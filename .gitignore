@@ -19,3 +19,11 @@ halo_enhancer.txt
 
 # DeepSeek scratch exports
 deepseek_*
+
+# .exe build tooling (not needed to run the Python tool)
+build.bat
+*.spec
+
+# Reference material / not part of the main tool
+*.ods
+test_gui.py
