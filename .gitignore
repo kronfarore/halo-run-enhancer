@@ -1,0 +1,21 @@
+# Build / packaging artifacts
+build/
+dist/
+__pycache__/
+*.pyc
+
+# Personal run data & outputs
+selections/
+patches/
+magnitude_presets.json
+
+# Manual backups & scratch copies
+halo_enhancer_backup*.py
+halo_enhancer*_backup*.py
+*_backup*_WORKING.py
+halo - Copy*.json
+halo.json.bak
+halo_enhancer.txt
+
+# DeepSeek scratch exports
+deepseek_*

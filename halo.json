@@ -1,0 +1,2701 @@
+{
+	"Comment": {
+		"Name of Effect": {
+			"desc": " A description of what it does hopefully",
+			"tag": "Under what tag it can be found in assembly",
+			"field": "What field it can be found in the tag",
+			"ignore": "Whether to ignore this effect in the tools pool. yes/no. defaults to no",
+			"impact": "Whether the effect can have positive, negative or either influence. Determines in which pool it lands. p/n/pn"
+		}
+	},
+	
+	"Missions": {
+		"Halo 1": {
+			"a10": {
+				"name": "The Pillar of Autumn",
+				"enemies": ["Elite", "Grunt"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"a30": {
+				"name": "Halo",
+				"enemies": ["Elite", "Grunt", "Jackal"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Sniper Rifle", "Needler"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"a50": {
+				"name": "The Truth and Reconciliation",
+				"enemies": ["Elite", "Grunt", "Jackal", "Hunter"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Sniper Rifle", "Needler"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"b30": {
+				"name": "The Silent Cartographer",
+				"enemies": ["Elite", "Grunt", "Jackal", "Hunter"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"b40": {
+				"name": "Assault on the Control Room",
+				"enemies": ["Elite", "Grunt", "Jackal", "Hunter"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Sniper Rifle", "Needler", "Rocket Launcher"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"c10": {
+				"name": "343 Guilty Spark",
+				"enemies": ["Grunt", "Jackal", "Flood Combat Form", "Flood Infection Form"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher", "Shotgun"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"c20": {
+				"name": "The Library",
+				"enemies": ["Flood Combat Form", "Flood Infection Form", "Flood Carrier Form"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher", "Shotgun", "Flamethrower"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"c40": {
+				"name": "Two Betrayals",
+				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Hunter", "Jackal", "Sentinel"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"d20": {
+				"name": "Keyes",
+				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Flamethrower"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"d40": {
+				"name": "The Maw",
+				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Hunter", "Sentinel"],
+				"weapons": ["Pistol", "Assault Rifle", "Plasma Pistol", "Plasma Rifle", "Needler", "Rocket Launcher", "Shotgun"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			}
+		},
+		"Halo 2": {
+			"01b": {
+				"name": "Cairo Station",
+				"enemies": ["Bugger", "Elite", "Grunt"],
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Plasma Rifle", "Shotgun", "SMG"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"03a": {
+				"name": "Outskirts",
+				"enemies": ["Bugger", "Elite", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Plasma Rifle", "SMG", "Sniper Rifle", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"03b": {
+				"name": "Metropolis",
+				"enemies": ["Elite", "Grunt", "Jackal"],
+				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"04a": {
+				"name": "The Arbiter",
+				"enemies": ["Elite", "Grunt", "Sentinel"],
+				"weapons": ["Sentinel Beam", "Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "SMG", "Flak Cannon"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"04b": {
+				"name": "Oracle",
+				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Sentinel"],
+				"boss": "Heretic Leader",
+				"weapons": ["Sentinel Beam", "Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Flak Cannon"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"05a": {
+				"name": "Delta Halo",
+				"enemies": ["Bugger", "Elite", "Grunt", "Jackal"],
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"05b": {
+				"name": "Regret",
+				"enemies": ["Bugger", "Elite", "Grunt", "Hunter", "Jackal"],
+				"boss": "Propeht Regret",
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"06a": {
+				"name": "Sacred Icon",
+				"enemies": ["Brute", "Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Jackal", "Sentinel"],
+				"boss": "Sentinel Enforcer",
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"06b": {
+				"name": "Quarantine Zone",
+				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Sentinel"],
+				"boss": "Sentinel Enforcer",
+				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Rocket Launcher"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"07a": {
+				"name": "Gravemind",
+				"enemies": ["Brute", "Bugger", "Elite", "Flood Infection Form", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "SMG", "Flak Cannon", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"07b": {
+				"name": "High Charity",
+				"enemies": ["Brute", "Bugger", "Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Jackal"],
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"08a": {
+				"name": "Uprising",
+				"enemies": ["Brute", "Bugger", "Elite", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"08b": {
+				"name": "The Great Journey",
+				"enemies": ["Brute", "Bugger", "Elite", "Hunter", "Jackal"],
+				"boss": "Tartarus",
+				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			}
+		}
+	},
+	
+	"Player Modifiers": {
+		"General Modifiers": {
+			"Starting Health Modifier": {
+				"desc": "Player starting health modifier (scenario)",
+				"tag": "scnr levels\\*",
+				"field": "Player Starting Profile",
+				"targets": [
+					{
+						"field": "Starting Health Modifier",
+						"block": "Player Starting Profile"
+					}
+				],
+				"special": true,
+				"impact": "p"
+			},
+			"Starting Shield Modifier": {
+				"desc": "Player starting shield modifier (scenario)",
+				"tag": "scnr levels\\*",
+				"field": "Player Starting Profile",
+				"targets": [
+					{
+						"field": "Starting Shield Modifier",
+						"block": "Player Starting Profile"
+					}
+				],
+				"special": true,
+				"impact": "p"
+			},
+			"Magnetism": {
+				"desc": "How much the crosshair sticks to the enemy",
+				"tag": "matg globals\\globals",
+				"field": "Player Control",
+				"targets": [
+					{ "field": "Magnetism Friction", "block": "Player Control" },
+					{ "field": "Magnetism Adhesion", "block": "Player Control" }
+				],
+				"impact": "p"
+			},
+			"Walking Speed": {
+				"desc": "Increases Walking Speed?",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [ { "field": "Walking Speed", "block": "Player Information" } ],
+				"impact": "p"
+			},
+			"Run Speed": {
+				"desc": "Run Forward, Run Backwards, Run Sideways, Run Acceleration",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [
+					{ "field": "Run Forward", "block": "Player Information" },
+					{ "field": "Run Backward", "block": "Player Information" },
+					{ "field": "Run Sideways", "block": "Player Information" },
+					{ "field": "Run Acceleration", "block": "Player Information" }
+				],
+				"impact": "p"
+			},
+			"Sneak Speed": {
+				"desc": "Sneak Forward, Sneak Backwards, Sneak Sideways, Sneak Acceleration",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [
+					{ "field": "Sneak Forward", "block": "Player Information" },
+					{ "field": "Sneak Backward", "block": "Player Information" },
+					{ "field": "Sneak Sideways", "block": "Player Information" },
+					{ "field": "Sneak Acceleration", "block": "Player Information" }
+				],
+				"impact": "p"
+			},
+			"Airborne Acceleration": {
+				"desc": "Acceleration while off ground?",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [ { "field": "Airborne Acceleration", "block": "Player Information" } ],
+				"impact": "p"
+			},
+			"Stun Penalty": {
+				"desc": "Stun Movement Penalty, Stun Turning Penalty, Stun Jumping Penalty",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [
+					{ "field": "Stun Movement Penalty", "block": "Player Information" },
+					{ "field": "Stun Turning Penalty", "block": "Player Information" },
+					{ "field": "Stun Jumping Penalty", "block": "Player Information" }
+				],
+				"impact": "p"
+			},
+			"Stun Time": {
+				"desc": "Minimum & Maximum Stun Time (after Fall Damage?)",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [
+					{ "field": "Minimum Stun Time", "block": "Player Information" },
+					{ "field": "Maximum Stun Time", "block": "Player Information" }
+				],
+				"impact": "n"
+			},
+			"Harmful Falling Distance": {
+				"desc": "Range between which fall damage is taken?",
+				"tag": "matg globals\\globals",
+				"field": "Falling Damage",
+				"targets": [
+					{ "field": "Harmful Falling Distance", "block": "Falling Damage" },
+					{ "field": "Harmful Falling Distance Max", "block": "Falling Damage" }
+				],
+				"impact": "p"
+			}
+		},
+		
+		"Specific Weapon Modifier": {
+			"Assault Rifle": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\assault rifle\\bullet",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\assault rifle\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\assault rifle\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\assault rifle\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Effective Range?": {
+					"desc": "Air Damage Range",
+					"tag": "proj weapons\\assault rifle\\bullet",
+					"field": "Physics",
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Pistol": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\pistol\\bullet",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\pistol\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\pistol\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\pistol\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\pistol\\pistol",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Plasma Pistol": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\plasma pistol\\bolt",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\plasma pistol\\bolt",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\plasma pistol\\bolt",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\plasma pistol\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Effective Range?": {
+					"desc": "Air Damage Range",
+					"tag": "proj weapons\\plasma pistol\\bolt",
+					"field": "Physics",
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"impact": "p"
+				},
+				"Heat Recovery": {
+					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Heat",
+					"targets": [
+						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Loss Per Second" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Age Misfire": {
+					"desc": "Age Misifre Start, Age Misfire Chance",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Miscellaneous",
+					"targets": [
+						{ "field": "Age Misfire Start" },
+						{ "field": "Age Misfire Chance" }
+					],
+					"impact": "p"
+				},
+				"Charging Time": {
+					"desc": "Time it takes to overcharge",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Charging",
+					"targets": [
+						{ "field": "Charging Time", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Per Round": {
+					"desc": "Heat per Round, Age per Round",
+					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"field": "Misc",
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Triggers" },
+						{ "field": "Age Generated Per Round", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Plasma Rifle": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\plasma rifle\\bolt",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\plasma rifle\\bolt",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\plasma rifle\\bolt",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\plasma rifle\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Effective Range?": {
+					"desc": "Air Damage Range",
+					"tag": "proj weapons\\plasma rifle\\bolt",
+					"field": "Physics",
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"impact": "p"
+				},
+				"Heat Recovery": {
+					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Heat",
+					"targets": [
+						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Loss Per Second" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Age": {
+					"desc": "Age Heat Recovery Penalty, Age Rate of Fire Penalty, Age Misifre Start, Age Misfire Chance",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Miscellaneous",
+					"targets": [
+						{ "field": "Age Heat Recovery Penalty" },
+						{ "field": "Age Rate Of Fire Penalty" },
+						{ "field": "Age Misfire Start" },
+						{ "field": "Age Misfire Chance" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Per Round": {
+					"desc": "Heat per Round, Age per Round",
+					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"field": "Misc",
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Triggers" },
+						{ "field": "Age Generated Per Round", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Needler": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\needler\\needle",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Needle Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\needler\\detonation damage",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\needler\\detonation damage",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\needler\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\needler\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Maximum Range": {
+					"desc": "Maximum Range before Needles explode",
+					"tag": "proj weapons\\needler\\bullet",
+					"field": "Detonations",
+					"targets": [
+						{ "field": "Maximum Range" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\needler\\needler",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Sniper Rifle": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\sniper rifle\\sniper bullet",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\sniper rifle\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\sniper rifle\\bullet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\sniper rifle\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time (0 initial value, not sure what's going on)",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Rocket Launcher": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\rocket launcher\\rocket",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Radius": {
+					"desc": "Min to Max Radius",
+					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"field": "",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "p"
+				},			
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\rocket launcher\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time (0 initial value, not sure what's going on)",
+					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
+					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Shotgun": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": "proj weapons\\shotgun\\pellet",
+					"field": "Physics",
+					"targets": [
+						{
+							"field": "Maximum Range"
+						},
+						{
+							"field": "Initial Velocity"
+						},
+						{
+							"field": "Final Velocity"
+						}
+					],
+					"impact": "p"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\shotgun\\pellet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\shotgun\\pellet",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\shotgun\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Zoom",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"impact": "p"
+				},
+				"Magazine": {
+					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Recharged", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Magazines",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"impact": "p"
+				},
+				"Rounds Per Second": {
+					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Firing",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Triggers" },
+						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+					],
+					"impact": "p"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": "weap weapons\\shotgun\\shotgun",
+					"field": "Projectile",
+					"targets": [
+						{ "field": "Error Angle", "block": "Triggers" },
+						{ "field": "Error Angle Max", "block": "Triggers" }
+					],
+					"impact": "p"
+				}
+			},
+			"Frag Grenade": {
+				"Grenade Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Maximum Count": {
+					"desc": "Maximum amount of Grenade by Type",
+					"tag": "matg globals\\globals",
+					"field": "Grenades 0 - 1",
+					"targets": [
+						{ "field": "Maximum Count", "block": "Grenades", "index": 0 }
+					],
+					"impact": "p"
+				},
+				"Radius": {
+					"desc": "How big of kaboom?",
+					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"field": "-",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "p"
+				}
+			},
+			"Plasma Grenade": {
+				"Grenade Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "p"
+				},
+				"Stun": {
+					"desc": "Stun, Maximum Stun, Stun Time",
+					"tag": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Stun" },
+						{ "field": "Maximum Stun" },
+						{ "field": "Stun Time" }
+					],
+					"impact": "p"
+				},
+				"Maximum Count": {
+					"desc": "Maximum amount of Grenade by Type",
+					"tag": "matg globals\\globals",
+					"field": "Grenades 1 - 1",
+					"targets": [
+						{ "field": "Maximum Count", "block": "Grenades", "index": 1 }
+					],
+					"impact": "p"
+				},
+				"Radius": {
+					"desc": "How big of kaboom?",
+					"tag": "jpt! weapons\\plasma grenade\\explosion",
+					"field": "-",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "p"
+				}
+			}
+		}
+	},
+	
+	"Enemy modifiers": {
+		"General modifiers": {
+			"Enemy damage": {
+				"desc": "How much damage the enemy deals",
+				"tag": "matg globals\\globals",
+				"field": "Difficulty",
+				"targets": [ { "field": "Enemy Damage", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Enemy Vitality": {
+				"desc": "How much health the enemy has",
+				"tag": "matg globals\\globals",
+				"field": "Difficulty",
+				"targets": [ { "field": "Enemy Vitality", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Enemy Shield": {
+				"desc": "How strong enemy shields are",
+				"tag": "matg globals\\globals",
+				"field": "Difficulty",
+				"targets": [ { "field": "Enemy Shield", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Enemy Recharge": {
+				"desc": "How fast enemy shields recharge",
+				"tag": "matg globals\\globals",
+				"field": "Difficulty",
+				"targets": [ { "field": "Enemy Recharge", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Infection Forms": {
+				"desc": "Toughness of Infection forms",
+				"tag": "matg globals\\globals",
+				"field": "Difficulty",
+				"targets": [ { "field": "Infection Forms", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Rate of Fire": {
+				"desc": "Enemy rate of fire scale",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Projectile Error": {
+				"desc": "Error of enemy fire",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Projectile Error", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Burst Error": {
+				"desc": "Reduces intra-burst shot distance, whatever that is",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Burst Error", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"New Target Delay": {
+				"desc": "Maybe how quickly they pick a new target?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "New Target Delay", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Burst Seperation": {
+				"desc": "Reduces the delay time between bursts, whatever that is",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Burst Separation", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Target Tracking": {
+				"desc": "Increase additional target tracking, I guess?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Target Tracking", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Target Leading": {
+				"desc": "Increase target leading fraction, I guess?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Target Leading", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Overcharge Chance": {
+				"desc": "Overcharge chance for plasma pistol?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Overcharge Chance", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Special Fire Delay": {
+				"desc": "Delay between Special Fire Shots (Overcharge, Banshee Bombs)",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Special Fire Delay", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Guidance Vs Player": {
+				"desc": "Guidance Velocity scale, probably how much they track the player",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Melee Delay Scale": {
+				"desc": "Non-berserk melee delay time",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Grenade Scales": {
+				"desc": "Grenade Chance, Grenade Timer",
+				"tag": "matg globals\\globals",
+				"field": "Grenades",
+				"targets": [
+					{ "field": "Grenade Chance Scale", "block": "Difficulty", "difficulty": true },
+					{ "field": "Grenade Timer Scale", "block": "Difficulty", "difficulty": true }
+				],
+				"impact": "n"
+			},
+			"Major Upgrades (Normal)": {
+				"desc": "Fraction of enemy upgrades, from normal pool?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Major Upgrade (Normal)", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Major Upgrades (Few)": {
+				"desc": "Fraction of enemy upgrades, from few pool?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Major Upgrade (Few)", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n"
+			},
+			"Major Upgrades (Many)": {
+				"desc": "Fraction of enemy upgrades, from few pool?",
+				"tag": "matg globals\\globals",
+				"field": "Ranged Fire",
+				"targets": [ { "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true } ],
+				"impact": "p"
+			},
+			"Player Stun Time": {
+				"desc": "Stun Time after Fall Damage?",
+				"tag": "matg globals\\globals",
+				"field": "Player Information",
+				"targets": [
+					{ "field": "Minimum Stun Time", "block": "Player Information" },
+					{ "field": "Minimum Stun Time", "block": "Player Information" }
+				],
+				"impact": "n"
+			},
+			"Player Vehicle Ram Chance": {
+				"desc": "Chance of deciding to ram the player",
+				"tag": "matg globals\\globals",
+				"field": "Vehicles",
+				"targets": [ { "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true } ],
+				"impact": "n",
+				"game": "Halo 2"
+			}
+		},
+		
+		"Specific Enemy modifier": {
+			"Elite": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\elite\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\elite\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\elite\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Cover Chance": {
+					"desc": "Dive into Cover and Emerge from Cover Chance",
+					"tag": "actr characters\\elite\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive Into Cover Chance" },
+						{ "field": "Emerge From Cover Chance" }
+					],
+					"impact": "n"
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"tag": "actr characters\\elite\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive From Grenade Chance" }
+					],
+					"impact": "n"
+				},
+				"Panic": {
+					"desc": "Various mechanics that trigger panic",
+					"tag": "actr characters\\elite\\*",
+					"field": "Panic",
+					"targets": [
+						{ "field": "Danger Trigger Time" },
+						{ "field": "Friend Killed Panic Chance" },
+						{ "field": "Panic Damage Threshold" },
+						{ "field": "Surprise Distance" }
+					],
+					"impact": "p"
+				},
+				"Defensive": {
+					"desc": "Taking cover and reacting to danger scales",
+					"tag": "actr characters\\elite\\*",
+					"field": "Defensive",
+					"targets": [
+						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Shield Fraction" },
+						{ "field": "Attack Shield Fraction" },
+						{ "field": "Pursue Shield Fraction" },
+						{ "field": "Attacking Crouch Threshold" },
+						{ "field": "Defending Crouch Threshold" }
+					],
+					"impact": "p"
+				},
+				"Berserk Melee Behaviour": {
+					"desc": "Melee Attack delay, Melee Charge Time",
+					"tag": "actr characters\\elite\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Attack Delay" },
+						{ "field": "Melee Charge Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Triggerin": {
+					"desc": "Berserk Damage Amount, Berserk Damage Threshold, Berserk Grenade Chance",
+					"tag": "actr characters\\elite\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Berserk Damage Amount" },
+						{ "field": "Berserk Damage Threshold" },
+						{ "field": "Berserk Grenade Chance" }
+					],
+					"impact": "p"
+				},
+				"Firing Positions": {
+					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
+					"tag": "actr characters\\elite\\*",
+					"field": "Firing Positions",
+					"targets": [
+						{ "field": "Guard Position Time" },
+						{ "field": "Combat Position Time" },
+						{ "field": "Old Position Avoid Distance" }
+					],
+					"impact": "p"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\elite\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Rate of Fire": {
+					"desc": "Increases Rate of Fire!",
+					"tag": "actv characters\\elite\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Rate Of Fire" }
+					],
+					"impact": "n"
+				},
+				"Projectile Error": {
+					"desc": "Error added to every Projectile fired. Less = more accurate",
+					"tag": "actv characters\\elite\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Projectile Error" }
+					],
+					"impact": "n"
+				},
+				"Target Tracking": {
+					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+					"tag": "actv characters\\elite\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Target Tracking" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\elite\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": 
+					{
+						"Halo 1": "actv characters\\elite\\elite major\\elite weapon",
+						"Halo 2": "char objects\\elite\\ai\\elite && _variants" 
+					},
+					"field": 
+					{
+						"Halo 1": "Unit",
+						"Halo 2": "Vitality Properties"
+					},
+					"impact": "n"
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity",
+					"tag":
+					{
+						"Halo 1": "actv characters\\elite\\elite major\\elite weapon",
+						"Halo 2": "char objects\\elite\\ai\\elite && _variants"
+					},
+					"field":
+					{
+						"Halo 1": "Unit",
+						"Halo 2": "Vitality Properties"
+					},
+					"impact": "n"
+				},
+				"Melee Damage": {
+					"desc": "Damage, Stun if you are feeling adventurous",
+					"tag": "jpt! characters\\elite\\elite melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			},
+			"Hunter": {
+				"Fuel Rod Charging Time": {
+					"desc": "Fuel rod charge time",
+					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"field": "Charging",
+					"targets": [
+						{
+							"field": "Charging Time",
+							"block": "Triggers"
+						}
+					],
+					"impact": "n"
+				},
+				"Fuel Rod Projectiles Per Shot": {
+					"desc": "Fuel rod projectiles per shot",
+					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"field": "Projectile",
+					"targets": [
+						{
+							"field": "Projectiles Per Shot",
+							"block": "Triggers"
+						}
+					],
+					"impact": "n"
+				},
+				"Fuel Rod Spew Time": {
+					"desc": "Fuel rod spew (continuous fire) time",
+					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"field": "Trigger",
+					"targets": [
+						{
+							"field": "Spew Time",
+							"block": "Triggers"
+						}
+					],
+					"impact": "n"
+				},
+				"Fuel Rod Radius": {
+					"desc": "Fuel rod explosion radius",
+					"tag": "jpt! weapons\\fuel rod gun\\explosion",
+					"field": "",
+					"targets": [
+						{
+							"field": "Radius"
+						},
+						{
+							"field": "Radius Max"
+						}
+					],
+					"impact": "n"
+				},
+				"Fuel Rod Damage": {
+					"desc": "Fuel rod explosion damage",
+					"tag": "jpt! weapons\\fuel rod gun\\explosion",
+					"field": "Damage",
+					"targets": [
+						{
+							"field": "Damage Lower Bound"
+						},
+						{
+							"field": "Damage Upper Bound"
+						}
+					],
+					"impact": "n"
+				},
+				"Fuel Rod Stun": {
+					"desc": "Fuel rod explosion stun",
+					"tag": "jpt! weapons\\fuel rod gun\\explosion",
+					"field": "Damage",
+					"targets": [
+						{
+							"field": "Stun"
+						},
+						{
+							"field": "Maximum Stun"
+						},
+						{
+							"field": "Stun Time"
+						}
+					],
+					"impact": "n"
+				},
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Behaviour": {
+					"desc": "Melee Attack delay, Melee Charge Time",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Attack Delay" },
+						{ "field": "Melee Charge Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Triggerin": {
+					"desc": "Berserk Damage Amount, Berserk Damage Threshold, Berserk Grenade Chance",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Berserk Damage Amount" },
+						{ "field": "Berserk Damage Threshold" },
+						{ "field": "Berserk Grenade Chance" }
+					],
+					"impact": "p"
+				},
+				"Firing Positions": {
+					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
+					"tag": "actr characters\\hunter\\*",
+					"field": "Firing Positions",
+					"targets": [
+						{ "field": "Guard Position Time" },
+						{ "field": "Combat Position Time" },
+						{ "field": "Old Position Avoid Distance" }
+					],
+					"impact": "p"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\hunter\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Rate of Fire": {
+					"desc": "Increases Rate of Fire!",
+					"tag": "actv characters\\hunter\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Rate Of Fire" }
+					],
+					"impact": "n"
+				},
+				"Projectile Error": {
+					"desc": "Error added to every Projectile fired. Less = more accurate",
+					"tag": "actv characters\\hunter\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Projectile Error" }
+					],
+					"impact": "n"
+				},
+				"Target Tracking": {
+					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+					"tag": "actv characters\\hunter\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Target Tracking" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\hunter\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": 
+					{
+						"Halo 1": "actv characters\\hunter\\hunter major\\hunter weapon",
+						"Halo 2": "char objects\\hunter\\ai\\hunter && _variants" 
+					},
+					"field": 
+					{
+						"Halo 1": "Unit",
+						"Halo 2": "Vitality Properties"
+					},
+					"impact": "n"
+				},
+				"Melee Damage": {
+					"desc": "Damage, Stun if you are feeling adventurous",
+					"tag": "jpt! characters\\hunter\\hunter melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			},
+			"Grunt": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Cover Chance": {
+					"desc": "Dive into Cover and Emerge from Cover Chance",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive Into Cover Chance" },
+						{ "field": "Emerge From Cover Chance" }
+					],
+					"impact": "n"
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive From Grenade Chance" }
+					],
+					"impact": "n"
+				},
+				"Panic": {
+					"desc": "Various mechanics that trigger panic",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Panic",
+					"targets": [
+						{ "field": "Danger Trigger Time" },
+						{ "field": "Friend Killed Panic Chance" },
+						{ "field": "Panic Damage Threshold" },
+						{ "field": "Surprise Distance" }
+					],
+					"impact": "p"
+				},
+				"Defensive": {
+					"desc": "Taking cover and reacting to danger scales",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Defensive",
+					"targets": [
+						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Shield Fraction" },
+						{ "field": "Attack Shield Fraction" },
+						{ "field": "Pursue Shield Fraction" },
+						{ "field": "Attacking Crouch Threshold" },
+						{ "field": "Defending Crouch Threshold" }
+					],
+					"impact": "p"
+				},
+				"Firing Positions": {
+					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
+					"tag": "actr characters\\grunt\\*",
+					"field": "Firing Positions",
+					"targets": [
+						{ "field": "Guard Position Time" },
+						{ "field": "Combat Position Time" },
+						{ "field": "Old Position Avoid Distance" }
+					],
+					"impact": "p"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Rate of Fire": {
+					"desc": "Increases Rate of Fire!",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Rate Of Fire" }
+					],
+					"impact": "n"
+				},
+				"Projectile Error": {
+					"desc": "Error added to every Projectile fired. Less = more accurate",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Projectile Error" }
+					],
+					"impact": "n"
+				},
+				"Special-Case Firing": {
+					"desc": "Overcharge chance, delay, behaviour",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Special-Case Firing Properties",
+					"targets": [
+						{ "field": "Special Damage Modifier" },
+						{ "field": "Special-Fire Chance" },
+						{ "field": "Special-Fire Delay" }
+					],
+					"impact": "n"
+				},
+				"Grenades": {
+					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral, Chance, Check Time, Timeout",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Grenades",
+					"targets": [
+						{ "field": "Grenade Velocity" },
+						{ "field": "Grenade Ranges" },
+						{ "field": "Collateral Damage Radius" },
+						{ "field": "Grenade Chance" },
+						{ "field": "Grenade Check Time" },
+						{ "field": "Encounter Grenade Timeout" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\grunt\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				}
+			},			
+			"Jackal": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Cover Chance": {
+					"desc": "Dive into Cover and Emerge from Cover Chance",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive Into Cover Chance" },
+						{ "field": "Emerge From Cover Chance" }
+					],
+					"impact": "n"
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Movement",
+					"targets": [
+						{ "field": "Dive From Grenade Chance" }
+					],
+					"impact": "n"
+				},
+				"Panic": {
+					"desc": "Various mechanics that trigger panic",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Panic",
+					"targets": [
+						{ "field": "Danger Trigger Time" },
+						{ "field": "Friend Killed Panic Chance" },
+						{ "field": "Panic Damage Threshold" },
+						{ "field": "Surprise Distance" }
+					],
+					"impact": "p"
+				},
+				"Defensive": {
+					"desc": "Taking cover and reacting to danger scales",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Defensive",
+					"targets": [
+						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Shield Fraction" },
+						{ "field": "Attack Shield Fraction" },
+						{ "field": "Pursue Shield Fraction" },
+						{ "field": "Attacking Crouch Threshold" },
+						{ "field": "Defending Crouch Threshold" }
+					],
+					"impact": "p"
+				},
+				"Firing Positions": {
+					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
+					"tag": "actr characters\\jackal\\*",
+					"field": "Firing Positions",
+					"targets": [
+						{ "field": "Guard Position Time" },
+						{ "field": "Combat Position Time" },
+						{ "field": "Old Position Avoid Distance" }
+					],
+					"impact": "p"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Rate of Fire": {
+					"desc": "Increases Rate of Fire!",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Rate Of Fire" }
+					],
+					"impact": "n"
+				},
+				"Projectile Error": {
+					"desc": "Error added to every Projectile fired. Less = more accurate",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Projectile Error" }
+					],
+					"impact": "n"
+				},
+				"Special-Case Firing": {
+					"desc": "Overcharge chance, delay, behaviour",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Special-Case Firing Properties",
+					"targets": [
+						{ "field": "Special Damage Modifier" },
+						{ "field": "Special-Fire Chance" },
+						{ "field": "Special-Fire Delay" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				},
+				"Shield Vitality": {
+					"desc": "Shield Power",
+					"tag": "actv characters\\jackal\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Shield Vitality" }
+					],
+					"impact": "n"
+				}
+			},
+			"Flood Combat Form": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Behaviour": {
+					"desc": "Melee Attack delay, Melee Charge Time",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Attack Delay" },
+						{ "field": "Melee Charge Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Leap": {
+					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Leap Range" },
+						{ "field": "Melee Leap Velocity" },
+						{ "field": "Melee Leap Chance" },
+						{ "field": "Melee Leap Ballistic" }
+					],
+					"impact": "n"
+				},
+				"Berserk Triggerin": {
+					"desc": "Berserk Damage Amount, Berserk Damage Threshold",
+					"tag": "actr characters\\floodcombat*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Berserk Damage Amount" },
+						{ "field": "Berserk Damage Threshold" },
+						{ "field": "Berserk Grenade Chance" }
+					],
+					"impact": "p"
+				},
+				"Movement Switching": {
+					"desc": "Movement Type, Initial Crouch Chance, Crouch Time, Run Time",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Movement Switching",
+					"targets": [
+						{ "field": "Initial Crouch Chance" },
+						{ "field": "Crouch Time" },
+						{ "field": "Run Time" }
+					],
+					"impact": "n"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Rate of Fire": {
+					"desc": "Increases Rate of Fire!",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Rate Of Fire" }
+					],
+					"impact": "n"
+				},
+				"Projectile Error": {
+					"desc": "Error added to every Projectile fired. Less = more accurate",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Projectile Error" }
+					],
+					"impact": "n"
+				},
+				"Target Tracking": {
+					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Target Tracking" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity",
+					"tag": "actv characters\\floodcombat*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Shield Vitality" }
+					],
+					"impact": "n"
+				},
+				"Melee Damage": {
+					"desc": "Damage, Stun if you are feeling adventurous",
+					"tag": "jpt! characters\\floodcombat elite\\melee & \\floodcombat human\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			},
+			"Flood Infection Form": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\flood_infection\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\flood_infection\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\flood_infection\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Behaviour": {
+					"desc": "Melee Attack delay, Melee Charge Time",
+					"tag": "actr characters\\flood_infection\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Attack Delay" },
+						{ "field": "Melee Charge Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Leap": {
+					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
+					"tag": "actr characters\\flood_infection\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Leap Range" },
+						{ "field": "Melee Leap Velocity" },
+						{ "field": "Melee Leap Chance" },
+						{ "field": "Melee Leap Ballistic" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\flood_infection\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				},
+				"Pop Radius": {
+					"desc": "Might increase the explosion when they die?",
+					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"field": "",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "n"
+				},
+				"Pop Damage": {
+					"desc": "Damage on pop? Lower Bound, Higher Bound",
+					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				},
+				"Melee Damage": {
+					"desc": "Damage, Stun if you are feeling adventurous",
+					"tag": "jpt! characters\\floodinfection\\melee",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			},
+			"Flood Carrier Form": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\floodcarrier\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\floodcarrier\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\floodcarrier\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Berserk Melee Behaviour": {
+					"desc": "Melee Charge Time",
+					"tag": "actr characters\\floodcarrier\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Melee Attack Delay" },
+						{ "field": "Melee Charge Time" }
+					],
+					"impact": "n"
+				},
+				"Suicide Sensing Distance": {
+					"desc": "How close they need to be, to check to blow up",
+					"tag": "actr characters\\floodcarrier\\*",
+					"field": "Berserk",
+					"targets": [
+						{ "field": "Suicide Sensing Distance" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\floodcarrier\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				},
+				"Pop Radius": {
+					"desc": "Might increase the explosion when they die?",
+					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"field": "",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "n"
+				},
+				"Pop Damage": {
+					"desc": "Damage on pop? Lower Bound, Higher Bound",
+					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			},
+			"Sentinel": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"tag": "actr characters\\sentinel\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Maximum Vision Distance" },
+						{ "field": "Central Vision Angle" },
+						{ "field": "Maximum Vision Angle" },
+						{ "field": "Peripheral Vision Angle" }
+					],
+					"impact": "n"
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"tag": "actr characters\\sentinel\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Hearing Distance" }
+					],
+					"impact": "n"
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
+					"tag": "actr characters\\sentinel\\*",
+					"field": "Perception",
+					"targets": [
+						{ "field": "Notice Projectile Chance" },
+						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Combat Perception Time" },
+						{ "field": "Guard Perception Time" },
+						{ "field": "Non-Combat Perception Time" }
+					],
+					"impact": "n"
+				},
+				"Defensive": {
+					"desc": "Taking cover and reacting to danger scales",
+					"tag": "actr characters\\sentinel\\*",
+					"field": "Defensive",
+					"targets": [
+						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Shield Fraction" },
+						{ "field": "Attack Shield Fraction" },
+						{ "field": "Pursue Shield Fraction" },
+						{ "field": "Attacking Crouch Threshold" },
+						{ "field": "Defending Crouch Threshold" }
+					],
+					"impact": "p"
+				},
+				"Firing Positions": {
+					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
+					"tag": "actr characters\\sentinel\\*",
+					"field": "Firing Positions",
+					"targets": [
+						{ "field": "Guard Position Time" },
+						{ "field": "Combat Position Time" },
+						{ "field": "Old Position Avoid Distance" }
+					],
+					"impact": "p"
+				},
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"tag": "actv characters\\sentinel\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Maximum Firing Distance" }
+					],
+					"impact": "n"
+				},
+				"Target Tracking": {
+					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+					"tag": "actv characters\\sentinel\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Target Tracking" }
+					],
+					"impact": "n"
+				},
+				"Weapon Damage Modifier": {
+					"desc": "Fraction of damage of the weapon used",
+					"tag": "actv characters\\sentinel\\*",
+					"field": "Weapon",
+					"targets": [
+						{ "field": "Weapon Damage Modifier" }
+					],
+					"impact": "n"
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"tag": "actv characters\\sentinel\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Body Vitality" }
+					],
+					"impact": "n"
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity",
+					"tag": "actv characters\\sentinel\\*",
+					"field": "Unit",
+					"targets": [
+						{ "field": "Shield Vitality" }
+					],
+					"impact": "n"
+				},
+				"Beam Damage": {
+					"desc": "Damage, Stun if you are feeling adventurous",
+					"tag": "jpt! characters\\sentinel\\beam",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				},
+				"Explosion Radius": {
+					"desc": "Explosion on death?",
+					"tag": "jpt! characters\\sentinel\\explosion",
+					"field": "",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"impact": "n"
+				},
+				"Explosion Damage": {
+					"desc": "Explosion on death? Lower Bound, Upper Bound",
+					"tag": "jpt! characters\\sentinel\\explosion",
+					"field": "Damage",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" }
+					],
+					"impact": "n"
+				}
+			}
+		}
+	},
+	
+	"Friend modifiers": {
+		"Friend Damage": {
+			"desc": "How much damage friends deal",
+			"tag": "matg globals\\globals",
+			"field": "Difficulty",
+			"targets": [ { "field": "Friend Damage", "block": "Difficulty", "difficulty": true } ],
+			"impact": "p"
+		},
+		"Friend Vitality": {
+			"desc": "How much health friends have",
+			"tag": "matg globals\\globals",
+			"field": "Difficulty",
+			"targets": [ { "field": "Friend Vitality", "block": "Difficulty", "difficulty": true } ],
+			"impact": "p"
+		},
+		"Friend Shield": {
+			"desc": "How strong friends shields are",
+			"tag": "matg globals\\globals",
+			"field": "Difficulty",
+			"targets": [ { "field": "Friend Shield", "block": "Difficulty", "difficulty": true } ],
+			"impact": "p"
+		},
+		"Friend Recharge": {
+			"desc": "How fast friendly shields recharge",
+			"tag": "matg globals\\globals",
+			"field": "Difficulty",
+			"targets": [ { "field": "Friend Recharge", "block": "Difficulty", "difficulty": true } ],
+			"impact": "p"
+		}
+	}
+}
