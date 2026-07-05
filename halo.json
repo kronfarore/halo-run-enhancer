@@ -1669,41 +1669,53 @@
 			"Elite": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Cover Chance": {
 					"desc": "Dive into Cover and Emerge from Cover Chance",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive Into Cover Chance" },
@@ -1713,7 +1725,10 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive From Grenade Chance" }
@@ -1722,7 +1737,10 @@
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Panic",
 					"targets": [
 						{ "field": "Danger Trigger Time" },
@@ -1734,10 +1752,13 @@
 				},
 				"Defensive": {
 					"desc": "Taking cover and reacting to danger scales",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Defensive",
 					"targets": [
-						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time", "block": { "Halo 1": null, "Halo 2": "Cover Properties" } },
 						{ "field": "Hide Shield Fraction" },
 						{ "field": "Attack Shield Fraction" },
 						{ "field": "Pursue Shield Fraction" },
@@ -1748,7 +1769,10 @@
 				},
 				"Berserk Melee Behaviour": {
 					"desc": "Melee Attack delay, Melee Charge Time",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Melee Attack Delay" },
@@ -1758,7 +1782,10 @@
 				},
 				"Berserk Triggerin": {
 					"desc": "Berserk Damage Amount, Berserk Damage Threshold, Berserk Grenade Chance",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Berserk Damage Amount" },
@@ -1769,7 +1796,10 @@
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
-					"tag": "actr characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Firing Positions",
 					"targets": [
 						{ "field": "Guard Position Time" },
@@ -1780,7 +1810,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -1789,7 +1822,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases Rate of Fire!",
-					"tag": "actv characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Rate Of Fire" }
@@ -1798,7 +1834,10 @@
 				},
 				"Projectile Error": {
 					"desc": "Error added to every Projectile fired. Less = more accurate",
-					"tag": "actv characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Projectile Error" }
@@ -1807,7 +1846,10 @@
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
-					"tag": "actv characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Target Tracking" }
@@ -1816,7 +1858,10 @@
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\elite\\*",
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -1962,41 +2007,53 @@
 				},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Berserk Melee Behaviour": {
 					"desc": "Melee Attack delay, Melee Charge Time",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Melee Attack Delay" },
@@ -2006,7 +2063,10 @@
 				},
 				"Berserk Triggerin": {
 					"desc": "Berserk Damage Amount, Berserk Damage Threshold, Berserk Grenade Chance",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Berserk Damage Amount" },
@@ -2017,7 +2077,10 @@
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
-					"tag": "actr characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Firing Positions",
 					"targets": [
 						{ "field": "Guard Position Time" },
@@ -2028,7 +2091,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -2037,7 +2103,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases Rate of Fire!",
-					"tag": "actv characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Rate Of Fire" }
@@ -2046,7 +2115,10 @@
 				},
 				"Projectile Error": {
 					"desc": "Error added to every Projectile fired. Less = more accurate",
-					"tag": "actv characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Projectile Error" }
@@ -2055,7 +2127,10 @@
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
-					"tag": "actv characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Target Tracking" }
@@ -2064,7 +2139,10 @@
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\hunter\\*",
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -2104,41 +2182,53 @@
 			"Grunt": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Cover Chance": {
 					"desc": "Dive into Cover and Emerge from Cover Chance",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive Into Cover Chance" },
@@ -2148,7 +2238,10 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive From Grenade Chance" }
@@ -2157,7 +2250,10 @@
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Panic",
 					"targets": [
 						{ "field": "Danger Trigger Time" },
@@ -2169,10 +2265,13 @@
 				},
 				"Defensive": {
 					"desc": "Taking cover and reacting to danger scales",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Defensive",
 					"targets": [
-						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time", "block": { "Halo 1": null, "Halo 2": "Cover Properties" } },
 						{ "field": "Hide Shield Fraction" },
 						{ "field": "Attack Shield Fraction" },
 						{ "field": "Pursue Shield Fraction" },
@@ -2183,7 +2282,10 @@
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
-					"tag": "actr characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Firing Positions",
 					"targets": [
 						{ "field": "Guard Position Time" },
@@ -2194,7 +2296,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -2203,7 +2308,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases Rate of Fire!",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Rate Of Fire" }
@@ -2212,7 +2320,10 @@
 				},
 				"Projectile Error": {
 					"desc": "Error added to every Projectile fired. Less = more accurate",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Projectile Error" }
@@ -2221,24 +2332,30 @@
 				},
 				"Special-Case Firing": {
 					"desc": "Overcharge chance, delay, behaviour",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Special-Case Firing Properties",
 					"targets": [
-						{ "field": "Special Damage Modifier" },
-						{ "field": "Special-Fire Chance" },
-						{ "field": "Special-Fire Delay" }
+						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Delay", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } }
 					],
 					"impact": "n"
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral, Chance, Check Time, Timeout",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Grenades",
 					"targets": [
-						{ "field": "Grenade Velocity" },
-						{ "field": "Grenade Ranges" },
-						{ "field": "Collateral Damage Radius" },
-						{ "field": "Grenade Chance" },
+						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
+						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
+						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
+						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Check Time" },
 						{ "field": "Encounter Grenade Timeout" }
 					],
@@ -2246,7 +2363,10 @@
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -2255,7 +2375,10 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\grunt\\*",
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2266,41 +2389,53 @@
 			"Jackal": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Cover Chance": {
 					"desc": "Dive into Cover and Emerge from Cover Chance",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive Into Cover Chance" },
@@ -2310,7 +2445,10 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Movement",
 					"targets": [
 						{ "field": "Dive From Grenade Chance" }
@@ -2319,7 +2457,10 @@
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Panic",
 					"targets": [
 						{ "field": "Danger Trigger Time" },
@@ -2331,10 +2472,13 @@
 				},
 				"Defensive": {
 					"desc": "Taking cover and reacting to danger scales",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Defensive",
 					"targets": [
-						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time", "block": { "Halo 1": null, "Halo 2": "Cover Properties" } },
 						{ "field": "Hide Shield Fraction" },
 						{ "field": "Attack Shield Fraction" },
 						{ "field": "Pursue Shield Fraction" },
@@ -2345,7 +2489,10 @@
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
-					"tag": "actr characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Firing Positions",
 					"targets": [
 						{ "field": "Guard Position Time" },
@@ -2356,7 +2503,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -2365,7 +2515,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases Rate of Fire!",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Rate Of Fire" }
@@ -2374,7 +2527,10 @@
 				},
 				"Projectile Error": {
 					"desc": "Error added to every Projectile fired. Less = more accurate",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Projectile Error" }
@@ -2383,18 +2539,24 @@
 				},
 				"Special-Case Firing": {
 					"desc": "Overcharge chance, delay, behaviour",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Special-Case Firing Properties",
 					"targets": [
-						{ "field": "Special Damage Modifier" },
-						{ "field": "Special-Fire Chance" },
-						{ "field": "Special-Fire Delay" }
+						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Delay", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } }
 					],
 					"impact": "n"
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -2403,7 +2565,10 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2412,7 +2577,10 @@
 				},
 				"Shield Vitality": {
 					"desc": "Shield Power",
-					"tag": "actv characters\\jackal\\*",
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Shield Vitality" }
@@ -2423,41 +2591,53 @@
 			"Flood Combat Form": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Berserk Melee Behaviour": {
 					"desc": "Melee Attack delay, Melee Charge Time",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Melee Attack Delay" },
@@ -2467,19 +2647,25 @@
 				},
 				"Berserk Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Berserk",
 					"targets": [
-						{ "field": "Melee Leap Range" },
+						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Velocity" },
-						{ "field": "Melee Leap Chance" },
-						{ "field": "Melee Leap Ballistic" }
+						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
 					"impact": "n"
 				},
 				"Berserk Triggerin": {
 					"desc": "Berserk Damage Amount, Berserk Damage Threshold",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Berserk Damage Amount" },
@@ -2490,7 +2676,10 @@
 				},
 				"Movement Switching": {
 					"desc": "Movement Type, Initial Crouch Chance, Crouch Time, Run Time",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Movement Switching",
 					"targets": [
 						{ "field": "Initial Crouch Chance" },
@@ -2501,7 +2690,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -2510,7 +2702,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases Rate of Fire!",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Rate Of Fire" }
@@ -2519,7 +2714,10 @@
 				},
 				"Projectile Error": {
 					"desc": "Error added to every Projectile fired. Less = more accurate",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Projectile Error" }
@@ -2528,7 +2726,10 @@
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Target Tracking" }
@@ -2537,7 +2738,10 @@
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -2546,7 +2750,10 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2555,7 +2762,10 @@
 				},
 				"Shield Vitality": {
 					"desc": "Shield Capacity",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Shield Vitality" }
@@ -2576,41 +2786,53 @@
 			"Flood Infection Form": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Berserk Melee Behaviour": {
 					"desc": "Melee Attack delay, Melee Charge Time",
-					"tag": "actr characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Melee Attack Delay" },
@@ -2620,19 +2842,25 @@
 				},
 				"Berserk Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
-					"tag": "actr characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Berserk",
 					"targets": [
-						{ "field": "Melee Leap Range" },
+						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Velocity" },
-						{ "field": "Melee Leap Chance" },
-						{ "field": "Melee Leap Ballistic" }
+						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
 					"impact": "n"
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\flood_infection\\*",
+					"tag": {
+						"Halo 1": "actv characters\\flood_infection\\*",
+						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2676,41 +2904,53 @@
 			"Flood Carrier Form": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Berserk Melee Behaviour": {
 					"desc": "Melee Charge Time",
-					"tag": "actr characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Melee Attack Delay" },
@@ -2720,7 +2960,10 @@
 				},
 				"Suicide Sensing Distance": {
 					"desc": "How close they need to be, to check to blow up",
-					"tag": "actr characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Berserk",
 					"targets": [
 						{ "field": "Suicide Sensing Distance" }
@@ -2729,7 +2972,10 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\floodcarrier\\*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2760,44 +3006,56 @@
 			"Sentinel": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"tag": "actr characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"tag": "actr characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"tag": "actr characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Perception",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" } }
 					],
 					"impact": "n"
 				},
 				"Defensive": {
 					"desc": "Taking cover and reacting to danger scales",
-					"tag": "actr characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Defensive",
 					"targets": [
-						{ "field": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time", "block": { "Halo 1": null, "Halo 2": "Cover Properties" } },
 						{ "field": "Hide Shield Fraction" },
 						{ "field": "Attack Shield Fraction" },
 						{ "field": "Pursue Shield Fraction" },
@@ -2808,7 +3066,10 @@
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
-					"tag": "actr characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Firing Positions",
 					"targets": [
 						{ "field": "Guard Position Time" },
@@ -2819,7 +3080,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actv characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Maximum Firing Distance" }
@@ -2828,7 +3092,10 @@
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
-					"tag": "actv characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actv characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Target Tracking" }
@@ -2837,7 +3104,10 @@
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
-					"tag": "actv characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actv characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Weapon",
 					"targets": [
 						{ "field": "Weapon Damage Modifier" }
@@ -2846,7 +3116,10 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": "actv characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actv characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Body Vitality" }
@@ -2855,7 +3128,10 @@
 				},
 				"Shield Vitality": {
 					"desc": "Shield Capacity",
-					"tag": "actv characters\\sentinel\\*",
+					"tag": {
+						"Halo 1": "actv characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
 					"field": "Unit",
 					"targets": [
 						{ "field": "Shield Vitality" }
