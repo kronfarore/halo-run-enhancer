@@ -10,6 +10,15 @@ from pathlib import Path
 import halo_map as hm
 
 
+def open_map(map_path, game=None):
+    """Open a map with the right parser for its game. Halo 2 uses the
+    second-gen `Halo2Map`; everything else uses the Halo 1 `HaloMap`."""
+    if game and '2' in str(game):
+        import halo2_map
+        return halo2_map.Halo2Map(map_path)
+    return hm.HaloMap(map_path)
+
+
 class PluginRegistry:
     """Loads Assembly plugins per tag group, honoring an MCC override order
     (e.g. Halo1MCC before Halo1). Missing plugins resolve to None, not errors."""
@@ -102,18 +111,25 @@ def save_presets(path, presets):
         json.dump(presets, f, indent=2, ensure_ascii=False)
 
 
-def default_map_path(app_dir, game_folder, mission_id):
-    """<MCC root>/<game_folder>/maps/<mission>.map, MCC root being the tool's parent."""
-    if not game_folder:
+def default_map_path(app_dir, map_subdir, mission_id):
+    """<MCC root>/<map_subdir>/<mission>.map, MCC root being the tool's parent.
+    Falls back to a prefix match (<mission>*.map) so a mission id like '01b'
+    resolves to Halo 2's '01b_spacestation.map'."""
+    if not map_subdir:
         return ''
-    return str(Path(app_dir).resolve().parent / game_folder / 'maps' / f'{mission_id}.map')
+    d = Path(app_dir).resolve().parent / map_subdir
+    exact = d / f'{mission_id}.map'
+    if exact.is_file():
+        return str(exact)
+    matches = sorted(d.glob(f'{mission_id}*.map'))
+    return str(matches[0]) if matches else str(exact)
 
 
-def apply_run(map_path, plan, registry, target_difficulty, backup=True):
+def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. Returns (results, backup_path). The map is only saved
     (and a one-time .bak made) if at least one write succeeds."""
-    m = hm.HaloMap(map_path)
+    m = open_map(map_path, game)
     results = []
     for item in plan:
         cls, path = hm.split_tag(item['tag'])

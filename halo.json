@@ -167,7 +167,7 @@
 				"field": "Player Starting Profile",
 				"targets": [
 					{
-						"field": "Starting Health Modifier",
+						"field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" },
 						"block": "Player Starting Profile"
 					}
 				],
@@ -180,7 +180,7 @@
 				"field": "Player Starting Profile",
 				"targets": [
 					{
-						"field": "Starting Shield Modifier",
+						"field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" },
 						"block": "Player Starting Profile"
 					}
 				],
@@ -365,8 +365,8 @@
 					"tag": "weap weapons\\assault rifle\\assault rifle",
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
@@ -375,7 +375,7 @@
 					"tag": "weap weapons\\assault rifle\\assault rifle",
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
@@ -384,8 +384,8 @@
 					"tag": "weap weapons\\assault rifle\\assault rifle",
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -393,7 +393,10 @@
 			"Pistol": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\pistol\\bullet",
+					"tag": {
+						"Halo 1": "proj weapons\\pistol\\bullet",
+						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -441,7 +444,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -452,7 +458,10 @@
 				},
 				"Magazine": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -464,7 +473,10 @@
 				},
 				"Reload Time": {
 					"desc": "Reload Time",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -473,30 +485,39 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\pistol\\pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -504,7 +525,10 @@
 			"Plasma Pistol": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\plasma pistol\\bolt",
+					"tag": {
+						"Halo 1": "proj weapons\\plasma pistol\\bolt",
+						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -549,7 +573,10 @@
 				},
 				"Effective Range?": {
 					"desc": "Air Damage Range",
-					"tag": "proj weapons\\plasma pistol\\bolt",
+					"tag": {
+						"Halo 1": "proj weapons\\plasma pistol\\bolt",
+						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
+					},
 					"field": "Physics",
 					"targets": [
 						{ "field": "Air Damage Range" },
@@ -559,7 +586,10 @@
 				},
 				"Heat Recovery": {
 					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Heat",
 					"targets": [
 						{ "field": "Heat Recovery Threshold" },
@@ -569,7 +599,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -580,7 +613,10 @@
 				},
 				"Age Misfire": {
 					"desc": "Age Misifre Start, Age Misfire Chance",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Miscellaneous",
 					"targets": [
 						{ "field": "Age Misfire Start" },
@@ -590,29 +626,38 @@
 				},
 				"Charging Time": {
 					"desc": "Time it takes to overcharge",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Charging",
 					"targets": [
-						{ "field": "Charging Time", "block": "Triggers" }
+						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Per Round": {
 					"desc": "Heat per Round, Age per Round",
-					"tag": "weap weapons\\plasma pistol\\plasma pistol",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
 					"field": "Misc",
 					"targets": [
-						{ "field": "Heat Generated Per Round", "block": "Triggers" },
-						{ "field": "Age Generated Per Round", "block": "Triggers" }
+						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -620,7 +665,10 @@
 			"Plasma Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\plasma rifle\\bolt",
+					"tag": {
+						"Halo 1": "proj weapons\\plasma rifle\\bolt",
+						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -665,7 +713,10 @@
 				},
 				"Effective Range?": {
 					"desc": "Air Damage Range",
-					"tag": "proj weapons\\plasma rifle\\bolt",
+					"tag": {
+						"Halo 1": "proj weapons\\plasma rifle\\bolt",
+						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
+					},
 					"field": "Physics",
 					"targets": [
 						{ "field": "Air Damage Range" },
@@ -675,7 +726,10 @@
 				},
 				"Heat Recovery": {
 					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Heat",
 					"targets": [
 						{ "field": "Heat Recovery Threshold" },
@@ -685,7 +739,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -696,7 +753,10 @@
 				},
 				"Age": {
 					"desc": "Age Heat Recovery Penalty, Age Rate of Fire Penalty, Age Misifre Start, Age Misfire Chance",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Miscellaneous",
 					"targets": [
 						{ "field": "Age Heat Recovery Penalty" },
@@ -708,40 +768,52 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Per Round": {
 					"desc": "Heat per Round, Age per Round",
-					"tag": "weap weapons\\plasma rifle\\plasma rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
 					"field": "Misc",
 					"targets": [
-						{ "field": "Heat Generated Per Round", "block": "Triggers" },
-						{ "field": "Age Generated Per Round", "block": "Triggers" }
+						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -749,7 +821,10 @@
 			"Needler": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\needler\\needle",
+					"tag": {
+						"Halo 1": "proj weapons\\needler\\needle",
+						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -816,7 +891,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -827,7 +905,10 @@
 				},
 				"Magazine": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -839,7 +920,10 @@
 				},
 				"Reload Time": {
 					"desc": "Reload Time",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -848,30 +932,39 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\needler\\needler",
+					"tag": {
+						"Halo 1": "weap weapons\\needler\\needler",
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -879,7 +972,10 @@
 			"Sniper Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\sniper rifle\\sniper bullet",
+					"tag": {
+						"Halo 1": "proj weapons\\sniper rifle\\sniper bullet",
+						"Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -927,7 +1023,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -938,7 +1037,10 @@
 				},
 				"Magazine": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -950,7 +1052,10 @@
 				},
 				"Reload Time": {
 					"desc": "Reload Time (0 initial value, not sure what's going on)",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -959,30 +1064,39 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\sniper rifle\\sniper rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -990,7 +1104,10 @@
 			"Rocket Launcher": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\rocket launcher\\rocket",
+					"tag": {
+						"Halo 1": "proj weapons\\rocket launcher\\rocket",
+						"Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -1048,7 +1165,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"tag": {
+						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1059,7 +1179,10 @@
 				},
 				"Magazine": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
-					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"tag": {
+						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1071,7 +1194,10 @@
 				},
 				"Reload Time": {
 					"desc": "Reload Time (0 initial value, not sure what's going on)",
-					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"tag": {
+						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1080,20 +1206,26 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
-					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"tag": {
+						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\rocket launcher\\rocket launcher",
+					"tag": {
+						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -1101,7 +1233,10 @@
 			"Shotgun": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\shotgun\\pellet",
+					"tag": {
+						"Halo 1": "proj weapons\\shotgun\\pellet",
+						"Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
+					},
 					"field": "Physics",
 					"targets": [
 						{
@@ -1149,7 +1284,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Zoom",
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1160,7 +1298,10 @@
 				},
 				"Magazine": {
 					"desc": "Rounds Total Initial, Rounds Total Maximum, Round Loaded Maximum, Rounds, Rounds Reloaded",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1172,7 +1313,10 @@
 				},
 				"Reload Time": {
 					"desc": "Reload Time",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Magazines",
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1181,30 +1325,39 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second. Define Acceleration and Deceleration time and Rounds Between Tracers if 0.",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Firing",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Triggers" },
-						{ "field": "Rounds Per Second Max", "block": "Triggers" }
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Triggers" }
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\shotgun\\shotgun",
+					"tag": {
+						"Halo 1": "weap weapons\\shotgun\\shotgun",
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
 					"field": "Projectile",
 					"targets": [
-						{ "field": "Error Angle", "block": "Triggers" },
-						{ "field": "Error Angle Max", "block": "Triggers" }
+						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
 					"impact": "p"
 				}
@@ -1621,29 +1774,33 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": 
-					{
-						"Halo 1": "actv characters\\elite\\elite major\\elite weapon",
-						"Halo 2": "char objects\\elite\\ai\\elite && _variants" 
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
 					},
-					"field": 
-					{
-						"Halo 1": "Unit",
-						"Halo 2": "Vitality Properties"
+					"field": "Vitality",
+					"targets": {
+						"Halo 1": [ { "field": "Body Vitality" } ],
+						"Halo 2": [
+							{ "field": "Normal Body Vitality", "block": "Vitality Properties" },
+							{ "field": "Legendary Body Vitality", "block": "Vitality Properties" }
+						]
 					},
 					"impact": "n"
 				},
 				"Shield Vitality": {
 					"desc": "Shield Capacity",
-					"tag":
-					{
-						"Halo 1": "actv characters\\elite\\elite major\\elite weapon",
-						"Halo 2": "char objects\\elite\\ai\\elite && _variants"
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
 					},
-					"field":
-					{
-						"Halo 1": "Unit",
-						"Halo 2": "Vitality Properties"
+					"field": "Vitality",
+					"targets": {
+						"Halo 1": [ { "field": "Shield Vitality" } ],
+						"Halo 2": [
+							{ "field": "Normal Shield Vitality", "block": "Vitality Properties" },
+							{ "field": "Legendary Shield Vitality", "block": "Vitality Properties" }
+						]
 					},
 					"impact": "n"
 				},
@@ -1661,36 +1818,45 @@
 			"Hunter": {
 				"Fuel Rod Charging Time": {
 					"desc": "Fuel rod charge time",
-					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"tag": {
+						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+					},
 					"field": "Charging",
 					"targets": [
 						{
 							"field": "Charging Time",
-							"block": "Triggers"
+							"block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" }
 						}
 					],
 					"impact": "n"
 				},
 				"Fuel Rod Projectiles Per Shot": {
 					"desc": "Fuel rod projectiles per shot",
-					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"tag": {
+						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+					},
 					"field": "Projectile",
 					"targets": [
 						{
 							"field": "Projectiles Per Shot",
-							"block": "Triggers"
+							"block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }
 						}
 					],
 					"impact": "n"
 				},
 				"Fuel Rod Spew Time": {
 					"desc": "Fuel rod spew (continuous fire) time",
-					"tag": "weap weapons\\fuel rod gun\\hunter fuel rod",
+					"tag": {
+						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+					},
 					"field": "Trigger",
 					"targets": [
 						{
 							"field": "Spew Time",
-							"block": "Triggers"
+							"block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" }
 						}
 					],
 					"impact": "n"
@@ -1853,15 +2019,17 @@
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": 
-					{
-						"Halo 1": "actv characters\\hunter\\hunter major\\hunter weapon",
-						"Halo 2": "char objects\\hunter\\ai\\hunter && _variants" 
+					"tag": {
+						"Halo 1": "actv characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
-					"field": 
-					{
-						"Halo 1": "Unit",
-						"Halo 2": "Vitality Properties"
+					"field": "Vitality",
+					"targets": {
+						"Halo 1": [ { "field": "Body Vitality" } ],
+						"Halo 2": [
+							{ "field": "Normal Body Vitality", "block": "Vitality Properties" },
+							{ "field": "Legendary Body Vitality", "block": "Vitality Properties" }
+						]
 					},
 					"impact": "n"
 				},

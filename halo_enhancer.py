@@ -96,7 +96,7 @@ CONFIG = {
     "target_difficulty": "Impossible",   # which difficulty slot difficulty-effects write to
     "assembly_plugins_dir": r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
     "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"]},
-    "map_game_folder": {"Halo 1": "halo1", "Halo 2": "halo2"},
+    "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11"},
     # #6: alternate internal names mapped to a canonical weapon. The alias
     # shares the canonical weapon's modifiers and is not treated as new.
     # e.g. {"Magnum": "Pistol"}
@@ -1016,10 +1016,11 @@ class MagnitudeEditorDialog(QDialog):
 
     _CUSTOM = '__custom__'
 
-    def __init__(self, parent, effects, subdirs, map_path, presets_path, target_difficulty):
+    def __init__(self, parent, effects, subdirs, map_path, presets_path, target_difficulty, game=None):
         super().__init__(parent)
         import halo_patch
         self._hp = halo_patch
+        self.game = game
         self.subdirs = subdirs
         self.presets_path = presets_path
         self.presets = halo_patch.load_presets(presets_path)
@@ -1056,7 +1057,7 @@ class MagnitudeEditorDialog(QDialog):
         path = self.map_edit.text().strip()
         src = path + '.bak' if Path(path + '.bak').is_file() else path
         try:
-            self._srcmap = self._hp.hm.HaloMap(src)
+            self._srcmap = self._hp.open_map(src, self.game)
         except Exception:
             self._srcmap = False
         return self._srcmap
@@ -1364,7 +1365,7 @@ class MagnitudeEditorDialog(QDialog):
             return
 
         try:
-            results, backup = self._hp.apply_run(map_path, plan, self.registry, self.target_difficulty)
+            results, backup = self._hp.apply_run(map_path, plan, self.registry, self.target_difficulty, game=self.game)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -2300,15 +2301,27 @@ class HaloGUI(QMainWindow):
             return
         game = self._current_game()
         games = self.db.get_games()
-        # Resolve any per-game dict tags to the active game's string so they're
-        # hashable/patchable (some effects carry {"Halo 1": ..., "Halo 2": ...}).
+        # Resolve any per-game dict values to the active game's string so they're
+        # hashable/patchable. An effect's `tag`, top-level `field`, and each
+        # target's `field`/`block` may carry {"Halo 1": ..., "Halo 2": ...}.
         for rd in self.run_state.rounds or []:
             slots = [(rd.get('player1') or {}).get('mod'), (rd.get('player2') or {}).get('mod'),
                      rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'),
                      rd.get('boss1'), rd.get('boss2')]
             for mod in slots:
-                if isinstance(mod, dict) and isinstance(mod.get('tag'), dict):
-                    mod['tag'] = resolve_gamed(mod['tag'], game, games)
+                if not isinstance(mod, dict):
+                    continue
+                for key in ('tag', 'field'):
+                    if isinstance(mod.get(key), dict):
+                        mod[key] = resolve_gamed(mod[key], game, games)
+                # `targets` may itself be per-game (games need different fields),
+                # e.g. {"Halo 1": [...], "Halo 2": [...]}.
+                if isinstance(mod.get('targets'), dict):
+                    mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
+                for t in mod.get('targets') or []:
+                    for key in ('field', 'block'):
+                        if isinstance(t.get(key), dict):
+                            t[key] = resolve_gamed(t[key], game, games)
         effects = halo_patch.collect_effects(self.run_state.rounds)
         if not effects:
             QMessageBox.information(self, "No effects yet",
@@ -2320,7 +2333,7 @@ class HaloGUI(QMainWindow):
             Path(__file__).resolve().parent, game_folder, self.run_state.mission_id)
         presets_path = str(app_data_dir() / "magnitude_presets.json")
         dlg = MagnitudeEditorDialog(self, effects, subdirs, map_path, presets_path,
-                                    CONFIG.get('target_difficulty', 'Normal'))
+                                    CONFIG.get('target_difficulty', 'Normal'), game=game)
         dlg.exec()
 
     def add_to_blacklist(self, mod_data, source, pair_id=None, mod_type=None):
