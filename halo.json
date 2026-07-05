@@ -413,7 +413,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\pistol\\bullet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\pistol\\bullet",
+						"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -423,7 +426,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\pistol\\bullet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\pistol\\bullet",
+						"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -542,7 +548,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\plasma pistol\\bolt",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma pistol\\bolt",
+						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -552,7 +561,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\plasma pistol\\bolt",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma pistol\\bolt",
+						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -682,7 +694,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\plasma rifle\\bolt",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma rifle\\bolt",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -692,7 +707,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\plasma rifle\\bolt",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma rifle\\bolt",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -992,7 +1010,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\sniper rifle\\bullet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\sniper rifle\\bullet",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1002,7 +1023,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\sniper rifle\\bullet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\sniper rifle\\bullet",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -1124,7 +1148,10 @@
 				},
 				"Radius": {
 					"desc": "Min to Max Radius",
-					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
+					},
 					"field": "",
 					"targets": [
 						{ "field": "Radius" },
@@ -1134,7 +1161,10 @@
 				},			
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1144,7 +1174,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\rocket launcher\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -1253,7 +1286,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\shotgun\\pellet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\shotgun\\pellet",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1263,7 +1299,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\shotgun\\pellet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\shotgun\\pellet",
+						"Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -1365,7 +1404,10 @@
 			"Frag Grenade": {
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1375,7 +1417,10 @@
 				},
 				"Stun": {
 					"desc": "Stun, Maximum Stun, Stun Time",
-					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Stun" },
@@ -1395,7 +1440,10 @@
 				},
 				"Radius": {
 					"desc": "How big of kaboom?",
-					"tag": "jpt! weapons\\frag grenade\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion"
+					},
 					"field": "-",
 					"targets": [
 						{ "field": "Radius" },
@@ -1437,7 +1485,10 @@
 				},
 				"Radius": {
 					"desc": "How big of kaboom?",
-					"tag": "jpt! weapons\\plasma grenade\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma grenade\\explosion",
+						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion"
+					},
 					"field": "-",
 					"targets": [
 						{ "field": "Radius" },
@@ -1806,7 +1857,10 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage, Stun if you are feeling adventurous",
-					"tag": "jpt! characters\\elite\\elite melee",
+					"tag": {
+						"Halo 1": "jpt! characters\\elite\\elite melee",
+						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2035,7 +2089,10 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage, Stun if you are feeling adventurous",
-					"tag": "jpt! characters\\hunter\\hunter melee",
+					"tag": {
+						"Halo 1": "jpt! characters\\hunter\\hunter melee",
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2604,7 +2661,10 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage, Stun if you are feeling adventurous",
-					"tag": "jpt! characters\\floodinfection\\melee",
+					"tag": {
+						"Halo 1": "jpt! characters\\floodinfection\\melee",
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2804,7 +2864,10 @@
 				},
 				"Beam Damage": {
 					"desc": "Damage, Stun if you are feeling adventurous",
-					"tag": "jpt! characters\\sentinel\\beam",
+					"tag": {
+						"Halo 1": "jpt! characters\\sentinel\\beam",
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam"
+					},
 					"field": "Damage",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
