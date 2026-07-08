@@ -1,5 +1,6 @@
 # halo_enhancer.py - Final version
 
+import copy
 import json
 import random
 import sys
@@ -8,6 +9,12 @@ from pathlib import Path
 from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
+
+
+# Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
+# bump only the last component for changes; the middle 2 becomes 3 only when
+# support reaches the next Halo game. Stamped into saved runs and patch logs.
+VERSION = "0.2.1"
 
 
 def resource_path(filename):
@@ -37,7 +44,17 @@ class _NullWriter:
 
 # Settings that persist across runs (editable in-app), stored next to saves.
 SETTINGS_FILE = 'settings.json'
-SETTINGS_KEYS = ('assembly_plugins_dir', 'target_difficulty')
+
+# Gameplay options exposed in the Options menu. These are BOTH global defaults
+# (persisted in settings.json) AND snapshotted into each saved run, so loading a
+# run restores the options it was played with. Keep this list in sync with
+# OptionsDialog and RunState's options round-trip.
+OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'include_wildcards',
+               'wildcard_chance', 'new_weapon_chance', 'include_grenades',
+               'weapon_choice_negatives', 'special_rate_factor',
+               'card_width', 'card_height', 'hide_tags', 'hide_fields')
+
+SETTINGS_KEYS = ('assembly_plugins_dir',) + OPTION_KEYS
 
 
 def load_settings():
@@ -71,22 +88,38 @@ CONFIG = {
     "font_size_button": 17,
     "font_size_weapon": 18,
     
-    "weapon_card_height": 500,
-    "card_height_no_wildcard": 500,
-    "card_height_wildcard": 700,
+    # Mod/weapon card size. `card_width` is enforced as a fixed width on every
+    # card; `card_height` is the base fixed height, and cards that also show a
+    # wildcard get `card_height + card_wildcard_extra`. Width and height are
+    # editable in the Options menu.
+    "card_width": 600,
+    "card_height": 800,
+    "card_wildcard_extra": 250,
+    # Appearance: hide the "Tag:" / "Fields:" lines on selection cards.
+    "hide_tags": False,
+    "hide_fields": False,
 
     "wildcard_chance": 0.1,
     "new_weapon_chance": 0.0,
+    # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
+    # them rarer. ~0.67 = about a third less often.
+    "special_rate_factor": 0.67,
     # Whether deliberate weapon choices (start-of-run picks and the New Weapon
     # button) carry a tied negative. Random new-weapon pairs from
     # new_weapon_chance are unaffected (their pair always has an enemy). False
     # strips negatives from those deliberate weapon choices.
     "weapon_choice_negatives": True,
 
+    # When True, mods that can only ever apply in one game (an explicit "game"
+    # filter, or a tag that isn't a per-game dict covering both games) are kept
+    # out of every roll — useful for a combined H1+H2 run that only wants
+    # effects that work in both. Structural test; see ModifierDatabase._is_single_game_mod.
+    "remove_single_game_mods": False,
+
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
-    "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG"],
+    "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
     # Dual wield and weapon upgrades only unlock from these games onward
     # (matched against game order in the JSON). Set to the first game to allow everywhere.
     "dual_wield_from_game": "Halo 2",
@@ -117,6 +150,19 @@ MOD_COLORS = {
     'gold':  {'border': 'FFD700', 'bg': '1a1a0a'},
     'boss':  {'border': 'AA00FF', 'bg': '160016'},  # #4: menacing purple
     'special': {'border': '00E5FF', 'bg': '06201f'},  # #3: standout cyan
+    'dual': {'border': '00E676', 'bg': '0a2012'},   # dual-wield-only effects
+}
+
+# Historical effect renames: old name -> current halo.json key. Consulted by
+# _refresh_mod_definition when a saved/loaded run's frozen mod name no longer
+# exists in halo.json, so old saves keep working after an effect is renamed.
+EFFECT_RENAMES = {
+    'Rounds Per Second': 'More Shooting',
+    'Age Misfire': 'Misfire',
+    'Berserk Melee Behaviour': 'Melee Behavior',
+    'Berserk Triggerin': 'Melee Behavior',
+    'Defensive': 'Cover Properties',
+    'Projectile Error': 'Accuracy',
 }
 
 
@@ -126,9 +172,16 @@ def resolve_gamed(value, game, games=None):
       1. exact game match wins;
       2. else an explicit 'default' key, if present;
       3. else the nearest EARLIER game that has an entry (e.g. a missing Halo 3
-         falls back to Halo 2), using `games` as the ordering;
-      4. else the nearest later game, then any entry; '' if the dict is empty.
-    `games` is the ordered list of game names (from the DB)."""
+         falls back to Halo 2's value — a newer engine often inherits an
+         older one's tag/field unless overridden), using `games` as the order;
+      4. otherwise the value simply isn't defined for this game — return None.
+         An entry defined only for a LATER game (e.g. an H2-only tag/field)
+         must NOT leak backward into an earlier game's resolution; the two
+         engines' tag/field namespaces are unrelated, so borrowing a later
+         game's value would silently patch the wrong (or a nonexistent) tag.
+    `games` is the ordered list of game names (from the DB). Callers that
+    need a display fallback should do `resolve_gamed(...) or 'N/A'`; callers
+    that build a patch plan should treat None as "not available this game"."""
     if not isinstance(value, dict):
         return value
     if game and game in value:
@@ -140,10 +193,54 @@ def resolve_gamed(value, game, games=None):
         for g in reversed(games[:idx]):      # nearest earlier game
             if g in value:
                 return value[g]
-        for g in games[idx + 1:]:            # then nearest later game
-            if g in value:
-                return value[g]
-    return next(iter(value.values()), '')
+    return None
+
+
+def target_fields_display(mod_data, game, games):
+    """Human-readable list of the target field names an effect actually patches
+    for the active game (replaces the old cosmetic mod-level 'field'). Resolves
+    per-game `targets` and per-game field names, and drops targets that don't
+    apply to this game."""
+    targets = mod_data.get('targets')
+    if isinstance(targets, dict):
+        targets = resolve_gamed(targets, game, games) or []
+    names = []
+    for t in targets or []:
+        if not isinstance(t, dict):
+            continue
+        if t.get('games') and game not in t['games']:
+            continue
+        fld = resolve_gamed(t.get('field'), game, games)
+        if fld:
+            names.append(str(fld))
+    return ", ".join(names) if names else "—"
+
+
+def single_game_badge(mod_data):
+    """'◆ H1 only' / '◆ H2 only' for an effect that can apply in just one game
+    (matches ModifierDatabase._is_single_game_mod), or None for cross-game ones."""
+    games = mod_data.get('games') or []
+    g = None
+    if len(games) == 1:
+        g = games[0]
+    elif isinstance(mod_data.get('tag'), dict) and len(mod_data['tag']) == 1:
+        g = next(iter(mod_data['tag']))
+    if not g:
+        return None
+    return "◆ %s only" % {'Halo 1': 'H1', 'Halo 2': 'H2'}.get(g, g)
+
+
+def card_meta_text(mod_data, game, games):
+    """The card's 'Tag:' / 'Fields:' lines, honoring the hide_tags/hide_fields
+    appearance options. Empty string if both are hidden."""
+    parts = []
+    if not CONFIG.get('hide_tags'):
+        tag = resolve_gamed(mod_data.get('tag', 'N/A'), game, games) or 'N/A'
+        parts.append(f"Tag: {tag[:60]}{'...' if len(tag) > 60 else ''}")
+    if not CONFIG.get('hide_fields'):
+        parts.append(f"Fields: {target_fields_display(mod_data, game, games)}")
+    return "\n".join(parts)
+
 
 class ModifierDatabase:
     """Load and manage all modifiers from halo.json"""
@@ -199,12 +296,14 @@ class ModifierDatabase:
             'name': mod_name,
             'desc': mod_data.get('desc', ''),
             'tag': mod_data.get('tag', ''),
-            'field': mod_data.get('field', ''),
-            'impact': mod_data.get('impact', 'p'),
             'games': self._parse_games(mod_data.get('game')),
             'wildcard': bool(mod_data.get('wildcard', False)),
             'special': bool(mod_data.get('special', False)),  # escalating-odds effect
-            'targets': list(mod_data.get('targets', []) or []),  # map-patch targets
+            'dual_only': bool(mod_data.get('dual_only', False)),  # needs 'Dual <X>'
+            'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
+            'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
+            'targets': mod_data.get('targets') if isinstance(mod_data.get('targets'), dict)
+                       else list(mod_data.get('targets', []) or []),  # map-patch targets
         }
         if extra:
             mod.update(extra)
@@ -224,16 +323,13 @@ class ModifierDatabase:
         if 'Enemy modifiers' in self.data:
             if 'General modifiers' in self.data['Enemy modifiers']:
                 for mod_name, mod_data in self.data['Enemy modifiers']['General modifiers'].items():
-                    mod = self._build_mod(mod_name, mod_data)
-                    mod['impact'] = mod_data.get('impact', 'n')
-                    self.negative_pool.append(mod)
+                    self.negative_pool.append(self._build_mod(mod_name, mod_data))
             if 'Specific Enemy modifier' in self.data['Enemy modifiers']:
                 for enemy, mods in self.data['Enemy modifiers']['Specific Enemy modifier'].items():
                     self.enemy_mods[enemy] = []
                     for mod_name, mod_data in mods.items():
-                        mod = self._build_mod(mod_name, mod_data, {'enemy': enemy})
-                        mod['impact'] = mod_data.get('impact', 'n')
-                        self.enemy_mods[enemy].append(mod)
+                        self.enemy_mods[enemy].append(
+                            self._build_mod(mod_name, mod_data, {'enemy': enemy}))
         # Wildcard pool: Friend modifiers are wildcards by nature, plus any mod
         # anywhere flagged `wildcard: true`.
         if 'Friend modifiers' in self.data:
@@ -289,7 +385,11 @@ class ModifierDatabase:
         return f"Weapon{CONFIG['blacklist_label_separator']}{weapon}"
 
     def get_weapon_modifiers(self, weapon_name):
-        return self.weapon_mods.get(self.resolve_weapon(weapon_name), [])
+        """Mods for a weapon slot. `dual_only` effects are offered only when
+        the slot is a 'Dual <X>' (the dual upgrade was taken)."""
+        mods = self.weapon_mods.get(self.resolve_weapon(weapon_name), [])
+        is_dual = bool(weapon_name) and str(weapon_name).startswith('Dual ')
+        return mods if is_dual else [m for m in mods if not m.get('dual_only')]
 
     def get_enemy_modifiers(self, mission_id):
         if mission_id not in self.mission_enemies:
@@ -365,6 +465,23 @@ class ModifierDatabase:
         games = mod.get('games')
         return (not games) or (game is None) or (game in games)
 
+    @staticmethod
+    def _is_single_game_mod(mod):
+        """Structural test for a mod that can apply in only one game: it carries
+        an explicit single-game filter, or its tag is a per-game dict with a
+        single game key. A PLAIN-STRING tag is NOT single-game — it's a shared
+        tag valid in every game (e.g. matg 'globals\\globals'), the most
+        cross-game kind there is."""
+        if len(mod.get('games') or []) == 1:
+            return True
+        tag = mod.get('tag')
+        return isinstance(tag, dict) and len(tag) < 2
+
+    def _cross_game_ok(self, mod):
+        """Honor the 'remove single-game mods' option. Off by default, so it has
+        no effect unless the user enables it in Options."""
+        return not (CONFIG.get('remove_single_game_mods') and self._is_single_game_mod(mod))
+
     def get_mod_label(self, mod, source=None):
         if source:
             return f"{source}{CONFIG['blacklist_label_separator']}{mod['name']}"
@@ -377,7 +494,8 @@ class ModifierDatabase:
 
     def filter_blacklisted(self, mods, blacklist, game=None):
         return [m for m in mods
-                if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)]
+                if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
+                and self._cross_game_ok(m)]
 
     def get_weapon_modifiers_filtered(self, weapon_name, blacklist, game=None):
         mods = self.get_weapon_modifiers(weapon_name)
@@ -408,7 +526,8 @@ class ModifierDatabase:
         # Filter first, then pick, so a blacklisted roll doesn't suppress
         # the wildcard entirely when other choices remain.
         available = [m for m in self.wildcard_pool
-                     if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)]
+                     if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
+                     and self._cross_game_ok(m)]
         return random.choice(available) if available else None
 
     def special_names(self):
@@ -424,6 +543,7 @@ class RunState:
         self.player1_weapons = []     # a player may accumulate several weapons
         self.player2_weapons = []
         self.selected_pairs = {'player1': None, 'player2': None}
+        self.options = {}            # per-run gameplay options snapshot (see OPTION_KEYS)
         self.current_turn = 'player1'
         self.phase = 'weapon_selection'
         self.pairs = []
@@ -466,6 +586,8 @@ class RunState:
         p1 = self.selected_pairs['player1']
         p2 = self.selected_pairs['player2']
         return {
+            "tool_version": VERSION,
+            "options": {k: CONFIG.get(k) for k in OPTION_KEYS},
             "mission": {"id": self.mission_id, "name": self.mission_name},
             "players": {
                 "player1": {
@@ -493,6 +615,12 @@ class RunState:
     @classmethod
     def from_dict(cls, data):
         state = cls()
+        # Restore the options this run was played with (applied to the live CONFIG
+        # so the loaded run behaves as saved). Only known option keys are honored.
+        opts = data.get('options') or {}
+        state.options = {k: opts[k] for k in OPTION_KEYS if k in opts}
+        for k, v in state.options.items():
+            CONFIG[k] = v
         state.mission_id = data.get('mission', {}).get('id', 'a10')
         state.mission_name = data.get('mission', {}).get('name', 'The Pillar of Autumn')
         p1data = data.get('players', {}).get('player1', {})
@@ -635,8 +763,11 @@ class WeaponSelectionCard(QGroupBox):
                                "padding: 15px; background-color: #0d0d0d; }")
         # 'add' cards carry a tied negative + an extra button, so they need more
         # room than the start-of-run weapon picks or they get squished.
-        self.setFixedHeight(CONFIG['card_height_wildcard'] if self.mode == 'add'
-                            else CONFIG['weapon_card_height'])
+        self.setFixedWidth(CONFIG['card_width'])
+        # Height hugs content (cards are top-aligned via the shared pairs_layout)
+        # instead of a fixed card_height — same fix as PairCard, so the initial and
+        # new-weapon selection cards no longer leave dead space below their button.
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
 
     def create_mod_widget(self, mod_data, label, color):
         scheme = MOD_COLORS.get(color, MOD_COLORS['red'])
@@ -655,17 +786,23 @@ class WeaponSelectionCard(QGroupBox):
         name = QLabel(f"{source}: {mod_data.get('name', 'Unknown')}")
         name.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_name']}px; color: #e0e0e0;")
         layout.addWidget(name)
+        badge = single_game_badge(mod_data)   # #2: single-game indicator
+        if badge:
+            bl = QLabel(badge)
+            bl.setStyleSheet(f"color: #d0a24a; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(bl)
         desc = QLabel(mod_data.get('desc', ''))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
         game = self.parent_widget._current_game() if self.parent_widget else None
         games = self.parent_widget.db.get_games() if self.parent_widget else None
-        tag = resolve_gamed(mod_data.get('tag', 'N/A'), game, games) or 'N/A'
-        field = resolve_gamed(mod_data.get('field', 'N/A'), game, games) or 'N/A'
-        tag_field = QLabel(f"Tag: {tag[:60]}{'...' if len(tag) > 60 else ''}\nField: {field}")
-        tag_field.setStyleSheet(f"color: #666; font-size: {CONFIG['font_size_small']}px; font-family: monospace;")
-        layout.addWidget(tag_field)
+        meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
+        if meta:
+            tag_field = QLabel(meta)
+            tag_field.setStyleSheet(f"color: #666; font-size: {CONFIG['font_size_small']}px; font-family: monospace;")
+            tag_field.setWordWrap(True)   # #1: wrap long "Fields:" text instead of clipping
+            layout.addWidget(tag_field)
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
         blacklist_btn.setToolTip("Add this modifier to blacklist")
@@ -724,14 +861,17 @@ class PairCard(QGroupBox):
             layout = QVBoxLayout(self)
             self.setLayout(layout)
 
-        layout.setSpacing(10)
+        layout.setSpacing(8)
+        # Tight top/left margins so there's no dead space above the PAIR title
+        # or between it and the first card.
+        layout.setContentsMargins(10, 4, 10, 10)
         player_text = ""
         if self.show_player1 and not self.show_player2:
             player_text = "PLAYER 1 - "
         elif self.show_player2 and not self.show_player1:
             player_text = "PLAYER 2 - "
         title = QLabel(f"{player_text}PAIR {self.pair['id']}")
-        title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0;")
+        title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0; margin: 0; padding: 0;")
         layout.addWidget(title)
 
         # The positive (player) card is replaced by a new-weapon offer when the
@@ -741,9 +881,10 @@ class PairCard(QGroupBox):
                 layout.addWidget(self.create_weapon_widget(
                     self.pair['new_weapon'], "PLAYER 1 - 🔫 NEW WEAPON", 'player1'))
             elif self.pair['player1_mod']:
+                w1 = self.pair['player1_mod'].get('weapon')
                 layout.addWidget(self.create_mod_widget(
                     self.pair['player1_mod'],
-                    f"PLAYER 1 ({self.pair['player1_mod'].get('weapon', 'Unknown Weapon')})",
+                    f"PLAYER 1 ({w1})" if w1 else "Player (General)",
                     "green", 'player1'))
 
         if self.show_player2:
@@ -751,9 +892,10 @@ class PairCard(QGroupBox):
                 layout.addWidget(self.create_weapon_widget(
                     self.pair['new_weapon'], "PLAYER 2 - 🔫 NEW WEAPON", 'player2'))
             elif self.pair['player2_mod']:
+                w2 = self.pair['player2_mod'].get('weapon')
                 layout.addWidget(self.create_mod_widget(
                     self.pair['player2_mod'],
-                    f"PLAYER 2 ({self.pair['player2_mod'].get('weapon', 'Unknown Weapon')})",
+                    f"PLAYER 2 ({w2})" if w2 else "Player (General)",
                     "green", 'player2'))
 
         if self.pair['enemy_mod']:
@@ -786,11 +928,14 @@ class PairCard(QGroupBox):
         select_btn.clicked.connect(self.on_select)
         layout.addWidget(select_btn)
 
-        self.setStyleSheet("QGroupBox { border: 1px solid #444; border-radius: 8px; padding: 15px; background-color: #0d0d0d; }")
-        if self.pair.get('wildcard_mod') is not None or self.pair.get('boss_mod') is not None:
-            self.setFixedHeight(CONFIG['card_height_wildcard'])
-        else:
-            self.setFixedHeight(CONFIG['card_height_no_wildcard'])
+        self.setStyleSheet("QGroupBox { border: 1px solid #444; border-radius: 8px; padding: 6px 12px 12px 12px; background-color: #0d0d0d; }")
+        self.setFixedWidth(CONFIG['card_width'])
+        # Height hugs the actual content instead of a fixed card_height. Cards are
+        # top-aligned in the row (pairs_layout AlignTop), so a short card no longer
+        # leaves dead vertical space below its SELECT button, and a tall one grows
+        # naturally instead of being squished. (card_height is retained only as the
+        # WeaponSelectionCard floor / Options value; it no longer pads PairCard.)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
 
     def on_blacklist_weapon(self, weapon, mod_type):
         if self.parent_widget:
@@ -836,7 +981,7 @@ class PairCard(QGroupBox):
             if mod_data.get('source') == 'General':
                 source = 'General'
             else:
-                source = mod_data.get('weapon', 'Unknown Weapon')
+                source = mod_data.get('weapon') or 'General'  # weaponless = general player effect
         elif mod_type == 'enemy':
             source = mod_data.get('enemy', 'General')
         elif mod_type == 'boss':
@@ -847,13 +992,17 @@ class PairCard(QGroupBox):
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss') else 1  # emphasize wildcard/boss
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
+        dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
         if special:
             scheme = MOD_COLORS['special']
+            border_width = 3
+        elif dual:
+            scheme = MOD_COLORS['dual']
             border_width = 3
         widget = QGroupBox(label)
         widget.setStyleSheet(f"""
             QGroupBox {{
-                border: {border_width}px {'double' if special else 'solid'} #{scheme['border']};
+                border: {border_width}px {'double' if special or dual else 'solid'} #{scheme['border']};
                 border-radius: 4px;
                 padding: 10px;
                 margin-top: 5px;
@@ -861,21 +1010,29 @@ class PairCard(QGroupBox):
             }}
         """)
         layout = QVBoxLayout(widget)
-        name = QLabel(f"{'★ ' if special else ''}{source}: {mod_data.get('name', 'Unknown')}")
+        marker = '★ ' if special else '⚔ ' if dual else ''
+        name = QLabel(f"{marker}{source}: {mod_data.get('name', 'Unknown')}")
         name.setStyleSheet("font-weight: bold; font-size: %dpx; color: %s;"
-                           % (CONFIG['font_size_name'], '#00E5FF' if special else '#e0e0e0'))
+                           % (CONFIG['font_size_name'],
+                              '#00E5FF' if special else '#00E676' if dual else '#e0e0e0'))
         layout.addWidget(name)
+        badge = single_game_badge(mod_data)   # #2: single-game indicator
+        if badge:
+            bl = QLabel(badge)
+            bl.setStyleSheet(f"color: #d0a24a; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(bl)
         desc = QLabel(mod_data.get('desc', ''))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
         game = self.parent_widget._current_game() if self.parent_widget else None
         games = self.parent_widget.db.get_games() if self.parent_widget else None
-        tag = resolve_gamed(mod_data.get('tag', 'N/A'), game, games) or 'N/A'
-        field = resolve_gamed(mod_data.get('field', 'N/A'), game, games) or 'N/A'
-        tag_field = QLabel(f"Tag: {tag[:60]}{'...' if len(tag) > 60 else ''}\nField: {field}")
-        tag_field.setStyleSheet(f"color: #666; font-size: {CONFIG['font_size_small']}px; font-family: monospace;")
-        layout.addWidget(tag_field)
+        meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
+        if meta:
+            tag_field = QLabel(meta)
+            tag_field.setStyleSheet(f"color: #666; font-size: {CONFIG['font_size_small']}px; font-family: monospace;")
+            tag_field.setWordWrap(True)   # #1: wrap long "Fields:" text instead of clipping
+            layout.addWidget(tag_field)
 
         button_layout = QHBoxLayout()
         button_layout.setSpacing(5)
@@ -1020,6 +1177,7 @@ class MagnitudeEditorDialog(QDialog):
         super().__init__(parent)
         import halo_patch
         self._hp = halo_patch
+        self.parent_gui = parent    # gives the fallback-preset lookup access to .db
         self.game = game
         self.subdirs = subdirs
         self.presets_path = presets_path
@@ -1075,17 +1233,33 @@ class MagnitudeEditorDialog(QDialog):
             return "no plugin"
         if not m.find_tags(cls, path):
             return "— not in map"
-        field = target['field']
-        if target.get('difficulty'):
-            field = f"{self.target_difficulty} {field}"
-        v = m.read_first(cls, path, field, plugin, target.get('block'), target.get('index', 0) or 0)
+        field = self._hp.apply_difficulty(target['field'], target, self.target_difficulty)
+        v = m.read_first(cls, path, field, plugin, target.get('block'),
+                         target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
         if v is None:
             return "field?"
         return f"{round(v, 4)}" if isinstance(v, float) else str(v)
 
-    def _variant_values_str(self, tag, target):
-        """List every matching variant's vanilla value as 'variant=value'
-        (or a single value / status if there's just one / none)."""
+    def _vanilla_num(self, tag, field, block=None, nth=0):
+        """Numeric vanilla value of a field (first matching tag), or None."""
+        m = self._read_source()
+        if not m:
+            return None
+        cls, path = self._hp.hm.split_tag(tag)
+        plugin = self.registry.get(cls)
+        if plugin is None:
+            return None
+        return m.read_first(cls, path, field, plugin, block, 0, nth=nth)
+
+    def _variant_values_str(self, tag, target, eff=None):
+        """List every matching variant's vanilla value(s) as 'values (variants)',
+        collapsing variants that share the same value(s) onto one line. When a target
+        spans multiple block elements (index='all'), each variant shows all its leaf
+        values — this is how an effect stays a SINGLE modifiable field yet still
+        exposes every per-variant/per-index vanilla value (H1 per-variant listing
+        extended to H2's indexed blocks). enum fields are shown by option name. If the
+        effect seeds this field on unset variants (init_defaults), the seeded default
+        is appended as '→ value (seeded default)' so the new behavior is visible."""
         m = self._read_source()
         if not m:
             return "?"
@@ -1093,28 +1267,102 @@ class MagnitudeEditorDialog(QDialog):
         plugin = self.registry.get(cls)
         if plugin is None:
             return "no plugin"
-        field = target['field']
-        if target.get('difficulty'):
-            field = f"{self.target_difficulty} {field}"
-        vals = m.read_all(cls, path, field, plugin, target.get('block'), target.get('index', 0) or 0)
-        if not vals:
+        field = self._hp.apply_difficulty(target['field'], target, self.target_difficulty)
+        nth = target.get('nth', 0) or 0
+        fld = plugin.find(field, target.get('block'), nth)
+        if fld is None and (target.get('difficulty') or target.get('diff_prefix')
+                            or target.get('diff_prefix_nl') or target.get('diff_suffix')):
+            # e.g. H2 accuracy has no 'Easy' tier — flag it rather than showing "field?"
+            return f"⚠ no definition for {self.target_difficulty} difficulty"
+        enum_names = {v: k.title() for k, v in fld['options'].items()} if (fld and fld.get('options')) else {}
+        def fmtval(x):
+            if isinstance(x, int) and x in enum_names:
+                return enum_names[x]
+            return round(x, 4) if isinstance(x, float) else x
+        default_line = self._init_default_line(eff, target, field, m, plugin, fmtval)
+        rows = m.read_all_leaves(cls, path, field, plugin, target.get('block'),
+                                 target.get('index', 0) or 0, nth=nth)
+        if not rows:
+            if default_line:
+                return default_line
             return "— not in map" if not m.find_tags(cls, path) else "field?"
-        fmt = lambda x: round(x, 4) if isinstance(x, float) else x
-        # #1: collapse variants that share a value onto one line.
-        by_value = {}
-        for p, vv in vals:
-            by_value.setdefault(fmt(vv), []).append(p.rsplit(chr(92), 1)[-1])
-        if len(by_value) == 1:
-            return str(next(iter(by_value)))
-        return "\n".join(f"{val}   ({', '.join(names)})" for val, names in by_value.items())
+        # collapse variants sharing the same value-list onto one line.
+        by_vals = {}
+        for p, vals in rows:
+            key = tuple(fmtval(v) for v in vals)
+            by_vals.setdefault(key, []).append(p.rsplit(chr(92), 1)[-1])
+        show = lambda key: ", ".join(str(k) for k in key)
+        # For a per-variant effect (wildcard tag) always name the variant(s), even
+        # when only one variant carries the data — so the user sees WHICH variant it
+        # is. Only a true singleton (exact tag, e.g. globals) shows a bare value.
+        if len(by_vals) == 1 and '*' not in path and not default_line:
+            return show(next(iter(by_vals)))
+        out = "\n".join(f"{show(key)}   ({', '.join(names)})" for key, names in by_vals.items())
+        return out + ("\n" + default_line if default_line else "")
+
+    def _init_default_line(self, eff, target, field, m, plugin, fmtval):
+        """'→ value (seeded default)' for a field that this effect's init_defaults
+        will seed onto unset variants, or None if it doesn't seed this field."""
+        init = eff.get('init_defaults') if isinstance(eff, dict) else None
+        if not isinstance(init, dict):
+            return None
+        base_field = target['field']
+        setmap = {k.lower(): v for k, v in (init.get('set') or {}).items()}
+        if base_field.lower() in setmap:
+            return "→ %s (seeded default)" % setmap[base_field.lower()]
+        covers = base_field in (init.get('copy') or [])
+        if init.get('grow') and init.get('block') and target.get('block') \
+                and str(target.get('block')).lower() == str(init.get('block')).lower():
+            covers = True
+        if not covers:
+            return None
+        scls, spath = self._hp.hm.split_tag(init['source'])
+        s = m.find_tags(scls, spath)
+        if not s:
+            return None
+        v = m.read_tag_field(s[0][1], field, plugin, block=init.get('block'), index=0)
+        return None if v is None else "→ %s (seeded default)" % fmtval(v)
 
     # ---- targets (halo.json + preset fallbacks, #7) ----
     def _effect_targets(self, eff):
         base = list(eff.get('targets') or [])
-        custom = list(self.presets.get(self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM)) or [])
+        custom = list(self.presets.get(self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM, self.game)) or [])
         for c in custom:
             c['custom'] = True
         return base + custom, (not base and bool(custom))
+
+    # A field lives here that took over for a field from an earlier game (so
+    # far only Halo 2's 'Shots Per Fire' family replacing 'Rounds Per Second'
+    # on capped-burst weapons). No saved preset yet for the new field? Fall
+    # back to whatever the user last typed for the field it replaced, on the
+    # SAME weapon+effect, so the magnitude doesn't reset to blank just because
+    # the underlying field changed between games.
+    _FIELD_CARRYOVER = {
+        'Shots Per Fire': 'Rounds Per Second',
+        'Shots Per Fire Max': 'Rounds Per Second Max',
+    }
+
+    def _fallback_preset_value(self, eff, target):
+        src_field = self._FIELD_CARRYOVER.get(target.get('field'))
+        db = getattr(self.parent_gui, 'db', None)
+        weapon = eff.get('group')
+        if not (src_field and db and weapon):
+            return None
+        orig = next((m for m in db.weapon_mods.get(weapon, []) if m['name'] == eff['name']), None)
+        if not orig or not isinstance(orig.get('tag'), dict):
+            return None
+        games = db.get_games()
+        for g in games:
+            if g == self.game:
+                continue
+            src_tag = resolve_gamed(orig['tag'], g, games)
+            if not src_tag:
+                continue
+            key = self._hp.preset_key(src_tag, eff['name'], src_field, g)
+            val = self.presets.get(key)
+            if val is not None and not isinstance(val, list):
+                return val
+        return None
 
     # ---- build ----
     @staticmethod
@@ -1163,6 +1411,13 @@ class MagnitudeEditorDialog(QDialog):
         drow.addWidget(help_lbl)
         drow.addStretch()
         layout.addLayout(drow)
+
+        legend = QLabel("Difficulty indicator:  🔺 raising the value makes the enemy tougher"
+                        "     🔻 lowering the value makes the enemy tougher   "
+                        "(shown per field where the direction isn't obvious)")
+        legend.setStyleSheet("color: #c8c8c8; font-size: 12px; padding: 2px;")
+        legend.setWordWrap(True)
+        layout.addWidget(legend)
 
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -1221,6 +1476,9 @@ class MagnitudeEditorDialog(QDialog):
         tagl.setStyleSheet("color: #666; font-size: 11px; font-family: monospace;")
         v.addWidget(tagl)
 
+        # Direction indicator is now PER FIELD (see the row loop); the legend at the
+        # top of the dialog explains the 🔺/🔻 symbols. A mod-level harder_when
+        # applies to all its fields; a target may override with its own harder_when.
         targets, fallback = self._effect_targets(eff)
         if fallback:
             flag = QLabel("Not defined in halo.json — using fallback field(s) from magnitude_presets.")
@@ -1233,23 +1491,61 @@ class MagnitudeEditorDialog(QDialog):
             note.setWordWrap(True)
             v.addWidget(note)
 
+        local_rows = []   # (target, line-edit) of THIS effect, for derived wiring
         for t in targets:
             row = QHBoxLayout()
-            fname = t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
+            derived = t.get('derived')
+            # per-field direction symbol (target harder_when overrides the mod's)
+            hw = t.get('harder_when') or eff.get('harder_when')
+            hw = resolve_gamed(hw, self.game) if isinstance(hw, dict) else hw
+            hw = hw.lower() if isinstance(hw, str) else ''
+            sym = '🔺 ' if hw == 'increased' else ('🔻 ' if hw == 'decreased' else '')
+            fname = sym + t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
+            if t.get('diff_suffix') or t.get('diff_prefix'):
+                fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
+            if t.get('diff_prefix_nl'):
+                fname += "  [%s]" % ('Legendary' if self.target_difficulty == 'Impossible' else 'Normal')
             if t.get('custom'):
                 fname += "  (preset)"
+            if t.get('negate'):
+                fname += "  (H2: input negated)"
+            if derived:
+                fname += "  (auto = " + " + ".join(derived) + ")"
+            if t.get('set') is not None:
+                fname += "  (fixed → %s)" % t['set']
             # #1: field name on top, operator input directly below it.
             left = QVBoxLayout()
             left.setSpacing(2)
             lbl = QLabel(fname)
+            lbl.setWordWrap(True)   # #1: wrap long field names instead of clipping
             left.addWidget(lbl)
             inrow = QHBoxLayout()
             le = QLineEdit()
-            le.setPlaceholderText("-x / +x / *x / =x")
             le.setMaximumWidth(120)
-            key = self._hp.preset_key(eff['tag'], eff['name'], t['field'])
-            if key in self.presets and not isinstance(self.presets[key], list):
-                le.setText(str(self.presets[key]))
+            if derived:
+                # Auto-computed field: display-only; recalculated at patch time.
+                le.setReadOnly(True)
+                le.setToolTip("Auto-computed from the fields above; not editable.")
+                le.setStyleSheet("background-color: #101010; color: #7ac07a; "
+                                 "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
+            elif t.get('set') is not None:
+                # Fixed set (enum enabler): display-only, always applied with the effect.
+                le.setReadOnly(True)
+                le.setText("= %s" % t['set'])
+                le.setToolTip("Always set to %s whenever this effect is patched." % t['set'])
+                le.setStyleSheet("background-color: #101010; color: #d0a24a; "
+                                 "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
+            else:
+                le.setPlaceholderText("-x / +x / *x / =x")
+                key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+                if key in self.presets and not isinstance(self.presets[key], list):
+                    le.setText(str(self.presets[key]))
+                else:
+                    fallback = self._fallback_preset_value(eff, t)
+                    if fallback is not None:
+                        le.setText(str(fallback))
+                        le.setToolTip("Carried over from %s (no value set for this field yet)"
+                                      % self._FIELD_CARRYOVER.get(t['field'], ''))
             inrow.addWidget(le)
             if t.get('custom'):
                 rm = QPushButton("✕")
@@ -1263,13 +1559,42 @@ class MagnitudeEditorDialog(QDialog):
             leftw.setMinimumWidth(240)
             row.addWidget(leftw)
             # #1/#2: variant values on the right, one line per distinct value.
-            variants = QLabel(self._variant_values_str(eff['tag'], t))
+            variants = QLabel(self._variant_values_str(eff['tag'], t, eff))
             variants.setStyleSheet("color: #7aa0c0; font-size: 12px; font-family: monospace;")
             variants.setWordWrap(True)
             variants.setAlignment(Qt.AlignTop)
             row.addWidget(variants, 1)
             v.addWidget(self._wrap(row))
             self.rows.append((eff, t, le))
+            local_rows.append((t, le))
+
+        # Wire derived rows: live-recompute from the source rows' vanilla values
+        # with the user's pending operators applied.
+        for dt, dle in [(t2, l2) for t2, l2 in local_rows if t2.get('derived')]:
+            def make_upd(dt=dt, dle=dle, srcs=tuple(dt['derived']), tag=eff['tag']):
+                def upd():
+                    total, seen = 0.0, 0
+                    for t2, l2 in local_rows:
+                        f2 = t2.get('field')
+                        if t2 is dt or f2 not in srcs:
+                            continue
+                        base_v = self._vanilla_num(tag, f2, t2.get('block'),
+                                                   t2.get('nth', 0) or 0)
+                        if base_v is None:
+                            continue
+                        txt = l2.text().strip()
+                        parsed = self._hp.hm.parse_operator(txt) if txt else None
+                        val = (self._hp.hm.OP_FUNCS[parsed[0]](base_v, parsed[1])
+                               if parsed else base_v)
+                        total += val
+                        seen += 1
+                    dle.setText(str(int(round(total))) if seen else "?")
+                return upd
+            upd = make_upd()
+            for t2, l2 in local_rows:
+                if t2 is not dt and t2.get('field') in dt['derived']:
+                    l2.textChanged.connect(upd)
+            upd()
 
         addbtn = QPushButton("＋ field")
         addbtn.setMaximumWidth(120)
@@ -1287,7 +1612,7 @@ class MagnitudeEditorDialog(QDialog):
         field, block = text.strip(), None
         if '::' in field:
             block, field = [s.strip() for s in field.split('::', 1)]
-        key = self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM)
+        key = self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM, self.game)
         lst = self.presets.get(key) or []
         lst.append({'field': field, 'block': block})
         self.presets[key] = lst
@@ -1295,7 +1620,7 @@ class MagnitudeEditorDialog(QDialog):
         self._populate()
 
     def _remove_custom(self, eff, target):
-        key = self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM)
+        key = self._hp.preset_key(eff['tag'], eff['name'], self._CUSTOM, self.game)
         lst = [c for c in (self.presets.get(key) or [])
                if not (c.get('field') == target['field'] and c.get('block') == target.get('block'))]
         if lst:
@@ -1343,15 +1668,42 @@ class MagnitudeEditorDialog(QDialog):
 
         plan_map = {}
         for eff, t, le in self.rows:
+            if t.get('derived') or t.get('set') is not None:
+                continue          # display-only / fixed-set; appended below when relevant
             txt = le.text().strip()
             if not txt:
                 continue
             key = (eff['tag'], eff['name'])
-            plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': []})
+            plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
+                                      'init_defaults': eff.get('init_defaults')})
             plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                          'difficulty': t.get('difficulty'),
-                                         'index': t.get('index', 0), 'op_str': txt})
-            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'])] = txt
+                                         'diff_suffix': t.get('diff_suffix'),
+                                         'index': t.get('index', 0), 'op_str': txt,
+                                         'negate': t.get('negate'),
+                                         'nth': t.get('nth', 0) or 0})
+            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+        # Auto-computed fields: recompute whenever their effect has any edit.
+        # Appended after the normal ops so the sources are already patched.
+        for eff, t, le in self.rows:
+            if not t.get('derived'):
+                continue
+            key = (eff['tag'], eff['name'])
+            if key in plan_map:
+                plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
+                                             'index': t.get('index', 0),
+                                             'derived': list(t['derived'])})
+        # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever
+        # their effect is being patched at all, so the enabler is applied with it.
+        for eff, t, le in self.rows:
+            if t.get('set') is None:
+                continue
+            key = (eff['tag'], eff['name'])
+            if key in plan_map:
+                plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
+                                             'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
+                                             'difficulty': t.get('difficulty'),
+                                             'diff_suffix': t.get('diff_suffix'), 'set': t['set']})
         plan = list(plan_map.values())
         if not plan:
             QMessageBox.information(self, "Nothing to apply", "Enter at least one operator first.")
@@ -1381,7 +1733,11 @@ class MagnitudeEditorDialog(QDialog):
             lines.append(f"Backup: {backup}")
         lines.append("")
         for r in ok:
-            lines.append(f"  OK  {r['effect']}: {r['field']}  {round(r['old'], 4)} -> {round(r['new'], 4)}")
+            hint = ("   (input negated for H2)" if r.get('negated')
+                    else "   (auto-computed)" if r.get('derived') else "")
+            if r.get('inherited_from'):
+                hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
+            lines.append(f"  OK  {r['effect']}: {r['field']}  {round(r['old'], 4)} -> {round(r['new'], 4)}{hint}")
         for r in bad:
             lines.append(f"  --  {r['effect']}: {r.get('field')}  ({r['reason']})")
         self.results.setPlainText("\n".join(lines))
@@ -1395,13 +1751,150 @@ class MagnitudeEditorDialog(QDialog):
             grouped = {}
             for item in plan:
                 grouped.setdefault(self._hp.hm.split_tag(item['tag'])[0], []).append(item)
-            data = {"map": map_path, "backup": backup,
+            data = {"tool_version": VERSION, "map": map_path, "backup": backup,
                     "target_difficulty": self.target_difficulty,
                     "timestamp": ts, "groups": grouped, "results": results}
             with open(patch_dir / f"patch_{mission}_{ts}.json", 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
         except Exception:
             pass  # patch-log failure shouldn't block the actual patch
+
+
+class OptionsDialog(QDialog):
+    """Edits the run options in OPTION_KEYS. Reads current values from CONFIG;
+    values() returns the edited set. The caller persists them (global + per-run)."""
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("⚙ Options")
+        self.setModal(True)
+        self.setMinimumWidth(460)
+        # Readable against the dark theme: light text, dark inputs, clear checks.
+        self.setStyleSheet("""
+            QDialog { background-color: #141414; }
+            QLabel { color: #e0e0e0; font-size: 13px; }
+            QCheckBox { color: #e0e0e0; font-size: 13px; spacing: 8px; }
+            QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #4a4a4a;
+                                   border-radius: 3px; background-color: #1a1a1a; }
+            QCheckBox::indicator:checked { background-color: #4CAF50; border: 1px solid #4CAF50; }
+            QComboBox, QDoubleSpinBox, QSpinBox {
+                background-color: #1a1a1a; color: #e0e0e0;
+                border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px 6px;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #1a1a1a; color: #e0e0e0;
+                selection-background-color: #2a5a2a;
+            }
+            QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
+            QSpinBox::up-button, QSpinBox::down-button { width: 16px; }
+            QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 5px;
+                        margin-top: 10px; padding: 10px 6px 6px 6px; }
+            QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }
+        """)
+        layout = QVBoxLayout(self)
+
+        # ---- Functionality section ----
+        func = QGroupBox("Functionality")
+        form = QFormLayout(func)
+        form.setLabelAlignment(Qt.AlignRight)
+
+        self.diff_combo = QComboBox()
+        self.diff_combo.addItems(["Easy", "Normal", "Hard", "Impossible"])
+        di = self.diff_combo.findText(CONFIG.get('target_difficulty', 'Normal'))
+        if di >= 0:
+            self.diff_combo.setCurrentIndex(di)
+        form.addRow("Target difficulty:", self.diff_combo)
+
+        self.single_game_cb = QCheckBox("Remove mods that only appear in one game")
+        self.single_game_cb.setChecked(bool(CONFIG.get('remove_single_game_mods')))
+        form.addRow("Cross-game only:", self.single_game_cb)
+
+        self.wildcards_cb = QCheckBox("Include wildcards")
+        self.wildcards_cb.setChecked(bool(CONFIG.get('include_wildcards')))
+        form.addRow("Wildcards:", self.wildcards_cb)
+
+        self.wildcard_chance = QDoubleSpinBox()
+        self.wildcard_chance.setRange(0.0, 1.0)
+        self.wildcard_chance.setSingleStep(0.05)
+        self.wildcard_chance.setDecimals(2)
+        self.wildcard_chance.setValue(float(CONFIG.get('wildcard_chance', 0.1)))
+        form.addRow("Wildcard chance:", self.wildcard_chance)
+
+        self.new_weapon_chance = QDoubleSpinBox()
+        self.new_weapon_chance.setRange(0.0, 1.0)
+        self.new_weapon_chance.setSingleStep(0.05)
+        self.new_weapon_chance.setDecimals(2)
+        self.new_weapon_chance.setValue(float(CONFIG.get('new_weapon_chance', 0.0)))
+        form.addRow("New-weapon chance:", self.new_weapon_chance)
+
+        self.special_rate = QDoubleSpinBox()
+        self.special_rate.setRange(0.0, 2.0)
+        self.special_rate.setSingleStep(0.05)
+        self.special_rate.setDecimals(2)
+        self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
+        self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.")
+        form.addRow("Special-effect rate:", self.special_rate)
+
+        self.grenades_cb = QCheckBox("Treat grenades as weapons")
+        self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
+        form.addRow("Grenades:", self.grenades_cb)
+
+        self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
+        self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
+        form.addRow("Weapon-choice negatives:", self.negatives_cb)
+        layout.addWidget(func)
+
+        # ---- Appearance section ----
+        appear = QGroupBox("Appearance")
+        aform = QFormLayout(appear)
+        aform.setLabelAlignment(Qt.AlignRight)
+
+        self.card_width = QSpinBox()
+        self.card_width.setRange(240, 900)
+        self.card_width.setSingleStep(10)
+        self.card_width.setValue(int(CONFIG.get('card_width', 380)))
+        aform.addRow("Card width (px):", self.card_width)
+
+        self.card_height = QSpinBox()
+        self.card_height.setRange(300, 1200)
+        self.card_height.setSingleStep(10)
+        self.card_height.setValue(int(CONFIG.get('card_height', 500)))
+        aform.addRow("Card height (px):", self.card_height)
+
+        self.hide_tags_cb = QCheckBox("Hide the “Tag:” line on cards")
+        self.hide_tags_cb.setChecked(bool(CONFIG.get('hide_tags')))
+        aform.addRow("Hide tags:", self.hide_tags_cb)
+
+        self.hide_fields_cb = QCheckBox("Hide the “Fields:” line on cards")
+        self.hide_fields_cb.setChecked(bool(CONFIG.get('hide_fields')))
+        aform.addRow("Hide fields:", self.hide_fields_cb)
+        layout.addWidget(appear)
+
+        note = QLabel("Saved as global defaults and stored with this run's save.")
+        note.setStyleSheet("color: #888; font-size: 11px;")
+        note.setWordWrap(True)
+        layout.addWidget(note)
+
+        buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def values(self):
+        return {
+            'target_difficulty': self.diff_combo.currentText(),
+            'remove_single_game_mods': self.single_game_cb.isChecked(),
+            'include_wildcards': self.wildcards_cb.isChecked(),
+            'wildcard_chance': round(self.wildcard_chance.value(), 2),
+            'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
+            'include_grenades': self.grenades_cb.isChecked(),
+            'weapon_choice_negatives': self.negatives_cb.isChecked(),
+            'special_rate_factor': round(self.special_rate.value(), 2),
+            'card_width': self.card_width.value(),
+            'card_height': self.card_height.value(),
+            'hide_tags': self.hide_tags_cb.isChecked(),
+            'hide_fields': self.hide_fields_cb.isChecked(),
+        }
 
 
 class HaloGUI(QMainWindow):
@@ -1498,8 +1991,13 @@ class HaloGUI(QMainWindow):
         return self.db.weapon_label(weapon) in self.run_state.blacklist
 
     def _game_weapon_pool(self):
+        """Weapons offerable as a fresh pick (initial choice, reroll, manual
+        change): the game's weapon pool minus blacklisted weapons AND minus
+        upgrade weapons (#3), which must only be reachable via the New Weapon
+        button's explicit "base already owned" check in `_weapon_offer_pool`."""
+        upgrades = CONFIG.get('weapon_upgrades', {})
         return [w for w in self.db.get_game_weapons(self._current_game())
-                if not self._blacklisted_weapon(w)]
+                if not self._blacklisted_weapon(w) and w not in upgrades]
 
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)
@@ -1608,7 +2106,7 @@ class HaloGUI(QMainWindow):
         self.pending_player2_selection = False
         self.clear_pairs()
         self.update_history()
-        self.save_btn.setEnabled(False)
+        self._sync_save_button()
         self.generate_btn.setEnabled(True)
         # Don't auto-roll the first effects — wait for the user to Generate.
         self.update_status("Weapons set — press 🔄 GENERATE PAIRS when ready")
@@ -1722,7 +2220,7 @@ class HaloGUI(QMainWindow):
             })
             self.run_state.phase = 'complete'
             self.run_state.current_turn = 'player1'
-            self.save_btn.setEnabled(True)
+            self._sync_save_button()
             self.generate_btn.setEnabled(True)
         self.clear_pairs()
         self.update_history()
@@ -1762,14 +2260,14 @@ class HaloGUI(QMainWindow):
             self.run_state.weapon_selection_made = True
             self.update_history()
             self.update_status("Run loaded - Both players have selected!")
-            self.save_btn.setEnabled(True)
+            self._sync_save_button()
             self.generate_btn.setEnabled(True)
         elif self.run_state.phase == 'weapon_selection':
             self.show_weapon_selection()
 
     # ---- UI Setup ----
     def setup_ui(self):
-        self.setWindowTitle("🎯 Halo Run Enhancer")
+        self.setWindowTitle(f"🎯 Halo Run Enhancer  v{VERSION}")
         self.setMinimumSize(1400, 900)
         central = QWidget()
         self.setCentralWidget(central)
@@ -1780,6 +2278,10 @@ class HaloGUI(QMainWindow):
         header = QLabel("🎯 HALO RUN ENHANCER")
         header.setStyleSheet("font-size: 28px; font-weight: bold; color: #4CAF50; padding: 10px; border-bottom: 2px solid #1a3a1a;")
         header_layout.addWidget(header)
+        ver = QLabel(f"v{VERSION}")
+        ver.setStyleSheet("font-size: 14px; color: #6a8a6a; padding: 10px 4px;")
+        ver.setAlignment(Qt.AlignBottom)
+        header_layout.addWidget(ver)
         header_layout.addStretch()
 
         combo_style = """
@@ -1887,7 +2389,7 @@ class HaloGUI(QMainWindow):
             QPushButton:disabled { background-color: #444; color: #888; }
         """)
         self.save_btn.clicked.connect(self.on_save)
-        self.save_btn.setEnabled(False)
+        self._sync_save_button()
         button_layout.addWidget(self.save_btn)
 
         self.patch_btn = QPushButton("🛠 PATCH MAP")
@@ -1901,6 +2403,18 @@ class HaloGUI(QMainWindow):
         """)
         self.patch_btn.clicked.connect(self.on_patch_map)
         button_layout.addWidget(self.patch_btn)
+
+        self.options_btn = QPushButton("⚙ OPTIONS")
+        self.options_btn.setToolTip("Adjust run options (difficulty, mod pools, wildcards…)")
+        self.options_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #3a3a3a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #4a4a4a; }
+        """)
+        self.options_btn.clicked.connect(self.on_options)
+        button_layout.addWidget(self.options_btn)
         button_layout.addStretch()
         main_layout.addLayout(button_layout)
 
@@ -1917,6 +2431,9 @@ class HaloGUI(QMainWindow):
         self.pairs_container.setStyleSheet("background-color: #0a0a0a;")
         self.pairs_layout = QHBoxLayout(self.pairs_container)
         self.pairs_layout.setSpacing(20)
+        # Top-align cards so short cards don't get centered with dead space above
+        # them; each card now sizes to its own content (see PairCard).
+        self.pairs_layout.setAlignment(Qt.AlignTop)
         self.pairs_scroll.setWidget(self.pairs_container)
         main_layout.addWidget(self.pairs_scroll, 1)
 
@@ -1988,7 +2505,7 @@ class HaloGUI(QMainWindow):
         self.run_state.enemy_mod = None
         self.run_state.wildcard_mod = None
         self.clear_pairs()
-        self.save_btn.setEnabled(False)
+        self._sync_save_button()
         self.generate_btn.setEnabled(True)
         self.update_status(f"{status_prefix} - Generate pairs manually")
 
@@ -2042,7 +2559,7 @@ class HaloGUI(QMainWindow):
             self.run_state.pairs = []
             self.clear_pairs()
             self.update_history()
-            self.save_btn.setEnabled(False)
+            self._sync_save_button()
             self.generate_btn.setEnabled(True)
             self.update_status(f"Weapon changed for {player.upper()} - Generate new pairs")
             if self.run_state.player1_weapon and self.run_state.player2_weapon:
@@ -2071,17 +2588,18 @@ class HaloGUI(QMainWindow):
             player = 'player1'
             turn_text = "Player 1"
             show_p1, show_p2 = True, False
-            self.save_btn.setEnabled(False)
+            self._sync_save_button()
             self.update_status("Regenerating pairs for Player 1")
 
         pairs = self.enhancer.generate_pairs(for_player=player)
         self.display_pairs(pairs, show_p1, show_p2)
         self.update_status(f"{turn_text}'s turn - Select a pair")
         self.update_history()
-        self.save_btn.setEnabled(False)
+        self._sync_save_button()
         self.generate_btn.setEnabled(True)
 
     def display_pairs(self, pairs, show_player1=True, show_player2=True):
+        self._last_display = (pairs, show_player1, show_player2)  # for re-render on options change
         self.pairs_container.setUpdatesEnabled(False)
         try:
             self._clear_pairs_layout()
@@ -2098,6 +2616,14 @@ class HaloGUI(QMainWindow):
             self._clear_pairs_layout()
         finally:
             self.pairs_container.setUpdatesEnabled(True)
+
+    def _sync_save_button(self):
+        """Save is available at all times EXCEPT while a card-picking round is in
+        progress and not yet concluded — i.e. player1_turn / player2_turn, where
+        the run state is mid-round. Weapon selection and completed rounds allow it."""
+        rs = getattr(self, 'run_state', None)
+        in_round = bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
+        self.save_btn.setEnabled(not in_round)
 
     def on_pair_selected(self, pair_id):
         player = self.run_state.current_turn
@@ -2144,7 +2670,7 @@ class HaloGUI(QMainWindow):
             self.run_state.rounds.append(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
 
-            self.save_btn.setEnabled(True)
+            self._sync_save_button()
             self.generate_btn.setEnabled(True)
             self.update_status("Both players have selected! Save or generate new pairs.")
             self.clear_pairs()
@@ -2269,6 +2795,22 @@ class HaloGUI(QMainWindow):
         self.status_label.setText(msg)
 
     # ---- Save ----
+    def on_options(self):
+        """Open the Options dialog. On accept, the new values are written to the
+        live CONFIG, persisted as global defaults (settings.json), and snapshotted
+        onto the current run so they travel with its save."""
+        dlg = OptionsDialog(self)
+        if dlg.exec() == QDialog.Accepted:
+            for k, v in dlg.values().items():
+                CONFIG[k] = v
+            save_settings()
+            self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
+            # Re-render the current pairs so card size changes apply immediately.
+            last = getattr(self, '_last_display', None)
+            if last and self.pair_cards:
+                self.display_pairs(*last)
+            self.update_status("Options updated.")
+
     def on_save(self):
         if self.run_state.phase != 'complete':
             QMessageBox.warning(self, "Not Complete", "Both players must select before saving!")
@@ -2292,6 +2834,50 @@ class HaloGUI(QMainWindow):
             QMessageBox.information(self, "Saved!", f"Selection saved to:\n{file_path}")
             
     # ---- Map patching (feature a) ----
+    def _refresh_mod_definition(self, mod):
+        """A saved/loaded run embeds a full snapshot of each mod's definition
+        (tag/field/targets/...) as it was AT ROLL TIME. If halo.json has since
+        changed — a tag corrected, converted to a per-game dict, a target
+        renamed — that snapshot goes stale: the frozen (often H1-only) tag
+        never picks up the fix, and patching an old run against H2 reports
+        "not present in this map" for every affected effect, forever. Look
+        the mod up again by name in the CURRENT database and overlay its
+        patch-relevant fields in place, so patching always uses live data.
+        If the effect itself was renamed (see EFFECT_RENAMES), the name-based
+        lookup is retried under the new name, and 'name' is updated too.
+
+        The overlaid values are DEEP-COPIED: the caller (on_patch_map) later
+        resolves per-game `field`/`block`/`nth` dicts to the active game IN
+        PLACE, so handing out references to the shared DB objects would collapse
+        their per-game dicts permanently after the first patch — a Halo 1 patch
+        would then leave only 'Triggers'/nth 0 behind and a later Halo 2 patch
+        of the same effect would fail to find block 'Barrels' ("field?")."""
+        def find_by_name(name):
+            if mod.get('weapon'):
+                return next((m for m in self.db.weapon_mods.get(mod['weapon'], [])
+                            if m['name'] == name), None)
+            if mod.get('enemy'):
+                return next((m for m in self.db.enemy_mods.get(mod['enemy'], [])
+                            if m['name'] == name), None)
+            for pool in (self.db.positive_pool, self.db.negative_pool, self.db.wildcard_pool):
+                found = next((m for m in pool if m['name'] == name), None)
+                if found:
+                    return found
+            return None
+
+        name = mod.get('name')
+        fresh = find_by_name(name)
+        renamed_to = None
+        if not fresh:
+            renamed_to = EFFECT_RENAMES.get(name)
+            if renamed_to:
+                fresh = find_by_name(renamed_to)
+        if fresh:
+            for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
+                        'harder_when', 'init_defaults'):
+                if key in fresh:
+                    mod[key] = copy.deepcopy(fresh[key])
+
     def on_patch_map(self):
         try:
             import halo_patch
@@ -2303,26 +2889,37 @@ class HaloGUI(QMainWindow):
         games = self.db.get_games()
         # Resolve any per-game dict values to the active game's string so they're
         # hashable/patchable. An effect's `tag`, top-level `field`, and each
-        # target's `field`/`block` may carry {"Halo 1": ..., "Halo 2": ...}.
-        for rd in self.run_state.rounds or []:
+        # target's `field`/`block` (and `targets` itself) may carry
+        # {"Halo 1": ..., "Halo 2": ...}. Resolve on a deep copy so the live run
+        # state's per-game dicts aren't collapsed to one game — that would break
+        # re-patching for the other game and corrupt a subsequently saved run.
+        rounds = copy.deepcopy(self.run_state.rounds or [])
+        for rd in rounds:
             slots = [(rd.get('player1') or {}).get('mod'), (rd.get('player2') or {}).get('mod'),
                      rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'),
                      rd.get('boss1'), rd.get('boss2')]
             for mod in slots:
                 if not isinstance(mod, dict):
                     continue
-                for key in ('tag', 'field'):
+                self._refresh_mod_definition(mod)
+                for key in ('tag', 'field', 'harder_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)
-                # `targets` may itself be per-game (games need different fields),
-                # e.g. {"Halo 1": [...], "Halo 2": [...]}.
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
                 for t in mod.get('targets') or []:
-                    for key in ('field', 'block'):
+                    for key in ('field', 'block', 'negate', 'nth', 'index'):
                         if isinstance(t.get(key), dict):
                             t[key] = resolve_gamed(t[key], game, games)
-        effects = halo_patch.collect_effects(self.run_state.rounds)
+                # A target may be limited to specific games (e.g. the derived
+                # H2 'Rounds Total Maximum' row has no H1 counterpart), and a
+                # per-game field/block that has no entry for this game now
+                # resolves to None (see resolve_gamed) — drop such targets too
+                # rather than ever calling plugin.find() with a None field.
+                mod['targets'] = [t for t in (mod.get('targets') or [])
+                                  if (not t.get('games') or game in t['games'])
+                                  and t.get('field') is not None]
+        effects = halo_patch.collect_effects(rounds)
         if not effects:
             QMessageBox.information(self, "No effects yet",
                                     "Select some effects first — there's nothing to patch.")
@@ -2332,8 +2929,14 @@ class HaloGUI(QMainWindow):
         map_path = halo_patch.default_map_path(
             Path(__file__).resolve().parent, game_folder, self.run_state.mission_id)
         presets_path = str(app_data_dir() / "magnitude_presets.json")
-        dlg = MagnitudeEditorDialog(self, effects, subdirs, map_path, presets_path,
-                                    CONFIG.get('target_difficulty', 'Normal'), game=game)
+        # Building the dialog reads the (possibly large, ~100 MB) H2 source map,
+        # which can take a couple of seconds — show a wait cursor meanwhile.
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            dlg = MagnitudeEditorDialog(self, effects, subdirs, map_path, presets_path,
+                                        CONFIG.get('target_difficulty', 'Normal'), game=game)
+        finally:
+            QApplication.restoreOverrideCursor()
         dlg.exec()
 
     def add_to_blacklist(self, mod_data, source, pair_id=None, mod_type=None):
@@ -2347,7 +2950,12 @@ class HaloGUI(QMainWindow):
         if pair_id is not None and mod_type is not None:
             self.on_reroll_modifier(pair_id, mod_type)
         elif self.run_state.phase == 'weapon_selection':
-            self.show_weapon_selection()
+            # Stay on the CURRENT player's weapon selection — re-showing the P1
+            # screen here was resetting Player 2's turn back to Player 1.
+            if getattr(self, 'pending_player2_selection', False):
+                self.show_player2_weapon_selection()
+            else:
+                self.show_weapon_selection()
         else:
             self.on_generate()
         
@@ -2368,7 +2976,10 @@ class RunEnhancer:
         pick so it's suppressed for one round). Everything else is weight 1."""
         if not mods:
             return None
-        weights = [self.run_state.special_counters.get(m['name'], 1) if m.get('special') else 1
+        # special_rate_factor (~0.67) trims how often special effects surface —
+        # their escalating counter weight is scaled down relative to normal mods.
+        sf = CONFIG.get('special_rate_factor', 0.67)
+        weights = [self.run_state.special_counters.get(m['name'], 1) * sf if m.get('special') else 1
                    for m in mods]
         if sum(weights) <= 0:                 # degenerate guard
             weights = [1] * len(mods)

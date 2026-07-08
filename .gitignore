@@ -8,6 +8,7 @@ __pycache__/
 selections/
 patches/
 magnitude_presets.json
+settings.json 
 
 # Manual backups & scratch copies
 halo_enhancer_backup*.py
@@ -16,6 +17,7 @@ halo_enhancer*_backup*.py
 halo - Copy*.json
 halo.json.bak
 halo_enhancer.txt
+halo_enhancer - Copy.py
 
 # DeepSeek scratch exports
 deepseek_*

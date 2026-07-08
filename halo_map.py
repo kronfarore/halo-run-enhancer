@@ -8,6 +8,7 @@
 #
 # This module has no GUI dependency so it can be tested headless.
 
+import math
 import struct
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -19,12 +20,81 @@ TYPE_FMT = {
     'int16': ('<h', 2), 'uint16': ('<H', 2), 'short': ('<h', 2), 'word': ('<H', 2),
     'int8': ('<b', 1), 'uint8': ('<B', 1), 'byte': ('<B', 1), 'sbyte': ('<b', 1),
     'degree': ('<f', 4), 'angle': ('<f', 4),  # angles stored as float radians
+    'enum16': ('<H', 2), 'enum8': ('<B', 1), 'enum32': ('<I', 4),  # option index (see Plugin._walk)
 }
 
 FLOAT_TYPES = {'float32', 'float', 'real'}
 
+# Angle fields are stored as float RADIANS on disk but Assembly (and the user)
+# work in DEGREES. Convert at the read/write boundary so displayed values and
+# typed operators match Assembly. `ranged` (a degree range) flattens to two
+# 'degree' halves below, so its bounds convert too. Multiply/divide are
+# scale-invariant (conversion cancels); set/add/subtract are the ones that
+# would otherwise be off by the 180/pi factor.
+ANGLE_TYPES = {'degree', 'angle'}
+
+
+def raw_to_display(field_type, v):
+    """On-disk value -> value shown/edited in the UI (radians -> degrees for angles)."""
+    return math.degrees(v) if field_type in ANGLE_TYPES else v
+
+
+def display_to_raw(field_type, v):
+    """UI value -> on-disk value (degrees -> radians for angles)."""
+    return math.radians(v) if field_type in ANGLE_TYPES else v
+
+# Assembly range types -> (sub-field struct type, byte width of each half).
+# rangef/range/ranged are two float32s; range16 is two int16s.
+RANGE_TYPES = {
+    'rangef': ('float32', 4), 'range': ('float32', 4),
+    'ranged': ('degree', 4),          # range of DEGREES; halves get angle conversion
+    'range16': ('int16', 2),
+}
+
 # XML node tags that introduce a nested reflexive (block) in Halo 1 plugins.
 BLOCK_TAGS = {'tagblock', 'reflexive', 'struct'}
+
+
+def _wildcard_matcher(pattern):
+    """Return a predicate matching a tag name against a '*' wildcard. A single '*'
+    is a fast prefix+suffix test (so 'a\\*' = startswith, '*z' = endswith,
+    'a\\*z' = both); multiple '*' fall back to fnmatch. Literal, case-sensitive."""
+    if pattern.count('*') == 1:
+        pre, suf = pattern.split('*')
+        return lambda name: (name.startswith(pre) and name.endswith(suf)
+                             and len(name) >= len(pre) + len(suf))
+    import fnmatch
+    return lambda name: fnmatch.fnmatchcase(name, pattern)
+
+
+def normalize_index_spec(spec, n):
+    """Return a per-block-level list (length `n`, OUTER->INNER) of element
+    selectors for a reflexive chain. Each selector is an int (a specific element)
+    or the string 'all' (every populated element at that level). Accepts:
+      None / 0    -> [0]*n           (single leaf; legacy default)
+      int i       -> innermost = i, all outer levels = 0 (legacy single-index)
+      'all'       -> ['all']*n       (full cross-product over every level)
+      list/tuple  -> per-level (outer->inner); left-padded with 0 to length n,
+                     each entry an int or 'all' (e.g. [0, 'all'])
+    This is what lets a doubly-nested field like H2 'Rate Of Fire'
+    (Firing Pattern Properties[i] -> Firing Patterns[j]) be reached at every
+    (i, j), which the legacy single-innermost-index `follow` could not do."""
+    if n <= 0:
+        return []
+    if spec is None:
+        return [0] * n
+    if isinstance(spec, str):
+        return (['all'] * n) if spec.strip().lower() == 'all' else [0] * n
+    if isinstance(spec, bool):            # bool is an int subclass — guard first
+        return [0] * n
+    if isinstance(spec, int):
+        return [0] * (n - 1) + [spec]
+    if isinstance(spec, (list, tuple)):
+        s = [(x.strip().lower() if isinstance(x, str) else x) for x in spec]
+        if len(s) < n:
+            s = [0] * (n - len(s)) + s
+        return list(s[-n:])
+    return [0] * n
 
 # Operator applied to a field's current value.
 OP_FUNCS = {
@@ -82,38 +152,64 @@ class Plugin:
                 sz = int(es, 16) if es else 0
                 self._walk(ch, chain + [name], offsets + [int(off, 16)], sizes + [sz])
             elif off is not None and name is not None and t in TYPE_FMT:
-                self.fields.append({
+                fld = {
                     'name': name,
                     'block_chain': list(chain),
                     'block_offsets': list(offsets),
                     'block_sizes': list(sizes),
                     'offset': int(off, 16),
                     'type': t,
-                })
-            elif off is not None and name is not None and t in ('rangef', 'range', 'ranged'):
-                # A range is two floats (min, max). Expose both: '<name>' (min)
-                # and '<name> Max' (max) so either bound can be targeted.
+                }
+                if t.startswith('enum'):
+                    # Capture the option list so a value can be given by NAME
+                    # (e.g. "Overcharge" -> 1) as well as by raw number.
+                    opts = {}
+                    for opt in ch:
+                        if opt.tag.lower() == 'option' and opt.get('name') is not None:
+                            try:
+                                opts[opt.get('name').strip().lower()] = int(opt.get('value', '0'), 16)
+                            except ValueError:
+                                pass
+                    if opts:
+                        fld['options'] = opts
+                self.fields.append(fld)
+            elif off is not None and name is not None and t in RANGE_TYPES:
+                # A range is a (min, max) pair. Expose both: '<name>' (min) and
+                # '<name> Max' (max) so either bound can be targeted. Width/type
+                # depends on the range kind — rangef/ranged/degree ranges are
+                # two float32s, but range16 is two int16s (half the width).
+                sub_type, width = RANGE_TYPES[t]
                 o = int(off, 16)
-                for suffix, delta in (('', 0), (' Max', 4)):
+                for suffix, delta in (('', 0), (' Max', width)):
                     self.fields.append({
                         'name': name + suffix,
                         'block_chain': list(chain),
                         'block_offsets': list(offsets),
                         'block_sizes': list(sizes),
                         'offset': o + delta,
-                        'type': 'float32',
+                        'type': sub_type,
                     })
 
-    def find(self, field_name, block=None):
+    def find(self, field_name, block=None, nth=0):
         """Locate a field by name (case-insensitive); if `block` is given, the
-        field's innermost block must match it."""
+        field's innermost block must match it. `nth` picks among duplicate
+        same-named fields in document order (e.g. H2's Barrels block has two
+        'Error Angle' fields — the dual-wield one first, the normal one second)."""
         fl = field_name.lower()
         cands = [f for f in self.fields if f['name'].lower() == fl]
         if block:
-            bl = block.lower()
+            # `block` matches against the field's block chain. A single name matches
+            # the INNERMOST block (back-compat). A '/'-separated path (outer/.../inner)
+            # matches that SUFFIX of the chain — used to disambiguate a field that
+            # appears under two different parents but the same innermost block name,
+            # e.g. H2 'Rate Of Fire' under both 'Weapons Properties/Firing Patterns'
+            # and 'Firing Pattern Properties/Firing Patterns'.
+            parts = [p.strip().lower() for p in block.split('/')]
+            k = len(parts)
             cands = [f for f in cands
-                     if f['block_chain'] and f['block_chain'][-1].lower() == bl]
-        return cands[0] if cands else None
+                     if len(f['block_chain']) >= k
+                     and [b.lower() for b in f['block_chain']][-k:] == parts]
+        return cands[nth] if 0 <= nth < len(cands) else None
 
 
 class HaloMap:
@@ -128,6 +224,9 @@ class HaloMap:
     # --- low-level ---
     def u32(self, o):
         return struct.unpack_from('<I', self.data, o)[0]
+
+    def i32(self, o):
+        return struct.unpack_from('<i', self.data, o)[0]
 
     def _cstr(self, o):
         end = self.data.index(b'\x00', o)
@@ -163,10 +262,11 @@ class HaloMap:
         return self.tags.get((cls, path))
 
     def find_tags(self, cls, path):
-        """Resolve a tag reference to (path, meta_off) pairs. A trailing '*' is a
-        VARIANT match — e.g. 'characters\\elite\\*' hits every elite variant
-        present in this map. ' & ' joins several paths of the same group. An
-        exact path returns 0 or 1 entry."""
+        """Resolve a tag reference to (path, meta_off) pairs. A '*' is a wildcard:
+        'characters\\elite\\*' (prefix) hits every elite variant, and it may also
+        appear mid/leading — e.g. 'characters\\grunt\\*plasma pistol' hits only the
+        plasma-pistol grunt variants (endswith). ' & ' joins several paths of the
+        same group. An exact path returns 0 or 1 entry."""
         if ' & ' in path:
             out, seen = [], set()
             for part in path.split(' & '):
@@ -175,14 +275,14 @@ class HaloMap:
                         seen.add(p)
                         out.append((p, o))
             return out
-        if path.endswith('*'):
-            prefix = path[:-1]
+        if '*' in path:
+            match = _wildcard_matcher(path)
             return sorted((p, off) for (c, p), off in self.tags.items()
-                          if c == cls and p.startswith(prefix))
+                          if c == cls and match(p))
         off = self.tags.get((cls, path))
         return [(path, off)] if off is not None else []
 
-    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0):
+    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0):
         """Apply an operator to a field across every tag matching (cls, path).
         Never raises for missing tags/fields — returns a list of result dicts
         (ok/old/new or ok=False/reason) so a summary can be shown at the end."""
@@ -191,23 +291,36 @@ class HaloMap:
         if not tags:
             return [{'tag': ref, 'field': field, 'ok': False,
                      'reason': 'not present in this map'}]
-        fld = plugin.find(field, block)
+        fld = plugin.find(field, block, nth)
         if not fld:
             return [{'tag': ref, 'field': field, 'ok': False,
                      'reason': 'field not found in plugin'}]
         fmt, _ = TYPE_FMT[fld['type']]
-        is_float = fld['type'] in FLOAT_TYPES
+        ftype = fld['type']
+        is_float = ftype in FLOAT_TYPES or ftype in ANGLE_TYPES
         results = []
         for tpath, meta in tags:
             try:
-                base = self.follow(meta, fld['block_offsets'], fld.get('block_sizes'), index)
-                off = base + fld['offset']
-                old = struct.unpack_from(fmt, self.data, off)[0]
-                new = OP_FUNCS[op](old, value)
-                new = float(new) if is_float else int(round(new))
-                struct.pack_into(fmt, self.data, off, new)
-                results.append({'tag': f"{cls} {tpath}", 'field': field,
-                                'ok': True, 'old': old, 'new': new})
+                leaves = self.follow_all(meta, fld['block_offsets'],
+                                         fld.get('block_sizes'), index)
+                if not leaves:
+                    results.append({'tag': f"{cls} {tpath}", 'field': field,
+                                    'ok': False, 'reason': 'no populated block element'})
+                    continue
+                first_old = first_new = None
+                for base in leaves:                 # patch every selected element
+                    off = base + fld['offset']
+                    old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
+                    new = OP_FUNCS[op](old, value)   # operate in display units (deg for angles)
+                    new = float(new) if is_float else int(round(new))
+                    struct.pack_into(fmt, self.data, off, display_to_raw(ftype, new))
+                    if first_old is None:
+                        first_old, first_new = old, new
+                r = {'tag': f"{cls} {tpath}", 'field': field, 'ok': True,
+                     'old': first_old, 'new': first_new}
+                if len(leaves) > 1:
+                    r['elements'] = len(leaves)
+                results.append(r)
             except Exception as e:
                 results.append({'tag': f"{cls} {tpath}", 'field': field,
                                 'ok': False, 'reason': str(e)})
@@ -228,45 +341,72 @@ class HaloMap:
             cur = base + idx * size
         return cur
 
-    def resolve(self, cls, path, field, plugin, block=None, index=0):
+    def follow_all(self, meta_off, block_offsets, block_sizes=None, index=0):
+        """Like `follow`, but returns EVERY leaf struct selected by `index`
+        (see normalize_index_spec). `index` may be an int (legacy: innermost=i),
+        'all' (enumerate every element at every level), or a per-level list such
+        as [0, 'all']. Reads each reflexive's count and skips empty/short blocks,
+        so it returns [] when nothing is populated (never fabricates offsets)."""
+        n = len(block_offsets)
+        if n == 0:
+            return [meta_off]
+        sel = normalize_index_spec(index, n)
+        cur = [meta_off]
+        for i, refl in enumerate(block_offsets):
+            size = block_sizes[i] if block_sizes else 0
+            nxt = []
+            for c in cur:
+                count = self.i32(c + refl)
+                ptr = self.u32(c + refl + 4)
+                if ptr == 0 or count <= 0:
+                    continue
+                arr = (ptr - self.magic) & 0xFFFFFFFF
+                s = sel[i]
+                idxs = range(count) if s == 'all' else ([s] if 0 <= s < count else [])
+                for idx in idxs:
+                    nxt.append(arr + idx * size)
+            cur = nxt
+        return cur
+
+    def resolve(self, cls, path, field, plugin, block=None, index=0, nth=0):
         """Return (base_offset, field_dict) for a field, or None."""
         meta = self.get_tag_meta(cls, path)
         if meta is None:
             return None
-        fld = plugin.find(field, block)
+        fld = plugin.find(field, block, nth)
         if not fld:
             return None
         base = self.follow(meta, fld['block_offsets'], fld.get('block_sizes'), index)
         return base, fld
 
-    def read(self, cls, path, field, plugin, block=None, index=0):
-        r = self.resolve(cls, path, field, plugin, block, index)
+    def read(self, cls, path, field, plugin, block=None, index=0, nth=0):
+        r = self.resolve(cls, path, field, plugin, block, index, nth)
         if r is None:
             return None
         base, fld = r
         fmt, _ = TYPE_FMT[fld['type']]
-        return struct.unpack_from(fmt, self.data, base + fld['offset'])[0]
+        return raw_to_display(fld['type'], struct.unpack_from(fmt, self.data, base + fld['offset'])[0])
 
-    def read_first(self, cls, path, field, plugin, block=None, index=0):
+    def read_first(self, cls, path, field, plugin, block=None, index=0, nth=0):
         """Read a field from the first tag matching (cls, path); handles the
         variant '*' form. Returns None if unresolved."""
         tags = self.find_tags(cls, path)
         if not tags:
             return None
-        fld = plugin.find(field, block)
+        fld = plugin.find(field, block, nth)
         if not fld:
             return None
         try:
             base = self.follow(tags[0][1], fld['block_offsets'], fld.get('block_sizes'), index)
             fmt, _ = TYPE_FMT[fld['type']]
-            return struct.unpack_from(fmt, self.data, base + fld['offset'])[0]
+            return raw_to_display(fld['type'], struct.unpack_from(fmt, self.data, base + fld['offset'])[0])
         except Exception:
             return None
 
-    def read_all(self, cls, path, field, plugin, block=None, index=0):
+    def read_all(self, cls, path, field, plugin, block=None, index=0, nth=0):
         """(tag_path, value) for every tag matching (cls, path) — one entry per
         variant. Skips any that don't resolve. Empty if the field is unknown."""
-        fld = plugin.find(field, block)
+        fld = plugin.find(field, block, nth)
         if not fld:
             return []
         fmt, _ = TYPE_FMT[fld['type']]
@@ -274,26 +414,81 @@ class HaloMap:
         for tpath, meta in self.find_tags(cls, path):
             try:
                 base = self.follow(meta, fld['block_offsets'], fld.get('block_sizes'), index)
-                out.append((tpath, struct.unpack_from(fmt, self.data, base + fld['offset'])[0]))
+                raw = struct.unpack_from(fmt, self.data, base + fld['offset'])[0]
+                out.append((tpath, raw_to_display(fld['type'], raw)))
             except Exception:
                 pass
         return out
 
-    def write(self, cls, path, field, plugin, value, block=None, index=0):
+    def read_all_leaves(self, cls, path, field, plugin, block=None, index=0, nth=0):
+        """Like read_all, but returns (tag_path, [value per selected leaf]) — every
+        element the index spec picks (e.g. index='all' across a multi-element block),
+        per variant tag. Variants whose block is empty are omitted. Used to show a
+        collapsed effect's full vanilla spread (H1-style per-variant listing extended
+        to H2's per-index blocks)."""
+        fld = plugin.find(field, block, nth)
+        if not fld:
+            return []
+        fmt, _ = TYPE_FMT[fld['type']]
+        out = []
+        for tpath, meta in self.find_tags(cls, path):
+            vals = []
+            for base in self.follow_all(meta, fld['block_offsets'], fld.get('block_sizes'), index):
+                try:
+                    vals.append(raw_to_display(fld['type'],
+                                struct.unpack_from(fmt, self.data, base + fld['offset'])[0]))
+                except Exception:
+                    pass
+            if vals:
+                out.append((tpath, vals))
+        return out
+
+    def read_tag_field(self, tag_base, field, plugin, block=None, index=0, nth=0):
+        """Read a field from a tag by its meta-offset base (mirrors Halo2Map's
+        signature so per-tag code can work across both parsers)."""
+        fld = plugin.find(field, block, nth)
+        if not fld:
+            return None
+        try:
+            base = self.follow(tag_base, fld['block_offsets'], fld.get('block_sizes'), index)
+            fmt, _ = TYPE_FMT[fld['type']]
+            return raw_to_display(fld['type'], struct.unpack_from(fmt, self.data, base + fld['offset'])[0])
+        except Exception:
+            return None
+
+    def write_tag_field(self, tag_base, field, value, plugin, block=None, index=0, nth=0):
+        """Write a field by meta-offset base (mirrors Halo2Map). Returns old value."""
+        fld = plugin.find(field, block, nth)
+        if not fld:
+            return None
+        try:
+            base = self.follow(tag_base, fld['block_offsets'], fld.get('block_sizes'), index)
+            fmt, _ = TYPE_FMT[fld['type']]
+            ftype = fld['type']
+            off = base + fld['offset']
+            old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
+            value = float(value) if (ftype in FLOAT_TYPES or ftype in ANGLE_TYPES) else int(round(value))
+            struct.pack_into(fmt, self.data, off, display_to_raw(ftype, value))
+            return old
+        except Exception:
+            return None
+
+    def write(self, cls, path, field, plugin, value, block=None, index=0, nth=0):
         """Write a value into the in-memory buffer (call save() to persist).
         Returns the previous value, or None if unresolved."""
-        r = self.resolve(cls, path, field, plugin, block, index)
+        r = self.resolve(cls, path, field, plugin, block, index, nth)
         if r is None:
             return None
         base, fld = r
         fmt, _ = TYPE_FMT[fld['type']]
+        ftype = fld['type']
         off = base + fld['offset']
-        old = struct.unpack_from(fmt, self.data, off)[0]
-        if fld['type'] in ('float32', 'float', 'real'):
+        old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
+        if ftype in FLOAT_TYPES or ftype in ANGLE_TYPES:
             value = float(value)
         else:
             value = int(value)
-        struct.pack_into(fmt, self.data, off, value)
+        struct.pack_into(fmt, self.data, off, display_to_raw(ftype, value))
         return old
 
     def save(self, out_path):
