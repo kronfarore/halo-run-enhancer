@@ -566,7 +566,7 @@
 					]
 				},
 				"Heat Recovery": {
-					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
@@ -763,7 +763,7 @@
 					]
 				},
 				"Heat Recovery": {
-					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
@@ -1554,7 +1554,7 @@
 					]
 				},
 				"Heat Recovery": {
-					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1974,7 +1974,7 @@
 					"game": "Halo 2"
 				},
 				"Heat Recovery": {
-					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
@@ -1982,17 +1982,6 @@
 						{ "field": "Heat Recovery Threshold" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
-					],
-					"game": "Halo 2"
-				},
-				"Misfire": {
-					"desc": "When Misfiring starts and how likely it is",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
-					},
-					"targets": [
-						{ "field": "Age Misfire Start" },
-						{ "field": "Age Misfire Chance" }
 					],
 					"game": "Halo 2"
 				},
@@ -2231,7 +2220,7 @@
 					"game": "Halo 2"
 				},
 				"Heat Recovery": {
-					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
 					},
@@ -2271,17 +2260,6 @@
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
-					],
-					"game": "Halo 2"
-				},
-				"Error Angle": {
-					"desc": "Spread of the shot, Minimum Error and Maximum Error",
-					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
-					},
-					"targets": [
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
 					],
 					"game": "Halo 2"
 				}
