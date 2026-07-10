@@ -511,8 +511,182 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     return out
 
 
+# --- zoom-UI copy: give a scopeless weapon a working scope overlay -----------
+# The scope lives in the weapon's HUD tag (H2 nhdt / H1 wphi), reached via the weap
+# tag's HUD-interface tagRef. We copy the donor's scope sub-elements into the target
+# HUD by growing the relevant block(s). Elements are copied verbatim, so embedded
+# tagRefs (scope masks/bitmaps) keep their map-global datums and resolve to the
+# donor's art in place.
+#
+# H1 needs BOTH parts of the scope: the full-screen mask is a "Screen Effect" block
+# element (with Mask tagRefs), and the reticle is a "Zoom Overlay" Crosshair. A HUD
+# is "scoped" iff it has a Screen Effect. H2's scope is a set of zoom-gated Bitmap
+# Widgets (flat), gated on the [Yes]Unit "Zoomed" flag bits. Each source block gives
+# a selector (which elements are the scope) and, if its elements carry a child
+# reflexive (H1 Crosshair -> Crosshair Overlays), a (child_off, child_elem) to
+# relocate into the target's own tag data so the copy owns it (see _selfcontain).
+_ZOOM_UI = {
+    'Halo 1': {'hud_ref': 0x480, 'id_at': 0xC,
+               'scoped_block': 0xAC,       # Screen Effect present => already scoped
+               'donor_pref': ('sniper rifle', 'pistol'),
+               'blocks': [
+                   {'off': 0xAC, 'elem': 0xB8, 'sel': ('all',), 'child': None},        # scope mask
+                   {'off': 0x84, 'elem': 0x68, 'sel': ('eq', 0x0, 1),                   # zoom reticle
+                    'child': (0x34, 0x6C)},                                            # Crosshair Overlays
+               ]},
+    'Halo 2': {'hud_ref': 0x2B0, 'id_at': 0x4,
+               'scoped_block': None,       # detected via the zoom-gated widget selector
+               'donor_pref': ('sniper_rifle', 'beam_rifle', 'battle_rifle'),
+               'blocks': [
+                   {'off': 0x8, 'elem': 0x64, 'sel': ('and', 0x8, 0b11 << 7), 'child': None},
+               ]},
+}
+
+
+def _selfcontain(m, elem, child):
+    """H1: relocate an element's child reflexive block into freshly appended tag
+    data and repoint it there, so the copied element owns its child instead of
+    pointing into the donor tag (which the H1 engine won't render across tags).
+    `child` = (child_reflexive_offset, child_elem_size); None -> element unchanged."""
+    if not child:
+        return elem
+    coff, cesz = child
+    cnt = struct.unpack_from('<I', elem, coff)[0]
+    ptr = struct.unpack_from('<I', elem, coff + 4)[0]
+    if cnt <= 0:
+        return elem
+    src = (ptr - m.magic) & 0xFFFFFFFF
+    new_off = m.append_raw(bytes(m.data[src:src + cnt * cesz]))
+    b = bytearray(elem)
+    struct.pack_into('<I', b, coff + 4, (new_off + m.magic) & 0xFFFFFFFF)
+    return bytes(b)
+
+
+def _hud_base(m, game, weap_base):
+    """Follow a weap tag's HUD-interface tagRef to its HUD tag's base offset."""
+    z = _ZOOM_UI[game]
+    rid = m.u32(weap_base + z['hud_ref'] + z['id_at'])
+    if rid in (0, 0xFFFFFFFF):
+        return None
+    row = rid & 0xFFFF
+    if hasattr(m, 'tag'):                                   # H2: datum row -> tag
+        t = m.tag(row)
+        return t['base'] if t else None
+    b = m.tag_array_off + row * 32                          # H1: tag-array meta_ptr
+    off = (m.u32(b + 0x14) - m.magic) & 0xFFFFFFFF
+    return off if 0 <= off < len(m.data) else None
+
+
+def _block_elems(m, hud_base, bs):
+    """Elements of one HUD source block matching its selector (list of raw bytes)."""
+    cnt = m.i32(hud_base + bs['off'])
+    if cnt <= 0:
+        return []
+    off = _block_base(m, hud_base + bs['off'])
+    sel = bs['sel']
+    out = []
+    for i in range(cnt):
+        e = off + i * bs['elem']
+        if sel[0] == 'all':
+            hit = True
+        else:
+            val = struct.unpack_from('<H', m.data, e + sel[1])[0]
+            hit = (val == sel[2]) if sel[0] == 'eq' else bool(val & sel[2])
+        if hit:
+            out.append(bytes(m.data[e:e + bs['elem']]))
+    return out
+
+
+def _hud_is_scoped(m, game, hud_base):
+    """True if this HUD already renders a scope (so we leave it alone)."""
+    z = _ZOOM_UI[game]
+    if z['scoped_block'] is not None:                      # H1: Screen Effect present
+        return m.i32(hud_base + z['scoped_block']) > 0
+    return bool(_block_elems(m, hud_base, z['blocks'][0]))  # H2: a zoom-gated widget
+
+
+def _zoom_donor(m, game, exclude_hud, prefer=None):
+    """The scoped donor weapon to copy from (its HUD base + short name), or
+    (None, None). If `prefer` (a weap tag path) names a weapon that is present and
+    scoped on this map, it wins; otherwise the best configured/auto donor is used."""
+    z = _ZOOM_UI[game]
+    if prefer:
+        _, pname = hm.split_tag(prefer)
+        wb = _weap_base(m, pname)
+        if wb is not None:
+            hud = _hud_base(m, game, wb)
+            if hud is not None and hud != exclude_hud and _hud_is_scoped(m, game, hud):
+                return hud, pname.rsplit(chr(92), 1)[-1]
+    if isinstance(getattr(m, 'tags', None), dict):          # H1
+        weaps = [(n, off) for (c, n), off in m.tags.items() if c == 'weap']
+    else:                                                   # H2
+        weaps = [(t['name'], t['base']) for t in m.tags
+                 if t.get('class') == 'weap' and t.get('base')]
+    cands = []
+    for name, wb in weaps:
+        hud = _hud_base(m, game, wb)
+        if hud is None or hud == exclude_hud or not _hud_is_scoped(m, game, hud):
+            continue
+        cands.append((name, hud))
+    if not cands:
+        return None, None
+    pref = z['donor_pref']
+    cands.sort(key=lambda it: (pref.index(it[0].rsplit(chr(92), 1)[-1])
+                               if it[0].rsplit(chr(92), 1)[-1] in pref else len(pref)))
+    name, hud = cands[0]
+    return hud, name.rsplit(chr(92), 1)[-1]
+
+
+def _apply_zoom_ui(m, game, targets, prefer_donor=None):
+    """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
+    copying every scope source block from a donor weapon on the map. `prefer_donor`
+    (a weap tag path) is used when present + scoped, else an auto donor. Idempotent:
+    a HUD already scoped (vanilla, or shared with a weapon patched earlier this run)
+    is left alone."""
+    z = _ZOOM_UI.get(game)
+    out = []
+    if not z:
+        return out
+    grown = set()
+    for tag in targets:
+        _, name = hm.split_tag(tag)
+        short = name.rsplit(chr(92), 1)[-1]
+        wb = _weap_base(m, name)
+        if wb is None:
+            out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
+                        'reason': 'weapon not in this map'})
+            continue
+        hud = _hud_base(m, game, wb)
+        if hud is None:
+            out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
+                        'reason': 'weapon has no HUD interface'})
+            continue
+        if hud in grown or _hud_is_scoped(m, game, hud):
+            out.append({'effect': 'zoom UI', 'field': short, 'ok': True,
+                        'old': short, 'new': 'already has a scope — unchanged'})
+            continue
+        donor_hud, donor = _zoom_donor(m, game, exclude_hud=hud, prefer=prefer_donor)
+        if donor_hud is None:
+            out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
+                        'reason': 'no scoped donor weapon in this map'})
+            continue
+        copied = 0
+        for bs in z['blocks']:
+            elems = _block_elems(m, donor_hud, bs)
+            if not elems:
+                continue
+            if bs['child']:                # relocate each element's child sub-block
+                elems = [_selfcontain(m, e, bs['child']) for e in elems]
+            m.grow_block(hud, bs['off'], bs['elem'], elems)
+            copied += len(elems)
+        grown.add(hud)
+        out.append({'effect': 'zoom UI', 'field': short, 'ok': True, 'old': short,
+                    'new': f'scope copied from {donor} ({copied} element(s))'})
+    return out
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
-              starting=None, weapon_swaps=None):
+              starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -581,6 +755,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # After the ops (so any Magazine effect is already in the weap tags),
         # set the player Starting Profile weapons + rounds from the run's picks.
         results.extend(_apply_starting_equipment(m, game, registry, starting))
+
+    if zoom_ui:
+        # Structural growth LAST: copy a donor scope overlay into each scopeless
+        # target weapon's HUD tag. Done after every value op so the relocated HUD
+        # block can't disturb them.
+        results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
 
     backup_path = None
     if any(r.get('ok') for r in results):

@@ -285,34 +285,43 @@ class Halo2Map:
         except Exception as e:
             return {**base_r, 'ok': False, 'reason': str(e)}
 
-    def append_block_element(self, tag_base, block_offset, elem_size, elem_bytes):
-        """Grow an EMPTY reflexive (count 0) at tag_base+block_offset to a single
-        populated element. The element bytes are APPENDED at end-of-image (so no
-        existing tag data or pointers move), the reflexive is set to [count=1][ptr]
-        pointing at them, and the header size fields (file_size@0x8, meta_size@0x14,
-        tag_data_size@0x2D8) grow by elem_size. Works because H2 tag data is one
-        contiguous blob addressed by a single meta-relative pointer (p2o). Only
-        count 0 -> 1 is supported (guarantees element contiguity). Returns the new
-        element's file offset. save()/update_checksum must follow.
+    def grow_block(self, tag_base, block_offset, elem_size, new_elems):
+        """Append `new_elems` (a list of elem_size-byte blocks) to the reflexive at
+        tag_base+block_offset, growing count M -> M+len(new_elems).
+
+        The block is RELOCATED to end-of-image: the existing M elements are copied
+        verbatim after EOF, the new ones follow, and the reflexive is repointed
+        there with the higher count. Nothing in the middle of the tag data moves, so
+        every other pointer stays valid; the old element bytes are simply orphaned.
+        Element bytes are copied verbatim, so any tagRefs they embed keep their
+        (map-global) datums, and any child reflexive pointers keep addressing the
+        unmoved child data — callers copying a subtree must fix those up themselves.
+
+        The tag-data / meta segments must stay SEGMENT_ALIGN (0x1000) aligned or MCC
+        rejects the cache ("segment size is not aligned"), so the appended region is
+        padded up to a whole alignment block. Header size fields (file_size@0x8,
+        meta_size@0x14, tag_data_size@0x2D8) grow by that padded delta. Returns the
+        new block's file offset. save()/update_checksum must follow.
 
         NOTE: this restructures the map (not just values); MCC must be verified to
         load a grown map in-game."""
         if self.compressed:
             raise NotImplementedError("cannot grow a compressed map")
+        if any(len(e) != elem_size for e in new_elems):
+            raise ValueError("every new element must be elem_size bytes")
+        if not new_elems:
+            raise ValueError("no elements to append")
         count = self.i32(tag_base + block_offset)
-        if count != 0:
-            raise ValueError("append_block_element only supports empty blocks (count 0)")
-        if len(elem_bytes) != elem_size:
-            raise ValueError("elem_bytes length != elem_size")
-        # The tag-data / meta segments must stay aligned to SEGMENT_ALIGN (0x1000)
-        # or the cache is rejected ("segment size is not aligned"). Pad the growth
-        # up to a whole segment-alignment block; the element sits at the start of
-        # the appended region and the reflexive points there, the rest is zero pad.
-        delta = (elem_size + self.SEGMENT_ALIGN - 1) & ~(self.SEGMENT_ALIGN - 1)
+        old_ptr = self.u32(tag_base + block_offset + 4)
+        existing = b'' if count == 0 else \
+            bytes(self.data[self.p2o(old_ptr):self.p2o(old_ptr) + count * elem_size])
+        blob = existing + b''.join(bytes(e) for e in new_elems)
+        total = count + len(new_elems)
+        delta = (len(blob) + self.SEGMENT_ALIGN - 1) & ~(self.SEGMENT_ALIGN - 1)
         new_off = len(self.data)
-        self.data += bytearray(elem_bytes) + bytearray(delta - elem_size)
+        self.data += blob + bytearray(delta - len(blob))
         ptr = (new_off - self.meta_offset + self.mask) & 0xFFFFFFFF
-        struct.pack_into('<i', self.data, tag_base + block_offset, 1)          # count
+        struct.pack_into('<i', self.data, tag_base + block_offset, total)      # count
         struct.pack_into('<I', self.data, tag_base + block_offset + 4, ptr)    # ptr
         self.file_size += delta
         self.meta_size += delta
@@ -321,6 +330,14 @@ class Halo2Map:
         struct.pack_into('<I', self.data, 0x14, self.meta_size)
         struct.pack_into('<I', self.data, 0x2D8, self.tag_data_size)
         return new_off
+
+    def append_block_element(self, tag_base, block_offset, elem_size, elem_bytes):
+        """Back-compat: grow an EMPTY reflexive (count 0) to a single element.
+        Delegates to grow_block; kept for the init_defaults seeder."""
+        count = self.i32(tag_base + block_offset)
+        if count != 0:
+            raise ValueError("append_block_element only supports empty blocks (count 0)")
+        return self.grow_block(tag_base, block_offset, elem_size, [elem_bytes])
 
     # --- checksum + save ---
     def update_checksum(self):

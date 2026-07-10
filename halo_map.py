@@ -491,6 +491,60 @@ class HaloMap:
         struct.pack_into(fmt, self.data, off, display_to_raw(ftype, value))
         return old
 
+    def grow_block(self, tag_base, block_offset, elem_size, new_elems):
+        """Append `new_elems` (elem_size-byte blocks) to the reflexive at
+        tag_base+block_offset, mirroring Halo2Map.grow_block but for the H1 cache.
+
+        H1 addresses tag data by a magic-relative pointer (offset = ptr - magic) and
+        the tag-data blob is the LAST region in the file (index_off + metaSize@0x14
+        == EOF), so appending at EOF extends that blob in place: the block is
+        relocated there (existing elements copied verbatim, new ones after), the
+        reflexive repointed with the higher count, and the header meta size@0x14 and
+        file size@0x08 grown. Every existing pointer is magic-relative and unmoved,
+        so nothing else needs fixing; the old element bytes are orphaned. Element
+        bytes are copied verbatim — embedded tagRefs keep their idents and any child
+        reflexive pointers keep addressing the unmoved child data, so a caller
+        copying a subtree must fix those pointers up itself. Returns the new block's
+        file offset. save() must follow.
+
+        H1 has no segment-alignment rule (unlike H2), but pointer targets are padded
+        to 4 bytes. NOTE: restructures the map; verify MCC loads a grown map."""
+        if any(len(e) != elem_size for e in new_elems):
+            raise ValueError("every new element must be elem_size bytes")
+        if not new_elems:
+            raise ValueError("no elements to append")
+        count = self.u32(tag_base + block_offset)
+        old_ptr = self.u32(tag_base + block_offset + 4)
+        existing = b'' if count == 0 else \
+            bytes(self.data[(old_ptr - self.magic) & 0xFFFFFFFF:
+                            ((old_ptr - self.magic) & 0xFFFFFFFF) + count * elem_size])
+        blob = existing + b''.join(bytes(e) for e in new_elems)
+        total = count + len(new_elems)
+        delta = (len(blob) + 3) & ~3
+        new_off = len(self.data)
+        self.data += blob + bytearray(delta - len(blob))
+        ptr = (new_off + self.magic) & 0xFFFFFFFF
+        struct.pack_into('<I', self.data, tag_base + block_offset, total)      # count
+        struct.pack_into('<I', self.data, tag_base + block_offset + 4, ptr)    # ptr
+        meta_size = self.u32(0x14) + delta
+        file_size = self.u32(0x08) + delta
+        struct.pack_into('<I', self.data, 0x14, meta_size)
+        struct.pack_into('<I', self.data, 0x08, file_size)
+        return new_off
+
+    def append_raw(self, blob):
+        """Append raw bytes to the tag-data blob at EOF (4-aligned), growing the
+        header meta size@0x14 and file size@0x08. Returns the new bytes' file
+        offset; address them with a magic-relative pointer (off + magic). Used to
+        relocate a child sub-block so a copied element can own its own copy instead
+        of pointing into another tag. save() must follow."""
+        delta = (len(blob) + 3) & ~3
+        new_off = len(self.data)
+        self.data += bytes(blob) + bytearray(delta - len(blob))
+        struct.pack_into('<I', self.data, 0x14, self.u32(0x14) + delta)
+        struct.pack_into('<I', self.data, 0x08, self.u32(0x08) + delta)
+        return new_off
+
     def save(self, out_path):
         with open(out_path, 'wb') as f:
             f.write(self.data)

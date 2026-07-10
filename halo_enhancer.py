@@ -65,9 +65,18 @@ def is_valid_run(data):
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'include_wildcards',
                'wildcard_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
-               'card_width', 'card_height', 'hide_tags', 'hide_fields')
+               'zoom_ui_on_scopeless', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
-SETTINGS_KEYS = ('assembly_plugins_dir',) + OPTION_KEYS
+# Weapons whose scope the zoom-UI copy can source from, per game — real scoped
+# weapons (mask bitmaps confirmed) that map to halo.json weapon names. The patcher
+# only offers the ones present on the map being patched ("guaranteed on the map").
+ZOOM_DONOR_WEAPONS = {
+    'Halo 1': ['Sniper Rifle', 'Pistol'],
+    'Halo 2': ['Sniper Rifle', 'Beam Rifle', 'Battle Rifle'],
+}
+
+# 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
+SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor') + OPTION_KEYS
 
 
 def load_settings():
@@ -119,8 +128,16 @@ CONFIG = {
     "special_rate_factor": 0.67,
     # When patching, set the scenario's starting Primary/Secondary Weapon to the
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
-    "set_starting_weapons": False,
+    "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    # When a Zoom effect is applied to a weapon that has no vanilla scope (e.g.
+    # Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon on the
+    # map into its HUD so the zoom actually shows a scope. Structurally grows the
+    # HUD tag — verify a patched map still loads in-game.
+    "zoom_ui_on_scopeless": True,
+    # Preferred scope source per game for the zoom-UI copy ({game: weapon name}).
+    # Used when that weapon is present on the map being patched, else auto-picked.
+    "zoom_donor": {},
     # Whether deliberate weapon choices (start-of-run picks and the New Weapon
     # button) carry a tied negative. Random new-weapon pairs from
     # new_weapon_chance are unaffected (their pair always has an enemy). False
@@ -1483,6 +1500,10 @@ class MagnitudeEditorDialog(QDialog):
         if swap_group:
             layout.addWidget(swap_group)
 
+        zoom_row = self._build_zoom_source_row()
+        if zoom_row:
+            layout.addWidget(zoom_row)
+
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
         self._cont = QWidget()
@@ -1914,6 +1935,75 @@ class MagnitudeEditorDialog(QDialog):
         return {'primary': prim, 'secondary': sec,
                 'profiles': CONFIG.get('starting_weapon_profiles', [0, 1])}
 
+    def _zoom_ui_spec(self, plan):
+        """weap tag paths of the Zoom effects in this plan, so scopeless weapons
+        that gain magnification also get a scope overlay. The patcher skips any
+        weapon already scoped (vanilla or shared HUD), so passing them all is safe."""
+        if not CONFIG.get('zoom_ui_on_scopeless', True):
+            return None
+        tags = [item['tag'] for item in plan
+                if item.get('name') == 'Zoom' and str(item.get('tag', '')).startswith('weap ')]
+        return tags or None
+
+    def _zoom_donor_candidates(self):
+        """Scope-source weapons offered to the user: real scoped weapons that are
+        guaranteed present on this mission's map (its level weapon pool)."""
+        db = getattr(self.parent_gui, 'db', None)
+        rs = getattr(self.parent_gui, 'run_state', None)
+        if db is None or rs is None:
+            return []
+        onmap = set(db.mission_weapons.get(getattr(rs, 'mission_id', None), []) or [])
+        return [w for w in ZOOM_DONOR_WEAPONS.get(self.game, []) if w in onmap]
+
+    def _build_zoom_source_row(self):
+        """A combo to pick which weapon's scope overlay to copy, shown only when a
+        weapon Zoom is being patched and there are eligible on-map donors. Defaults
+        to the remembered choice when it's available on this map, else Auto."""
+        if not CONFIG.get('zoom_ui_on_scopeless', True):
+            return None
+        if not any(e.get('name') == 'Zoom' and str(e.get('tag', '')).startswith('weap ')
+                   for e in self.effects):
+            return None
+        cands = self._zoom_donor_candidates()
+        if not cands:
+            return None
+        box = QGroupBox("Scope overlay source")
+        h = QHBoxLayout(box)
+        h.addWidget(QLabel("Copy the scope from:"))
+        self.zoom_src_combo = QComboBox()
+        self.zoom_src_combo.addItem("Auto (any scoped weapon on the map)", None)
+        for w in cands:
+            self.zoom_src_combo.addItem(w, w)
+        remembered = (CONFIG.get('zoom_donor') or {}).get(self.game)
+        if remembered in cands:
+            self.zoom_src_combo.setCurrentIndex(cands.index(remembered) + 1)
+        self.zoom_src_combo.currentIndexChanged.connect(self._on_zoom_src_changed)
+        h.addWidget(self.zoom_src_combo)
+        h.addStretch()
+        return box
+
+    def _on_zoom_src_changed(self):
+        """Remember the choice per game (persisted); it is reused on any later map
+        that has that weapon (else the patcher falls back to auto)."""
+        w = self.zoom_src_combo.currentData()
+        zd = dict(CONFIG.get('zoom_donor') or {})
+        if w:
+            zd[self.game] = w
+        else:
+            zd.pop(self.game, None)
+        CONFIG['zoom_donor'] = zd
+        save_settings()
+
+    def _zoom_donor_spec(self):
+        """The chosen scope-source as a weap tag path, or None for auto. Reads the
+        combo when shown, else the remembered per-game preference."""
+        combo = getattr(self, 'zoom_src_combo', None)
+        w = combo.currentData() if combo is not None else (CONFIG.get('zoom_donor') or {}).get(self.game)
+        db = getattr(self.parent_gui, 'db', None)
+        if not w or db is None:
+            return None
+        return db.weap_tag_for(w, self.game)
+
     def _apply(self):
         map_path = self.map_edit.text().strip()
         if not Path(map_path).is_file():
@@ -1959,13 +2049,15 @@ class MagnitudeEditorDialog(QDialog):
         plan = list(plan_map.values())
         starting = self._starting_weapons_spec()
         weapon_swaps = self._weapon_swaps_spec()
+        zoom_ui = self._zoom_ui_spec(plan)
         if not plan and not starting and not weapon_swaps:
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
 
         extras = ([] + (["set starting weapons"] if starting else [])
-                  + (["scatter map weapons"] if weapon_swaps else []))
+                  + (["scatter map weapons"] if weapon_swaps else [])
+                  + (["add scope UI where missing"] if zoom_ui else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -1977,7 +2069,8 @@ class MagnitudeEditorDialog(QDialog):
         try:
             results, backup = self._hp.apply_run(map_path, plan, self.registry,
                                                  self.target_difficulty, game=self.game,
-                                                 starting=starting, weapon_swaps=weapon_swaps)
+                                                 starting=starting, weapon_swaps=weapon_swaps,
+                                                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec())
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -2113,6 +2206,13 @@ class OptionsDialog(QDialog):
         self.starting_weapons_cb.setToolTip("On patch: Primary = P1's first weapon, Secondary = P2's first weapon, "
                                             "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
         form.addRow("Starting weapons:", self.starting_weapons_cb)
+
+        self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
+        self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
+        self.zoom_ui_cb.setToolTip("On patch: if a Zoom effect is applied to a weapon with no vanilla scope "
+                                   "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
+                                   "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
+        form.addRow("Scope UI:", self.zoom_ui_cb)
         layout.addWidget(func)
 
         # ---- Appearance section ----
@@ -2162,6 +2262,7 @@ class OptionsDialog(QDialog):
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
+            'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
