@@ -804,7 +804,7 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second",
+					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
@@ -994,7 +994,7 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second",
+					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
@@ -1462,7 +1462,7 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second",
+					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
@@ -1586,7 +1586,7 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second",
+					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -2126,11 +2126,13 @@
 					"game": "Halo 2"
 				},
 				"More Shooting": {
-					"desc": "Shots fired per trigger pull (0 by default - set it rather than scale it)",
+					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
