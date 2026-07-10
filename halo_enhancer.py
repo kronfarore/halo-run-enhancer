@@ -49,9 +49,22 @@ SETTINGS_FILE = 'settings.json'
 # (persisted in settings.json) AND snapshotted into each saved run, so loading a
 # run restores the options it was played with. Keep this list in sync with
 # OptionsDialog and RunState's options round-trip.
+RUN_FILE_MARKER = 'halo-run-enhancer'   # stamped into saved runs so loading can validate
+
+
+def is_valid_run(data):
+    """True if `data` looks like one of our saved runs — either it carries the
+    format marker, or (older saves without it) it has the run's structural keys."""
+    if not isinstance(data, dict):
+        return False
+    if data.get('format') == RUN_FILE_MARKER:
+        return True
+    return any(k in data for k in ('phase', 'mission_id', 'rounds', 'selected_pairs'))
+
+
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'include_wildcards',
                'wildcard_chance', 'new_weapon_chance', 'include_grenades',
-               'weapon_choice_negatives', 'special_rate_factor',
+               'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
 SETTINGS_KEYS = ('assembly_plugins_dir',) + OPTION_KEYS
@@ -104,6 +117,10 @@ CONFIG = {
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
     "special_rate_factor": 0.67,
+    # When patching, set the scenario's starting Primary/Secondary Weapon to the
+    # players' picked weapons (profiles 0 & 1: single-player + co-op start).
+    "set_starting_weapons": False,
+    "starting_weapon_profiles": [0, 1],
     # Whether deliberate weapon choices (start-of-run picks and the New Weapon
     # button) carry a tied negative. Random new-weapon pairs from
     # new_weapon_chance are unaffected (their pair always has an enemy). False
@@ -163,7 +180,18 @@ EFFECT_RENAMES = {
     'Berserk Triggerin': 'Melee Behavior',
     'Defensive': 'Cover Properties',
     'Projectile Error': 'Accuracy',
+    'Effective Range?': 'Projectile',   # merged into Projectile
 }
+
+# The four difficulty flavors halo_patch.apply_difficulty understands. A plan op
+# must carry whichever one its target declares, or the field name is looked up
+# unexpanded and the write silently misses (e.g. "Body Vitality" instead of
+# "Legendary Body Vitality").
+DIFF_FLAVOR_KEYS = ('difficulty', 'diff_suffix', 'diff_prefix', 'diff_prefix_nl')
+
+
+def _diff_flavor(target):
+    return {k: target.get(k) for k in DIFF_FLAVOR_KEYS}
 
 
 def resolve_gamed(value, game, games=None):
@@ -384,6 +412,20 @@ class ModifierDatabase:
         """Blacklist label for a weapon (distinct from modifier labels)."""
         return f"Weapon{CONFIG['blacklist_label_separator']}{weapon}"
 
+    def is_grenade(self, name):
+        """Grenades are equipment, not weapons — they never carry a weap tag and
+        must be excluded from the starting-weapon / map-weapon-swap features."""
+        return any(name in gl for gl in self.mission_grenades.values())
+
+    def weap_tag_for(self, weapon_name, game):
+        """The `weap ...` tag for a weapon in the given game, taken from any of its
+        effects (used to set the scenario's starting weapons). None if unknown."""
+        for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
+            tag = resolve_gamed(mod.get('tag'), game, self.get_games())
+            if isinstance(tag, str) and tag.startswith('weap '):
+                return tag
+        return None
+
     def get_weapon_modifiers(self, weapon_name):
         """Mods for a weapon slot. `dual_only` effects are offered only when
         the slot is a 'Dual <X>' (the dual upgrade was taken)."""
@@ -437,13 +479,21 @@ class ModifierDatabase:
         return ", ".join(names) if names else None
 
     def get_boss_modifiers_filtered(self, mission_id, blacklist, game=None):
-        """Boss pool: any boss enemy's specific mods (if defined) plus the
-        general negative pool, so bosses can always draw a challenge effect."""
+        """Boss pool: the boss encounter's OWN mods, so a boss card only ever
+        touches the boss. Those mods target the boss's char tag alone, which in
+        Halo 2 means they must name fields the boss variant itself holds — a
+        field it merely inherits from its parent lives on the parent, and
+        patching it there would buff every sibling enemy too.
+
+        Only when a boss has no catered pool yet do we fall back to the general
+        negative pool (which hits all enemies), so boss levels still draw a card."""
         mods = []
         for boss in self.mission_boss.get(mission_id) or []:
             mods.extend(self.enemy_mods.get(boss, []))
-        mods = mods + self.negative_pool
-        return self.filter_blacklisted(mods, blacklist, game)
+        specific = self.filter_blacklisted(mods, blacklist, game)
+        if specific:
+            return specific
+        return self.filter_blacklisted(list(self.negative_pool), blacklist, game)
 
     def get_games(self):
         return list(self.games)
@@ -1153,17 +1203,27 @@ class StartDialog(QDialog):
             self,
             "Select Saved Run",
             "selections/",
-            "JSON Files (*.json)"
+            "Halo Run (*.run);;JSON Files (*.json)"
         )
         if file_path:
             try:
                 with open(file_path, 'r', encoding='utf-8') as f:
                     data = json.load(f)
+            except Exception as e:
+                QMessageBox.critical(self, "Not a valid run",
+                                     f"Couldn't read this file as a run:\n{e}")
+                return
+            if not is_valid_run(data):
+                QMessageBox.critical(self, "Not a valid run",
+                                     "This file isn't a Halo Run Enhancer save "
+                                     "(missing the run marker/structure).")
+                return
+            try:
                 self.loaded_state = RunState.from_dict(data)
                 self.choice = 'load'
                 self.accept()
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to load file:\n{str(e)}")
+                QMessageBox.critical(self, "Error", f"Failed to load run:\n{str(e)}")
 
 
 class MagnitudeEditorDialog(QDialog):
@@ -1419,12 +1479,16 @@ class MagnitudeEditorDialog(QDialog):
         legend.setWordWrap(True)
         layout.addWidget(legend)
 
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        swap_group = self._build_weapon_swap_group()
+        if swap_group:
+            layout.addWidget(swap_group)
+
+        self._scroll = QScrollArea()
+        self._scroll.setWidgetResizable(True)
         self._cont = QWidget()
         self.form = QVBoxLayout(self._cont)
-        scroll.setWidget(self._cont)
-        layout.addWidget(scroll, 1)
+        self._scroll.setWidget(self._cont)
+        layout.addWidget(self._scroll, 1)
         self._populate()
 
         self.results = QTextEdit()
@@ -1437,12 +1501,34 @@ class MagnitudeEditorDialog(QDialog):
         apply_btn = QPushButton("💾 Backup && Apply to Map")
         apply_btn.setStyleSheet("background-color: #5a3a2a; color: white; font-weight: bold; padding: 8px 16px; border-radius: 5px;")
         apply_btn.clicked.connect(self._apply)
+        next_empty_btn = QPushButton("⤓ Next empty entry")
+        next_empty_btn.setToolTip("Jump to the next blank operator field")
+        next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
+        next_empty_btn.clicked.connect(self._jump_to_next_empty)
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(self.reject)
         btns.addWidget(apply_btn)
+        btns.addWidget(next_empty_btn)
         btns.addStretch()
         btns.addWidget(close_btn)
         layout.addLayout(btns)
+
+    def _jump_to_next_empty(self):
+        """Scroll to and focus the next blank operator field (wrapping around). Uses a
+        persistent pointer rather than focusWidget() — clicking the button itself
+        steals focus, so focusWidget() would otherwise always report the button and
+        never advance past the current entry."""
+        order = [le for _, t, le in self.rows if le is not None and not le.isReadOnly()]
+        empties = [(i, le) for i, le in enumerate(order) if not le.text().strip()]
+        if not empties:
+            return
+        start = getattr(self, '_jump_order_idx', -1)
+        after = [(i, le) for i, le in empties if i > start]
+        i, le = after[0] if after else empties[0]     # wrap to the first empty
+        self._jump_order_idx = i
+        self._scroll.ensureWidgetVisible(le, 50, 60)
+        le.setFocus()
+        le.selectAll()
 
     def _clear_layout(self, layout):
         while layout.count():
@@ -1453,9 +1539,53 @@ class MagnitudeEditorDialog(QDialog):
             elif item.layout():
                 self._clear_layout(item.layout())
 
+    def _remove_effect(self, eff):
+        """Delete an effect from the run itself, not just from this patch session.
+
+        `collect_effects` folds every pick of the same effect into one entry, so
+        one removal has to clear every slot in every round that produced it. The
+        run's own copies may still carry a pre-rename name (they were frozen when
+        the card was drawn), hence the EFFECT_RENAMES fallback when matching."""
+        name, weapon, enemy = eff['name'], eff.get('weapon'), eff.get('enemy')
+
+        def matches(mod):
+            if not isinstance(mod, dict):
+                return False
+            if mod.get('weapon') != weapon or mod.get('enemy') != enemy:
+                return False
+            n = mod.get('name')
+            return n == name or EFFECT_RENAMES.get(n) == name
+
+        if QMessageBox.question(
+                self, "Remove effect",
+                f"Remove '{name}' from the run entirely?\n\n"
+                f"It was picked {eff['count']}× and will be cleared from every round.\n"
+                f"The change only becomes permanent when you save the run.",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+
+        removed = 0
+        for rd in self.parent_gui.run_state.rounds or []:
+            for pk in ('player1', 'player2'):
+                slot = rd.get(pk)
+                if isinstance(slot, dict) and matches(slot.get('mod')):
+                    slot['mod'] = None
+                    removed += 1
+            for k in ('enemy1', 'enemy2', 'wildcard', 'boss1', 'boss2'):
+                if matches(rd.get(k)):
+                    rd[k] = None
+                    removed += 1
+
+        self.effects = [e for e in self.effects if e is not eff]
+        self._populate()
+        self.parent_gui.update_history()
+        self.parent_gui._sync_save_button()
+        self.parent_gui.update_status(f"Removed '{name}' from the run ({removed} pick(s)).")
+
     def _populate(self):
         self._clear_layout(self.form)
         self.rows = []
+        self._jump_order_idx = -1   # row order changed; restart the empty-entry cursor
         for grp, effs in self._hp.group_effects(self.effects):
             hdr = QLabel(grp)
             hdr.setStyleSheet("font-weight: bold; font-size: 15px; color: #4CAF50; margin-top: 8px;")
@@ -1467,6 +1597,22 @@ class MagnitudeEditorDialog(QDialog):
     def _effect_box(self, eff):
         box = QGroupBox(f"{eff['name']}   ×{eff['count']}")
         v = QVBoxLayout(box)
+        hdr = QHBoxLayout()
+        hdr.addStretch()
+        rm = QPushButton("✕ Remove")
+        rm.setToolTip("Delete this effect from the run entirely (every round that picked it)")
+        rm.setMaximumWidth(90)
+        rm.setStyleSheet("QPushButton { background-color:#3a2222; color:#e0a0a0; border:1px solid #5a3a3a; "
+                         "border-radius:3px; padding:2px 8px; font-size:11px; } "
+                         "QPushButton:hover { background-color:#5a2a2a; }")
+        rm.clicked.connect(lambda _=False, e=eff: self._remove_effect(e))
+        hdr.addWidget(rm)
+        v.addLayout(hdr)
+        if eff.get('_missing_in_db'):
+            warn = QLabel("⚠ Effect not present in halo.json — using the saved snapshot; it may be outdated.")
+            warn.setStyleSheet("color: #e05a5a; font-size: 12px; font-weight: bold;")
+            warn.setWordWrap(True)
+            v.addWidget(warn)
         if eff.get('desc'):
             d = QLabel(eff['desc'])
             d.setWordWrap(True)
@@ -1660,6 +1806,114 @@ class MagnitudeEditorDialog(QDialog):
         self._srcmap = None
         self._populate()
 
+    def _build_weapon_swap_group(self):
+        """Sliders (one per unique arsenal weapon) for scattering picked weapons into
+        the map's weapon placements; sum capped at 100%. None if no arsenal/parent."""
+        self._swap_sliders = {}
+        self._swap_total_lbl = None
+        rs = getattr(self.parent_gui, 'run_state', None) if self.parent_gui else None
+        if rs is None:
+            return None
+        db = getattr(self.parent_gui, 'db', None)
+        arsenal = []
+        for pl in ('player1', 'player2'):
+            try:
+                for w in rs.weapons_for(pl):
+                    if w and w not in arsenal and not (db and db.is_grenade(w)):
+                        arsenal.append(w)   # grenades are equipment, not swappable weapons
+            except Exception:
+                pass
+        if not arsenal:
+            return None
+        saved = (getattr(rs, 'options', {}) or {}).get('weapon_swap_rates', {})
+        self._swap_spins = {}
+        box = QGroupBox("Replace map weapons with picks (scattered across the level)")
+        box.setStyleSheet(
+            "QGroupBox { color:#e0e0e0; border:1px solid #3a3a3a; border-radius:5px; "
+            "margin-top:8px; padding:8px 6px 6px 6px; } "
+            "QGroupBox::title { subcontrol-origin: margin; left:10px; padding:0 4px; } "
+            "QSlider::groove:horizontal { height:6px; background:#242424; border-radius:3px; } "
+            "QSlider::sub-page:horizontal { background:#2f7a3a; border-radius:3px; } "
+            "QSlider::add-page:horizontal { background:#242424; border-radius:3px; } "
+            "QSlider::handle:horizontal { background:#4CAF50; width:14px; margin:-5px 0; border-radius:7px; } "
+            "QSlider::handle:horizontal:hover { background:#69d16b; } "
+            "QSpinBox { background:#141414; color:#8fe08f; border:1px solid #3a3a3a; "
+            "border-radius:3px; padding:2px 4px; } "
+            "QSpinBox:focus { border:1px solid #4CAF50; }")
+        v = QVBoxLayout(box)
+        for w in arsenal:
+            row = QHBoxLayout()
+            nl = QLabel(w); nl.setMinimumWidth(170); nl.setStyleSheet("color:#e0e0e0;")
+            sl = QSlider(Qt.Horizontal); sl.setRange(0, 100); sl.setValue(int(saved.get(w, 0)))
+            sp = QSpinBox(); sp.setRange(0, 100); sp.setSuffix("%"); sp.setFixedWidth(70)
+            sp.setValue(sl.value()); sp.setToolTip("Type a %, or drag the slider")
+            sl.valueChanged.connect(lambda val, ww=w: self._set_swap(ww, val))
+            sp.valueChanged.connect(lambda val, ww=w: self._set_swap(ww, val))
+            row.addWidget(nl); row.addWidget(sl, 1); row.addWidget(sp)
+            v.addLayout(row)
+            self._swap_sliders[w] = sl
+            self._swap_spins[w] = sp
+        self._swap_total_lbl = QLabel()
+        v.addWidget(self._swap_total_lbl)
+        self._update_swap_total()
+        return box
+
+    def _set_swap(self, weapon, val):
+        """Slider/spin both route here: cap so the total across weapons stays ≤ 100%,
+        then mirror the capped value into both widgets (signals blocked)."""
+        others = sum(s.value() for k, s in self._swap_sliders.items() if k != weapon)
+        val = max(0, min(int(val), 100 - others))
+        for wdg in (self._swap_sliders[weapon], self._swap_spins.get(weapon)):
+            if wdg is not None and wdg.value() != val:
+                wdg.blockSignals(True); wdg.setValue(val); wdg.blockSignals(False)
+        self._update_swap_total()
+
+    def _update_swap_total(self):
+        if self._swap_total_lbl is not None:
+            t = sum(s.value() for s in self._swap_sliders.values())
+            self._swap_total_lbl.setText(f"Total: {t}% of the map's weapon spots (max 100%)")
+            self._swap_total_lbl.setStyleSheet("color:%s; font-size:12px;" % ('#e0803a' if t >= 100 else '#888'))
+
+    def _weapon_swaps_spec(self):
+        """{weap-tag: rate} from the sliders, or None. Also snapshots the rates onto
+        the run so they persist for the session."""
+        db = getattr(self.parent_gui, 'db', None) if self.parent_gui else None
+        if db is None:
+            return None
+        rates, swaps = {}, {}
+        for wname, sl in getattr(self, '_swap_sliders', {}).items():
+            if sl.value() <= 0:
+                continue
+            rates[wname] = sl.value()
+            tag = db.weap_tag_for(wname, self.game)
+            if tag:
+                swaps[tag] = swaps.get(tag, 0.0) + sl.value() / 100.0
+        rs = getattr(self.parent_gui, 'run_state', None)
+        if rs is not None and rates:
+            opts = getattr(rs, 'options', None)
+            if isinstance(opts, dict):
+                opts['weapon_swap_rates'] = rates
+        return swaps or None
+
+    def _starting_weapons_spec(self):
+        """Starting-weapons spec from the run's picks (Primary = P1's first weapon,
+        Secondary = P2's), or None if the option is off / no picks / no db."""
+        if not CONFIG.get('set_starting_weapons') or not self.parent_gui:
+            return None
+        rs = getattr(self.parent_gui, 'run_state', None)
+        db = getattr(self.parent_gui, 'db', None)
+        if rs is None or db is None:
+            return None
+        p1 = getattr(rs, 'player1_weapon', None)
+        p2 = getattr(rs, 'player2_weapon', None)
+        # grenades are equipment, not a valid Primary/Secondary starting weapon
+        prim = db.weap_tag_for(p1, self.game) if (p1 and not db.is_grenade(p1)) else None
+        sec = db.weap_tag_for(p2, self.game) if (p2 and not db.is_grenade(p2)) else None
+        if not prim and not sec:
+            return None
+        return {'primary': prim, 'secondary': sec,
+                'profiles': CONFIG.get('starting_weapon_profiles', [0, 1])}
+
     def _apply(self):
         map_path = self.map_edit.text().strip()
         if not Path(map_path).is_file():
@@ -1677,8 +1931,7 @@ class MagnitudeEditorDialog(QDialog):
             plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
                                       'init_defaults': eff.get('init_defaults')})
             plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
-                                         'difficulty': t.get('difficulty'),
-                                         'diff_suffix': t.get('diff_suffix'),
+                                         **_diff_flavor(t),
                                          'index': t.get('index', 0), 'op_str': txt,
                                          'negate': t.get('negate'),
                                          'nth': t.get('nth', 0) or 0})
@@ -1702,22 +1955,29 @@ class MagnitudeEditorDialog(QDialog):
             if key in plan_map:
                 plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                              'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
-                                             'difficulty': t.get('difficulty'),
-                                             'diff_suffix': t.get('diff_suffix'), 'set': t['set']})
+                                             **_diff_flavor(t), 'set': t['set']})
         plan = list(plan_map.values())
-        if not plan:
-            QMessageBox.information(self, "Nothing to apply", "Enter at least one operator first.")
+        starting = self._starting_weapons_spec()
+        weapon_swaps = self._weapon_swaps_spec()
+        if not plan and not starting and not weapon_swaps:
+            QMessageBox.information(self, "Nothing to apply",
+                                   "Enter at least one operator, or set starting / map weapons.")
             return
 
+        extras = ([] + (["set starting weapons"] if starting else [])
+                  + (["scatter map weapons"] if weapon_swaps else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
-            f"Write {sum(len(i['ops']) for i in plan)} edit(s) into:\n{map_path}\n\n"
-            f"A one-time backup (.bak) of the original will be made first.")
+            f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
+            + (" + " + " + ".join(extras) if extras else "")
+            + f" into:\n{map_path}\n\nA one-time backup (.bak) of the original will be made first.")
         if confirm != QMessageBox.Yes:
             return
 
         try:
-            results, backup = self._hp.apply_run(map_path, plan, self.registry, self.target_difficulty, game=self.game)
+            results, backup = self._hp.apply_run(map_path, plan, self.registry,
+                                                 self.target_difficulty, game=self.game,
+                                                 starting=starting, weapon_swaps=weapon_swaps)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -1732,14 +1992,19 @@ class MagnitudeEditorDialog(QDialog):
         if backup:
             lines.append(f"Backup: {backup}")
         lines.append("")
+        def _fmt(x):
+            return round(x, 4) if isinstance(x, (int, float)) else x
         for r in ok:
             hint = ("   (input negated for H2)" if r.get('negated')
                     else "   (auto-computed)" if r.get('derived') else "")
             if r.get('inherited_from'):
                 hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
-            lines.append(f"  OK  {r['effect']}: {r['field']}  {round(r['old'], 4)} -> {round(r['new'], 4)}{hint}")
+            tag = f"   [{r['tag']}]" if r.get('tag') else ""
+            lines.append(f"  OK  {r['effect']}: {r.get('field', '')}  "
+                         f"{_fmt(r.get('old'))} -> {_fmt(r.get('new'))}{tag}{hint}")
         for r in bad:
-            lines.append(f"  --  {r['effect']}: {r.get('field')}  ({r['reason']})")
+            tag = f"   [{r['tag']}]" if r.get('tag') else ""
+            lines.append(f"  --  {r['effect']}: {r.get('field')}  ({r['reason']}){tag}")
         self.results.setPlainText("\n".join(lines))
 
     def _write_patch_file(self, map_path, plan, results, backup):
@@ -1842,6 +2107,12 @@ class OptionsDialog(QDialog):
         self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
         self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
         form.addRow("Weapon-choice negatives:", self.negatives_cb)
+
+        self.starting_weapons_cb = QCheckBox("Set starting weapons from picks (scenario profiles 0 & 1)")
+        self.starting_weapons_cb.setChecked(bool(CONFIG.get('set_starting_weapons')))
+        self.starting_weapons_cb.setToolTip("On patch: Primary = P1's first weapon, Secondary = P2's first weapon, "
+                                            "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
+        form.addRow("Starting weapons:", self.starting_weapons_cb)
         layout.addWidget(func)
 
         # ---- Appearance section ----
@@ -1890,6 +2161,7 @@ class OptionsDialog(QDialog):
             'include_grenades': self.grenades_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
+            'set_starting_weapons': self.starting_weapons_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
@@ -2026,6 +2298,8 @@ class HaloGUI(QMainWindow):
         self.pair_cards = []
 
     def display_weapon_selection(self, choices, is_player2=False, mode='initial'):
+        self._last_weapon_display = (choices, is_player2, mode)  # re-render on options change
+        self._last_display = None                                 # weapon screen, not pairs
         self.pairs_container.setUpdatesEnabled(False)
         try:
             self._clear_pairs_layout()
@@ -2416,6 +2690,19 @@ class HaloGUI(QMainWindow):
         self.options_btn.clicked.connect(self.on_options)
         button_layout.addWidget(self.options_btn)
         button_layout.addStretch()
+
+        # Debug: search halo.json's mods and inject one into the run (far right).
+        self.add_mod_btn = QPushButton("🔍 ADD MOD")
+        self.add_mod_btn.setToolTip("Debug: search all effects in halo.json and add one to this run")
+        self.add_mod_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2a2a3a; color: #a0a0d0; font-weight: bold;
+                font-size: 14px; padding: 10px 16px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #3a3a5a; }
+        """)
+        self.add_mod_btn.clicked.connect(self.on_add_mod_debug)
+        button_layout.addWidget(self.add_mod_btn)
         main_layout.addLayout(button_layout)
 
         self.pairs_scroll = QScrollArea()
@@ -2600,6 +2887,7 @@ class HaloGUI(QMainWindow):
 
     def display_pairs(self, pairs, show_player1=True, show_player2=True):
         self._last_display = (pairs, show_player1, show_player2)  # for re-render on options change
+        self._last_weapon_display = None                          # pairs screen, not weapon select
         self.pairs_container.setUpdatesEnabled(False)
         try:
             self._clear_pairs_layout()
@@ -2795,6 +3083,69 @@ class HaloGUI(QMainWindow):
         self.status_label.setText(msg)
 
     # ---- Save ----
+    def on_add_mod_debug(self):
+        """Debug helper: search every effect in halo.json and inject the picked one
+        into the run as its own round, so it shows up in the patcher."""
+        entries = []   # (label, mod)
+        for weapon, mods in self.db.weapon_mods.items():
+            for mod in mods:
+                entries.append((f"[Weapon] {weapon}: {mod['name']}", mod))
+        for enemy, mods in self.db.enemy_mods.items():
+            for mod in mods:
+                entries.append((f"[Enemy] {enemy}: {mod['name']}", mod))
+        for pool, kind in ((self.db.positive_pool, 'Player+'), (self.db.negative_pool, 'Enemy-'),
+                           (self.db.wildcard_pool, 'Wildcard')):
+            for mod in pool:
+                entries.append((f"[{kind}] {mod['name']}", mod))
+
+        dlg = QDialog(self)
+        dlg.setWindowTitle("🔍 Add mod (debug)")
+        dlg.setModal(True)
+        dlg.setMinimumSize(520, 480)
+        dlg.setStyleSheet("QDialog { background-color:#141414; } QLabel { color:#e0e0e0; } "
+                          "QLineEdit { background-color:#1a1a1a; color:#e0e0e0; border:1px solid #3a3a3a; "
+                          "padding:5px; border-radius:3px; } "
+                          "QListWidget { background-color:#1a1a1a; color:#e0e0e0; border:1px solid #3a3a3a; }")
+        v = QVBoxLayout(dlg)
+        v.addWidget(QLabel("Type to filter; double-click (or OK) to add the effect to this run:"))
+        search = QLineEdit()
+        search.setPlaceholderText("e.g. jackal special, pistol magazine…")
+        lst = QListWidget()
+        for label, _ in entries:
+            lst.addItem(label)
+
+        def refilter(text):
+            words = text.lower().split()
+            for i, (label, _) in enumerate(entries):
+                lst.item(i).setHidden(bool(words) and not all(w in label.lower() for w in words))
+        search.textChanged.connect(refilter)
+
+        btns = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        btns.accepted.connect(dlg.accept)
+        btns.rejected.connect(dlg.reject)
+        lst.itemDoubleClicked.connect(lambda _: dlg.accept())
+        v.addWidget(search)
+        v.addWidget(lst, 1)
+        v.addWidget(btns)
+        search.setFocus()
+        if dlg.exec() != QDialog.Accepted or lst.currentRow() < 0 or lst.currentItem().isHidden():
+            return
+        label, mod = entries[lst.currentRow()]
+        mod = copy.deepcopy(mod)
+        round_data = {'player1': {'weapon': None, 'mod': None, 'gained_weapon': None},
+                      'player2': {'weapon': None, 'mod': None, 'gained_weapon': None},
+                      'enemy1': None, 'enemy2': None, 'wildcard': None,
+                      'boss1': None, 'boss2': None, 'debug_added': True}
+        if mod.get('weapon') or label.startswith('[Player+'):
+            round_data['player1'] = {'weapon': mod.get('weapon'), 'mod': mod, 'gained_weapon': None}
+        elif mod.get('enemy') or label.startswith('[Enemy'):
+            round_data['enemy1'] = mod
+        else:
+            round_data['wildcard'] = mod
+        self.run_state.rounds.append(round_data)
+        self.update_history()
+        self.update_status(f"(debug) Added to run: {label}")
+
     def on_options(self):
         """Open the Options dialog. On accept, the new values are written to the
         live CONFIG, persisted as global defaults (settings.json), and snapshotted
@@ -2805,10 +3156,12 @@ class HaloGUI(QMainWindow):
                 CONFIG[k] = v
             save_settings()
             self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
-            # Re-render the current pairs so card size changes apply immediately.
-            last = getattr(self, '_last_display', None)
-            if last and self.pair_cards:
-                self.display_pairs(*last)
+            # Re-render the CURRENT screen (weapon selection or pairs) so appearance
+            # options (hide tags/fields, card width) apply immediately.
+            if getattr(self, '_last_weapon_display', None) and self.pair_cards:
+                self.display_weapon_selection(*self._last_weapon_display)
+            elif getattr(self, '_last_display', None) and self.pair_cards:
+                self.display_pairs(*self._last_display)
             self.update_status("Options updated.")
 
     def on_save(self):
@@ -2820,12 +3173,13 @@ class HaloGUI(QMainWindow):
         selections_dir.mkdir(exist_ok=True)
 
         save_data = self.run_state.to_dict()
+        save_data['format'] = RUN_FILE_MARKER   # tag it so loading can validate the file
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        default_name = f"selection_{timestamp}.json"
+        default_name = f"selection_{timestamp}.run"
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save Selection",
+            self, "Save Run",
             str(selections_dir / default_name),
-            "JSON Files (*.json)"
+            "Halo Run (*.run)"
         )
         if file_path:
             with open(file_path, 'w', encoding='utf-8') as f:
@@ -2873,10 +3227,15 @@ class HaloGUI(QMainWindow):
             if renamed_to:
                 fresh = find_by_name(renamed_to)
         if fresh:
+            mod.pop('_missing_in_db', None)
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'harder_when', 'init_defaults'):
+                        'harder_when', 'init_defaults', 'games'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
+        else:
+            # The effect no longer exists in halo.json (removed/renamed away). Keep the
+            # frozen snapshot but flag it so the patcher can warn.
+            mod['_missing_in_db'] = True
 
     def on_patch_map(self):
         try:
@@ -2902,6 +3261,11 @@ class HaloGUI(QMainWindow):
                 if not isinstance(mod, dict):
                     continue
                 self._refresh_mod_definition(mod)
+                if not self.db._game_ok(mod, game):
+                    # A mod-level game filter (e.g. "game": "Halo 1") now excludes the
+                    # WHOLE effect from patching the other game, not just its targets.
+                    mod['_game_excluded'] = True
+                    continue
                 for key in ('tag', 'field', 'harder_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)

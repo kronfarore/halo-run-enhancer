@@ -6,7 +6,6 @@
 			"ignore": "Whether to ignore this effect in the tools pool. yes/no. defaults to no"
 		}
 	},
-	
 	"Missions": {
 		"Halo 1": {
 			"a10": {
@@ -111,7 +110,7 @@
 			"05b": {
 				"name": "Regret",
 				"enemies": ["Bugger", "Elite", "Grunt", "Hunter", "Jackal"],
-				"boss": "Propeht Regret",
+				"boss": "Prophet Regret",
 				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"]
 			},
@@ -156,18 +155,13 @@
 			}
 		}
 	},
-	
 	"Player Modifiers": {
 		"General Modifiers": {
 			"Starting Health Modifier": {
 				"desc": "Player starting health modifier (scenario)",
 				"tag": "scnr levels\\*",
 				"targets": [
-					{
-						"field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" },
-						"block": "Player Starting Profile",
-						"negate": { "Halo 1": false, "Halo 2": true }
-					}
+					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
 				],
 				"special": true
 			},
@@ -175,18 +169,16 @@
 				"desc": "Player starting shield modifier (scenario)",
 				"tag": "scnr levels\\*",
 				"targets": [
-					{
-						"field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" },
-						"block": "Player Starting Profile",
-						"negate": { "Halo 1": false, "Halo 2": true }
-					}
+					{ "field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" }, "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
 				],
 				"special": true
 			},
 			"Enemy damage": {
 				"desc": "Reducing global enemy damage is something like increasing your health!",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Enemy Damage", "block": "Difficulty", "difficulty": true } ],
+				"targets": [
+					{ "field": "Enemy Damage", "block": "Difficulty", "difficulty": true }
+				],
 				"special": true
 			},
 			"Magnetism": {
@@ -200,7 +192,9 @@
 			"Walking Speed": {
 				"desc": "Increases Walking Speed?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Walking Speed", "block": "Player Information" } ]
+				"targets": [
+					{ "field": "Walking Speed", "block": "Player Information" }
+				]
 			},
 			"Run Speed": {
 				"desc": "Run Forward, Run Backwards, Run Sideways, Run Acceleration",
@@ -225,7 +219,9 @@
 			"Airborne Acceleration": {
 				"desc": "Acceleration while off ground?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Airborne Acceleration", "block": "Player Information" } ]
+				"targets": [
+					{ "field": "Airborne Acceleration", "block": "Player Information" }
+				]
 			},
 			"Stun Penalty": {
 				"desc": "Stun Movement Penalty, Stun Turning Penalty, Stun Jumping Penalty",
@@ -251,36 +247,19 @@
 					{ "field": "Harmful Falling Distance", "block": "Falling Damage" },
 					{ "field": "Harmful Falling Distance Max", "block": "Falling Damage" }
 				]
-			},
-			"Melee Damage": {
-				"desc": "Melee Damage for every weapon other than the Energy Blade, but including the used up Energy Blade",
-				"tag": {
-					"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
-				},
-				"targets": [
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
-				],
-				"game": "Halo 2"
 			}
 		},
-		
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": "proj weapons\\assault rifle\\bullet",
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -301,14 +280,6 @@
 						{ "field": "Damage Upper Bound Max" }
 					],
 					"game": "Halo 1"
-				},
-				"Effective Range?": {
-					"desc": "Air Damage Range",
-					"tag": "proj weapons\\assault rifle\\bullet",
-					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
-					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -392,15 +363,11 @@
 						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -416,14 +383,16 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\pistol\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\pistol\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
+					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -541,9 +510,11 @@
 						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -565,15 +536,9 @@
 						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" }
 					]
 				},
 				"Charged Damage": {
@@ -589,24 +554,15 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\plasma pistol\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma pistol\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
-				},
-				"Effective Range?": {
-					"desc": "Air Damage Range",
-					"tag": {
-						"Halo 1": "proj weapons\\plasma pistol\\bolt",
-						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
-					},
-					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Heat Recovery": {
@@ -775,15 +731,11 @@
 						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -799,24 +751,15 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\plasma rifle\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\plasma rifle\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
-				},
-				"Effective Range?": {
-					"desc": "Air Damage Range",
-					"tag": {
-						"Halo 1": "proj weapons\\plasma rifle\\bolt",
-						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
-					},
-					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Heat Recovery": {
@@ -948,15 +891,11 @@
 						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Needle Timer": {
@@ -1007,14 +946,16 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\needler\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\needler\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
+					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -1107,15 +1048,11 @@
 						"Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -1131,14 +1068,16 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\sniper rifle\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\sniper rifle\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
+					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -1234,15 +1173,11 @@
 						"Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Radius": {
@@ -1255,12 +1190,12 @@
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
 					]
-				},			
+				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1269,14 +1204,16 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\rocket launcher\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 this is smash_melee, shared with the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\rocket launcher\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
+					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -1360,15 +1297,11 @@
 						"Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
 					},
 					"targets": [
-						{
-							"field": "Maximum Range"
-						},
-						{
-							"field": "Initial Velocity"
-						},
-						{
-							"field": "Final Velocity"
-						}
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					]
 				},
 				"Bullet Damage": {
@@ -1384,14 +1317,16 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\shotgun\\melee",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 1": "jpt! weapons\\shotgun\\melee",
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					],
-					"game": "Halo 1"
+					]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -1488,15 +1423,7 @@
 					"targets": [
 						{ "field": "Maximum Range" },
 						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" }
-					]
-				},
-				"Effective Range?": {
-					"desc": "Range where full damage is done?",
-					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"
-					},
-					"targets": [
+						{ "field": "Final Velocity" },
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					]
@@ -1598,6 +1525,18 @@
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
 					],
 					"dual_only": true
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
 				}
 			},
 			"Brute Plasma Rifle": {
@@ -1607,17 +1546,9 @@
 						"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
+						{ "field": "Maximum Range" },
 						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" }
-					]
-				},
-				"Effective Range?": {
-					"desc": "Range where full damage is done?",
-					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"
-					},
-					"targets": [
+						{ "field": "Final Velocity" },
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					]
@@ -1727,6 +1658,18 @@
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
 					],
 					"dual_only": true
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
 				}
 			},
 			"Battle Rifle": {
@@ -1738,7 +1681,9 @@
 					"targets": [
 						{ "field": "Maximum Range" },
 						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" }
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
 					],
 					"game": "Halo 2"
 				},
@@ -1834,11 +1779,516 @@
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
 					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				}
+			},
+			"Brute Shot": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"
+					},
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Radius": {
+					"desc": "Min to Max Radius of the grenade explosion",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
+					},
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct grenade impact and the explosion.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, which the Energy Blade's Slice Damage shares - changing one changes the other.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range.",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					],
+					"game": "Halo 2"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"game": "Halo 2"
+				},
+				"More Shooting": {
+					"desc": "How many shots leave the barrel per trigger pull (this weapon's Rounds Per Second is 0).",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon can fire again",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Error Angle": {
+					"desc": "Spread of the shot, Minimum Error and Maximum Error",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				}
+			},
+			"Beam Rifle": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"
+					},
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Heat Recovery": {
+					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Loss Per Second" },
+						{ "field": "Overheated Heat Loss Per Second" }
+					],
+					"game": "Halo 2"
+				},
+				"Misfire": {
+					"desc": "When Misfiring starts and how likely it is",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Age Misfire Start" },
+						{ "field": "Age Misfire Chance" }
+					],
+					"game": "Halo 2"
+				},
+				"Per Round": {
+					"desc": "Heat per Round, Age (battery drain) per Round",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Barrels" },
+						{ "field": "Age Generated Per Round", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"More Shooting": {
+					"desc": "Shots fired per trigger pull (this weapon's Rounds Per Second is 0)",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon can fire again",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Error Angle": {
+					"desc": "Spread of the shot, Minimum Error and Maximum Error",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				}
+			},
+			"Flak Cannon": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"
+					},
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Radius": {
+					"desc": "Min to Max Radius of the flak explosion",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"
+					},
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					],
+					"game": "Halo 2"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"game": "Halo 2"
+				},
+				"More Shooting": {
+					"desc": "Shots fired per trigger pull (0 by default - set it rather than scale it)",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon can fire again - this, not Rounds Per Second, paces the Flak Cannon",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Error Angle": {
+					"desc": "Spread of the shot, Minimum Error and Maximum Error",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				}
+			},
+			"Sentinel Beam": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": {
+						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Beam Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 the player's Sentinel Beam is the EXACT SAME weapon the Sentinel enemy fires - this is the same damage tag, so buffing it buffs every Sentinel shooting at you. That is why the Sentinel enemy's own 'Beam Damage' mod is Halo 1 only.",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Heat Recovery": {
+					"desc": "Heat Recovery Threshold, Heat Loss Per Second",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Loss Per Second" },
+						{ "field": "Overheated Heat Loss Per Second" }
+					],
+					"game": "Halo 2"
+				},
+				"Per Round": {
+					"desc": "Heat per Round, Age (battery drain) per Round",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Barrels" },
+						{ "field": "Age Generated Per Round", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"More Shooting": {
+					"desc": "The number of firing effects created per second",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Error Angle": {
+					"desc": "Spread of the shot, Minimum Error and Maximum Error",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+					},
+					"targets": [
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
 				}
 			},
 			"Energy Blade": {
 				"Slice Damage": {
-					"desc": "Normal Swing damage",
+					"desc": "Normal Swing damage. Uses slice_melee, which the Brute Shot's Melee Damage shares - changing one changes the other.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
@@ -1935,88 +2385,119 @@
 			}
 		}
 	},
-	
 	"Enemy modifiers": {
 		"General modifiers": {
 			"Enemy damage": {
 				"desc": "How much damage the enemy deals",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Enemy Damage", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Enemy Damage", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Enemy Vitality": {
 				"desc": "How much health the enemy has",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Enemy Vitality", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Enemy Vitality", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Enemy Shield": {
 				"desc": "How strong enemy shields are",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Enemy Shield", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Enemy Shield", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Enemy Recharge": {
 				"desc": "How fast enemy shields recharge",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Enemy Recharge", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Enemy Recharge", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Infection Forms": {
 				"desc": "Toughness of Infection forms",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Infection Forms", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Infection Forms", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Rate of Fire": {
 				"desc": "Enemy rate of fire scale",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Projectile Error": {
 				"desc": "Error of enemy fire",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Projectile Error", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Projectile Error", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Burst Error": {
 				"desc": "Reduces intra-burst shot distance, whatever that is",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Burst Error", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Burst Error", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"New Target Delay": {
 				"desc": "Maybe how quickly they pick a new target?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "New Target Delay", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "New Target Delay", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Burst Seperation": {
 				"desc": "Reduces the delay time between bursts, whatever that is",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Burst Separation", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Burst Separation", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Target Tracking": {
 				"desc": "Increase additional target tracking, I guess?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Target Tracking", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Target Tracking", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Target Leading": {
 				"desc": "Increase target leading fraction, I guess?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Target Leading", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Target Leading", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Overcharge Chance": {
 				"desc": "Overcharge chance for plasma pistol?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Overcharge Chance", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Overcharge Chance", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Special Fire Delay": {
 				"desc": "Delay between Special Fire Shots (Overcharge, Banshee Bombs)",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Special Fire Delay", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Special Fire Delay", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Guidance Vs Player": {
 				"desc": "Guidance Velocity scale, probably how much they track the player",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Melee Delay Scale": {
 				"desc": "Non-berserk melee delay time",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Grenade Scales": {
 				"desc": "Grenade Chance, Grenade Timer",
@@ -2029,17 +2510,23 @@
 			"Major Upgrades (Normal)": {
 				"desc": "Fraction of enemy upgrades, from normal pool?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Major Upgrade (Normal)", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Major Upgrade (Normal)", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Major Upgrades (Few)": {
 				"desc": "Fraction of enemy upgrades, from few pool?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Major Upgrade (Few)", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Major Upgrade (Few)", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Major Upgrades (Many)": {
 				"desc": "Fraction of enemy upgrades, from few pool?",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true } ]
+				"targets": [
+					{ "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true }
+				]
 			},
 			"Player Stun Time": {
 				"desc": "Stun Time after Fall Damage?",
@@ -2052,11 +2539,12 @@
 			"Player Vehicle Ram Chance": {
 				"desc": "Chance of deciding to ram the player",
 				"tag": "matg globals\\globals",
-				"targets": [ { "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true } ],
+				"targets": [
+					{ "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true }
+				],
 				"game": "Halo 2"
 			}
 		},
-		
 		"Specific Enemy modifier": {
 			"Elite": {
 				"Vision": {
@@ -2094,7 +2582,7 @@
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": {
 						"Halo 1": [
@@ -2111,7 +2599,7 @@
 					"desc": "Chance of running a dive animation from avoiding a grenade",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
@@ -2121,7 +2609,7 @@
 					"desc": "Cover-seeking time and shield thresholds (Halo 2 scales all 3 Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": {
 						"Halo 1": [
@@ -2143,10 +2631,10 @@
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } ,"index": "all"},
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all" },
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
@@ -2168,7 +2656,7 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -2178,7 +2666,7 @@
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -2194,7 +2682,7 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -2216,20 +2704,22 @@
 					"game": "Halo 1",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
-"init_defaults": {
+					"init_defaults": {
 						"Halo 1": {
 							"tag": "actv characters\\elite\\*",
 							"source": "actv characters\\grunt\\grunt minor plasma pistol",
 							"only_if_zero": "Grenade Stimulus",
-							"copy": [ "Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance" ],
-							"set": { "Grenade Stimulus": "Visible Target" }
+							"copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"],
+							"set": {
+								"Grenade Stimulus": "Visible Target"
+							}
 						}
 					},
-										"targets": [
+					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -2240,30 +2730,32 @@
 					"game": "Halo 1",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
-"init_defaults": {
+					"init_defaults": {
 						"Halo 1": {
 							"tag": "actv characters\\elite\\*",
 							"source": "actv characters\\grunt\\grunt minor plasma pistol",
 							"only_if_zero": "Grenade Stimulus",
-							"copy": [ "Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance" ],
-							"set": { "Grenade Stimulus": "Visible Target" }
+							"copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"],
+							"set": {
+								"Grenade Stimulus": "Visible Target"
+							}
 						}
 					},
-										"targets": [
+					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{ "field": "Grenade Throw Delay", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
+						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
 					]
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
 						{ "field": "Target Tracking" }
@@ -2284,10 +2776,12 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": {
-						"Halo 1": [ { "field": "Body Vitality" } ],
+						"Halo 1": [
+							{ "field": "Body Vitality" }
+						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						]
@@ -2297,10 +2791,12 @@
 					"desc": "Shield Capacity",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": {
-						"Halo 1": [ { "field": "Shield Vitality" } ],
+						"Halo 1": [
+							{ "field": "Shield Vitality" }
+						],
 						"Halo 2": [
 							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						]
@@ -2321,7 +2817,7 @@
 				"Upgrade Chance": {
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
@@ -2333,80 +2829,59 @@
 				"Shield Recharge": {
 					"desc": "Delay before Shield begins to recharge and the time it takes",
 					"tag": {
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
-						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties"},
-						{ "field": "Shield Recharge Time", "block": "Vitality Properties"}
+						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
+						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
 					"game": "Halo 2"
 				}
 			},
 			"Hunter": {
-				"Fuel Rod Charging Time": {
+				"Hunter Fuel Rod Charging Time": {
 					"desc": "Fuel rod charge time",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
-						{
-							"field": "Charging Time",
-							"block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" }
-						}
+						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
 					]
 				},
-				"Fuel Rod Projectiles Per Shot": {
+				"Hunter Fuel Rod Projectiles Per Shot": {
 					"desc": "Fuel rod projectiles per shot",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
-						{
-							"field": "Projectiles Per Shot",
-							"block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }
-						}
+						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					]
 				},
-				"Fuel Rod Spew Time": {
-					"desc": "Fuel rod spew (continuous fire) time. Untested.",
+				"Hunter Fuel Rod Rounds per Second": {
+					"desc": "Higher fire rate for Hunter weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
-						{
-							"field": "Spew Time",
-							"block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" }
-						}
+						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Shots Per Fire", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2"] },
+						{ "field": "Shots Per Fire Max", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2"] }
 					]
 				},
-				"Fuel Rod Radius": {
-					"desc": "Fuel rod explosion radius",
-					"tag": "jpt! weapons\\fuel rod gun\\explosion",
-					"targets": [
-						{
-							"field": "Radius"
-						},
-						{
-							"field": "Radius Max"
-						}
-					]
-				},
-				"Fuel Rod Damage": {
+				"Hunter Fuel Rod Damage": {
 					"desc": "Fuel rod explosion damage",
-					"tag": "jpt! weapons\\fuel rod gun\\explosion",
+					"tag": {
+						"Halo 1": "jpt! weapons\\fuel rod gun\\explosion",
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component"
+					},
 					"targets": [
-						{
-							"field": "Damage Lower Bound"
-						},
-						{
-							"field": "Damage Upper Bound"
-						},
-						{
-							"field": "Damage Upper Bound Max"
-						}
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
 					]
 				},
 				"Vision": {
@@ -2440,21 +2915,6 @@
 						{ "field": "Non-Combat Perception Time" }
 					]
 				},
-				"Melee Behavior": {
-					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
-					"tag": {
-						"Halo 1": "actr characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
-					},
-					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"] },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
-					]
-				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
 					"tag": "actr characters\\hunter\\*",
@@ -2465,8 +2925,8 @@
 					],
 					"game": "Halo 1"
 				},
-				"Maximum Firing Distance": {
-					"desc": "Increases range in witch they can use their weapon",
+				"Maximum Firing Distance Hunter Fuel Rod": {
+					"desc": "Increases range in witch they can use their weapon, as well as their effective weapon range",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
@@ -2475,21 +2935,19 @@
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
 					]
 				},
-				"Rate of Fire": {
-					"desc": "Increases enemy Rate of Fire (shots per second).",
+				"Projectile Range Hunter Fuel Rod": {
+					"desc": "Increases the maximum range, that the projectile can fly and it's speed",
 					"tag": {
-						"Halo 1": "actv characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 1": "proj weapons\\fuel rod gun\\fuel rod",
+						"Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component"
 					},
-					"harder_when": "increased",
-					"targets": {
-						"Halo 1": [
-							{ "field": "Rate Of Fire" }
-						],
-						"Halo 2": [
-							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
-						]
-					}
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Maximum Range" }
+					]
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
@@ -2518,9 +2976,14 @@
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
-					"targets": [
-						{ "field": "Target Tracking" }
-					]
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Tracking" }
+						],
+						"Halo 2": [
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						]
+					}
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
@@ -2539,17 +3002,34 @@
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": {
-						"Halo 1": [ { "field": "Body Vitality" } ],
+						"Halo 1": [
+							{ "field": "Body Vitality" }
+						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						]
 					}
 				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*",
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
+					"targets": [
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all" },
+						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"] },
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
+					]
+				},
 				"Melee Damage": {
 					"desc": "Melee Damage from Hunter",
 					"tag": {
-						"Halo 1": "jpt! characters\\hunter\\hunter melee",
-						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash"
+						"Halo 1": "jpt! characters\\hunter\\melee",
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2557,15 +3037,15 @@
 						{ "field": "Damage Upper Bound Max" }
 					]
 				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
+				"Stun Behavior": {
+					"desc": "Change the Stun threshold and the stun duration",
 					"tag": {
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
+						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
+						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
 					],
 					"game": "Halo 2"
 				}
@@ -2606,7 +3086,7 @@
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": {
 						"Halo 1": [
@@ -2623,28 +3103,17 @@
 					"desc": "Chance of running a dive animation from avoiding a grenade",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
-						]
-				},
-				"Panic": {
-					"desc": "Various mechanics that trigger panic",
-					"tag": {
-						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
-					},
-					"targets": [
-						{ "field": "Friend Killed Panic Chance" },
-						{ "field": "Leader Killed Panic Chance" }
 					]
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time; vitality threshold to trigger cover (Halo 2 scales all 3 Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": {
 						"Halo 1": [
@@ -2672,7 +3141,7 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -2682,7 +3151,7 @@
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -2698,7 +3167,7 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -2719,7 +3188,7 @@
 					"desc": "Overcharge chance, delay, behaviour",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*plasma pistol",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
@@ -2732,11 +3201,11 @@
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -2746,14 +3215,14 @@
 					"desc": "Behavior that influences the chance and timing for grenades",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{ "field": "Grenade Throw Delay", "block": {"Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
+						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
 					]
 				},
 				"Weapon Damage Modifier": {
@@ -2770,7 +3239,7 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": {
 						"Halo 1": [
@@ -2784,7 +3253,7 @@
 				"Upgrade Chance": {
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
@@ -2796,14 +3265,32 @@
 				"Retreat": {
 					"desc": "Cowering time and the chance to flee when a leader or nearby peers die",
 					"tag": {
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Friend Killed Panic Chance" },
+							{ "field": "Leader Killed Panic Chance" }
+						],
+						"Halo 2": [
+							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
+							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
+							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+						]
+					}
+				},
+				"Stun Behavior": {
+					"desc": "Change the Stun threshold and the stun duration",
+					"tag": {
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"targets": [
-						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
+						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
+						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
 					],
 					"game": "Halo 2"
 				}
@@ -2861,13 +3348,12 @@
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
-					"tag": {
-						"Halo 1": "actr characters\\jackal\\*"
-					},
+					"tag": "actr characters\\jackal\\*",
 					"targets": [
 						{ "field": "Friend Killed Panic Chance" },
 						{ "field": "Leader Killed Panic Chance" }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and shield thresholds",
@@ -2992,6 +3478,17 @@
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+					],
+					"game": "Halo 2"
+				},
+				"Shield Recharge": {
+					"desc": "Delay before Shield begins to recharge and the time it takes",
+					"tag": {
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": [
+						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
+						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
 					"game": "Halo 2"
 				}
@@ -3171,6 +3668,18 @@
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+					],
+					"game": "Halo 2"
+				},
+				"Stun Behavior": {
+					"desc": "Change the Stun threshold and the stun duration",
+					"tag": {
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": [
+						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
+						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
+						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
 					],
 					"game": "Halo 2"
 				}
@@ -3510,19 +4019,20 @@
 				},
 				"Beam Damage": {
 					"desc": "Beam Damage",
-					"tag": {
-						"Halo 1": "jpt! characters\\sentinel\\beam",
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam"
-					},
+					"tag": "jpt! characters\\sentinel\\beam",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Explosion Radius": {
 					"desc": "Explosion on death?",
-					"tag": "jpt! characters\\sentinel\\explosion",
+					"tag": {
+						"Halo 1": "jpt! characters\\sentinel\\explosion",
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
@@ -3530,96 +4040,137 @@
 				},
 				"Explosion Damage": {
 					"desc": "Explosion on death? Lower Bound, Upper Bound",
-					"tag": "jpt! characters\\sentinel\\explosion",
+					"tag": {
+						"Halo 1": "jpt! characters\\sentinel\\explosion",
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
+				}
+			},
+			"Bugger": {
+				"Body Vitality": {
+					"desc": "Health",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+					]
 				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
+				"Cover Chance": {
+					"desc": "Chance of seeking cover",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and vitality threshold",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of diving to avoid a grenade",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
+					]
+				},
+				"Melee Damage": {
+					"desc": "Melee Damage from Bugger",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				}
+			},
+			"Heretic Leader": {
+				"Body Vitality": {
+					"desc": "Health of the Heretic Leader himself (his escorts are unaffected)",
 					"tag": {
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
 					},
 					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+						{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+					],
+					"game": "Halo 2"
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity of the Heretic Leader himself (his escorts are unaffected)",
+					"tag": {
+						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
+					},
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+					],
+					"game": "Halo 2"
+				},
+				"Shield Recharge": {
+					"desc": "Delay before his Shield begins to recharge and the time it takes",
+					"tag": {
+						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
+					},
+					"targets": [
+						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
+						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
+					],
+					"game": "Halo 2"
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance he dives away from a grenade",
+					"tag": {
+						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
+					},
+					"targets": [
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
 					],
 					"game": "Halo 2"
 				}
-			},
-				"Bugger": {
-					"Body Vitality": {
-						"desc": "Health",
-						"game": "Halo 2",
-						"tag": "char objects\\characters\\bugger\\ai\\bugger*",
-						"targets": [
-							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
-						]
-					},
-					"Cover Chance": {
-						"desc": "Chance of seeking cover",
-						"game": "Halo 2",
-						"tag": "char objects\\characters\\bugger\\ai\\bugger*",
-						"targets": [
-							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
-						]
-					},
-					"Cover Properties": {
-						"desc": "Cover-seeking time and vitality threshold",
-						"game": "Halo 2",
-						"tag": "char objects\\characters\\bugger\\ai\\bugger*",
-						"targets": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
-						]
-					},
-					"Dive From Grenade Chance": {
-						"desc": "Chance of diving to avoid a grenade",
-						"game": "Halo 2",
-						"tag": "char objects\\characters\\bugger\\ai\\bugger*",
-						"targets": [
-							{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
-						]
-					},
-					"Melee Damage": {
-						"desc": "Melee Damage from Bugger",
-						"game": "Halo 2",
-						"tag": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
-						"targets": [
-							{ "field": "Damage Lower Bound" },
-							{ "field": "Damage Upper Bound" },
-							{ "field": "Damage Upper Bound Max" }
-						]
-					}
-				}
+			}
 		}
 	},
-	
 	"Friend modifiers": {
 		"Friend Damage": {
 			"desc": "How much damage friends deal",
 			"tag": "matg globals\\globals",
-			"targets": [ { "field": "Friend Damage", "block": "Difficulty", "difficulty": true } ]
+			"targets": [
+				{ "field": "Friend Damage", "block": "Difficulty", "difficulty": true }
+			]
 		},
 		"Friend Vitality": {
 			"desc": "How much health friends have",
 			"tag": "matg globals\\globals",
-			"targets": [ { "field": "Friend Vitality", "block": "Difficulty", "difficulty": true } ]
+			"targets": [
+				{ "field": "Friend Vitality", "block": "Difficulty", "difficulty": true }
+			]
 		},
 		"Friend Shield": {
 			"desc": "How strong friends shields are",
 			"tag": "matg globals\\globals",
-			"targets": [ { "field": "Friend Shield", "block": "Difficulty", "difficulty": true } ]
+			"targets": [
+				{ "field": "Friend Shield", "block": "Difficulty", "difficulty": true }
+			]
 		},
 		"Friend Recharge": {
 			"desc": "How fast friendly shields recharge",
 			"tag": "matg globals\\globals",
-			"targets": [ { "field": "Friend Recharge", "block": "Difficulty", "difficulty": true } ]
+			"targets": [
+				{ "field": "Friend Recharge", "block": "Difficulty", "difficulty": true }
+			]
 		}
 	}
 }

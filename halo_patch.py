@@ -5,6 +5,7 @@
 
 import json
 import shutil
+import struct
 from pathlib import Path
 
 import halo_map as hm
@@ -56,7 +57,7 @@ def collect_effects(rounds):
     seen, order = {}, []
 
     def add(mod, group, cat):
-        if not isinstance(mod, dict):
+        if not isinstance(mod, dict) or mod.get('_game_excluded'):
             return
         tag = mod.get('tag')
         if not tag:
@@ -67,6 +68,9 @@ def collect_effects(rounds):
                          'tag': tag, 'targets': list(mod.get('targets') or []),
                          'harder_when': mod.get('harder_when'),
                          'init_defaults': mod.get('init_defaults'),
+                         '_missing_in_db': mod.get('_missing_in_db'),
+                         # source identity, so the patcher can remove it from the run
+                         'weapon': mod.get('weapon'), 'enemy': mod.get('enemy'),
                          'group': group, 'cat': cat, 'count': 0}
             order.append(key)
         seen[key]['count'] += 1
@@ -267,12 +271,258 @@ def _apply_init_defaults(m, spec, registry):
     return out
 
 
-def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None):
+# scnr Player Starting Profile weapon-slot byte layout per game. A weapon tagRef is
+# ['weap' magic @0][ ... ][id]; H1 is 16 bytes (ident at +0xC), H2 is 8 bytes
+# (datum at +0x4). Round fields (int16) follow the ref within the profile element.
+_WEAP_MAGIC = 0x77656170
+_STARTING_SLOTS = {
+    'Halo 1': {'ref_size': 16, 'id_at': 0xC,
+               'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
+               'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
+    'Halo 2': {'ref_size': 8, 'id_at': 0x4,
+               'primary':   {'ref': 0x28, 'loaded': 0x30, 'total': 0x32},
+               'secondary': {'ref': 0x34, 'loaded': 0x3C, 'total': 0x3E}},
+}
+
+
+def _weap_ref_id(m, name):
+    """Full tag ident (H1) / datum (H2) for a weap tag by name, or None if that
+    tag isn't in this map — the safety net for a picked weapon the map lacks."""
+    if isinstance(getattr(m, 'tags', None), dict):          # H1 HaloMap
+        for i in range(m.tag_count):
+            b = m.tag_array_off + i * 32
+            if bytes(m.data[b:b + 4][::-1]).decode('latin1') != 'weap':
+                continue
+            try:
+                if m._cstr((m.u32(b + 0x10) - m.magic) & 0xFFFFFFFF) == name:
+                    return m.u32(b + 0xC)
+            except Exception:
+                pass
+        return None
+    for t in getattr(m, 'tags', []):                        # H2 Halo2Map
+        if t.get('class') == 'weap' and t.get('name') == name:
+            return t.get('datum')
+    return None
+
+
+def _weap_base(m, name):
+    if isinstance(getattr(m, 'tags', None), dict):
+        return m.tags.get(('weap', name))
+    for t in getattr(m, 'tags', []):
+        if t.get('class') == 'weap' and t.get('name') == name:
+            return t.get('base')
+    return None
+
+
+def _scnr_base(m):
+    if hasattr(m, 'scenario_tag'):                          # H2
+        t = m.scenario_tag()
+        return t['base'] if t else None
+    tags = m.find_tags('scnr', 'levels' + chr(92) + '*')    # H1
+    return tags[0][1] if tags else None
+
+
+def _write_starting_weapon(m, poff, slot, refid, loaded, total, game):
+    lay = _STARTING_SLOTS[game]
+    s = lay[slot]
+    ro = poff + s['ref']
+    struct.pack_into('<I', m.data, ro, _WEAP_MAGIC)
+    if lay['ref_size'] == 16:
+        struct.pack_into('<II', m.data, ro + 4, 0, 0)       # clear the H1 name-ptr words
+    struct.pack_into('<I', m.data, ro + lay['id_at'], refid & 0xFFFFFFFF)
+    if loaded is not None:
+        struct.pack_into('<h', m.data, poff + s['loaded'], max(-32768, min(32767, int(loaded))))
+    if total is not None:
+        struct.pack_into('<h', m.data, poff + s['total'], max(-32768, min(32767, int(total))))
+
+
+def _apply_starting_equipment(m, game, registry, starting):
+    """Set the player Starting Profile weapons from the run's picks. `starting` =
+    {'primary': weap-tag or None, 'secondary': weap-tag or None, 'profiles': [..]}.
+    Rounds come from each weap tag's CURRENT Magazines values (so a Magazine effect
+    already applied this run carries through; else vanilla). Missing weapons are
+    skipped, not written (safety net)."""
+    out = []
+    scnr_plug = registry.get('scnr')
+    weap_plug = registry.get('weap')
+    scnr_base = _scnr_base(m)
+    if scnr_plug is None or scnr_base is None:
+        return [{'effect': 'starting weapons', 'ok': False,
+                 'reason': 'scnr plugin/tag unavailable'}]
+    bf = None
+    for fn in ('Starting Health Damage', 'Starting Health Modifier'):
+        bf = scnr_plug.find(fn, 'Player Starting Profile')
+        if bf:
+            break
+    lay = _STARTING_SLOTS.get(game)
+    if not bf or not lay:
+        return [{'effect': 'starting weapons', 'ok': False,
+                 'reason': 'Player Starting Profile layout unavailable'}]
+    boff = bf['block_offsets'][-1]
+    esize = bf['block_sizes'][-1]
+    count = m.i32(scnr_base + boff)
+    profiles = [i for i in (starting.get('profiles') or [0, 1]) if 0 <= i < count]
+    for slot in ('primary', 'secondary'):
+        tag = starting.get(slot)
+        if not tag:
+            continue
+        _, name = hm.split_tag(tag)
+        short = name.rsplit(chr(92), 1)[-1]
+        refid = _weap_ref_id(m, name)
+        if refid is None:      # SAFETY NET: weapon tag absent from this map
+            out.append({'effect': 'starting weapons', 'field': slot.title() + ' Weapon',
+                        'ok': False, 'reason': f'weapon not in this map: {short}'})
+            continue
+        wb = _weap_base(m, name)
+        loaded = total = None
+        if wb is not None and weap_plug is not None:
+            loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug, block='Magazines', index=0)
+            total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug, block='Magazines', index=0)
+        n = 0
+        for i in profiles:
+            poff = m.follow(scnr_base, [boff], [esize], i)
+            if poff is None:
+                continue
+            _write_starting_weapon(m, poff, slot, refid, loaded, total, game)
+            n += 1
+        out.append({'effect': 'starting weapons', 'field': slot.title() + ' Weapon',
+                    'ok': True, 'old': short,
+                    'new': f'set on {n} profile(s) ({loaded}/{total} rounds)'})
+    return out
+
+
+# scnr weapon-placement + palette layout per game (Weapons list, Weapon Palette).
+_MAP_WEAPONS = {
+    'Halo 1': {'weapons': (0x270, 0x5C), 'palette': (0x27C, 0x30), 'pal_id_at': 0xC,
+               'palette_index': 0x0, 'rounds_left': 0x48, 'rounds_loaded': 0x4A},
+    'Halo 2': {'weapons': (0x90, 0x54), 'palette': (0x98, 0x28), 'pal_id_at': 0x4,
+               'palette_index': 0x0, 'rounds_left': 0x4C, 'rounds_loaded': 0x4E},
+}
+
+
+def _tag_name_by_id(m, rid):
+    row = rid & 0xFFFF
+    if hasattr(m, 'tag'):                                   # H2
+        t = m.tag(row)
+        return t['name'] if t else None
+    b = m.tag_array_off + row * 32                          # H1
+    try:
+        return m._cstr((m.u32(b + 0x10) - m.magic) & 0xFFFFFFFF)
+    except Exception:
+        return None
+
+
+def _block_base(m, off):
+    ptr = m.u32(off + 4)
+    return m.p2o(ptr) if hasattr(m, 'p2o') else (ptr - m.magic) & 0xFFFFFFFF
+
+
+def _spread_slots(N, counts):
+    """Assign each (key, count) `count` placement slots EVENLY spread across [0, N)
+    — evenly-spaced positions with collisions bumped to the nearest free slot, so a
+    weapon's replacements are scattered through the level (not clustered up front),
+    and different weapons interleave. Returns {slot_index: key}."""
+    target = {}
+    for key, c in counts:
+        if c <= 0:
+            continue
+        for k in range(c):
+            pos = min(int((k + 0.5) * N / c), N - 1)
+            if pos not in target:
+                target[pos] = key
+                continue
+            for d in range(1, N):
+                if pos + d < N and (pos + d) not in target:
+                    target[pos + d] = key
+                    break
+                if pos - d >= 0 and (pos - d) not in target:
+                    target[pos - d] = key
+                    break
+            else:
+                break
+    return target
+
+
+def _apply_weapon_swaps(m, game, registry, swaps):
+    """Replace a fraction of the map's weapon placements with the players' picked
+    weapons, scattered evenly. `swaps` = {weap-tag: rate 0..1}. Rounds are set to the
+    weapon's VANILLA magazine values (this runs BEFORE the effect ops, so Magazine
+    picks don't apply). Weapons absent from the map's Weapon Palette are skipped."""
+    out = []
+    lay = _MAP_WEAPONS.get(game)
+    scnr_base = _scnr_base(m)
+    if not lay or scnr_base is None:
+        return [{'effect': 'map weapons', 'ok': False, 'reason': 'scnr/layout unavailable'}]
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    N = m.i32(scnr_base + woff)
+    if N <= 0:
+        return [{'effect': 'map weapons', 'ok': False, 'reason': 'no weapon placements in map'}]
+    wbase = _block_base(m, scnr_base + woff)
+    pbase = _block_base(m, scnr_base + poff)
+    pcount = m.i32(scnr_base + poff)
+    pal = {i: _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) for i in range(pcount)}
+    weap_plug = registry.get('weap')
+
+    assign = []          # (palette_index, count, rounds_left, rounds_loaded, short)
+    for tag, rate in swaps.items():
+        if not rate or rate <= 0:
+            continue
+        _, name = hm.split_tag(tag)
+        short = name.rsplit(chr(92), 1)[-1]
+        pi = next((i for i, n in pal.items() if n == name), None)
+        if pi is None:                          # SAFETY NET: not in the map's palette
+            out.append({'effect': 'map weapons', 'field': short, 'ok': False,
+                        'reason': 'weapon not in this map\'s palette'})
+            continue
+        c = int(round(rate * N))
+        if c <= 0:
+            continue
+        rl = rd = -1
+        wb = _weap_base(m, name)
+        if wb is not None and weap_plug is not None:
+            t = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug, block='Magazines', index=0)
+            l = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug, block='Magazines', index=0)
+            rl = int(t) if t is not None else -1
+            rd = int(l) if l is not None else -1
+        assign.append((pi, c, rl, rd, short))
+
+    # never replace more than N placements (UI caps the slider sum, this is a guard)
+    while sum(a[1] for a in assign) > N and assign:
+        j = max(range(len(assign)), key=lambda k: assign[k][1])
+        pi, c, rl, rd, s = assign[j]
+        assign[j] = (pi, c - 1, rl, rd, s)
+
+    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    info = {a[0]: (a[2], a[3], a[4]) for a in assign}
+    done = {}
+    for slot, pi in slots.items():
+        e = wbase + slot * wes
+        struct.pack_into('<h', m.data, e + lay['palette_index'], pi)
+        rl, rd, short = info[pi]
+        if rl >= 0:
+            struct.pack_into('<h', m.data, e + lay['rounds_left'], max(-32768, min(32767, rl)))
+        if rd >= 0:
+            struct.pack_into('<h', m.data, e + lay['rounds_loaded'], max(-32768, min(32767, rd)))
+        done[short] = done.get(short, 0) + 1
+    for short, n in done.items():
+        out.append({'effect': 'map weapons', 'field': short, 'ok': True,
+                    'old': f'{N} placements', 'new': f'{n} swapped in'})
+    return out
+
+
+def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
+              starting=None, weapon_swaps=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
-    difficulty, op_str}]}. Returns (results, backup_path). The map is only saved
-    (and a one-time .bak made) if at least one write succeeds."""
+    difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
+    weapons. Returns (results, backup_path). The map is only saved (and a one-time
+    .bak made) if at least one write succeeds."""
     m = open_map(map_path, game)
     results = []
+    if weapon_swaps:
+        # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
+        # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
+        results.extend(_apply_weapon_swaps(m, game, registry, weapon_swaps))
     for item in plan:
         cls, path = hm.split_tag(item['tag'])
         plugin = registry.get(cls)
@@ -326,6 +576,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 if negate:
                     r['negated'] = True
                 results.append(r)
+
+    if starting:
+        # After the ops (so any Magazine effect is already in the weap tags),
+        # set the player Starting Profile weapons + rounds from the run's picks.
+        results.extend(_apply_starting_equipment(m, game, registry, starting))
 
     backup_path = None
     if any(r.get('ok') for r in results):
