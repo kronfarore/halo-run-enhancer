@@ -2039,6 +2039,127 @@
 					"game": "Halo 2"
 				}
 			},
+			"Covenant Carbine": {
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"
+					},
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					],
+					"game": "Halo 2"
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					],
+					"game": "Halo 2"
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					],
+					"game": "Halo 2"
+				},
+				"More Shooting": {
+					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon can fire again",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					],
+					"game": "Halo 2"
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+					],
+					"game": "Halo 2"
+				},
+				"Melee Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": "Halo 2"
+				}
+			},
 			"Flak Cannon": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
