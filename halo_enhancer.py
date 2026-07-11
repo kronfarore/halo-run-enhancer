@@ -122,7 +122,7 @@ CONFIG = {
     "hide_fields": False,
     # Debug mode: exposes developer tools (the patcher "＋ field" button and the
     # main-window "ADD MOD" search). Off for normal play.
-    "debug_mode": False,
+    "debug_mode": True,
 
     "wildcard_chance": 0.1,
     "new_weapon_chance": 0.0,
