@@ -196,6 +196,8 @@ EFFECT_RENAMES = {
     'Berserk Melee Behaviour': 'Melee Behavior',
     'Berserk Triggerin': 'Melee Behavior',
     'Berserk Melee Leap': 'Melee Leap',
+    'Target Tracking': 'Target Tracking & Leading',
+    'Target Leading': 'Target Tracking & Leading',
     'Defensive': 'Cover Properties',
     'Projectile Error': 'Accuracy',
     'Effective Range?': 'Projectile',   # merged into Projectile

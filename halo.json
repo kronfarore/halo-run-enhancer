@@ -2559,17 +2559,11 @@
 					{ "field": "Burst Separation", "block": "Difficulty", "difficulty": true }
 				]
 			},
-			"Target Tracking": {
-				"desc": "Increase additional target tracking, I guess?",
+			"Target Tracking & Leading": {
+				"desc": "Increase enemy target tracking and leading (global difficulty scalars)",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Target Tracking", "block": "Difficulty", "difficulty": true }
-				]
-			},
-			"Target Leading": {
-				"desc": "Increase target leading fraction, I guess?",
-				"tag": "matg globals\\globals",
-				"targets": [
+					{ "field": "Target Tracking", "block": "Difficulty", "difficulty": true },
 					{ "field": "Target Leading", "block": "Difficulty", "difficulty": true }
 				]
 			},
@@ -2710,6 +2704,17 @@
 					{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+				]
+			},
+			"Accuracy": {
+				"desc": "General enemy accuracy via the shared AI base \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). Exceptions: most Elites, Grunts, Jackals, Hunter, Marines and Sentinels set their own.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
+					{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 				]
 			}
 		},
@@ -2920,14 +2925,15 @@
 						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
 					]
 				},
-				"Target Tracking": {
-					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+				"Target Tracking & Leading": {
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
-						{ "field": "Target Tracking" }
+						{ "field": "Target Tracking" },
+						{ "field": "Target Leading" }
 					],
 					"game": "Halo 1"
 				},
@@ -3140,18 +3146,20 @@
 						]
 					}
 				},
-				"Target Tracking": {
-					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+				"Target Tracking & Leading": {
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Target Tracking" }
+							{ "field": "Target Tracking" },
+							{ "field": "Target Leading" }
 						],
 						"Halo 2": [
-							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
+							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 						]
 					}
 				},
@@ -3771,18 +3779,26 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy (H1 projectile error; lower = more accurate).",
-					"game": "Halo 1",
-					"tag": "actv characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"harder_when": "decreased",
-					"targets": [
-						{ "field": "Projectile Error" }
-					]
+					"targets": {
+						"Halo 1": [
+							{ "field": "Projectile Error" }
+						],
+						"Halo 2": [
+							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						]
+					}
 				},
-				"Target Tracking": {
-					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+				"Target Tracking & Leading": {
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
 					"tag": "actv characters\\floodcombat*",
 					"targets": [
-						{ "field": "Target Tracking" }
+						{ "field": "Target Tracking" },
+						{ "field": "Target Leading" }
 					],
 					"game": "Halo 1"
 				},
@@ -4120,18 +4136,20 @@
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
 					]
 				},
-				"Target Tracking": {
-					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
+				"Target Tracking & Leading": {
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Target Tracking" }
+							{ "field": "Target Tracking" },
+							{ "field": "Target Leading" }
 						],
 						"Halo 2": [
-							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
+							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 						]
 					}
 				},
