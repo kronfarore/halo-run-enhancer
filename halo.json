@@ -2525,7 +2525,7 @@
 				]
 			},
 			"Rate of Fire": {
-				"desc": "Enemy rate of fire scale",
+				"desc": "Global enemy rate of fire scale",
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true }
@@ -2618,7 +2618,7 @@
 				]
 			},
 			"Major Upgrades (Many)": {
-				"desc": "Fraction of enemy upgrades, from few pool?",
+				"desc": "Fraction of enemy upgrades, from many pool?",
 				"tag": "matg globals\\globals",
 				"targets": [
 					{ "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true }
@@ -2641,7 +2641,7 @@
 				"game": "Halo 2"
 			},
 			"Vision": {
-				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared AI base. Exceptions (own values): the Flood Combat forms.",
+				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared generic AI base. Exception: the Flood Combat forms.",
 				"game": "Halo 2",
 				"tag": "char ai\\generic",
 				"targets": [
@@ -2653,7 +2653,7 @@
 				]
 			},
 			"Hearing Distance": {
-				"desc": "General enemy hearing range via the shared AI base. Exceptions: the Flood Combat forms.",
+				"desc": "General enemy hearing range via the shared generic AI base. Exception: the Flood Combat forms.",
 				"game": "Halo 2",
 				"tag": "char ai\\generic",
 				"targets": [
@@ -2661,7 +2661,7 @@
 				]
 			},
 			"Perception": {
-				"desc": "General enemy perception \u2014 notice chances and perception times. Exceptions: the Flood Combat forms.",
+				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Exception: the Flood Combat forms.",
 				"game": "Halo 2",
 				"tag": "char ai\\generic",
 				"targets": [
@@ -2673,7 +2673,7 @@
 				]
 			},
 			"Retreat": {
-				"desc": "General cower time and flee chance when a leader or peers die. Exceptions: Grunts and Jackals.",
+				"desc": "General cower time and flee chance when a leader or peers die via the shared generic AI base. Exceptions: Grunts and Jackals.",
 				"game": "Halo 2",
 				"tag": "char ai\\generic",
 				"targets": [
@@ -2704,17 +2704,6 @@
 					{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
-				]
-			},
-			"Accuracy": {
-				"desc": "General enemy accuracy via the shared AI base \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). Exceptions: most Elites, Grunts, Jackals, Hunter, Marines and Sentinels set their own.",
-				"game": "Halo 2",
-				"tag": "char ai\\generic",
-				"targets": [
-					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
-					{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 				]
 			}
 		},
@@ -2853,7 +2842,7 @@
 					}
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
+					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
@@ -2926,7 +2915,7 @@
 					]
 				},
 				"Target Tracking & Leading": {
-					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
@@ -3126,7 +3115,7 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
+					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
@@ -3147,7 +3136,7 @@
 					}
 				},
 				"Target Tracking & Leading": {
-					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
@@ -3343,7 +3332,7 @@
 					}
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
+					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
@@ -3508,13 +3497,21 @@
 					]
 				},
 				"Cover Chance": {
-					"desc": "Dive into Cover and Emerge from Cover Chance",
-					"tag": "actr characters\\jackal\\*",
-					"game": "Halo 1",
-					"targets": [
-						{ "field": "Dive Into Cover Chance" },
-						{ "field": "Emerge From Cover Chance" }
-					]
+					"desc": "Dive into / emerge from cover chance (H1); cover-seeking chance (H2). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Dive Into Cover Chance" },
+							{ "field": "Emerge From Cover Chance" }
+						],
+						"Halo 2": [
+							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
+							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						]
+					}
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
@@ -3536,16 +3533,25 @@
 					"game": "Halo 1"
 				},
 				"Cover Properties": {
-					"desc": "Cover-seeking time and shield thresholds",
-					"tag": "actr characters\\jackal\\*",
-					"game": "Halo 1",
-					"targets": [
-						{ "field": "Hide Behind Cover Time" },
-						{ "field": "Hide Behind Cover Time Max" },
-						{ "field": "Hide Shield Fraction" },
-						{ "field": "Attack Shield Fraction" },
-						{ "field": "Pursue Shield Fraction" }
-					]
+					"desc": "Cover-seeking time and shield/vitality thresholds. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max" },
+							{ "field": "Hide Shield Fraction" },
+							{ "field": "Attack Shield Fraction" },
+							{ "field": "Pursue Shield Fraction" }
+						],
+						"Halo 2": [
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						]
+					}
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
@@ -3577,7 +3583,7 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy. H1: projectile error (lower = more accurate). H2: accuracy bounds/time (higher = more accurate).",
+					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
@@ -3753,13 +3759,19 @@
 					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
-					"desc": "Increases range in witch they can use their weapon",
-					"tag": "actv characters\\floodcombat*",
-					"note": "H2 inherits from generic char",
-					"targets": [
-						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
-					],
-					"game": "Halo 1"
+					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"tag": {
+						"Halo 1": "actv characters\\floodcombat*",
+						"Halo 2": "char ai\\generic"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Maximum Firing Distance" }
+						],
+						"Halo 2": [
+							{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+						]
+					}
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
@@ -3778,7 +3790,7 @@
 					}
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy (H1 projectile error; lower = more accurate).",
+					"desc": "Enemy weapon accuracy.",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
 						"Halo 2": "char objects\\characters\\floodcombat*"
@@ -3794,7 +3806,7 @@
 					}
 				},
 				"Target Tracking & Leading": {
-					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": "actv characters\\floodcombat*",
 					"targets": [
 						{ "field": "Target Tracking" },
@@ -3889,38 +3901,59 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
-					"tag": "actr characters\\flood_infection\\*",
-					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] }
-					],
-					"game": "Halo 1"
+					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Melee Attack Delay" },
+							{ "field": "Melee Charge Time" }
+						],
+						"Halo 2": [
+							{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+							{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+							{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+						]
+					}
 				},
 				"Melee Leap": {
-					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
-					"tag": "actr characters\\flood_infection\\*",
-					"targets": [
-						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Leap Velocity" },
-						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
-					],
-					"game": "Halo 1"
+					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"tag": {
+						"Halo 1": "actr characters\\flood_infection\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Melee Leap Range" },
+							{ "field": "Melee Leap Velocity" },
+							{ "field": "Melee Leap Chance" },
+							{ "field": "Melee Leap Ballistic" }
+						],
+						"Halo 2": [
+							{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+							{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
+							{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+							{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+							{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+						]
+					}
 				},
 				"Body Vitality": {
-					"desc": "May actually be pointless to increase this, because it looks like infections have a unique property that makes them burst regardless of health",
-					"tag": "actv characters\\flood_infection\\*",
+					"desc": "Health (infections burst regardless, so this may be moot). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Flood Infection Forms.",
+					"tag": {
+						"Halo 1": "actv characters\\flood_infection\\*",
+						"Halo 2": "char ai\\generic"
+					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
 						],
 						"Halo 2": [
-							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+							{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 						]
-					},
-					"game": "Halo 1"
+					}
 				},
 				"Pop Radius": {
 					"desc": "Might increase the explosion when they die?",
@@ -3956,6 +3989,28 @@
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
+				},
+				"Accuracy": {
+					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"tag": {
+						"Halo 1": "actv characters\\flood_infection\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"harder_when": {
+						"Halo 1": "decreased",
+						"Halo 2": "increased"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Projectile Error" }
+						],
+						"Halo 2": [
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
+							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
+						]
+					}
 				}
 			},
 			"Flood Carrier Form": {
@@ -4063,6 +4118,28 @@
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
+				},
+				"Accuracy": {
+					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"tag": {
+						"Halo 1": "actv characters\\floodcarrier\\*",
+						"Halo 2": "char ai\\generic"
+					},
+					"harder_when": {
+						"Halo 1": "decreased",
+						"Halo 2": "increased"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Projectile Error" }
+						],
+						"Halo 2": [
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
+							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
+						]
+					}
 				}
 			},
 			"Sentinel": {
@@ -4137,7 +4214,7 @@
 					]
 				},
 				"Target Tracking & Leading": {
-					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1 = current position",
+					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
@@ -4271,6 +4348,137 @@
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"game": "Halo 2",
+					"tag": "char ai\\generic",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Melee Leap": {
+					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"game": "Halo 2",
+					"tag": "char ai\\generic",
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Accuracy": {
+					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"game": "Halo 2",
+					"tag": "char ai\\generic",
+					"targets": [
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
+						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
+					]
+				}
+			},
+			"Brute": {
+				"Melee Behavior": {
+					"desc": "Delay/timeout between melee attempts and the chance of one.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Melee Leap": {
+					"desc": "Melee lunge range, velocity, chance and ballistic arc.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Cover Chance": {
+					"desc": "Chance of seeking cover.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and the vitality threshold that triggers it.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Body Vitality": {
+					"desc": "Health.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Grenades": {
+					"desc": "Grenade throwing \u2014 velocity, range, collateral.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+					]
+				},
+				"Grenades Chance": {
+					"desc": "How often they throw grenades.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all" }
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of diving away from a grenade.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
+					]
+				},
+				"Accuracy": {
+					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"game": "Halo 2",
+					"tag": "char ai\\generic",
+					"targets": [
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
+						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
+					]
+				},
+				"Maximum Firing Distance": {
+					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"game": "Halo 2",
+					"tag": "char ai\\generic",
+					"targets": [
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
 					]
 				}
 			},
