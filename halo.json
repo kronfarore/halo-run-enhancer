@@ -4044,9 +4044,14 @@
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
-					"targets": [
-						{ "field": "Target Tracking" }
-					]
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Tracking" }
+						],
+						"Halo 2": [
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						]
+					}
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
