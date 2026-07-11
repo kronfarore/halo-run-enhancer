@@ -4482,6 +4482,86 @@
 					]
 				}
 			},
+			"Prophet Regret": {
+				"Body Vitality": {
+					"desc": "Prophet Regret's health.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\prophet\\ai\\prophet_regret",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Prophet Regret's shield.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\prophet\\ai\\prophet_regret",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Maximum Firing Distance": {
+					"desc": "Range within which he uses his gravity cannon.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\prophet\\ai\\prophet_regret",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Target Tracking & Leading": {
+					"desc": "How well he tracks and leads moving targets.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\prophet\\ai\\prophet_regret",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
+						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Gravity Cannon": {
+					"desc": "His gravity cannon's fire rate and shots per burst.",
+					"game": "Halo 2",
+					"tag": "weap objects\\characters\\prophet\\weapons\\gravity_cannon\\gravity_cannon",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" },
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					]
+				},
+				"Gravity Cannon Projectile": {
+					"desc": "Gravity cannon projectile range and velocity.",
+					"game": "Halo 2",
+					"tag": "proj objects\\characters\\prophet\\weapons\\gravity_cannon\\projectiles\\gravity_cannon",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Gravity Throne": {
+					"desc": "His flying throne's movement \u2014 top speed, acceleration and turning.",
+					"game": "Halo 2",
+					"tag": "vehi objects\\vehicles\\gravity_throne\\gravity_throne",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Forward Speed" },
+						{ "field": "Maximum Reverse Speed" },
+						{ "field": "Speed Acceleration" },
+						{ "field": "Speed Deceleration" },
+						{ "field": "Maximum Left Turn" },
+						{ "field": "Maximum Right Turn (Negative)" },
+						{ "field": "Turn Rate" }
+					]
+				}
+			},
 			"Heretic Leader": {
 				"Body Vitality": {
 					"desc": "Health of the Heretic Leader himself (his escorts are unaffected)",
@@ -4523,6 +4603,52 @@
 						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
 					],
 					"game": "Halo 2"
+				},
+				"Hologram Rate of Fire": {
+					"desc": "Rate of fire of the Heretic Leader's decoy holograms.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Hologram Accuracy": {
+					"desc": "Projectile error of the holograms (lower = more accurate).",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
+					"harder_when": "decreased",
+					"targets": [
+						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Hologram Target Tracking & Leading": {
+					"desc": "How well the holograms track and lead moving targets.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
+						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Hologram Body Vitality": {
+					"desc": "Health of the decoy holograms.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Hologram Shield Vitality": {
+					"desc": "Shield of the decoy holograms.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
 				}
 			}
 		}
