@@ -1916,6 +1916,7 @@
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
