@@ -65,7 +65,7 @@ def is_valid_run(data):
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'include_wildcards',
                'wildcard_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
-               'zoom_ui_on_scopeless', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
+               'zoom_ui_on_scopeless', 'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
 # Weapons whose scope the zoom-UI copy can source from, per game — real scoped
 # weapons (mask bitmaps confirmed) that map to halo.json weapon names. The patcher
@@ -120,6 +120,9 @@ CONFIG = {
     # Appearance: hide the "Tag:" / "Fields:" lines on selection cards.
     "hide_tags": False,
     "hide_fields": False,
+    # Debug mode: exposes developer tools (the patcher "＋ field" button and the
+    # main-window "ADD MOD" search). Off for normal play.
+    "debug_mode": False,
 
     "wildcard_chance": 0.1,
     "new_weapon_chance": 0.0,
@@ -1766,11 +1769,12 @@ class MagnitudeEditorDialog(QDialog):
                     l2.textChanged.connect(upd)
             upd()
 
-        addbtn = QPushButton("＋ field")
-        addbtn.setMaximumWidth(120)
-        addbtn.setToolTip("Add / override the patch field for this effect")
-        addbtn.clicked.connect(lambda _=False, e=eff: self._add_custom_field(e))
-        v.addWidget(addbtn)
+        if CONFIG.get('debug_mode'):    # developer-only: add/override an arbitrary field
+            addbtn = QPushButton("＋ field")
+            addbtn.setMaximumWidth(120)
+            addbtn.setToolTip("Add / override the patch field for this effect")
+            addbtn.clicked.connect(lambda _=False, e=eff: self._add_custom_field(e))
+            v.addWidget(addbtn)
         return box
 
     def _add_custom_field(self, eff):
@@ -2216,6 +2220,12 @@ class OptionsDialog(QDialog):
                                    "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
                                    "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
         form.addRow("Scope UI:", self.zoom_ui_cb)
+
+        self.debug_mode_cb = QCheckBox("Debug mode (developer tools)")
+        self.debug_mode_cb.setChecked(bool(CONFIG.get('debug_mode')))
+        self.debug_mode_cb.setToolTip("Shows the patcher's “＋ field” button and the main-window “ADD MOD” "
+                                      "search. Leave off for normal play.")
+        form.addRow("Debug:", self.debug_mode_cb)
         layout.addWidget(func)
 
         # ---- Appearance section ----
@@ -2266,6 +2276,7 @@ class OptionsDialog(QDialog):
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
+            'debug_mode': self.debug_mode_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
@@ -2806,6 +2817,7 @@ class HaloGUI(QMainWindow):
             QPushButton:hover { background-color: #3a3a5a; }
         """)
         self.add_mod_btn.clicked.connect(self.on_add_mod_debug)
+        self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
         button_layout.addWidget(self.add_mod_btn)
         main_layout.addLayout(button_layout)
 
@@ -3260,6 +3272,8 @@ class HaloGUI(QMainWindow):
                 CONFIG[k] = v
             save_settings()
             self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
+            if hasattr(self, 'add_mod_btn'):        # debug tools show/hide live
+                self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
             # Re-render the CURRENT screen (weapon selection or pairs) so appearance
             # options (hide tags/fields, card width) apply immediately.
             if getattr(self, '_last_weapon_display', None) and self.pair_cards:
