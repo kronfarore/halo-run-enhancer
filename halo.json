@@ -2645,6 +2645,72 @@
 					{ "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true }
 				],
 				"game": "Halo 2"
+			},
+			"Vision": {
+				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared AI base. Exceptions (own values): the Flood Combat forms.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all" },
+					{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all" },
+					{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all" },
+					{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all" },
+					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all" }
+				]
+			},
+			"Hearing Distance": {
+				"desc": "General enemy hearing range via the shared AI base. Exceptions: the Flood Combat forms.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all" }
+				]
+			},
+			"Perception": {
+				"desc": "General enemy perception \u2014 notice chances and perception times. Exceptions: the Flood Combat forms.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all" },
+					{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all" },
+					{ "field": "Combat Perception Time", "block": "Perception Properties", "index": "all" },
+					{ "field": "Guard Perception Time", "block": "Perception Properties", "index": "all" },
+					{ "field": "Non-Combat Perception Time", "block": "Perception Properties", "index": "all" }
+				]
+			},
+			"Retreat": {
+				"desc": "General cower time and flee chance when a leader or peers die. Exceptions: Grunts and Jackals.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
+					{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
+					{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+					{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+					{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+				]
+			},
+			"Placement Properties": {
+				"desc": "General chance of spawning as an upgraded variant. Exceptions: most Elite and Grunt variants.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
+					{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
+					{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+				]
+			},
+			"Grenade Properties": {
+				"desc": "General grenade behaviour \u2014 velocity, range, collateral. Exceptions: Brutes, Grunts, Marines, SpecOps Elites and the Flood Combat forms.",
+				"game": "Halo 2",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
+					{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all" },
+					{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
+					{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
+					{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+				]
 			}
 		},
 		"Specific Enemy modifier": {
@@ -2657,7 +2723,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -2994,7 +3061,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -3161,7 +3229,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -3406,7 +3475,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -3598,33 +3668,40 @@
 			"Flood Combat Form": {
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"game": "Halo 1",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Peripheral Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
 					]
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"game": "Halo 1",
-					"tag": "actr characters\\floodcombat*",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"targets": [
-						{ "field": "Hearing Distance" }
+						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
 					]
 				},
 				"Perception": {
-					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"game": "Halo 1",
-					"tag": "actr characters\\floodcombat*",
+					"desc": "Notice Projectile, Notice Vehicle, Combat/Guard/Non-Combat Perception",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*",
+						"Halo 2": "char objects\\characters\\floodcombat*"
+					},
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
 					]
 				},
 				"Melee Behavior": {
@@ -3670,6 +3747,7 @@
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": "actv characters\\floodcombat*",
+					"note": "H2 inherits from generic char",
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
 					],
@@ -3770,7 +3848,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -3872,7 +3951,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
@@ -3978,7 +4058,8 @@
 						{ "field": "Maximum Vision Distance" },
 						{ "field": "Central Vision Angle" },
 						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" }
+						{ "field": "Peripheral Vision Angle" },
+						{ "field": "Peripheral Distance" }
 					]
 				},
 				"Hearing Distance": {
