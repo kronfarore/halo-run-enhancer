@@ -3641,7 +3641,7 @@
 						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
 					]
 				},
-				"Berserk Melee Leap": {
+				"Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -3758,18 +3758,6 @@
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
-				},
-				"Stun Behavior": {
-					"desc": "Change the Stun threshold and the stun duration",
-					"tag": {
-						"Halo 2": "char objects\\characters\\floodcombat*"
-					},
-					"targets": [
-						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
-						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
-						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
-					],
-					"game": "Halo 2"
 				}
 			},
 			"Flood Infection Form": {
@@ -3814,7 +3802,7 @@
 					],
 					"game": "Halo 1"
 				},
-				"Berserk Melee Leap": {
+				"Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
 					"tag": "actr characters\\flood_infection\\*",
 					"targets": [
@@ -3826,7 +3814,7 @@
 					"game": "Halo 1"
 				},
 				"Body Vitality": {
-					"desc": "Health",
+					"desc": "May actually be pointless to increase this, because it looks like infections have a unique property that makes them burst regardless of health",
 					"tag": "actv characters\\flood_infection\\*",
 					"targets": {
 						"Halo 1": [
@@ -3864,8 +3852,8 @@
 				"Melee Damage": {
 					"desc": "Melee Damage from Flood Infection Forms",
 					"tag": {
-						"Halo 1": "jpt! characters\\floodinfection\\melee",
-						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite"
+						"Halo 1": "jpt! characters\\flood_infection\\melee",
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -3918,6 +3906,21 @@
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] }
 					]
 				},
+				"Melee Leap": {
+					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
+					"tag": {
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
+					},
+					"targets": [
+						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
+						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
+					],
+					"game": "Halo 2"
+				},
 				"Suicide Sensing Distance": {
 					"desc": "How close they need to be, to check to blow up",
 					"tag": "actr characters\\floodcarrier\\*",
@@ -3944,7 +3947,7 @@
 				"Pop Radius": {
 					"desc": "Might increase the explosion when they die?",
 					"tag": {
-						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
 						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [
@@ -3955,7 +3958,7 @@
 				"Pop Damage": {
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
 					"tag": {
-						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
 						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [

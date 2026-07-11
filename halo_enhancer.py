@@ -195,6 +195,7 @@ EFFECT_RENAMES = {
     'Age Misfire': 'Misfire',
     'Berserk Melee Behaviour': 'Melee Behavior',
     'Berserk Triggerin': 'Melee Behavior',
+    'Berserk Melee Leap': 'Melee Leap',
     'Defensive': 'Cover Properties',
     'Projectile Error': 'Accuracy',
     'Effective Range?': 'Projectile',   # merged into Projectile
