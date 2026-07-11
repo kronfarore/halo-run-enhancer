@@ -3649,32 +3649,30 @@
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Leap Velocity" },
+						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					]
 				},
 				"Movement Switching": {
 					"desc": "Movement Type, Initial Crouch Chance, Crouch Time, Run Time",
-					"tag": {
-						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
-					},
+					"tag": "actv characters\\floodcombat*",
 					"targets": [
 						{ "field": "Initial Crouch Chance" },
 						{ "field": "Crouch Time" },
 						{ "field": "Run Time" }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"tag": {
-						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
-					},
+					"tag": "actv characters\\floodcombat*",
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
@@ -3703,13 +3701,11 @@
 				},
 				"Target Tracking": {
 					"desc": "Where to shoot on moving targets, between 0.0 and 1.0 = current position",
-					"tag": {
-						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
-					},
+					"tag": "actv characters\\floodcombat*",
 					"targets": [
 						{ "field": "Target Tracking" }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
@@ -3753,29 +3749,20 @@
 				},
 				"Melee Damage": {
 					"desc": "Melee Damage from Flood Combat Forms",
-					"tag": "jpt! characters\\floodcombat elite\\melee & \\floodcombat human\\melee",
+					"tag": {
+						"Halo 1": "jpt! characters\\floodcombat elite\\melee & \\floodcombat human\\melee",
+						"Halo 2": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
 				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
-					"tag": {
-						"Halo 2": "char objects\\characters\\floodcombat*"
-					},
-					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
-					],
-					"game": "Halo 2"
-				},
 				"Stun Behavior": {
 					"desc": "Change the Stun threshold and the stun duration",
 					"tag": {
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
@@ -3819,35 +3806,28 @@
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
-					"tag": {
-						"Halo 1": "actr characters\\flood_infection\\*",
-						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
-					},
+					"tag": "actr characters\\flood_infection\\*",
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Berserk Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
-					"tag": {
-						"Halo 1": "actr characters\\flood_infection\\*",
-						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
-					},
+					"tag": "actr characters\\flood_infection\\*",
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Body Vitality": {
 					"desc": "Health",
-					"tag": {
-						"Halo 1": "actv characters\\flood_infection\\*",
-						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
-					},
+					"tag": "actv characters\\flood_infection\\*",
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
@@ -3855,11 +3835,15 @@
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						]
-					}
+					},
+					"game": "Halo 1"
 				},
 				"Pop Radius": {
 					"desc": "Might increase the explosion when they die?",
-					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"tag": {
+						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
+					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
@@ -3867,7 +3851,10 @@
 				},
 				"Pop Damage": {
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
-					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"tag": {
+						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
@@ -3885,18 +3872,6 @@
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
-				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
-					"tag": {
-						"Halo 2": "char objects\\characters\\flood_infection\\ai\\flood_infection*"
-					},
-					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
-					],
-					"game": "Halo 2"
 				}
 			},
 			"Flood Carrier Form": {
@@ -3945,13 +3920,11 @@
 				},
 				"Suicide Sensing Distance": {
 					"desc": "How close they need to be, to check to blow up",
-					"tag": {
-						"Halo 1": "actr characters\\floodcarrier\\*",
-						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
-					},
+					"tag": "actr characters\\floodcarrier\\*",
 					"targets": [
 						{ "field": "Suicide Sensing Distance" }
-					]
+					],
+					"game": "Halo 1"
 				},
 				"Body Vitality": {
 					"desc": "Health",
@@ -3970,7 +3943,10 @@
 				},
 				"Pop Radius": {
 					"desc": "Might increase the explosion when they die?",
-					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"tag": {
+						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
+					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
@@ -3978,24 +3954,15 @@
 				},
 				"Pop Damage": {
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
-					"tag": "jpt! characters\\flood_infection\\body destroyed & nopop",
+					"tag": {
+						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
+						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
-				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
-					"tag": {
-						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
-					},
-					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
-					],
-					"game": "Halo 2"
 				}
 			},
 			"Sentinel": {
