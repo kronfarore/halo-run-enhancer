@@ -62,10 +62,17 @@ def is_valid_run(data):
     return any(k in data for k in ('phase', 'mission_id', 'rounds', 'selected_pairs'))
 
 
-OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'include_wildcards',
+OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods', 'include_wildcards',
                'wildcard_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
-               'zoom_ui_on_scopeless', 'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
+               'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'debug_mode',
+               'card_width', 'card_height', 'hide_tags', 'hide_fields')
+
+
+def boss_mods_removed():
+    """Boss cards are suppressed when 'Remove boss mods' is set, or when 'Remove
+    single-game mods' is set (bosses are unique per game, so they qualify)."""
+    return bool(CONFIG.get('remove_boss_mods') or CONFIG.get('remove_single_game_mods'))
 
 # Weapons whose scope the zoom-UI copy can source from, per game — real scoped
 # weapons (mask bitmaps confirmed) that map to halo.json weapon names. The patcher
@@ -152,6 +159,12 @@ CONFIG = {
     # out of every roll — useful for a combined H1+H2 run that only wants
     # effects that work in both. Structural test; see ModifierDatabase._is_single_game_mod.
     "remove_single_game_mods": False,
+    # Suppress boss cards entirely. Forced on while remove_single_game_mods is on
+    # (bosses are unique per game). See boss_mods_removed().
+    "remove_boss_mods": False,
+    # Boss option: make Heretic Leader boss mods target the leader AND his decoy
+    # holograms together (one card tunes both).
+    "combine_heretic_hologram": False,
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
@@ -2174,6 +2187,27 @@ class OptionsDialog(QDialog):
         self.single_game_cb.setChecked(bool(CONFIG.get('remove_single_game_mods')))
         form.addRow("Cross-game only:", self.single_game_cb)
 
+        self.remove_boss_cb = QCheckBox("Remove boss mods (no Boss cards)")
+        self.remove_boss_cb.setToolTip("Suppress the guaranteed Boss card on boss levels. Forced on while "
+                                       "'Remove mods that only appear in one game' is set, since bosses are "
+                                       "unique to a single game.")
+        # sub-option: forced on (and locked) while the single-game option is on
+        def _sync_boss_sub():
+            parent_on = self.single_game_cb.isChecked()
+            if parent_on:
+                self.remove_boss_cb.setChecked(True)
+            self.remove_boss_cb.setEnabled(not parent_on)
+        self.remove_boss_cb.setChecked(bool(CONFIG.get('remove_boss_mods')))
+        self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
+        _sync_boss_sub()
+        form.addRow("    ↳ Boss mods:", self.remove_boss_cb)
+
+        self.combine_holo_cb = QCheckBox("Combine Heretic Leader & his Holograms into one mod")
+        self.combine_holo_cb.setChecked(bool(CONFIG.get('combine_heretic_hologram')))
+        self.combine_holo_cb.setToolTip("On patch: Heretic Leader boss cards target the leader and his decoy "
+                                        "holograms together, so one card tunes both.")
+        form.addRow("Heretic bosses:", self.combine_holo_cb)
+
         self.wildcards_cb = QCheckBox("Include wildcards")
         self.wildcards_cb.setChecked(bool(CONFIG.get('include_wildcards')))
         form.addRow("Wildcards:", self.wildcards_cb)
@@ -2268,6 +2302,8 @@ class OptionsDialog(QDialog):
         return {
             'target_difficulty': self.diff_combo.currentText(),
             'remove_single_game_mods': self.single_game_cb.isChecked(),
+            'remove_boss_mods': self.remove_boss_cb.isChecked() or self.single_game_cb.isChecked(),
+            'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
@@ -3127,7 +3163,8 @@ class HaloGUI(QMainWindow):
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
         elif mod_type == 'boss':
-            boss_mods = self.db.get_boss_modifiers_filtered(self.run_state.mission_id, bl, game)
+            boss_mods = [] if boss_mods_removed() else \
+                self.db.get_boss_modifiers_filtered(self.run_state.mission_id, bl, game)
             if boss_mods:
                 name = self.db.get_boss_name(self.run_state.mission_id)
                 pair['boss_mod'] = {**random.choice(boss_mods), 'boss': name}
@@ -3355,6 +3392,14 @@ class HaloGUI(QMainWindow):
             # frozen snapshot but flag it so the patcher can warn.
             mod['_missing_in_db'] = True
 
+    @staticmethod
+    def _combine_heretic_tag(tag):
+        """Given a resolved char tag for the Heretic Leader or his hologram, return
+        a multi-tag that targets BOTH (dedup class prefix)."""
+        cls = tag.split(' ', 1)[0]
+        base = "objects\\characters\\heretic\\ai\\"
+        return f"{cls} {base}heretic_leader & {base}heretic_leader_hologram"
+
     def on_patch_map(self):
         try:
             import halo_patch
@@ -3387,6 +3432,12 @@ class HaloGUI(QMainWindow):
                 for key in ('tag', 'field', 'harder_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)
+                # Boss option: fold the Heretic Leader and his holograms into one
+                # target so a single boss card tunes both (fields resolve on
+                # whichever tag holds them).
+                if (CONFIG.get('combine_heretic_hologram') and mod.get('boss') == 'Heretic Leader'
+                        and isinstance(mod.get('tag'), str) and 'heretic_leader' in mod['tag']):
+                    mod['tag'] = self._combine_heretic_tag(mod['tag'])
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
                 for t in mod.get('targets') or []:
@@ -3476,8 +3527,9 @@ class RunEnhancer:
         wpool = self._new_weapon_pool(for_player)
 
         # #4: boss levels get a guaranteed Boss card on every pair, and wildcards
-        # are disabled for the level.
-        has_boss = self.db.mission_has_boss(mid)
+        # are disabled for the level — unless boss mods are being removed, in which
+        # case the level behaves like a normal one (wildcards re-enabled).
+        has_boss = self.db.mission_has_boss(mid) and not boss_mods_removed()
         boss_pool = self.db.get_boss_modifiers_filtered(mid, bl, game) if has_boss else []
         boss_name = self.db.get_boss_name(mid)
 
