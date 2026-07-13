@@ -4395,18 +4395,6 @@
 						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
 					]
 				},
-				"Melee Leap": {
-					"desc": "Melee lunge range, velocity, chance and ballistic arc.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
-					"targets": [
-						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
-					]
-				},
 				"Cover Chance": {
 					"desc": "Chance of seeking cover.",
 					"game": "Halo 2",
@@ -4434,6 +4422,16 @@
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
 				},
+				"Body Recharge": {
+					"desc": "Did you know Brutes can regenerate Health? Recharge Fraction = % of Max Health they can regain.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all" },
+						{ "field": "Body Recharge Delay Time", "block": "Vitality Properties", "index": "all" },
+						{ "field": "Body Recharge Time", "block": "Vitality Properties", "index": "all" }
+					]
+				},
 				"Grenades": {
 					"desc": "Grenade throwing \u2014 velocity, range, collateral.",
 					"game": "Halo 2",
@@ -4451,7 +4449,8 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all" }
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": "Grenades Properties", "index": "all" }
 					]
 				},
 				"Dive From Grenade Chance": {
@@ -4481,7 +4480,9 @@
 						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
 					]
 				}
-			},
+			}
+		},
+		"Boss enemy modifier": {
 			"Prophet Regret": {
 				"Body Vitality": {
 					"desc": "Prophet Regret's health.",
@@ -4550,15 +4551,14 @@
 					"desc": "His flying throne's movement \u2014 top speed, acceleration and turning.",
 					"game": "Halo 2",
 					"tag": "vehi objects\\vehicles\\gravity_throne\\gravity_throne",
-					"harder_when": "increased",
 					"targets": [
-						{ "field": "Maximum Forward Speed" },
-						{ "field": "Maximum Reverse Speed" },
-						{ "field": "Speed Acceleration" },
-						{ "field": "Speed Deceleration" },
-						{ "field": "Maximum Left Turn" },
-						{ "field": "Maximum Right Turn (Negative)" },
-						{ "field": "Turn Rate" }
+						{ "field": "Maximum Forward Speed", "harder_when": "increased" },
+						{ "field": "Maximum Reverse Speed", "harder_when": "increased" },
+						{ "field": "Speed Acceleration", "harder_when": "increased" },
+						{ "field": "Speed Deceleration", "harder_when": "increased" },
+						{ "field": "Maximum Left Turn", "harder_when": "increased" },
+						{ "field": "Maximum Right Turn (Negative)", "harder_when": "decreased" },
+						{ "field": "Turn Rate", "harder_when": "increased" }
 					]
 				}
 			},
@@ -4648,6 +4648,272 @@
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				}
+			},
+			"Sentinel Enforcer": {
+				"Body Vitality": {
+					"desc": "Health of the Enforcer's hull.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\sentinel_enforcer\\ai\\sentinel_enforcer",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Shield of the Enforcer.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\sentinel_enforcer\\ai\\sentinel_enforcer",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance he dodges away from a grenade.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\sentinel_enforcer\\ai\\sentinel_enforcer",
+					"targets": [
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
+					]
+				},
+				"Grapple Melee": {
+					"desc": "Damage of his grapple melee.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\sentinel_enforcer\\damage_effects\\grapple_melee",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Beam": {
+					"desc": "His eliminator beam's fire rate and shots per burst.",
+					"game": "Halo 2",
+					"tag": "weap objects\\characters\\sentinel_enforcer\\weapons\\beam\\sentinel_enforcer_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" },
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					]
+				},
+				"Beam Projectile": {
+					"desc": "Beam range and velocity (shared with the sentinel eliminators).",
+					"game": "Halo 2",
+					"tag": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Beam Damage": {
+					"desc": "Beam damage (shared with the sentinel eliminators).",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Needler": {
+					"desc": "His needler's fire rate and shots per burst.",
+					"game": "Halo 2",
+					"tag": "weap objects\\characters\\sentinel_enforcer\\weapons\\needler\\sentinel_enforcer_needler",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" },
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					]
+				},
+				"Needler Projectile": {
+					"desc": "Needle range and velocity (shared with the sentinels).",
+					"game": "Halo 2",
+					"tag": "proj objects\\characters\\sentinel_aggressor\\weapons\\needler\\sentinel_aggressor_needler_needle",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Needler Damage": {
+					"desc": "Needle impact damage (shared with the sentinels).",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\needler\\damage_effects\\sentinel_aggressor_needler_needle_impact",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Rocket": {
+					"desc": "His rocket's fire rate and shots per burst.",
+					"game": "Halo 2",
+					"tag": "weap objects\\characters\\sentinel_enforcer\\weapons\\rocket\\sentinel_enforcer_rocket",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" },
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					]
+				},
+				"Rocket Projectile": {
+					"desc": "Rocket range and velocity.",
+					"game": "Halo 2",
+					"tag": "proj objects\\characters\\sentinel_enforcer\\weapons\\rocket\\sentinel_enforcer_rocket",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Rocket Damage": {
+					"desc": "Rocket explosion damage and radius.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\sentinel_enforcer\\weapons\\rocket\\damage_effects\\sentinel_enforcer_rocket_explosion",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" },
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Enforcer Chassis": {
+					"desc": "His hull's movement \u2014 top speed, acceleration and turning.",
+					"game": "Halo 2",
+					"tag": "vehi objects\\characters\\sentinel_enforcer\\sentinel_enforcer",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Forward Speed" },
+						{ "field": "Maximum Reverse Speed" },
+						{ "field": "Speed Acceleration" },
+						{ "field": "Speed Deceleration" },
+						{ "field": "Maximum Left Turn" },
+						{ "field": "Maximum Right Turn (Negative)" },
+						{ "field": "Turn Rate" }
+					]
+				}
+			},
+			"Tartarus": {
+				"Body Vitality": {
+					"desc": "Tartarus's health.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Tartarus's shield (his fuel-rod shield).",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between hammer swings and the chance of one.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Melee Leap": {
+					"desc": "His hammer lunge range, velocity, chance and arc.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Cover Chance": {
+					"desc": "Chance he seeks cover.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and vitality threshold.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance he dives away from a grenade.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
+					]
+				},
+				"Maximum Firing Distance": {
+					"desc": "Range within which he engages.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Gravity Hammer Damage": {
+					"desc": "Damage of the gravity hammer \u2014 its swing, ground-slam explosion and obstacle smash.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee & objects\\characters\\brute\\damage_effects\\tartarus_obstacle_smash",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Gravity Hammer Radius": {
+					"desc": "Blast radius of the hammer's swing and ground-slam.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
 					]
 				}
 			}

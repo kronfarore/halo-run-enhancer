@@ -14,7 +14,7 @@ from PySide6.QtGui import *
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
 # bump only the last component for changes; the middle 2 becomes 3 only when
 # support reaches the next Halo game. Stamped into saved runs and patch logs.
-VERSION = "0.2.1"
+VERSION = "0.2.05b"
 
 
 def resource_path(filename):
@@ -318,6 +318,7 @@ class ModifierDatabase:
         self.wildcard_pool = []
         self.weapon_mods = {}
         self.enemy_mods = {}
+        self.boss_mods = {}         # boss name -> mods (Boss enemy modifier section)
         self.mission_enemies = {}
         self.mission_list = []
         self.games = []             # game names in JSON order
@@ -394,6 +395,13 @@ class ModifierDatabase:
                     for mod_name, mod_data in mods.items():
                         self.enemy_mods[enemy].append(
                             self._build_mod(mod_name, mod_data, {'enemy': enemy}))
+            # Bosses live in their own section; keyed like enemies (mod['enemy'] =
+            # boss name) but only ever drawn via the boss pool, never as a normal
+            # enemy card.
+            if 'Boss enemy modifier' in self.data['Enemy modifiers']:
+                for boss, mods in self.data['Enemy modifiers']['Boss enemy modifier'].items():
+                    self.boss_mods[boss] = [self._build_mod(n, md, {'enemy': boss})
+                                            for n, md in mods.items()]
         # Wildcard pool: Friend modifiers are wildcards by nature, plus any mod
         # anywhere flagged `wildcard: true`.
         if 'Friend modifiers' in self.data:
@@ -525,7 +533,7 @@ class ModifierDatabase:
         negative pool (which hits all enemies), so boss levels still draw a card."""
         mods = []
         for boss in self.mission_boss.get(mission_id) or []:
-            mods.extend(self.enemy_mods.get(boss, []))
+            mods.extend(self.boss_mods.get(boss) or self.enemy_mods.get(boss, []))
         specific = self.filter_blacklisted(mods, blacklist, game)
         if specific:
             return specific
@@ -3366,8 +3374,8 @@ class HaloGUI(QMainWindow):
                 return next((m for m in self.db.weapon_mods.get(mod['weapon'], [])
                             if m['name'] == name), None)
             if mod.get('enemy'):
-                return next((m for m in self.db.enemy_mods.get(mod['enemy'], [])
-                            if m['name'] == name), None)
+                pool = self.db.enemy_mods.get(mod['enemy']) or self.db.boss_mods.get(mod['enemy'], [])
+                return next((m for m in pool if m['name'] == name), None)
             for pool in (self.db.positive_pool, self.db.negative_pool, self.db.wildcard_pool):
                 found = next((m for m in pool if m['name'] == name), None)
                 if found:
