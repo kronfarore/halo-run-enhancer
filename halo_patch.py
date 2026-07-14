@@ -13,14 +13,21 @@ import halo_map as hm
 
 # Games that use the second-generation (Halo 2 MCC) cache format.
 SECOND_GEN_GAMES = {'Halo 2'}
+# Games that use the third-generation (Halo 3 MCC) cache format.
+THIRD_GEN_GAMES = {'Halo 3'}
 
 
 def open_map(map_path, game=None):
-    """Open a map with the right parser for its game. Second-generation games
-    (Halo 2) use `Halo2Map`; everything else uses the Halo 1 `HaloMap`."""
-    if str(game).strip() in SECOND_GEN_GAMES:
+    """Open a map with the right parser for its game: Halo 2 -> `Halo2Map`
+    (second-gen), Halo 3 -> `Halo3Map` (third-gen), everything else -> the
+    Halo 1 `HaloMap`."""
+    g = str(game).strip()
+    if g in SECOND_GEN_GAMES:
         import halo2_map
         return halo2_map.Halo2Map(map_path)
+    if g in THIRD_GEN_GAMES:
+        import halo3_map
+        return halo3_map.Halo3Map(map_path)
     return hm.HaloMap(map_path)
 
 

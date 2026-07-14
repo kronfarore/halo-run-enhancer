@@ -6,6 +6,30 @@ modifier pairs each round, lets two players draft them turn-by-turn, and then
 Halo 2, with Halo 3 support in progress), resolving fields through the Assembly
 plugin definitions — no recompilation, just byte edits.
 
+## Requirements
+
+The repository is self-contained for **rolling and drafting** a run. Two things
+it needs are **not** in the repo because they're external installs:
+
+| Dependency | In repo? | Needed for | Notes |
+|---|---|---|---|
+| Python 3.8+ and PySide6 | requirements only | everything | `pip install -r requirements.txt` |
+| `halo.json` + the `.py` modules | ✅ yes | everything | bundled |
+| **Halo: MCC install** (the `.map` files) | ❌ no | patching maps | your Steam/Store MCC |
+| **Assembly / HCEEK `Plugins` folder** | ❌ no | patching maps | see below |
+
+The **Assembly plugin XMLs** (`matg.xml`, `scnr.xml`, `weap.xml`, …) are read
+**at runtime** to resolve each field's byte offset when patching a map — they are
+a hard dependency for the patcher, not just reference material. They ship with
+[Assembly](https://github.com/XboxChaos/Assembly) / HCEEK; point
+`assembly_plugins_dir` at that `Plugins` directory (Options menu, or
+`settings.json`). Without them, rolling and drafting still work, but "Patch to
+map" cannot resolve fields. The tool **warns at startup** (a dialog + console
+line) if `halo.json` or the plugins folder is missing, then continues.
+
+Files the app *writes* itself and does not need shipped: `settings.json`,
+`magnitude_presets.json`, `selections/`, `patches/` (all gitignored).
+
 ## Installation & running
 
 1. Install Python 3.8+.
@@ -126,4 +150,13 @@ Runs can be saved and loaded; a saved run restores the options it was played wit
   cutscene scripting (plus the unavoidable rebuild reindexing), so they patch
   identically to vanilla.
 * **Tag/field definitions** — this tool resolves map fields through the Assembly
-  plugin XML from [XboxChaos/Assembly](https://github.com/XboxChaos/Assembly).
+  plugin XML from [XboxChaos/Assembly](https://github.com/XboxChaos/Assembly),
+  which is licensed under GPL-3.0.
+
+## License
+
+Halo Run Enhancer is licensed under the **GNU General Public License v3.0** — see
+[LICENSE](LICENSE). It uses tag/field definitions from
+[XboxChaos/Assembly](https://github.com/XboxChaos/Assembly) (also GPL-3.0); any
+build that embeds those plugin files must comply with the GPL, and their
+copyright and license notices must be preserved.

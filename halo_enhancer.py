@@ -6,9 +6,17 @@ import random
 import sys
 from datetime import datetime
 from pathlib import Path
-from PySide6.QtWidgets import *
-from PySide6.QtCore import *
-from PySide6.QtGui import *
+try:
+    from PySide6.QtWidgets import *
+    from PySide6.QtCore import *
+    from PySide6.QtGui import *
+except ImportError as e:
+    sys.stderr.write(
+        "ERROR: PySide6 is required to run Halo Run Enhancer but is not installed.\n"
+        "Install the dependencies first:\n"
+        "    pip install -r requirements.txt\n"
+        f"(import error: {e})\n")
+    sys.exit(1)
 
 
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
@@ -187,8 +195,10 @@ CONFIG = {
     # --- Map patching (Halo 1 for now) ---
     "target_difficulty": "Impossible",   # which difficulty slot difficulty-effects write to
     "assembly_plugins_dir": r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
-    "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"]},
-    "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11"},
+    "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"],
+                               "Halo 3": ["Halo3MCC", "Halo3"]},
+    "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
+                        "Halo 3": "halo3/maps"},
     # #6: alternate internal names mapped to a canonical weapon. The alias
     # shares the canonical weapon's modifiers and is not treated as new.
     # e.g. {"Magnum": "Pistol"}
@@ -3771,6 +3781,37 @@ class RunEnhancer:
                 return True
         return False
 
+def check_dependencies():
+    """Return a list of human-readable problems with the runtime environment
+    (missing data files / Assembly plugins). Empty list means all good.
+
+    Warn-and-continue: only map PATCHING needs the Assembly plugins (they resolve
+    field name -> byte offset); rolling and drafting a run work without them.
+    Call after load_settings() so a user-configured assembly_plugins_dir is seen."""
+    problems = []
+    # 1. halo.json — the modifier database (bundled; a clone always has it).
+    hj = Path(resource_path('halo.json'))
+    if not hj.is_file():
+        problems.append(f"halo.json (the modifier database) was not found at {hj}.")
+    # 2. Assembly plugin folder — an EXTERNAL dependency, not bundled. Required to
+    #    patch maps; ships with Assembly/HCEEK and is set via assembly_plugins_dir.
+    root = CONFIG.get('assembly_plugins_dir')
+    subdirs = CONFIG.get('plugin_subdirs_by_game', {})
+    expected = sorted({s for subs in subdirs.values() for s in subs})
+    if not root or not Path(root).is_dir():
+        problems.append(
+            f"Assembly plugins folder not found (assembly_plugins_dir = {root!r}).\n"
+            "  Map patching needs Assembly's 'Plugins' directory. Install Assembly / "
+            "HCEEK and set the folder in Options. Rolling and drafting still work.")
+    elif not any((Path(root) / sub).is_dir() and any((Path(root) / sub).glob('*.xml'))
+                 for sub in expected):
+        problems.append(
+            f"Assembly plugins folder {root!r} has none of the expected game "
+            f"subfolders ({', '.join(expected)}) with plugin .xml files.\n"
+            "  Map patching will not be able to resolve fields.")
+    return problems
+
+
 def main():
     # In a windowed build sys.stdout/err are None; guard the diagnostic prints.
     if sys.stdout is None:
@@ -3798,6 +3839,19 @@ def main():
         QScrollArea { background-color: #0a0a0a; }
         QScrollArea > QWidget > QWidget { background-color: #0a0a0a; }
     """)
+
+    # Warn (but continue) if runtime dependencies are missing — rolling/drafting
+    # still work; map patching needs the Assembly plugins.
+    problems = check_dependencies()
+    if problems:
+        body = "\n\n".join("• " + p for p in problems)
+        print("⚠ Missing dependencies:\n" + body)
+        QMessageBox.warning(
+            None, "Missing dependencies",
+            "Some things needed for full functionality are missing:\n\n" + body
+            + "\n\nThe app will still open — affected features (mainly map "
+              "patching) won't work until this is resolved. See the README's "
+              "Requirements section.")
 
     try:
         window = HaloGUI()
