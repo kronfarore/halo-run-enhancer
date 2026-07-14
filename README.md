@@ -3,8 +3,8 @@
 A GUI tool for co-op Halo: The Master Chief Collection runs. It rolls tied
 modifier pairs each round, lets two players draft them turn-by-turn, and then
 **patches the chosen effects directly into the game's `.map` files** (Halo 1 and
-Halo 2), resolving fields through the Assembly plugin definitions — no
-recompilation, just byte edits.
+Halo 2, with Halo 3 support in progress), resolving fields through the Assembly
+plugin definitions — no recompilation, just byte edits.
 
 ## Installation & running
 
@@ -116,3 +116,14 @@ pristine copy of the original, untouched map. This backup is important:
 | **Debug mode** | Expose per-field patching and the add-mod tools. |
 
 Runs can be saved and loaded; a saved run restores the options it was played with.
+
+## Credits
+
+* **Halo 3 base maps** — the Halo 3 campaign maps used for Halo 3 support are the
+  cutscene-free rebuilds from **"Halo 3 Cortana Begone" by TacoUpgrade**
+  ([Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3567825314)).
+  Verified to differ from the stock maps only by the removal of the Cortana
+  cutscene scripting (plus the unavoidable rebuild reindexing), so they patch
+  identically to vanilla.
+* **Tag/field definitions** — this tool resolves map fields through the Assembly
+  plugin XML from [XboxChaos/Assembly](https://github.com/XboxChaos/Assembly).
