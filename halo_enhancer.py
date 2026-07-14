@@ -63,7 +63,7 @@ def is_valid_run(data):
 
 
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods', 'include_wildcards',
-               'wildcard_chance', 'new_weapon_chance', 'include_grenades',
+               'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'debug_mode',
                'card_width', 'card_height', 'hide_tags', 'hide_fields')
@@ -140,6 +140,7 @@ CONFIG = {
     "debug_mode": True,
 
     "wildcard_chance": 0.1,
+    "exhaust_chance": 0.1,   # #5: per-pair chance of a one-map Exhaust (non-boss 3rd slot)
     "new_weapon_chance": 0.0,
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
@@ -209,6 +210,7 @@ MOD_COLORS = {
     'boss':  {'border': 'AA00FF', 'bg': '160016'},  # #4: menacing purple
     'special': {'border': '00E5FF', 'bg': '06201f'},  # #3: standout cyan
     'dual': {'border': '00E676', 'bg': '0a2012'},   # dual-wield-only effects
+    'exhaust': {'border': 'FF7043', 'bg': '1e0f06'},  # #5: one-map exhaust (ember orange)
 }
 
 # Historical effect renames: old name -> current halo.json key. Consulted by
@@ -632,6 +634,16 @@ class ModifierDatabase:
                      and self._cross_game_ok(m)]
         return random.choice(available) if available else None
 
+    def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
+        """#5: draw a one-map Exhaust from the general negative pool, excluding
+        negatives already active this run (so there's never an overlap to
+        unwind) and anything blacklisted / off-game. None if nothing is left."""
+        available = [m for m in self.negative_pool
+                     if m.get('name') not in active_names
+                     and self.get_mod_label(m) not in blacklist
+                     and self._game_ok(m, game) and self._cross_game_ok(m)]
+        return random.choice(available) if available else None
+
     def special_names(self):
         """Names of the escalating-odds special effects (#3)."""
         return [m['name'] for m in self.positive_pool if m.get('special')]
@@ -656,6 +668,8 @@ class RunState:
         self.rounds = []
         self.new_weapon_count = 0   # #4: how many new-weapon pairs P1 was offered
         self.special_counters = {}  # special effect name -> rounds since last picked
+        # #5: a player who picked an Exhaust gets one no-negative choice next round.
+        self.free_negative_pending = {'player1': False, 'player2': False}
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -711,6 +725,7 @@ class RunState:
             "timestamp": datetime.now().isoformat(),
             "blacklist": list(self.blacklist),
             "special_counters": dict(self.special_counters),
+            "free_negative_pending": dict(self.free_negative_pending),
             "rounds": self.rounds
         }
 
@@ -764,6 +779,9 @@ class RunState:
         state.current_turn = data.get('current_turn', 'player1')
         state.blacklist = set(data.get('blacklist', []))
         state.special_counters = dict(data.get('special_counters', {}))
+        fnp = data.get('free_negative_pending') or {}
+        state.free_negative_pending = {'player1': bool(fnp.get('player1')),
+                                       'player2': bool(fnp.get('player2'))}
         return state
 
 class WeaponSelectionCard(QGroupBox):
@@ -1003,10 +1021,25 @@ class PairCard(QGroupBox):
         if self.pair['enemy_mod']:
             enemy_widget = self.create_mod_widget(self.pair['enemy_mod'], "ENEMY", "red", 'enemy')
             layout.addWidget(enemy_widget)
+        elif self.pair.get('no_negative'):
+            # #5: exhaust reward — this pair carries no enemy buff.
+            free = QLabel("✦ NO ENEMY BUFF  (exhaust reward)")
+            free.setStyleSheet("color: #00E676; font-weight: bold; font-size: "
+                               f"{CONFIG['font_size_name']}px; padding: 8px; "
+                               "border: 1px dashed #00E676; border-radius: 4px; "
+                               "background-color: #0a2012;")
+            free.setWordWrap(True)
+            layout.addWidget(free)
 
         if self.pair['wildcard_mod']:
             wildcard_widget = self.create_mod_widget(self.pair['wildcard_mod'], "🎲 WILDCARD", "gold", 'wildcard')
             layout.addWidget(wildcard_widget)
+
+        # #5: one-map Exhaust (3rd slot; mutually exclusive with Wildcard/Boss).
+        if self.pair.get('exhaust_mod'):
+            exhaust_widget = self.create_mod_widget(
+                self.pair['exhaust_mod'], "🜂 EXHAUST (one map)", "exhaust", 'exhaust')
+            layout.addWidget(exhaust_widget)
 
         # #4: guaranteed boss card on boss levels (replaces the wildcard roll).
         if self.pair.get('boss_mod'):
@@ -1088,11 +1121,13 @@ class PairCard(QGroupBox):
             source = mod_data.get('enemy', 'General')
         elif mod_type == 'boss':
             source = mod_data.get('boss') or mod_data.get('enemy', 'Boss')
+        elif mod_type == 'exhaust':
+            source = 'Exhaust'
         else:
             source = 'Wildcard'
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
-        border_width = 2 if color in ('gold', 'boss') else 1  # emphasize wildcard/boss
+        border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
         dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
         if special:
@@ -1158,6 +1193,8 @@ class PairCard(QGroupBox):
         elif mod_type == 'boss':
             # Boss effects come from the enemy/negative pool; blacklist by their real source.
             bl_source = mod_data.get('enemy', 'General')
+        elif mod_type == 'exhaust':
+            bl_source = 'Exhaust'
         else:
             bl_source = 'Wildcard'
         blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data, bl_source, self.pair['id'], mod_type))
@@ -1749,9 +1786,19 @@ class MagnitudeEditorDialog(QDialog):
                         le.setToolTip("Carried over from %s (no value set for this field yet)"
                                       % self._FIELD_CARRYOVER.get(t['field'], ''))
             inrow.addWidget(le)
+            eh = le.sizeHint().height()   # keep row-adornment buttons the input's height
+            # #1: debug-only per-field patch — write just this one field to the map.
+            if CONFIG.get('debug_mode') and not derived and t.get('set') is None:
+                one = QPushButton("⤓ field")
+                one.setMaximumWidth(72)
+                one.setFixedHeight(eh)   # don't inflate the row (misaligns the value column)
+                one.setToolTip("Patch ONLY this field into the map now (debug)")
+                one.clicked.connect(lambda _=False, e=eff, tt=t, ed=le: self._apply_single(e, tt, ed))
+                inrow.addWidget(one)
             if t.get('custom'):
                 rm = QPushButton("✕")
                 rm.setMaximumWidth(28)
+                rm.setFixedHeight(eh)
                 rm.setToolTip("Remove this fallback field")
                 rm.clicked.connect(lambda _=False, e=eff, tt=t: self._remove_custom(e, tt))
                 inrow.addWidget(rm)
@@ -2115,26 +2162,69 @@ class MagnitudeEditorDialog(QDialog):
         self._write_patch_file(map_path, plan, results, backup)
         self._srcmap = None  # map changed on disk; re-read vanilla next time
 
-        ok = [r for r in results if r.get('ok')]
-        bad = [r for r in results if not r.get('ok')]
-        lines = [f"Applied {len(ok)} edit(s); {len(bad)} skipped/failed."]
+        self._show_results(results, backup)
+
+    def _show_results(self, results, backup):
+        # #4: three buckets — Applied (a real write), Skipped (a deliberate no-op:
+        # already-scoped scope, weapon that rounds/trims to 0, an H2-only field on
+        # an H1 map), and Failed (an edit that should have landed but didn't).
+        applied = [r for r in results if r.get('ok') and not r.get('skip')]
+        skipped = [r for r in results if r.get('skip')]
+        failed = [r for r in results if not r.get('ok') and not r.get('skip')]
+        lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
         if backup:
             lines.append(f"Backup: {backup}")
         lines.append("")
         def _fmt(x):
             return round(x, 4) if isinstance(x, (int, float)) else x
-        for r in ok:
+        for r in applied:
             hint = ("   (input negated for H2)" if r.get('negated')
                     else "   (auto-computed)" if r.get('derived') else "")
             if r.get('inherited_from'):
                 hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
-            lines.append(f"  OK  {r['effect']}: {r.get('field', '')}  "
+            lines.append(f"  OK    {r['effect']}: {r.get('field', '')}  "
                          f"{_fmt(r.get('old'))} -> {_fmt(r.get('new'))}{tag}{hint}")
-        for r in bad:
+        for r in skipped:
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
-            lines.append(f"  --  {r['effect']}: {r.get('field')}  ({r['reason']}){tag}")
+            why = r.get('reason') or r.get('new') or 'no change needed'
+            lines.append(f"  SKIP  {r['effect']}: {r.get('field', '')}  ({why}){tag}")
+        for r in failed:
+            tag = f"   [{r['tag']}]" if r.get('tag') else ""
+            lines.append(f"  FAIL  {r['effect']}: {r.get('field')}  ({r.get('reason')}){tag}")
         self.results.setPlainText("\n".join(lines))
+
+    def _apply_single(self, eff, t, le):
+        """#1 (debug): patch just this one field into the current map, using the
+        operator currently in its box. Skips the starting/weapon/zoom passes."""
+        map_path = self.map_edit.text().strip()
+        if not Path(map_path).is_file():
+            QMessageBox.warning(self, "Map not found", f"Not a file:\n{map_path}")
+            return
+        txt = le.text().strip()
+        if not txt:
+            QMessageBox.information(self, "Nothing to apply",
+                                   "Enter an operator for this field first.")
+            return
+        op = {'field': t['field'], 'block': t.get('block'), **_diff_flavor(t),
+              'index': t.get('index', 0), 'op_str': txt, 'negate': t.get('negate'),
+              'nth': t.get('nth', 0) or 0}
+        plan = [{'tag': eff['tag'], 'name': eff['name'], 'ops': [op],
+                 'init_defaults': eff.get('init_defaults')}]
+        try:
+            # Incremental: patch this one field onto the live map, preserving the
+            # other already-applied effects (don't restore the baseline).
+            results, backup = self._hp.apply_run(map_path, plan, self.registry,
+                                                 self.target_difficulty, game=self.game,
+                                                 from_baseline=False)
+        except Exception as e:
+            QMessageBox.critical(self, "Patch failed", str(e))
+            return
+        self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+        self._hp.save_presets(self.presets_path, self.presets)
+        self._write_patch_file(map_path, plan, results, backup)
+        self._srcmap = None  # map changed on disk; re-read vanilla next time
+        self._show_results(results, backup)
 
     def _write_patch_file(self, map_path, plan, results, backup):
         try:
@@ -2242,6 +2332,15 @@ class OptionsDialog(QDialog):
         self.wildcard_chance.setValue(float(CONFIG.get('wildcard_chance', 0.1)))
         form.addRow("Wildcard chance:", self.wildcard_chance)
 
+        self.exhaust_chance = QDoubleSpinBox()
+        self.exhaust_chance.setRange(0.0, 1.0)
+        self.exhaust_chance.setSingleStep(0.05)
+        self.exhaust_chance.setDecimals(2)
+        self.exhaust_chance.setValue(float(CONFIG.get('exhaust_chance', 0.1)))
+        self.exhaust_chance.setToolTip("Per-pair chance of a one-map Exhaust in the 3rd slot "
+                                       "(non-boss levels; mutually exclusive with Wildcard). 0 disables.")
+        form.addRow("Exhaust chance:", self.exhaust_chance)
+
         self.new_weapon_chance = QDoubleSpinBox()
         self.new_weapon_chance.setRange(0.0, 1.0)
         self.new_weapon_chance.setSingleStep(0.05)
@@ -2254,7 +2353,7 @@ class OptionsDialog(QDialog):
         self.special_rate.setSingleStep(0.05)
         self.special_rate.setDecimals(2)
         self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
-        self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.")
+        self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
         form.addRow("Special-effect rate:", self.special_rate)
 
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
@@ -2329,6 +2428,7 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
+            'exhaust_chance': round(self.exhaust_chance.value(), 2),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'include_grenades': self.grenades_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
@@ -3130,6 +3230,16 @@ class HaloGUI(QMainWindow):
                 'boss1': p1_pair.get('boss_mod'),
                 'boss2': p2_pair.get('boss_mod')
             }
+            # #5: stamp each picked Exhaust with the mission it belongs to (so it
+            # only patches that one map), and grant its picker a no-negative
+            # choice next round.
+            for pk, pr in (('exhaust1', p1_pair), ('exhaust2', p2_pair)):
+                ex = pr.get('exhaust_mod')
+                if isinstance(ex, dict):
+                    ex = {**ex, '_exhaust_mission': self.run_state.mission_id}
+                    self.run_state.free_negative_pending[
+                        'player1' if pk == 'exhaust1' else 'player2'] = True
+                round_data[pk] = ex
             self.run_state.rounds.append(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
 
@@ -3185,6 +3295,9 @@ class HaloGUI(QMainWindow):
             pair['enemy_mod'] = random.choice(mods) if mods else None
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
+        elif mod_type == 'exhaust':
+            active = self.enhancer._active_negative_names()
+            pair['exhaust_mod'] = self.db.get_exhaust_modifier_filtered(active, bl, game)
         elif mod_type == 'boss':
             boss_mods = [] if boss_mods_removed() else \
                 self.db.get_boss_modifiers_filtered(self.run_state.mission_id, bl, game)
@@ -3445,7 +3558,8 @@ class HaloGUI(QMainWindow):
         for rd in rounds:
             slots = [(rd.get('player1') or {}).get('mod'), (rd.get('player2') or {}).get('mod'),
                      rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'),
-                     rd.get('boss1'), rd.get('boss2')]
+                     rd.get('boss1'), rd.get('boss2'),
+                     rd.get('exhaust1'), rd.get('exhaust2')]
             for mod in slots:
                 if not isinstance(mod, dict):
                     continue
@@ -3478,7 +3592,7 @@ class HaloGUI(QMainWindow):
                 mod['targets'] = [t for t in (mod.get('targets') or [])
                                   if (not t.get('games') or game in t['games'])
                                   and t.get('field') is not None]
-        effects = halo_patch.collect_effects(rounds)
+        effects = halo_patch.collect_effects(rounds, self.run_state.mission_id)
         if not effects:
             QMessageBox.information(self, "No effects yet",
                                     "Select some effects first — there's nothing to patch.")
@@ -3578,6 +3692,11 @@ class RunEnhancer:
         else:
             offered = []
 
+        # #5: exhausts draw from negatives not already active, so there's never
+        # an overlap to unwind. Recomputed per generate (active set is stable
+        # across this call's three pairs).
+        active_neg = self._active_negative_names()
+
         pairs = []
         wi = 0
         for i in range(3):
@@ -3585,6 +3704,7 @@ class RunEnhancer:
             new_weapon = None
             p1_choice = p2_choice = None
             wildcard = None
+            exhaust = None
             boss_mod = make_boss_mod(random.choice(boss_pool), boss_name) if boss_pool else None
             if flags[i] and wi < len(offered):
                 new_weapon = offered[wi]
@@ -3595,9 +3715,14 @@ class RunEnhancer:
                     p1_choice = choice
                 else:
                     p2_choice = choice
-                if (not has_boss and CONFIG['include_wildcards']
-                        and random.random() < CONFIG['wildcard_chance']):
-                    wildcard = self.db.get_wildcard_modifier_filtered(bl, game)
+                # #5: 3rd slot on non-boss levels — roll Exhaust first (10%), else
+                # Wildcard. The three are mutually exclusive (one slot).
+                if not has_boss:
+                    if random.random() < (CONFIG.get('exhaust_chance', 0.1) or 0):
+                        exhaust = self.db.get_exhaust_modifier_filtered(active_neg, bl, game)
+                    if exhaust is None and CONFIG['include_wildcards'] \
+                            and random.random() < CONFIG['wildcard_chance']:
+                        wildcard = self.db.get_wildcard_modifier_filtered(bl, game)
             pairs.append({
                 'id': i + 1,
                 'player1_mod': p1_choice,
@@ -3605,12 +3730,38 @@ class RunEnhancer:
                 'enemy_mod': enemy_choice,
                 'wildcard_mod': wildcard,
                 'boss_mod': boss_mod,
+                'exhaust_mod': exhaust,
                 'new_weapon': new_weapon,
+                'no_negative': False,
                 'selected_by': None
             })
+        # #5: compensation — if this player is owed a no-negative choice (they
+        # picked an Exhaust last round), strip the enemy card from one pair.
+        if self.run_state.free_negative_pending.get(for_player):
+            idx = random.randrange(len(pairs))
+            pairs[idx]['enemy_mod'] = None
+            pairs[idx]['no_negative'] = True
+            self.run_state.free_negative_pending[for_player] = False
         self.run_state.pairs = pairs
         self.run_state.current_turn = for_player
         return pairs
+
+    def _active_negative_names(self):
+        """#5: names of negatives already active this run — every enemy card, plus
+        Exhausts still bound to the current mission. Used to keep a fresh Exhaust
+        from duplicating an active negative."""
+        mid = self.run_state.mission_id
+        names = set()
+        for rd in self.run_state.rounds:
+            for k in ('enemy1', 'enemy2'):
+                m = rd.get(k)
+                if isinstance(m, dict):
+                    names.add(m.get('name'))
+            for k in ('exhaust1', 'exhaust2'):
+                m = rd.get(k)
+                if isinstance(m, dict) and m.get('_exhaust_mission') == mid:
+                    names.add(m.get('name'))
+        return names
 
     def select_pair(self, pair_id, player):
         for pair in self.run_state.pairs:

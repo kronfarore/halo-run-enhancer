@@ -50,10 +50,13 @@ class PluginRegistry:
         return plugin
 
 
-def collect_effects(rounds):
+def collect_effects(rounds, mission_id=None):
     """Unique patchable effects from a run's rounds, in first-seen order, each
     with a selection `count`, and a source `group`/`cat` (specific weapon,
-    player-general, specific enemy, enemy-general, friend, boss) for display."""
+    player-general, specific enemy, enemy-general, friend, boss, exhaust) for
+    display. Exhausts are one-map negatives: an exhaust is only included when
+    patching the mission it was rolled in (mission_id), so leaving that mission
+    drops it automatically (paired with apply_run's idempotent re-patch)."""
     seen, order = {}, []
 
     def add(mod, group, cat):
@@ -89,6 +92,11 @@ def collect_effects(rounds):
         add(rd.get('wildcard'), 'Friend / Wildcard', 4)
         for k in ('boss1', 'boss2'):
             add(rd.get(k), 'Boss', 5)
+        for k in ('exhaust1', 'exhaust2'):
+            ex = rd.get(k)
+            if isinstance(ex, dict) and (mission_id is None
+                                         or ex.get('_exhaust_mission') == mission_id):
+                add(ex, 'Exhaust', 6)
     return [seen[k] for k in order]
 
 
@@ -181,7 +189,7 @@ def _apply_derived(m, cls, path, effect_name, op, plugin):
     ref = f"{cls} {path}"
     if not hasattr(m, 'p2o'):  # H2-only marker; H1 HaloMap also has read_tag_field
         return [{'effect': effect_name, 'tag': ref, 'field': field,
-                 'ok': False, 'reason': 'derived fields are Halo 2 only'}]
+                 'ok': False, 'skip': True, 'reason': 'derived fields are Halo 2 only'}]
     tags = m.find_tags(cls, path)
     if not tags:
         return [{'effect': effect_name, 'tag': ref, 'field': field,
@@ -693,12 +701,23 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
 
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
-              starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None):
+              starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
+              from_baseline=True):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
-    .bak made) if at least one write succeeds."""
-    m = open_map(map_path, game)
+    .bak made) if at least one write succeeds.
+
+    Patching is idempotent: whenever a .bak (the pristine original) exists, the
+    map is rebuilt FROM that baseline rather than compounded onto the live file.
+    So re-patching never double-applies, and dropping an effect from the plan
+    (e.g. a spent one-map Exhaust) cleanly removes it — the baseline restores the
+    bytes and only the remaining effects are re-applied. Pass from_baseline=False
+    to instead patch the live file in place (used by the debug single-field
+    patch, which must not wipe the other already-applied effects)."""
+    bak = Path(str(map_path) + '.bak')
+    baseline = str(bak) if (from_baseline and backup and bak.exists()) else map_path
+    m = open_map(baseline, game)
     results = []
     if weapon_swaps:
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so

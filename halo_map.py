@@ -103,12 +103,13 @@ OP_FUNCS = {
     'sub': lambda old, v: old - v,
     'mul': lambda old, v: old * v,
 }
-_OP_SIGNS = {'=': 'set', '+': 'add', '-': 'sub', '*': 'mul'}
+_OP_SIGNS = {'=': 'set', '+': 'add', '-': 'sub', '*': 'mul', 'x': 'mul', 'X': 'mul'}
 
 
 def parse_operator(text):
-    """Parse a compact edit like '+5', '-0.3', '*1.2', '=1' into (op, value).
-    A bare number means 'set'. Returns None if unparseable."""
+    """Parse a compact edit like '+5', '-0.3', '*1.2' / 'x1.2', '=1' into
+    (op, value). A bare number means 'set'. Both '.' and ',' work as the decimal
+    separator. Returns None if unparseable."""
     if text is None:
         return None
     text = str(text).strip()
@@ -119,7 +120,7 @@ def parse_operator(text):
     if op is None:
         op = 'set'
     try:
-        return (op, float(body))
+        return (op, float(body.replace(',', '.')))
     except ValueError:
         return None
 
