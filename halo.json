@@ -4670,14 +4670,6 @@
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
 				},
-				"Dive From Grenade Chance": {
-					"desc": "Chance he dodges away from a grenade.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\sentinel_enforcer\\ai\\sentinel_enforcer",
-					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
-					]
-				},
 				"Grapple Melee": {
 					"desc": "Damage of his grapple melee.",
 					"game": "Halo 2",
@@ -4813,7 +4805,7 @@
 						{ "field": "Speed Acceleration" },
 						{ "field": "Speed Deceleration" },
 						{ "field": "Maximum Left Turn" },
-						{ "field": "Maximum Right Turn (Negative)" },
+						{ "field": "Maximum Right Turn (Negative)", "harder_when": "decreased" },
 						{ "field": "Turn Rate" }
 					]
 				}
@@ -4876,14 +4868,6 @@
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
-					]
-				},
-				"Dive From Grenade Chance": {
-					"desc": "Chance he dives away from a grenade.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
 					]
 				},
 				"Maximum Firing Distance": {

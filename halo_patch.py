@@ -179,7 +179,7 @@ def _apply_derived(m, cls, path, effect_name, op, plugin):
     field, block = op['field'], op.get('block')
     index = op.get('index', 0) or 0
     ref = f"{cls} {path}"
-    if not hasattr(m, 'read_tag_field'):
+    if not hasattr(m, 'p2o'):  # H2-only marker; H1 HaloMap also has read_tag_field
         return [{'effect': effect_name, 'tag': ref, 'field': field,
                  'ok': False, 'reason': 'derived fields are Halo 2 only'}]
     tags = m.find_tags(cls, path)
@@ -477,6 +477,8 @@ def _apply_weapon_swaps(m, game, registry, swaps):
             continue
         c = int(round(rate * N))
         if c <= 0:
+            out.append({'effect': 'map weapons', 'field': short, 'ok': True, 'skip': True,
+                        'reason': f'rate too low for {N} placements (rounds to 0)'})
             continue
         rl = rd = -1
         wb = _weap_base(m, name)
@@ -508,6 +510,11 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     for short, n in done.items():
         out.append({'effect': 'map weapons', 'field': short, 'ok': True,
                     'old': f'{N} placements', 'new': f'{n} swapped in'})
+    # a pick that survived rate-rounding but got trimmed to 0 by the N cap
+    for _pi, _c, _rl, _rd, short in assign:
+        if done.get(short, 0) == 0:
+            out.append({'effect': 'map weapons', 'field': short, 'ok': True, 'skip': True,
+                        'reason': f'trimmed to 0 (total capped at {N} placements)'})
     return out
 
 
@@ -662,7 +669,7 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
                         'reason': 'weapon has no HUD interface'})
             continue
         if hud in grown or _hud_is_scoped(m, game, hud):
-            out.append({'effect': 'zoom UI', 'field': short, 'ok': True,
+            out.append({'effect': 'zoom UI', 'field': short, 'ok': True, 'skip': True,
                         'old': short, 'new': 'already has a scope — unchanged'})
             continue
         donor_hud, donor = _zoom_donor(m, game, exclude_hud=hud, prefer=prefer_donor)
@@ -763,7 +770,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
 
     backup_path = None
-    if any(r.get('ok') for r in results):
+    if any(r.get('ok') and not r.get('skip') for r in results):
         if backup:
             bp = Path(str(map_path) + '.bak')
             if not bp.exists():                     # keep the pristine original

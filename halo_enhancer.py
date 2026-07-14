@@ -14,7 +14,7 @@ from PySide6.QtGui import *
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
 # bump only the last component for changes; the middle 2 becomes 3 only when
 # support reaches the next Halo game. Stamped into saved runs and patch logs.
-VERSION = "0.2.05b"
+VERSION = "0.2.08b"
 
 
 def resource_path(filename):
@@ -73,6 +73,14 @@ def boss_mods_removed():
     """Boss cards are suppressed when 'Remove boss mods' is set, or when 'Remove
     single-game mods' is set (bosses are unique per game, so they qualify)."""
     return bool(CONFIG.get('remove_boss_mods') or CONFIG.get('remove_single_game_mods'))
+
+
+def make_boss_mod(pool_mod, boss_name):
+    """Stamp a drawn boss-pool mod with the boss it represents. The 'boss' key
+    names the card ('☠ BOSS: <name>'); the mod keeps its own 'enemy' key (from
+    the DB) as the blacklist source. Single place the boss-card convention lives."""
+    return {**pool_mod, 'boss': boss_name}
+
 
 # Weapons whose scope the zoom-UI copy can source from, per game — real scoped
 # weapons (mask bitmaps confirmed) that map to halo.json weapon names. The patcher
@@ -1002,7 +1010,7 @@ class PairCard(QGroupBox):
 
         # #4: guaranteed boss card on boss levels (replaces the wildcard roll).
         if self.pair.get('boss_mod'):
-            boss_name = self.pair['boss_mod'].get('boss', 'Boss')
+            boss_name = self.pair['boss_mod'].get('boss') or self.pair['boss_mod'].get('enemy', 'Boss')
             boss_widget = self.create_mod_widget(self.pair['boss_mod'], f"☠ BOSS: {boss_name}", "boss", 'boss')
             layout.addWidget(boss_widget)
 
@@ -1079,7 +1087,7 @@ class PairCard(QGroupBox):
         elif mod_type == 'enemy':
             source = mod_data.get('enemy', 'General')
         elif mod_type == 'boss':
-            source = mod_data.get('boss', 'Boss')
+            source = mod_data.get('boss') or mod_data.get('enemy', 'Boss')
         else:
             source = 'Wildcard'
 
@@ -2199,13 +2207,20 @@ class OptionsDialog(QDialog):
         self.remove_boss_cb.setToolTip("Suppress the guaranteed Boss card on boss levels. Forced on while "
                                        "'Remove mods that only appear in one game' is set, since bosses are "
                                        "unique to a single game.")
-        # sub-option: forced on (and locked) while the single-game option is on
+        # sub-option: forced on (and locked) while the single-game option is on.
+        # The forced-on display state must not clobber the user's real preference,
+        # so we track it separately and restore it when single-game is turned off.
+        self._user_remove_boss = bool(CONFIG.get('remove_boss_mods'))
         def _sync_boss_sub():
             parent_on = self.single_game_cb.isChecked()
-            if parent_on:
-                self.remove_boss_cb.setChecked(True)
+            self.remove_boss_cb.blockSignals(True)
+            self.remove_boss_cb.setChecked(True if parent_on else self._user_remove_boss)
             self.remove_boss_cb.setEnabled(not parent_on)
-        self.remove_boss_cb.setChecked(bool(CONFIG.get('remove_boss_mods')))
+            self.remove_boss_cb.blockSignals(False)
+        def _on_boss_toggled(checked):
+            if self.remove_boss_cb.isEnabled():  # ignore programmatic (forced) changes
+                self._user_remove_boss = checked
+        self.remove_boss_cb.toggled.connect(_on_boss_toggled)
         self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
         _sync_boss_sub()
         form.addRow("    ↳ Boss mods:", self.remove_boss_cb)
@@ -2310,7 +2325,7 @@ class OptionsDialog(QDialog):
         return {
             'target_difficulty': self.diff_combo.currentText(),
             'remove_single_game_mods': self.single_game_cb.isChecked(),
-            'remove_boss_mods': self.remove_boss_cb.isChecked() or self.single_game_cb.isChecked(),
+            'remove_boss_mods': self._user_remove_boss,  # raw preference; boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
@@ -3175,7 +3190,7 @@ class HaloGUI(QMainWindow):
                 self.db.get_boss_modifiers_filtered(self.run_state.mission_id, bl, game)
             if boss_mods:
                 name = self.db.get_boss_name(self.run_state.mission_id)
-                pair['boss_mod'] = {**random.choice(boss_mods), 'boss': name}
+                pair['boss_mod'] = make_boss_mod(random.choice(boss_mods), name)
         show_p1 = self.run_state.current_turn == 'player1'
         show_p2 = self.run_state.current_turn == 'player2'
         self.display_pairs(self.run_state.pairs, show_p1, show_p2)
@@ -3254,6 +3269,9 @@ class HaloGUI(QMainWindow):
         for enemy, mods in self.db.enemy_mods.items():
             for mod in mods:
                 entries.append((f"[Enemy] {enemy}: {mod['name']}", mod))
+        for boss, mods in self.db.boss_mods.items():
+            for mod in mods:
+                entries.append((f"[Boss] {boss}: {mod['name']}", mod))
         for pool, kind in ((self.db.positive_pool, 'Player+'), (self.db.negative_pool, 'Enemy-'),
                            (self.db.wildcard_pool, 'Wildcard')):
             for mod in pool:
@@ -3567,7 +3585,7 @@ class RunEnhancer:
             new_weapon = None
             p1_choice = p2_choice = None
             wildcard = None
-            boss_mod = {**random.choice(boss_pool), 'boss': boss_name} if boss_pool else None
+            boss_mod = make_boss_mod(random.choice(boss_pool), boss_name) if boss_pool else None
             if flags[i] and wi < len(offered):
                 new_weapon = offered[wi]
                 wi += 1
