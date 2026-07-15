@@ -147,12 +147,12 @@ Runs can be saved and loaded; a saved run restores the options it was played wit
 
 ## Credits
 
-* **Halo 3 base maps** — the Halo 3 campaign maps used for Halo 3 support are the
-  cutscene-free rebuilds from **"Halo 3 Cortana Begone" by TacoUpgrade**
-  ([Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3567825314)).
-  Verified to differ from the stock maps only by the removal of the Cortana
-  cutscene scripting (plus the unavoidable rebuild reindexing), so they patch
-  identically to vanilla.
+* **Cortana/Gravemind cutscene removal** — the tool can optionally patch the flood
+  "Cortana flicker" and Gravemind vision cutscenes out of the Halo 3 campaign maps
+  (off by default). Thanks to **"Halo 3 Cortana Begone" by TacoUpgrade**
+  ([Steam Workshop](https://steamcommunity.com/sharedfiles/filedetails/?id=3567825314)) —
+  studying that mod is how we worked out how to patch those scenes out ourselves,
+  so the tool does it from your own stock maps with no external mod required.
 * **Tag/field definitions** — this tool resolves map fields through the Assembly
   plugin XML from [XboxChaos/Assembly](https://github.com/XboxChaos/Assembly),
   which is licensed under GPL-3.0.
