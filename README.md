@@ -30,6 +30,12 @@ line) if `halo.json` or the plugins folder is missing, then continues.
 Files the app *writes* itself and does not need shipped: `settings.json`,
 `magnitude_presets.json`, `selections/`, `patches/` (all gitignored).
 
+**Halo 2 maps must be decompressed to patch them.** The patcher edits bytes in
+place and does not re-compress, so a compressed H2 `.map` can't be saved back.
+Most H2 campaign maps already ship uncompressed, but any that aren't (and the
+tutorial/intro) must be decompressed first — Assembly can do this ("Save map"
+after opening, or its decompress option).
+
 ## Installation & running
 
 1. Install Python 3.8+.
