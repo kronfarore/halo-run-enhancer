@@ -32,9 +32,7 @@ Files the app *writes* itself and does not need shipped: `settings.json`,
 
 **Halo 2 maps must be decompressed to patch them.** The patcher edits bytes in
 place and does not re-compress, so a compressed H2 `.map` can't be saved back.
-Most H2 campaign maps already ship uncompressed, but any that aren't (and the
-tutorial/intro) must be decompressed first — Assembly can do this ("Save map"
-after opening, or its decompress option).
+Assembly can do this (Tools -> Map Compressor).
 
 ## Installation & running
 
