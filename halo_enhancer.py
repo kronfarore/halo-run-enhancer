@@ -73,8 +73,8 @@ def is_valid_run(data):
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods', 'include_wildcards',
                'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
-               'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'debug_mode',
-               'card_width', 'card_height', 'hide_tags', 'hide_fields')
+               'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
 
 def boss_mods_removed():
@@ -182,6 +182,12 @@ CONFIG = {
     # Boss option: make Heretic Leader boss mods target the leader AND his decoy
     # holograms together (one card tunes both).
     "combine_heretic_hologram": False,
+
+    # Halo 3 only: on patch, remove the Cortana flicker + Gravemind vision cutscenes
+    # from the map (opt-in, OFF by default). Composes with the .bak baseline model —
+    # applied fresh from the pristine baseline each patch, so toggling it off and
+    # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
+    "remove_h3_cutscenes": False,
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
@@ -312,6 +318,17 @@ def single_game_badge(mod_data):
     if not g:
         return None
     return "◆ %s only" % {'Halo 1': 'H1', 'Halo 2': 'H2'}.get(g, g)
+
+
+def heretic_combine_active(mod_data, game, games):
+    """True if the 'Combine Heretic Leader & holograms' option will make this boss
+    card also tune the decoy holograms. Mirrors the patch-time check in
+    on_patch_map so the card shows what patching will actually do."""
+    if not (CONFIG.get('combine_heretic_hologram')
+            and mod_data.get('boss') == 'Heretic Leader'):
+        return False
+    tag = resolve_gamed(mod_data.get('tag'), game, games)
+    return isinstance(tag, str) and 'heretic_leader' in tag
 
 
 def card_meta_text(mod_data, game, games):
@@ -921,12 +938,17 @@ class WeaponSelectionCard(QGroupBox):
             bl = QLabel(badge)
             bl.setStyleSheet(f"color: #d0a24a; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(bl)
+        game = self.parent_widget._current_game() if self.parent_widget else None
+        games = self.parent_widget.db.get_games() if self.parent_widget else None
+        if heretic_combine_active(mod_data, game, games):   # reflect the combine option
+            combo = QLabel("⛨ Also tunes his decoy holograms (Combine option on)")
+            combo.setWordWrap(True)
+            combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(combo)
         desc = QLabel(mod_data.get('desc', ''))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
-        game = self.parent_widget._current_game() if self.parent_widget else None
-        games = self.parent_widget.db.get_games() if self.parent_widget else None
         meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
         if meta:
             tag_field = QLabel(meta)
@@ -1168,12 +1190,17 @@ class PairCard(QGroupBox):
             bl = QLabel(badge)
             bl.setStyleSheet(f"color: #d0a24a; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(bl)
+        game = self.parent_widget._current_game() if self.parent_widget else None
+        games = self.parent_widget.db.get_games() if self.parent_widget else None
+        if heretic_combine_active(mod_data, game, games):   # reflect the combine option
+            combo = QLabel("⛨ Also tunes his decoy holograms (Combine option on)")
+            combo.setWordWrap(True)
+            combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(combo)
         desc = QLabel(mod_data.get('desc', ''))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
-        game = self.parent_widget._current_game() if self.parent_widget else None
-        games = self.parent_widget.db.get_games() if self.parent_widget else None
         meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
         if meta:
             tag_field = QLabel(meta)
@@ -2143,14 +2170,16 @@ class MagnitudeEditorDialog(QDialog):
         starting = self._starting_weapons_spec()
         weapon_swaps = self._weapon_swaps_spec()
         zoom_ui = self._zoom_ui_spec(plan)
-        if not plan and not starting and not weapon_swaps:
+        remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
+        if not plan and not starting and not weapon_swaps and not remove_cutscenes:
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
 
         extras = ([] + (["set starting weapons"] if starting else [])
                   + (["scatter map weapons"] if weapon_swaps else [])
-                  + (["add scope UI where missing"] if zoom_ui else []))
+                  + (["add scope UI where missing"] if zoom_ui else [])
+                  + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -2163,7 +2192,8 @@ class MagnitudeEditorDialog(QDialog):
             results, backup = self._hp.apply_run(map_path, plan, self.registry,
                                                  self.target_difficulty, game=self.game,
                                                  starting=starting, weapon_swaps=weapon_swaps,
-                                                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec())
+                                                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
+                                                 remove_cutscenes=remove_cutscenes)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -2331,6 +2361,13 @@ class OptionsDialog(QDialog):
                                         "holograms together, so one card tunes both.")
         form.addRow("Heretic bosses:", self.combine_holo_cb)
 
+        self.cutscenes_cb = QCheckBox("Remove Cortana / Gravemind cutscenes (Halo 3)")
+        self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes')))
+        self.cutscenes_cb.setToolTip("Halo 3 only: on patch, strip the flood Cortana-flicker and Gravemind "
+                                     "vision cutscenes from the map. Off by default; reversible — turn off "
+                                     "and re-patch to restore.")
+        form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
+
         self.wildcards_cb = QCheckBox("Include wildcards")
         self.wildcards_cb.setChecked(bool(CONFIG.get('include_wildcards')))
         form.addRow("Wildcards:", self.wildcards_cb)
@@ -2436,6 +2473,7 @@ class OptionsDialog(QDialog):
             'remove_single_game_mods': self.single_game_cb.isChecked(),
             'remove_boss_mods': self._user_remove_boss,  # raw preference; boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
+            'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),

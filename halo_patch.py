@@ -709,7 +709,7 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
-              from_baseline=True):
+              from_baseline=True, remove_cutscenes=False):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -794,6 +794,23 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
+
+    if remove_cutscenes and str(game).strip() in THIRD_GEN_GAMES:
+        # Halo 3 opt-in: neutralise the Cortana/Gravemind vision cutscenes on the map
+        # (in-place HSC statement-skip). Runs from the pristine baseline like everything
+        # else, so it's reversible by turning the option off and re-patching.
+        import halo3_cutscene
+        rep = halo3_cutscene.remove_cortana_flicker(m)
+        r = {'tag': 'scnr', 'field': 'Cortana/Gravemind cutscenes',
+             'effect': 'Remove Halo 3 cutscenes'}
+        if rep.get('ok'):
+            r.update(ok=True, skip=(rep['edits'] == 0),
+                     old='present', new=f"removed ({rep['removed_exprs']} exprs)")
+        elif rep.get('reason') == 'no cutscene recipe for this map':
+            r.update(ok=True, skip=True, reason=rep['reason'])   # H3 map w/o cutscenes: N/A
+        else:
+            r.update(ok=False, reason=rep.get('reason', 'cutscene removal failed'))
+        results.append(r)
 
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):
