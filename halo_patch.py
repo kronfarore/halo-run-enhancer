@@ -97,6 +97,7 @@ def collect_effects(rounds, mission_id=None):
                 add(mod, mod['enemy'] if mod.get('enemy') else 'Enemy (general)',
                     2 if mod.get('enemy') else 3)
         add(rd.get('wildcard'), 'Friend / Wildcard', 4)
+        add(rd.get('wildcard2'), 'Friend / Wildcard', 4)   # player 2's wildcard slot
         for k in ('boss1', 'boss2'):
             add(rd.get(k), 'Boss', 5)
         for k in ('exhaust1', 'exhaust2'):

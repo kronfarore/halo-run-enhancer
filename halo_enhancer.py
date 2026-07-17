@@ -1492,7 +1492,19 @@ class MagnitudeEditorDialog(QDialog):
         for p, vals in rows:
             key = tuple(fmtval(v) for v in vals)
             by_vals.setdefault(key, []).append(p.rsplit(chr(92), 1)[-1])
-        show = lambda key: ", ".join(str(k) for k in key)
+
+        def show(key):
+            # An index:'all' target over a big block (e.g. ai\generic's per-weapon
+            # Weapons Properties, 40+ entries) would otherwise dump a wall of numbers
+            # with no way to tell what each belongs to. Summarise long numeric lists as
+            # a range + count instead; short lists still show every value.
+            if len(key) > 6:
+                nums = [k for k in key if isinstance(k, (int, float))]
+                if len(nums) == len(key):
+                    lo, hi = min(nums), max(nums)
+                    span = f"all {lo:g}" if lo == hi else f"{lo:g} – {hi:g}"
+                    return f"{len(key)} entries: {span}"
+            return ", ".join(str(k) for k in key)
         # For a per-variant effect (wildcard tag) always name the variant(s), even
         # when only one variant carries the data — so the user sees WHICH variant it
         # is. Only a true singleton (exact tag, e.g. globals) shows a bare value.
@@ -1716,7 +1728,7 @@ class MagnitudeEditorDialog(QDialog):
                 if isinstance(slot, dict) and matches(slot.get('mod')):
                     slot['mod'] = None
                     removed += 1
-            for k in ('enemy1', 'enemy2', 'wildcard', 'boss1', 'boss2'):
+            for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2', 'boss1', 'boss2'):
                 if matches(rd.get(k)):
                     rd[k] = None
                     removed += 1
@@ -3290,7 +3302,11 @@ class HaloGUI(QMainWindow):
                 },
                 'enemy1': p1_pair.get('enemy_mod'),
                 'enemy2': p2_pair.get('enemy_mod'),
+                # wildcards are rolled independently per player (like enemy1/2 and
+                # boss1/2), so record BOTH — otherwise a wildcard picked on player 2's
+                # side is dropped from the summary and the patch.
                 'wildcard': p1_pair.get('wildcard_mod'),
+                'wildcard2': p2_pair.get('wildcard_mod'),
                 'boss1': p1_pair.get('boss_mod'),
                 'boss2': p2_pair.get('boss_mod')
             }
@@ -3384,6 +3400,16 @@ class HaloGUI(QMainWindow):
         return "—"
 
     @staticmethod
+    def _enemy_effect_label(mod):
+        """Round-summary label for an enemy modifier: the effect name plus which
+        enemy it was picked for — 'Cover Chance (Elite)' for a specific enemy, or
+        'Perception (general)' for a general enemy modifier. 'None' if no mod."""
+        if not isinstance(mod, dict):
+            return "None"
+        who = mod.get('enemy') or "general"
+        return f"{mod.get('name', '?')} ({who})"
+
+    @staticmethod
     def _round_summary(pdata):
         if pdata.get('starting'):
             return f"{pdata.get('weapon')} (starting weapon)"
@@ -3411,14 +3437,16 @@ class HaloGUI(QMainWindow):
             for i, round_data in enumerate(self.run_state.rounds, 1):
                 enemy1 = round_data.get('enemy1')
                 enemy2 = round_data.get('enemy2')
-                wildcard = round_data.get('wildcard')
+                # both players' wildcard slots (deduped if the same one)
+                wilds = [w for w in (round_data.get('wildcard'), round_data.get('wildcard2')) if w]
                 boss1 = round_data.get('boss1')
                 boss2 = round_data.get('boss2')
                 text += f"Round {i}: P1: {self._round_summary(round_data['player1'])}, "
                 text += f"P2: {self._round_summary(round_data['player2'])}, "
-                text += f"Enemies: {enemy1['name'] if enemy1 else 'None'}, {enemy2['name'] if enemy2 else 'None'}"
-                if wildcard:
-                    text += f", Wildcard: {wildcard['name']}"
+                text += f"Enemies: {self._enemy_effect_label(enemy1)}, {self._enemy_effect_label(enemy2)}"
+                if wilds:
+                    names = list(dict.fromkeys(w['name'] for w in wilds))
+                    text += f", Wildcard: {', '.join(names)}"
                 if boss1 or boss2:
                     text += f", Boss: {boss1['name'] if boss1 else 'None'}, {boss2['name'] if boss2 else 'None'}"
                 text += "\n"
@@ -3621,7 +3649,8 @@ class HaloGUI(QMainWindow):
         rounds = copy.deepcopy(self.run_state.rounds or [])
         for rd in rounds:
             slots = [(rd.get('player1') or {}).get('mod'), (rd.get('player2') or {}).get('mod'),
-                     rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'),
+                     rd.get('enemy1'), rd.get('enemy2'),
+                     rd.get('wildcard'), rd.get('wildcard2'),
                      rd.get('boss1'), rd.get('boss2'),
                      rd.get('exhaust1'), rd.get('exhaust2')]
             for mod in slots:

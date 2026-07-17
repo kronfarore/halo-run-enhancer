@@ -535,6 +535,10 @@ class Halo3Map:
         results = []
         for tpath, base in tags:
             r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth)
+            if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
+                # char variant with an empty block inherits it from its base — not a
+                # failure; the base variant in this same set carries (and gets) the edit.
+                r = {**r, 'ok': True, 'skip': True, 'reason': 'inherits from base'}
             r['tag'] = f"{cls} {tpath}"
             results.append(r)
         return results

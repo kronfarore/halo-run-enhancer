@@ -530,6 +530,10 @@ class Halo2Map:
                 if follow_parents else base
             if holder is None:
                 r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth)
+                if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
+                    # variant inherits this block from outside its own tag set (e.g. the
+                    # shared ai\generic base) — not a failure, just nothing to write here.
+                    r = {**r, 'ok': True, 'skip': True, 'reason': 'inherits from base'}
                 r['tag'] = f"{cls} {tpath}"
                 results.append(r)
                 continue
