@@ -2202,6 +2202,10 @@ class MagnitudeEditorDialog(QDialog):
             if t.get('derived') or t.get('set') is not None:
                 continue          # display-only / fixed-set; appended below when relevant
             txt = le.text().strip()
+            # #11: remember the input as-is, including an empty one — an empty entry is
+            # a valid "leave this field alone" that sticks (so a cleared value doesn't
+            # come back from a fallback next time). Only a non-empty input adds an op.
+            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
             if not txt:
                 continue
             key = (eff['tag'], eff['name'])
@@ -2213,7 +2217,6 @@ class MagnitudeEditorDialog(QDialog):
                                          'negate': t.get('negate'),
                                          'reload_anim': t.get('reload_anim'),
                                          'nth': t.get('nth', 0) or 0})
-            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
         # Auto-computed fields: recompute whenever their effect has any edit.
         # Appended after the normal ops so the sources are already patched.
         for eff, t, le in self.rows:
