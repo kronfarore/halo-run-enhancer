@@ -143,13 +143,13 @@ def save_presets(path, presets):
         json.dump(presets, f, indent=2, ensure_ascii=False)
 
 
-def default_map_path(app_dir, map_subdir, mission_id):
-    """<MCC root>/<map_subdir>/<mission>.map, MCC root being the tool's parent.
-    Falls back to a prefix match (<mission>*.map) so a mission id like '01b'
-    resolves to Halo 2's '01b_spacestation.map'."""
-    if not map_subdir:
+def default_map_path(mcc_root, map_subdir, mission_id):
+    """<mcc_root>/<map_subdir>/<mission>.map. Falls back to a prefix match
+    (<mission>*.map) so a mission id like '01b' resolves to Halo 2's
+    '01b_spacestation.map'."""
+    if not map_subdir or not mcc_root:
         return ''
-    d = Path(app_dir).resolve().parent / map_subdir
+    d = Path(mcc_root).resolve() / map_subdir
     exact = d / f'{mission_id}.map'
     if exact.is_file():
         return str(exact)

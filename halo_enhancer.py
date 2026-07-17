@@ -99,7 +99,15 @@ ZOOM_DONOR_WEAPONS = {
 }
 
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
-SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor') + OPTION_KEYS
+# 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
+# found under (per-game subfolder); defaults to the tool's parent when unset.
+SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root') + OPTION_KEYS
+
+
+def mcc_root():
+    """The remembered MCC install folder, or the tool's parent as a fallback (works
+    for the default <MCC>/tool layout). Every map is resolved under here."""
+    return CONFIG.get('mcc_root') or str(Path(__file__).resolve().parent.parent)
 
 
 def load_settings():
@@ -1359,13 +1367,16 @@ class MagnitudeEditorDialog(QDialog):
 
     _CUSTOM = '__custom__'
 
-    def __init__(self, parent, effects, subdirs, map_path, presets_path, target_difficulty, game=None):
+    def __init__(self, parent, effects, subdirs, map_path, presets_path, target_difficulty,
+                 game=None, map_subdir='', mission_id=None):
         super().__init__(parent)
         import halo_patch
         self._hp = halo_patch
         self.parent_gui = parent    # gives the fallback-preset lookup access to .db
         self.game = game
         self.subdirs = subdirs
+        self.map_subdir = map_subdir      # per-game maps folder, for re-finding on root change
+        self.mission_id = mission_id
         self.presets_path = presets_path
         self.presets = halo_patch.load_presets(presets_path)
         self.target_difficulty = target_difficulty
@@ -1586,6 +1597,17 @@ class MagnitudeEditorDialog(QDialog):
 
     def _build(self, map_path):
         layout = QVBoxLayout(self)
+
+        mrow = QHBoxLayout()
+        mrow.addWidget(QLabel("MCC folder:"))
+        self.mcc_edit = QLineEdit(mcc_root())
+        self.mcc_edit.setToolTip("Your 'Halo The Master Chief Collection' folder — maps are "
+                                 "auto-found here. Remembered across sessions.")
+        mrow.addWidget(self.mcc_edit, 1)
+        mbrowse = QPushButton("Browse…")
+        mbrowse.clicked.connect(self._browse_mcc_root)
+        mrow.addWidget(mbrowse)
+        layout.addLayout(mrow)
 
         prow = QHBoxLayout()
         prow.addWidget(QLabel("Assembly plugins folder:"))
@@ -1952,6 +1974,24 @@ class MagnitudeEditorDialog(QDialog):
         self._populate()
 
     # ---- path handling ----
+    def _browse_mcc_root(self):
+        start = self.mcc_edit.text().strip() or str(app_data_dir())
+        path = QFileDialog.getExistingDirectory(
+            self, "Select the 'Halo The Master Chief Collection' folder", start)
+        if path:
+            self._set_mcc_root(path)
+
+    def _set_mcc_root(self, path):
+        """Remember the MCC folder and re-resolve this dialog's map from it."""
+        self.mcc_edit.setText(path)
+        CONFIG['mcc_root'] = path
+        save_settings()
+        if self.map_subdir and self.mission_id:
+            found = self._hp.default_map_path(path, self.map_subdir, self.mission_id)
+            if found:
+                self.map_edit.setText(found)
+                self._reload()
+
     def _browse_plugins(self):
         start = self.plugins_edit.text().strip() or str(app_data_dir())
         path = QFileDialog.getExistingDirectory(self, "Select Assembly plugins folder", start)
@@ -3692,15 +3732,15 @@ class HaloGUI(QMainWindow):
             return
         subdirs = CONFIG.get('plugin_subdirs_by_game', {}).get(game, [])
         game_folder = CONFIG.get('map_game_folder', {}).get(game, '')
-        map_path = halo_patch.default_map_path(
-            Path(__file__).resolve().parent, game_folder, self.run_state.mission_id)
+        map_path = halo_patch.default_map_path(mcc_root(), game_folder, self.run_state.mission_id)
         presets_path = str(app_data_dir() / "magnitude_presets.json")
         # Building the dialog reads the (possibly large, ~100 MB) H2 source map,
         # which can take a couple of seconds — show a wait cursor meanwhile.
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
             dlg = MagnitudeEditorDialog(self, effects, subdirs, map_path, presets_path,
-                                        CONFIG.get('target_difficulty', 'Normal'), game=game)
+                                        CONFIG.get('target_difficulty', 'Normal'), game=game,
+                                        map_subdir=game_folder, mission_id=self.run_state.mission_id)
         finally:
             QApplication.restoreOverrideCursor()
         dlg.exec()
