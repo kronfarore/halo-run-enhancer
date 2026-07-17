@@ -73,6 +73,7 @@ def is_valid_run(data):
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods', 'include_wildcards',
                'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
+               'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
                'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
@@ -165,6 +166,8 @@ CONFIG = {
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    "coop_no_starting_weapons": False,      # #1: don't give the coop profile (index 1) the picks
+    "null_coop_starting_equipment": False,  # #2: empty the coop profile's starting weapons
     # When a Zoom effect is applied to a weapon that has no vanilla scope (e.g.
     # Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon on the
     # map into its HUD so the zoom actually shows a scope. Structurally grows the
@@ -2191,22 +2194,31 @@ class MagnitudeEditorDialog(QDialog):
 
     def _starting_weapons_spec(self):
         """Starting-weapons spec from the run's picks (Primary = P1's first weapon,
-        Secondary = P2's), or None if the option is off / no picks / no db."""
-        if not CONFIG.get('set_starting_weapons') or not self.parent_gui:
+        Secondary = P2's). Coop is profile index 1: #1 can exclude it from the picked
+        weapons, #2 can empty it entirely. Returns None if nothing to do."""
+        if not self.parent_gui:
             return None
         rs = getattr(self.parent_gui, 'run_state', None)
         db = getattr(self.parent_gui, 'db', None)
         if rs is None or db is None:
             return None
-        p1 = getattr(rs, 'player1_weapon', None)
-        p2 = getattr(rs, 'player2_weapon', None)
-        # grenades are equipment, not a valid Primary/Secondary starting weapon
-        prim = db.weap_tag_for(p1, self.game) if (p1 and not db.is_grenade(p1)) else None
-        sec = db.weap_tag_for(p2, self.game) if (p2 and not db.is_grenade(p2)) else None
-        if not prim and not sec:
+        null_coop = bool(CONFIG.get('null_coop_starting_equipment'))    # #2
+        # #1: also implied by #2 — don't hand the picked weapons to the coop profile.
+        skip_coop = bool(CONFIG.get('coop_no_starting_weapons')) or null_coop
+        prim = sec = None
+        if CONFIG.get('set_starting_weapons'):
+            p1 = getattr(rs, 'player1_weapon', None)
+            p2 = getattr(rs, 'player2_weapon', None)
+            # grenades are equipment, not a valid Primary/Secondary starting weapon
+            prim = db.weap_tag_for(p1, self.game) if (p1 and not db.is_grenade(p1)) else None
+            sec = db.weap_tag_for(p2, self.game) if (p2 and not db.is_grenade(p2)) else None
+        profiles = [p for p in CONFIG.get('starting_weapon_profiles', [0, 1])
+                    if not (skip_coop and p == 1)]
+        null_profiles = [1] if null_coop else []
+        if not (prim or sec) and not null_profiles:
             return None
         return {'primary': prim, 'secondary': sec,
-                'profiles': CONFIG.get('starting_weapon_profiles', [0, 1])}
+                'profiles': profiles, 'null_profiles': null_profiles}
 
     def _zoom_ui_spec(self, plan):
         """weap tag paths of the Zoom effects in this plan, so scopeless weapons
@@ -2582,6 +2594,19 @@ class OptionsDialog(QDialog):
                                             "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
         form.addRow("Starting weapons:", self.starting_weapons_cb)
 
+        # #1/#2: coop = scenario Player Starting Profile index 1.
+        self.coop_no_start_cb = QCheckBox("Don't give the coop player the starting weapons")
+        self.coop_no_start_cb.setChecked(bool(CONFIG.get('coop_no_starting_weapons')))
+        self.coop_no_start_cb.setToolTip("Apply the picked starting weapons to player 1 only "
+                                         "(profile 0); leave the coop profile (index 1) as the map defines it.")
+        form.addRow("Coop starting weapons:", self.coop_no_start_cb)
+
+        self.coop_null_cb = QCheckBox("Empty the coop player's starting equipment (null)")
+        self.coop_null_cb.setChecked(bool(CONFIG.get('null_coop_starting_equipment')))
+        self.coop_null_cb.setToolTip("Clear the coop profile's Primary and Secondary weapons so the "
+                                     "coop player starts empty-handed. Overrides the option above.")
+        form.addRow("Coop equipment:", self.coop_null_cb)
+
         self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
         self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
         self.zoom_ui_cb.setToolTip("On patch: if a Zoom effect is applied to a weapon with no vanilla scope "
@@ -2647,6 +2672,8 @@ class OptionsDialog(QDialog):
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
+            'coop_no_starting_weapons': self.coop_no_start_cb.isChecked(),
+            'null_coop_starting_equipment': self.coop_null_cb.isChecked(),
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
             'card_width': self.card_width.value(),

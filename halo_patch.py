@@ -352,6 +352,21 @@ def _write_starting_weapon(m, poff, slot, refid, loaded, total, game):
         struct.pack_into('<h', m.data, poff + s['total'], max(-32768, min(32767, int(total))))
 
 
+def _null_starting_weapon(m, poff, slot, game):
+    """Empty a profile's weapon slot: a null tagRef (class + id both -1) and 0 rounds.
+    A null secondary is common in vanilla profiles; a null primary starts the player
+    empty-handed."""
+    lay = _STARTING_SLOTS[game]
+    s = lay[slot]
+    ro = poff + s['ref']
+    struct.pack_into('<I', m.data, ro, 0xFFFFFFFF)
+    if lay['ref_size'] == 16:
+        struct.pack_into('<II', m.data, ro + 4, 0, 0)
+    struct.pack_into('<I', m.data, ro + lay['id_at'], 0xFFFFFFFF)
+    struct.pack_into('<h', m.data, poff + s['loaded'], 0)
+    struct.pack_into('<h', m.data, poff + s['total'], 0)
+
+
 def _apply_starting_equipment(m, game, registry, starting):
     """Set the player Starting Profile weapons from the run's picks. `starting` =
     {'primary': weap-tag or None, 'secondary': weap-tag or None, 'profiles': [..]}.
@@ -377,6 +392,15 @@ def _apply_starting_equipment(m, game, registry, starting):
     boff = bf['block_offsets'][-1]
     esize = bf['block_sizes'][-1]
     count = m.i32(scnr_base + boff)
+    # #2: empty a coop profile's starting equipment entirely (null primary+secondary).
+    for i in [p for p in (starting.get('null_profiles') or []) if 0 <= p < count]:
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        for slot in ('primary', 'secondary'):
+            _null_starting_weapon(m, poff, slot, game)
+        out.append({'effect': 'starting weapons', 'field': f'Profile {i}',
+                    'ok': True, 'old': 'weapons', 'new': 'emptied (null)'})
     profiles = [i for i in (starting.get('profiles') or [0, 1]) if 0 <= i < count]
     for slot in ('primary', 'secondary'):
         tag = starting.get(slot)
