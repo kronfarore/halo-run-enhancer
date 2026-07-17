@@ -62,6 +62,34 @@ class Halo2Map:
     def i32(self, o):
         return struct.unpack_from('<i', self.data, o)[0]
 
+    def resolve_stringid(self, sid):
+        """Resolve a Halo 2 stringID to its string. H2 classic uses direct-index IDs
+        (no namespaces): the low 16 bits are the global index into the string table,
+        whose blob/count/index-array pointers are real file offsets in the header
+        (count @0x30, blob @0x34, index array @0x3C). Returns None on failure."""
+        if not hasattr(self, '_sid'):
+            try:
+                cnt = self.u32(0x30)
+                blob = self.u32(0x34)
+                idx = self.u32(0x3C)
+                self._sid = (cnt, blob, idx) if (0 < idx < blob < len(self.data) and cnt > 0) else None
+            except Exception:
+                self._sid = None
+        if not self._sid:
+            return None
+        cnt, blob, idx = self._sid
+        i = sid & 0xFFFF
+        if not (0 <= i < cnt):
+            return None
+        try:
+            off = struct.unpack_from('<i', self.data, idx + i * 4)[0]
+            if off < 0:
+                return None
+            p = blob + off
+            return self.data[p:self.data.index(b'\x00', p)].decode('latin1')
+        except (ValueError, struct.error):
+            return None
+
     def _cstr(self, o):
         end = self.data.index(b'\x00', o)
         return bytes(self.data[o:end]).decode('latin1')

@@ -317,6 +317,69 @@ class Halo3Map:
             except Exception:
                 pass
 
+    # --- stringID blob (the debug-string table; separate from tag names) ---
+    _SID_ANCHOR = b'default\x00reload_1\x00reload_2\x00chamber_1\x00chamber_2\x00'
+
+    def _locate_stringids(self):
+        """Find the stringID index array + string blob on retail maps (header
+        pointers @0x34/0x3C are virtual garbage). The blob always opens with the
+        engine's static set (`default\\0reload_1\\0...`), and the int32 offset array
+        sits immediately before it: idx_base = blob_base - count*4. Also rebuilds the
+        stripped static tail (retail zeroes those index entries but keeps the strings
+        at the head of the blob). Returns True on success; caches on the instance."""
+        if hasattr(self, '_sid_blob'):
+            return self._sid_ok
+        self._sid_ok = False
+        d = self.data
+        cnt = self.str_tbl_count
+        p = d.find(self._SID_ANCHOR)
+        if p < 1 or cnt <= 0:
+            self._sid_blob = self._sid_idx = 0
+            return False
+        blob = p - 1                              # the leading NUL == empty string
+        idx = blob - cnt * 4
+        if idx < 0 or idx % 4 != 0:
+            self._sid_blob = self._sid_idx = 0
+            return False
+        offs = list(struct.unpack_from('<%di' % cnt, d, idx))
+        # trailing zeros == stripped static set; rebuild from the blob head
+        strip = cnt
+        while strip > 0 and offs[strip - 1] == 0:
+            strip -= 1
+        first_real = min((o for o in offs if o > 0), default=1)
+        k, q = 0, 1
+        while q < first_real and strip + k < cnt:
+            offs[strip + k] = q
+            q = d.index(b'\x00', blob + q) - blob + 1
+            k += 1
+        self._sid_blob, self._sid_idx = blob, idx
+        self._sid_offs, self._sid_strip = offs, strip
+        self._sid_ok = True
+        return True
+
+    def _string_at(self, gidx):
+        if not self._locate_stringids() or not (0 <= gidx < self.str_tbl_count):
+            return None
+        off = self._sid_offs[gidx]
+        p = self._sid_blob + off
+        try:
+            return self.data[p:self.data.index(b'\x00', p)].decode('latin1')
+        except ValueError:
+            return None
+
+    def resolve_stringid(self, sid):
+        """Resolve a stringID value to its string. Handles namespace 0 (the engine's
+        static set — where animation-action labels like `reload_empty` live) by mapping
+        its index into the rebuilt stripped tail. Returns None for other namespaces or
+        on failure."""
+        if not self._locate_stringids():
+            return None
+        namespace = (sid >> 16) & 0xFF
+        index = sid & 0xFFFF
+        if namespace != 0:
+            return None
+        return self._string_at(self._sid_strip + index - 1)
+
     # --- tag lookups ---
     def tag(self, index):
         return self.tags[index] if 0 <= index < len(self.tags) else None

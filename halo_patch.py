@@ -739,6 +739,27 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_init_defaults(m, item['init_defaults'], registry))
         for op in item.get('ops', []):
             base = {'effect': item['name'], 'tag': item['tag'], 'field': op['field']}
+            if op.get('reload_anim'):
+                # Halo 3 reload-speed: scale the first-person reload ANIMATION length
+                # (these weapons carry no tag-side Reload Time). item['tag'] is the
+                # jmad fp-graph pattern; the operator supplies the multiplier.
+                parsed = hm.parse_operator(op.get('op_str'))
+                if not parsed:
+                    results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
+                    continue
+                oper, val = parsed
+                mult = hm.OP_FUNCS[oper](1.0, val)   # *0.5 or =0.5 -> 0.5
+                import halo3_reload
+                rep = halo3_reload.scale_reload(m, path, mult, game=game)
+                r = {**base}
+                if rep.get('ok'):
+                    r.update(ok=True, skip=bool(rep.get('skip')),
+                             old='reload anim', new=(rep.get('reason') if rep.get('skip')
+                                  else f"x{mult:g} ({rep['animations']} anim, {rep['graphs']} graph)"))
+                else:
+                    r.update(ok=False, reason=rep.get('reason', 'reload scale failed'))
+                results.append(r)
+                continue
             if plugin is None:
                 results.append({**base, 'ok': False, 'reason': f'no plugin for {cls}'})
                 continue

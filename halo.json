@@ -198,7 +198,7 @@
 			"070": {
 				"name": "The Ark",
 				"enemies": ["Brute", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Sentinel Beam"],
+				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Machine Gun", "Plasma Cannon"]
@@ -206,7 +206,7 @@
 			"100": {
 				"name": "The Covenant",
 				"enemies": ["Brute", "Bugger", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
+				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Machine Gun", "Plasma Cannon"]
@@ -214,7 +214,7 @@
 			"110": {
 				"name": "Cortana",
 				"enemies": ["Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form"],
-				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade", "Firebomb Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Invisibility"],
 				"turret": ["Machine Gun", "Flamethrower"]
@@ -222,6 +222,7 @@
 			"120": {
 				"name": "Halo",
 				"enemies": ["Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form", "Sentinel"],
+				"boss": "343 Guilty Spark",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
 				"grenades": [],
 				"equipment": ["Auto Turret", "Invincibility"],
@@ -327,7 +328,10 @@
 			"Assault Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"tag": "proj weapons\\assault rifle\\bullet",
+					"tag": {
+						"Halo 1": "proj weapons\\assault rifle\\bullet",
+						"Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"
+					},
 					"targets": [
 						{ "field": "Maximum Range" },
 						{ "field": "Initial Velocity" },
@@ -338,7 +342,10 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": "jpt! weapons\\assault rifle\\bullet",
+					"tag": {
+						"Halo 1": "jpt! weapons\\assault rifle\\bullet",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
@@ -357,7 +364,10 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
@@ -366,7 +376,10 @@
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
@@ -376,15 +389,23 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload Time",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 1", "Halo 3"],
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "jmad *fp_assault_rifle*"
+					},
+					"targets": {
+						"Halo 1": [ { "field": "Reload Time", "block": "Magazines" } ],
+						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
+					}
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -392,14 +413,20 @@
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					]
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
-					"tag": "weap weapons\\assault rifle\\assault rifle",
+					"tag": {
+						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
 						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -411,7 +438,8 @@
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -423,7 +451,8 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
@@ -434,7 +463,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\pistol\\bullet",
-						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
+						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet",
+						"Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -448,7 +478,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\pistol\\bullet",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -460,7 +491,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\pistol\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -472,7 +504,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -484,7 +517,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -495,20 +529,25 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload Time",
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "jmad *fp_magnum*",
+						"Halo 3": "jmad *fp_magnum*"
 					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"targets": {
+						"Halo 1": [ { "field": "Reload Time", "block": "Magazines" } ],
+						"Halo 2": [ { "field": "Reload Animation", "reload_anim": true } ],
+						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
+					}
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": {
 						"Halo 1": [
@@ -524,18 +563,20 @@
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -545,7 +586,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -555,10 +597,25 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Homing (Charged)": {
+					"desc": "How hard the overcharge bolt homes in on targets",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
+					},
+					"targets": [
+						{ "field": "Guided Angular Velocity Lower" },
+						{ "field": "Guided Angular Velocity Upper" },
+						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
+						{ "field": "Guided Projectile (Outer Range) Error Radius", "games": ["Halo 3"] }
+					]
+				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -570,7 +627,8 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
@@ -581,7 +639,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\plasma pistol\\bolt",
-						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
+						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt",
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -595,7 +654,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma pistol\\bolt",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -607,7 +667,8 @@
 					"desc": "Projectile range before it disappears and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\plasma rifle\\charged bolt",
-						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
+						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -619,7 +680,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma rifle\\charged bolt",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -631,7 +693,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma pistol\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -643,7 +706,8 @@
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": {
 						"Halo 1": [
@@ -661,7 +725,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -673,7 +738,8 @@
 					"desc": "When Misifirng starts and how likely it is",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start" },
@@ -684,7 +750,8 @@
 					"desc": "Time it takes to overcharge",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -694,7 +761,8 @@
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -704,7 +772,8 @@
 					"desc": "For every projectily, fire this many (charged shot)",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 }
@@ -714,7 +783,8 @@
 					"desc": "Heat per Round, Age per Round",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -725,61 +795,68 @@
 					"desc": "Heat per Round, Age per Round (charged shot)",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 }
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
+						{ "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3"] }
 					]
 				},
 				"More Shooting": {
 					"desc": "How many shots the weapon caps per fire",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting (Charged)": {
 					"desc": "How many shots the weapon caps per fire (charged shot)",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1 },
 						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time (Charged)": {
 					"desc": "How long after firing before the weapon can fire again (charged shot)",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels", "index": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Plasma Rifle": {
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -791,7 +868,8 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
@@ -802,7 +880,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\plasma rifle\\bolt",
-						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
+						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+						"Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -816,7 +895,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma rifle\\bolt",
-						"Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -828,7 +908,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma rifle\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -840,7 +921,8 @@
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": {
 						"Halo 1": [
@@ -858,7 +940,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -870,7 +953,8 @@
 					"desc": "When Misifirng starts and how likely it is",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start" },
@@ -881,7 +965,8 @@
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -894,7 +979,8 @@
 					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -905,7 +991,8 @@
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -915,7 +1002,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -927,7 +1015,8 @@
 					"desc": "Heat per Round, Age per Round",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -936,8 +1025,23 @@
 				}
 			},
 			"Needler": {
+				"Homing": {
+					"desc": "How hard the needles home in on targets",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard",
+						"Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
+					},
+					"targets": [
+						{ "field": "Guided Angular Velocity Lower" },
+						{ "field": "Guided Angular Velocity Upper" },
+						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
+						{ "field": "Guided Projectile (Outer Range) Error Radius", "games": ["Halo 3"] }
+					]
+				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
+					"game": ["Halo 2"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
@@ -950,6 +1054,7 @@
 				},
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
+					"game": ["Halo 2"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
@@ -962,7 +1067,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\needler\\needle",
-						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
+						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard",
+						"Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -976,7 +1082,8 @@
 					"desc": "How long needles stick to the target before exploding",
 					"tag": {
 						"Halo 1": "proj weapons\\needler\\needle",
-						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
+						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard",
+						"Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
 					},
 					"targets": [
 						{ "field": "Timer" },
@@ -988,7 +1095,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\detonation damage",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1000,7 +1108,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound (both the attached and free-floating super detonation)",
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1012,7 +1121,8 @@
 					"desc": "Size of the needle super detionation",
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"
+						"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation",
+						"Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -1023,7 +1133,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1035,7 +1146,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1047,7 +1159,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1061,7 +1174,8 @@
 					"desc": "Reload Time",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1071,7 +1185,8 @@
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1084,7 +1199,8 @@
 					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1095,7 +1211,8 @@
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1105,7 +1222,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -1119,7 +1237,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\sniper rifle\\sniper bullet",
-						"Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"
+						"Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet",
+						"Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1133,7 +1252,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\sniper rifle\\sniper bullet",
-						"Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1145,7 +1265,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\sniper rifle\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1157,7 +1278,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1169,7 +1291,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1179,21 +1302,24 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload Time (0 initial value, not sure what's going on)",
+								"Reload Time": {
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
+						"Halo 2": "jmad *fp_sniper_rifle*",
+						"Halo 3": "jmad *fp_sniper_rifle*"
 					},
 					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
+						{ "field": "Reload Animation", "reload_anim": true }
 					]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": {
 						"Halo 1": [
@@ -1209,18 +1335,20 @@
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1230,7 +1358,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
-						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -1244,7 +1373,8 @@
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\rocket launcher\\rocket",
-						"Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"
+						"Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket",
+						"Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1258,7 +1388,8 @@
 					"desc": "Min to Max Radius",
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion",
+						"Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -1269,7 +1400,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact",
+						"Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1281,7 +1413,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 this is smash_melee, shared with the Flak Cannon and the Sentinel Beam - changing one changes all three.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1293,7 +1426,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1305,7 +1439,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1319,7 +1454,8 @@
 					"desc": "Reload Time (0 initial value, not sure what's going on)",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1329,7 +1465,8 @@
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": {
 						"Halo 1": [
@@ -1345,18 +1482,20 @@
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1364,11 +1503,23 @@
 				}
 			},
 			"Shotgun": {
+				"Pellet Spread": {
+					"desc": "Pellet count (yaw x pitch), spread cone and distribution",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+					"targets": [
+						{ "field": "Yaw Count", "block": "Conical Spread" },
+						{ "field": "Pitch Count", "block": "Conical Spread" },
+						{ "field": "Spread", "block": "Conical Spread" },
+						{ "field": "Distribution Exponent", "block": "Conical Spread" }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
 						"Halo 1": "proj weapons\\shotgun\\pellet",
-						"Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
+						"Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+						"Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1382,7 +1533,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\shotgun\\pellet",
-						"Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1394,7 +1546,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\shotgun\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1406,7 +1559,8 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1418,7 +1572,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1432,7 +1587,8 @@
 					"desc": "Reload Time",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1442,7 +1598,8 @@
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": {
 						"Halo 1": [
@@ -1458,18 +1615,20 @@
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1479,7 +1638,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -1489,10 +1649,24 @@
 				}
 			},
 			"SMG": {
+				"Bullet Damage": {
+					"desc": "Damage per bullet",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
 				"Projectile": {
 					"desc": "Maximum Range, Velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"
+						"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+						"Halo 3": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1505,7 +1679,8 @@
 				"Zoom": {
 					"desc": "Magnification Levels and Range",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1516,7 +1691,8 @@
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1529,7 +1705,8 @@
 				"Reload Time": {
 					"desc": "Time to reload",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
@@ -1538,7 +1715,8 @@
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
@@ -1550,18 +1728,20 @@
 				"Recoil": {
 					"desc": "Angle change added per shot while firing",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Angle Change Per Shot", "block": "Barrels" },
 						{ "field": "Angle Change Per Shot Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "Projectiles per shot",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
@@ -1570,7 +1750,8 @@
 				"Error Angle": {
 					"desc": "Weapon Spread",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
@@ -1581,7 +1762,8 @@
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1593,7 +1775,8 @@
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
@@ -1603,14 +1786,15 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Brute Plasma Rifle": {
@@ -1750,7 +1934,8 @@
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet"
+						"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet",
+						"Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1759,36 +1944,39 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1797,22 +1985,21 @@
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
-					},
+								"Reload Time": {
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_battle_rifle*",
 					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					],
-					"game": "Halo 2"
+						{ "field": "Reload Animation", "reload_anim": true }
+					]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
@@ -1820,58 +2007,63 @@
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Brute Shot": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"
+						"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade",
+						"Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1880,59 +2072,64 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Radius": {
 					"desc": "Min to Max Radius of the grenade explosion",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
+						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion",
+						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct grenade impact and the explosion.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact"
+						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact",
+						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, which the Energy Blade's Slice Damage shares - changing one changes the other.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range.",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1941,67 +2138,74 @@
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
+								"Reload Time": {
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "jmad *fp_brute_shot*"
 					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					],
-					"game": "Halo 2"
+					"targets": {
+						"Halo 2": [ { "field": "Reload Time", "block": "Magazines" } ],
+						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
+					}
 				},
 				"More Shooting": {
 					"desc": "How many shots leave the barrel per trigger pull (this weapon's Rounds Per Second is 0).",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Error Angle": {
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Beam Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"
+						"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam",
+						"Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -2010,115 +2214,125 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Per Round": {
 					"desc": "Heat per Round, Age (battery drain) per Round",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
 						{ "field": "Age Generated Per Round", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
 					"desc": "Shots fired per trigger pull (this weapon's Rounds Per Second is 0)",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Error Angle": {
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Covenant Carbine": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"
+						"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug",
+						"Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -2127,36 +2341,39 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug"
+						"Halo 2": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug",
+						"Halo 3": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -2165,22 +2382,21 @@
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
-					},
+								"Reload Time": {
+					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_covenant_carbine*",
 					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					],
-					"game": "Halo 2"
+						{ "field": "Reload Animation", "reload_anim": true }
+					]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
@@ -2188,58 +2404,74 @@
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Flak Cannon": {
+				"Homing": {
+					"desc": "How hard the bolts home in on targets",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt",
+					"targets": [
+						{ "field": "Guided Angular Velocity Lower" },
+						{ "field": "Guided Angular Velocity Upper" },
+						{ "field": "Guided Angular Velocity At Rest" },
+						{ "field": "Guided Projectile (Outer Range) Error Radius" }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"
+						"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt",
+						"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -2248,59 +2480,64 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Radius": {
 					"desc": "Min to Max Radius of the flak explosion",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion",
+						"Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact",
+						"Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -2309,22 +2546,24 @@
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Reload Time": {
 					"desc": "Reload Time",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Reload Time", "block": "Magazines" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
@@ -2332,45 +2571,49 @@
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon can fire again - this, not Rounds Per Second, paces the Flak Cannon",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Error Angle": {
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
 						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Sentinel Beam": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
-						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -2379,94 +2622,102 @@
 						{ "field": "Air Damage Range" },
 						{ "field": "Air Damage Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Beam Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 the player's Sentinel Beam is the EXACT SAME weapon the Sentinel enemy fires - this is the same damage tag, so buffing it buffs every Sentinel shooting at you. That is why the Sentinel enemy's own 'Beam Damage' mod is Halo 1 only.",
 					"tag": {
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam"
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam",
+						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Per Round": {
 					"desc": "Heat per Round, Age (battery drain) per Round",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
 						{ "field": "Age Generated Per Round", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
 						{ "field": "Rounds Per Second Max", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Energy Blade": {
 				"Slice Damage": {
 					"desc": "Normal Swing damage. Uses slice_melee, which the Brute Shot's Melee Damage shares - changing one changes the other.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2477,7 +2728,8 @@
 				"Dash Damage": {
 					"desc": "Damage of the lunge attack",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2488,7 +2740,8 @@
 				"Range": {
 					"desc": "Increasing Autoaim Range increases your range and then you go wooooo!",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade"
+						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade"
 					},
 					"targets": [
 						{ "field": "Autoaim Range" }
@@ -2500,7 +2753,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
+						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
+						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2519,7 +2773,8 @@
 					"desc": "How big of kaboom?",
 					"tag": {
 						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
+						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
+						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -2532,7 +2787,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached",
-						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
+						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
+						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2551,11 +2807,470 @@
 					"desc": "How big of kaboom?",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma grenade\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
+						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
+						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
+					]
+				}
+			},
+			"Mauler": {
+				"Projectile": {
+					"desc": "Range and speed of the pellets",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Bullet Damage": {
+					"desc": "Damage per pellet",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Pellet Spread": {
+					"desc": "Pellet count (yaw x pitch), spread cone and distribution",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
+					"targets": [
+						{ "field": "Yaw Count", "block": "Conical Spread" },
+						{ "field": "Pitch Count", "block": "Conical Spread" },
+						{ "field": "Spread", "block": "Conical Spread" },
+						{ "field": "Distribution Exponent", "block": "Conical Spread" }
+					]
+				},
+				"Magazine": {
+					"desc": "Magazine and carried ammo",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Delay between shots",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					]
+				},
+				"Dual Weapon Error": {
+					"desc": "Weapon error while dual wielding",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Minimum Error", "block": "Barrels" },
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					]
+				},
+				"Dual Weapon Damage": {
+					"desc": "Damage scale while dual wielding",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+					]
+				}
+			},
+			"Spike Rifle": {
+				"Projectile": {
+					"desc": "Range and speed of the spikes",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Bullet Damage": {
+					"desc": "Damage per spike",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Magazine": {
+					"desc": "Magazine and carried ammo",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				},
+				"Reload Time": {
+					"desc": "Reload Time",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Reload Time", "block": "Magazines" }
+					]
+				},
+				"More Shooting": {
+					"desc": "Rate of fire",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon error",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+					]
+				},
+				"Dual Weapon Error": {
+					"desc": "Weapon error while dual wielding",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Minimum Error", "block": "Barrels" },
+						{ "field": "Error Angle", "block": "Barrels" },
+						{ "field": "Error Angle Max", "block": "Barrels" }
+					]
+				},
+				"Dual Weapon Damage": {
+					"desc": "Damage scale while dual wielding",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+					]
+				}
+			},
+			"Gravity Hammer": {
+				"Hammer Damage": {
+					"desc": "Damage of the gravity blast",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Hammer Radius": {
+					"desc": "Blast radius of the gravity blast",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Chieftain Hammer Damage": {
+					"desc": "Damage of Brute Chieftain hammer blasts",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Chieftain Hammer Radius": {
+					"desc": "Blast radius of Brute Chieftain hammer blasts",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Range": {
+					"desc": "Lunge range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+					"targets": [
+						{ "field": "Autoaim Range" }
+					]
+				}
+			},
+			"Spartan Laser": {
+				"Beam Damage": {
+					"desc": "Damage per beam tick (the beam is 5 ticks)",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Charging Time": {
+					"desc": "Charge-up time before the beam fires",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{ "field": "Charging Time", "block": "New Triggers" }
+					]
+				},
+				"More Shooting": {
+					"desc": "Beam ticks per shot",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1 }
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per shot, battery used per shot",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": 1 },
+						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1 }
+					]
+				},
+				"Zoom": {
+					"desc": "Zoom",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					]
+				}
+			},
+			"Flamethrower": {
+				"Flame Damage": {
+					"desc": "Damage per flame blob",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\turret\\flamethrower\\damage_effects\\flamethrower_impact",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Projectile": {
+					"desc": "Reach and speed of the flame stream",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"Rate of Fire": {
+					"desc": "Flame blobs per second",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" }
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per blob, fuel used per blob",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Barrels" },
+						{ "field": "Age Generated Per Round", "block": "Barrels" }
+					]
+				}
+			},
+			"Machine Gun": {
+				"Bullet Damage": {
+					"desc": "Damage per bullet (mounted and detached)",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Projectile": {
+					"desc": "Range and speed of the bullets",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"More Shooting": {
+					"desc": "Rate of fire (spins up)",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					]
+				},
+				"Magazine": {
+					"desc": "Rounds when detached",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				}
+			},
+			"Plasma Cannon": {
+				"Bullet Damage": {
+					"desc": "Damage per bolt (mounted and detached)",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Projectile": {
+					"desc": "Range and speed of the bolts",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"More Shooting": {
+					"desc": "Rate of fire (spins up)",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					]
+				},
+				"Magazine": {
+					"desc": "Rounds when detached",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"targets": [
+						{ "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				}
+			},
+			"Claymore Grenade": {
+				"Grenade Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound (thrown and stuck)",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_attached_explosion",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Radius": {
+					"desc": "Blast radius",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Maximum Count": {
+					"desc": "Maximum amount of Grenade by Type",
+					"game": "Halo 3",
+					"tag": "matg globals\\globals",
+					"targets": [
+						{ "field": "Maximum Count", "block": "Grenades", "index": 2 }
+					]
+				}
+			},
+			"Firebomb Grenade": {
+				"Grenade Damage": {
+					"desc": "Impact damage",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_impact",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Burn Damage": {
+					"desc": "Burn damage over time",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Burn Radius": {
+					"desc": "Radius of the burning area",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Maximum Count": {
+					"desc": "Maximum amount of Grenade by Type",
+					"game": "Halo 3",
+					"tag": "matg globals\\globals",
+					"targets": [
+						{ "field": "Maximum Count", "block": "Grenades", "index": 3 }
 					]
 				}
 			}
@@ -2716,7 +3431,7 @@
 			},
 			"Vision": {
 				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared generic AI base. Exception: the Flood Combat forms.",
-				"game": "Halo 2",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all" },
@@ -2728,27 +3443,27 @@
 			},
 			"Hearing Distance": {
 				"desc": "General enemy hearing range via the shared generic AI base. Exception: the Flood Combat forms.",
-				"game": "Halo 2",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all" }
 				]
 			},
 			"Perception": {
-				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Exception: the Flood Combat forms.",
-				"game": "Halo 2",
+				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base (Halo 3 merges the three times into one Perception Time). Exception: the Flood Combat forms.",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all" },
 					{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all" },
-					{ "field": "Combat Perception Time", "block": "Perception Properties", "index": "all" },
-					{ "field": "Guard Perception Time", "block": "Perception Properties", "index": "all" },
-					{ "field": "Non-Combat Perception Time", "block": "Perception Properties", "index": "all" }
+					{ "field": { "Halo 2": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": "Perception Properties", "index": "all" },
+					{ "field": "Guard Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"] },
+					{ "field": "Non-Combat Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"] }
 				]
 			},
 			"Retreat": {
 				"desc": "General cower time and flee chance when a leader or peers die via the shared generic AI base. Exceptions: Grunts and Jackals.",
-				"game": "Halo 2",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
@@ -2760,7 +3475,7 @@
 			},
 			"Placement Properties": {
 				"desc": "General chance of spawning as an upgraded variant. Exceptions: most Elite and Grunt variants.",
-				"game": "Halo 2",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
@@ -2770,7 +3485,7 @@
 			},
 			"Grenade Properties": {
 				"desc": "General grenade behaviour \u2014 velocity, range, collateral. Exceptions: Brutes, Grunts, Marines, SpecOps Elites and the Flood Combat forms.",
-				"game": "Halo 2",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
@@ -2778,6 +3493,16 @@
 					{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
 					{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+				]
+			},
+			"AI Projectile Speed": {
+				"desc": "How fast AI-fired projectiles fly on Normal and Legendary tiers (weapons with unset tiers use engine default and are unaffected)",
+				"game": "Halo 3",
+				"harder_when": "increased",
+				"tag": "proj *",
+				"targets": [
+					{ "field": "AI Normal Velocity Scale" },
+					{ "field": "AI Legendary Velocity Scale" }
 				]
 			}
 		},
@@ -3168,7 +3893,8 @@
 					"desc": "Increases range in witch they can use their weapon, as well as their effective weapon range",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -3192,7 +3918,8 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -3213,7 +3940,8 @@
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3240,7 +3968,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3255,7 +3984,8 @@
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\hunter\\*",
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
@@ -3281,14 +4011,29 @@
 				"Stun Behavior": {
 					"desc": "Change the Stun threshold and the stun duration",
 					"tag": {
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
 						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
 						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
 						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
+				},
+				"Berserk": {
+					"desc": "Charge rampage cooldown, perimeter and limits",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
+					"targets": [
+						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all", "harder_when": "decreased" },
+						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
+						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+					]
 				}
 			},
 			"Grunt": {
@@ -3328,7 +4073,8 @@
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3345,7 +4091,8 @@
 					"desc": "Chance of running a dive animation from avoiding a grenade",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
@@ -3355,7 +4102,8 @@
 					"desc": "Cover-seeking time; vitality threshold to trigger cover (Halo 2 scales all 3 Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3383,7 +4131,8 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -3393,7 +4142,8 @@
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -3409,7 +4159,8 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -3430,7 +4181,8 @@
 					"desc": "Overcharge chance, delay, behaviour",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*plasma pistol",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
@@ -3443,7 +4195,8 @@
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
@@ -3457,7 +4210,8 @@
 					"desc": "Behavior that influences the chance and timing for grenades",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
@@ -3481,7 +4235,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3495,20 +4250,22 @@
 				"Upgrade Chance": {
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Retreat": {
 					"desc": "Cowering time and the chance to flee when a leader or nearby peers die",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3527,14 +4284,33 @@
 				"Stun Behavior": {
 					"desc": "Change the Stun threshold and the stun duration",
 					"tag": {
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
 						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
 						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
 						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
+				},
+				"Kamikaze": {
+					"desc": "Suicide-charge chance and limits",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"targets": [
+						{ "field": "Broken Kamikaze Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+					]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their pack leader",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"targets": [
+						{ "field": "Maximum Leader Distance", "block": "General Properties" },
+						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
 				}
 			},
 			"Jackal": {
@@ -3574,7 +4350,8 @@
 					"desc": "Dive into / emerge from cover chance (H1); cover-seeking chance (H2). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3591,7 +4368,8 @@
 					"desc": "Chance of running a dive animation from avoiding a grenade",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
@@ -3610,7 +4388,8 @@
 					"desc": "Cover-seeking time and shield/vitality thresholds. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3641,7 +4420,8 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -3660,7 +4440,8 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -3681,7 +4462,8 @@
 					"desc": "Overcharge chance, delay, behaviour",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
@@ -3703,7 +4485,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3718,7 +4501,8 @@
 					"desc": "Shield Power",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3732,25 +4516,36 @@
 				"Upgrade Chance": {
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": [
 						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
 						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Shield Recharge": {
 					"desc": "Delay before Shield begins to recharge and the time it takes",
 					"tag": {
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their pack leader",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"targets": [
+						{ "field": "Maximum Leader Distance", "block": "General Properties" },
+						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
 				}
 			},
 			"Flood Combat Form": {
@@ -3758,7 +4553,8 @@
 					"desc": "Vision Distance, Angles, Peripheral",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
@@ -3772,31 +4568,34 @@
 					"desc": "Hearing Distance",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": "Hearing Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
 					]
 				},
 				"Perception": {
-					"desc": "Notice Projectile, Notice Vehicle, Combat/Guard/Non-Combat Perception",
+					"desc": "Notice Projectile, Notice Vehicle, Combat/Guard/Non-Combat Perception (Halo 3 merges the three times into one Perception Time)",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
 						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
+						{ "field": { "Halo 1": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] },
+						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] }
 					]
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
@@ -3811,7 +4610,8 @@
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
@@ -3836,7 +4636,8 @@
 					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3851,7 +4652,8 @@
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -3867,7 +4669,8 @@
 					"desc": "Enemy weapon accuracy.",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"harder_when": "decreased",
 					"targets": {
@@ -3902,7 +4705,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3917,7 +4721,8 @@
 					"desc": "Shield Capacity",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
-						"Halo 2": "char objects\\characters\\floodcombat*"
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3938,6 +4743,17 @@
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Combatform Berserk": {
+					"desc": "Chance to go berserk at different distances and how many can go berserk",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\floodcombat*",
+					"targets": [
+						{ "field": "Berserk Chance", "block": "Combatform Properties", "index": "all" },
+						{ "field": "Berserk Distance", "block": "Combatform Properties", "index": "all" },
+						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
 					]
 				}
 			},
@@ -3978,7 +4794,8 @@
 					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actr characters\\flood_infection\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3996,7 +4813,8 @@
 					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actr characters\\flood_infection\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4018,7 +4836,8 @@
 					"desc": "Health (infections burst regardless, so this may be moot). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actv characters\\flood_infection\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4068,7 +4887,8 @@
 					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"tag": {
 						"Halo 1": "actv characters\\flood_infection\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -4085,6 +4905,16 @@
 							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 						]
 					}
+				},
+				"Infestation Speed": {
+					"desc": "Time to convert a corpse into a combat form",
+					"game": "Halo 3",
+					"harder_when": "decreased",
+					"tag": "char objects\\characters\\flood_infection\\ai\\flood_infection*",
+					"targets": [
+						{ "field": "Infection Time", "block": "Swarm Properties" },
+						{ "field": "Infection Time Max", "block": "Swarm Properties" }
+					]
 				}
 			},
 			"Flood Carrier Form": {
@@ -4124,7 +4954,8 @@
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\floodcarrier\\*",
-						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*",
+						"Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
@@ -4135,7 +4966,8 @@
 				"Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
 					"tag": {
-						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier",
+						"Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
@@ -4145,7 +4977,7 @@
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Suicide Sensing Distance": {
 					"desc": "How close they need to be, to check to blow up",
@@ -4159,7 +4991,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\floodcarrier\\*",
-						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*"
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*",
+						"Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4197,7 +5030,8 @@
 					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"tag": {
 						"Halo 1": "actv characters\\floodcarrier\\*",
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -4214,6 +5048,165 @@
 							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 						]
 					}
+				}
+			},
+			"Flood Pure Form": {
+				"Vision": {
+					"desc": "Vision Distance, Angles, Peripheral",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all" },
+						{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all" },
+						{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all" },
+						{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all" },
+						{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all" }
+					]
+				},
+				"Hearing Distance": {
+					"desc": "Hearing Distance",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all" }
+					]
+				},
+				"Perception": {
+					"desc": "Notice Projectile, Notice Vehicle, Perception Time",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all" },
+						{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all" },
+						{ "field": "Perception Time", "block": "Perception Properties", "index": "all" }
+					]
+				},
+				"Cover Chance": {
+					"desc": "Chance of seeking cover",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time; vitality threshold to trigger cover",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+					]
+				},
+				"Body Recharge": {
+					"desc": "Pure Forms regenerate health — Recharge Fraction = % of Max Health they can regain",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all" },
+						{ "field": "Body Recharge Delay Time", "block": "Vitality Properties", "index": "all" },
+						{ "field": "Body Recharge Time", "block": "Vitality Properties", "index": "all" }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between melee attempts and the chance of one — the stalker and tank sub-forms carry their own melee",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Maximum Firing Distance": {
+					"desc": "Range in which the ranged sub-form uses its spikes",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Accuracy": {
+					"desc": "Ranged sub-form weapon accuracy — accuracy bounds/time",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+						{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
+					]
+				},
+				"Stealth Morphs": {
+					"desc": "Stalker sub-form stealth triggers — distance and damage thresholds for morphing into the stealthy stalker",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stealth Morph Damage Threshold", "block": "Morph Properties", "index": "all" }
+					]
+				},
+				"Tank Form": {
+					"desc": "All tank form fields",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Distance Damage Outer Radius", "block": "Morph Properties", "index": "all" },
+						{ "field": "Distance Damage Inner Radius", "block": "Morph Properties", "index": "all" },
+						{ "field": "Distance Damage Time", "block": "Morph Properties", "index": "all" },
+						{ "field": "Distance Damage Reset Time", "block": "Morph Properties", "index": "all" },
+						{ "field": "Throttle Distance", "block": "Morph Properties", "index": "all" },
+						{ "field": "Throttle Distance Max", "block": "Morph Properties", "index": "all" },
+						{ "field": "Protect Damage Amount", "block": "Morph Properties", "index": "all" },
+						{ "field": "Protect Time", "block": "Morph Properties", "index": "all" },
+						{ "field": "Spew Chance", "block": "Morph Properties", "index": "all" },
+						{ "field": "Spew Frequency", "block": "Morph Properties", "index": "all" },
+						{ "field": "Spew Frequency Max", "block": "Morph Properties", "index": "all" }
+					]
+				},
+				"Stalker Form": {
+					"desc": "All stalker form fields",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stealth Morph Damage Threshold", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stalk Range", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stalk Range Max", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stalk Range Hard Maximum", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stalk Charge Chance", "block": "Morph Properties", "index": "all" }
+					]
+				},
+				"Ranged Form": {
+					"desc": "Turtle and protect morph behavior",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Ranged Proximity Distance", "block": "Morph Properties", "index": "all" },
+						{ "field": "Turtle Damage Threshold", "block": "Morph Properties", "index": "all", "harder_when": "decreased" },
+						{ "field": "Turtle Time", "block": "Morph Properties", "index": "all", "harder_when": "increased" },
+						{ "field": "Turtle Time Max", "block": "Morph Properties", "index": "all", "harder_when": "increased" },
+						{ "field": "Turtle Distance", "block": "Morph Properties", "index": "all" },
+						{ "field": "Turtle Abort Distance", "block": "Morph Properties", "index": "all" }
+					]
+				},
+				"Group Morph": {
+					"desc": "In what range a pure form decides to morph into the same form",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
+					"targets": [
+						{ "field": "Group Morph Range", "block": "Morph Properties", "index": "all" }
+					]
 				}
 			},
 			"Sentinel": {
@@ -4253,7 +5246,8 @@
 					"desc": "Cover-seeking time; vitality threshold to trigger cover (Halo 2 scales all Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4281,7 +5275,8 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -4291,7 +5286,8 @@
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char ai\\generic"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4318,7 +5314,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4333,7 +5330,8 @@
 					"desc": "Shield Capacity",
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -4376,21 +5374,36 @@
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their group leader",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+					"targets": [
+						{ "field": "Maximum Leader Distance", "block": "General Properties" },
+						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
 				}
 			},
 			"Bugger": {
 				"Body Vitality": {
 					"desc": "Health",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 					]
 				},
 				"Cover Chance": {
 					"desc": "Chance of seeking cover",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
 					"targets": [
 						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
 						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
@@ -4398,8 +5411,11 @@
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and vitality threshold",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
@@ -4408,8 +5424,11 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving to avoid a grenade",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
 					"targets": [
 						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
 					]
@@ -4426,8 +5445,11 @@
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
-					"game": "Halo 2",
-					"tag": "char ai\\generic",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
+					},
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
@@ -4436,8 +5458,11 @@
 				},
 				"Melee Leap": {
 					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
-					"game": "Halo 2",
-					"tag": "char ai\\generic",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
+					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
@@ -4448,8 +5473,11 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": "Halo 2",
-					"tag": "char ai\\generic",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
+					},
 					"targets": [
 						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
 						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
@@ -4461,8 +5489,11 @@
 			"Brute": {
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts and the chance of one.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
@@ -4471,17 +5502,26 @@
 				},
 				"Cover Chance": {
 					"desc": "Chance of seeking cover.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Shielded Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
+						{ "field": "Shielded Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
+						{ "field": "Shield Depleted Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] }
 					]
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and the vitality threshold that triggers it.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
@@ -4490,16 +5530,22 @@
 				},
 				"Body Vitality": {
 					"desc": "Health.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
 				},
 				"Body Recharge": {
 					"desc": "Did you know Brutes can regenerate Health? Recharge Fraction = % of Max Health they can regain.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all" },
 						{ "field": "Body Recharge Delay Time", "block": "Vitality Properties", "index": "all" },
@@ -4508,8 +5554,11 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing \u2014 velocity, range, collateral.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
 						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all" },
@@ -4520,8 +5569,11 @@
 				},
 				"Grenades Chance": {
 					"desc": "How often they throw grenades.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all" },
 						{ "field": "Anti-Vehicle Grenade Chance", "block": "Grenades Properties", "index": "all" }
@@ -4529,16 +5581,22 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving away from a grenade.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
 					"targets": [
 						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
 					]
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": "Halo 2",
-					"tag": "char ai\\generic",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
+					},
 					"targets": [
 						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
 						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
@@ -4548,10 +5606,73 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": "Halo 2",
-					"tag": "char ai\\generic",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic"
+					},
 					"targets": [
 						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Shield down Berserk": {
+					"desc": "Chance to berserk when shields are deplteded depending on how far away they are, sorted in the right pair",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Shield-Down Berserk Ranges Max", "block": "Charge Properties", "index": "all" },
+						{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "index": "all" },
+						{ "field": "Shield-Down Berserk Ranges", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"More Berserking": {
+					"desc": "Berserking Cooldown and how many can berserk at the same time",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all"},
+						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+					]
+				},
+				"Leader Charge": {
+					"desc": "Chance for a leader to charge, when all his lackies died and how far they charge",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their pack leader",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Maximum Leader Distance", "block": "General Properties" },
+						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
+				},
+				"Deployable Shield Use": {
+					"desc": "Cover use and bubble-shield deployment thresholds",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" },
+						{ "field": "Recent Damage Shield Equipment", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Equipment Use Chance": {
+					"desc": "Chance of deploying their equipment",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Easy/Normal", "block": "Equipment Definitions/Equipment Use", "index": "all" },
+						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all" }
 					]
 				}
 			}
@@ -4972,6 +6093,51 @@
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
+					]
+				}
+			},
+			"343 Guilty Spark": {
+				"Body Vitality": {
+					"desc": "Guilty Spark's health during the boss fight (stock: 2000).",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\monitor\\ai\\monitor_combat",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Beam Damage": {
+					"desc": "Damage of his eye beam (stock: 100 per hit).",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\characters\\monitor\\damage_effects\\first_hit",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Beam Rate of Fire": {
+					"desc": "How fast his eye beam ticks (stock: 30 rounds per second).",
+					"game": "Halo 3",
+					"tag": "weap objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" }
+					]
+				},
+				"Beam Range": {
+					"desc": "Reach and speed of his eye beam (stock: 120 range).",
+					"game": "Halo 3",
+					"tag": "proj objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Maximum Range" }
 					]
 				}
 			}
