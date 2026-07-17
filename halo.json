@@ -388,17 +388,14 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
+						"Halo 1": "antr weapons\\assault rifle\\fp\\fp",
 						"Halo 3": "jmad *fp_assault_rifle*"
 					},
-					"targets": {
-						"Halo 1": [ { "field": "Reload Time", "block": "Magazines" } ],
-						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
-					}
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second",
@@ -528,19 +525,15 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\pistol\\pistol",
+						"Halo 1": "antr weapons\\pistol\\fp\\fp",
 						"Halo 2": "jmad *fp_magnum*",
 						"Halo 3": "jmad *fp_magnum*"
 					},
-					"targets": {
-						"Halo 1": [ { "field": "Reload Time", "block": "Magazines" } ],
-						"Halo 2": [ { "field": "Reload Animation", "reload_anim": true } ],
-						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
-					}
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
@@ -1170,16 +1163,15 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\needler\\needler",
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 1": "antr weapons\\needler\\fp\\fp",
+						"Halo 2": "jmad *fp_needler*",
+						"Halo 3": "jmad *fp_needler*"
 					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
@@ -1302,18 +1294,16 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
-						"Halo 2": "jmad *fp_sniper_rifle*",
-						"Halo 3": "jmad *fp_sniper_rifle*"
-					},
-					"targets": [
-						{ "field": "Reload Animation", "reload_anim": true }
-					]
-				},
+																"Reload Time": {
+									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+									"game": ["Halo 1", "Halo 2", "Halo 3"],
+									"tag": {
+										"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
+										"Halo 2": "jmad *fp_sniper_rifle*",
+										"Halo 3": "jmad *fp_sniper_rifle*"
+									},
+									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+								},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
 					"tag": {
@@ -1450,16 +1440,15 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload Time (0 initial value, not sure what's going on)",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
-						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 1": "antr weapons\\rocket launcher\\fp\\fp",
+						"Halo 2": "jmad *fp_rocket_launcher*",
+						"Halo 3": "jmad *fp_rocket_launcher*"
 					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
@@ -1583,16 +1572,15 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 1": "antr weapons\\shotgun\\fp\\fp",
+						"Halo 2": "jmad *fp_shotgun*",
+						"Halo 3": "jmad *fp_shotgun*"
 					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
@@ -1702,15 +1690,11 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Time to reload",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
-					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_smg*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
@@ -1987,14 +1971,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-								"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": "jmad *fp_battle_rifle*",
-					"targets": [
-						{ "field": "Reload Animation", "reload_anim": true }
-					]
-				},
+																"Reload Time": {
+									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+									"game": ["Halo 2", "Halo 3"],
+									"tag": "jmad *fp_battle_rifle*",
+									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+								},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
@@ -2140,18 +2122,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-								"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
-						"Halo 3": "jmad *fp_brute_shot*"
-					},
-					"targets": {
-						"Halo 2": [ { "field": "Reload Time", "block": "Magazines" } ],
-						"Halo 3": [ { "field": "Reload Animation", "reload_anim": true } ]
-					}
-				},
+																"Reload Time": {
+									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+									"game": ["Halo 2", "Halo 3"],
+									"tag": "jmad *fp_brute_shot*",
+									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+								},
 				"More Shooting": {
 					"desc": "How many shots leave the barrel per trigger pull (this weapon's Rounds Per Second is 0).",
 					"tag": {
@@ -2384,14 +2360,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-								"Reload Time": {
-					"desc": "Reload time. On weapons with no tag-side reload timer the reload is driven by the first-person animation instead, so this scales that animation's length (both Master Chief and Arbiter); *0.5 = twice as fast.",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": "jmad *fp_covenant_carbine*",
-					"targets": [
-						{ "field": "Reload Animation", "reload_anim": true }
-					]
-				},
+																"Reload Time": {
+									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+									"game": ["Halo 2", "Halo 3"],
+									"tag": "jmad *fp_covenant_carbine*",
+									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+								},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
@@ -2548,16 +2522,11 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
-					},
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_flak_cannon*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
@@ -2887,6 +2856,12 @@
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
 					]
+				},
+				"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": "Halo 3",
+					"tag": "jmad *fp_excavator*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				}
 			},
 			"Spike Rifle": {
@@ -2924,13 +2899,11 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Reload Time": {
-					"desc": "Reload Time",
+								"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
-					"targets": [
-						{ "field": "Reload Time", "block": "Magazines" }
-					]
+					"tag": "jmad *fp_spike_rifle*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire",
