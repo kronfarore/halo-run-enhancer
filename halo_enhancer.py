@@ -1451,22 +1451,18 @@ class MagnitudeEditorDialog(QDialog):
             return "?"
         cls, path = self._hp.hm.split_tag(tag)
         if target.get('reload_anim'):
-            # jmad reload animation: show the current reload frame counts per graph
-            # (Master Chief / Arbiter) instead of a plugin field.
+            # Reload animation: show the current reload length in seconds (frames / 30fps)
+            # per graph (Master Chief / Arbiter), instead of a plugin field value.
             try:
-                import halo3_reload, struct as _st
-                L = halo3_reload.LAYOUTS.get(self.game)
-                if not L or not hasattr(m, 'resolve_stringid'):
-                    return "reload animation"
+                import halo3_reload
+                rows = halo3_reload.reload_frames(m, path, self.game)
+                if not rows:
+                    return "— no reload animation on this map"
                 labels = []
-                for name, base in m.find_tags(cls, path):
-                    anims = m.follow_all(base, [L['anim_blk']], [L['anim_el']], 'all')
-                    fcs = sorted({_st.unpack_from('<h', m.data, anims[i] + L['fc_off'])[0]
-                                  for i in halo3_reload._reload_anim_indices(m, base, L)})
-                    who = 'Arbiter' if 'dervish' in name else ('Master Chief' if 'masterchief' in name else name.rsplit(chr(92), 1)[-1])
-                    if fcs:
-                        labels.append("%s frames (%s)" % (", ".join(str(f) for f in fcs), who))
-                return "\n".join(labels) if labels else "— no reload animation"
+                for who, fcs in rows:
+                    secs = ", ".join("%.2fs" % (f / halo3_reload.FPS) for f in fcs)
+                    labels.append("%s  (%s)" % (secs, who))
+                return "\n".join(labels)
             except Exception:
                 return "reload animation"
         plugin = self.registry.get(cls)
