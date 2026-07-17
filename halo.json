@@ -318,6 +318,7 @@
 			"Harmful Falling Distance": {
 				"desc": "Range between which fall damage is taken?",
 				"tag": "matg globals\\globals",
+				"easier_when": "increased",
 				"targets": [
 					{ "field": "Harmful Falling Distance", "block": "Falling Damage" },
 					{ "field": "Harmful Falling Distance Max", "block": "Falling Damage" }
@@ -3569,13 +3570,22 @@
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all" },
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"] },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
+				},
+				"Elite Berserk": {
+					"desc": "Elite Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*"
+					},
+					"targets": [
+						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+					],
+					"game": "Halo 1"
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
@@ -3961,13 +3971,22 @@
 						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all" },
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"] },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
+				},
+				"Hunter Berserk": {
+					"desc": "Hunter Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"tag": {
+						"Halo 1": "actr characters\\hunter\\*"
+					},
+					"targets": [
+						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+					],
+					"game": "Halo 1"
 				},
 				"Melee Damage": {
 					"desc": "Melee Damage from Hunter",
@@ -4571,13 +4590,22 @@
 						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"] },
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"] },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"] }
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
+				},
+				"Hunter Berserk": {
+					"desc": "Hunter Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"tag": {
+						"Halo 1": "actr characters\\floodcombat*"
+					},
+					"targets": [
+						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+					],
+					"game": "Halo 1"
 				},
 				"Melee Leap": {
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
