@@ -101,7 +101,7 @@ ZOOM_DONOR_WEAPONS = {
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
 # 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
 # found under (per-game subfolder); defaults to the tool's parent when unset.
-SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root') + OPTION_KEYS
+SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top') + OPTION_KEYS
 
 
 def mcc_root():
@@ -703,6 +703,9 @@ class RunState:
         self.rounds = []
         self.new_weapon_count = 0   # #4: how many new-weapon pairs P1 was offered
         self.special_counters = {}  # special effect name -> rounds since last picked
+        # patcher: (tag, name) of every effect already applied to a map — anything not
+        # in here is "new" (highlighted / optionally shown first) until the next patch.
+        self.patched_effect_keys = set()
         # #5: a player who picked an Exhaust gets one no-negative choice next round.
         self.free_negative_pending = {'player1': False, 'player2': False}
 
@@ -761,6 +764,7 @@ class RunState:
             "blacklist": list(self.blacklist),
             "special_counters": dict(self.special_counters),
             "free_negative_pending": dict(self.free_negative_pending),
+            "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
             "rounds": self.rounds
         }
 
@@ -783,6 +787,7 @@ class RunState:
         state.player1_weapons = p1data.get('weapons') or ([state.player1_weapon] if state.player1_weapon else [])
         state.player2_weapons = p2data.get('weapons') or ([state.player2_weapon] if state.player2_weapon else [])
         state.rounds = data.get('rounds', [])
+        state.patched_effect_keys = {tuple(k) for k in data.get('patched_effect_keys', [])}
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -1396,6 +1401,17 @@ class MagnitudeEditorDialog(QDialog):
             QLabel { color: #e0e0e0; }
             QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a;
                         border-radius: 5px; margin-top: 8px; }
+            /* #9: high-contrast scrollbars that stand out from the dark background */
+            QScrollBar:vertical { background: #202020; width: 16px; margin: 0; }
+            QScrollBar::handle:vertical { background: #6a6a6a; min-height: 40px;
+                        border-radius: 5px; border: 1px solid #808080; }
+            QScrollBar::handle:vertical:hover { background: #8fb8ff; border-color: #8fb8ff; }
+            QScrollBar:horizontal { background: #202020; height: 16px; margin: 0; }
+            QScrollBar::handle:horizontal { background: #6a6a6a; min-width: 40px;
+                        border-radius: 5px; border: 1px solid #808080; }
+            QScrollBar::handle:horizontal:hover { background: #8fb8ff; border-color: #8fb8ff; }
+            QScrollBar::add-line, QScrollBar::sub-line { height: 0; width: 0; }
+            QScrollBar::add-page, QScrollBar::sub-page { background: transparent; }
         """)
         self._build_registry()
         self._build(map_path)
@@ -1647,8 +1663,8 @@ class MagnitudeEditorDialog(QDialog):
         drow.addStretch()
         layout.addLayout(drow)
 
-        legend = QLabel("Difficulty indicator:  🔺 raising the value makes the enemy tougher"
-                        "     🔻 lowering the value makes the enemy tougher   "
+        legend = QLabel("Direction indicator:  🔺 raising makes it harder    🔻 lowering makes it harder"
+                        "    🟢▲ raising makes it easier    🟢▼ lowering makes it easier   "
                         "(shown per field where the direction isn't obvious)")
         legend.setStyleSheet("color: #c8c8c8; font-size: 12px; padding: 2px;")
         legend.setWordWrap(True)
@@ -1661,6 +1677,22 @@ class MagnitudeEditorDialog(QDialog):
         zoom_row = self._build_zoom_source_row()
         if zoom_row:
             layout.addWidget(zoom_row)
+
+        # #5/#7: search-to-effect + "show new effects first" toggle.
+        srow = QHBoxLayout()
+        srow.addWidget(QLabel("🔍 Find:"))
+        self.search_edit = QLineEdit()
+        self.search_edit.setPlaceholderText("effect name… (Enter cycles matches)")
+        self.search_edit.textChanged.connect(lambda s: self._search_effect(s, advance=False))
+        self.search_edit.returnPressed.connect(
+            lambda: self._search_effect(self.search_edit.text(), advance=True))
+        srow.addWidget(self.search_edit, 1)
+        self.new_top_cb = QCheckBox("Show new effects at the top")
+        self.new_top_cb.setToolTip("List effects not yet applied to a map first, until you patch")
+        self.new_top_cb.setChecked(bool(CONFIG.get('show_new_at_top')))
+        self.new_top_cb.toggled.connect(self._toggle_new_top)
+        srow.addWidget(self.new_top_cb)
+        layout.addLayout(srow)
 
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
@@ -1761,20 +1793,67 @@ class MagnitudeEditorDialog(QDialog):
         self.parent_gui._sync_save_button()
         self.parent_gui.update_status(f"Removed '{name}' from the run ({removed} pick(s)).")
 
+    def _patched_keys(self):
+        rs = getattr(self.parent_gui, 'run_state', None)
+        return getattr(rs, 'patched_effect_keys', set()) if rs else set()
+
+    def _is_new(self, eff):
+        return (eff.get('tag'), eff.get('name')) not in self._patched_keys()
+
     def _populate(self):
         self._clear_layout(self.form)
         self.rows = []
+        self._effect_boxes = []     # (name, box) for the search jump
+        self._search_idx = -1
         self._jump_order_idx = -1   # row order changed; restart the empty-entry cursor
-        for grp, effs in self._hp.group_effects(self.effects):
+
+        def render_group(grp, effs, color="#4CAF50"):
             hdr = QLabel(grp)
-            hdr.setStyleSheet("font-weight: bold; font-size: 15px; color: #4CAF50; margin-top: 8px;")
+            hdr.setStyleSheet(f"font-weight: bold; font-size: 15px; color: {color}; margin-top: 8px;")
             self.form.addWidget(hdr)
             for eff in effs:
-                self.form.addWidget(self._effect_box(eff))
+                box = self._effect_box(eff)
+                self._effect_boxes.append((eff.get('name', ''), box))
+                self.form.addWidget(box)
+
+        groups = self._hp.group_effects(self.effects)
+        if CONFIG.get('show_new_at_top'):
+            # #7: a "New" section first (effects not yet patched, in normal order),
+            # then the regular groups with those effects removed so each shows once.
+            new_effs = [e for e in self.effects if self._is_new(e)]
+            if new_effs:
+                render_group("🆕 New effects", new_effs, color="#8fb8ff")
+            newset = {id(e) for e in new_effs}
+            groups = [(g, [e for e in effs if id(e) not in newset]) for g, effs in groups]
+        for grp, effs in groups:
+            if effs:
+                render_group(grp, effs)
         self.form.addStretch()
 
+    def _toggle_new_top(self, on):
+        CONFIG['show_new_at_top'] = bool(on)
+        save_settings()
+        self._populate()
+
+    def _search_effect(self, text, advance=False):
+        q = (text or '').strip().lower()
+        if not q:
+            return
+        matches = [box for nm, box in getattr(self, '_effect_boxes', []) if q in nm.lower()]
+        if not matches:
+            return
+        idx = (getattr(self, '_search_idx', -1) + 1) % len(matches) if advance else 0
+        self._search_idx = idx
+        self._scroll.ensureWidgetVisible(matches[idx], 50, 60)
+
     def _effect_box(self, eff):
-        box = QGroupBox(f"{eff['name']}   ×{eff['count']}")
+        is_new = self._is_new(eff)
+        title = f"{'🆕 ' if is_new else ''}{eff['name']}   ×{eff['count']}"
+        box = QGroupBox(title)
+        if is_new:
+            # #6: highlight effects not yet applied to a map; cleared on the next patch.
+            box.setStyleSheet("QGroupBox { border: 2px solid #8fb8ff; border-radius: 5px; "
+                              "margin-top: 8px; } QGroupBox::title { color: #8fb8ff; }")
         v = QVBoxLayout(box)
         hdr = QHBoxLayout()
         hdr.addStretch()
@@ -1820,11 +1899,18 @@ class MagnitudeEditorDialog(QDialog):
         for t in targets:
             row = QHBoxLayout()
             derived = t.get('derived')
-            # per-field direction symbol (target harder_when overrides the mod's)
-            hw = t.get('harder_when') or eff.get('harder_when')
-            hw = resolve_gamed(hw, self.game) if isinstance(hw, dict) else hw
-            hw = hw.lower() if isinstance(hw, str) else ''
+            # per-field direction symbols (target overrides the mod's). harder_when
+            # marks the direction that makes the game HARDER (🔺/🔻); easier_when marks
+            # the direction that makes it EASIER (🟢▲/🟢▼) — the two are opposites, so
+            # normally only one is set per field.
+            def _dir(kind):
+                v = t.get(kind) or eff.get(kind)
+                v = resolve_gamed(v, self.game) if isinstance(v, dict) else v
+                return v.lower() if isinstance(v, str) else ''
+            hw = _dir('harder_when')
+            ew = _dir('easier_when')
             sym = '🔺 ' if hw == 'increased' else ('🔻 ' if hw == 'decreased' else '')
+            sym += '🟢▲ ' if ew == 'increased' else ('🟢▼ ' if ew == 'decreased' else '')
             fname = sym + t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
                 fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
@@ -2272,6 +2358,14 @@ class MagnitudeEditorDialog(QDialog):
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
         self._srcmap = None  # map changed on disk; re-read vanilla next time
+
+        # #6: every effect in this patch is no longer "new" — record it and refresh so
+        # the highlight/new-section clears.
+        rs = getattr(self.parent_gui, 'run_state', None)
+        if rs is not None and any(r.get('ok') and not r.get('skip') for r in results):
+            for eff in self.effects:
+                rs.patched_effect_keys.add((eff.get('tag'), eff.get('name')))
+            self._populate()
 
         self._show_results(results, backup)
 
