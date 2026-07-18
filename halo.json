@@ -3574,8 +3574,8 @@
 						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
 				},
@@ -3986,8 +3986,8 @@
 						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
 				},
@@ -4593,7 +4593,7 @@
 					"targets": [
 						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
 						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": { "Halo 1": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": { "Halo 1": "Combat Perception Time", "Halo 2": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
 						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] },
 						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] }
 					]
@@ -4606,8 +4606,8 @@
 						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
 					]
 				},
@@ -4979,8 +4979,8 @@
 						"Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" } },
-						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 2": "Charge Properties" } },
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] }
 					]
 				},
