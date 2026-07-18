@@ -3789,7 +3789,8 @@
 					"desc": "Fuel rod charge time",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
-						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -3799,7 +3800,8 @@
 					"desc": "Fuel rod projectiles per shot",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
-						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -3809,7 +3811,8 @@
 					"desc": "Higher fire rate for Hunter weapon",
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
-						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -3822,7 +3825,8 @@
 					"desc": "Fuel rod explosion damage",
 					"tag": {
 						"Halo 1": "jpt! weapons\\fuel rod gun\\explosion",
-						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component"
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component",
+						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -3887,7 +3891,8 @@
 					"desc": "Increases the maximum range, that the projectile can fly and it's speed",
 					"tag": {
 						"Halo 1": "proj weapons\\fuel rod gun\\fuel rod",
-						"Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component"
+						"Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component",
+						"Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary"
 					},
 					"targets": [
 						{ "field": "Air Damage Range" },
@@ -3992,7 +3997,8 @@
 					"desc": "Melee Damage from Hunter",
 					"tag": {
 						"Halo 1": "jpt! characters\\hunter\\melee",
-						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
+						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -4738,7 +4744,8 @@
 					"desc": "Melee Damage from Flood Combat Forms",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcombat elite\\melee & \\floodcombat human\\melee",
-						"Halo 2": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash"
+						"Halo 2": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_charge_first_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_boarding_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_obstacle_smash"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -4853,7 +4860,8 @@
 					"desc": "Might increase the explosion when they die?",
 					"tag": {
 						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
-						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop",
+						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -4864,7 +4872,8 @@
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
 					"tag": {
 						"Halo 1": "jpt! characters\\flood_infection\\body destroyed & nopop",
-						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop",
+						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -4876,7 +4885,8 @@
 					"desc": "Melee Damage from Flood Infection Forms",
 					"tag": {
 						"Halo 1": "jpt! characters\\flood_infection\\melee",
-						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap"
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap",
+						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -5008,7 +5018,8 @@
 					"desc": "Might increase the explosion when they die?",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
-						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
+						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion",
+						"Halo 3": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -5019,7 +5030,8 @@
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
-						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
+						"Halo 2": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion",
+						"Halo 3": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -5357,7 +5369,8 @@
 					"desc": "Explosion on death?",
 					"tag": {
 						"Halo 1": "jpt! characters\\sentinel\\explosion",
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
+						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -5368,7 +5381,8 @@
 					"desc": "Explosion on death? Lower Bound, Upper Bound",
 					"tag": {
 						"Halo 1": "jpt! characters\\sentinel\\explosion",
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
+						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
