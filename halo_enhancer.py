@@ -75,6 +75,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'ignore_elite_in_h3',
                'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
 
 
@@ -199,6 +200,7 @@ CONFIG = {
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": False,
+    "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
@@ -2545,6 +2547,13 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
+        self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
+        self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
+        self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
+                                           "so Elite enemy modifiers would tune your allies — this skips "
+                                           "them when patching a Halo 3 map. Turn off to patch them anyway.")
+        form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
+
         self.wildcards_cb = QCheckBox("Include wildcards")
         self.wildcards_cb.setChecked(bool(CONFIG.get('include_wildcards')))
         form.addRow("Wildcards:", self.wildcards_cb)
@@ -2664,6 +2673,7 @@ class OptionsDialog(QDialog):
             'remove_boss_mods': self._user_remove_boss,  # raw preference; boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
+            'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
@@ -3824,6 +3834,12 @@ class HaloGUI(QMainWindow):
                 if not self.db._game_ok(mod, game):
                     # A mod-level game filter (e.g. "game": "Halo 1") now excludes the
                     # WHOLE effect from patching the other game, not just its targets.
+                    mod['_game_excluded'] = True
+                    continue
+                if (game == 'Halo 3' and CONFIG.get('ignore_elite_in_h3')
+                        and mod.get('enemy') == 'Elite'):
+                    # In Halo 3 the Elites are allies, not enemies — skip Elite enemy
+                    # effects there by default (option in the run settings).
                     mod['_game_excluded'] = True
                     continue
                 for key in ('tag', 'field', 'harder_when', 'init_defaults'):

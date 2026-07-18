@@ -3518,7 +3518,8 @@
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3535,7 +3536,8 @@
 					"desc": "Chance of running a dive animation from avoiding a grenade",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
@@ -3545,7 +3547,8 @@
 					"desc": "Cover-seeking time and shield thresholds (Halo 2 scales all 3 Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3567,7 +3570,8 @@
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
@@ -3601,7 +3605,8 @@
 					"desc": "Increases range in witch they can use their weapon",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -3611,7 +3616,8 @@
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -3627,7 +3633,8 @@
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -3722,7 +3729,8 @@
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3737,7 +3745,8 @@
 					"desc": "Shield Capacity",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -3752,7 +3761,8 @@
 					"desc": "Melee Damage from Elite",
 					"tag": {
 						"Halo 1": "jpt! characters\\elite\\elite melee",
-						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
+						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
