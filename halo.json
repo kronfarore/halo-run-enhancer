@@ -1392,7 +1392,7 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\explosion",
 						"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact",
-						"Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact"
+						"Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2073,7 +2073,7 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct grenade impact and the explosion.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact",
-						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact"
+						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2472,8 +2472,8 @@
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact",
-						"Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact"
+						"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion",
+						"Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -4753,7 +4753,7 @@
 				"Melee Damage": {
 					"desc": "Melee Damage from Flood Combat Forms",
 					"tag": {
-						"Halo 1": "jpt! characters\\floodcombat elite\\melee & \\floodcombat human\\melee",
+						"Halo 1": "jpt! characters\\floodcombat elite\\melee & characters\\floodcombat_human\\melee",
 						"Halo 2": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash",
 						"Halo 3": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_charge_first_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_boarding_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_obstacle_smash"
 					},
