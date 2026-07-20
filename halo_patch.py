@@ -76,6 +76,7 @@ def collect_effects(rounds, mission_id=None):
         if key not in seen:
             seen[key] = {'name': mod.get('name'), 'desc': mod.get('desc', ''),
                          'tag': tag, 'targets': list(mod.get('targets') or []),
+                         'skull': mod.get('skull'),
                          'harder_when': mod.get('harder_when'),
                          'easier_when': mod.get('easier_when'),
                          'init_defaults': mod.get('init_defaults'),
@@ -533,10 +534,12 @@ def _apply_starting_equipment(m, game, registry, starting):
             loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug, block='Magazines', index=0)
             total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug, block='Magazines', index=0)
         # Battery weapons (energy sword, plasma pistol) have no Magazines block, so
-        # there are no counts to copy. Write -1 — which these fields document as
-        # "weapon default" — rather than leaving the replaced weapon's counts behind.
-        loaded = -1 if loaded is None else loaded
-        total = -1 if total is None else total
+        # there are no counts to copy. Vanilla profiles store 0 for these, not the
+        # -1 the plugin calls "weapon default" (-1 didn't actually read back as a
+        # default in testing), so match vanilla rather than leaving the replaced
+        # weapon's counts behind.
+        loaded = 0 if loaded is None else loaded
+        total = 0 if total is None else total
         n = 0
         for i in profiles:
             poff = m.follow(scnr_base, [boff], [esize], i)
@@ -553,6 +556,111 @@ def _apply_starting_equipment(m, game, registry, starting):
                     'ok': True, 'old': short,
                     'new': f'set on {n} profile(s) ({loaded}/{total} rounds)'})
     return out
+
+
+# ---- Skulls -----------------------------------------------------------------
+# "Betrayal": every human squad turns on the player. Campaign maps leave squad
+# Team at Default and let the engine resolve allegiance from the character, so
+# flipping sides means writing an explicit Team on the squads that are human.
+#
+# H1 keeps allegiance per ENCOUNTER (squads hang off the encounter); H2 and H3
+# keep it per SQUAD, reaching the character through a palette -- directly in H2,
+# via the Fire-Teams sub-block in H3.
+_TEAM_COVENANT = 3
+_BETRAYAL = {
+    'Halo 2': {'squads': (0x160, 0x74), 'team': 0x24, 'char_idx': 0x36,
+               'palette': (0x178, 0x08), 'pal_id_at': 0x4, 'fireteams': None},
+    'Halo 3': {'squads': (0x384, 0x40), 'team': 0x24, 'char_idx': 0x8,
+               'palette': (0x3A8, 0x10), 'pal_id_at': 0xC, 'fireteams': (0x30, 0x60)},
+}
+# Characters whose squads count as "human" for Betrayal. Matched against the last
+# path component of the character/actor tag name. Keep these specific: a loose word
+# like "commander" also matches `elite commander energy sword`, which flipped a
+# Covenant encounter on b30 until it was removed.
+_HUMAN_WORDS = ('marine', 'crewman', 'captain', 'johnson', 'miranda', 'keyes',
+                'sergeant', 'pilot', 'civilian', 'odst')
+
+
+# Belt-and-braces: whatever _HUMAN_WORDS matches, a tag naming a Covenant/Flood/
+# Sentinel species is never human. Checked against the WHOLE path, since the species
+# usually shows up in a parent folder (`characters\elite\elite commander\...`).
+_NONHUMAN_WORDS = ('elite', 'grunt', 'jackal', 'brute', 'hunter', 'flood', 'sentinel',
+                   'drone', 'engineer', 'prophet', 'monitor', 'bugger', 'skirmisher')
+
+
+def _is_human_tag(name):
+    if not name:
+        return False
+    low = name.lower()
+    if any(w in low for w in _NONHUMAN_WORDS):
+        return False
+    return any(w in low.rsplit(chr(92), 1)[-1] for w in _HUMAN_WORDS)
+
+
+def _apply_betrayal(m, game, registry):
+    """Flip every human squad/encounter to the Covenant team."""
+    out = []
+    scnr_base = _scnr_base(m)
+    if scnr_base is None:
+        return [{'effect': 'Betrayal', 'ok': False, 'reason': 'scenario tag unavailable'}]
+
+    flipped, skipped = [], 0
+    if game == 'Halo 1':
+        # H1: allegiance is per encounter, and an encounter's squads name actors
+        # from the Actor Palette. Proven in-game on a10.
+        pal = m.follow_all(scnr_base, [0x420], [0x10], 'all')
+        names = []
+        for el in pal:
+            ident = struct.unpack_from('<I', m.data, el + 0xC)[0]
+            names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+        for e in m.follow_all(scnr_base, [0x42C], [0xB0], 'all'):
+            kinds = set()
+            for sq in m.follow_all(e, [0x80], [0xE8], 'all'):
+                ati = struct.unpack_from('<h', m.data, sq + 0x20)[0]
+                if 0 <= ati < len(names) and names[ati]:
+                    kinds.add(names[ati])
+            if not kinds:
+                continue
+            if all(_is_human_tag(k) for k in kinds):
+                struct.pack_into('<h', m.data, e + 0x24, _TEAM_COVENANT)
+                flipped.append(_cstr_at(m, e))
+            else:
+                skipped += 1
+        label = 'encounters'
+    else:
+        lay = _BETRAYAL.get(game)
+        if not lay:
+            return [{'effect': 'Betrayal', 'ok': False, 'reason': f'not supported in {game}'}]
+        poff, pel = lay['palette']
+        names = []
+        for el in m.follow_all(scnr_base, [poff], [pel], 'all'):
+            ident = struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0]
+            names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+        soff, sel = lay['squads']
+        for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
+            idxs = []
+            if lay['fireteams']:
+                foff, fel = lay['fireteams']
+                for ft in m.follow_all(sq, [foff], [fel], 'all'):
+                    idxs.append(struct.unpack_from('<h', m.data, ft + lay['char_idx'])[0])
+            else:
+                idxs.append(struct.unpack_from('<h', m.data, sq + lay['char_idx'])[0])
+            kinds = {names[i] for i in idxs if 0 <= i < len(names) and names[i]}
+            if not kinds:
+                continue
+            if all(_is_human_tag(k) for k in kinds):
+                struct.pack_into('<h', m.data, sq + lay['team'], _TEAM_COVENANT)
+                flipped.append(_cstr_at(m, sq))
+            else:
+                skipped += 1
+        label = 'squads'
+    return [{'effect': 'Betrayal', 'field': f'Squad Team ({label})', 'ok': True,
+             'old': 'as the map defines', 'new': f'{len(flipped)} human {label} -> Covenant',
+             'detail': ', '.join(flipped[:12]) + ('…' if len(flipped) > 12 else '')}]
+
+
+def _cstr_at(m, off, limit=0x20):
+    return bytes(m.data[off:off + limit]).split(b'\0')[0].decode('latin1', 'replace')
 
 
 # scnr weapon-placement + palette layout per game (Weapons list, Weapon Palette).
@@ -858,7 +966,7 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
-              from_baseline=True, remove_cutscenes=False):
+              from_baseline=True, remove_cutscenes=False, skulls=()):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -964,6 +1072,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
+
+    # Skulls are whole-map rules rather than tag edits, so they run last, after every
+    # value op. Like the rest they start from the pristine baseline, so unpicking the
+    # skull and re-patching restores the map.
+    for skull in (skulls or ()):
+        if str(skull).strip().lower() == 'betrayal':
+            results.extend(_apply_betrayal(m, str(game).strip(), registry))
 
     if remove_cutscenes and str(game).strip() in THIRD_GEN_GAMES:
         # Halo 3 opt-in: neutralise the Cortana/Gravemind vision cutscenes on the map

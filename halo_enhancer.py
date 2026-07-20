@@ -71,7 +71,7 @@ def is_valid_run(data):
 
 
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods',
-               'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
+               'wildcard_chance', 'skull_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
@@ -103,7 +103,8 @@ ZOOM_DONOR_WEAPONS = {
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
 # 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
 # found under (per-game subfolder); defaults to the tool's parent when unset.
-SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top') + OPTION_KEYS
+SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
+                 'options_dialog_size') + OPTION_KEYS
 
 
 def mcc_root():
@@ -166,6 +167,7 @@ CONFIG = {
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    "skull_chance": 0.0,                    # #7: chance a pair's negative is a Skull instead
     "two_player_coop": True,                # #8: H3 only — P1 plays Chief, P2 plays the Dervish
     "coop_no_starting_weapons": False,      # #1: don't give the coop profile (index 1) the picks
     "null_coop_starting_equipment": False,  # #2: empty the coop profile's starting weapons
@@ -240,7 +242,32 @@ MOD_COLORS = {
     'special': {'border': '00E5FF', 'bg': '06201f'},  # #3: standout cyan
     'dual': {'border': '00E676', 'bg': '0a2012'},   # dual-wield-only effects
     'exhaust': {'border': 'FF7043', 'bg': '1e0f06'},  # #5: one-map exhaust (ember orange)
+    'skull': {'border': 'D8D0C0', 'bg': '141210'},  # #7: skull — bone on near-black
 }
+
+
+def skull_watermark_path():
+    """Path to a faded ☠ image, rendered once into the app data dir.
+
+    Qt stylesheets can only take a background-image from a file (no inline data),
+    so the glyph is painted to a PNG rather than shipped as an asset."""
+    p = app_data_dir() / "skull_bg.png"
+    if not p.exists():
+        try:
+            from PySide6.QtGui import QPixmap, QPainter, QColor, QFont
+            pm = QPixmap(256, 256)
+            pm.fill(Qt.transparent)
+            painter = QPainter(pm)
+            font = QFont()
+            font.setPointSize(170)
+            painter.setFont(font)
+            painter.setPen(QColor(216, 208, 192, 30))   # faint, so text stays readable
+            painter.drawText(pm.rect(), Qt.AlignCenter, "☠")
+            painter.end()
+            pm.save(str(p))
+        except Exception:
+            return None                                 # cosmetic only — never fatal
+    return p if p.exists() else None
 
 # Historical effect renames: old name -> current halo.json key. Consulted by
 # _refresh_mod_definition when a saved/loaded run's frozen mod name no longer
@@ -366,6 +393,7 @@ class ModifierDatabase:
         self.positive_pool = []
         self.negative_pool = []
         self.wildcard_pool = []
+        self.skull_pool = []        # #7: negative-slot alternatives, whole-map rules
         self.weapon_mods = {}
         self.enemy_mods = {}
         self.boss_mods = {}         # boss name -> mods (Boss enemy modifier section)
@@ -413,9 +441,11 @@ class ModifierDatabase:
             'tag': mod_data.get('tag', ''),
             'games': self._parse_games(mod_data.get('game')),
             'wildcard': bool(mod_data.get('wildcard', False)),
+            'skull': mod_data.get('skull'),   # #7: whole-map rule, not a tag edit
             'special': bool(mod_data.get('special', False)),  # escalating-odds effect
             'dual_only': bool(mod_data.get('dual_only', False)),  # needs 'Dual <X>'
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
+            'easier_when': mod_data.get('easier_when'),  # ...and its opposite (all 4 uses are mod-level)
             'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
             'targets': mod_data.get('targets') if isinstance(mod_data.get('targets'), dict)
                        else list(mod_data.get('targets', []) or []),  # map-patch targets
@@ -452,6 +482,11 @@ class ModifierDatabase:
                 for boss, mods in self.data['Enemy modifiers']['Boss enemy modifier'].items():
                     self.boss_mods[boss] = [self._build_mod(n, md, {'enemy': boss})
                                             for n, md in mods.items()]
+        # #7: Skulls are negatives that change a whole-map rule instead of tag values,
+        # so they're drawn in place of a normal negative rather than alongside one.
+        if 'Skull modifiers' in self.data:
+            for mod_name, mod_data in self.data['Skull modifiers'].items():
+                self.skull_pool.append(self._build_mod(mod_name, mod_data))
         # Wildcard pool: Friend modifiers are wildcards by nature, plus any mod
         # anywhere flagged `wildcard: true`.
         if 'Friend modifiers' in self.data:
@@ -673,6 +708,17 @@ class ModifierDatabase:
         available = [m for m in self.wildcard_pool
                      if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                      and self._cross_game_ok(m)]
+        return random.choice(available) if available else None
+
+    def get_skull_modifier_filtered(self, active_names, blacklist, game=None):
+        """#7: draw a Skull to stand in for a normal negative. A skull is a whole-map
+        rule, so the same one twice does nothing extra — already-active skulls are
+        excluded. A skull_chance of 0 is what disables them; there's no separate
+        toggle, for the same reason wildcards no longer have one."""
+        available = [m for m in self.skull_pool
+                     if m.get('name') not in active_names
+                     and self.get_mod_label(m) not in blacklist
+                     and self._game_ok(m, game) and self._cross_game_ok(m)]
         return random.choice(available) if available else None
 
     def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
@@ -1169,7 +1215,7 @@ class PairCard(QGroupBox):
             else:
                 source = mod_data.get('weapon') or 'General'  # weaponless = general player effect
         elif mod_type == 'enemy':
-            source = mod_data.get('enemy', 'General')
+            source = 'Skull' if mod_data.get('skull') else mod_data.get('enemy', 'General')
         elif mod_type == 'boss':
             source = mod_data.get('boss') or mod_data.get('enemy', 'Boss')
         elif mod_type == 'exhaust':
@@ -1181,28 +1227,41 @@ class PairCard(QGroupBox):
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
         dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
-        if special:
+        skull = bool(mod_data.get('skull'))      # #7: whole-map rule
+        if skull:
+            scheme = MOD_COLORS['skull']
+            border_width = 3
+        elif special:
             scheme = MOD_COLORS['special']
             border_width = 3
         elif dual:
             scheme = MOD_COLORS['dual']
             border_width = 3
+        # #7: skull cards get the glyph as a faint background watermark.
+        bg_img = ''
+        if skull:
+            wm = skull_watermark_path()
+            if wm:
+                bg_img = (f"background-image: url({str(wm).replace(chr(92), '/')});"
+                          "background-repeat: no-repeat; background-position: center;")
         widget = QGroupBox(label)
         widget.setStyleSheet(f"""
             QGroupBox {{
-                border: {border_width}px {'double' if special or dual else 'solid'} #{scheme['border']};
+                border: {border_width}px {'double' if special or dual or skull else 'solid'} #{scheme['border']};
                 border-radius: 4px;
                 padding: 10px;
                 margin-top: 5px;
                 background-color: #{scheme['bg']};
+                {bg_img}
             }}
         """)
         layout = QVBoxLayout(widget)
-        marker = '★ ' if special else '⚔ ' if dual else ''
+        marker = '☠ ' if skull else '★ ' if special else '⚔ ' if dual else ''
         name = QLabel(f"{marker}{source}: {mod_data.get('name', 'Unknown')}")
         name.setStyleSheet("font-weight: bold; font-size: %dpx; color: %s;"
                            % (CONFIG['font_size_name'],
-                              '#00E5FF' if special else '#00E676' if dual else '#e0e0e0'))
+                              '#D8D0C0' if skull else '#00E5FF' if special
+                              else '#00E676' if dual else '#e0e0e0'))
         layout.addWidget(name)
         badge = single_game_badge(mod_data)   # #2: single-game indicator
         if badge:
@@ -1752,6 +1811,10 @@ class MagnitudeEditorDialog(QDialog):
             item = layout.takeAt(0)
             w = item.widget()
             if w:
+                # Unparent before deleteLater: takeAt only drops it from the layout,
+                # so an un-managed child stays visible until the event loop runs the
+                # deferred delete — which repopulating mid-signal doesn't wait for.
+                w.setParent(None)
                 w.deleteLater()
             elif item.layout():
                 self._clear_layout(item.layout())
@@ -1827,10 +1890,14 @@ class MagnitudeEditorDialog(QDialog):
             # #7: a "New" section first (effects not yet patched, in normal order),
             # then the regular groups with those effects removed so each shows once.
             new_effs = [e for e in self.effects if self._is_new(e)]
-            if new_effs:
+            # Only split when the list is genuinely mixed. Before the first patch of
+            # a run — and after loading a save written before patched_effect_keys
+            # existed — *everything* is new, and hoisting all of it reorders nothing
+            # while making the real groups vanish behind one header.
+            if new_effs and len(new_effs) < len(self.effects):
                 render_group(f"🆕 New effects ({len(new_effs)})", new_effs, color="#8fb8ff")
-            newset = {id(e) for e in new_effs}
-            groups = [(g, [e for e in effs if id(e) not in newset]) for g, effs in groups]
+                newset = {id(e) for e in new_effs}
+                groups = [(g, [e for e in effs if id(e) not in newset]) for g, effs in groups]
         for grp, effs in groups:
             if effs:
                 render_group(grp, effs)
@@ -2373,7 +2440,8 @@ class MagnitudeEditorDialog(QDialog):
                                                  self.target_difficulty, game=self.game,
                                                  starting=starting, weapon_swaps=weapon_swaps,
                                                  zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
-                                                 remove_cutscenes=remove_cutscenes)
+                                                 remove_cutscenes=remove_cutscenes,
+                                                 skulls=skulls)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -2483,6 +2551,16 @@ class OptionsDialog(QDialog):
         self.setWindowTitle("⚙ Options")
         self.setModal(True)
         self.setMinimumWidth(460)
+        # Remember how the user sized this dialog — it's a scrolling list now, so how
+        # much of it is visible at once is a real preference.
+        size = CONFIG.get('options_dialog_size')
+        if isinstance(size, (list, tuple)) and len(size) == 2:
+            try:
+                self.resize(max(460, int(size[0])), max(320, int(size[1])))
+            except (TypeError, ValueError):
+                self.resize(560, 720)
+        else:
+            self.resize(560, 720)
         # Readable against the dark theme: light text, dark inputs, clear checks.
         self.setStyleSheet("""
             QDialog { background-color: #141414; }
@@ -2584,6 +2662,16 @@ class OptionsDialog(QDialog):
                                         "as a wildcard) in the 3rd slot on non-boss levels. Mutually exclusive "
                                         "with Exhaust. Set to 0 to disable wildcards entirely.")
         rform.addRow("Wildcard chance:", self.wildcard_chance)
+
+        self.skull_chance = QDoubleSpinBox()
+        self.skull_chance.setRange(0.0, 1.0)
+        self.skull_chance.setSingleStep(0.05)
+        self.skull_chance.setDecimals(2)
+        self.skull_chance.setValue(float(CONFIG.get('skull_chance', 0.0)))
+        self.skull_chance.setToolTip("Per-pair chance that the negative half of a card is a Skull — a "
+                                     "whole-map rule (e.g. Betrayal: every human squad turns on you) "
+                                     "instead of a tag tweak. 0 disables skulls.")
+        rform.addRow("Skull chance:", self.skull_chance)
 
         self.exhaust_chance = QDoubleSpinBox()
         self.exhaust_chance.setRange(0.0, 1.0)
@@ -2737,6 +2825,14 @@ class OptionsDialog(QDialog):
         buttons.rejected.connect(self.reject)
         outer.addWidget(buttons)
 
+    def done(self, r):
+        # Remember the size on close, including on Cancel — it's a window preference,
+        # not one of the options. Reading it here (rather than tracking resizeEvent)
+        # keeps it to a single disk write per session.
+        CONFIG['options_dialog_size'] = [self.width(), self.height()]
+        save_settings()
+        super().done(r)
+
     def values(self):
         return {
             'target_difficulty': self.diff_combo.currentText(),
@@ -2746,6 +2842,7 @@ class OptionsDialog(QDialog):
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
+            'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'include_grenades': self.grenades_cb.isChecked(),
@@ -3964,7 +4061,7 @@ class HaloGUI(QMainWindow):
                     # effects there by default (option in the run settings).
                     mod['_game_excluded'] = True
                     continue
-                for key in ('tag', 'field', 'harder_when', 'init_defaults'):
+                for key in ('tag', 'field', 'harder_when', 'easier_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)
                 # Boss option: fold the Heretic Leader and his holograms into one
@@ -4096,6 +4193,13 @@ class RunEnhancer:
         wi = 0
         for i in range(3):
             enemy_choice = random.choice(enemy_mods) if enemy_mods else None
+            # #7: a Skull can stand in for the pair's negative. Placeholder weighting
+            # for now — one roll per pair, at skull_chance, replacing the enemy card.
+            if random.random() < (CONFIG.get('skull_chance', 0.0) or 0):
+                skull = self.db.get_skull_modifier_filtered(active_neg, bl, game)
+                if skull is not None:
+                    enemy_choice = skull
+                    active_neg = set(active_neg) | {skull.get('name')}
             new_weapon = None
             p1_choice = p2_choice = None
             wildcard = None

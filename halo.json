@@ -6172,6 +6172,15 @@
 			}
 		}
 	},
+	"Skull modifiers": {
+		"Betrayal": {
+			"desc": "Every human squad turns on you. Marines, crew and Johnson fight for the Covenant for the whole level.",
+			"skull": "betrayal",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": "scnr",
+			"targets": []
+		}
+	},
 	"Friend modifiers": {
 		"Friend Damage": {
 			"desc": "How much damage friends deal",

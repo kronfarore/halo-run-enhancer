@@ -29,3 +29,4 @@ build.bat
 # Reference material / not part of the main tool
 *.ods
 test_gui.py
+skull_bg.png
