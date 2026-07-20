@@ -77,6 +77,7 @@ def collect_effects(rounds, mission_id=None):
             seen[key] = {'name': mod.get('name'), 'desc': mod.get('desc', ''),
                          'tag': tag, 'targets': list(mod.get('targets') or []),
                          'harder_when': mod.get('harder_when'),
+                         'easier_when': mod.get('easier_when'),
                          'init_defaults': mod.get('init_defaults'),
                          '_missing_in_db': mod.get('_missing_in_db'),
                          # source identity, so the patcher can remove it from the run

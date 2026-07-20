@@ -1827,7 +1827,7 @@ class MagnitudeEditorDialog(QDialog):
             # then the regular groups with those effects removed so each shows once.
             new_effs = [e for e in self.effects if self._is_new(e)]
             if new_effs:
-                render_group("🆕 New effects", new_effs, color="#8fb8ff")
+                render_group(f"🆕 New effects ({len(new_effs)})", new_effs, color="#8fb8ff")
             newset = {id(e) for e in new_effs}
             groups = [(g, [e for e in effs if id(e) not in newset]) for g, effs in groups]
         for grp, effs in groups:
@@ -2377,8 +2377,10 @@ class MagnitudeEditorDialog(QDialog):
         # the highlight/new-section clears.
         rs = getattr(self.parent_gui, 'run_state', None)
         if rs is not None and any(r.get('ok') and not r.get('skip') for r in results):
-            for eff in self.effects:
-                rs.patched_effect_keys.add((eff.get('tag'), eff.get('name')))
+            # Only effects that actually carried an edit stop being "new" — one left
+            # blank is still waiting for you, so it keeps its highlight.
+            for item in plan:
+                rs.patched_effect_keys.add((item.get('tag'), item.get('name')))
             self._populate()
 
         self._show_results(results, backup)
@@ -2613,8 +2615,15 @@ class OptionsDialog(QDialog):
         self.coop_null_cb = QCheckBox("Empty the coop player's starting equipment (null)")
         self.coop_null_cb.setChecked(bool(CONFIG.get('null_coop_starting_equipment')))
         self.coop_null_cb.setToolTip("Clear the coop profile's Primary and Secondary weapons so the "
-                                     "coop player starts empty-handed. Overrides the option above.")
+                                     "coop player starts empty-handed. Mutually exclusive with the "
+                                     "option above.")
         form.addRow("Coop equipment:", self.coop_null_cb)
+        # These two describe conflicting intents for the same profile — keep exactly
+        # one active so it's always obvious what the coop player will start with.
+        self.coop_no_start_cb.toggled.connect(
+            lambda on: on and self.coop_null_cb.setChecked(False))
+        self.coop_null_cb.toggled.connect(
+            lambda on: on and self.coop_no_start_cb.setChecked(False))
 
         self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
         self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
@@ -3789,7 +3798,7 @@ class HaloGUI(QMainWindow):
         if fresh:
             mod.pop('_missing_in_db', None)
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'harder_when', 'init_defaults', 'games'):
+                        'harder_when', 'easier_when', 'init_defaults', 'games'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         else:
