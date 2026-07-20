@@ -485,8 +485,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\pistol\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -898,8 +898,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma rifle\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1123,8 +1123,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1251,11 +1251,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2/3: hits 1-3 use strike_melee; the Lunge melee (an out-of-ammo bayonet charge) uses a separate jpt!, smash_melee_response -- both change together.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\sniper rifle\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1532,8 +1532,8 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
 						"Halo 1": "jpt! weapons\\shotgun\\melee",
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -1767,8 +1767,8 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2026,8 +2026,8 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2205,8 +2205,8 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2415,8 +2415,8 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -2604,10 +2604,10 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 uses smash_melee, shared with the Rocket Launcher and the Flak Cannon. Halo 3 actually uses a different jpt!, slice_melee -- confirmed on the map data; the H3 tag was wrong before this fix.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },

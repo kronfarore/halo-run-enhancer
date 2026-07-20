@@ -611,7 +611,7 @@ _NONHUMAN_WORDS = ('elite', 'grunt', 'jackal', 'brute', 'hunter', 'flood', 'sent
 # Humans that stay loyal: a squad containing one of these never flips, even though
 # it classifies as human. Johnson is scripted in several missions and turning him
 # hostile breaks those sequences.
-_BETRAYAL_LOYAL = ('johnson',)
+_BETRAYAL_LOYAL = ('johnson', 'miranda')
 
 
 def _is_loyal_tag(name):
