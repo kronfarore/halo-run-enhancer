@@ -235,8 +235,9 @@ CONFIG = {
 }
 
 # border / background hex for mod widgets, keyed by logical color name
-# The green used for positive/easier cues throughout the UI (matches MOD_COLORS['green']).
+# Direction-indicator colours, matching the positive/negative card borders.
 EASIER_GREEN = '#4CAF50'
+HARDER_RED = '#f44336'
 
 MOD_COLORS = {
     'green': {'border': '4CAF50', 'bg': '0a1a0a'},
@@ -1732,9 +1733,11 @@ class MagnitudeEditorDialog(QDialog):
         drow.addStretch()
         layout.addLayout(drow)
 
+        _r = f'<span style="color: {HARDER_RED};">'
         _g = f'<span style="color: {EASIER_GREEN};">'
-        legend = QLabel("Direction indicator: &nbsp;🔺 raising makes it harder &nbsp; &nbsp;"
-                        "🔻 lowering makes it harder &nbsp; &nbsp;"
+        legend = QLabel("Direction indicator: &nbsp;"
+                        f"{_r}▲</span> raising makes it harder &nbsp; &nbsp;"
+                        f"{_r}▼</span> lowering makes it harder &nbsp; &nbsp;"
                         f"{_g}▲</span> raising makes it easier &nbsp; &nbsp;"
                         f"{_g}▼</span> lowering makes it easier &nbsp; "
                         "(shown per field where the direction isn't obvious)")
@@ -1980,20 +1983,20 @@ class MagnitudeEditorDialog(QDialog):
             row = QHBoxLayout()
             derived = t.get('derived')
             # per-field direction symbols (target overrides the mod's). harder_when
-            # marks the direction that makes the game HARDER (🔺/🔻); easier_when marks
-            # the direction that makes it EASIER — the same triangle in green. Emoji
-            # can't be recoloured, so the easier one uses the geometric ▲/▼ tinted via
-            # rich text; at label size it reads as the same shape. The two are
-            # opposites, so normally only one is set per field.
+            # marks the direction that makes the game HARDER (red ▲/▼); easier_when the
+            # direction that makes it EASIER (green ▲/▼). Both are the geometric glyph
+            # tinted through rich text rather than an emoji, so the pair matches
+            # exactly and each can carry its own colour. The two are opposites, so
+            # normally only one is set per field.
             def _dir(kind):
                 v = t.get(kind) or eff.get(kind)
                 v = resolve_gamed(v, self.game) if isinstance(v, dict) else v
                 return v.lower() if isinstance(v, str) else ''
             hw = _dir('harder_when')
             ew = _dir('easier_when')
-            sym = '🔺 ' if hw == 'increased' else ('🔻 ' if hw == 'decreased' else '')
+            hw_glyph = '▲' if hw == 'increased' else ('▼' if hw == 'decreased' else '')
             ew_glyph = '▲' if ew == 'increased' else ('▼' if ew == 'decreased' else '')
-            fname = sym + t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
+            fname = t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
                 fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
             if t.get('diff_prefix_nl'):
@@ -2010,12 +2013,16 @@ class MagnitudeEditorDialog(QDialog):
             left = QVBoxLayout()
             left.setSpacing(2)
             lbl = QLabel(fname)
-            if ew_glyph:
-                # Only this label needs rich text (to tint the triangle). Escape the
-                # rest and keep the double-spacing, which HTML would otherwise collapse.
+            if hw_glyph or ew_glyph:
+                # Rich text only where a symbol is shown, so it can be tinted. Escape
+                # the rest and keep the double-spacing HTML would otherwise collapse.
+                marks = ''
+                if hw_glyph:
+                    marks += f'<span style="color: {HARDER_RED};">{hw_glyph}</span> '
+                if ew_glyph:
+                    marks += f'<span style="color: {EASIER_GREEN};">{ew_glyph}</span> '
                 lbl.setTextFormat(Qt.RichText)
-                lbl.setText(f'<span style="color: {EASIER_GREEN};">{ew_glyph}</span> '
-                            + html.escape(fname).replace('  ', '&nbsp; '))
+                lbl.setText(marks + html.escape(fname).replace('  ', '&nbsp; '))
             lbl.setWordWrap(True)   # #1: wrap long field names instead of clipping
             left.addWidget(lbl)
             inrow = QHBoxLayout()
@@ -2465,18 +2472,27 @@ class MagnitudeEditorDialog(QDialog):
             QMessageBox.critical(self, "Patch failed", str(e))
             return
 
+        # Effects that were on screen but had no value typed produced no ops, so the
+        # patcher never saw them and they'd otherwise stay "new" forever. Report them
+        # as a deliberate skip so the summary accounts for every effect in the run.
+        # Added before the patch log is written so it records them too.
+        planned = {(i.get('tag'), i.get('name')) for i in plan}
+        for eff in self.effects:
+            if (eff.get('tag'), eff.get('name')) in planned or eff.get('skull'):
+                continue
+            results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
+                            'ok': True, 'skip': True, 'reason': 'no value changed'})
+
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
         self._srcmap = None  # map changed on disk; re-read vanilla next time
 
-        # #6: every effect in this patch is no longer "new" — record it and refresh so
-        # the highlight/new-section clears.
+        # #6: every effect present at patch time is no longer "new" — including the
+        # ones left blank, which were a deliberate "leave this alone", not an oversight.
         rs = getattr(self.parent_gui, 'run_state', None)
         if rs is not None and any(r.get('ok') and not r.get('skip') for r in results):
-            # Only effects that actually carried an edit stop being "new" — one left
-            # blank is still waiting for you, so it keeps its highlight.
-            for item in plan:
-                rs.patched_effect_keys.add((item.get('tag'), item.get('name')))
+            for eff in self.effects:
+                rs.patched_effect_keys.add((eff.get('tag'), eff.get('name')))
             self._populate()
 
         self._show_results(results, backup)
