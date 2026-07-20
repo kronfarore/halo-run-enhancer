@@ -70,7 +70,7 @@ def is_valid_run(data):
     return any(k in data for k in ('phase', 'mission_id', 'rounds', 'selected_pairs'))
 
 
-OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods', 'include_wildcards',
+OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods',
                'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'coop_no_starting_weapons', 'null_coop_starting_equipment',
@@ -134,7 +134,6 @@ def save_settings():
 
 # Configuration
 CONFIG = {
-    "include_wildcards": True,
     "font_size_title": 20,
     "font_size_subtitle": 18,
     "font_size_name": 16,
@@ -665,7 +664,8 @@ class ModifierDatabase:
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_wildcard_modifier_filtered(self, blacklist, game=None):
-        if not (self.wildcard_pool and CONFIG['include_wildcards']):
+        # No separate on/off switch: a wildcard_chance of 0 is what disables wildcards.
+        if not self.wildcard_pool:
             return None
         # Filter first, then pick, so a blacklisted roll doesn't suppress
         # the wildcard entirely when other choices remain.
@@ -2496,10 +2496,16 @@ class OptionsDialog(QDialog):
                         margin-top: 10px; padding: 10px 6px 6px 6px; }
             QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }
         """)
-        layout = QVBoxLayout(self)
+        outer = QVBoxLayout(self)
+        _scroll = QScrollArea()
+        _scroll.setWidgetResizable(True)
+        _cont = QWidget()
+        layout = QVBoxLayout(_cont)
+        _scroll.setWidget(_cont)
+        outer.addWidget(_scroll, 1)
 
-        # ---- Functionality section ----
-        func = QGroupBox("Functionality")
+        # ---- Run rules ----
+        func = QGroupBox("Run rules")
         form = QFormLayout(func)
         form.setLabelAlignment(Qt.AlignRight)
 
@@ -2508,10 +2514,16 @@ class OptionsDialog(QDialog):
         di = self.diff_combo.findText(CONFIG.get('target_difficulty', 'Normal'))
         if di >= 0:
             self.diff_combo.setCurrentIndex(di)
+        self.diff_combo.setToolTip("Which difficulty slot the patcher writes. Effects with per-difficulty "
+                                   "fields (enemy damage, accuracy tiers, upgrade chances) are applied to "
+                                   "this difficulty — set it to the one you actually play.")
         form.addRow("Target difficulty:", self.diff_combo)
 
         self.single_game_cb = QCheckBox("Remove mods that only appear in one game")
         self.single_game_cb.setChecked(bool(CONFIG.get('remove_single_game_mods')))
+        self.single_game_cb.setToolTip("Only offer effects that work in every game, so a run can move "
+                                       "between Halo 1/2/3 without cards becoming unpatchable. Also forces "
+                                       "Boss mods off, since bosses are game-specific.")
         form.addRow("Cross-game only:", self.single_game_cb)
 
         self.remove_boss_cb = QCheckBox("Remove boss mods (no Boss cards)")
@@ -2536,6 +2548,67 @@ class OptionsDialog(QDialog):
         _sync_boss_sub()
         form.addRow("    ↳ Boss mods:", self.remove_boss_cb)
 
+        self.grenades_cb = QCheckBox("Treat grenades as weapons")
+        self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
+        self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
+                                    "They are never used as a starting Primary/Secondary weapon.")
+        form.addRow("Grenades:", self.grenades_cb)
+
+        self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
+        self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
+        self.negatives_cb.setToolTip("When you deliberately choose a weapon, an enemy card is tied to that "
+                                     "choice — taking what you want costs you something.")
+        form.addRow("Weapon-choice negatives:", self.negatives_cb)
+        layout.addWidget(func)
+
+        # ---- Card rolls ----
+        rolls = QGroupBox("Card rolls")
+        rform = QFormLayout(rolls)
+        rform.setLabelAlignment(Qt.AlignRight)
+
+        self.wildcard_chance = QDoubleSpinBox()
+        self.wildcard_chance.setRange(0.0, 1.0)
+        self.wildcard_chance.setSingleStep(0.05)
+        self.wildcard_chance.setDecimals(2)
+        self.wildcard_chance.setValue(float(CONFIG.get('wildcard_chance', 0.1)))
+        self.wildcard_chance.setToolTip("Per-pair chance of a Wildcard (Friend modifier or any effect flagged "
+                                        "as a wildcard) in the 3rd slot on non-boss levels. Mutually exclusive "
+                                        "with Exhaust. Set to 0 to disable wildcards entirely.")
+        rform.addRow("Wildcard chance:", self.wildcard_chance)
+
+        self.exhaust_chance = QDoubleSpinBox()
+        self.exhaust_chance.setRange(0.0, 1.0)
+        self.exhaust_chance.setSingleStep(0.05)
+        self.exhaust_chance.setDecimals(2)
+        self.exhaust_chance.setValue(float(CONFIG.get('exhaust_chance', 0.1)))
+        self.exhaust_chance.setToolTip("Per-pair chance of a one-map Exhaust in the 3rd slot "
+                                       "(non-boss levels; mutually exclusive with Wildcard). 0 disables.")
+        rform.addRow("Exhaust chance:", self.exhaust_chance)
+
+        self.new_weapon_chance = QDoubleSpinBox()
+        self.new_weapon_chance.setRange(0.0, 1.0)
+        self.new_weapon_chance.setSingleStep(0.05)
+        self.new_weapon_chance.setDecimals(2)
+        self.new_weapon_chance.setValue(float(CONFIG.get('new_weapon_chance', 0.0)))
+        self.new_weapon_chance.setToolTip("Per-pair chance that a card offers a brand-new weapon from the "
+                                          "level's pool instead of a modifier. Both players are offered the "
+                                          "same number of new-weapon cards. 0 disables.")
+        rform.addRow("New-weapon chance:", self.new_weapon_chance)
+
+        self.special_rate = QDoubleSpinBox()
+        self.special_rate.setRange(0.0, 2.0)
+        self.special_rate.setSingleStep(0.05)
+        self.special_rate.setDecimals(2)
+        self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
+        self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
+        rform.addRow("Special-effect rate:", self.special_rate)
+        layout.addWidget(rolls)
+
+        # ---- Map patching ----
+        patchg = QGroupBox("Map patching")
+        form = QFormLayout(patchg)
+        form.setLabelAlignment(Qt.AlignRight)
+
         self.combine_holo_cb = QCheckBox("Combine Heretic Leader & his Holograms into one mod")
         self.combine_holo_cb.setChecked(bool(CONFIG.get('combine_heretic_hologram')))
         self.combine_holo_cb.setToolTip("On patch: Heretic Leader boss cards target the leader and his decoy "
@@ -2555,49 +2628,6 @@ class OptionsDialog(QDialog):
                                            "so Elite enemy modifiers would tune your allies — this skips "
                                            "them when patching a Halo 3 map. Turn off to patch them anyway.")
         form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
-
-        self.wildcards_cb = QCheckBox("Include wildcards")
-        self.wildcards_cb.setChecked(bool(CONFIG.get('include_wildcards')))
-        form.addRow("Wildcards:", self.wildcards_cb)
-
-        self.wildcard_chance = QDoubleSpinBox()
-        self.wildcard_chance.setRange(0.0, 1.0)
-        self.wildcard_chance.setSingleStep(0.05)
-        self.wildcard_chance.setDecimals(2)
-        self.wildcard_chance.setValue(float(CONFIG.get('wildcard_chance', 0.1)))
-        form.addRow("Wildcard chance:", self.wildcard_chance)
-
-        self.exhaust_chance = QDoubleSpinBox()
-        self.exhaust_chance.setRange(0.0, 1.0)
-        self.exhaust_chance.setSingleStep(0.05)
-        self.exhaust_chance.setDecimals(2)
-        self.exhaust_chance.setValue(float(CONFIG.get('exhaust_chance', 0.1)))
-        self.exhaust_chance.setToolTip("Per-pair chance of a one-map Exhaust in the 3rd slot "
-                                       "(non-boss levels; mutually exclusive with Wildcard). 0 disables.")
-        form.addRow("Exhaust chance:", self.exhaust_chance)
-
-        self.new_weapon_chance = QDoubleSpinBox()
-        self.new_weapon_chance.setRange(0.0, 1.0)
-        self.new_weapon_chance.setSingleStep(0.05)
-        self.new_weapon_chance.setDecimals(2)
-        self.new_weapon_chance.setValue(float(CONFIG.get('new_weapon_chance', 0.0)))
-        form.addRow("New-weapon chance:", self.new_weapon_chance)
-
-        self.special_rate = QDoubleSpinBox()
-        self.special_rate.setRange(0.0, 2.0)
-        self.special_rate.setSingleStep(0.05)
-        self.special_rate.setDecimals(2)
-        self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
-        self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
-        form.addRow("Special-effect rate:", self.special_rate)
-
-        self.grenades_cb = QCheckBox("Treat grenades as weapons")
-        self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
-        form.addRow("Grenades:", self.grenades_cb)
-
-        self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
-        self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
-        form.addRow("Weapon-choice negatives:", self.negatives_cb)
 
         self.starting_weapons_cb = QCheckBox("Set starting weapons from picks (scenario profiles 0 & 1)")
         self.starting_weapons_cb.setChecked(bool(CONFIG.get('set_starting_weapons')))
@@ -2631,13 +2661,19 @@ class OptionsDialog(QDialog):
                                    "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
                                    "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
         form.addRow("Scope UI:", self.zoom_ui_cb)
+        layout.addWidget(patchg)
+
+        # ---- Advanced ----
+        adv = QGroupBox("Advanced")
+        vform = QFormLayout(adv)
+        vform.setLabelAlignment(Qt.AlignRight)
 
         self.debug_mode_cb = QCheckBox("Debug mode (developer tools)")
         self.debug_mode_cb.setChecked(bool(CONFIG.get('debug_mode')))
         self.debug_mode_cb.setToolTip("Shows the patcher's “＋ field” button and the main-window “ADD MOD” "
                                       "search. Leave off for normal play.")
-        form.addRow("Debug:", self.debug_mode_cb)
-        layout.addWidget(func)
+        vform.addRow("Debug:", self.debug_mode_cb)
+        layout.addWidget(adv)
 
         # ---- Appearance section ----
         appear = QGroupBox("Appearance")
@@ -2648,32 +2684,39 @@ class OptionsDialog(QDialog):
         self.card_width.setRange(240, 900)
         self.card_width.setSingleStep(10)
         self.card_width.setValue(int(CONFIG.get('card_width', 380)))
+        self.card_width.setToolTip("Width of the effect cards on the selection screen. Shrink both "
+                                   "dimensions if the cards don't fit your display.")
         aform.addRow("Card width (px):", self.card_width)
 
         self.card_height = QSpinBox()
         self.card_height.setRange(300, 1200)
         self.card_height.setSingleStep(10)
         self.card_height.setValue(int(CONFIG.get('card_height', 500)))
+        self.card_height.setToolTip("Height of the effect cards on the selection screen.")
         aform.addRow("Card height (px):", self.card_height)
 
         self.hide_tags_cb = QCheckBox("Hide the “Tag:” line on cards")
         self.hide_tags_cb.setChecked(bool(CONFIG.get('hide_tags')))
+        self.hide_tags_cb.setToolTip("Hide the raw tag path (e.g. “weap …\\assault_rifle”) on cards — "
+                                     "cosmetic only, it does not change what gets patched.")
         aform.addRow("Hide tags:", self.hide_tags_cb)
 
         self.hide_fields_cb = QCheckBox("Hide the “Fields:” line on cards")
         self.hide_fields_cb.setChecked(bool(CONFIG.get('hide_fields')))
+        self.hide_fields_cb.setToolTip("Hide the list of tag fields a card edits — cosmetic only.")
         aform.addRow("Hide fields:", self.hide_fields_cb)
         layout.addWidget(appear)
+        layout.addStretch(1)
 
         note = QLabel("Saved as global defaults and stored with this run's save.")
         note.setStyleSheet("color: #888; font-size: 11px;")
         note.setWordWrap(True)
-        layout.addWidget(note)
+        outer.addWidget(note)
 
         buttons = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Cancel)
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
-        layout.addWidget(buttons)
+        outer.addWidget(buttons)
 
     def values(self):
         return {
@@ -2683,7 +2726,6 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
-            'include_wildcards': self.wildcards_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
@@ -2727,6 +2769,40 @@ class HaloGUI(QMainWindow):
                 self.load_run_state(dialog.loaded_state)
         else:
             self.close()
+
+    def on_main_menu(self):
+        """#4: reopen the start menu mid-session so a different run can be loaded.
+        Not show_start_dialog(): there, Cancel means "quit at startup"; here it
+        has to mean "never mind, stay in the current run"."""
+        if QMessageBox.question(
+                self, "Back to main menu",
+                "Return to the main menu to start or load a different run?\n\n"
+                "Anything you haven't stored with 💾 SAVE SELECTION will be lost.",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+        dialog = StartDialog(self)
+        if dialog.exec() != QDialog.Accepted:
+            return
+        if dialog.choice == 'load':
+            self.load_run_state(dialog.loaded_state)
+        elif dialog.choice == 'new':
+            # Fresh run on the level that's currently selected in the dropdowns.
+            mid = self.mission_combo.currentData() or self.run_state.mission_id
+            self.run_state = RunState()
+            self.run_state.mission_id = mid
+            info = self.db.mission_enemies.get(mid)
+            if info:
+                self.run_state.mission_name = info['name']
+            self.enhancer = RunEnhancer(self.db, self.run_state)
+            self._p1_start_enemy = None
+            self._manual_queue = []
+            self._manual_results = {}
+            self.pending_player2_selection = False
+            self.clear_pairs()
+            self.update_weapon_display()
+            self.update_history()
+            self._sync_save_button()
+            self.show_weapon_selection()
 
     # ---- Weapon Selection ----
     def _current_game(self):
@@ -3164,6 +3240,8 @@ class HaloGUI(QMainWindow):
 
         button_layout = QHBoxLayout()
         self.generate_btn = QPushButton("🔄 GENERATE PAIRS")
+        self.generate_btn.setToolTip("Roll this level's cards for the current player. "
+                                     "Each card pairs a benefit with a drawback.")
         self.generate_btn.setStyleSheet("""
             QPushButton {
                 background-color: #2a5a2a; color: white; font-weight: bold;
@@ -3187,6 +3265,8 @@ class HaloGUI(QMainWindow):
         button_layout.addWidget(self.new_weapon_btn)
 
         self.save_btn = QPushButton("💾 SAVE SELECTION")
+        self.save_btn.setToolTip("Write this run (picks, weapons, history, options) to a save file "
+                                 "so it can be reloaded from the main menu.")
         self.save_btn.setStyleSheet("""
             QPushButton {
                 background-color: #2a3a5a; color: white; font-weight: bold;
@@ -3222,6 +3302,19 @@ class HaloGUI(QMainWindow):
         """)
         self.options_btn.clicked.connect(self.on_options)
         button_layout.addWidget(self.options_btn)
+
+        self.menu_btn = QPushButton("🏠 MAIN MENU")
+        self.menu_btn.setToolTip("Back to the start menu to begin a new run or load a saved one. "
+                                 "Unsaved progress in this run is lost.")
+        self.menu_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #3a3a3a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #4a4a4a; }
+        """)
+        self.menu_btn.clicked.connect(self.on_main_menu)
+        button_layout.addWidget(self.menu_btn)
         button_layout.addStretch()
 
         # Debug: search halo.json's mods and inject one into the run (far right).
@@ -4002,8 +4095,7 @@ class RunEnhancer:
                 if not has_boss:
                     if random.random() < (CONFIG.get('exhaust_chance', 0.1) or 0):
                         exhaust = self.db.get_exhaust_modifier_filtered(active_neg, bl, game)
-                    if exhaust is None and CONFIG['include_wildcards'] \
-                            and random.random() < CONFIG['wildcard_chance']:
+                    if exhaust is None and random.random() < (CONFIG.get('wildcard_chance', 0.1) or 0):
                         wildcard = self.db.get_wildcard_modifier_filtered(bl, game)
             pairs.append({
                 'id': i + 1,
