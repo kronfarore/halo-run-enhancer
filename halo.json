@@ -235,6 +235,7 @@
 			"Starting Health Modifier": {
 				"desc": "Player starting health modifier (scenario)",
 				"tag": "scnr levels\\*",
+				"easier_when": "increased",
 				"targets": [
 					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
 				],
@@ -243,14 +244,16 @@
 			"Starting Shield Modifier": {
 				"desc": "Player starting shield modifier (scenario)",
 				"tag": "scnr levels\\*",
+				"easier_when": "increased",
 				"targets": [
 					{ "field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" }, "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
 				],
 				"special": true
 			},
-			"Enemy damage": {
+			"Enemy Damage Reduction": {
 				"desc": "Reducing global enemy damage is something like increasing your health!",
 				"tag": "matg globals\\globals",
+				"easier_when": "decreased",
 				"targets": [
 					{ "field": "Enemy Damage", "block": "Difficulty", "difficulty": true }
 				],
@@ -315,13 +318,14 @@
 					{ "field": "Maximum Stun Time", "block": "Player Information" }
 				]
 			},
-			"Harmful Falling Distance": {
-				"desc": "Range between which fall damage is taken?",
-				"tag": "matg globals\\globals",
-				"easier_when": "increased",
+			"Fall Damage": {
+				"desc": "Change fall damage",
+				"tag": "jpt! globals\\falling",
+				"easier_when": "decreased",
 				"targets": [
-					{ "field": "Harmful Falling Distance", "block": "Falling Damage" },
-					{ "field": "Harmful Falling Distance Max", "block": "Falling Damage" }
+					{ "field": "Damage Lower Bound", "block": "Falling Damage" },
+					{ "field": "Damage Upper Bound", "block": "Falling Damage" },
+					{ "field": "Damage Upper Bound Max", "block": "Falling Damage" }
 				]
 			}
 		},
