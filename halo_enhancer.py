@@ -367,6 +367,17 @@ def _diff_flavor(target):
     return {k: target.get(k) for k in DIFF_FLAVOR_KEYS}
 
 
+def effect_desc(mod, game=None, games=None):
+    """#7: the description to show for `mod` in `game` — its 'desc_overrides' entry
+    for this game if one resolves, else the plain 'desc'. Kept as a SEPARATE key
+    rather than turning 'desc' itself into a per-game dict, so every existing
+    flat-string desc in halo.json needs no migration; only mods that actually
+    need a different wording per game gain the extra key."""
+    ov = mod.get('desc_overrides')
+    resolved = resolve_gamed(ov, game, games) if ov else None
+    return resolved if resolved else mod.get('desc', '')
+
+
 def resolve_gamed(value, game, games=None):
     """A `tag`/`field` value may be a plain string (applies to all games) or a
     dict keyed by game name. Resolution for the active game:
@@ -509,6 +520,7 @@ class ModifierDatabase:
         mod = {
             'name': mod_name,
             'desc': mod_data.get('desc', ''),
+            'desc_overrides': mod_data.get('desc_overrides'),  # #7: per-game desc overrides
             'tag': mod_data.get('tag', ''),
             'games': self._parse_games(mod_data.get('game')),
             'wildcard': bool(mod_data.get('wildcard', False)),
@@ -1091,7 +1103,7 @@ class WeaponSelectionCard(QGroupBox):
             combo.setWordWrap(True)
             combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(combo)
-        desc = QLabel(mod_data.get('desc', ''))
+        desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
@@ -1367,7 +1379,7 @@ class PairCard(QGroupBox):
             combo.setWordWrap(True)
             combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(combo)
-        desc = QLabel(mod_data.get('desc', ''))
+        desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(desc)
@@ -2048,8 +2060,10 @@ class MagnitudeEditorDialog(QDialog):
             warn.setStyleSheet("color: #e05a5a; font-size: 12px; font-weight: bold;")
             warn.setWordWrap(True)
             v.addWidget(warn)
-        if eff.get('desc'):
-            d = QLabel(eff['desc'])
+        _games = self.parent_gui.db.get_games() if self.parent_gui else None
+        _desc = effect_desc(eff, self.game, _games)
+        if _desc:
+            d = QLabel(_desc)
             d.setWordWrap(True)
             d.setStyleSheet("color: #aaa; font-size: 12px;")
             v.addWidget(d)
@@ -4240,7 +4254,8 @@ class HaloGUI(QMainWindow):
         if fresh:
             mod.pop('_missing_in_db', None)
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'skull', 'harder_when', 'easier_when', 'init_defaults', 'games'):
+                        'desc_overrides', 'skull', 'harder_when', 'easier_when',
+                        'init_defaults', 'games'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         else:

@@ -75,6 +75,7 @@ def collect_effects(rounds, mission_id=None):
         key = (tag, mod.get('name'))
         if key not in seen:
             seen[key] = {'name': mod.get('name'), 'desc': mod.get('desc', ''),
+                         'desc_overrides': mod.get('desc_overrides'),  # #7
                          'tag': tag, 'targets': list(mod.get('targets') or []),
                          'skull': mod.get('skull'),
                          'harder_when': mod.get('harder_when'),
