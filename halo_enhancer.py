@@ -80,7 +80,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
-               'hide_tags', 'hide_fields')
+               'h3_equipment_in_rolls', 'hide_tags', 'hide_fields')
 
 
 def boss_mods_removed():
@@ -214,6 +214,7 @@ CONFIG = {
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     "grenades_need_weapon": False,     # #4: only offer grenades once a real gun is held
     "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
+    "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -314,6 +315,7 @@ MOD_COLORS = {
     'dual': {'border': '00E676', 'bg': '0a2012'},   # dual-wield-only effects
     'exhaust': {'border': 'FF7043', 'bg': '1e0f06'},  # #5: one-map exhaust (ember orange)
     'skull': {'border': 'D8D0C0', 'bg': '141210'},  # #7: skull — bone on near-black
+    'equipment': {'border': 'ADCB2E', 'bg': '13160a'},  # H3 equipment — yellow-green
 }
 
 
@@ -485,6 +487,7 @@ class ModifierDatabase:
         self.mission_games = {}     # mission_id -> game name
         self.mission_weapons = {}   # mission_id -> level weapon pool
         self.mission_grenades = {}  # mission_id -> grenade pool (#2)
+        self.mission_equipment = {} # mission_id -> H3 equipment pool
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
         try:
             self.load_data()
@@ -593,6 +596,7 @@ class ModifierDatabase:
                     self.mission_games[mission_id] = game
                     self.mission_weapons[mission_id] = mission_data.get('weapons', [])
                     self.mission_grenades[mission_id] = mission_data.get('grenades', [])
+                    self.mission_equipment[mission_id] = mission_data.get('equipment', [])
                     boss = mission_data.get('boss')
                     self.mission_boss[mission_id] = ([boss] if isinstance(boss, str)
                                                      else list(boss) if boss else [])
@@ -628,6 +632,11 @@ class ModifierDatabase:
         """Grenades are equipment, not weapons — they never carry a weap tag and
         must be excluded from the starting-weapon / map-weapon-swap features."""
         return any(name in gl for gl in self.mission_grenades.values())
+
+    def is_equipment(self, name):
+        """H3 equipment (Bubble Shield, Regenerator...): an `eqip` tag, not a
+        `weap` one. Like grenades, never a Primary/Secondary starting weapon."""
+        return any(name in el for el in self.mission_equipment.values())
 
     def weap_tag_for(self, weapon_name, game):
         """The `weap ...` tag for a weapon in the given game, taken from any of its
@@ -1278,8 +1287,11 @@ class PairCard(QGroupBox):
             self.parent_widget.add_weapon_to_blacklist(weapon, self.pair['id'], mod_type)
 
     def create_weapon_widget(self, weapon, label, mod_type):
-        """Offer to add a weapon to the arsenal (replaces the positive card)."""
-        scheme = MOD_COLORS['green']
+        """Offer to add a weapon (or, in H3 with the option on, a piece of
+        equipment) to the arsenal — replaces the positive card."""
+        db = self.parent_widget.db if self.parent_widget else None
+        is_equip = bool(db and db.is_equipment(weapon))
+        scheme = MOD_COLORS['equipment'] if is_equip else MOD_COLORS['green']
         widget = QGroupBox(label)
         widget.setStyleSheet(f"""
             QGroupBox {{
@@ -1289,11 +1301,12 @@ class PairCard(QGroupBox):
             }}
         """)
         layout = QVBoxLayout(widget)
-        name = QLabel(f"➕ Add weapon: {weapon}")
-        name.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_name']}px; color: #4CAF50;")
+        name = QLabel(f"➕ Add {'equipment' if is_equip else 'weapon'}: {weapon}")
+        name.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_name']}px; "
+                           f"color: #{scheme['border']};")
         layout.addWidget(name)
-        info = QLabel("Selecting this pair adds the weapon to your arsenal instead of a "
-                      "positive effect. The enemy effect below still applies.")
+        info = QLabel(f"Selecting this pair adds the {'equipment' if is_equip else 'weapon'} to "
+                      "your arsenal instead of a positive effect. The enemy effect below still applies.")
         info.setWordWrap(True)
         info.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
         layout.addWidget(info)
@@ -2417,9 +2430,13 @@ class MagnitudeEditorDialog(QDialog):
         if CONFIG.get('set_starting_weapons'):
             p1 = getattr(rs, 'player1_weapon', None)
             p2 = getattr(rs, 'player2_weapon', None)
-            # grenades are equipment, not a valid Primary/Secondary starting weapon
-            prim = db.weap_tag_for(p1, self.game) if (p1 and not db.is_grenade(p1)) else None
-            sec = db.weap_tag_for(p2, self.game) if (p2 and not db.is_grenade(p2)) else None
+            # grenades and equipment aren't a valid Primary/Secondary starting weapon
+            # (weap_tag_for would already return None for either — this just documents
+            # why, and skips the lookup)
+            def _startable(w):
+                return bool(w) and not db.is_grenade(w) and not db.is_equipment(w)
+            prim = db.weap_tag_for(p1, self.game) if _startable(p1) else None
+            sec = db.weap_tag_for(p2, self.game) if _startable(p2) else None
         # #8: Halo 3 has two playable characters. With 2-player coop on, each pick
         # becomes its own character's weapon (P1 -> Chief, P2 -> Dervish) and the
         # coop options act on the respawn profiles; with it off, H3 behaves like the
@@ -2806,6 +2823,14 @@ class OptionsDialog(QDialog):
                                           "card. Halo 2's Chieftain is Tartarus, who is already a boss.")
         form.addRow("Brute Chieftains:", self.chieftain_boss_cb)
 
+        self.equipment_rolls_cb = QCheckBox("Equipment can turn up in New Weapon draws (Halo 3)")
+        self.equipment_rolls_cb.setChecked(bool(CONFIG.get('h3_equipment_in_rolls')))
+        self.equipment_rolls_cb.setToolTip("Halo 3 only. Bubble Shield, Regenerator and the rest of "
+                                           "the level's equipment can be drawn by the New Weapon button, "
+                                           "same as an actual weapon. Equipment has no weapon-specific "
+                                           "mods of its own, so a pick just grants the item.")
+        form.addRow("Equipment in rolls:", self.equipment_rolls_cb)
+
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
         self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
         self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
@@ -3075,6 +3100,7 @@ class OptionsDialog(QDialog):
             'include_grenades': self.grenades_cb.isChecked(),
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
+            'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
@@ -4379,8 +4405,14 @@ class RunEnhancer:
     def _new_weapon_pool(self, player):
         owned = set(self.run_state.weapons_for(player))
         bl = self.run_state.blacklist
-        pool = [w for w in self.db.get_level_weapons(self.run_state.mission_id)
-                if w not in owned and self.db.weapon_label(w) not in bl]
+        pool = list(self.db.get_level_weapons(self.run_state.mission_id))
+        # New option: H3 equipment can turn up in a New Weapon draw too. Equipment
+        # has no weapon mods of its own (get_weapon_modifiers degrades to []), so a
+        # picked piece just grants the item, same as a weapon with no mods would.
+        game = self.db.get_game_for_mission(self.run_state.mission_id)
+        if game == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
+            pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
+        pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
         return gate_grenades(self.db, pool, self.run_state, player)
 
     def _weighted_pick(self, mods):
