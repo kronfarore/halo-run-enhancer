@@ -299,12 +299,77 @@ _STARTING_SLOTS = {
     'Halo 2': {'ref_size': 8, 'id_at': 0x4,
                'primary':   {'ref': 0x28, 'loaded': 0x30, 'total': 0x32},
                'secondary': {'ref': 0x34, 'loaded': 0x3C, 'total': 0x3E}},
+    # H3's profile element is 0x58 (MCC) but the weapon slots sit exactly where H1
+    # puts them, with the same 16-byte tagRef. Verified against all 11 campaign maps.
+    'Halo 3': {'ref_size': 16, 'id_at': 0xC,
+               'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
+               'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
 }
 
+# H3 tag idents are (index + salt) << 16 | index. Sampling every tagRef in the
+# starting-profile block of all 11 campaign maps gives salt 0xE176 for 159 of 160
+# refs, so it's the formula — but the map is asked first (see _h3_ident_salt) and
+# this is only the fallback, since one outlier shows the salt isn't truly fixed.
+_H3_IDENT_SALT = 0xE176
 
-def _weap_ref_id(m, name):
-    """Full tag ident (H1) / datum (H2) for a weap tag by name, or None if that
+
+def _h3_ident_salt(m, scnr_base, boff, esize, count):
+    """Recover this map's tag-ident salt from the tagRefs already in its starting
+    profiles, so we mint idents the way the map itself does. Falls back to the
+    observed constant when a map has no usable reference to learn from."""
+    seen = {}
+    for i in range(count):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        for ro in (0x28, 0x3C):
+            rid = struct.unpack_from('<I', m.data, poff + ro + 0xC)[0]
+            if rid == 0xFFFFFFFF:
+                continue
+            idx = rid & 0xFFFF
+            t = m.tag(idx)
+            if t and t.get('class') == 'weap':
+                d = ((rid >> 16) - idx) & 0xFFFF
+                seen[d] = seen.get(d, 0) + 1
+    return max(seen, key=seen.get) if seen else _H3_IDENT_SALT
+
+
+def _h3_profile_role(index, name):
+    """('chief'|'dervish'|None, is_respawn) for a Player Starting Profile.
+
+    Names are only trustworthy on some maps: 020_base, 030_outskirts, 070_waste and
+    120_halo leave the four player profiles named 'player starting profile_N' or
+    blank. The index convention does hold everywhere -- 0/1 are chief initial/respawn
+    and 2/3 dervish initial/respawn, confirmed by the covenant weapons 2/3 always
+    carry. So trust an explicit chief/dervish name where there is one, and fall back
+    to the index only for generic/unnamed profiles. Named NPC profiles (marine_*,
+    barracks_*, arbiter_*, johnson_swap, elite_insertion, shotty_man...) match
+    neither rule and are deliberately left alone."""
+    n = (name or '').strip().lower()
+    generic = (not n) or n.startswith('player starting profile')
+    if 'dervish' in n:
+        role = 'dervish'
+    elif 'chief' in n:
+        role = 'chief'
+    elif generic and index in (0, 1):
+        role = 'chief'
+    elif generic and index in (2, 3):
+        role = 'dervish'
+    else:
+        return None, False
+    return role, ('respawn' in n) or (generic and index in (1, 3))
+
+
+def _weap_ref_id(m, name, game=None, salt=None):
+    """Full tag ident (H1/H3) / datum (H2) for a weap tag by name, or None if that
     tag isn't in this map — the safety net for a picked weapon the map lacks."""
+    if game == 'Halo 3':                                    # H3: mint the ident
+        for t in getattr(m, 'tags', []):
+            if t.get('class') == 'weap' and t.get('name') == name:
+                i = t['index']
+                s = _H3_IDENT_SALT if salt is None else salt
+                return (((i + s) & 0xFFFF) << 16) | (i & 0xFFFF)
+        return None
     if isinstance(getattr(m, 'tags', None), dict):          # H1 HaloMap
         for i in range(m.tag_count):
             b = m.tag_array_off + i * 32
@@ -368,6 +433,13 @@ def _null_starting_weapon(m, poff, slot, game):
     struct.pack_into('<h', m.data, poff + s['total'], 0)
 
 
+def _profile_is_empty(m, poff, game):
+    """True if this profile's Primary weapon slot is a null tagRef."""
+    lay = _STARTING_SLOTS[game]
+    ro = poff + lay['primary']['ref'] + lay['id_at']
+    return struct.unpack_from('<I', m.data, ro)[0] == 0xFFFFFFFF
+
+
 def _apply_starting_equipment(m, game, registry, starting):
     """Set the player Starting Profile weapons from the run's picks. `starting` =
     {'primary': weap-tag or None, 'secondary': weap-tag or None, 'profiles': [..]}.
@@ -393,25 +465,66 @@ def _apply_starting_equipment(m, game, registry, starting):
     boff = bf['block_offsets'][-1]
     esize = bf['block_sizes'][-1]
     count = m.i32(scnr_base + boff)
-    # #2: empty a coop profile's starting equipment entirely (null primary+secondary).
-    for i in [p for p in (starting.get('null_profiles') or []) if 0 <= p < count]:
-        poff = m.follow(scnr_base, [boff], [esize], i)
-        if poff is None:
-            continue
-        for slot in ('primary', 'secondary'):
-            _null_starting_weapon(m, poff, slot, game)
-        out.append({'effect': 'starting weapons', 'field': f'Profile {i}',
-                    'ok': True, 'old': 'weapons', 'new': 'emptied (null)'})
-    profiles = [i for i in (starting.get('profiles') or [0, 1]) if 0 <= i < count]
-    for slot in ('primary', 'secondary'):
-        tag = starting.get(slot)
+    salt = _h3_ident_salt(m, scnr_base, boff, esize, count) if game == 'Halo 3' else None
+
+    def _null_profiles(idxs, label):
+        for i in idxs:
+            poff = m.follow(scnr_base, [boff], [esize], i)
+            if poff is None:
+                continue
+            for slot in ('primary', 'secondary'):
+                _null_starting_weapon(m, poff, slot, game)
+            out.append({'effect': 'starting weapons', 'field': label(i),
+                        'ok': True, 'old': 'weapons', 'new': 'emptied (null)'})
+
+    # A plan of (weapon slot, [profile indices], weap tag, report label). H3 with
+    # 2-player coop is the only case where the two picks land on different profiles
+    # rather than the two slots of the same one (#8).
+    prim, sec = starting.get('primary'), starting.get('secondary')
+    if game == 'Halo 3' and starting.get('h3_coop'):
+        roles = {}
+        for i in range(count):
+            poff = m.follow(scnr_base, [boff], [esize], i)
+            if poff is None:
+                continue
+            nm = bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+            roles[i] = _h3_profile_role(i, nm)
+        # The coop options act on the respawn profiles here, not on a fixed index 1.
+        null_respawn = bool(starting.get('null_respawn'))
+        hold_respawn = bool(starting.get('skip_respawn')) or null_respawn
+        if null_respawn:
+            _null_profiles([i for i, (r, resp) in sorted(roles.items()) if r and resp],
+                           lambda i: f'Profile {i} (respawn)')
+        def _of(role):
+            return [i for i, (r, resp) in sorted(roles.items())
+                    if r == role and not (hold_respawn and resp)]
+        # guard_empty: this path matches profiles by role rather than by an index the
+        # user named, so it can sweep in scripted weaponless ones (chief_pre_training).
+        plan = [('primary', _of('chief'), prim, 'Chief Weapon', True),
+                ('primary', _of('dervish'), sec, 'Dervish Weapon', True)]
+    else:
+        # Pre-H3, and H3 with coop off: both picks go on the same profile(s), P1 as
+        # Primary and P2 as Secondary. H3 uses profile 0 only — its other profiles
+        # belong to the second character or to NPCs.
+        default = [0] if game == 'Halo 3' else [0, 1]
+        _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
+                       lambda i: f'Profile {i}')
+        profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
+        if game == 'Halo 3':
+            profiles = [i for i in profiles if i == 0]
+        # No guard here: these profiles were named outright, and a map that starts
+        # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
+        plan = [('primary', profiles, prim, 'Primary Weapon', False),
+                ('secondary', profiles, sec, 'Secondary Weapon', False)]
+
+    for slot, profiles, tag, label, guard_empty in plan:
         if not tag:
             continue
         _, name = hm.split_tag(tag)
         short = name.rsplit(chr(92), 1)[-1]
-        refid = _weap_ref_id(m, name)
+        refid = _weap_ref_id(m, name, game, salt)
         if refid is None:      # SAFETY NET: weapon tag absent from this map
-            out.append({'effect': 'starting weapons', 'field': slot.title() + ' Weapon',
+            out.append({'effect': 'starting weapons', 'field': label,
                         'ok': False, 'reason': f'weapon not in this map: {short}'})
             continue
         wb = _weap_base(m, name)
@@ -419,14 +532,24 @@ def _apply_starting_equipment(m, game, registry, starting):
         if wb is not None and weap_plug is not None:
             loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug, block='Magazines', index=0)
             total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug, block='Magazines', index=0)
+        # Battery weapons (energy sword, plasma pistol) have no Magazines block, so
+        # there are no counts to copy. Write -1 — which these fields document as
+        # "weapon default" — rather than leaving the replaced weapon's counts behind.
+        loaded = -1 if loaded is None else loaded
+        total = -1 if total is None else total
         n = 0
         for i in profiles:
             poff = m.follow(scnr_base, [boff], [esize], i)
             if poff is None:
                 continue
+            # A null Primary is deliberate: it's a scripted empty-handed state
+            # (chief_pre_training, no_weapon_profile, injured_profile...). Arming
+            # those breaks the scene, so leave any weaponless profile weaponless.
+            if guard_empty and _profile_is_empty(m, poff, game):
+                continue
             _write_starting_weapon(m, poff, slot, refid, loaded, total, game)
             n += 1
-        out.append({'effect': 'starting weapons', 'field': slot.title() + ' Weapon',
+        out.append({'effect': 'starting weapons', 'field': label,
                     'ok': True, 'old': short,
                     'new': f'set on {n} profile(s) ({loaded}/{total} rounds)'})
     return out

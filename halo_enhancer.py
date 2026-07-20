@@ -73,7 +73,7 @@ def is_valid_run(data):
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods',
                'wildcard_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
-               'coop_no_starting_weapons', 'null_coop_starting_equipment',
+               'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
                'ignore_elite_in_h3',
                'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
@@ -166,6 +166,7 @@ CONFIG = {
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    "two_player_coop": True,                # #8: H3 only — P1 plays Chief, P2 plays the Dervish
     "coop_no_starting_weapons": False,      # #1: don't give the coop profile (index 1) the picks
     "null_coop_starting_equipment": False,  # #2: empty the coop profile's starting weapons
     # When a Zoom effect is applied to a weapon that has no vanilla scope (e.g.
@@ -2214,13 +2215,21 @@ class MagnitudeEditorDialog(QDialog):
             # grenades are equipment, not a valid Primary/Secondary starting weapon
             prim = db.weap_tag_for(p1, self.game) if (p1 and not db.is_grenade(p1)) else None
             sec = db.weap_tag_for(p2, self.game) if (p2 and not db.is_grenade(p2)) else None
+        # #8: Halo 3 has two playable characters. With 2-player coop on, each pick
+        # becomes its own character's weapon (P1 -> Chief, P2 -> Dervish) and the
+        # coop options act on the respawn profiles; with it off, H3 behaves like the
+        # earlier games but writes profile 0 only.
+        h3_coop = (self.game == 'Halo 3') and bool(CONFIG.get('two_player_coop', True))
         profiles = [p for p in CONFIG.get('starting_weapon_profiles', [0, 1])
                     if not (skip_coop and p == 1)]
         null_profiles = [1] if null_coop else []
-        if not (prim or sec) and not null_profiles:
+        if not (prim or sec) and not (null_profiles or (h3_coop and null_coop)):
             return None
         return {'primary': prim, 'secondary': sec,
-                'profiles': profiles, 'null_profiles': null_profiles}
+                'profiles': profiles, 'null_profiles': null_profiles,
+                'h3_coop': h3_coop,
+                'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
+                'null_respawn': null_coop}
 
     def _zoom_ui_spec(self, plan):
         """weap tag paths of the Zoom effects in this plan, so scopeless weapons
@@ -2635,7 +2644,17 @@ class OptionsDialog(QDialog):
                                             "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
         form.addRow("Starting weapons:", self.starting_weapons_cb)
 
-        # #1/#2: coop = scenario Player Starting Profile index 1.
+        self.two_player_cb = QCheckBox("2-player coop: P1 plays Chief, P2 the Dervish (Halo 3)")
+        self.two_player_cb.setChecked(bool(CONFIG.get('two_player_coop', True)))
+        self.two_player_cb.setToolTip("On by default, and only does anything in Halo 3, which has two "
+                                      "playable characters. On: P1's first weapon is given to every "
+                                      "Chief profile and P2's to every Dervish profile, and the two "
+                                      "coop options below act on the respawn profiles. Off: both picks "
+                                      "go on profile 0 as Primary/Secondary, like Halo 1 and 2.")
+        form.addRow("2-player coop:", self.two_player_cb)
+
+        # #1/#2: coop = scenario Player Starting Profile index 1 (pre-H3), or the
+        # respawn profiles when Halo 3's two-character handling is active.
         self.coop_no_start_cb = QCheckBox("Don't give the coop player the starting weapons")
         self.coop_no_start_cb.setChecked(bool(CONFIG.get('coop_no_starting_weapons')))
         self.coop_no_start_cb.setToolTip("Apply the picked starting weapons to player 1 only "
@@ -2733,6 +2752,7 @@ class OptionsDialog(QDialog):
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
+            'two_player_coop': self.two_player_cb.isChecked(),
             'coop_no_starting_weapons': self.coop_no_start_cb.isChecked(),
             'null_coop_starting_equipment': self.coop_null_cb.isChecked(),
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
