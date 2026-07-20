@@ -1018,16 +1018,18 @@ class WeaponSelectionCard(QGroupBox):
             self.setLayout(layout)
 
         layout.setSpacing(10)
+        db = self.parent_widget.db if self.parent_widget else None
+        is_equip = bool(db and db.is_equipment(self.pair_data.get('weapon')))
         player_text = "PLAYER 2" if self.is_player2 else "PLAYER 1"
-        heading = "🔫 NEW WEAPON" if self.mode == 'add' else "CHOICE"
+        heading = ("🎒 NEW EQUIPMENT" if is_equip else "🔫 NEW WEAPON") if self.mode == 'add' else "CHOICE"
         title = QLabel(f"{player_text} - {heading} {self.pair_data['id']}")
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0;")
         layout.addWidget(title)
 
-        weapon_group = QGroupBox("WEAPON")
+        weapon_group = QGroupBox("EQUIPMENT" if is_equip else "WEAPON")
         weapon_group.setStyleSheet("border: 2px solid #4CAF50; border-radius: 4px; padding: 10px; margin-top: 5px; background-color: #0a1a0a;")
         weapon_layout = QVBoxLayout(weapon_group)
-        weapon_label = QLabel(f"Weapon: {self.pair_data['weapon']}")
+        weapon_label = QLabel(f"{'Equipment' if is_equip else 'Weapon'}: {self.pair_data['weapon']}")
         weapon_label.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_weapon']}px; color: #4CAF50;")
         weapon_layout.addWidget(weapon_label)
         mod_count = len(self.pair_data.get('modifiers', []))
@@ -1220,10 +1222,17 @@ class PairCard(QGroupBox):
 
         # The positive (player) card is replaced by a new-weapon offer when the
         # pair rolled one (#4); the enemy/negative card below still shows.
+        db = self.parent_widget.db if self.parent_widget else None
+
+        def _new_heading(player_label):
+            nw = self.pair.get('new_weapon')
+            tag = "🎒 NEW EQUIPMENT" if (db and db.is_equipment(nw)) else "🔫 NEW WEAPON"
+            return f"{player_label} - {tag}"
+
         if self.show_player1:
             if self.pair.get('new_weapon'):
                 positive.append(self.create_weapon_widget(
-                    self.pair['new_weapon'], "PLAYER 1 - 🔫 NEW WEAPON", 'player1'))
+                    self.pair['new_weapon'], _new_heading("PLAYER 1"), 'player1'))
             elif self.pair['player1_mod']:
                 w1 = self.pair['player1_mod'].get('weapon')
                 positive.append(self.create_mod_widget(
@@ -1234,7 +1243,7 @@ class PairCard(QGroupBox):
         if self.show_player2:
             if self.pair.get('new_weapon'):
                 positive.append(self.create_weapon_widget(
-                    self.pair['new_weapon'], "PLAYER 2 - 🔫 NEW WEAPON", 'player2'))
+                    self.pair['new_weapon'], _new_heading("PLAYER 2"), 'player2'))
             elif self.pair['player2_mod']:
                 w2 = self.pair['player2_mod'].get('weapon')
                 positive.append(self.create_mod_widget(
@@ -4182,6 +4191,24 @@ class HaloGUI(QMainWindow):
     def update_status(self, msg):
         self.status_label.setText(msg)
 
+    @staticmethod
+    def _debug_mod_round(label, mod):
+        """One mod turned into its own single-effect round, categorized the same
+        way the real draw would slot it (weapon -> player1, enemy/skull -> enemy1,
+        everything else -> wildcard)."""
+        mod = copy.deepcopy(mod)
+        round_data = {'player1': {'weapon': None, 'mod': None, 'gained_weapon': None},
+                      'player2': {'weapon': None, 'mod': None, 'gained_weapon': None},
+                      'enemy1': None, 'enemy2': None, 'wildcard': None,
+                      'boss1': None, 'boss2': None, 'debug_added': True}
+        if mod.get('weapon') or label.startswith('[Player+'):
+            round_data['player1'] = {'weapon': mod.get('weapon'), 'mod': mod, 'gained_weapon': None}
+        elif mod.get('enemy') or mod.get('skull') or label.startswith(('[Enemy', '[Skull')):
+            round_data['enemy1'] = mod
+        else:
+            round_data['wildcard'] = mod
+        return round_data
+
     # ---- Save ----
     def on_add_mod_debug(self):
         """Debug helper: search every effect in halo.json and inject the picked one
@@ -4197,7 +4224,7 @@ class HaloGUI(QMainWindow):
             for mod in mods:
                 entries.append((f"[Boss] {boss}: {mod['name']}", mod))
         for pool, kind in ((self.db.positive_pool, 'Player+'), (self.db.negative_pool, 'Enemy-'),
-                           (self.db.wildcard_pool, 'Wildcard')):
+                           (self.db.wildcard_pool, 'Wildcard'), (self.db.skull_pool, 'Skull')):
             for mod in pool:
                 entries.append((f"[{kind}] {mod['name']}", mod))
 
@@ -4226,26 +4253,38 @@ class HaloGUI(QMainWindow):
         btns = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
         btns.accepted.connect(dlg.accept)
         btns.rejected.connect(dlg.reject)
+        # Add every single mod in halo.json to this run at once, each as its own
+        # round -- for exercising the patcher/validator against literally everything,
+        # not for normal play. A separate result code keeps it distinct from OK/Cancel.
+        add_all_btn = QPushButton(f"➕ Add ALL ({len(entries)})")
+        add_all_btn.setToolTip("Add every effect currently in halo.json to this run, "
+                               "one per round. For testing the patcher, not for play.")
+        ADD_ALL = QDialog.Accepted + 1
+        add_all_btn.clicked.connect(lambda: dlg.done(ADD_ALL))
+        btns.addButton(add_all_btn, QDialogButtonBox.ActionRole)
         lst.itemDoubleClicked.connect(lambda _: dlg.accept())
         v.addWidget(search)
         v.addWidget(lst, 1)
         v.addWidget(btns)
         search.setFocus()
-        if dlg.exec() != QDialog.Accepted or lst.currentRow() < 0 or lst.currentItem().isHidden():
+        result = dlg.exec()
+        if result == ADD_ALL:
+            if QMessageBox.question(
+                    self, "Add every mod?",
+                    f"Add all {len(entries)} effects to this run, one per round?\n\n"
+                    "This is meant for testing the patcher against everything at once, "
+                    "not for a normal run.",
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+                return
+            for label, mod in entries:
+                self.run_state.rounds.append(self._debug_mod_round(label, mod))
+            self.update_history()
+            self.update_status(f"(debug) Added all {len(entries)} effects to the run.")
+            return
+        if result != QDialog.Accepted or lst.currentRow() < 0 or lst.currentItem().isHidden():
             return
         label, mod = entries[lst.currentRow()]
-        mod = copy.deepcopy(mod)
-        round_data = {'player1': {'weapon': None, 'mod': None, 'gained_weapon': None},
-                      'player2': {'weapon': None, 'mod': None, 'gained_weapon': None},
-                      'enemy1': None, 'enemy2': None, 'wildcard': None,
-                      'boss1': None, 'boss2': None, 'debug_added': True}
-        if mod.get('weapon') or label.startswith('[Player+'):
-            round_data['player1'] = {'weapon': mod.get('weapon'), 'mod': mod, 'gained_weapon': None}
-        elif mod.get('enemy') or label.startswith('[Enemy'):
-            round_data['enemy1'] = mod
-        else:
-            round_data['wildcard'] = mod
-        self.run_state.rounds.append(round_data)
+        self.run_state.rounds.append(self._debug_mod_round(label, mod))
         self.update_history()
         self.update_status(f"(debug) Added to run: {label}")
 
