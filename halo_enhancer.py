@@ -80,7 +80,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
-               'h3_equipment_in_rolls', 'hide_tags', 'hide_fields')
+               'h3_equipment_in_rolls', 'equipment_need_weapon',
+               'hide_tags', 'hide_fields')
 
 
 def boss_mods_removed():
@@ -215,6 +216,7 @@ CONFIG = {
     "grenades_need_weapon": False,     # #4: only offer grenades once a real gun is held
     "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
     "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
+    "equipment_need_weapon": False,     # ...and only once the player holds a real gun
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -239,6 +241,12 @@ CONFIG = {
     # unless the upgrade has its own entry in the JSON). Picking an upgrade while
     # dual-wielding the base also grants "Dual <upgrade>".
     "weapon_upgrades": {"Brute Plasma Rifle": "Plasma Rifle"},
+    # Upgrades / dual-wields that exist in only SOME games, beyond the blanket
+    # *_from_game gates above. Key = the offered weapon, value = the games where it
+    # may be offered. Halo 3 dropped the Brute Plasma Rifle and made the Needler
+    # two-handed, so neither should ever be offered there.
+    "weapon_only_in_games": {"Brute Plasma Rifle": ["Halo 2"],
+                             "Dual Needler": ["Halo 2"]},
 
     "blacklist_label_separator": ": ",
 }
@@ -250,21 +258,32 @@ CONFIG = {
 CARD_CHROME_HEIGHT = 340
 
 
-def gate_grenades(db, weapons, run_state, player=None):
-    """Drop grenades from an offer pool while the player has no real gun (#4).
+def is_real_weapon(db, name):
+    """An actual gun — neither a grenade nor a piece of H3 equipment. Holding only
+    a Bubble Shield doesn't make a player armed."""
+    return bool(name) and not db.is_grenade(name) and not db.is_equipment(name)
 
-    Without this a player's very first pick can be a grenade, leaving them with no
-    actual weapon. `player` None means "nobody in particular" — the start-of-run
-    choice — which is exactly the case that must be gated, so it checks both.
-    Off unless 'grenades need a gun' is enabled, which itself needs grenades on."""
-    if not (CONFIG.get('grenades_need_weapon') and CONFIG.get('include_grenades', True)):
+
+def gate_offer_pool(db, weapons, run_state, player=None):
+    """Drop grenades and/or equipment from an offer pool while the player has no
+    real gun (#4, and its equipment counterpart).
+
+    Without this a player's very first pick can be a grenade or a Bubble Shield,
+    leaving them with nothing to actually shoot with. `player` None means "nobody in
+    particular" — the start-of-run choice — which is exactly the case that must be
+    gated, so it checks both. Each half is off unless its own option is enabled,
+    which in turn requires the feature it gates to be on."""
+    gate_gren = bool(CONFIG.get('grenades_need_weapon') and CONFIG.get('include_grenades', True))
+    gate_equip = bool(CONFIG.get('equipment_need_weapon') and CONFIG.get('h3_equipment_in_rolls'))
+    if not (gate_gren or gate_equip):
         return weapons
     players = [player] if player else ['player1', 'player2']
-    for p in players:
-        owned = run_state.weapons_for(p) if run_state else []
-        if not any(not db.is_grenade(w) for w in owned):
-            return [w for w in weapons if not db.is_grenade(w)]
-    return weapons
+    if all(any(is_real_weapon(db, w) for w in (run_state.weapons_for(p) if run_state else []))
+           for p in players):
+        return weapons                      # everyone concerned already has a gun
+    return [w for w in weapons
+            if not (gate_gren and db.is_grenade(w))
+            and not (gate_equip and db.is_equipment(w))]
 
 
 def card_metrics():
@@ -2125,7 +2144,11 @@ class MagnitudeEditorDialog(QDialog):
             ew = _dir('easier_when')
             hw_glyph = '▲' if hw == 'increased' else ('▼' if hw == 'decreased' else '')
             ew_glyph = '▲' if ew == 'increased' else ('▼' if ew == 'decreased' else '')
-            fname = t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
+            # 'label' overrides the displayed name only — t['field'] stays the real,
+            # per-game-resolved field the patch actually reads/writes (e.g. H2's
+            # "Starting Health Damage" internally, shown to the user as the more
+            # meaningful "Starting Health Modifier").
+            fname = (t.get('label') or t['field']) + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
                 fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
             if t.get('diff_prefix_nl'):
@@ -2133,7 +2156,7 @@ class MagnitudeEditorDialog(QDialog):
             if t.get('custom'):
                 fname += "  (preset)"
             if t.get('negate'):
-                fname += "  (H2: input negated)"
+                fname += "  (needs negative values for some reason)"
             if derived:
                 fname += "  (auto = " + " + ".join(derived) + ")"
             if t.get('set') is not None:
@@ -2656,7 +2679,7 @@ class MagnitudeEditorDialog(QDialog):
         def _fmt(x):
             return round(x, 4) if isinstance(x, (int, float)) else x
         for r in applied:
-            hint = ("   (input negated for H2)" if r.get('negated')
+            hint = ("   (needs negative values for some reason)" if r.get('negated')
                     else "   (auto-computed)" if r.get('derived') else "")
             if r.get('inherited_from'):
                 hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
@@ -2830,6 +2853,22 @@ class OptionsDialog(QDialog):
                                            "same as an actual weapon. Equipment has no weapon-specific "
                                            "mods of its own, so a pick just grants the item.")
         form.addRow("Equipment in rolls:", self.equipment_rolls_cb)
+
+        self.equipment_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
+        self.equipment_need_weapon_cb.setChecked(bool(CONFIG.get('equipment_need_weapon')))
+        self.equipment_need_weapon_cb.setToolTip("Keeps equipment from being the first thing a "
+                                                 "player picks up, which would leave them with no "
+                                                 "actual gun. Only available while equipment is in "
+                                                 "the rolls.")
+
+        def _sync_equip_sub(_=False):
+            on = self.equipment_rolls_cb.isChecked()
+            self.equipment_need_weapon_cb.setEnabled(on)
+            if not on:
+                self.equipment_need_weapon_cb.setChecked(False)
+        self.equipment_rolls_cb.toggled.connect(_sync_equip_sub)
+        _sync_equip_sub()
+        form.addRow("    ↳ Equipment needs a gun:", self.equipment_need_weapon_cb)
 
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
         self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
@@ -3101,6 +3140,7 @@ class OptionsDialog(QDialog):
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
+            'equipment_need_weapon': self.equipment_need_weapon_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
@@ -3255,7 +3295,7 @@ class HaloGUI(QMainWindow):
         upgrades = CONFIG.get('weapon_upgrades', {})
         pool = [w for w in self.db.get_game_weapons(self._current_game())
                 if not self._blacklisted_weapon(w) and w not in upgrades]
-        return gate_grenades(self.db, pool, self.run_state, player)
+        return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)
@@ -3380,6 +3420,13 @@ class HaloGUI(QMainWindow):
             return games.index(cur) >= games.index(min_game)
         return True  # unknown ordering -> don't restrict
 
+    def _upgrade_allowed_here(self, weapon):
+        """False if `weapon` is restricted to games other than the current one.
+        Covers weapons that simply don't exist in a later game (the Brute Plasma
+        Rifle) or stopped being dual-wieldable (the Halo 3 Needler)."""
+        allowed = CONFIG.get('weapon_only_in_games', {}).get(weapon)
+        return True if not allowed else self._current_game() in allowed
+
     def _weapon_offer_pool(self, player):
         """Game weapon pool minus owned, plus 'Dual <Weapon>' options for owned
         one-handed weapons (#7) and upgrade weapons whose base is owned (#3).
@@ -3392,13 +3439,23 @@ class HaloGUI(QMainWindow):
             for w in self.run_state.weapons_for(player):
                 if w in one_handed and not w.startswith('Dual '):
                     dual = f"Dual {w}"
-                    if dual not in owned and not self._blacklisted_weapon(dual):
+                    if (dual not in owned and not self._blacklisted_weapon(dual)
+                            and self._upgrade_allowed_here(dual)):
                         pool.append(dual)
         if self._game_at_least(CONFIG.get('upgrades_from_game', 'Halo 2')):
             for upgrade, base in CONFIG.get('weapon_upgrades', {}).items():
+                if not self._upgrade_allowed_here(upgrade):
+                    continue
                 if base in owned and upgrade not in owned and not self._blacklisted_weapon(upgrade):
                     pool.append(upgrade)
-        return pool
+        # The NEW WEAPON button draws from here, not from RunEnhancer._new_weapon_pool
+        # (which only feeds the automatic per-pair rolls) — equipment has to be added
+        # to BOTH or the button never offers any.
+        if self._current_game() == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
+            for e in (self.db.mission_equipment.get(self.run_state.mission_id) or []):
+                if e not in owned and not self._blacklisted_weapon(e):
+                    pool.append(e)
+        return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _grant_weapon(self, player, weapon):
         """Add a weapon; if it's an upgrade and the player dual-wields the base,
@@ -4413,7 +4470,7 @@ class RunEnhancer:
         if game == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
             pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
         pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
-        return gate_grenades(self.db, pool, self.run_state, player)
+        return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _weighted_pick(self, mods):
         """Pick a player mod. A special effect's weight equals its counter =

@@ -243,7 +243,7 @@
 				"tag": "scnr levels\\*",
 				"easier_when": "increased",
 				"targets": [
-					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
+					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "label": "Starting Health Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
 				],
 				"special": true
 			},
@@ -2080,6 +2080,7 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, which the Energy Blade's Slice Damage shares - changing one changes the other.",
+				"desc_overrides": { "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, shared with the Energy Blade AND the Sentinel Gun's melee in Halo 3 -- changing one changes all three." },
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
@@ -2604,7 +2605,7 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 uses smash_melee, shared with the Rocket Launcher and the Flak Cannon. Halo 3 actually uses a different jpt!, slice_melee -- confirmed on the map data; the H3 tag was wrong before this fix.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 uses smash_melee, shared with the Rocket Launcher and the Flak Cannon. Halo 3 actually uses slice_melee which is shared with Brute Shot and Energy Blade.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
@@ -2680,7 +2681,7 @@
 			},
 			"Energy Blade": {
 				"Slice Damage": {
-					"desc": "Normal Swing damage. Uses slice_melee, which the Brute Shot's Melee Damage shares - changing one changes the other.",
+					"desc": "Normal Swing damage. Uses slice_melee, which the Brute Shot's Melee Damage shares - changing one changes the other. In H3 it also affects the Sentinel Gun.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
@@ -4005,7 +4006,7 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Berserk": {
-					"desc": "Charge rampage cooldown, perimeter and limits",
+					"desc": "UNVERIFIED: Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may have no visible effect until confirmed in-game. Charge rampage cooldown, perimeter and limits.",
 					"game": "Halo 3",
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\hunter\\ai\\hunter*",

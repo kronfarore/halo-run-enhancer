@@ -1087,8 +1087,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 continue
             oper, val = parsed
             negate = bool(op.get('negate'))
-            if negate:                                # H2 stores the inverse sign
-                val = -val
+            if negate:
+                # H2 onward wants this value negative no matter what's typed (a
+                # positive input here has been observed to do nothing useful, for
+                # reasons that aren't clear from the tag data alone) -- force the
+                # sign rather than just flipping it, so a negative input doesn't
+                # silently flip back to positive.
+                val = -abs(val)
             field = apply_difficulty(op['field'], op, target_difficulty)
             for r in m.apply_field(cls, path, field, oper, val, plugin,
                                    block=op.get('block'), index=op.get('index', 0) or 0,
