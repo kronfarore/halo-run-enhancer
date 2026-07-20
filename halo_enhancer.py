@@ -1,6 +1,7 @@
 # halo_enhancer.py - Final version
 
 import copy
+import html
 import json
 import random
 import sys
@@ -234,6 +235,9 @@ CONFIG = {
 }
 
 # border / background hex for mod widgets, keyed by logical color name
+# The green used for positive/easier cues throughout the UI (matches MOD_COLORS['green']).
+EASIER_GREEN = '#4CAF50'
+
 MOD_COLORS = {
     'green': {'border': '4CAF50', 'bg': '0a1a0a'},
     'red':   {'border': 'f44336', 'bg': '1a0a0a'},
@@ -1728,8 +1732,11 @@ class MagnitudeEditorDialog(QDialog):
         drow.addStretch()
         layout.addLayout(drow)
 
-        legend = QLabel("Direction indicator:  🔺 raising makes it harder    🔻 lowering makes it harder"
-                        "    🟢▲ raising makes it easier    🟢▼ lowering makes it easier   "
+        _g = f'<span style="color: {EASIER_GREEN};">'
+        legend = QLabel("Direction indicator: &nbsp;🔺 raising makes it harder &nbsp; &nbsp;"
+                        "🔻 lowering makes it harder &nbsp; &nbsp;"
+                        f"{_g}▲</span> raising makes it easier &nbsp; &nbsp;"
+                        f"{_g}▼</span> lowering makes it easier &nbsp; "
                         "(shown per field where the direction isn't obvious)")
         legend.setStyleSheet("color: #c8c8c8; font-size: 12px; padding: 2px;")
         legend.setWordWrap(True)
@@ -1974,8 +1981,10 @@ class MagnitudeEditorDialog(QDialog):
             derived = t.get('derived')
             # per-field direction symbols (target overrides the mod's). harder_when
             # marks the direction that makes the game HARDER (🔺/🔻); easier_when marks
-            # the direction that makes it EASIER (🟢▲/🟢▼) — the two are opposites, so
-            # normally only one is set per field.
+            # the direction that makes it EASIER — the same triangle in green. Emoji
+            # can't be recoloured, so the easier one uses the geometric ▲/▼ tinted via
+            # rich text; at label size it reads as the same shape. The two are
+            # opposites, so normally only one is set per field.
             def _dir(kind):
                 v = t.get(kind) or eff.get(kind)
                 v = resolve_gamed(v, self.game) if isinstance(v, dict) else v
@@ -1983,7 +1992,7 @@ class MagnitudeEditorDialog(QDialog):
             hw = _dir('harder_when')
             ew = _dir('easier_when')
             sym = '🔺 ' if hw == 'increased' else ('🔻 ' if hw == 'decreased' else '')
-            sym += '🟢▲ ' if ew == 'increased' else ('🟢▼ ' if ew == 'decreased' else '')
+            ew_glyph = '▲' if ew == 'increased' else ('▼' if ew == 'decreased' else '')
             fname = sym + t['field'] + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
                 fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
@@ -2001,6 +2010,12 @@ class MagnitudeEditorDialog(QDialog):
             left = QVBoxLayout()
             left.setSpacing(2)
             lbl = QLabel(fname)
+            if ew_glyph:
+                # Only this label needs rich text (to tint the triangle). Escape the
+                # rest and keep the double-spacing, which HTML would otherwise collapse.
+                lbl.setTextFormat(Qt.RichText)
+                lbl.setText(f'<span style="color: {EASIER_GREEN};">{ew_glyph}</span> '
+                            + html.escape(fname).replace('  ', '&nbsp; '))
             lbl.setWordWrap(True)   # #1: wrap long field names instead of clipping
             left.addWidget(lbl)
             inrow = QHBoxLayout()
@@ -2418,7 +2433,10 @@ class MagnitudeEditorDialog(QDialog):
         weapon_swaps = self._weapon_swaps_spec()
         zoom_ui = self._zoom_ui_spec(plan)
         remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
-        if not plan and not starting and not weapon_swaps and not remove_cutscenes:
+        # #7: skulls carry no per-field targets, so they never reach plan_map — collect
+        # them straight off the effects list.
+        skulls = [e['skull'] for e in self.effects if e.get('skull')]
+        if not plan and not starting and not weapon_swaps and not remove_cutscenes and not skulls:
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
@@ -2426,7 +2444,8 @@ class MagnitudeEditorDialog(QDialog):
         extras = ([] + (["set starting weapons"] if starting else [])
                   + (["scatter map weapons"] if weapon_swaps else [])
                   + (["add scope UI where missing"] if zoom_ui else [])
-                  + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else []))
+                  + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
+                  + ([f"apply skull: {', '.join(skulls)}"] if skulls else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"

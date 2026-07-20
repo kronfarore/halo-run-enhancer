@@ -599,7 +599,6 @@ def _is_human_tag(name):
 
 def _apply_betrayal(m, game, registry):
     """Flip every human squad/encounter to the Covenant team."""
-    out = []
     scnr_base = _scnr_base(m)
     if scnr_base is None:
         return [{'effect': 'Betrayal', 'ok': False, 'reason': 'scenario tag unavailable'}]
