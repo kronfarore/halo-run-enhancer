@@ -485,8 +485,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
-					"desc_overrides": { "Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons." },
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\pistol\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
@@ -526,7 +529,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
@@ -549,6 +552,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers" }
 						],
 						"Halo 2": [
+							{ "field": "Shots Per Fire", "block": "Barrels" },
+							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels" },
+							{ "field": "Rounds Per Second Max", "block": "Barrels" },
 							{ "field": "Shots Per Fire", "block": "Barrels" },
 							{ "field": "Shots Per Fire Max", "block": "Barrels" }
 						]
@@ -684,7 +693,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma pistol\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
@@ -782,7 +795,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }	
 					]
 				},
 				"Per Round (Charged)": {
@@ -795,6 +809,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] },
 						{ "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3"] }
 					]
 				},
@@ -899,7 +914,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma rifle\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
@@ -1014,7 +1033,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
 					]
 				}
 			},
@@ -1124,7 +1144,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\needler\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
@@ -1164,7 +1188,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
@@ -1255,7 +1279,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2/3: hits 1-3 use strike_melee; the Lunge melee (an out-of-ammo bayonet charge) uses a separate jpt!, smash_melee_response -- both change together.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\sniper rifle\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response",
@@ -1401,7 +1429,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 this is smash_melee, shared with the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\rocket launcher\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
@@ -1533,7 +1565,11 @@
 					]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 1": "jpt! weapons\\shotgun\\melee",
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
@@ -1573,7 +1609,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
@@ -1691,7 +1727,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_smg*",
@@ -1769,7 +1805,11 @@
 					"dual_only": true
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
@@ -1903,7 +1943,7 @@
 					"dual_only": true
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
@@ -1972,12 +2012,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-																"Reload Time": {
-									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
-									"game": ["Halo 2", "Halo 3"],
-									"tag": "jmad *fp_battle_rifle*",
-									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
-								},
+				"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_battle_rifle*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
@@ -2028,7 +2068,11 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
@@ -2083,8 +2127,8 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, which the Energy Blade's Slice Damage shares - changing one changes the other.",
-					"desc_overrides": { "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, shared with the Energy Blade AND the Sentinel Gun's melee in Halo 3 -- changing one changes all three." },
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, which the Energy Blade's Slice Damage shares.",
+					"desc_overrides": { "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses slice_melee, shared with the Energy Blade AND the Sentinel Gun's melee in Halo 3." },
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
@@ -2124,12 +2168,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-																"Reload Time": {
-									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
-									"game": ["Halo 2", "Halo 3"],
-									"tag": "jmad *fp_brute_shot*",
-									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
-								},
+				"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_brute_shot*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+				},
 				"More Shooting": {
 					"desc": "How many shots leave the barrel per trigger pull (this weapon's Rounds Per Second is 0).",
 					"tag": {
@@ -2208,7 +2252,11 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
@@ -2254,7 +2302,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" }
+						{ "field": "Age Generated Per Round", "block": "Barrels" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -2362,12 +2411,12 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-																"Reload Time": {
-									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
-									"game": ["Halo 2", "Halo 3"],
-									"tag": "jmad *fp_covenant_carbine*",
-									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
-								},
+				"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jmad *fp_covenant_carbine*",
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+				},
 				"More Shooting": {
 					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
 					"tag": {
@@ -2418,7 +2467,11 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 shares one melee tag (strike_melee) across most weapons, including the depleted Energy Blade, so this changes all of them.",
+					"desc": "Damage Lower Bound, Damage Upper Bound.",
+					"desc_overrides": { 
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
+					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
@@ -2484,7 +2537,7 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Uses smash_melee, shared with the Rocket Launcher, the Flak Cannon and the Sentinel Beam - changing one changes all three.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
@@ -2524,7 +2577,7 @@
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_flak_cannon*",
@@ -2609,7 +2662,10 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Halo 2 uses smash_melee, shared with the Rocket Launcher and the Flak Cannon. Halo 3 actually uses slice_melee which is shared with Brute Shot and Energy Blade.",
+					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons. The damage type switches from H2 to H3.",
+					"desc_overrides": { 
+						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons. The damage type switches from H2 to H3."
+					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
@@ -2655,7 +2711,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" }
+						{ "field": "Age Generated Per Round", "block": "Barrels" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -2685,16 +2742,29 @@
 			},
 			"Energy Blade": {
 				"Slice Damage": {
-					"desc": "Normal Swing damage. Uses slice_melee, which the Brute Shot's Melee Damage shares - changing one changes the other. In H3 it also affects the Sentinel Gun.",
+					"desc": "Normal Swing damage. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
-					]
+					],
+					"game": ["Halo 2"]
+				},
+				"Strike Damage": {
+					"desc": "Damage of the depleted sword. Uses a melee damage type, that is shared with different weapons.",
+					"tag": {
+						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": ["Halo 2", "Halo 3"]
 				},
 				"Dash Damage": {
 					"desc": "Damage of the lunge attack",
@@ -2778,8 +2848,8 @@
 					"desc": "How big of kaboom?",
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma grenade\\explosion",
-						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
-						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
+						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
+						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -2788,6 +2858,36 @@
 				}
 			},
 			"Mauler": {
+				"Melee Damage": {
+					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": ["Halo 3"]
+				},
+				"More Shooting": {
+					"desc": "Rate of fire",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
+						{ "field": "Shots Per Fire", "block": "Barrels" },
+						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": { "Halo 3": "Barrels" } }
+					]
+				},
 				"Projectile": {
 					"desc": "Range and speed of the pellets",
 					"game": "Halo 3",
@@ -2841,16 +2941,6 @@
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
-				"Dual Weapon Error": {
-					"desc": "Weapon error while dual wielding",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
-					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
-					]
-				},
 				"Dual Weapon Damage": {
 					"desc": "Damage scale while dual wielding",
 					"game": "Halo 3",
@@ -2867,6 +2957,18 @@
 				}
 			},
 			"Spike Rifle": {
+				"Melee Damage": {
+					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": ["Halo 3"]
+				},
 				"Projectile": {
 					"desc": "Range and speed of the spikes",
 					"game": "Halo 3",
@@ -2901,7 +3003,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": "Halo 3",
 					"tag": "jmad *fp_spike_rifle*",
@@ -2958,6 +3060,18 @@
 						{ "field": "Damage Upper Bound Max" }
 					]
 				},
+				"Melee Damage": {
+					"desc": "Lower Bound and Upper Bound Damage. One effect shared with other weapons.",
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": ["Halo 3"]
+				},
 				"Hammer Radius": {
 					"desc": "Blast radius of the gravity blast",
 					"game": "Halo 3",
@@ -2968,7 +3082,7 @@
 					]
 				},
 				"Range": {
-					"desc": "Lunge range",
+					"desc": "Lunge range. It just works.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
 					"targets": [
@@ -2977,6 +3091,29 @@
 				}
 			},
 			"Spartan Laser": {
+				"Heat Recovery": {
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+					},
+					"targets": [
+						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Loss Per Second" },
+						{ "field": "Overheated Heat Loss Per Second" }
+					]
+				},
+				"Melee Damage": {
+					"desc": "Lower Bound and Upper Bound Damage. Effect shared with other weapons.",
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					],
+					"game": ["Halo 3"]
+				},
 				"Beam Damage": {
 					"desc": "Damage per beam tick (the beam is 5 ticks)",
 					"game": "Halo 3",
@@ -2996,12 +3133,23 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Beam ticks per shot",
+					"desc": "Beam ticks per shot.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
-						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1 }
+						{ "field": "Rounds Per Second", "block": "Barrels", "index": 1 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": 1  },
+						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1  },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1  }
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": { "Halo 3": "Barrels", "index": 1 } }
 					]
 				},
 				"Per Round": {
@@ -3010,7 +3158,17 @@
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": 1 },
-						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1 }
+						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1 },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1 }
+					]
+				},
+				"Impact Radius": {
+					"desc": "Impact Radius of the Laser",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
 					]
 				},
 				"Zoom": {
@@ -3062,7 +3220,8 @@
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" }
+						{ "field": "Age Generated Per Round", "block": "Barrels" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels" }						
 					]
 				}
 			},
@@ -3164,7 +3323,17 @@
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound (thrown and stuck)",
 					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_attached_explosion",
+					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_attached_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_boarding_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_directional_explosion",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Spikes Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_fragment",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
@@ -3174,7 +3343,7 @@
 				"Radius": {
 					"desc": "Blast radius",
 					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion",
+					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_boarding_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_directional_explosion",
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
@@ -3193,7 +3362,7 @@
 				"Grenade Damage": {
 					"desc": "Impact damage",
 					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_impact",
+					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_impact & objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_equipment_explosion",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
@@ -3213,7 +3382,7 @@
 				"Burn Radius": {
 					"desc": "Radius of the burning area",
 					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn",
+					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn & objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_equipment_explosion",
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }

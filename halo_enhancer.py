@@ -1026,11 +1026,14 @@ class WeaponSelectionCard(QGroupBox):
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0;")
         layout.addWidget(title)
 
+        scheme = MOD_COLORS['equipment'] if is_equip else MOD_COLORS['green']
         weapon_group = QGroupBox("EQUIPMENT" if is_equip else "WEAPON")
-        weapon_group.setStyleSheet("border: 2px solid #4CAF50; border-radius: 4px; padding: 10px; margin-top: 5px; background-color: #0a1a0a;")
+        weapon_group.setStyleSheet(f"border: 2px solid #{scheme['border']}; border-radius: 4px; "
+                                   f"padding: 10px; margin-top: 5px; background-color: #{scheme['bg']};")
         weapon_layout = QVBoxLayout(weapon_group)
         weapon_label = QLabel(f"{'Equipment' if is_equip else 'Weapon'}: {self.pair_data['weapon']}")
-        weapon_label.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_weapon']}px; color: #4CAF50;")
+        weapon_label.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_weapon']}px; "
+                                   f"color: #{scheme['border']};")
         weapon_layout.addWidget(weapon_label)
         mod_count = len(self.pair_data.get('modifiers', []))
         mod_label = QLabel(f"Available modifiers: {mod_count}")
@@ -1749,12 +1752,21 @@ class MagnitudeEditorDialog(QDialog):
                     span = f"all {lo:g}" if lo == hi else f"{lo:g} – {hi:g}"
                     return f"{len(key)} entries: {span}"
             return ", ".join(str(k) for k in key)
+        # H2/H3 resolve their singleton scnr/matg tags by returning the nominal
+        # wildcard path ('levels\*') unchanged, so the per-variant label came out as a
+        # bare '*' — not a real variant. Strip those meaningless labels so such a
+        # target renders like a plain singleton ("0.0, 0.0") instead of "0.0, 0.0  (*)".
+        by_vals = {k: [n for n in names if n != '*'] for k, names in by_vals.items()}
         # For a per-variant effect (wildcard tag) always name the variant(s), even
         # when only one variant carries the data — so the user sees WHICH variant it
-        # is. Only a true singleton (exact tag, e.g. globals) shows a bare value.
-        if len(by_vals) == 1 and '*' not in path and not default_line:
+        # is. A true singleton (exact tag, or a wildcard that didn't expand to real
+        # names) shows a bare value.
+        if len(by_vals) == 1 and not default_line and (
+                '*' not in path or not next(iter(by_vals.values()))):
             return show(next(iter(by_vals)))
-        out = "\n".join(f"{show(key)}   ({', '.join(names)})" for key, names in by_vals.items())
+        out = "\n".join(
+            (f"{show(key)}   ({', '.join(names)})" if names else show(key))
+            for key, names in by_vals.items())
         return out + ("\n" + default_line if default_line else "")
 
     def _init_default_line(self, eff, target, field, m, plugin, fmtval):
