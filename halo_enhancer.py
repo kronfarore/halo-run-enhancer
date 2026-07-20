@@ -78,7 +78,9 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
                'ignore_elite_in_h3',
                'debug_mode', 'card_width', 'card_height',
-               'card_width_override', 'card_height_override', 'hide_tags', 'hide_fields')
+               'card_width_override', 'card_height_override', 'card_spacing',
+               'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
+               'hide_tags', 'hide_fields')
 
 
 def boss_mods_removed():
@@ -152,6 +154,8 @@ CONFIG = {
     "card_height": 800,
     "card_width_override": False,
     "card_height_override": False,
+    "card_spacing": 20,        # gap between the three cards
+    "card_row_margin": 20,     # gap around the row
     "card_wildcard_extra": 250,
     # Appearance: hide the "Tag:" / "Fields:" lines on selection cards.
     "hide_tags": False,
@@ -208,6 +212,8 @@ CONFIG = {
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
+    "grenades_need_weapon": False,     # #4: only offer grenades once a real gun is held
+    "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -237,12 +243,27 @@ CONFIG = {
 }
 
 # border / background hex for mod widgets, keyed by logical color name
-# Space the pairs row needs around/between the three cards, and the vertical slice
-# taken by the header, weapon row, button row and status bar. Rough by nature —
-# card_metrics() clamps whatever falls out, and the pairs area still scrolls.
-CARD_ROW_MARGINS = 80
-CARD_ROW_SPACING = 15
+# Vertical slice taken by the header, weapon row, button row and status bar. Rough
+# by nature — card_metrics() clamps whatever falls out, and the pairs area scrolls.
+# The horizontal gaps are user-adjustable (card_spacing / card_row_margin).
 CARD_CHROME_HEIGHT = 340
+
+
+def gate_grenades(db, weapons, run_state, player=None):
+    """Drop grenades from an offer pool while the player has no real gun (#4).
+
+    Without this a player's very first pick can be a grenade, leaving them with no
+    actual weapon. `player` None means "nobody in particular" — the start-of-run
+    choice — which is exactly the case that must be gated, so it checks both.
+    Off unless 'grenades need a gun' is enabled, which itself needs grenades on."""
+    if not (CONFIG.get('grenades_need_weapon') and CONFIG.get('include_grenades', True)):
+        return weapons
+    players = [player] if player else ['player1', 'player2']
+    for p in players:
+        owned = run_state.weapons_for(p) if run_state else []
+        if not any(not db.is_grenade(w) for w in owned):
+            return [w for w in weapons if not db.is_grenade(w)]
+    return weapons
 
 
 def card_metrics():
@@ -258,7 +279,9 @@ def card_metrics():
         screen = QGuiApplication.primaryScreen()
         if screen is not None:
             geo = screen.availableGeometry()
-            w = (geo.width() - CARD_ROW_MARGINS - 2 * CARD_ROW_SPACING) // 3
+            gap = int(CONFIG.get('card_spacing', 20))
+            margin = int(CONFIG.get('card_row_margin', 20))
+            w = (geo.width() - 2 * margin - 2 * gap - 24) // 3   # 24 ≈ scrollbar
             h = geo.height() - CARD_CHROME_HEIGHT
     except Exception:
         pass                                    # headless / odd platform: use defaults
@@ -272,6 +295,11 @@ def card_metrics():
         h = int(CONFIG.get('card_height', h) or h)
     return max(240, min(int(w), 1400)), max(300, min(int(h), 2000))
 
+
+# Halo 3 missions that actually PLACE a Brute Chieftain (checked against each map's
+# scnr character palette, not just the tags it carries). 010 uses the
+# brute_chieftain_armor_no_grenade variant, which the tag wildcard still covers.
+CHIEFTAIN_MISSIONS = ('010', '020', '030', '040', '070', '100')
 
 # Direction-indicator colours, matching the positive/negative card borders.
 EASIER_GREEN = '#4CAF50'
@@ -643,11 +671,21 @@ class ModifierDatabase:
         return weapons or list(self.weapon_mods.keys())
 
     # ---- Boss (#4) ----
+    def bosses_for(self, mission_id):
+        """Boss names for a mission: those declared in halo.json, plus Brute
+        Chieftains when that option is on. Resolved per call rather than baked into
+        mission_boss at load, so toggling the option takes effect without a reload."""
+        names = list(self.mission_boss.get(mission_id) or [])
+        if CONFIG.get('brute_chieftain_bosses') and mission_id in CHIEFTAIN_MISSIONS:
+            if 'Brute Chieftain' not in names:
+                names.append('Brute Chieftain')
+        return names
+
     def mission_has_boss(self, mission_id):
-        return bool(self.mission_boss.get(mission_id))
+        return bool(self.bosses_for(mission_id))
 
     def get_boss_name(self, mission_id):
-        names = self.mission_boss.get(mission_id) or []
+        names = self.bosses_for(mission_id)
         return ", ".join(names) if names else None
 
     def get_boss_modifiers_filtered(self, mission_id, blacklist, game=None):
@@ -660,7 +698,7 @@ class ModifierDatabase:
         Only when a boss has no catered pool yet do we fall back to the general
         negative pool (which hits all enemies), so boss levels still draw a card."""
         mods = []
-        for boss in self.mission_boss.get(mission_id) or []:
+        for boss in self.bosses_for(mission_id):
             mods.extend(self.boss_mods.get(boss) or self.enemy_mods.get(boss, []))
         specific = self.filter_blacklisted(mods, blacklist, game)
         if specific:
@@ -2369,9 +2407,14 @@ class MagnitudeEditorDialog(QDialog):
         profiles = [p for p in CONFIG.get('starting_weapon_profiles', [0, 1])
                     if not (skip_coop and p == 1)]
         null_profiles = [1] if null_coop else []
-        if not (prim or sec) and not (null_profiles or (h3_coop and null_coop)):
+        # #5: with the option on, a slot we can't fill is emptied rather than left
+        # holding the map's vanilla weapon — otherwise picking a grenade (or a weapon
+        # this map lacks) silently leaves the vanilla gun in place, which reads as the
+        # setting having done nothing.
+        null_empty = bool(CONFIG.get('set_starting_weapons'))
+        if not (prim or sec) and not (null_profiles or (h3_coop and null_coop) or null_empty):
             return None
-        return {'primary': prim, 'secondary': sec,
+        return {'primary': prim, 'secondary': sec, 'null_empty_slots': null_empty,
                 'profiles': profiles, 'null_profiles': null_profiles,
                 'h3_coop': h3_coop,
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
@@ -2727,11 +2770,34 @@ class OptionsDialog(QDialog):
         _sync_boss_sub()
         form.addRow("    ↳ Boss mods:", self.remove_boss_cb)
 
+        self.chieftain_boss_cb = QCheckBox("Brute Chieftains count as bosses (Halo 3)")
+        self.chieftain_boss_cb.setChecked(bool(CONFIG.get('brute_chieftain_bosses')))
+        self.chieftain_boss_cb.setToolTip("Halo 3 only. Treats the six missions that actually place a "
+                                          "Chieftain (Sierra 117, Crow's Nest, Tsavo Highway, The Storm, "
+                                          "The Ark, The Covenant) as boss levels, so they draw a Chieftain "
+                                          "card. Halo 2's Chieftain is Tartarus, who is already a boss.")
+        form.addRow("Brute Chieftains:", self.chieftain_boss_cb)
+
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
         self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
         self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
                                     "They are never used as a starting Primary/Secondary weapon.")
         form.addRow("Grenades:", self.grenades_cb)
+
+        self.grenades_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
+        self.grenades_need_weapon_cb.setChecked(bool(CONFIG.get('grenades_need_weapon')))
+        self.grenades_need_weapon_cb.setToolTip("Keeps a grenade from being the first thing a player "
+                                                "picks up, which would leave them with no actual gun. "
+                                                "Only available while grenades count as weapons.")
+
+        def _sync_grenade_sub(_=False):
+            on = self.grenades_cb.isChecked()
+            self.grenades_need_weapon_cb.setEnabled(on)
+            if not on:
+                self.grenades_need_weapon_cb.setChecked(False)
+        self.grenades_cb.toggled.connect(_sync_grenade_sub)
+        _sync_grenade_sub()
+        form.addRow("    ↳ Grenades need a gun:", self.grenades_need_weapon_cb)
 
         self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
         self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
@@ -2919,6 +2985,22 @@ class OptionsDialog(QDialog):
         self.card_height.setToolTip(tiph)
         aform.addRow("Card height (px):", hrow)
 
+        self.card_spacing = QSpinBox()
+        self.card_spacing.setRange(0, 120)
+        self.card_spacing.setSingleStep(2)
+        self.card_spacing.setValue(int(CONFIG.get('card_spacing', 20)))
+        self.card_spacing.setToolTip("Empty space between the three cards. Cards shrink to keep "
+                                     "the row fitting, unless the width override is on.")
+        aform.addRow("Gap between cards (px):", self.card_spacing)
+
+        self.card_row_margin = QSpinBox()
+        self.card_row_margin.setRange(0, 200)
+        self.card_row_margin.setSingleStep(5)
+        self.card_row_margin.setValue(int(CONFIG.get('card_row_margin', 20)))
+        self.card_row_margin.setToolTip("Empty space around the card row (left/right, and half "
+                                        "that above/below).")
+        aform.addRow("Margin around row (px):", self.card_row_margin)
+
         self.hide_tags_cb = QCheckBox("Hide the “Tag:” line on cards")
         self.hide_tags_cb.setChecked(bool(CONFIG.get('hide_tags')))
         self.hide_tags_cb.setToolTip("Hide the raw tag path (e.g. “weap …\\assault_rifle”) on cards — "
@@ -2963,6 +3045,8 @@ class OptionsDialog(QDialog):
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'include_grenades': self.grenades_cb.isChecked(),
+            'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
+            'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
@@ -2975,6 +3059,8 @@ class OptionsDialog(QDialog):
             'card_height': self.card_height.value(),
             'card_width_override': self.card_width_override.isChecked(),
             'card_height_override': self.card_height_override.isChecked(),
+            'card_spacing': self.card_spacing.value(),
+            'card_row_margin': self.card_row_margin.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
         }
@@ -3107,14 +3193,15 @@ class HaloGUI(QMainWindow):
     def _blacklisted_weapon(self, weapon):
         return self.db.weapon_label(weapon) in self.run_state.blacklist
 
-    def _game_weapon_pool(self):
+    def _game_weapon_pool(self, player=None):
         """Weapons offerable as a fresh pick (initial choice, reroll, manual
         change): the game's weapon pool minus blacklisted weapons AND minus
         upgrade weapons (#3), which must only be reachable via the New Weapon
         button's explicit "base already owned" check in `_weapon_offer_pool`."""
         upgrades = CONFIG.get('weapon_upgrades', {})
-        return [w for w in self.db.get_game_weapons(self._current_game())
+        pool = [w for w in self.db.get_game_weapons(self._current_game())
                 if not self._blacklisted_weapon(w) and w not in upgrades]
+        return gate_grenades(self.db, pool, self.run_state, player)
 
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)
@@ -3580,7 +3667,11 @@ class HaloGUI(QMainWindow):
         self.pairs_container = QWidget()
         self.pairs_container.setStyleSheet("background-color: #0a0a0a;")
         self.pairs_layout = QHBoxLayout(self.pairs_container)
-        self.pairs_layout.setSpacing(20)
+        # Gap between cards and around the row — both adjustable in Options, and both
+        # fed into card_metrics() so the cards shrink to keep the row fitting.
+        self.pairs_layout.setSpacing(int(CONFIG.get('card_spacing', 20)))
+        _m = int(CONFIG.get('card_row_margin', 20))
+        self.pairs_layout.setContentsMargins(_m, _m // 2, _m, _m // 2)
         # Top-align cards so short cards don't get centered with dead space above
         # them; each card now sizes to its own content (see PairCard).
         self.pairs_layout.setAlignment(Qt.AlignTop)
@@ -3753,6 +3844,11 @@ class HaloGUI(QMainWindow):
         self._last_weapon_display = None                          # pairs screen, not weapon select
         self.pairs_container.setUpdatesEnabled(False)
         try:
+            # Re-read the gaps here, not just at construction, so changing them in
+            # Options takes effect on the next render instead of needing a restart.
+            self.pairs_layout.setSpacing(int(CONFIG.get('card_spacing', 20)))
+            _m = int(CONFIG.get('card_row_margin', 20))
+            self.pairs_layout.setContentsMargins(_m, _m // 2, _m, _m // 2)
             self._clear_pairs_layout()
             for pair in pairs:
                 card = PairCard(pair, self, show_player1, show_player2)
@@ -4111,7 +4207,10 @@ class HaloGUI(QMainWindow):
             if mod.get('enemy'):
                 pool = self.db.enemy_mods.get(mod['enemy']) or self.db.boss_mods.get(mod['enemy'], [])
                 return next((m for m in pool if m['name'] == name), None)
-            for pool in (self.db.positive_pool, self.db.negative_pool, self.db.wildcard_pool):
+            # skull_pool included, or a picked skull looks removed-from-halo.json on
+            # reload and the patcher warns about a snapshot that's actually current.
+            for pool in (self.db.positive_pool, self.db.negative_pool,
+                         self.db.wildcard_pool, self.db.skull_pool):
                 found = next((m for m in pool if m['name'] == name), None)
                 if found:
                     return found
@@ -4127,7 +4226,7 @@ class HaloGUI(QMainWindow):
         if fresh:
             mod.pop('_missing_in_db', None)
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'harder_when', 'easier_when', 'init_defaults', 'games'):
+                        'skull', 'harder_when', 'easier_when', 'init_defaults', 'games'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         else:
@@ -4251,8 +4350,9 @@ class RunEnhancer:
     def _new_weapon_pool(self, player):
         owned = set(self.run_state.weapons_for(player))
         bl = self.run_state.blacklist
-        return [w for w in self.db.get_level_weapons(self.run_state.mission_id)
+        pool = [w for w in self.db.get_level_weapons(self.run_state.mission_id)
                 if w not in owned and self.db.weapon_label(w) not in bl]
+        return gate_grenades(self.db, pool, self.run_state, player)
 
     def _weighted_pick(self, mods):
         """Pick a player mod. A special effect's weight equals its counter =

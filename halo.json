@@ -6034,6 +6034,37 @@
 					]
 				}
 			},
+			"Brute Chieftain": {
+				"Body Vitality": {
+					"desc": "The Chieftain's health.",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain*",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The Chieftain's shield.",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain*",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between hammer swings, the chance of one, and its lunge range. Only the hammer Chieftain defines these; the armoured one inherits.",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain*",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" }
+					]
+				}
+			},
 			"Tartarus": {
 				"Body Vitality": {
 					"desc": "Tartarus's health.",

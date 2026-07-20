@@ -518,8 +518,23 @@ def _apply_starting_equipment(m, game, registry, starting):
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
                 ('secondary', profiles, sec, 'Secondary Weapon', False)]
 
+    null_empty = bool(starting.get('null_empty_slots'))
     for slot, profiles, tag, label, guard_empty in plan:
         if not tag:
+            # #5: nothing to put here (a grenade pick, or no second player). Empty the
+            # slot so the setting visibly takes effect instead of leaving the map's
+            # vanilla weapon in place. Profiles already empty are left alone.
+            if null_empty:
+                n = 0
+                for i in profiles:
+                    poff = m.follow(scnr_base, [boff], [esize], i)
+                    if poff is None or (guard_empty and _profile_is_empty(m, poff, game)):
+                        continue
+                    _null_starting_weapon(m, poff, slot, game)
+                    n += 1
+                if n:
+                    out.append({'effect': 'starting weapons', 'field': label, 'ok': True,
+                                'old': 'map default', 'new': f'emptied on {n} profile(s)'})
             continue
         _, name = hm.split_tag(tag)
         short = name.rsplit(chr(92), 1)[-1]
@@ -593,6 +608,16 @@ _NONHUMAN_WORDS = ('elite', 'grunt', 'jackal', 'brute', 'hunter', 'flood', 'sent
                    'drone', 'engineer', 'prophet', 'monitor', 'bugger', 'skirmisher')
 
 
+# Humans that stay loyal: a squad containing one of these never flips, even though
+# it classifies as human. Johnson is scripted in several missions and turning him
+# hostile breaks those sequences.
+_BETRAYAL_LOYAL = ('johnson',)
+
+
+def _is_loyal_tag(name):
+    return bool(name) and any(w in name.lower() for w in _BETRAYAL_LOYAL)
+
+
 def _is_human_tag(name):
     if not name:
         return False
@@ -631,7 +656,7 @@ def _apply_betrayal(m, game, registry):
                     kinds.add(names[ati])
             if not kinds:
                 continue
-            if all(_is_human_tag(k) for k in kinds):
+            if all(_is_human_tag(k) for k in kinds) and not any(_is_loyal_tag(k) for k in kinds):
                 struct.pack_into('<h', m.data, e + 0x24, team)
                 flipped.append(_cstr_at(m, e))
             else:
@@ -658,7 +683,7 @@ def _apply_betrayal(m, game, registry):
             kinds = {names[i] for i in idxs if 0 <= i < len(names) and names[i]}
             if not kinds:
                 continue
-            if all(_is_human_tag(k) for k in kinds):
+            if all(_is_human_tag(k) for k in kinds) and not any(_is_loyal_tag(k) for k in kinds):
                 struct.pack_into('<h', m.data, sq + lay['team'], team)
                 flipped.append(_cstr_at(m, sq))
             else:
