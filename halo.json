@@ -158,6 +158,7 @@
 			"010": {
 				"name": "Sierra 117",
 				"enemies": ["Brute", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Regenerator", "Superflare"],
@@ -166,6 +167,7 @@
 			"020": {
 				"name": "Crow's Nest",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Invisibility", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -174,6 +176,7 @@
 			"030": {
 				"name": "Tsavo Highway",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -182,6 +185,7 @@
 			"040": {
 				"name": "The Storm",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"],
@@ -198,6 +202,7 @@
 			"070": {
 				"name": "The Ark",
 				"enemies": ["Brute", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -206,6 +211,7 @@
 			"100": {
 				"name": "The Covenant",
 				"enemies": ["Brute", "Bugger", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -267,13 +273,6 @@
 					{ "field": "Magnetism Adhesion", "block": "Player Control" }
 				]
 			},
-			"Walking Speed": {
-				"desc": "Increases Walking Speed?",
-				"tag": "matg globals\\globals",
-				"targets": [
-					{ "field": "Walking Speed", "block": "Player Information" }
-				]
-			},
 			"Run Speed": {
 				"desc": "Run Forward, Run Backwards, Run Sideways, Run Acceleration",
 				"tag": "matg globals\\globals",
@@ -292,13 +291,6 @@
 					{ "field": "Sneak Backward", "block": "Player Information" },
 					{ "field": "Sneak Sideways", "block": "Player Information" },
 					{ "field": "Sneak Acceleration", "block": "Player Information" }
-				]
-			},
-			"Airborne Acceleration": {
-				"desc": "Acceleration while off ground?",
-				"tag": "matg globals\\globals",
-				"targets": [
-					{ "field": "Airborne Acceleration", "block": "Player Information" }
 				]
 			},
 			"Stun Penalty": {
@@ -323,9 +315,9 @@
 				"tag": "jpt! globals\\falling",
 				"easier_when": "decreased",
 				"targets": [
-					{ "field": "Damage Lower Bound", "block": "Falling Damage" },
-					{ "field": "Damage Upper Bound", "block": "Falling Damage" },
-					{ "field": "Damage Upper Bound Max", "block": "Falling Damage" }
+					{ "field": "Damage Lower Bound" },
+					{ "field": "Damage Upper Bound" },
+					{ "field": "Damage Upper Bound Max" }
 				]
 			}
 		},
@@ -2965,27 +2957,6 @@
 					"desc": "Blast radius of the gravity blast",
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
-					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
-					]
-				},
-				"Chieftain Hammer Damage": {
-					"desc": "Damage of Brute Chieftain hammer blasts",
-					"game": "Halo 3",
-					"harder_when": "increased",
-					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
-					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
-					]
-				},
-				"Chieftain Hammer Radius": {
-					"desc": "Blast radius of Brute Chieftain hammer blasts",
-					"game": "Halo 3",
-					"harder_when": "increased",
-					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
 					"targets": [
 						{ "field": "Radius" },
 						{ "field": "Radius Max" }
@@ -6063,6 +6034,27 @@
 						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" }
 					]
+				},
+				"Chieftain Hammer Damage": {
+					"desc": "Damage of Brute Chieftain hammer blasts",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Chieftain Hammer Radius": {
+					"desc": "Blast radius of Brute Chieftain hammer blasts",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
 				}
 			},
 			"Tartarus": {
@@ -6205,7 +6197,7 @@
 	},
 	"Skull modifiers": {
 		"Betrayal": {
-			"desc": "Every human squad turns on you. Marines, crew and Johnson turn hostile for the whole level \u2014 they join the Flood in Halo 1 and the Heretics in Halo 2 and 3, so the Covenant keeps fighting them too.",
+			"desc": "Every human squad turns on you. Marinel join the Flood in Halo 1 and the Heretics in Halo 2 and 3, so the Covenant keeps fighting them too.",
 			"skull": "betrayal",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": "scnr",

@@ -108,7 +108,7 @@ ZOOM_DONOR_WEAPONS = {
 # 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
 # found under (per-game subfolder); defaults to the tool's parent when unset.
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
-                 'options_dialog_size') + OPTION_KEYS
+                 'options_dialog_size', 'patcher_dialog_size') + OPTION_KEYS
 
 
 def mcc_root():
@@ -1548,6 +1548,13 @@ class MagnitudeEditorDialog(QDialog):
         self.setWindowTitle("Apply Effects to Map")
         self.setModal(True)
         self.setMinimumSize(940, 760)
+        # Remember how the user sized this window between sessions (same as Options).
+        _sz = CONFIG.get('patcher_dialog_size')
+        if isinstance(_sz, (list, tuple)) and len(_sz) == 2:
+            try:
+                self.resize(max(940, int(_sz[0])), max(760, int(_sz[1])))
+            except (TypeError, ValueError):
+                pass
         # #5: allow maximizing/minimizing the dialog.
         self.setWindowFlags(self.windowFlags()
                             | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
@@ -2596,6 +2603,13 @@ class MagnitudeEditorDialog(QDialog):
             self._populate()
 
         self._show_results(results, backup)
+
+    def done(self, r):
+        # Remember the size on close, including Cancel — a window preference, not a
+        # patch setting. Read here rather than tracked on resize, so it's one write.
+        CONFIG['patcher_dialog_size'] = [self.width(), self.height()]
+        save_settings()
+        super().done(r)
 
     def _show_results(self, results, backup):
         # #4: three buckets — Applied (a real write), Skipped (a deliberate no-op:
