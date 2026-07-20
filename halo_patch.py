@@ -566,7 +566,12 @@ def _apply_starting_equipment(m, game, registry, starting):
 # H1 keeps allegiance per ENCOUNTER (squads hang off the encounter); H2 and H3
 # keep it per SQUAD, reaching the character through a palette -- directly in H2,
 # via the Fire-Teams sub-block in H3.
-_TEAM_COVENANT = 3
+# Which side the betrayed humans join, per game. Not Covenant: a third faction reads
+# as its own event and keeps the Covenant fighting them too. H1's enum has no Heretic
+# (slot 6 is Unused6), so Flood is the only real third option there. H3 does define
+# Heretic even though the campaign has none, so its allegiances are untested —
+# see the note in halo.json's Betrayal entry.
+_BETRAYAL_TEAM = {'Halo 1': 4, 'Halo 2': 6, 'Halo 3': 6}   # Flood / Heretic / Heretic
 _BETRAYAL = {
     'Halo 2': {'squads': (0x160, 0x74), 'team': 0x24, 'char_idx': 0x36,
                'palette': (0x178, 0x08), 'pal_id_at': 0x4, 'fireteams': None},
@@ -598,10 +603,16 @@ def _is_human_tag(name):
 
 
 def _apply_betrayal(m, game, registry):
-    """Flip every human squad/encounter to the Covenant team."""
+    """Flip every human squad/encounter onto a hostile third faction (see
+    _BETRAYAL_TEAM): Flood in Halo 1, Heretic in Halo 2 and 3."""
     scnr_base = _scnr_base(m)
     if scnr_base is None:
         return [{'effect': 'Betrayal', 'ok': False, 'reason': 'scenario tag unavailable'}]
+
+    team = _BETRAYAL_TEAM.get(game)
+    if team is None:
+        return [{'effect': 'Betrayal', 'ok': False, 'reason': f'not supported in {game}'}]
+    team_name = {4: 'Flood', 6: 'Heretic'}.get(team, str(team))
 
     flipped, skipped = [], 0
     if game == 'Halo 1':
@@ -621,7 +632,7 @@ def _apply_betrayal(m, game, registry):
             if not kinds:
                 continue
             if all(_is_human_tag(k) for k in kinds):
-                struct.pack_into('<h', m.data, e + 0x24, _TEAM_COVENANT)
+                struct.pack_into('<h', m.data, e + 0x24, team)
                 flipped.append(_cstr_at(m, e))
             else:
                 skipped += 1
@@ -648,13 +659,13 @@ def _apply_betrayal(m, game, registry):
             if not kinds:
                 continue
             if all(_is_human_tag(k) for k in kinds):
-                struct.pack_into('<h', m.data, sq + lay['team'], _TEAM_COVENANT)
+                struct.pack_into('<h', m.data, sq + lay['team'], team)
                 flipped.append(_cstr_at(m, sq))
             else:
                 skipped += 1
         label = 'squads'
     return [{'effect': 'Betrayal', 'field': f'Squad Team ({label})', 'ok': True,
-             'old': 'as the map defines', 'new': f'{len(flipped)} human {label} -> Covenant',
+             'old': 'as the map defines', 'new': f'{len(flipped)} human {label} -> {team_name}',
              'detail': ', '.join(flipped[:12]) + ('…' if len(flipped) > 12 else '')}]
 
 

@@ -77,7 +77,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
                'ignore_elite_in_h3',
-               'debug_mode', 'card_width', 'card_height', 'hide_tags', 'hide_fields')
+               'debug_mode', 'card_width', 'card_height',
+               'card_width_override', 'card_height_override', 'hide_tags', 'hide_fields')
 
 
 def boss_mods_removed():
@@ -144,12 +145,13 @@ CONFIG = {
     "font_size_button": 17,
     "font_size_weapon": 18,
     
-    # Mod/weapon card size. `card_width` is enforced as a fixed width on every
-    # card; `card_height` is the base fixed height, and cards that also show a
-    # wildcard get `card_height + card_wildcard_extra`. Width and height are
-    # editable in the Options menu.
+    # Mod/weapon card size. Both dimensions are normally derived from the screen by
+    # card_metrics() so every card is the same size and stops resizing with its
+    # content; these values only take effect when the matching *_override is on.
     "card_width": 600,
     "card_height": 800,
+    "card_width_override": False,
+    "card_height_override": False,
     "card_wildcard_extra": 250,
     # Appearance: hide the "Tag:" / "Fields:" lines on selection cards.
     "hide_tags": False,
@@ -235,6 +237,42 @@ CONFIG = {
 }
 
 # border / background hex for mod widgets, keyed by logical color name
+# Space the pairs row needs around/between the three cards, and the vertical slice
+# taken by the header, weapon row, button row and status bar. Rough by nature —
+# card_metrics() clamps whatever falls out, and the pairs area still scrolls.
+CARD_ROW_MARGINS = 80
+CARD_ROW_SPACING = 15
+CARD_CHROME_HEIGHT = 340
+
+
+def card_metrics():
+    """(width, height) for every selection card, the same for all of them.
+
+    Derived from the screen rather than the content: cards used to hug their text,
+    so every reroll resized them. Assumes a roughly fullscreen window — three cards
+    across the available width — and either dimension can be pinned in Options via
+    its override checkbox. The pairs area keeps its scrollbar, so a smaller window
+    scrolls instead of squashing the cards."""
+    w = h = None
+    try:
+        screen = QGuiApplication.primaryScreen()
+        if screen is not None:
+            geo = screen.availableGeometry()
+            w = (geo.width() - CARD_ROW_MARGINS - 2 * CARD_ROW_SPACING) // 3
+            h = geo.height() - CARD_CHROME_HEIGHT
+    except Exception:
+        pass                                    # headless / odd platform: use defaults
+    if not w or w < 240:
+        w = 600
+    if not h or h < 300:
+        h = 800
+    if CONFIG.get('card_width_override'):
+        w = int(CONFIG.get('card_width', w) or w)
+    if CONFIG.get('card_height_override'):
+        h = int(CONFIG.get('card_height', h) or h)
+    return max(240, min(int(w), 1400)), max(300, min(int(h), 2000))
+
+
 # Direction-indicator colours, matching the positive/negative card borders.
 EASIER_GREEN = '#4CAF50'
 HARDER_RED = '#f44336'
@@ -980,10 +1018,10 @@ class WeaponSelectionCard(QGroupBox):
                                "padding: 15px; background-color: #0d0d0d; }")
         # 'add' cards carry a tied negative + an extra button, so they need more
         # room than the start-of-run weapon picks or they get squished.
-        self.setFixedWidth(CONFIG['card_width'])
-        # Height hugs content (cards are top-aligned via the shared pairs_layout)
-        # instead of a fixed card_height — same fix as PairCard, so the initial and
-        # new-weapon selection cards no longer leave dead space below their button.
+        # Same screen-derived width as PairCard so the two screens line up. Height
+        # still hugs content here: these cards appear on their own selection screen,
+        # not in a row that needs matching heights.
+        self.setFixedWidth(card_metrics()[0])
         self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
 
     def create_mod_widget(self, mod_data, label, color):
@@ -1096,33 +1134,38 @@ class PairCard(QGroupBox):
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0; margin: 0; padding: 0;")
         layout.addWidget(title)
 
+        # Three fixed bands — player card(s), enemy/negative, third slot — each given
+        # the same stretch. That keeps the negative block starting at the same height
+        # on every card in the row, even when a card leaves a slot empty, instead of
+        # each block floating to wherever the one above it happened to end.
+        positive, negative, third = [], [], []
+
         # The positive (player) card is replaced by a new-weapon offer when the
         # pair rolled one (#4); the enemy/negative card below still shows.
         if self.show_player1:
             if self.pair.get('new_weapon'):
-                layout.addWidget(self.create_weapon_widget(
+                positive.append(self.create_weapon_widget(
                     self.pair['new_weapon'], "PLAYER 1 - 🔫 NEW WEAPON", 'player1'))
             elif self.pair['player1_mod']:
                 w1 = self.pair['player1_mod'].get('weapon')
-                layout.addWidget(self.create_mod_widget(
+                positive.append(self.create_mod_widget(
                     self.pair['player1_mod'],
                     f"PLAYER 1 ({w1})" if w1 else "Player (General)",
                     "green", 'player1'))
 
         if self.show_player2:
             if self.pair.get('new_weapon'):
-                layout.addWidget(self.create_weapon_widget(
+                positive.append(self.create_weapon_widget(
                     self.pair['new_weapon'], "PLAYER 2 - 🔫 NEW WEAPON", 'player2'))
             elif self.pair['player2_mod']:
                 w2 = self.pair['player2_mod'].get('weapon')
-                layout.addWidget(self.create_mod_widget(
+                positive.append(self.create_mod_widget(
                     self.pair['player2_mod'],
                     f"PLAYER 2 ({w2})" if w2 else "Player (General)",
                     "green", 'player2'))
 
         if self.pair['enemy_mod']:
-            enemy_widget = self.create_mod_widget(self.pair['enemy_mod'], "ENEMY", "red", 'enemy')
-            layout.addWidget(enemy_widget)
+            negative.append(self.create_mod_widget(self.pair['enemy_mod'], "ENEMY", "red", 'enemy'))
         elif self.pair.get('no_negative'):
             # #5: exhaust reward — this pair carries no enemy buff.
             free = QLabel("✦ NO ENEMY BUFF  (exhaust reward)")
@@ -1131,23 +1174,30 @@ class PairCard(QGroupBox):
                                "border: 1px dashed #00E676; border-radius: 4px; "
                                "background-color: #0a2012;")
             free.setWordWrap(True)
-            layout.addWidget(free)
+            negative.append(free)
 
         if self.pair['wildcard_mod']:
-            wildcard_widget = self.create_mod_widget(self.pair['wildcard_mod'], "🎲 WILDCARD", "gold", 'wildcard')
-            layout.addWidget(wildcard_widget)
+            third.append(self.create_mod_widget(self.pair['wildcard_mod'], "🎲 WILDCARD", "gold", 'wildcard'))
 
         # #5: one-map Exhaust (3rd slot; mutually exclusive with Wildcard/Boss).
         if self.pair.get('exhaust_mod'):
-            exhaust_widget = self.create_mod_widget(
-                self.pair['exhaust_mod'], "🜂 EXHAUST (one map)", "exhaust", 'exhaust')
-            layout.addWidget(exhaust_widget)
+            third.append(self.create_mod_widget(
+                self.pair['exhaust_mod'], "🜂 EXHAUST (one map)", "exhaust", 'exhaust'))
 
         # #4: guaranteed boss card on boss levels (replaces the wildcard roll).
         if self.pair.get('boss_mod'):
             boss_name = self.pair['boss_mod'].get('boss') or self.pair['boss_mod'].get('enemy', 'Boss')
-            boss_widget = self.create_mod_widget(self.pair['boss_mod'], f"☠ BOSS: {boss_name}", "boss", 'boss')
-            layout.addWidget(boss_widget)
+            third.append(self.create_mod_widget(self.pair['boss_mod'], f"☠ BOSS: {boss_name}", "boss", 'boss'))
+
+        for band in (positive, negative, third):
+            holder = QWidget()
+            hl = QVBoxLayout(holder)
+            hl.setContentsMargins(0, 0, 0, 0)
+            hl.setSpacing(6)
+            for w in band:
+                hl.addWidget(w)
+            hl.addStretch()          # content sits at the top of its band
+            layout.addWidget(holder, 1)
 
         select_btn = QPushButton("SELECT")
         select_btn.setStyleSheet(f"""
@@ -1166,13 +1216,12 @@ class PairCard(QGroupBox):
         layout.addWidget(select_btn)
 
         self.setStyleSheet("QGroupBox { border: 1px solid #444; border-radius: 8px; padding: 6px 12px 12px 12px; background-color: #0d0d0d; }")
-        self.setFixedWidth(CONFIG['card_width'])
-        # Height hugs the actual content instead of a fixed card_height. Cards are
-        # top-aligned in the row (pairs_layout AlignTop), so a short card no longer
-        # leaves dead vertical space below its SELECT button, and a tall one grows
-        # naturally instead of being squished. (card_height is retained only as the
-        # WeaponSelectionCard floor / Options value; it no longer pads PairCard.)
-        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Maximum)
+        # One screen-derived size for every card. Letting the height hug its content
+        # meant each reroll resized the cards and shifted the positive/negative blocks
+        # to different heights across the row; a fixed size holds them in place.
+        cw, ch = card_metrics()
+        self.setFixedSize(cw, ch)
+        self.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
     def on_blacklist_weapon(self, weapon, mod_type):
         if self.parent_widget:
@@ -1967,7 +2016,15 @@ class MagnitudeEditorDialog(QDialog):
         # top of the dialog explains the 🔺/🔻 symbols. A mod-level harder_when
         # applies to all its fields; a target may override with its own harder_when.
         targets, fallback = self._effect_targets(eff)
-        if fallback:
+        if eff.get('skull'):
+            # #7: a skull is a whole-map rule with no per-field targets, so the
+            # "no target defined" and fallback warnings don't apply — having none
+            # is correct here. Say what it will do instead.
+            note = QLabel("☠ Skull — a whole-map rule, applied on patch. Nothing to set.")
+            note.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; font-size: 12px;")
+            note.setWordWrap(True)
+            v.addWidget(note)
+        elif fallback:
             flag = QLabel("Not defined in halo.json — using fallback field(s) from magnitude_presets.")
             flag.setStyleSheet("color: #e0b83a; font-size: 12px;")
             flag.setWordWrap(True)
@@ -2822,20 +2879,45 @@ class OptionsDialog(QDialog):
         aform = QFormLayout(appear)
         aform.setLabelAlignment(Qt.AlignRight)
 
-        self.card_width = QSpinBox()
-        self.card_width.setRange(240, 900)
-        self.card_width.setSingleStep(10)
-        self.card_width.setValue(int(CONFIG.get('card_width', 380)))
-        self.card_width.setToolTip("Width of the effect cards on the selection screen. Shrink both "
-                                   "dimensions if the cards don't fit your display.")
-        aform.addRow("Card width (px):", self.card_width)
+        auto = QLabel("Card size is worked out from your screen so every card matches "
+                      "and stops resizing as you reroll. Tick a box to pin one yourself.")
+        auto.setStyleSheet("color: #888; font-size: 11px;")
+        auto.setWordWrap(True)
+        aform.addRow("", auto)
 
+        wrow = QHBoxLayout()
+        self.card_width_override = QCheckBox("Override")
+        self.card_width_override.setChecked(bool(CONFIG.get('card_width_override')))
+        self.card_width = QSpinBox()
+        self.card_width.setRange(240, 1400)
+        self.card_width.setSingleStep(10)
+        self.card_width.setValue(int(CONFIG.get('card_width', 600)))
+        self.card_width.setEnabled(self.card_width_override.isChecked())
+        self.card_width_override.toggled.connect(self.card_width.setEnabled)
+        wrow.addWidget(self.card_width_override)
+        wrow.addWidget(self.card_width, 1)
+        tipw = ("Off: the width is (screen width ÷ 3) so three cards fill the row. "
+                "On: this value is used instead.")
+        self.card_width_override.setToolTip(tipw)
+        self.card_width.setToolTip(tipw)
+        aform.addRow("Card width (px):", wrow)
+
+        hrow = QHBoxLayout()
+        self.card_height_override = QCheckBox("Override")
+        self.card_height_override.setChecked(bool(CONFIG.get('card_height_override')))
         self.card_height = QSpinBox()
-        self.card_height.setRange(300, 1200)
+        self.card_height.setRange(300, 2000)
         self.card_height.setSingleStep(10)
-        self.card_height.setValue(int(CONFIG.get('card_height', 500)))
-        self.card_height.setToolTip("Height of the effect cards on the selection screen.")
-        aform.addRow("Card height (px):", self.card_height)
+        self.card_height.setValue(int(CONFIG.get('card_height', 800)))
+        self.card_height.setEnabled(self.card_height_override.isChecked())
+        self.card_height_override.toggled.connect(self.card_height.setEnabled)
+        hrow.addWidget(self.card_height_override)
+        hrow.addWidget(self.card_height, 1)
+        tiph = ("Off: the height is the screen height minus the header and buttons. "
+                "On: this value is used instead. The card row scrolls either way.")
+        self.card_height_override.setToolTip(tiph)
+        self.card_height.setToolTip(tiph)
+        aform.addRow("Card height (px):", hrow)
 
         self.hide_tags_cb = QCheckBox("Hide the “Tag:” line on cards")
         self.hide_tags_cb.setChecked(bool(CONFIG.get('hide_tags')))
@@ -2891,6 +2973,8 @@ class OptionsDialog(QDialog):
             'debug_mode': self.debug_mode_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
+            'card_width_override': self.card_width_override.isChecked(),
+            'card_height_override': self.card_height_override.isChecked(),
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
         }

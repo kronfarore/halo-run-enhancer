@@ -6174,7 +6174,7 @@
 	},
 	"Skull modifiers": {
 		"Betrayal": {
-			"desc": "Every human squad turns on you. Marines, crew and Johnson fight for the Covenant from now on.",
+			"desc": "Every human squad turns on you. Marines, crew and Johnson turn hostile for the whole level \u2014 they join the Flood in Halo 1 and the Heretics in Halo 2 and 3, so the Covenant keeps fighting them too.",
 			"skull": "betrayal",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": "scnr",
