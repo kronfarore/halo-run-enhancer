@@ -552,6 +552,8 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels" },
+							{ "field": "Rounds Per Second Max", "block": "Barrels" },
 							{ "field": "Shots Per Fire", "block": "Barrels" },
 							{ "field": "Shots Per Fire Max", "block": "Barrels" }
 						],
@@ -820,6 +822,8 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
@@ -832,6 +836,8 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels", "index": 1 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": 1 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1 },
 						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1 }
 					],
@@ -1346,6 +1352,8 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels" },
+							{ "field": "Rounds Per Second Max", "block": "Barrels" },
 							{ "field": "Shots Per Fire", "block": "Barrels" },
 							{ "field": "Shots Per Fire Max", "block": "Barrels" }
 						]
@@ -1473,7 +1481,7 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-								"Reload Time": {
+				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
@@ -1496,6 +1504,8 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels" },
+							{ "field": "Rounds Per Second Max", "block": "Barrels" },
 							{ "field": "Shots Per Fire", "block": "Barrels" },
 							{ "field": "Shots Per Fire Max", "block": "Barrels" }
 						]
@@ -1632,6 +1642,8 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels" },
+							{ "field": "Rounds Per Second Max", "block": "Barrels" },
 							{ "field": "Shots Per Fire", "block": "Barrels" },
 							{ "field": "Shots Per Fire Max", "block": "Barrels" }
 						]
@@ -1663,14 +1675,14 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
-						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
 						{ "field": "Error Angle", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
 						{ "field": "Error Angle Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } }
-					]
+					],
+					"game": ["Halo 1", "Halo 2"]
 				}
 			},
 			"SMG": {
@@ -2175,12 +2187,14 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "How many shots leave the barrel per trigger pull (this weapon's Rounds Per Second is 0).",
+					"desc": "How many shots leave the barrel per trigger pull, and the rate they leave at.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
 						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
@@ -2308,12 +2322,14 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Shots fired per trigger pull (this weapon's Rounds Per Second is 0)",
+					"desc": "Shots fired per trigger pull, and the rate they fire at",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" },
 						{ "field": "Shots Per Fire", "block": "Barrels" },
 						{ "field": "Shots Per Fire Max", "block": "Barrels" }
 					],
@@ -2886,7 +2902,8 @@
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 3": "Barrels" } }
-					]
+					],
+					"game": "Halo 3"
 				},
 				"Projectile": {
 					"desc": "Range and speed of the pellets",
@@ -6370,6 +6387,13 @@
 		}
 	},
 	"Skull modifiers": {
+		"Eyepatch": {
+			"desc": "No aim assist. Every weapon loses its autoaim and magnetism \u2014 the reticule stops sticking and your aim stops bending onto targets.",
+			"skull": "eyepatch",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": "weap",
+			"targets": []
+		},
 		"Betrayal": {
 			"desc": "Every human squad turns on you. Marinel join the Flood in Halo 1 and the Heretics in Halo 2 and 3, so the Covenant keeps fighting them too.",
 			"skull": "betrayal",

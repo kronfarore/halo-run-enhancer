@@ -695,6 +695,42 @@ def _apply_betrayal(m, game, registry):
              'detail': ', '.join(flipped[:12]) + ('…' if len(flipped) > 12 else '')}]
 
 
+# "Eyepatch": zero every weapon's aim assist. Autoaim is the reticule's stickiness
+# and Magnetism the pull that bends your aim onto a target; both exist in all three
+# games (H3 additionally has the two Falloff Range fields). Deviation Angle is
+# deliberately NOT included -- that's AI projectile scatter, not player aim assist.
+_AIM_ASSIST_FIELDS = ('Autoaim Angle', 'Autoaim Range', 'Autoaim Falloff Range',
+                      'Magnetism Angle', 'Magnetism Range', 'Magnetism Falloff Range')
+
+
+def _apply_eyepatch(m, game, registry):
+    """Zero the aim-assist fields on every weap tag in the map."""
+    plugin = registry.get('weap')
+    if plugin is None:
+        return [{'effect': 'Eyepatch', 'ok': False, 'reason': 'no weap plugin'}]
+    tags = m.find_tags('weap', '*')
+    if not tags:
+        return [{'effect': 'Eyepatch', 'ok': False, 'reason': 'no weapons in this map'}]
+    zeroed, touched = 0, set()
+    for field in _AIM_ASSIST_FIELDS:
+        fld = plugin.find(field)
+        if not fld or fld['block_chain']:        # not in this game's plugin
+            continue
+        fmt, _ = hm.TYPE_FMT[fld['type']]
+        for name, base in tags:
+            try:
+                struct.pack_into(fmt, m.data, base + fld['offset'], 0)
+            except Exception:
+                continue
+            zeroed += 1
+            touched.add(name)
+    if not zeroed:
+        return [{'effect': 'Eyepatch', 'ok': False, 'reason': 'no aim-assist fields resolved'}]
+    return [{'effect': 'Eyepatch', 'field': 'Aim assist (autoaim + magnetism)', 'ok': True,
+             'old': 'as the map defines', 'tag': 'weap *',
+             'new': f'zeroed on {len(touched)} weapon(s), {zeroed} field write(s)'}]
+
+
 def _cstr_at(m, off, limit=0x20):
     return bytes(m.data[off:off + limit]).split(b'\0')[0].decode('latin1', 'replace')
 
@@ -1023,6 +1059,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
         # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
         results.extend(_apply_weapon_swaps(m, game, registry, weapon_swaps))
+    # Skulls are whole-map rules, applied BEFORE the per-field ops. Order matters for
+    # any skull that zeroes a field a normal effect also touches (Eyepatch vs an
+    # aim-assist buff): running the skull first leaves the effect something to act on,
+    # whereas running it last would flatten the effect's result to the skull's value.
+    for skull in (skulls or ()):
+        s = str(skull).strip().lower()
+        if s == 'betrayal':
+            results.extend(_apply_betrayal(m, str(game).strip(), registry))
+        elif s == 'eyepatch':
+            results.extend(_apply_eyepatch(m, str(game).strip(), registry))
     for item in plan:
         cls, path = hm.split_tag(item['tag'])
         plugin = registry.get(cls)
@@ -1113,13 +1159,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
-
-    # Skulls are whole-map rules rather than tag edits, so they run last, after every
-    # value op. Like the rest they start from the pristine baseline, so unpicking the
-    # skull and re-patching restores the map.
-    for skull in (skulls or ()):
-        if str(skull).strip().lower() == 'betrayal':
-            results.extend(_apply_betrayal(m, str(game).strip(), registry))
 
     if remove_cutscenes and str(game).strip() in THIRD_GEN_GAMES:
         # Halo 3 opt-in: neutralise the Cortana/Gravemind vision cutscenes on the map

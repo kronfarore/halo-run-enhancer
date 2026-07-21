@@ -1684,6 +1684,23 @@ class MagnitudeEditorDialog(QDialog):
             return None
         return m.read_first(cls, path, field, plugin, block, 0, nth=nth)
 
+    def _absent_from_game(self, eff):
+        """True if this effect's weapon/equipment doesn't exist in the selected game
+        at all (as opposed to merely not being placed on the current level)."""
+        if not isinstance(eff, dict):
+            return False
+        db = getattr(self.parent_gui, 'db', None)
+        if db is None or not self.game:
+            return False
+        w = eff.get('weapon')
+        if w:
+            # Equipment is Halo 3 only; otherwise ask the game's own weapon pool.
+            if db.is_equipment(w):
+                return self.game != 'Halo 3'
+            return db.resolve_weapon(w) not in db.get_game_weapons(self.game)
+        games = eff.get('games') or []
+        return bool(games) and self.game not in games
+
     def _variant_values_str(self, tag, target, eff=None):
         """List every matching variant's vanilla value(s) as 'values (variants)',
         collapsing variants that share the same value(s) onto one line. When a target
@@ -1733,7 +1750,12 @@ class MagnitudeEditorDialog(QDialog):
         if not rows:
             if default_line:
                 return default_line
-            return "— not in map" if not m.find_tags(cls, path) else "field?"
+            if m.find_tags(cls, path):
+                return "field?"
+            # Distinguish "this game doesn't have this weapon/equipment at all" from
+            # "it exists in this game but isn't placed on this particular level".
+            return ("— not in the selected game" if self._absent_from_game(eff)
+                    else "— not in map")
         # collapse variants sharing the same value-list onto one line.
         by_vals = {}
         for p, vals in rows:
