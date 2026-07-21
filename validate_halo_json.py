@@ -69,15 +69,18 @@ def resolve_gamed(v, game):
 
 
 def declared_games(eff):
-    """Which games an effect applies to — mirrors the app's own inference."""
+    """Which games an effect is OFFERED in — matching ModifierDatabase._game_ok,
+    which is the code that actually gates a card.
+
+    Note it does NOT infer anything from the tag dict: `_game_ok` returns True
+    whenever there is no explicit `game` key, so a per-game tag dict alone does not
+    restrict an effect. An effect with tag keys {H1, H2} and no `game` key is still
+    offered in H3, where `resolve_gamed` silently falls back to the H2 tag."""
     g = eff.get('game')
     if isinstance(g, str):
         return [g]
     if isinstance(g, list):
         return list(g)
-    tag = eff.get('tag')
-    if isinstance(tag, dict):
-        return [x for x in GAMES if x in tag]
     return list(GAMES)
 
 

@@ -325,6 +325,7 @@
 			"Assault Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "proj weapons\\assault rifle\\bullet",
 						"Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"
@@ -339,6 +340,7 @@
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "jpt! weapons\\assault rifle\\bullet",
 						"Halo 3": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet"
@@ -351,6 +353,7 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo 1", "Halo 3"],
 					"desc_overrides": { "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons." },
 					"tag": {
 						"Halo 1": "jpt! weapons\\assault rifle\\melee",
@@ -364,6 +367,7 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
@@ -376,6 +380,7 @@
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
@@ -399,6 +404,7 @@
 				},
 				"Rounds Per Second": {
 					"desc": "The number of firing effects created per second",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
@@ -410,6 +416,7 @@
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
@@ -420,6 +427,7 @@
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
+					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
@@ -1837,6 +1845,7 @@
 			"Brute Plasma Rifle": {
 				"Projectile": {
 					"desc": "Velocity",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"
 					},
@@ -1850,6 +1859,7 @@
 				},
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1861,6 +1871,7 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels and Range",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1872,6 +1883,7 @@
 				},
 				"Misfire": {
 					"desc": "When Misifirng starts and how likely it is",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1882,6 +1894,7 @@
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1894,6 +1907,7 @@
 				},
 				"Ramp Up": {
 					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1904,6 +1918,7 @@
 				},
 				"Projectiles Per Shot": {
 					"desc": "Projectiles per shot",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1913,6 +1928,7 @@
 				},
 				"Error Angle": {
 					"desc": "Weapon Spread",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1924,6 +1940,7 @@
 				},
 				"Per Round": {
 					"desc": "Heat and Age generated per shot",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1934,6 +1951,7 @@
 				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -1946,6 +1964,7 @@
 				},
 				"Dual Weapon Damage": {
 					"desc": "Damage dealt while dual wielding",
+					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
@@ -3637,6 +3656,32 @@
 					{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
 				]
 			},
+			"Firing Patterns": {
+				"desc": "General enemy rate of fire via the shared generic AI base. Exceptions: the Flood combat forms, Hunters and turrets, which define their own.",
+				"game": "Halo 3",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+				]
+			},
+			"Accuracy": {
+				"desc": "General enemy weapon accuracy via the shared generic AI base. Exceptions: Grunts, Jackals, Hunters and the Flood forms, which define their own.",
+				"game": "Halo 3",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" }
+				]
+			},
+			"Maximum Firing Distance": {
+				"desc": "General enemy engagement range via the shared generic AI base. Exceptions: Grunts, Jackals and the Flood forms, which define their own.",
+				"game": "Halo 3",
+				"tag": "char ai\\generic",
+				"targets": [
+					{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+				]
+			},
 			"AI Projectile Speed": {
 				"desc": "How fast AI-fired projectiles fly on Normal and Legendary tiers (weapons with unset tiers use engine default and are unaffected)",
 				"game": "Halo 3",
@@ -3771,10 +3816,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -3782,10 +3827,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -3799,10 +3844,10 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -4082,6 +4127,7 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -4305,6 +4351,7 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Maximum Firing Distance modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -4316,10 +4363,10 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -4333,6 +4380,7 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -4594,6 +4642,7 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Maximum Firing Distance modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
@@ -4614,6 +4663,7 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
@@ -4688,19 +4738,6 @@
 							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						]
 					}
-				},
-				"Upgrade Chance": {
-					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
-					"tag": {
-						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char ai\\generic"
-					},
-					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
-					],
-					"game": ["Halo 2", "Halo 3"]
 				},
 				"Shield Recharge": {
 					"desc": "Delay before Shield begins to recharge and the time it takes",
@@ -4819,6 +4856,7 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Maximum Firing Distance modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
 						"Halo 2": "char ai\\generic",
@@ -4835,6 +4873,7 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Firing Patterns modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
 						"Halo 2": "char objects\\characters\\floodcombat*",
@@ -4852,6 +4891,7 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy.",
+					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
 						"Halo 2": "char objects\\characters\\floodcombat*",
@@ -5074,10 +5114,10 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\flood_infection\\*",
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char ai\\generic"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -5219,10 +5259,10 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\floodcarrier\\*",
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char ai\\generic"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -5464,10 +5504,10 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
+					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -5666,10 +5706,9 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char ai\\generic"
 					},
 					"targets": [
 						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
@@ -5785,10 +5824,9 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char ai\\generic"
 					},
 					"targets": [
 						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
@@ -5799,10 +5837,9 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
+						"Halo 2": "char ai\\generic"
 					},
 					"targets": [
 						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
