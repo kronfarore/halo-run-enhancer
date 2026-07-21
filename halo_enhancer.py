@@ -81,6 +81,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
+               'remove_superflare_jammer', 'remove_invincibility_invisibility',
+               'denied_equipment_as_enemy_mods',
                'hide_tags', 'hide_fields')
 
 
@@ -217,6 +219,13 @@ CONFIG = {
     "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
     "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
     "equipment_need_weapon": False,     # ...and only once the player holds a real gun
+    # Deny specific equipment to the player. Grouped the way they play: two
+    # "deny the enemy information" pieces, two "become untouchable" pieces.
+    "remove_superflare_jammer": False,
+    "remove_invincibility_invisibility": False,
+    # Anything denied above can instead be offered as an ENEMY modifier, since
+    # Brutes are the only characters that carry equipment.
+    "denied_equipment_as_enemy_mods": False,
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -262,6 +271,15 @@ def is_real_weapon(db, name):
     """An actual gun — neither a grenade nor a piece of H3 equipment. Holding only
     a Bubble Shield doesn't make a player armed."""
     return bool(name) and not db.is_grenade(name) and not db.is_equipment(name)
+
+
+def strip_denied_equipment(db, items):
+    """Drop equipment the player is denied from an offer pool."""
+    denied = denied_equipment()
+    if not denied:
+        return items
+    return [w for w in items
+            if not (db.is_equipment(w) and db.resolve_equipment(w) in denied)]
 
 
 def gate_offer_pool(db, weapons, run_state, player=None):
@@ -320,6 +338,37 @@ def card_metrics():
 # scnr character palette, not just the tags it carries). 010 uses the
 # brute_chieftain_armor_no_grenade variant, which the tag wildcard still covers.
 CHIEFTAIN_MISSIONS = ('010', '020', '030', '040', '070', '100')
+
+# Equipment the player can be denied, grouped as the two options present them.
+DENIABLE_EQUIPMENT = {
+    'remove_superflare_jammer': ('Superflare', 'Jammer'),
+    'remove_invincibility_invisibility': ('Invincibility', 'Invisibility'),
+}
+# Halo 3 missions where a Brute that ACTUALLY carries each piece can spawn — read
+# from every map's character palette crossed with the char Equipment Definitions
+# block, counting only carriers whose Relative Drop Chance is above zero. Brutes are
+# the only characters that carry equipment at all. Jammer and Invisibility ride
+# solely on brute_stalker, which is why they are limited to two missions.
+EQUIPMENT_CARRIER_MISSIONS = {
+    'Superflare':    ('010', '020', '030', '040', '070', '100'),
+    'Jammer':        ('070', '100'),
+    'Invincibility': ('010', '020', '040', '070', '100'),
+    'Invisibility':  ('070', '100'),
+    'Bubble Shield': ('010', '020', '030', '040', '070', '100'),
+    'Instant Cover': ('010', '020', '030', '040', '070', '100'),
+    'Power Drain':   ('020', '030', '040', '070', '100'),
+    'Regenerator':   ('010', '020', '040', '070', '100'),
+    'Trip Mine':     ('020', '030', '070', '100'),
+}
+
+
+def denied_equipment():
+    """Equipment names the player is currently denied, per the two options."""
+    out = set()
+    for key, names in DENIABLE_EQUIPMENT.items():
+        if CONFIG.get(key):
+            out.update(names)
+    return out
 
 # Direction-indicator colours, matching the positive/negative card borders.
 EASIER_GREEN = '#4CAF50'
@@ -722,6 +771,29 @@ class ModifierDatabase:
         is_dual = bool(weapon_name) and str(weapon_name).startswith('Dual ')
         return mods if is_dual else [m for m in mods if not m.get('dual_only')]
 
+    def denied_equipment_enemy_mods(self, mission_id):
+        """Equipment the player is denied, re-offered as ENEMY modifiers (#4).
+
+        Brutes are the only characters that carry equipment, so a piece the player
+        can't have is still live on the map as a Brute's toy — tuning it becomes a
+        negative. Restricted to missions where a Brute that actually carries it can
+        spawn (EQUIPMENT_CARRIER_MISSIONS), so e.g. Jammer and Invisibility only
+        appear on The Ark and The Covenant, the two missions with brute_stalker."""
+        if not CONFIG.get('denied_equipment_as_enemy_mods'):
+            return []
+        out = []
+        for name in sorted(denied_equipment()):
+            key = self.resolve_equipment(name)
+            if not key or mission_id not in EQUIPMENT_CARRIER_MISSIONS.get(name, ()):
+                continue
+            for m in self.equipment_mods.get(key, []):
+                # Re-tagged as a Brute effect so it groups, labels and blacklists
+                # like any other enemy modifier. Copied so the player-side pool
+                # entry is never mutated.
+                out.append({**m, 'enemy': 'Brute', 'equipment': None,
+                            'name': f'{name} {m["name"]}'})
+        return out
+
     def get_enemy_modifiers(self, mission_id):
         if mission_id not in self.mission_enemies:
             return list(self.negative_pool)
@@ -730,7 +802,8 @@ class ModifierDatabase:
         for enemy in enemy_names:
             if enemy in self.enemy_mods:
                 specific_mods.extend(self.enemy_mods[enemy])
-        return specific_mods + self.negative_pool
+        return (specific_mods + self.denied_equipment_enemy_mods(mission_id)
+                + self.negative_pool)
 
     def get_available_weapons(self):
         return list(self.weapon_mods.keys())
@@ -3013,6 +3086,37 @@ class OptionsDialog(QDialog):
         _sync_equip_sub()
         form.addRow("    ↳ Equipment needs a gun:", self.equipment_need_weapon_cb)
 
+        self.no_flare_jammer_cb = QCheckBox("Deny the player Superflare and Jammer")
+        self.no_flare_jammer_cb.setChecked(bool(CONFIG.get('remove_superflare_jammer')))
+        self.no_flare_jammer_cb.setToolTip("Halo 3: never offer Superflare or Jammer to the "
+                                           "player. Brutes still carry and use them.")
+        form.addRow("Deny flare/jammer:", self.no_flare_jammer_cb)
+
+        self.no_invinc_invis_cb = QCheckBox("Deny the player Invincibility and Invisibility")
+        self.no_invinc_invis_cb.setChecked(bool(CONFIG.get('remove_invincibility_invisibility')))
+        self.no_invinc_invis_cb.setToolTip("Halo 3: never offer Invincibility or Invisibility "
+                                           "to the player. Brutes still carry and use them.")
+        form.addRow("Deny invinc/invis:", self.no_invinc_invis_cb)
+
+        self.denied_as_enemy_cb = QCheckBox("…offer the denied ones as enemy modifiers instead")
+        self.denied_as_enemy_cb.setChecked(bool(CONFIG.get('denied_equipment_as_enemy_mods')))
+        self.denied_as_enemy_cb.setToolTip("Equipment the player is denied becomes an enemy card "
+                                           "instead, since Brutes are the only characters that "
+                                           "carry equipment. Only on missions where a Brute that "
+                                           "actually carries it spawns — Jammer and Invisibility "
+                                           "ride on brute_stalker, so they only reach The Ark and "
+                                           "The Covenant.")
+
+        def _sync_denied_sub(_=False):
+            on = self.no_flare_jammer_cb.isChecked() or self.no_invinc_invis_cb.isChecked()
+            self.denied_as_enemy_cb.setEnabled(on)
+            if not on:
+                self.denied_as_enemy_cb.setChecked(False)
+        self.no_flare_jammer_cb.toggled.connect(_sync_denied_sub)
+        self.no_invinc_invis_cb.toggled.connect(_sync_denied_sub)
+        _sync_denied_sub()
+        form.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
+
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
         self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
         self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
@@ -3284,6 +3388,9 @@ class OptionsDialog(QDialog):
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
             'equipment_need_weapon': self.equipment_need_weapon_cb.isChecked(),
+            'remove_superflare_jammer': self.no_flare_jammer_cb.isChecked(),
+            'remove_invincibility_invisibility': self.no_invinc_invis_cb.isChecked(),
+            'denied_equipment_as_enemy_mods': self.denied_as_enemy_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
@@ -3438,6 +3545,7 @@ class HaloGUI(QMainWindow):
         upgrades = CONFIG.get('weapon_upgrades', {})
         pool = [w for w in self.db.get_game_weapons(self._current_game())
                 if not self._blacklisted_weapon(w) and w not in upgrades]
+        pool = strip_denied_equipment(self.db, pool)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _weapon_choice_negatives(self):
@@ -3598,6 +3706,7 @@ class HaloGUI(QMainWindow):
             for e in (self.db.mission_equipment.get(self.run_state.mission_id) or []):
                 if e not in owned and not self._blacklisted_weapon(e):
                     pool.append(e)
+        pool = strip_denied_equipment(self.db, pool)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _grant_weapon(self, player, weapon):
@@ -4647,6 +4756,7 @@ class RunEnhancer:
         if game == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
             pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
         pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
+        pool = strip_denied_equipment(self.db, pool)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _weighted_pick(self, mods):

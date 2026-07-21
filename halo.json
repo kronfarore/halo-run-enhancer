@@ -3727,6 +3727,15 @@
 			}
 		},	
 		"Auto Turret": {
+			"Vitality": {
+				"desc": "Auto Turret health. The turret has no vitality of its own and takes it from the shared generic AI base, so this also moves Flood Infection Forms, mounted turrets, Cortana and Truth -- the only other characters that inherit it.",
+				"game": "Halo 3",
+				"tag": "char ai\\generic",
+				"harder_when": "increased",
+				"targets": [
+					{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+				]
+			},
 			"Charges": {
 				"desc": "How many charges does the equipment hold",
 				"game": "Halo 3",
