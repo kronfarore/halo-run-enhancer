@@ -740,6 +740,86 @@ _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 
 _EQUIP_CARRIER_TAG = 'objects' + chr(92) + 'characters' + chr(92) + 'brute' + chr(92) + '*'
 
 
+# scnr equipment placements + palette, per game (mirrors _MAP_WEAPONS). Equipment
+# cards are Halo 3 only today, but the other two are laid out the same way.
+_MAP_EQUIPMENT = {
+    'Halo 1': {'items': (0x258, 0x28), 'palette': (0x264, 0x30), 'pal_id_at': 0xC,
+               'palette_index': 0x0},
+    'Halo 2': {'items': (0x80, 0x38), 'palette': (0x88, 0x28), 'pal_id_at': 0x4,
+               'palette_index': 0x0},
+    'Halo 3': {'items': (0xFC, 0x8C), 'palette': (0x108, 0x10), 'pal_id_at': 0xC,
+               'palette_index': 0x0},
+}
+
+
+def map_equipment_placement_count(m, game):
+    """How many equipment placements the level has — the denominator for an
+    equipment replacement percentage."""
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    scnr_base = _scnr_base(m)
+    if not lay or scnr_base is None:
+        return 0
+    return max(0, m.i32(scnr_base + lay['items'][0]))
+
+
+def _apply_equipment_swaps(m, game, swaps):
+    """Replace a share of the level's EQUIPMENT placements, scattered evenly.
+    `swaps` = {eqip-tag: rate 0..1}. Same idea as _apply_weapon_swaps, minus the
+    ammo bookkeeping — equipment placements carry no rounds."""
+    out = []
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    scnr_base = _scnr_base(m)
+    if not lay or scnr_base is None:
+        return [{'effect': 'map equipment', 'ok': False, 'reason': 'scnr/layout unavailable'}]
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    N = m.i32(scnr_base + ioff)
+    if N <= 0:
+        return [{'effect': 'map equipment', 'ok': False,
+                 'reason': 'no equipment placements in this level'}]
+    ibase = _block_base(m, scnr_base + ioff)
+    pbase = _block_base(m, scnr_base + poff)
+    pcount = m.i32(scnr_base + poff)
+    pal = {i: _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+           for i in range(pcount)}
+
+    assign = []
+    for tag, rate in (swaps or {}).items():
+        if not rate or rate <= 0:
+            continue
+        _, name = hm.split_tag(tag)
+        short = name.rsplit(chr(92), 1)[-1]
+        pi = next((i for i, n in pal.items() if n == name), None)
+        if pi is None:                       # SAFETY NET: not in this level's palette
+            out.append({'effect': 'map equipment', 'field': short, 'ok': False,
+                        'reason': "equipment not in this level's palette"})
+            continue
+        c = int(round(rate * N))
+        if c <= 0:
+            out.append({'effect': 'map equipment', 'field': short, 'ok': True,
+                        'skip': True,
+                        'reason': f'rate too low for {N} placements (rounds to 0)'})
+            continue
+        assign.append((pi, c, short))
+
+    while sum(a[1] for a in assign) > N and assign:
+        j = max(range(len(assign)), key=lambda k: assign[k][1])
+        pi, c, s = assign[j]
+        assign[j] = (pi, c - 1, s)
+
+    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    names = {a[0]: a[2] for a in assign}
+    done = {}
+    for slot, pi in slots.items():
+        struct.pack_into('<h', m.data, ibase + slot * ies + lay['palette_index'], pi)
+        done[pi] = done.get(pi, 0) + 1
+    for pi, n in done.items():
+        out.append({'effect': 'map equipment', 'field': names[pi], 'ok': True,
+                    'tag': 'scnr', 'old': f'{N} placements',
+                    'new': f'{n} swapped in'})
+    return out
+
+
 def equipment_drop_chances(m, game, eq_path):
     """[(brute short name, chance)] for one piece of equipment — the vanilla display
     for a drop-chance row, so the relative weights are visible before editing."""
@@ -1130,7 +1210,8 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
-              from_baseline=True, remove_cutscenes=False, skulls=()):
+              from_baseline=True, remove_cutscenes=False, skulls=(),
+              equipment_swaps=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -1151,6 +1232,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
         # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
         results.extend(_apply_weapon_swaps(m, game, registry, weapon_swaps))
+    if equipment_swaps:
+        # Same placement-scatter idea, on the equipment block.
+        results.extend(_apply_equipment_swaps(m, str(game).strip(), equipment_swaps))
     # Skulls are whole-map rules, applied BEFORE the per-field ops. Order matters for
     # any skull that zeroes a field a normal effect also touches (Eyepatch vs an
     # aim-assist buff): running the skull first leaves the effect something to act on,

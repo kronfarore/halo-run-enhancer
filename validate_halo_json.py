@@ -238,8 +238,14 @@ def check_resolution():
                 report(f'{label} [{game}]: tag resolves on 0 maps  ({tag})')
                 continue
             targets = resolve_gamed(eff.get('targets'), game) or []
+            # Pseudo-field targets are handled by dedicated ops in apply_run, not by
+            # a plugin field write, so there is no field name to resolve: reload
+            # animation length, map placement percentages, and the Brute equipment
+            # drop weight (whose element is picked by tagRef, not by index).
             for t in targets:
-                if not isinstance(t, dict) or t.get('reload_anim'):
+                if not isinstance(t, dict) or any(
+                        t.get(k) for k in ('reload_anim', 'map_swap', 'map_equip',
+                                           'equip_drop')):
                     continue
                 if t.get('games') and game not in t['games']:
                     continue

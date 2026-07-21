@@ -1920,6 +1920,12 @@ class MagnitudeEditorDialog(QDialog):
                         + (f'   (+{zero} at 0)' if zero else ''))
             except Exception:
                 return "relative drop weight on Brutes"
+        if target.get('map_equip'):
+            try:
+                n = self._hp.map_equipment_placement_count(m, self.game)
+                return f'{n} equipment placements on this level  (enter e.g. =25 for 25%)'
+            except Exception:
+                return "percentage of the level's equipment placements"
         if target.get('map_swap'):
             # Not a tag field — the magnitude is a percentage of the level's weapon
             # placements. Show how many there are so the % means something.
@@ -2827,9 +2833,9 @@ class MagnitudeEditorDialog(QDialog):
         # #7: Map Presence rows aren't tag edits — their magnitude is a percentage fed
         # to the same weapon-swap mechanism the sliders drive, so they're collected
         # here and merged into the swap spec rather than becoming plan ops.
-        card_swaps = {}
+        card_swaps, equip_swaps = {}, {}
         for eff, t, le in self.rows:
-            if not t.get('map_swap'):
+            if not (t.get('map_swap') or t.get('map_equip')):
                 continue
             txt = le.text().strip()
             self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
@@ -2838,11 +2844,13 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             pct = parsed[1]
             if pct > 0:
-                card_swaps[eff['tag']] = card_swaps.get(eff['tag'], 0.0) + pct / 100.0
+                bucket = equip_swaps if t.get('map_equip') else card_swaps
+                bucket[eff['tag']] = bucket.get(eff['tag'], 0.0) + pct / 100.0
 
         plan_map = {}
         for eff, t, le in self.rows:
-            if t.get('derived') or t.get('set') is not None or t.get('map_swap'):
+            if (t.get('derived') or t.get('set') is not None
+                    or t.get('map_swap') or t.get('map_equip')):
                 continue          # display-only / fixed-set / swap; handled separately
             txt = le.text().strip()
             # #11: remember the input as-is, including an empty one — an empty entry is
@@ -2891,7 +2899,8 @@ class MagnitudeEditorDialog(QDialog):
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
-        if not plan and not starting and not weapon_swaps and not remove_cutscenes and not skulls:
+        if (not plan and not starting and not weapon_swaps and not remove_cutscenes
+                and not skulls and not equip_swaps):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
@@ -2915,7 +2924,8 @@ class MagnitudeEditorDialog(QDialog):
                                                  starting=starting, weapon_swaps=weapon_swaps,
                                                  zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                                                  remove_cutscenes=remove_cutscenes,
-                                                 skulls=skulls)
+                                                 skulls=skulls,
+                                                 equipment_swaps=equip_swaps or None)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return

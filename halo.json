@@ -3439,6 +3439,14 @@
 	},
 	"Equipment": {
 		"Bubble Shield": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3476,6 +3484,14 @@
 			}
 		},	
 		"Instant Cover": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\instantcover_equipment\\instantcover_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3512,6 +3528,14 @@
 			}
 		},	
 		"Invincibility": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3539,6 +3563,14 @@
 			}
 		},	
 		"Jammer": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\jammer_equipment\\jammer_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3587,6 +3619,14 @@
 			}
 		},	
 		"Power Drain": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\powerdrain_equipment\\powerdrain_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3648,6 +3688,14 @@
 			}
 		},	
 		"Regenerator": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\regenerator_equipment\\regenerator_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3685,6 +3733,14 @@
 			}
 		},	
 		"Superflare": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\superflare_equipment\\superflare_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3722,6 +3778,14 @@
 			}
 		},	
 		"Grav Lift": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\gravlift_equipment\\gravlift_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3750,6 +3814,14 @@
 			}
 		},	
 		"Trip Mine": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\tripmine_equipment\\tripmine_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
@@ -3799,6 +3871,14 @@
 			}
 		},	
 		"Auto Turret": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\autoturret_equipment\\autoturret_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Vitality": {
 				"desc": "Auto Turret health. The turret has no vitality of its own and takes it from the shared generic AI base, so this also moves Flood Infection Forms, mounted turrets, Cortana and Truth -- the only other characters that inherit it.",
 				"game": "Halo 3",
@@ -3868,6 +3948,14 @@
 			}	
 		},	
 		"Invisibility": {
+			"Map Presence": {
+				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
+				"targets": [
+					{ "field": "Map replacement %", "map_equip": true }
+				]
+			},
 			"Brute Drop Chance": {
 				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
 				"game": "Halo 3",
