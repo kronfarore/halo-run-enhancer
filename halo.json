@@ -2802,7 +2802,8 @@
 					},
 					"targets": [
 						{ "field": "Autoaim Range" }
-					]
+					],
+					"affected_by_skull": "Eyepatch"
 				}
 			},
 			"Frag Grenade": {
@@ -3104,7 +3105,8 @@
 					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
 					"targets": [
 						{ "field": "Autoaim Range" }
-					]
+					],
+					"affected_by_skull": "Eyepatch"
 				}
 			},
 			"Spartan Laser": {

@@ -388,6 +388,45 @@ def _diff_flavor(target):
     return {k: target.get(k) for k in DIFF_FLAVOR_KEYS}
 
 
+def active_skull_names(run_state):
+    """Names of the skulls already locked into this run — every committed round plus
+    the current round's selections. A skull is a whole-map rule, so once it's picked
+    it governs every later patch of that level."""
+    names = set()
+    if run_state is None:
+        return names
+
+    def scan(mod):
+        if isinstance(mod, dict) and mod.get('skull'):
+            names.add(mod.get('name'))
+
+    for rd in getattr(run_state, 'rounds', None) or []:
+        for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2',
+                  'boss1', 'boss2', 'exhaust1', 'exhaust2'):
+            scan(rd.get(k))
+        for pk in ('player1', 'player2'):
+            scan((rd.get(pk) or {}).get('mod'))
+    for pk in ('player1', 'player2'):
+        sel = (getattr(run_state, 'selected_pairs', None) or {}).get(pk)
+        if isinstance(sel, dict):
+            for k in ('enemy_mod', 'wildcard_mod', 'boss_mod', 'exhaust_mod'):
+                scan(sel.get(k))
+    return names
+
+
+def skull_conflict(mod, run_state):
+    """The active skull that neutralises `mod`, or None. `affected_by_skull` may
+    name one skull or several; only an ACTIVE one is worth warning about, since the
+    note is meaningless in a run where that skull was never drawn."""
+    want = (mod or {}).get('affected_by_skull')
+    if not want:
+        return None
+    names = [want] if isinstance(want, str) else list(want)
+    active = active_skull_names(run_state)
+    hit = [n for n in names if n in active]
+    return ', '.join(hit) if hit else None
+
+
 def effect_desc(mod, game=None, games=None):
     """#7: the description to show for `mod` in `game` — its 'desc_overrides' entry
     for this game if one resolves, else the plain 'desc'. Kept as a SEPARATE key
@@ -547,6 +586,9 @@ class ModifierDatabase:
             'games': self._parse_games(mod_data.get('game')),
             'wildcard': bool(mod_data.get('wildcard', False)),
             'skull': mod_data.get('skull'),   # #7: whole-map rule, not a tag edit
+            # Name(s) of skull(s) that neutralise this effect. Only surfaced on the
+            # card while one of them is actually active in the run.
+            'affected_by_skull': mod_data.get('affected_by_skull'),
             'special': bool(mod_data.get('special', False)),  # escalating-odds effect
             'dual_only': bool(mod_data.get('dual_only', False)),  # needs 'Dual <X>'
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
@@ -1136,6 +1178,14 @@ class WeaponSelectionCard(QGroupBox):
             combo.setWordWrap(True)
             combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(combo)
+        _rs = self.parent_widget.run_state if self.parent_widget else None
+        _sk = skull_conflict(mod_data, _rs)
+        if _sk:     # only shown while that skull is actually active in the run
+            warn = QLabel(f"☠ Affected by Skull: {_sk}")
+            warn.setWordWrap(True)
+            warn.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; "
+                               f"font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(warn)
         desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
@@ -1423,6 +1473,14 @@ class PairCard(QGroupBox):
             combo.setWordWrap(True)
             combo.setStyleSheet(f"color: #c07af0; font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
             layout.addWidget(combo)
+        _rs = self.parent_widget.run_state if self.parent_widget else None
+        _sk = skull_conflict(mod_data, _rs)
+        if _sk:     # only shown while that skull is actually active in the run
+            warn = QLabel(f"☠ Affected by Skull: {_sk}")
+            warn.setWordWrap(True)
+            warn.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; "
+                               f"font-size: {CONFIG['font_size_small']}px; font-weight: bold;")
+            layout.addWidget(warn)
         desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
@@ -2135,6 +2193,13 @@ class MagnitudeEditorDialog(QDialog):
             warn.setStyleSheet("color: #e05a5a; font-size: 12px; font-weight: bold;")
             warn.setWordWrap(True)
             v.addWidget(warn)
+        _sk = skull_conflict(eff, getattr(self.parent_gui, 'run_state', None))
+        if _sk:     # the skull zeroes this field first — say so before a value is typed
+            sw = QLabel(f"☠ Affected by Skull: {_sk} — it zeroes this field before your "
+                        "edit, so a multiply stays 0. Use = or + to set a value that sticks.")
+            sw.setWordWrap(True)
+            sw.setStyleSheet(f"color: #{MOD_COLORS['skull']['border']}; font-size: 12px; font-weight: bold;")
+            v.addWidget(sw)
         _games = self.parent_gui.db.get_games() if self.parent_gui else None
         _desc = effect_desc(eff, self.game, _games)
         if _desc:

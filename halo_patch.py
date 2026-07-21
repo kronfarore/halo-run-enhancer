@@ -78,6 +78,7 @@ def collect_effects(rounds, mission_id=None):
                          'desc_overrides': mod.get('desc_overrides'),  # #7
                          'tag': tag, 'targets': list(mod.get('targets') or []),
                          'skull': mod.get('skull'),
+                         'affected_by_skull': mod.get('affected_by_skull'),
                          'harder_when': mod.get('harder_when'),
                          'easier_when': mod.get('easier_when'),
                          'init_defaults': mod.get('init_defaults'),
