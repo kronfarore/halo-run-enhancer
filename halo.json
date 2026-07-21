@@ -3437,6 +3437,375 @@
 			}
 		}
 	},
+	"Equipment": {
+		"Bubble Shield": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\bubbleshield\\bubbleshield",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Instant Cover": {
+			"Charges": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\instantcover_equipment\\instantcover_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Durability": {
+				"desc": "How durable is the deployed shield",
+				"game": "Halo 3",
+				"tag": "hlmt objects\\equipment\\instantcover\\instantcover",
+				"targets": [
+					{ "field": "Maximum Vitality", "block": "New Damage Info", "index": 0 },
+					{ "field": "Maximum Shield Vitality", "block": "New Damage Info", "index": 0 }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\instantcover_equipment\\instantcover_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Invincibility": {
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Duration": {
+				"desc": "How long does the shield stay active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
+				"targets": [
+					{ "field": "Duration" }
+				]
+			}
+		},	
+		"Jammer": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\jammer\\jammer",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Motion Tracker Noise": {
+				"desc": "The Jamming effect stats. Does nothing against the AI",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\jammer\\jammer",
+				"targets": [
+					{ "field": "Arm Time", "block": "Motion Tracker Noise", "index": 0 },
+					{ "field": "Noise Radius", "block": "Motion Tracker Noise", "index": 0 },
+					{ "field": "Noise Count", "block": "Motion Tracker Noise", "index": 0 },
+					{ "field": "Flash Radius", "block": "Motion Tracker Noise", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\jammer_equipment\\jammer_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\jammer_equipment\\jammer_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Power Drain": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\powerdrain\\powerdrain",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\powerdrain_equipment\\powerdrain_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\powerdrain_equipment\\powerdrain_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			},
+			"Equipment Explosion": {
+				"desc": "Radius and Damage of the final explosion",
+				"game": "Halo 3",
+				"tag": "jpt! objects\\equipment\\powerdrain\\damage_effects\\powerdrain_explosion",
+				"targets": [
+					{ "field": "Radius" },
+					{ "field": "Radius Max" },
+					{ "field": "Damage Lower Bound" },
+					{ "field": "Damage Upper Bound" },
+					{ "field": "Damage Upper Bound Max" }
+				]
+			},
+			"Powerdrain": {
+				"desc": "Radius and Damage of the final explosion",
+				"game": "Halo 3",
+				"tag": "jpt! objects\\equipment\\powerdrain\\damage_effects\\powerdrain_field",
+				"targets": [
+					{ "field": "Radius" },
+					{ "field": "Radius Max" },
+					{ "field": "Damage Lower Bound" },
+					{ "field": "Damage Upper Bound" },
+					{ "field": "Damage Upper Bound Max" }
+				]
+			}
+		},	
+		"Regenerator": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\regenerator\\regenerator",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\regenerator_equipment\\regenerator_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\regenerator_equipment\\regenerator_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Superflare": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\superflare\\superflare",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\superflare_equipment\\superflare_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\superflare_equipment\\superflare_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Grav Lift": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\gravlift\\gravlift",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\gravlift_equipment\\gravlift_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\gravlift_equipment\\gravlift_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			}
+		},	
+		"Trip Mine": {
+			"Duration": {
+				"desc": "How long the equipment stays active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\tripmine\\tripmine",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Arm Time", "block": "Proximity Mine", "index": 0 },
+					{ "field": "Self Destruct Time", "block": "Proximity Mine", "index": 0 }
+				]
+			},
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\tripmine_equipment\\tripmine_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\tripmine_equipment\\tripmine_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			},
+			"Equipment Explosion": {
+				"desc": "Radius and Damage of the final explosion",
+				"game": "Halo 3",
+				"tag": "jpt! objects\\equipment\\tripmine\\damage_effects\\tripmine_explosion & objects\\equipment\\tripmine\\damage_effects\\tripmine_explosion_base",
+				"targets": [
+					{ "field": "Radius" },
+					{ "field": "Radius Max" },
+					{ "field": "Damage Lower Bound" },
+					{ "field": "Damage Upper Bound" },
+					{ "field": "Damage Upper Bound Max" }
+				]
+			}
+		},	
+		"Auto Turret": {
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\autoturret_equipment\\autoturret_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Spawn Velocity": {
+				"desc": "How fast you throw this equipment",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\autoturret_equipment\\autoturret_equipment",
+				"targets": [
+					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
+				]
+			},
+			"Maximum Firing Distance": {
+				"desc": "Firing Distance for the turret",
+				"game": "Halo 3",
+				"tag": "char objects\\equipment\\autoturret\\autoturret",
+				"targets": [
+					{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" },
+					{ "field": "Normal Combat Range Max", "block": "Weapons Properties", "index": "all" },
+					{ "field": "Timid Combat Range Max", "block": "Weapons Properties", "index": "all" },
+					{ "field": "Aggressive Combat Range Max", "block": "Weapons Properties", "index": "all" }
+				]
+			},
+			"Accuracy": {
+				"desc": "Accuracy of the turret.",
+				"game": "Halo 3",
+				"tag": "char objects\\equipment\\autoturret\\autoturret",
+				"targets": [
+					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" }
+				]
+			},
+			"Projectiles Per Shot": {
+				"desc": "More shots per shot for the turret",
+				"game": "Halo 3",
+				"tag": {
+					"Halo 3": "weap objects\\equipment\\autoturret\\autoturret_beam"
+				},
+				"targets": [
+					{ "field": "Projectiles Per Shot", "block": "Barrels", "index": "all" }
+				]
+			},
+			"Turret Damage": {
+				"desc": "Melee Damage from Elite",
+				"tag": {
+					"Halo 3": "jpt! objects\\equipment\\autoturret\\damage_effects\\autoturret_beam_impact"
+				},
+				"targets": [
+					{ "field": "Damage Lower Bound" },
+					{ "field": "Damage Upper Bound" },
+					{ "field": "Damage Upper Bound Max" }
+				]
+			}	
+		},	
+		"Invisibility": {
+			"Charges": {
+				"desc": "How many charges does the equipment hold",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
+				"targets": [
+					{ "field": "Charges" }
+				]
+			},
+			"Duration": {
+				"desc": "How long does the shield stay active",
+				"game": "Halo 3",
+				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
+				"targets": [
+					{ "field": "Duration" },
+					{ "field": "Invisible Time", "block": "Invisibility Mode", "index": 0 }
+				]
+			}
+		}
+	},	
 	"Enemy modifiers": {
 		"General modifiers": {
 			"Enemy damage": {

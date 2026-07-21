@@ -23,7 +23,7 @@ except ImportError as e:
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
 # bump only the last component for changes; the middle 2 becomes 3 only when
 # support reaches the next Halo game. Stamped into saved runs and patch logs.
-VERSION = "0.2.08b"
+VERSION = "0.3.010"
 
 
 def resource_path(filename):
@@ -546,6 +546,7 @@ class ModifierDatabase:
         self.mission_weapons = {}   # mission_id -> level weapon pool
         self.mission_grenades = {}  # mission_id -> grenade pool (#2)
         self.mission_equipment = {} # mission_id -> H3 equipment pool
+        self.equipment_mods = {}    # equipment name -> [mods], offered once it's owned
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
         try:
             self.load_data()
@@ -629,6 +630,12 @@ class ModifierDatabase:
                 for boss, mods in self.data['Enemy modifiers']['Boss enemy modifier'].items():
                     self.boss_mods[boss] = [self._build_mod(n, md, {'enemy': boss})
                                             for n, md in mods.items()]
+        # Equipment effects are keyed like weapon effects, but only ever surface once
+        # the player is actually carrying that piece (see get_player_modifiers_filtered).
+        if 'Equipment' in self.data:
+            for eq, mods in self.data['Equipment'].items():
+                self.equipment_mods[eq] = [
+                    self._build_mod(n, md, {'equipment': eq}) for n, md in mods.items()]
         # #7: Skulls are negatives that change a whole-map rule instead of tag values,
         # so they're drawn in place of a normal negative rather than alongside one.
         if 'Skull modifiers' in self.data:
@@ -850,13 +857,40 @@ class ModifierDatabase:
             weapons = [weapons]
         weapon_mods = []
         for w in weapons or []:
-            if w:
+            if not w:
+                continue
+            # A carried piece of equipment contributes its own effects, exactly like a
+            # weapon does — which is what keeps them out of the pool until it's taken.
+            if self.is_equipment(w):
+                weapon_mods.extend(self.get_equipment_modifiers_filtered(w, blacklist, game))
+            else:
                 weapon_mods.extend(self.get_weapon_modifiers_filtered(w, blacklist, game))
         # Copy each general mod before tagging it so we never mutate the
         # shared pool entries that random.choice hands back elsewhere.
         general_mods = [{**m, 'source': 'General'}
                         for m in self.filter_blacklisted(self.positive_pool, blacklist, game)]
         return weapon_mods + general_mods
+
+    def resolve_equipment(self, name):
+        """Match a carried item to its Equipment key in halo.json, tolerating
+        spacing/case differences between the mission lists ("Bubble Shield") and the
+        effect keys ("Bubbleshield") — a silent mismatch here would just drop the
+        item's effects with no error."""
+        if not name:
+            return None
+        if name in self.equipment_mods:
+            return name
+        norm = name.replace(' ', '').lower()
+        for k in self.equipment_mods:
+            if k.replace(' ', '').lower() == norm:
+                return k
+        return None
+
+    def get_equipment_modifiers_filtered(self, name, blacklist, game=None):
+        key = self.resolve_equipment(name)
+        if not key:
+            return []
+        return self.filter_blacklisted(self.equipment_mods[key], blacklist, game)
 
     def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None):
         mods = self.get_enemy_modifiers(mission_id)
@@ -1411,7 +1445,8 @@ class PairCard(QGroupBox):
             if mod_data.get('source') == 'General':
                 source = 'General'
             else:
-                source = mod_data.get('weapon') or 'General'  # weaponless = general player effect
+                # weaponless = general player effect; equipment names its own piece
+                source = mod_data.get('weapon') or mod_data.get('equipment') or 'General'
         elif mod_type == 'enemy':
             source = 'Skull' if mod_data.get('skull') else mod_data.get('enemy', 'General')
         elif mod_type == 'boss':
@@ -4450,6 +4485,10 @@ class HaloGUI(QMainWindow):
         would then leave only 'Triggers'/nth 0 behind and a later Halo 2 patch
         of the same effect would fail to find block 'Barrels' ("field?")."""
         def find_by_name(name):
+            if mod.get('equipment'):
+                key = self.db.resolve_equipment(mod['equipment'])
+                return next((m for m in self.db.equipment_mods.get(key, [])
+                            if m['name'] == name), None)
             if mod.get('weapon'):
                 return next((m for m in self.db.weapon_mods.get(mod['weapon'], [])
                             if m['name'] == name), None)

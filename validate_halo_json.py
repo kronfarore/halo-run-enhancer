@@ -92,6 +92,10 @@ def iter_effects():
     for w, effs in (pm.get('Specific Weapon Modifier') or {}).items():
         for n, e in effs.items():
             yield f'{w}/{n}', e, w
+    # Equipment is a sibling top-level section, keyed like weapons.
+    for q, effs in (DB.get('Equipment') or {}).items():
+        for n, e in effs.items():
+            yield f'{q}/{n}', e, None
     em = DB.get('Enemy modifiers', {})
     for n, e in (em.get('General modifiers') or {}).items():
         yield f'EnemyGen/{n}', e, None

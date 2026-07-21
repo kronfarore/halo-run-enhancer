@@ -85,6 +85,7 @@ def collect_effects(rounds, mission_id=None):
                          '_missing_in_db': mod.get('_missing_in_db'),
                          # source identity, so the patcher can remove it from the run
                          'weapon': mod.get('weapon'), 'enemy': mod.get('enemy'),
+                         'equipment': mod.get('equipment'),
                          'group': group, 'cat': cat, 'count': 0}
             order.append(key)
         seen[key]['count'] += 1
@@ -93,8 +94,8 @@ def collect_effects(rounds, mission_id=None):
         for pk in ('player1', 'player2'):
             mod = (rd.get(pk) or {}).get('mod')
             if isinstance(mod, dict):
-                add(mod, mod['weapon'] if mod.get('weapon') else 'Player (general)',
-                    0 if mod.get('weapon') else 1)
+                src = mod.get('weapon') or mod.get('equipment')
+                add(mod, src if src else 'Player (general)', 0 if src else 1)
         for k in ('enemy1', 'enemy2'):
             mod = rd.get(k)
             if isinstance(mod, dict):
