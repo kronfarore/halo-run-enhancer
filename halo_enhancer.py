@@ -82,7 +82,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
-               'denied_equipment_as_enemy_mods',
+               'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'hide_tags', 'hide_fields')
 
 
@@ -226,6 +226,9 @@ CONFIG = {
     # Anything denied above can instead be offered as an ENEMY modifier, since
     # Brutes are the only characters that carry equipment.
     "denied_equipment_as_enemy_mods": False,
+    # #7: offer map-replacement as a per-weapon CARD instead of the patcher's
+    # sliders. The two are the same mechanism, so only one is shown at a time.
+    "weapon_swap_cards": False,
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -919,8 +922,34 @@ class ModifierDatabase:
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                 and self._cross_game_ok(m)]
 
+    def map_swap_mod(self, weapon_name, game=None):
+        """#7: the per-weapon "Map Presence" card — replace a share of the level's
+        weapon placements with this weapon. Synthesized rather than stored in
+        halo.json so it tracks the weapon list automatically, and because it isn't a
+        tag-field edit: the magnitude is a percentage handed to the same swap
+        mechanism the patcher's sliders drive (which is why only one is shown)."""
+        if not CONFIG.get('weapon_swap_cards'):
+            return None
+        tag = self.weap_tag_for(weapon_name, game)
+        if not tag:
+            return None                    # grenades/equipment have no weap tag
+        return {
+            'name': 'Map Presence',
+            'desc': f'Replace a share of the level\'s weapon placements with the '
+                    f'{weapon_name}. Enter the percentage to swap.',
+            'tag': tag, 'games': [game] if game else [],
+            'weapon': weapon_name, 'wildcard': False, 'special': False,
+            'dual_only': False, 'skull': None, 'affected_by_skull': None,
+            'desc_overrides': None, 'harder_when': None, 'easier_when': None,
+            'init_defaults': None,
+            'targets': [{'field': 'Map replacement %', 'map_swap': True}],
+        }
+
     def get_weapon_modifiers_filtered(self, weapon_name, blacklist, game=None):
-        mods = self.get_weapon_modifiers(weapon_name)
+        mods = list(self.get_weapon_modifiers(weapon_name))
+        swap = self.map_swap_mod(weapon_name, game)
+        if swap:
+            mods.append(swap)
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_player_modifiers_filtered(self, weapons, blacklist, game=None):
@@ -1880,6 +1909,14 @@ class MagnitudeEditorDialog(QDialog):
         if not m:
             return "?"
         cls, path = self._hp.hm.split_tag(tag)
+        if target.get('map_swap'):
+            # Not a tag field — the magnitude is a percentage of the level's weapon
+            # placements. Show how many there are so the % means something.
+            try:
+                n = self._hp.map_weapon_placement_count(m, self.game)
+                return f'{n} weapon placements on this level  (enter e.g. =25 for 25%)'
+            except Exception:
+                return 'percentage of the level\'s weapon placements'
         if target.get('reload_anim'):
             # Reload animation: show the current reload length in seconds (frames / 30fps)
             # per graph (Master Chief / Arbiter), instead of a plugin field value.
@@ -2568,6 +2605,10 @@ class MagnitudeEditorDialog(QDialog):
         the map's weapon placements; sum capped at 100%. None if no arsenal/parent."""
         self._swap_sliders = {}
         self._swap_total_lbl = None
+        # #7: with map-replacement offered as per-weapon cards, the sliders are the
+        # same mechanism twice — hide them so there's one obvious place to set it.
+        if CONFIG.get('weapon_swap_cards'):
+            return None
         rs = getattr(self.parent_gui, 'run_state', None) if self.parent_gui else None
         if rs is None:
             return None
@@ -2772,10 +2813,26 @@ class MagnitudeEditorDialog(QDialog):
             QMessageBox.warning(self, "Map not found", f"Not a file:\n{map_path}")
             return
 
+        # #7: Map Presence rows aren't tag edits — their magnitude is a percentage fed
+        # to the same weapon-swap mechanism the sliders drive, so they're collected
+        # here and merged into the swap spec rather than becoming plan ops.
+        card_swaps = {}
+        for eff, t, le in self.rows:
+            if not t.get('map_swap'):
+                continue
+            txt = le.text().strip()
+            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+            parsed = self._hp.hm.parse_operator(txt)
+            if not parsed:
+                continue
+            pct = parsed[1]
+            if pct > 0:
+                card_swaps[eff['tag']] = card_swaps.get(eff['tag'], 0.0) + pct / 100.0
+
         plan_map = {}
         for eff, t, le in self.rows:
-            if t.get('derived') or t.get('set') is not None:
-                continue          # display-only / fixed-set; appended below when relevant
+            if t.get('derived') or t.get('set') is not None or t.get('map_swap'):
+                continue          # display-only / fixed-set / swap; handled separately
             txt = le.text().strip()
             # #11: remember the input as-is, including an empty one — an empty entry is
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
@@ -2814,7 +2871,9 @@ class MagnitudeEditorDialog(QDialog):
                                              **_diff_flavor(t), 'set': t['set']})
         plan = list(plan_map.values())
         starting = self._starting_weapons_spec()
-        weapon_swaps = self._weapon_swaps_spec()
+        # Cards and sliders are the same mechanism and never both shown, so whichever
+        # is active supplies the swaps.
+        weapon_swaps = card_swaps or self._weapon_swaps_spec()
         zoom_ui = self._zoom_ui_spec(plan)
         remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
@@ -3117,6 +3176,14 @@ class OptionsDialog(QDialog):
         _sync_denied_sub()
         form.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
 
+        self.swap_cards_cb = QCheckBox("Offer map weapon replacement as per-weapon cards")
+        self.swap_cards_cb.setChecked(bool(CONFIG.get('weapon_swap_cards')))
+        self.swap_cards_cb.setToolTip("Each weapon gains a “Map Presence” card whose magnitude is "
+                                      "the percentage of the level's weapon placements replaced with "
+                                      "it. Same mechanism as the patcher's swap sliders, so the "
+                                      "sliders are hidden while this is on.")
+        form.addRow("Map replacement:", self.swap_cards_cb)
+
         self.grenades_cb = QCheckBox("Treat grenades as weapons")
         self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
         self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
@@ -3391,6 +3458,7 @@ class OptionsDialog(QDialog):
             'remove_superflare_jammer': self.no_flare_jammer_cb.isChecked(),
             'remove_invincibility_invisibility': self.no_invinc_invis_cb.isChecked(),
             'denied_equipment_as_enemy_mods': self.denied_as_enemy_cb.isChecked(),
+            'weapon_swap_cards': self.swap_cards_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),

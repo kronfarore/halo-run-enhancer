@@ -743,6 +743,11 @@ _MAP_WEAPONS = {
                'palette_index': 0x0, 'rounds_left': 0x48, 'rounds_loaded': 0x4A},
     'Halo 2': {'weapons': (0x90, 0x54), 'palette': (0x98, 0x28), 'pal_id_at': 0x4,
                'palette_index': 0x0, 'rounds_left': 0x4C, 'rounds_loaded': 0x4E},
+    # Halo 3 was missing entirely, so map weapon swapping silently did nothing there
+    # — the placement block just resolved to 0 entries. Palette elements are 16-byte
+    # tagRefs (ident at +0xC) like the rest of H3.
+    'Halo 3': {'weapons': (0x114, 0xA8), 'palette': (0x120, 0x10), 'pal_id_at': 0xC,
+               'palette_index': 0x0, 'rounds_left': 0x6C, 'rounds_loaded': 0x6E},
 }
 
 
@@ -759,8 +764,15 @@ def _tag_name_by_id(m, rid):
 
 
 def _block_base(m, off):
+    """File offset of a tagblock's element array. Each generation resolves its
+    pointer differently: H1 subtracts the map magic, H2 exposes p2o(), and H3 stores
+    realVA>>2 which data2off() unpacks."""
     ptr = m.u32(off + 4)
-    return m.p2o(ptr) if hasattr(m, 'p2o') else (ptr - m.magic) & 0xFFFFFFFF
+    if hasattr(m, 'data2off'):                       # Halo 3
+        return m.data2off(ptr)
+    if hasattr(m, 'p2o'):                            # Halo 2
+        return m.p2o(ptr)
+    return (ptr - m.magic) & 0xFFFFFFFF              # Halo 1
 
 
 def _spread_slots(N, counts):
@@ -787,6 +799,16 @@ def _spread_slots(N, counts):
             else:
                 break
     return target
+
+
+def map_weapon_placement_count(m, game):
+    """How many weapon placements the level has — the denominator a Map Presence
+    percentage applies to. 0 if the game has no known layout."""
+    lay = _MAP_WEAPONS.get(str(game).strip())
+    scnr_base = _scnr_base(m)
+    if not lay or scnr_base is None:
+        return 0
+    return max(0, m.i32(scnr_base + lay['weapons'][0]))
 
 
 def _apply_weapon_swaps(m, game, registry, swaps):
