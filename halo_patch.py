@@ -733,6 +733,74 @@ def _apply_eyepatch(m, game, registry):
              'new': f'zeroed on {len(touched)} weapon(s), {zeroed} field write(s)'}]
 
 
+# Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
+# Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
+_EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14}}
+# Only Brutes carry equipment at all, so that's the whole search space.
+_EQUIP_CARRIER_TAG = 'objects' + chr(92) + 'characters' + chr(92) + 'brute' + chr(92) + '*'
+
+
+def equipment_drop_chances(m, game, eq_path):
+    """[(brute short name, chance)] for one piece of equipment — the vanilla display
+    for a drop-chance row, so the relative weights are visible before editing."""
+    lay = _EQUIP_DEFS.get(str(game).strip())
+    if not lay:
+        return []
+    out = []
+    for name, base in m.find_tags('char', _EQUIP_CARRIER_TAG):
+        for el in m.follow_all(base, [lay['block']], [lay['elem']], 'all'):
+            rid = struct.unpack_from('<I', m.data, el + lay['id_at'])[0]
+            if rid == 0xFFFFFFFF:
+                continue
+            nm = _tag_name_by_id(m, rid)
+            if isinstance(nm, str) and nm == eq_path:
+                out.append((name.rsplit(chr(92), 1)[-1],
+                            round(struct.unpack_from('<f', m.data, el + lay['chance'])[0], 3)))
+    return out
+
+
+def _apply_equipment_drop(m, game, eq_path, oper, val):
+    """Scale how often Brutes drop one piece of equipment.
+
+    Relative Drop Chance is a WEIGHT within each character's own equipment list, not
+    a probability — a Brute picks among its entries in proportion. So raising one
+    entry shifts that Brute's odds toward it rather than guaranteeing a drop, and
+    entries sitting at 0 stay at 0 under a multiply (they're deliberately disabled).
+    """
+    lay = _EQUIP_DEFS.get(str(game).strip())
+    if not lay:
+        return [{'effect': 'equipment drop', 'ok': False,
+                 'reason': f'not supported in {game}'}]
+    short = eq_path.rsplit(chr(92), 1)[-1]
+    tags = m.find_tags('char', _EQUIP_CARRIER_TAG)
+    if not tags:
+        return [{'effect': 'equipment drop', 'field': short, 'ok': False,
+                 'reason': 'no Brutes in this map'}]
+    hits, changed = 0, 0
+    for name, base in tags:
+        for el in m.follow_all(base, [lay['block']], [lay['elem']], 'all'):
+            rid = struct.unpack_from('<I', m.data, el + lay['id_at'])[0]
+            if rid == 0xFFFFFFFF:
+                continue
+            nm = _tag_name_by_id(m, rid)
+            if not isinstance(nm, str) or nm != eq_path:
+                continue
+            hits += 1
+            old = struct.unpack_from('<f', m.data, el + lay['chance'])[0]
+            new = max(0.0, hm.OP_FUNCS[oper](old, val))
+            if abs(new - old) > 1e-9:
+                struct.pack_into('<f', m.data, el + lay['chance'], new)
+                changed += 1
+    if not hits:
+        return [{'effect': 'equipment drop', 'field': short, 'ok': False,
+                 'reason': 'no Brute on this map carries it'}]
+    return [{'effect': 'equipment drop', 'field': short, 'ok': True,
+             'skip': changed == 0, 'tag': 'char brute*',
+             'old': f'{hits} carrier entr{"y" if hits == 1 else "ies"}',
+             'new': (f'{changed} changed' if changed
+                     else 'all entries were 0 (equipment disabled on those Brutes)')}]
+
+
 def _cstr_at(m, off, limit=0x20):
     return bytes(m.data[off:off + limit]).split(b'\0')[0].decode('latin1', 'replace')
 
@@ -1102,6 +1170,19 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_init_defaults(m, item['init_defaults'], registry))
         for op in item.get('ops', []):
             base = {'effect': item['name'], 'tag': item['tag'], 'field': op['field']}
+            if op.get('equip_drop'):
+                # Brute equipment loadout: the element to edit is picked by which
+                # equipment its tagRef points at, which no index/block target can
+                # express — hence a dedicated op rather than a plugin field write.
+                parsed = hm.parse_operator(op.get('op_str'))
+                if not parsed:
+                    results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
+                    continue
+                oper, val = parsed
+                for r in _apply_equipment_drop(m, str(game).strip(), op['equip_drop'], oper, val):
+                    r['effect'] = item['name']
+                    results.append(r)
+                continue
             if op.get('reload_anim'):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
                 # (these weapons carry no tag-side Reload Time). item['tag'] is the

@@ -1909,6 +1909,17 @@ class MagnitudeEditorDialog(QDialog):
         if not m:
             return "?"
         cls, path = self._hp.hm.split_tag(tag)
+        if target.get('equip_drop'):
+            try:
+                rows = self._hp.equipment_drop_chances(m, self.game, target['equip_drop'])
+                if not rows:
+                    return "— no Brute on this level carries it"
+                live = [f'{n}={c:g}' for n, c in rows if c > 0]
+                zero = sum(1 for _, c in rows if c <= 0)
+                return (('  '.join(live) if live else 'every carrier is at 0')
+                        + (f'   (+{zero} at 0)' if zero else ''))
+            except Exception:
+                return "relative drop weight on Brutes"
         if target.get('map_swap'):
             # Not a tag field — the magnitude is a percentage of the level's weapon
             # placements. Show how many there are so the % means something.
@@ -2848,6 +2859,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'index': t.get('index', 0), 'op_str': txt,
                                          'negate': t.get('negate'),
                                          'reload_anim': t.get('reload_anim'),
+                                         'equip_drop': t.get('equip_drop'),
                                          'nth': t.get('nth', 0) or 0})
         # Auto-computed fields: recompute whenever their effect has any edit.
         # Appended after the normal ops so the sources are already patched.

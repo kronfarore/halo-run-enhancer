@@ -3439,6 +3439,15 @@
 	},
 	"Equipment": {
 		"Bubble Shield": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3467,6 +3476,15 @@
 			}
 		},	
 		"Instant Cover": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\instantcover_equipment\\instantcover_equipment" }
+				]
+			},
 			"Charges": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3494,6 +3512,15 @@
 			}
 		},	
 		"Invincibility": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\invincibility_equipment\\invincibility_equipment" }
+				]
+			},
 			"Charges": {
 				"desc": "How many charges does the equipment hold",
 				"game": "Halo 3",
@@ -3512,6 +3539,15 @@
 			}
 		},	
 		"Jammer": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\jammer_equipment\\jammer_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3551,6 +3587,15 @@
 			}
 		},	
 		"Power Drain": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\powerdrain_equipment\\powerdrain_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3603,6 +3648,15 @@
 			}
 		},	
 		"Regenerator": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\regenerator_equipment\\regenerator_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3631,6 +3685,15 @@
 			}
 		},	
 		"Superflare": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\superflare_equipment\\superflare_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3687,6 +3750,15 @@
 			}
 		},	
 		"Trip Mine": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\tripmine_equipment\\tripmine_equipment" }
+				]
+			},
 			"Duration": {
 				"desc": "How long the equipment stays active",
 				"game": "Halo 3",
@@ -3796,6 +3868,15 @@
 			}	
 		},	
 		"Invisibility": {
+			"Brute Drop Chance": {
+				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"game": "Halo 3",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"harder_when": "decreased",
+				"targets": [
+					{ "field": "Relative Drop Chance", "equip_drop": "objects\\equipment\\invisibility_equipment\\invisibility_equipment" }
+				]
+			},
 			"Charges": {
 				"desc": "How many charges does the equipment hold",
 				"game": "Halo 3",
