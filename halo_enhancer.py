@@ -224,7 +224,7 @@ CONFIG = {
     # from the map (opt-in, OFF by default). Composes with the .bak baseline model —
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
-    "remove_h3_cutscenes": False,
+    "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
@@ -3279,23 +3279,72 @@ class OptionsDialog(QDialog):
                                       "it. Same mechanism as the patcher's swap sliders, so the "
                                       "sliders are hidden while this is on.")
         wform.addRow("Map replacement:", self.swap_cards_cb)
+
+        self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
+        self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
+        self.zoom_ui_cb.setToolTip("On patch: if a Zoom effect is applied to a weapon with no vanilla scope "
+                                   "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
+                                   "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
+        wform.addRow("Scope UI:", self.zoom_ui_cb)
         layout.addWidget(weap_g)
 
-        # ---- Boss options (#2): Remove-boss is the master; with boss cards gone the
-        # other two have nothing to shape, so they grey out ----
+        # ---- Starting loadout (#5): sits right under Weapon ----
+        load_g = QGroupBox("Starting loadout")
+        lform = QFormLayout(load_g)
+        lform.setLabelAlignment(Qt.AlignRight)
+
+        self.starting_weapons_cb = QCheckBox("Set starting weapons from picks (scenario profiles 0 & 1)")
+        self.starting_weapons_cb.setChecked(bool(CONFIG.get('set_starting_weapons')))
+        self.starting_weapons_cb.setToolTip("On patch: Primary = P1's first weapon, Secondary = P2's first weapon, "
+                                            "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
+        lform.addRow("Starting weapons:", self.starting_weapons_cb)
+
+        self.starting_equipment_cb = QCheckBox("Place first equipment per player at their spawn (Halo 3)")
+        self.starting_equipment_cb.setChecked(bool(CONFIG.get('set_starting_equipment')))
+        self.starting_equipment_cb.setToolTip(
+            "Halo 3 only. Halo 3's starting profile has no equipment field, so a picked "
+            "piece is granted by placing it on the player's starting location — you walk "
+            "into it as the level loads. Player 1's first equipment goes on their spawn, "
+            "player 2's on theirs; with 2-player coop off, both land on player 1's spawn. "
+            "A NEW placement is added, so the level's own equipment is untouched. If the "
+            "piece isn't in the level's palette it's added; only a piece the map never "
+            "loads at all is skipped.")
+        lform.addRow("Starting equipment:", self.starting_equipment_cb)
+
+        self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")
+        self.equipment_all_selected_cb.setChecked(bool(CONFIG.get('equipment_all_selected')))
+        self.equipment_all_selected_cb.setToolTip(
+            "On: every piece of equipment a player has picked up is placed on their spawn. "
+            "Off: only their first. Needs 'Starting equipment'.")
+
+        # #5: all-carried is meaningless without starting equipment — gate it.
+        def _sync_all_equip(_=False):
+            on = self.starting_equipment_cb.isChecked()
+            self.equipment_all_selected_cb.setEnabled(on)
+            if not on:
+                self.equipment_all_selected_cb.setChecked(False)
+        self.starting_equipment_cb.toggled.connect(_sync_all_equip)
+        _sync_all_equip()
+        lform.addRow("    ↳ All carried equipment:", self.equipment_all_selected_cb)
+        layout.addWidget(load_g)
+
+        # ---- Boss options (#2): "Add Boss card" is the master; with boss cards off
+        # the other two have nothing to shape, so they grey out ----
         boss_g = QGroupBox("Boss options")
         bform = QFormLayout(boss_g)
         bform.setLabelAlignment(Qt.AlignRight)
 
-        self.remove_boss_cb = QCheckBox("Remove boss mods (no Boss cards)")
-        self.remove_boss_cb.setToolTip("Suppress the guaranteed Boss card on boss levels. Forced on while "
-                                       "'Remove mods that only appear in one game' is set, since bosses are "
-                                       "unique to a single game. While this is on, the two options below do "
-                                       "nothing — there are no boss cards to shape.")
-        # The forced-on display state must not clobber the user's real preference, so
-        # we track it separately and restore it when single-game is turned off.
-        self._user_remove_boss = bool(CONFIG.get('remove_boss_mods'))
-        bform.addRow("Boss mods:", self.remove_boss_cb)
+        # #2: presented as a positive "add the Boss card" switch (on by default),
+        # while the stored config stays remove_boss_mods (checked here == NOT removed).
+        self.boss_cards_cb = QCheckBox("Add a Boss card on boss levels")
+        self.boss_cards_cb.setToolTip("On (default): boss levels draw their guaranteed Boss card. Forced OFF "
+                                      "while 'Remove mods that only appear in one game' is set, since bosses "
+                                      "are game-specific. While this is off, the two options below do nothing "
+                                      "— there are no boss cards to shape.")
+        # The forced-off display state must not clobber the user's real preference, so
+        # track it separately and restore it when single-game is turned off.
+        self._user_boss_cards = not bool(CONFIG.get('remove_boss_mods'))
+        bform.addRow("Boss cards:", self.boss_cards_cb)
 
         self.combine_holo_cb = QCheckBox("Combine Heretic Leader & his Holograms into one mod")
         self.combine_holo_cb.setChecked(bool(CONFIG.get('combine_heretic_hologram')))
@@ -3311,26 +3360,29 @@ class OptionsDialog(QDialog):
                                           "card. Halo 2's Chieftain is Tartarus, who is already a boss.")
         bform.addRow("    ↳ Brute Chieftains:", self.chieftain_boss_cb)
 
-        # Remove-boss OFF is the prerequisite for the other boss options. single_game
-        # forces remove-boss on (and locks it), which must also disable the children —
-        # so children are synced from the master's effective state, done explicitly
-        # because the forced change is signal-blocked.
+        # Boss cards ON is the prerequisite for the other boss options; with them off
+        # there is nothing to shape, so grey the children out. single_game forces boss
+        # cards off (and locks the switch), which must also disable the children — so
+        # children sync from the switch's effective state, done explicitly because the
+        # forced change is signal-blocked.
         def _sync_boss_children(_=False):
-            gone = self.remove_boss_cb.isChecked()
+            on = self.boss_cards_cb.isChecked()
             for cb in (self.combine_holo_cb, self.chieftain_boss_cb):
-                cb.setEnabled(not gone)
+                cb.setEnabled(on)
+                if not on:
+                    cb.setChecked(False)
         def _sync_boss_sub():
-            parent_on = self.single_game_cb.isChecked()
-            self.remove_boss_cb.blockSignals(True)
-            self.remove_boss_cb.setChecked(True if parent_on else self._user_remove_boss)
-            self.remove_boss_cb.setEnabled(not parent_on)
-            self.remove_boss_cb.blockSignals(False)
+            forced_off = self.single_game_cb.isChecked()
+            self.boss_cards_cb.blockSignals(True)
+            self.boss_cards_cb.setChecked(False if forced_off else self._user_boss_cards)
+            self.boss_cards_cb.setEnabled(not forced_off)
+            self.boss_cards_cb.blockSignals(False)
             _sync_boss_children()
         def _on_boss_toggled(checked):
-            if self.remove_boss_cb.isEnabled():   # ignore programmatic (forced) changes
-                self._user_remove_boss = checked
+            if self.boss_cards_cb.isEnabled():   # ignore programmatic (forced) changes
+                self._user_boss_cards = checked
             _sync_boss_children()
-        self.remove_boss_cb.toggled.connect(_on_boss_toggled)
+        self.boss_cards_cb.toggled.connect(_on_boss_toggled)
         self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
         _sync_boss_sub()
         layout.addWidget(boss_g)
@@ -3417,6 +3469,55 @@ class OptionsDialog(QDialog):
         eform.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
         layout.addWidget(equip_g)
 
+        # ---- Coop (#6) ----
+        coop_g = QGroupBox("Coop")
+        cform = QFormLayout(coop_g)
+        cform.setLabelAlignment(Qt.AlignRight)
+
+        self.two_player_cb = QCheckBox("2-player coop: P1 plays Chief, P2 the Dervish (Halo 3)")
+        self.two_player_cb.setChecked(bool(CONFIG.get('two_player_coop', True)))
+        self.two_player_cb.setToolTip("On by default, and only does anything in Halo 3, which has two "
+                                      "playable characters. On: P1's first weapon is given to every "
+                                      "Chief profile and P2's to every Dervish profile, and the two "
+                                      "options below act on the respawn profiles. Off: both picks "
+                                      "go on profile 0 as Primary/Secondary, like Halo 1 and 2.")
+        cform.addRow("2-player coop:", self.two_player_cb)
+
+        # Rename per #6: these act on the profiles the player RESPAWNS with in coop.
+        # H1/H2: the coop starting-profile (index 1). H3 has many more profiles, so
+        # which are start-of-map vs respawn still needs verifying in-game — see the
+        # note handed back to the user.
+        self.coop_no_start_cb = QCheckBox("Keep coop respawn weapons vanilla")
+        self.coop_no_start_cb.setChecked(bool(CONFIG.get('coop_no_starting_weapons')))
+        self.coop_no_start_cb.setToolTip("Don't change the weapons you respawn with in coop play — keeps them "
+                                         "vanilla. The picked starting weapons still apply to player 1's "
+                                         "start-of-map loadout.")
+        cform.addRow("Vanilla respawn weapons:", self.coop_no_start_cb)
+
+        self.coop_null_cb = QCheckBox("Empty the coop respawn weapons (null)")
+        self.coop_null_cb.setChecked(bool(CONFIG.get('null_coop_starting_equipment')))
+        self.coop_null_cb.setToolTip("Clear the coop respawn profile's Primary and Secondary weapons so the "
+                                     "coop player respawns empty-handed. Mutually exclusive with keeping them "
+                                     "vanilla.")
+        cform.addRow("Empty respawn weapons:", self.coop_null_cb)
+        # Conflicting intents for the same profile — keep exactly one active.
+        self.coop_no_start_cb.toggled.connect(
+            lambda on: on and self.coop_null_cb.setChecked(False))
+        self.coop_null_cb.toggled.connect(
+            lambda on: on and self.coop_no_start_cb.setChecked(False))
+
+        # #6: the respawn options only mean anything when starting weapons are being
+        # set at all — grey them out otherwise.
+        def _sync_coop_respawn(_=False):
+            on = self.starting_weapons_cb.isChecked()
+            for cb in (self.coop_no_start_cb, self.coop_null_cb):
+                cb.setEnabled(on)
+                if not on:
+                    cb.setChecked(False)
+        self.starting_weapons_cb.toggled.connect(_sync_coop_respawn)
+        _sync_coop_respawn()
+        layout.addWidget(coop_g)
+
         # ---- Card rolls ----
         rolls = QGroupBox("Card rolls")
         rform = QFormLayout(rolls)
@@ -3476,9 +3577,9 @@ class OptionsDialog(QDialog):
         form.setLabelAlignment(Qt.AlignRight)
 
         self.cutscenes_cb = QCheckBox("Remove Cortana / Gravemind cutscenes (Halo 3)")
-        self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes')))
+        self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes', True)))
         self.cutscenes_cb.setToolTip("Halo 3 only: on patch, strip the flood Cortana-flicker and Gravemind "
-                                     "vision cutscenes from the map. Off by default; reversible — turn off "
+                                     "vision cutscenes from the map. On by default; reversible — turn off "
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
@@ -3489,67 +3590,6 @@ class OptionsDialog(QDialog):
                                            "them when patching a Halo 3 map. Turn off to patch them anyway.")
         form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
 
-        self.starting_weapons_cb = QCheckBox("Set starting weapons from picks (scenario profiles 0 & 1)")
-        self.starting_weapons_cb.setChecked(bool(CONFIG.get('set_starting_weapons')))
-        self.starting_weapons_cb.setToolTip("On patch: Primary = P1's first weapon, Secondary = P2's first weapon, "
-                                            "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
-        form.addRow("Starting weapons:", self.starting_weapons_cb)
-
-        self.starting_equipment_cb = QCheckBox("Place first equipment per player at their spawn (Halo 3)")
-        self.starting_equipment_cb.setChecked(bool(CONFIG.get('set_starting_equipment')))
-        self.starting_equipment_cb.setToolTip(
-            "Halo 3 only. Halo 3's starting profile has no equipment field, so a picked "
-            "piece is granted by placing it on the player's starting location — you walk "
-            "into it as the level loads. Player 1's first equipment goes on their spawn, "
-            "player 2's on theirs; with 2-player coop off, both land on player 1's spawn. "
-            "A NEW placement is added, so the level's own equipment is untouched. If the "
-            "piece isn't in the level's palette it's added; only a piece the map never "
-            "loads at all is skipped.")
-        form.addRow("Starting equipment:", self.starting_equipment_cb)
-
-        self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")
-        self.equipment_all_selected_cb.setChecked(bool(CONFIG.get('equipment_all_selected')))
-        self.equipment_all_selected_cb.setToolTip(
-            "On: every piece of equipment a player has picked up is placed on their spawn. "
-            "Off: only their first. Needs 'Starting equipment'.")
-        form.addRow("All carried equipment:", self.equipment_all_selected_cb)
-
-        self.two_player_cb = QCheckBox("2-player coop: P1 plays Chief, P2 the Dervish (Halo 3)")
-        self.two_player_cb.setChecked(bool(CONFIG.get('two_player_coop', True)))
-        self.two_player_cb.setToolTip("On by default, and only does anything in Halo 3, which has two "
-                                      "playable characters. On: P1's first weapon is given to every "
-                                      "Chief profile and P2's to every Dervish profile, and the two "
-                                      "coop options below act on the respawn profiles. Off: both picks "
-                                      "go on profile 0 as Primary/Secondary, like Halo 1 and 2.")
-        form.addRow("2-player coop:", self.two_player_cb)
-
-        # #1/#2: coop = scenario Player Starting Profile index 1 (pre-H3), or the
-        # respawn profiles when Halo 3's two-character handling is active.
-        self.coop_no_start_cb = QCheckBox("Don't give the coop player the starting weapons")
-        self.coop_no_start_cb.setChecked(bool(CONFIG.get('coop_no_starting_weapons')))
-        self.coop_no_start_cb.setToolTip("Apply the picked starting weapons to player 1 only "
-                                         "(profile 0); leave the coop profile (index 1) as the map defines it.")
-        form.addRow("Coop starting weapons:", self.coop_no_start_cb)
-
-        self.coop_null_cb = QCheckBox("Empty the coop player's starting equipment (null)")
-        self.coop_null_cb.setChecked(bool(CONFIG.get('null_coop_starting_equipment')))
-        self.coop_null_cb.setToolTip("Clear the coop profile's Primary and Secondary weapons so the "
-                                     "coop player starts empty-handed. Mutually exclusive with the "
-                                     "option above.")
-        form.addRow("Coop equipment:", self.coop_null_cb)
-        # These two describe conflicting intents for the same profile — keep exactly
-        # one active so it's always obvious what the coop player will start with.
-        self.coop_no_start_cb.toggled.connect(
-            lambda on: on and self.coop_null_cb.setChecked(False))
-        self.coop_null_cb.toggled.connect(
-            lambda on: on and self.coop_no_start_cb.setChecked(False))
-
-        self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
-        self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
-        self.zoom_ui_cb.setToolTip("On patch: if a Zoom effect is applied to a weapon with no vanilla scope "
-                                   "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
-                                   "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
-        form.addRow("Scope UI:", self.zoom_ui_cb)
         layout.addWidget(patchg)
 
         # ---- Advanced ----
@@ -3660,7 +3700,7 @@ class OptionsDialog(QDialog):
         return {
             'target_difficulty': self.diff_combo.currentData(),   # internal slot name
             'remove_single_game_mods': self.single_game_cb.isChecked(),
-            'remove_boss_mods': self._user_remove_boss,  # raw preference; boss_mods_removed() ORs in single-game at runtime
+            'remove_boss_mods': not self._user_boss_cards,  # inverted UI ("Add Boss card"); boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
