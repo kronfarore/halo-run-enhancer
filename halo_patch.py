@@ -1049,11 +1049,14 @@ def _apply_spawn_equipment(m, game, spec):
     # A placement references the Equipment Palette by index. A piece the level never
     # uses isn't in the palette, but its tag IS loaded (the models ship in the map), so
     # we can append a palette entry pointing at it rather than giving up.
-    pal = {}
+    pal = {}                        # tag path (lower) -> palette index
+    pal_by_datum = {}               # tag datum -> palette index (name-independent)
     pc = max(0, m.i32(scnr_base + poff))
     pbase = _block_base(m, scnr_base + poff)
     for i in range(pc) if pbase else []:
-        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        datum = m.u32(pbase + i * pes + lay['pal_id_at'])
+        pal_by_datum.setdefault(datum, i)
+        nm = _tag_name_by_id(m, datum)
         if isinstance(nm, str):
             pal[nm.replace('/', '\\').lower()] = i
 
@@ -1090,10 +1093,17 @@ def _apply_spawn_equipment(m, game, spec):
                                 'ok': True, 'skip': True,
                                 'reason': 'equipment not present in this level'})
                     continue
-                pi = pc + len(new_pal)
-                new_pal.append(datum)
-                new_pal_idx[key] = pi
-                added = True
+                # Guard against a duplicate palette entry: if this exact tag datum is
+                # already in the palette (even when name matching missed it — stripped
+                # or differently-cased names), reuse that index instead of appending.
+                if datum in pal_by_datum:
+                    pi = pal_by_datum[datum]
+                    new_pal_idx[key] = pi
+                else:
+                    pi = pc + len(new_pal)
+                    new_pal.append(datum)
+                    new_pal_idx[key] = pi
+                    added = True
             plan.append((pi, pos, bsp, label, si, added))
     if not plan:
         return out
