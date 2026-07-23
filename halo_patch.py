@@ -966,23 +966,59 @@ def h3_player_spawns(m):
     return out
 
 
-def _h3_free_run(m, need):
-    """A 16-byte-aligned file offset with `need` free bytes that maps back to a tag
-    pointer, or None.
+def _h3_reserve(m, sizes):
+    """Reserve one 16-byte-aligned region per entry in `sizes`, all inside a SINGLE
+    partition zero-run, each mapping back to a tag pointer. Returns the list of file
+    offsets, or None if no run fits them all.
 
     H3 stores tagblock pointers as realVA>>2 resolved through the partition table, so
-    a block may only live where a partition maps it: appending at EOF is unusable,
-    and the partition holding the scenario can't be extended because the tail tables
-    sit immediately behind it. Relocating into an existing zero run is the way in.
-    Every playable H3 map has 31-62 KB of such slack; only the intro and epilogue
-    cinematics have none, and those carry no equipment at all."""
-    for la, sz, fb in m.partitions:
-        if fb is None or not sz or fb + sz > len(m.data):
+    a block may only live where a partition maps it: appending at EOF is unusable, and
+    the partition holding the scenario can't be extended because the tail tables sit
+    immediately behind it. Relocating into an existing zero run is the way in. Every
+    playable H3 map has 31-62 KB of such slack; only the intro and epilogue cinematics
+    have none, and those carry no equipment at all. Placing several grown blocks in one
+    run keeps them from clobbering each other."""
+    total = 0
+    for sz in sizes:
+        total = ((total + 15) & ~15) + sz
+    for la, psz, fb in m.partitions:
+        if fb is None or not psz or fb + psz > len(m.data):
             continue
-        for mo in re.finditer(rb'\x00{%d,}' % (need + 16), bytes(m.data[fb:fb + sz])):
-            dest = (fb + mo.start() + 15) & ~15
-            if dest + need <= fb + mo.end() and m.off2data(dest) is not None:
-                return dest
+        for mo in re.finditer(rb'\x00{%d,}' % (total + 16), bytes(m.data[fb:fb + psz])):
+            offs, cur, ok = [], fb + mo.start(), True
+            for sz in sizes:
+                cur = (cur + 15) & ~15
+                if cur + sz > fb + mo.end() or m.off2data(cur) is None:
+                    ok = False
+                    break
+                offs.append(cur)
+                cur += sz
+            if ok:
+                return offs
+    return None
+
+
+def _h3_free_run(m, need):
+    """Single-region convenience wrapper over _h3_reserve."""
+    got = _h3_reserve(m, [need])
+    return got[0] if got else None
+
+
+def _h3_tag_datum(m, cls, path):
+    """The tag datum (salt<<16)|row for a class+path present in the map, or None.
+
+    A palette entry references a tag by this datum, so it's what we must write to add
+    a piece the level doesn't currently stock — the tag itself is already loaded (the
+    equipment models ship in the map), it just isn't in the scenario's palette."""
+    io = m.index_header_off
+    tbl = m.va2off(m.u64(io + 0x18))                    # tag table: 8 bytes/row
+    want = str(path).replace('/', '\\').lower()
+    for t in m.tags:
+        if t.get('class') == cls and t.get('name') \
+                and str(t['name']).replace('/', '\\').lower() == want:
+            row = t['index']
+            salt = struct.unpack_from('<H', m.data, tbl + row * 8 + 2)[0]
+            return ((salt << 16) | (row & 0xFFFF)) & 0xFFFFFFFF
     return None
 
 
@@ -1010,11 +1046,13 @@ def _apply_spawn_equipment(m, game, spec):
         return [{'effect': 'starting equipment', 'ok': False,
                  'reason': 'level has no equipment placements to extend'}]
 
-    # A placement references the Equipment Palette by index, so a piece the level
-    # never uses can't be granted without also growing the palette.
+    # A placement references the Equipment Palette by index. A piece the level never
+    # uses isn't in the palette, but its tag IS loaded (the models ship in the map), so
+    # we can append a palette entry pointing at it rather than giving up.
     pal = {}
+    pc = max(0, m.i32(scnr_base + poff))
     pbase = _block_base(m, scnr_base + poff)
-    for i in range(max(0, m.i32(scnr_base + poff))) if pbase else []:
+    for i in range(pc) if pbase else []:
         nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
         if isinstance(nm, str):
             pal[nm.replace('/', '\\').lower()] = i
@@ -1025,6 +1063,8 @@ def _apply_spawn_equipment(m, game, spec):
                  'reason': 'no player starting locations'}]
 
     plan = []
+    new_pal = []                # datums to append to the palette, in assignment order
+    new_pal_idx = {}            # path key -> the palette index it will get
     for si, items in enumerate(groups):
         if not items:
             continue
@@ -1038,24 +1078,28 @@ def _apply_spawn_equipment(m, game, spec):
             continue
         pos, bsp = spawns[si]
         for tag in items:
-            pi = pal.get(str(tag).replace('/', '\\').lower())
+            key = str(tag).replace('/', '\\').lower()
+            label = str(tag).rsplit('\\', 1)[-1]
+            pi = pal.get(key, new_pal_idx.get(key))
+            added = False
             if pi is None:
-                out.append({'effect': 'starting equipment',
-                            'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
-                            'reason': 'not in this level\'s equipment palette'})
-                continue
-            plan.append((pi, pos, bsp, str(tag).rsplit('\\', 1)[-1], si))
+                datum = _h3_tag_datum(m, 'eqip', tag)
+                if datum is None:
+                    # the tag isn't even loaded in this map: nothing to reference
+                    out.append({'effect': 'starting equipment', 'field': label,
+                                'ok': True, 'skip': True,
+                                'reason': 'equipment not present in this level'})
+                    continue
+                pi = pc + len(new_pal)
+                new_pal.append(datum)
+                new_pal_idx[key] = pi
+                added = True
+            plan.append((pi, pos, bsp, label, si, added))
     if not plan:
         return out
 
-    need = (N + len(plan)) * ies
-    dest = _h3_free_run(m, need)
-    if dest is None:
-        return out + [{'effect': 'starting equipment', 'ok': False,
-                       'reason': f'no free run of {need} bytes to relocate the block'}]
-
-    # A template that already spawns on its own, so the new elements inherit valid
-    # Type / Source / BSP Policy instead of guessed values.
+    # A template placement that already spawns on its own, so new elements inherit
+    # valid Type / Source / BSP Policy instead of guessed values.
     tmpl = next((i for i in range(N)
                  if not struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
                  & (_PLACE_NOT_AUTO | _PLACE_NEVER)), None)
@@ -1063,12 +1107,35 @@ def _apply_spawn_equipment(m, game, spec):
         return out + [{'effect': 'starting equipment', 'ok': False,
                        'reason': 'no auto-spawning placement to use as a template'}]
 
+    # Reserve slack for both grown blocks in one run so neither clobbers the other.
+    items_need = (N + len(plan)) * ies
+    pal_need = (pc + len(new_pal)) * pes
+    sizes = [items_need] + ([pal_need] if new_pal else [])
+    got = _h3_reserve(m, sizes)
+    if got is None:
+        return out + [{'effect': 'starting equipment', 'ok': False,
+                       'reason': f'no free run of {sum(sizes)} bytes to relocate blocks'}]
+    dest = got[0]
+
+    # --- grow the palette first (placements below reference its new indices) ---
+    if new_pal:
+        pdest = got[1]
+        m.data[pdest:pdest + pc * pes] = m.data[pbase:pbase + pc * pes]
+        pal_tmpl = m.data[pbase:pbase + pes]            # an eqip tagRef, for the group id
+        for j, datum in enumerate(new_pal):
+            pe_off = pdest + (pc + j) * pes
+            m.data[pe_off:pe_off + pes] = pal_tmpl
+            struct.pack_into('<I', m.data, pe_off + lay['pal_id_at'], datum)
+        struct.pack_into('<i', m.data, scnr_base + poff, pc + len(new_pal))
+        struct.pack_into('<I', m.data, scnr_base + poff + 4, m.off2data(pdest))
+
+    # --- grow the placements ---
     m.data[dest:dest + N * ies] = m.data[base:base + N * ies]
     uids = [m.u32(base + i * ies + _EQ_UID) for i in range(N)]
     nxt = max(u & 0xFFFF for u in uids) + 1
     salt = uids[tmpl] >> 16
 
-    for k, (pi, pos, bsp, label, si) in enumerate(plan):
+    for k, (pi, pos, bsp, label, si, added) in enumerate(plan):
         e = dest + (N + k) * ies
         m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
         struct.pack_into('<h', m.data, e + _EQ_PALETTE, pi)
@@ -1087,9 +1154,9 @@ def _apply_spawn_equipment(m, game, spec):
         struct.pack_into('<H', m.data, e + _EQ_GAMEFLAGS, 0)     # campaign, not MP-only
         out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
                     'old': 'not present',
-                    'new': f'placed on spawn {si}' + (' (coop)' if spec.get('coop') else '')})
+                    'new': f'placed on spawn {si}' + (' (+palette)' if added else '')})
 
-    # repoint last, so the map stays consistent if anything above raised
+    # repoint the placements last, so the map stays consistent if anything above raised
     struct.pack_into('<i', m.data, scnr_base + ioff, N + len(plan))
     struct.pack_into('<I', m.data, scnr_base + ioff + 4, m.off2data(dest))
     return out

@@ -181,8 +181,9 @@ CONFIG = {
     # Halo 3 only. H3's Player Starting Profile has no equipment field (Reach added
     # one), so the run's picked equipment is granted by APPENDING a placement onto the
     # player's starting location — the item is walked into as the level loads. Vanilla
-    # placements are never touched. A piece the level's Equipment Palette lacks is
-    # reported as a skip. Player 1's equipment lands on spawn 0, player 2's on spawn 1;
+    # placements are never touched. A piece the level doesn't stock in its palette is
+    # added to it (the equipment models ship in every map); only a piece whose tag the
+    # map never loads at all is skipped. Player 1's lands on spawn 0, player 2's on 1;
     # with 2-player coop off, everything lands on spawn 0. By default only the FIRST
     # equipment each player carries is placed.
     "set_starting_equipment": False,
@@ -3396,8 +3397,9 @@ class OptionsDialog(QDialog):
             "piece is granted by placing it on the player's starting location — you walk "
             "into it as the level loads. Player 1's first equipment goes on their spawn, "
             "player 2's on theirs; with 2-player coop off, both land on player 1's spawn. "
-            "A NEW placement is added, so the level's own equipment is untouched. A piece "
-            "the level doesn't already use anywhere is reported as a skip.")
+            "A NEW placement is added, so the level's own equipment is untouched. If the "
+            "piece isn't in the level's palette it's added; only a piece the map never "
+            "loads at all is skipped.")
         form.addRow("Starting equipment:", self.starting_equipment_cb)
 
         self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")
