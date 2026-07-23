@@ -1405,15 +1405,12 @@ def _apply_weapon_swaps(m, game, registry, swaps):
         pi, c, rl, rd, s = assign[j]
         assign[j] = (pi, c - 1, rl, rd, s)
 
-    # H3: keep a swapped-in weapon only in BSPs where its model streams (see
-    # _apply_equipment_swaps). H1/H2 spread across every placement.
-    if str(game).strip() == 'Halo 3':
-        slot_masks = [struct.unpack_from('<H', m.data, wbase + i * wes + _EQ_ATTACH)[0]
-                      for i in range(N)]
-        slots = _spread_slots_bsp(N, slot_masks,
-                                  [(a[0], a[1], _h3_stream_mask(m, woff, wes, a[0])) for a in assign])
-    else:
-        slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    # NOTE: no BSP/streaming filter here (unlike _apply_equipment_swaps). Weapons are
+    # carried by nearly every enemy and marine, so their models stream in essentially
+    # every combat zone — i.e. everywhere weapon placements sit — and the streaming gate
+    # never bites. Confining to placement BSPs would only under-place a common weapon
+    # whose own placements happen to cluster in a few zones.
+    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
     info = {a[0]: (a[2], a[3], a[4]) for a in assign}
     done = {}
     for slot, pi in slots.items():
