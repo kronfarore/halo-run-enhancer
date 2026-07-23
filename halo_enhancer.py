@@ -5,6 +5,7 @@ import html
 import json
 import random
 import sys
+import threading
 from datetime import datetime
 from pathlib import Path
 try:
@@ -447,9 +448,46 @@ EFFECT_RENAMES = {
 # "Legendary Body Vitality").
 DIFF_FLAVOR_KEYS = ('difficulty', 'diff_suffix', 'diff_prefix', 'diff_prefix_nl')
 
+# Public difficulty names shown in the UI vs. the internal slot names the game (and
+# halo_patch) use. Only the labels change: Hard is presented as Heroic, Impossible as
+# Legendary. Stored/target_difficulty values stay internal, so nothing downstream
+# needs to know about the public names.
+DIFF_DISPLAY = (('Easy', 'Easy'), ('Normal', 'Normal'),
+                ('Heroic', 'Hard'), ('Legendary', 'Impossible'))
+_DIFF_TO_PUBLIC = {intern: pub for pub, intern in DIFF_DISPLAY}
+
+
+def _fill_difficulty_combo(combo, current_internal):
+    """Populate a QComboBox with public difficulty labels carrying their internal
+    value as itemData, and select the row matching current_internal. Read the choice
+    back with combo.currentData()."""
+    combo.clear()
+    for pub, intern in DIFF_DISPLAY:
+        combo.addItem(pub, intern)
+    i = combo.findData(current_internal)
+    combo.setCurrentIndex(i if i >= 0 else 1)   # default Normal
+
 
 def _diff_flavor(target):
     return {k: target.get(k) for k in DIFF_FLAVOR_KEYS}
+
+
+def _patch_error_text(e):
+    """A player-actionable message for a patch failure. A PermissionError (Errno 13)
+    almost always means the map file is locked or read-only — surface the likely
+    causes instead of a bare traceback."""
+    if isinstance(e, PermissionError) or getattr(e, 'errno', None) == 13:
+        fn = getattr(e, 'filename', None)
+        return ("Windows denied write access to the map file (Errno 13: permission "
+                "denied).\n\nUsual causes, most common first:\n"
+                "  • Halo MCC is open — close the game completely, then patch again.\n"
+                "  • The .map or its .bak is marked read-only — right-click → Properties "
+                "and clear Read-only.\n"
+                "  • The map lives under Program Files, which needs elevation — run this "
+                "tool as administrator.\n\n"
+                + (f"File: {fn}\n" if fn else "")
+                + f"({e})")
+    return str(e)
 
 
 def active_skull_names(run_state):
@@ -2143,11 +2181,9 @@ class MagnitudeEditorDialog(QDialog):
         drow = QHBoxLayout()
         drow.addWidget(QLabel("Difficulty:"))
         self.diff_combo = QComboBox()
-        self.diff_combo.addItems(["Easy", "Normal", "Hard", "Impossible"])
-        di = self.diff_combo.findText(self.target_difficulty)
-        if di >= 0:
-            self.diff_combo.setCurrentIndex(di)
-        self.diff_combo.currentTextChanged.connect(self._on_difficulty_changed)
+        _fill_difficulty_combo(self.diff_combo, self.target_difficulty)
+        self.diff_combo.currentIndexChanged.connect(
+            lambda _=0: self._on_difficulty_changed(self.diff_combo.currentData()))
         drow.addWidget(self.diff_combo)
         help_lbl = QLabel("operators:  =x set   +x add   -x subtract   *x multiply   (blank = skip)")
         help_lbl.setStyleSheet("color: #aaa; font-size: 12px;")
@@ -2440,7 +2476,9 @@ class MagnitudeEditorDialog(QDialog):
             # per-game-resolved field the patch actually reads/writes (e.g. H2's
             # "Starting Health Damage" internally, shown to the user as the more
             # meaningful "Starting Health Modifier").
-            fname = (t.get('label') or t['field']) + (f"  [{self.target_difficulty}]" if t.get('difficulty') else "")
+            fname = (t.get('label') or t['field']) + (
+                f"  [{_DIFF_TO_PUBLIC.get(self.target_difficulty, self.target_difficulty)}]"
+                if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
                 fname += "  [%s]" % self._hp.DIFFICULTY_SUFFIX_MAP.get(self.target_difficulty, self.target_difficulty)
             if t.get('diff_prefix_nl'):
@@ -2591,10 +2629,11 @@ class MagnitudeEditorDialog(QDialog):
         self._hp.save_presets(self.presets_path, self.presets)
         self._populate()
 
-    def _on_difficulty_changed(self, text):
+    def _on_difficulty_changed(self, internal):
         # #2: switch the difficulty slot; vanilla values re-read from the same map.
-        self.target_difficulty = text
-        CONFIG['target_difficulty'] = text
+        # `internal` is the game's slot name (Hard/Impossible), not the public label.
+        self.target_difficulty = internal
+        CONFIG['target_difficulty'] = internal
         save_settings()
         self._populate()
 
@@ -2892,6 +2931,41 @@ class MagnitudeEditorDialog(QDialog):
             return None
         return db.weap_tag_for(w, self.game)
 
+    def _run_busy(self, fn, title="Patching", label="Working"):
+        """Run fn() off the GUI thread while showing an animated busy dialog, so a long
+        patch is visibly distinct from a hang. Returns fn()'s value; re-raises whatever
+        it raised. Patching is pure file/tag work with no Qt calls, so a plain worker
+        thread is safe — the GUI thread only spins the event loop and the dots."""
+        result = {}
+
+        def work():
+            try:
+                result['value'] = fn()
+            except BaseException as e:      # carry it back to the GUI thread to re-raise
+                result['error'] = e
+
+        dlg = QProgressDialog(label, None, 0, 0, self)   # 0,0 = indeterminate busy bar
+        dlg.setWindowTitle(title)
+        dlg.setCancelButton(None)                        # patching can't be interrupted safely
+        dlg.setWindowModality(Qt.WindowModal)
+        dlg.setMinimumDuration(0)
+        dlg.setAutoClose(False)
+        dlg.setAutoReset(False)
+        dlg.show()
+        t = threading.Thread(target=work, daemon=True)
+        t.start()
+        dots = 0
+        while t.is_alive():
+            dots = dots % 3 + 1
+            dlg.setLabelText(label + "." * dots + " " * (3 - dots))
+            QApplication.processEvents()
+            t.join(0.6)                                  # ~every 0.6 s a dot appears
+        QApplication.processEvents()
+        dlg.close()
+        if 'error' in result:
+            raise result['error']
+        return result.get('value')
+
     def _apply(self):
         map_path = self.map_edit.text().strip()
         if not Path(map_path).is_file():
@@ -2990,16 +3064,17 @@ class MagnitudeEditorDialog(QDialog):
             return
 
         try:
-            results, backup = self._hp.apply_run(map_path, plan, self.registry,
-                                                 self.target_difficulty, game=self.game,
-                                                 starting=starting, weapon_swaps=weapon_swaps,
-                                                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
-                                                 remove_cutscenes=remove_cutscenes,
-                                                 skulls=skulls,
-                                                 equipment_swaps=equip_swaps or None,
-                                                 spawn_equipment=spawn_equipment)
+            results, backup = self._run_busy(lambda: self._hp.apply_run(
+                map_path, plan, self.registry,
+                self.target_difficulty, game=self.game,
+                starting=starting, weapon_swaps=weapon_swaps,
+                zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
+                remove_cutscenes=remove_cutscenes,
+                skulls=skulls,
+                equipment_swaps=equip_swaps or None,
+                spawn_equipment=spawn_equipment))
         except Exception as e:
-            QMessageBox.critical(self, "Patch failed", str(e))
+            QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
 
         # Effects that were on screen but had no value typed produced no ops, so the
@@ -3084,11 +3159,12 @@ class MagnitudeEditorDialog(QDialog):
         try:
             # Incremental: patch this one field onto the live map, preserving the
             # other already-applied effects (don't restore the baseline).
-            results, backup = self._hp.apply_run(map_path, plan, self.registry,
-                                                 self.target_difficulty, game=self.game,
-                                                 from_baseline=False)
+            results, backup = self._run_busy(lambda: self._hp.apply_run(
+                map_path, plan, self.registry,
+                self.target_difficulty, game=self.game,
+                from_baseline=False))
         except Exception as e:
-            QMessageBox.critical(self, "Patch failed", str(e))
+            QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
         self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
         self._hp.save_presets(self.presets_path, self.presets)
@@ -3169,13 +3245,11 @@ class OptionsDialog(QDialog):
         form.setLabelAlignment(Qt.AlignRight)
 
         self.diff_combo = QComboBox()
-        self.diff_combo.addItems(["Easy", "Normal", "Hard", "Impossible"])
-        di = self.diff_combo.findText(CONFIG.get('target_difficulty', 'Normal'))
-        if di >= 0:
-            self.diff_combo.setCurrentIndex(di)
+        _fill_difficulty_combo(self.diff_combo, CONFIG.get('target_difficulty', 'Normal'))
         self.diff_combo.setToolTip("Which difficulty slot the patcher writes. Effects with per-difficulty "
                                    "fields (enemy damage, accuracy tiers, upgrade chances) are applied to "
-                                   "this difficulty — set it to the one you actually play.")
+                                   "this difficulty — set it to the one you actually play. (Heroic and "
+                                   "Legendary are the game's Hard and Impossible slots.)")
         form.addRow("Target difficulty:", self.diff_combo)
 
         self.single_game_cb = QCheckBox("Remove mods that only appear in one game")
@@ -3185,27 +3259,49 @@ class OptionsDialog(QDialog):
                                        "Boss mods off, since bosses are game-specific.")
         form.addRow("Cross-game only:", self.single_game_cb)
 
+        layout.addWidget(func)
+
+        # ---- Weapon (#4): sits right under the run rules ----
+        weap_g = QGroupBox("Weapon")
+        wform = QFormLayout(weap_g)
+        wform.setLabelAlignment(Qt.AlignRight)
+
+        self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
+        self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
+        self.negatives_cb.setToolTip("When you deliberately choose a weapon, an enemy card is tied to that "
+                                     "choice — taking what you want costs you something.")
+        wform.addRow("Weapon-choice negatives:", self.negatives_cb)
+
+        self.swap_cards_cb = QCheckBox("Offer map weapon replacement as per-weapon cards")
+        self.swap_cards_cb.setChecked(bool(CONFIG.get('weapon_swap_cards')))
+        self.swap_cards_cb.setToolTip("Each weapon gains a “Map Presence” card whose magnitude is "
+                                      "the percentage of the level's weapon placements replaced with "
+                                      "it. Same mechanism as the patcher's swap sliders, so the "
+                                      "sliders are hidden while this is on.")
+        wform.addRow("Map replacement:", self.swap_cards_cb)
+        layout.addWidget(weap_g)
+
+        # ---- Boss options (#2): Remove-boss is the master; with boss cards gone the
+        # other two have nothing to shape, so they grey out ----
+        boss_g = QGroupBox("Boss options")
+        bform = QFormLayout(boss_g)
+        bform.setLabelAlignment(Qt.AlignRight)
+
         self.remove_boss_cb = QCheckBox("Remove boss mods (no Boss cards)")
         self.remove_boss_cb.setToolTip("Suppress the guaranteed Boss card on boss levels. Forced on while "
                                        "'Remove mods that only appear in one game' is set, since bosses are "
-                                       "unique to a single game.")
-        # sub-option: forced on (and locked) while the single-game option is on.
-        # The forced-on display state must not clobber the user's real preference,
-        # so we track it separately and restore it when single-game is turned off.
+                                       "unique to a single game. While this is on, the two options below do "
+                                       "nothing — there are no boss cards to shape.")
+        # The forced-on display state must not clobber the user's real preference, so
+        # we track it separately and restore it when single-game is turned off.
         self._user_remove_boss = bool(CONFIG.get('remove_boss_mods'))
-        def _sync_boss_sub():
-            parent_on = self.single_game_cb.isChecked()
-            self.remove_boss_cb.blockSignals(True)
-            self.remove_boss_cb.setChecked(True if parent_on else self._user_remove_boss)
-            self.remove_boss_cb.setEnabled(not parent_on)
-            self.remove_boss_cb.blockSignals(False)
-        def _on_boss_toggled(checked):
-            if self.remove_boss_cb.isEnabled():  # ignore programmatic (forced) changes
-                self._user_remove_boss = checked
-        self.remove_boss_cb.toggled.connect(_on_boss_toggled)
-        self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
-        _sync_boss_sub()
-        form.addRow("    ↳ Boss mods:", self.remove_boss_cb)
+        bform.addRow("Boss mods:", self.remove_boss_cb)
+
+        self.combine_holo_cb = QCheckBox("Combine Heretic Leader & his Holograms into one mod")
+        self.combine_holo_cb.setChecked(bool(CONFIG.get('combine_heretic_hologram')))
+        self.combine_holo_cb.setToolTip("On patch: Heretic Leader boss cards target the leader and his decoy "
+                                        "holograms together, so one card tunes both.")
+        bform.addRow("    ↳ Heretic bosses:", self.combine_holo_cb)
 
         self.chieftain_boss_cb = QCheckBox("Brute Chieftains count as bosses (Halo 3)")
         self.chieftain_boss_cb.setChecked(bool(CONFIG.get('brute_chieftain_bosses')))
@@ -3213,7 +3309,57 @@ class OptionsDialog(QDialog):
                                           "Chieftain (Sierra 117, Crow's Nest, Tsavo Highway, The Storm, "
                                           "The Ark, The Covenant) as boss levels, so they draw a Chieftain "
                                           "card. Halo 2's Chieftain is Tartarus, who is already a boss.")
-        form.addRow("Brute Chieftains:", self.chieftain_boss_cb)
+        bform.addRow("    ↳ Brute Chieftains:", self.chieftain_boss_cb)
+
+        # Remove-boss OFF is the prerequisite for the other boss options. single_game
+        # forces remove-boss on (and locks it), which must also disable the children —
+        # so children are synced from the master's effective state, done explicitly
+        # because the forced change is signal-blocked.
+        def _sync_boss_children(_=False):
+            gone = self.remove_boss_cb.isChecked()
+            for cb in (self.combine_holo_cb, self.chieftain_boss_cb):
+                cb.setEnabled(not gone)
+        def _sync_boss_sub():
+            parent_on = self.single_game_cb.isChecked()
+            self.remove_boss_cb.blockSignals(True)
+            self.remove_boss_cb.setChecked(True if parent_on else self._user_remove_boss)
+            self.remove_boss_cb.setEnabled(not parent_on)
+            self.remove_boss_cb.blockSignals(False)
+            _sync_boss_children()
+        def _on_boss_toggled(checked):
+            if self.remove_boss_cb.isEnabled():   # ignore programmatic (forced) changes
+                self._user_remove_boss = checked
+            _sync_boss_children()
+        self.remove_boss_cb.toggled.connect(_on_boss_toggled)
+        self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
+        _sync_boss_sub()
+        layout.addWidget(boss_g)
+
+        # ---- Equipment (#3): grenades, then equipment rolls, then denials ----
+        equip_g = QGroupBox("Equipment")
+        eform = QFormLayout(equip_g)
+        eform.setLabelAlignment(Qt.AlignRight)
+
+        self.grenades_cb = QCheckBox("Treat grenades as weapons")
+        self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
+        self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
+                                    "They are never used as a starting Primary/Secondary weapon.")
+        eform.addRow("Grenades:", self.grenades_cb)
+
+        self.grenades_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
+        self.grenades_need_weapon_cb.setChecked(bool(CONFIG.get('grenades_need_weapon')))
+        self.grenades_need_weapon_cb.setToolTip("Keeps a grenade from being the first thing a player "
+                                                "picks up, which would leave them with no actual gun. "
+                                                "Only available while grenades count as weapons.")
+
+        def _sync_grenade_sub(_=False):
+            on = self.grenades_cb.isChecked()
+            self.grenades_need_weapon_cb.setEnabled(on)
+            if not on:
+                self.grenades_need_weapon_cb.setChecked(False)
+        self.grenades_cb.toggled.connect(_sync_grenade_sub)
+        _sync_grenade_sub()
+        eform.addRow("    ↳ Grenades need a gun:", self.grenades_need_weapon_cb)
 
         self.equipment_rolls_cb = QCheckBox("Equipment can turn up in New Weapon draws (Halo 3)")
         self.equipment_rolls_cb.setChecked(bool(CONFIG.get('h3_equipment_in_rolls')))
@@ -3221,7 +3367,7 @@ class OptionsDialog(QDialog):
                                            "the level's equipment can be drawn by the New Weapon button, "
                                            "same as an actual weapon. Equipment has no weapon-specific "
                                            "mods of its own, so a pick just grants the item.")
-        form.addRow("Equipment in rolls:", self.equipment_rolls_cb)
+        eform.addRow("Equipment in rolls:", self.equipment_rolls_cb)
 
         self.equipment_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
         self.equipment_need_weapon_cb.setChecked(bool(CONFIG.get('equipment_need_weapon')))
@@ -3237,19 +3383,19 @@ class OptionsDialog(QDialog):
                 self.equipment_need_weapon_cb.setChecked(False)
         self.equipment_rolls_cb.toggled.connect(_sync_equip_sub)
         _sync_equip_sub()
-        form.addRow("    ↳ Equipment needs a gun:", self.equipment_need_weapon_cb)
+        eform.addRow("    ↳ Equipment needs a gun:", self.equipment_need_weapon_cb)
 
         self.no_flare_jammer_cb = QCheckBox("Deny the player Superflare and Jammer")
         self.no_flare_jammer_cb.setChecked(bool(CONFIG.get('remove_superflare_jammer')))
         self.no_flare_jammer_cb.setToolTip("Halo 3: never offer Superflare or Jammer to the "
                                            "player. Brutes still carry and use them.")
-        form.addRow("Deny flare/jammer:", self.no_flare_jammer_cb)
+        eform.addRow("Deny flare/jammer:", self.no_flare_jammer_cb)
 
         self.no_invinc_invis_cb = QCheckBox("Deny the player Invincibility and Invisibility")
         self.no_invinc_invis_cb.setChecked(bool(CONFIG.get('remove_invincibility_invisibility')))
         self.no_invinc_invis_cb.setToolTip("Halo 3: never offer Invincibility or Invisibility "
                                            "to the player. Brutes still carry and use them.")
-        form.addRow("Deny invinc/invis:", self.no_invinc_invis_cb)
+        eform.addRow("Deny invinc/invis:", self.no_invinc_invis_cb)
 
         self.denied_as_enemy_cb = QCheckBox("…offer the denied ones as enemy modifiers instead")
         self.denied_as_enemy_cb.setChecked(bool(CONFIG.get('denied_equipment_as_enemy_mods')))
@@ -3268,43 +3414,8 @@ class OptionsDialog(QDialog):
         self.no_flare_jammer_cb.toggled.connect(_sync_denied_sub)
         self.no_invinc_invis_cb.toggled.connect(_sync_denied_sub)
         _sync_denied_sub()
-        form.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
-
-        self.swap_cards_cb = QCheckBox("Offer map weapon replacement as per-weapon cards")
-        self.swap_cards_cb.setChecked(bool(CONFIG.get('weapon_swap_cards')))
-        self.swap_cards_cb.setToolTip("Each weapon gains a “Map Presence” card whose magnitude is "
-                                      "the percentage of the level's weapon placements replaced with "
-                                      "it. Same mechanism as the patcher's swap sliders, so the "
-                                      "sliders are hidden while this is on.")
-        form.addRow("Map replacement:", self.swap_cards_cb)
-
-        self.grenades_cb = QCheckBox("Treat grenades as weapons")
-        self.grenades_cb.setChecked(bool(CONFIG.get('include_grenades')))
-        self.grenades_cb.setToolTip("Let grenades be offered as weapon picks (and carry weapon effects). "
-                                    "They are never used as a starting Primary/Secondary weapon.")
-        form.addRow("Grenades:", self.grenades_cb)
-
-        self.grenades_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
-        self.grenades_need_weapon_cb.setChecked(bool(CONFIG.get('grenades_need_weapon')))
-        self.grenades_need_weapon_cb.setToolTip("Keeps a grenade from being the first thing a player "
-                                                "picks up, which would leave them with no actual gun. "
-                                                "Only available while grenades count as weapons.")
-
-        def _sync_grenade_sub(_=False):
-            on = self.grenades_cb.isChecked()
-            self.grenades_need_weapon_cb.setEnabled(on)
-            if not on:
-                self.grenades_need_weapon_cb.setChecked(False)
-        self.grenades_cb.toggled.connect(_sync_grenade_sub)
-        _sync_grenade_sub()
-        form.addRow("    ↳ Grenades need a gun:", self.grenades_need_weapon_cb)
-
-        self.negatives_cb = QCheckBox("Deliberate weapon picks carry a tied negative")
-        self.negatives_cb.setChecked(bool(CONFIG.get('weapon_choice_negatives')))
-        self.negatives_cb.setToolTip("When you deliberately choose a weapon, an enemy card is tied to that "
-                                     "choice — taking what you want costs you something.")
-        form.addRow("Weapon-choice negatives:", self.negatives_cb)
-        layout.addWidget(func)
+        eform.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
+        layout.addWidget(equip_g)
 
         # ---- Card rolls ----
         rolls = QGroupBox("Card rolls")
@@ -3363,12 +3474,6 @@ class OptionsDialog(QDialog):
         patchg = QGroupBox("Map patching")
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
-
-        self.combine_holo_cb = QCheckBox("Combine Heretic Leader & his Holograms into one mod")
-        self.combine_holo_cb.setChecked(bool(CONFIG.get('combine_heretic_hologram')))
-        self.combine_holo_cb.setToolTip("On patch: Heretic Leader boss cards target the leader and his decoy "
-                                        "holograms together, so one card tunes both.")
-        form.addRow("Heretic bosses:", self.combine_holo_cb)
 
         self.cutscenes_cb = QCheckBox("Remove Cortana / Gravemind cutscenes (Halo 3)")
         self.cutscenes_cb.setChecked(bool(CONFIG.get('remove_h3_cutscenes')))
@@ -3553,7 +3658,7 @@ class OptionsDialog(QDialog):
 
     def values(self):
         return {
-            'target_difficulty': self.diff_combo.currentText(),
+            'target_difficulty': self.diff_combo.currentData(),   # internal slot name
             'remove_single_game_mods': self.single_game_cb.isChecked(),
             'remove_boss_mods': self._user_remove_boss,  # raw preference; boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
