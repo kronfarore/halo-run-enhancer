@@ -809,7 +809,16 @@ def _apply_equipment_swaps(m, game, swaps):
         pi, c, s = assign[j]
         assign[j] = (pi, c - 1, s)
 
-    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    # In Halo 3 a placement only renders where the swapped-in model streams, so confine
+    # each piece to placements in a BSP where vanilla already puts it. H1/H2 have no
+    # such per-zone streaming, so they spread across every slot as before.
+    if str(game).strip() == 'Halo 3':
+        slot_masks = [struct.unpack_from('<H', m.data, ibase + i * ies + _EQ_ATTACH)[0]
+                      for i in range(N)]
+        slots = _spread_slots_bsp(N, slot_masks,
+                                  [(a[0], a[1], _h3_stream_mask(m, ioff, ies, a[0])) for a in assign])
+    else:
+        slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
     names = {a[0]: a[2] for a in assign}
     done = {}
     for slot, pi in slots.items():
@@ -819,6 +828,10 @@ def _apply_equipment_swaps(m, game, swaps):
         out.append({'effect': 'map equipment', 'field': names[pi], 'ok': True,
                     'tag': 'scnr', 'old': f'{N} placements',
                     'new': f'{n} swapped in'})
+    for pi, c, short in assign:                  # streaming left a piece nowhere to go
+        if pi not in done:
+            out.append({'effect': 'map equipment', 'field': short, 'ok': True, 'skip': True,
+                        'reason': 'no free placement in a BSP where it streams'})
     return out
 
 
@@ -1062,19 +1075,40 @@ def _h3_mask_at(m, pos):
     return best
 
 
-def _h3_equip_stream_mask(m, pal_idx):
-    """BSP mask where this palette entry is known to stream — the union of attach masks
-    of every vanilla equipment placement using it (vanilla puts the model there)."""
-    lay = _MAP_EQUIPMENT['Halo 3']
-    io, ie = lay['items']
+def _h3_stream_mask(m, block_off, elem, pal_idx):
+    """BSP mask where a palette entry is known to stream — the union of attach masks of
+    every vanilla placement in the block at `block_off` (equipment or weapon) using it.
+    A placement only renders where the model streams, i.e. where vanilla puts it."""
     scnr = _scnr_base(m)
-    N, ib = max(0, m.i32(scnr + io)), _block_base(m, scnr + io)
+    N, base = max(0, m.i32(scnr + block_off)), _block_base(m, scnr + block_off)
     mask = 0
-    for i in range(N) if ib else []:
-        e = ib + i * ie
-        if struct.unpack_from('<h', m.data, e)[0] == pal_idx:
+    for i in range(N) if base else []:
+        e = base + i * elem
+        if struct.unpack_from('<h', m.data, e)[0] == pal_idx:   # palette index @0x0
             mask |= struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
     return mask
+
+
+def _spread_slots_bsp(N, slot_masks, assign):
+    """Like _spread_slots, but each key is confined to placements whose BSP mask
+    (slot_masks[i]) overlaps the key's own stream mask, so a swapped-in piece only lands
+    where its model streams. `assign` = [(key, count, stream_mask)]. Returns {slot: key}.
+    A piece whose stream BSPs have too few free slots simply gets fewer than requested."""
+    taken = {}
+    for key, c, smask in assign:
+        if c <= 0:
+            continue
+        # smask == 0 means the piece has no vanilla placements to learn its streaming
+        # from (e.g. an enemy-carried-only weapon) — don't restrict it, since it may
+        # well stream via enemy loadouts we can't see. Otherwise confine to its BSPs.
+        valid = [i for i in range(N)
+                 if i not in taken and (not smask or (slot_masks[i] & smask))]
+        if not valid:
+            continue
+        c = min(c, len(valid))
+        for k in range(c):                       # evenly spaced, distinct for c<=len
+            taken[valid[min(len(valid) - 1, int((k + 0.5) * len(valid) / c))]] = key
+    return taken
 
 
 def _h3_fallback_weapon(m, from_pos, equip_mask, used):
@@ -1200,7 +1234,7 @@ def _apply_spawn_equipment(m, game, spec):
             if label in skip:
                 # can't stream at the start -> drop on the nearest weapon in a BSP where
                 # it does; multiple such pieces spread over distinct weapons
-                emask = _h3_equip_stream_mask(m, pi)
+                emask = _h3_stream_mask(m, ioff, ies, pi)
                 fb = _h3_fallback_weapon(m, base_pos, emask, used_weapons) if emask else None
                 if fb is None:
                     out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
@@ -1371,7 +1405,15 @@ def _apply_weapon_swaps(m, game, registry, swaps):
         pi, c, rl, rd, s = assign[j]
         assign[j] = (pi, c - 1, rl, rd, s)
 
-    slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    # H3: keep a swapped-in weapon only in BSPs where its model streams (see
+    # _apply_equipment_swaps). H1/H2 spread across every placement.
+    if str(game).strip() == 'Halo 3':
+        slot_masks = [struct.unpack_from('<H', m.data, wbase + i * wes + _EQ_ATTACH)[0]
+                      for i in range(N)]
+        slots = _spread_slots_bsp(N, slot_masks,
+                                  [(a[0], a[1], _h3_stream_mask(m, woff, wes, a[0])) for a in assign])
+    else:
+        slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
     info = {a[0]: (a[2], a[3], a[4]) for a in assign}
     done = {}
     for slot, pi in slots.items():
