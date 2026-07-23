@@ -3311,10 +3311,11 @@ class OptionsDialog(QDialog):
             "A NEW placement is added, so the level's own equipment is untouched. If the "
             "piece isn't in the level's palette it's added; only a piece the map never "
             "loads is skipped.\n\n"
-            "Note: a few levels start you in a vehicle or mid-cinematic where nothing can "
-            "spawn on the exact start point — there the equipment is placed at the "
-            "nearest reachable spot instead, so you may pick it up a moment into the level "
-            "rather than underfoot.")
+            "Note: a few levels start you in a vehicle or mid-cinematic, so the drop uses "
+            "a hand-picked reachable spot there instead of the raw spawn. And a piece the "
+            "level only streams later (e.g. Auto Turret on some maps) can't appear at the "
+            "start at all — it's placed on the nearest weapon in the first area where it "
+            "does load, so you pick it up a little way in rather than underfoot.")
         lform.addRow("Starting equipment:", self.starting_equipment_cb)
 
         self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")

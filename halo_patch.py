@@ -1022,13 +1022,96 @@ def _h3_tag_datum(m, cls, path):
     return None
 
 
-def _apply_spawn_equipment(m, game, spec):
-    """Grant Halo 3 starting equipment by APPENDING placements on the player spawns.
+# Hand-picked drop points (world pos) for maps where the Player Starting Location is
+# unusable — a cinematic/vehicle spot, or spawn-protected. Confirmed reachable in-game.
+# Maps not listed drop on the player spawn. See the project memory on BSP/streaming.
+_H3_LOADOUT_ANCHOR = {
+    '020_base':    (-25.8, 44.4, -7.2),      # hallway by the armory racks
+    '100_citadel': (-254.0, 215.2, -10.5),   # the on-foot start after the Pelican
+    '120_halo':    (-269.6, -424.1, -10.0),  # just before the drop to the control centre
+}
 
-    `spec` = {'groups': [[eqip tag path, ...], ...]}. Group i is placed on player
-    starting location i: group 0 on player 1's spawn, group 1 on player 2's. The
-    caller decides the split — with 2-player coop off it hands a single group holding
-    both players' items, so everything lands on spawn 0.
+# (map -> equipment basenames) that do NOT stream at that map's start — their model
+# resources are only loaded in a later zone, so a placement at the start renders
+# nothing (baked in the PVS, unfixable). Such a piece is dropped instead on the nearest
+# weapon in a BSP where it DOES stream. Confirmed in-game 2026-07-23.
+_H3_NO_START_STREAM = {
+    '040_voi':     frozenset({'gravlift_equipment'}),
+    '070_waste':   frozenset({'autoturret_equipment'}),
+    '100_citadel': frozenset({'autoturret_equipment'}),
+}
+
+
+def _h3_mask_at(m, pos):
+    """Attach mask of the nearest vanilla weapon to `pos` — approximates which BSP is
+    loaded there, so a placement dropped at pos attaches to the right BSP."""
+    lay = _MAP_WEAPONS['Halo 3']
+    wo, we = lay['weapons']
+    scnr = _scnr_base(m)
+    wN, wb = max(0, m.i32(scnr + wo)), _block_base(m, scnr + wo)
+    best, bestd = 1, None
+    for i in range(wN) if wb else []:
+        e = wb + i * we
+        att = struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+        if not att:
+            continue
+        wp = struct.unpack_from('<fff', m.data, e + _EQ_POS)
+        dd = sum((a - b) ** 2 for a, b in zip(wp, pos))
+        if bestd is None or dd < bestd:
+            bestd, best = dd, att
+    return best
+
+
+def _h3_equip_stream_mask(m, pal_idx):
+    """BSP mask where this palette entry is known to stream — the union of attach masks
+    of every vanilla equipment placement using it (vanilla puts the model there)."""
+    lay = _MAP_EQUIPMENT['Halo 3']
+    io, ie = lay['items']
+    scnr = _scnr_base(m)
+    N, ib = max(0, m.i32(scnr + io)), _block_base(m, scnr + io)
+    mask = 0
+    for i in range(N) if ib else []:
+        e = ib + i * ie
+        if struct.unpack_from('<h', m.data, e)[0] == pal_idx:
+            mask |= struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+    return mask
+
+
+def _h3_fallback_weapon(m, from_pos, equip_mask, used):
+    """Nearest vanilla weapon placement (index not in `used`) whose attach mask overlaps
+    equip_mask — i.e. a designer-placed floor spot in the first BSP zone where a piece
+    that can't stream at the start DOES stream. Returns (index, pos, mask) or None."""
+    lay = _MAP_WEAPONS['Halo 3']
+    wo, we = lay['weapons']
+    scnr = _scnr_base(m)
+    wN, wb = max(0, m.i32(scnr + wo)), _block_base(m, scnr + wo)
+    cands = []
+    for i in range(wN) if wb else []:
+        if i in used:
+            continue
+        e = wb + i * we
+        att = struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+        if att & equip_mask:
+            wp = struct.unpack_from('<fff', m.data, e + _EQ_POS)
+            cands.append((sum((a - b) ** 2 for a, b in zip(wp, from_pos)), i, wp, att & equip_mask))
+    if not cands:
+        return None
+    cands.sort(key=lambda c: c[0])
+    _, i, wp, mask = cands[0]
+    return i, wp, mask
+
+
+def _apply_spawn_equipment(m, game, spec):
+    """Grant Halo 3 starting equipment by APPENDING placements at the player start.
+
+    `spec` = {'groups': [[eqip tag path, ...], ...]}. Group i is player i's items:
+    group 0 -> player 1, group 1 -> player 2. With 2-player coop off the caller hands a
+    single merged group. Each group drops at that player's start — the curated
+    _H3_LOADOUT_ANCHOR where the spawn is unusable, else the Player Starting Location.
+
+    A piece that does not stream at the start (_H3_NO_START_STREAM) can't render there,
+    so it falls back to the nearest weapon in a BSP where it does stream; several such
+    pieces spread across the nearest distinct weapons rather than stacking on one.
 
     Appending rather than reusing a vanilla placement is the point: relocating an
     existing one would delete that pickup from wherever the level put it."""
@@ -1065,46 +1148,73 @@ def _apply_spawn_equipment(m, game, spec):
         return [{'effect': 'starting equipment', 'ok': False,
                  'reason': 'no player starting locations'}]
 
-    plan = []
+    map_id = str(getattr(m, 'internal_name', '') or '')
+    anchor = _H3_LOADOUT_ANCHOR.get(map_id)
+    skip = _H3_NO_START_STREAM.get(map_id, frozenset())
+    anchor_mask = _h3_mask_at(m, anchor) if anchor else None
+
+    def _resolve_pi(tag, key, label):
+        """Palette index for a tag (appending an entry if needed), or (None, None) with
+        a skip already emitted. Second value = whether a palette entry was appended."""
+        pi = pal.get(key, new_pal_idx.get(key))
+        if pi is not None:
+            return pi, False
+        datum = _h3_tag_datum(m, 'eqip', tag)
+        if datum is None:
+            out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
+                        'skip': True, 'reason': 'equipment not present in this level'})
+            return None, None
+        # duplicate guard: reuse an entry already present by datum (name-independent)
+        if datum in pal_by_datum:
+            new_pal_idx[key] = pal_by_datum[datum]
+            return pal_by_datum[datum], False
+        pi = pc + len(new_pal)
+        new_pal.append(datum)
+        new_pal_idx[key] = pi
+        return pi, True
+
+    plan = []                   # (pi, pos, mask, label, si, added, mode)
     new_pal = []                # datums to append to the palette, in assignment order
     new_pal_idx = {}            # path key -> the palette index it will get
+    used_weapons = set()        # weapon placements already used as a fallback drop
+    ring = {}                   # base-point key -> how many items dropped there so far
     for si, items in enumerate(groups):
         if not items:
             continue
-        if si >= len(spawns):
-            # a non-error outcome (a solo-only level, say): report as a skip, not a
-            # failure, so the summary doesn't flag it red
+        if not anchor and si >= len(spawns):
+            # a non-error outcome (solo level, no player 2): report as a skip
             for tag in items:
                 out.append({'effect': 'starting equipment',
                             'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
                             'reason': f'no player starting location {si}'})
             continue
-        pos, bsp = spawns[si]
+        base_pos = anchor if anchor else spawns[si][0]
+        base_mask = anchor_mask if anchor else (1 << max(0, spawns[si][1]))
+        bkey = 'anchor' if anchor else si
         for tag in items:
             key = str(tag).replace('/', '\\').lower()
             label = str(tag).rsplit('\\', 1)[-1]
-            pi = pal.get(key, new_pal_idx.get(key))
-            added = False
+            pi, added = _resolve_pi(tag, key, label)
             if pi is None:
-                datum = _h3_tag_datum(m, 'eqip', tag)
-                if datum is None:
-                    # the tag isn't even loaded in this map: nothing to reference
-                    out.append({'effect': 'starting equipment', 'field': label,
-                                'ok': True, 'skip': True,
-                                'reason': 'equipment not present in this level'})
+                continue
+            if label in skip:
+                # can't stream at the start -> drop on the nearest weapon in a BSP where
+                # it does; multiple such pieces spread over distinct weapons
+                emask = _h3_equip_stream_mask(m, pi)
+                fb = _h3_fallback_weapon(m, base_pos, emask, used_weapons) if emask else None
+                if fb is None:
+                    out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
+                                'skip': True, 'reason': "can't spawn at start, no fallback spot"})
                     continue
-                # Guard against a duplicate palette entry: if this exact tag datum is
-                # already in the palette (even when name matching missed it — stripped
-                # or differently-cased names), reuse that index instead of appending.
-                if datum in pal_by_datum:
-                    pi = pal_by_datum[datum]
-                    new_pal_idx[key] = pi
-                else:
-                    pi = pc + len(new_pal)
-                    new_pal.append(datum)
-                    new_pal_idx[key] = pi
-                    added = True
-            plan.append((pi, pos, bsp, label, si, added))
+                used_weapons.add(fb[0])
+                plan.append((pi, fb[1], fb[2], label, si, added, 'fallback'))
+            else:
+                # tight ring around the base point so multiple items don't interpenetrate
+                kk = ring.get(bkey, 0)
+                ring[bkey] = kk + 1
+                ang = kk * 1.9
+                p = (base_pos[0] + 0.8 * math.cos(ang), base_pos[1] + 0.8 * math.sin(ang), base_pos[2])
+                plan.append((pi, p, base_mask, label, si, added, 'start'))
     if not plan:
         return out
 
@@ -1145,26 +1255,27 @@ def _apply_spawn_equipment(m, game, spec):
     nxt = max(u & 0xFFFF for u in uids) + 1
     salt = uids[tmpl] >> 16
 
-    for k, (pi, pos, bsp, label, si, added) in enumerate(plan):
+    for k, (pi, pos, mask, label, si, added, mode) in enumerate(plan):
         e = dest + (N + k) * ies
         m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
         struct.pack_into('<h', m.data, e + _EQ_PALETTE, pi)
         struct.pack_into('<h', m.data, e + _EQ_NAME, -1)
         fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0] & ~(_PLACE_NOT_AUTO | _PLACE_NEVER)
         struct.pack_into('<I', m.data, e + _EQ_FLAGS, fl)
-        # spread copies on one spawn around a tight ring so they don't interpenetrate,
-        # while staying well inside the pickup radius
-        ang = k * 1.9
-        struct.pack_into('<fff', m.data, e + _EQ_POS,
-                         pos[0] + 0.15 * math.cos(ang), pos[1] + 0.15 * math.sin(ang), pos[2])
+        struct.pack_into('<fff', m.data, e + _EQ_POS, pos[0], pos[1], pos[2])
         struct.pack_into('<ii', m.data, e + _EQ_NODES, 0, 0)     # own no Node Orientations
         struct.pack_into('<I', m.data, e + _EQ_UID, ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
         struct.pack_into('<h', m.data, e + _EQ_FOLDER, -1)       # immune to object_destroy_folder
-        struct.pack_into('<H', m.data, e + _EQ_ATTACH, 1 << max(0, bsp))
+        struct.pack_into('<H', m.data, e + _EQ_ATTACH, mask)
         struct.pack_into('<H', m.data, e + _EQ_GAMEFLAGS, 0)     # campaign, not MP-only
+        if mode == 'fallback':
+            where = "at nearest weapon (can't stream at start)"
+        elif anchor:
+            where = 'at start anchor'
+        else:
+            where = f'on spawn {si}'
         out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
-                    'old': 'not present',
-                    'new': f'placed on spawn {si}' + (' (+palette)' if added else '')})
+                    'old': 'not present', 'new': where + (' (+palette)' if added else '')})
 
     # repoint the placements last, so the map stays consistent if anything above raised
     struct.pack_into('<i', m.data, scnr_base + ioff, N + len(plan))
