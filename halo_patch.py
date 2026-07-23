@@ -1094,8 +1094,17 @@ def _spread_slots_bsp(N, slot_masks, assign):
     (slot_masks[i]) overlaps the key's own stream mask, so a swapped-in piece only lands
     where its model streams. `assign` = [(key, count, stream_mask)]. Returns {slot: key}.
     A piece whose stream BSPs have too few free slots simply gets fewer than requested."""
+    # Serve the most BSP-constrained pieces FIRST: one with few eligible slots must claim
+    # them before a broad piece (which has alternatives) eats them, so each piece keeps
+    # its fair share whenever the slots exist. Without this, a broad piece processed
+    # first can starve a narrow one even when a fair split was possible.
+    def eligible(smask):
+        return N if not smask else sum(1 for mm in slot_masks if mm & smask)
+    order = sorted(range(len(assign)), key=lambda j: eligible(assign[j][2]))
+
     taken = {}
-    for key, c, smask in assign:
+    for j in order:
+        key, c, smask = assign[j]
         if c <= 0:
             continue
         # smask == 0 means the piece has no vanilla placements to learn its streaming
