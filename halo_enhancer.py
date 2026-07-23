@@ -184,7 +184,9 @@ CONFIG = {
     # player's starting location — the item is walked into as the level loads. Vanilla
     # placements are never touched. A piece the level doesn't stock in its palette is
     # added to it (the equipment models ship in every map); only a piece whose tag the
-    # map never loads at all is skipped. Player 1's lands on spawn 0, player 2's on 1;
+    # map never loads at all is skipped. On vehicle/cinematic starts where nothing can
+    # spawn on the exact start point, a per-map anchor drops it at the nearest reachable
+    # spot instead. Player 1's lands on spawn 0, player 2's on 1;
     # with 2-player coop off, everything lands on spawn 0. By default only the FIRST
     # equipment each player carries is placed.
     "set_starting_equipment": False,
@@ -3303,12 +3305,16 @@ class OptionsDialog(QDialog):
         self.starting_equipment_cb.setChecked(bool(CONFIG.get('set_starting_equipment')))
         self.starting_equipment_cb.setToolTip(
             "Halo 3 only. Halo 3's starting profile has no equipment field, so a picked "
-            "piece is granted by placing it on the player's starting location — you walk "
-            "into it as the level loads. Player 1's first equipment goes on their spawn, "
-            "player 2's on theirs; with 2-player coop off, both land on player 1's spawn. "
+            "piece is granted by PLACING it near the player's starting location — you "
+            "walk into it as the level loads. Player 1's first equipment goes at their "
+            "start, player 2's at theirs; with 2-player coop off, both go to player 1. "
             "A NEW placement is added, so the level's own equipment is untouched. If the "
             "piece isn't in the level's palette it's added; only a piece the map never "
-            "loads at all is skipped.")
+            "loads is skipped.\n\n"
+            "Note: a few levels start you in a vehicle or mid-cinematic where nothing can "
+            "spawn on the exact start point — there the equipment is placed at the "
+            "nearest reachable spot instead, so you may pick it up a moment into the level "
+            "rather than underfoot.")
         lform.addRow("Starting equipment:", self.starting_equipment_cb)
 
         self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")
