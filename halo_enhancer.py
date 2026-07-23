@@ -81,6 +81,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
+               'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'hide_tags', 'hide_fields')
@@ -177,6 +178,16 @@ CONFIG = {
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    # Halo 3 only. H3's Player Starting Profile has no equipment field (Reach added
+    # one), so the run's picked equipment is granted by APPENDING a placement onto the
+    # player's starting location — the item is walked into as the level loads. Vanilla
+    # placements are never touched. A piece the level's Equipment Palette lacks is
+    # reported as a skip. Player 1's equipment lands on spawn 0, player 2's on spawn 1;
+    # with 2-player coop off, everything lands on spawn 0. By default only the FIRST
+    # equipment each player carries is placed.
+    "set_starting_equipment": False,
+    # Place EVERY equipment each player carries, not just their first.
+    "equipment_all_selected": False,
     "skull_chance": 0.0,                    # #7: chance a pair's negative is a Skull instead
     "two_player_coop": True,                # #8: H3 only — P1 plays Chief, P2 plays the Dervish
     "coop_no_starting_weapons": False,      # #1: don't give the coop profile (index 1) the picks
@@ -764,6 +775,16 @@ class ModifierDatabase:
         for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
             tag = resolve_gamed(mod.get('tag'), game, self.get_games())
             if isinstance(tag, str) and tag.startswith('weap '):
+                return tag
+        return None
+
+    def eqip_tag_for(self, name, game):
+        """The `eqip ...` tag for a piece of equipment, taken from any of its effects.
+        The counterpart of weap_tag_for, used to grant Halo 3 starting equipment by
+        placing it on the player spawn. None if unknown."""
+        for mod in self.equipment_mods.get(self.resolve_equipment(name), []):
+            tag = resolve_gamed(mod.get('tag'), game, self.get_games())
+            if isinstance(tag, str) and tag.startswith('eqip '):
                 return tag
         return None
 
@@ -2755,6 +2776,52 @@ class MagnitudeEditorDialog(QDialog):
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
                 'null_respawn': null_coop}
 
+    def _spawn_equipment_spec(self):
+        """Halo 3 starting equipment: the equipment each player carries, appended as
+        placements on their spawn.
+
+        H3's Player Starting Profile has no equipment field at all, so unlike starting
+        weapons this cannot be written into a profile — the item is placed on the
+        starting location and walked into as the level loads. Player 1's equipment goes
+        on spawn 0 and player 2's on spawn 1; with 2-player coop off both merge onto
+        spawn 0. By default only each player's first equipment is placed; the
+        'all selected' option places everything they carry."""
+        if self.game != 'Halo 3' or not CONFIG.get('set_starting_equipment'):
+            return None
+        rs = getattr(self.parent_gui, 'run_state', None)
+        db = getattr(self.parent_gui, 'db', None)
+        if rs is None or db is None:
+            return None
+        first_only = not CONFIG.get('equipment_all_selected')
+
+        def paths(names):
+            # carried items are weapons AND equipment mixed; keep only equipment, as
+            # eqip tag paths, order preserved, de-duplicated
+            out, seen = [], set()
+            for w in (names or []):
+                if not db.is_equipment(w):
+                    continue
+                tag = db.eqip_tag_for(w, self.game)
+                p = tag.split(' ', 1)[1].strip() if tag else None
+                if p and p not in seen:
+                    seen.add(p)
+                    out.append(p)
+                    if first_only:
+                        break
+            return out
+
+        p1 = paths(getattr(rs, 'player1_weapons', None))
+        p2 = paths(getattr(rs, 'player2_weapons', None))
+        if bool(CONFIG.get('two_player_coop', True)):
+            groups = [p1, p2]                       # each player's own spawn
+        else:
+            # solo: player 2 isn't in the level, so fold their picks onto spawn 0
+            merged = p1 + [x for x in p2 if x not in p1]
+            groups = [merged]
+        if not any(groups):
+            return None
+        return {'groups': groups}
+
     def _zoom_ui_spec(self, plan):
         """weap tag paths of the Zoom effects in this plan, so scopeless weapons
         that gain magnification also get a scope overlay. The patcher skips any
@@ -2894,18 +2961,21 @@ class MagnitudeEditorDialog(QDialog):
         # Cards and sliders are the same mechanism and never both shown, so whichever
         # is active supplies the swaps.
         weapon_swaps = card_swaps or self._weapon_swaps_spec()
+        spawn_equipment = self._spawn_equipment_spec()
         zoom_ui = self._zoom_ui_spec(plan)
         remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
         if (not plan and not starting and not weapon_swaps and not remove_cutscenes
-                and not skulls and not equip_swaps):
+                and not skulls and not equip_swaps and not spawn_equipment):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
 
         extras = ([] + (["set starting weapons"] if starting else [])
+                  + ([f"place {sum(len(g) for g in spawn_equipment['groups'])} "
+                      f"starting equipment"] if spawn_equipment else [])
                   + (["scatter map weapons"] if weapon_swaps else [])
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
@@ -2925,7 +2995,8 @@ class MagnitudeEditorDialog(QDialog):
                                                  zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                                                  remove_cutscenes=remove_cutscenes,
                                                  skulls=skulls,
-                                                 equipment_swaps=equip_swaps or None)
+                                                 equipment_swaps=equip_swaps or None,
+                                                 spawn_equipment=spawn_equipment)
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", str(e))
             return
@@ -3318,6 +3389,24 @@ class OptionsDialog(QDialog):
                                             "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
         form.addRow("Starting weapons:", self.starting_weapons_cb)
 
+        self.starting_equipment_cb = QCheckBox("Place first equipment per player at their spawn (Halo 3)")
+        self.starting_equipment_cb.setChecked(bool(CONFIG.get('set_starting_equipment')))
+        self.starting_equipment_cb.setToolTip(
+            "Halo 3 only. Halo 3's starting profile has no equipment field, so a picked "
+            "piece is granted by placing it on the player's starting location — you walk "
+            "into it as the level loads. Player 1's first equipment goes on their spawn, "
+            "player 2's on theirs; with 2-player coop off, both land on player 1's spawn. "
+            "A NEW placement is added, so the level's own equipment is untouched. A piece "
+            "the level doesn't already use anywhere is reported as a skip.")
+        form.addRow("Starting equipment:", self.starting_equipment_cb)
+
+        self.equipment_all_selected_cb = QCheckBox("Place every equipment each player carries, not just the first")
+        self.equipment_all_selected_cb.setChecked(bool(CONFIG.get('equipment_all_selected')))
+        self.equipment_all_selected_cb.setToolTip(
+            "On: every piece of equipment a player has picked up is placed on their spawn. "
+            "Off: only their first. Needs 'Starting equipment'.")
+        form.addRow("All carried equipment:", self.equipment_all_selected_cb)
+
         self.two_player_cb = QCheckBox("2-player coop: P1 plays Chief, P2 the Dervish (Halo 3)")
         self.two_player_cb.setChecked(bool(CONFIG.get('two_player_coop', True)))
         self.two_player_cb.setToolTip("On by default, and only does anything in Halo 3, which has two "
@@ -3484,6 +3573,8 @@ class OptionsDialog(QDialog):
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
+            'set_starting_equipment': self.starting_equipment_cb.isChecked(),
+            'equipment_all_selected': self.equipment_all_selected_cb.isChecked(),
             'two_player_coop': self.two_player_cb.isChecked(),
             'coop_no_starting_weapons': self.coop_no_start_cb.isChecked(),
             'null_coop_starting_equipment': self.coop_null_cb.isChecked(),

@@ -4,6 +4,8 @@
 # No GUI dependency; safe to unit-test headless.
 
 import json
+import math
+import re
 import shutil
 import struct
 from pathlib import Path
@@ -923,6 +925,176 @@ def _block_base(m, off):
     return (ptr - m.magic) & 0xFFFFFFFF              # Halo 1
 
 
+# --- Halo 3 starting equipment -------------------------------------------------
+# H3 has no "Starting Equipment" profile field (Reach added one; in H3 that offset is
+# the Editor Folder Index). What it can do is PLACE equipment, and an item sitting on
+# a Player Starting Location is walked into the instant the level loads. Confirmed
+# in-game on 020_base.
+#
+# A placement only appears if ALL of these hold:
+#   Can Attach To BSP Flags @0x50 includes the BSP that loads there,
+#   Placement Flags @0x4 has Not Automatically / Never Placed clear,
+#   Editor Folder Index @0x42 is -1, or the scenario script's object_destroy_folder
+#     calls delete it wherever it is,
+#   Position @0x8 is exact — placed equipment never settles under gravity.
+_H3_SPAWNS = (0x24C, 0x18)              # Player Starting Locations block
+_H3_SPAWN_BSP, _H3_SPAWN_TYPE = 0x14, 0x16
+_EQ_PALETTE, _EQ_NAME, _EQ_FLAGS, _EQ_POS = 0x0, 0x2, 0x4, 0x8
+_EQ_NODES, _EQ_UID, _EQ_FOLDER, _EQ_ATTACH, _EQ_GAMEFLAGS = 0x24, 0x38, 0x42, 0x50, 0x5C
+_PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
+
+
+def h3_player_spawns(m):
+    """The level's Player Starting Locations as [(position, bsp_index), ...].
+
+    Deliberately index-based, NOT filtered by Campaign Player Type: every H3 map has
+    exactly four, but seven maps label them {chief, dervish, 4, 4} while Tsavo
+    Highway, Floodgate and Cortana label all four as type 0. Matching on type would
+    silently place nothing for player 2 on those levels. Index 0 is the solo spawn."""
+    scnr_base = _scnr_base(m)
+    boff, esize = _H3_SPAWNS
+    if scnr_base is None:
+        return []
+    base = _block_base(m, scnr_base + boff)
+    if not base:
+        return []
+    out = []
+    for i in range(max(0, m.i32(scnr_base + boff))):
+        e = base + i * esize
+        out.append((struct.unpack_from('<fff', m.data, e),
+                    struct.unpack_from('<h', m.data, e + _H3_SPAWN_BSP)[0]))
+    return out
+
+
+def _h3_free_run(m, need):
+    """A 16-byte-aligned file offset with `need` free bytes that maps back to a tag
+    pointer, or None.
+
+    H3 stores tagblock pointers as realVA>>2 resolved through the partition table, so
+    a block may only live where a partition maps it: appending at EOF is unusable,
+    and the partition holding the scenario can't be extended because the tail tables
+    sit immediately behind it. Relocating into an existing zero run is the way in.
+    Every playable H3 map has 31-62 KB of such slack; only the intro and epilogue
+    cinematics have none, and those carry no equipment at all."""
+    for la, sz, fb in m.partitions:
+        if fb is None or not sz or fb + sz > len(m.data):
+            continue
+        for mo in re.finditer(rb'\x00{%d,}' % (need + 16), bytes(m.data[fb:fb + sz])):
+            dest = (fb + mo.start() + 15) & ~15
+            if dest + need <= fb + mo.end() and m.off2data(dest) is not None:
+                return dest
+    return None
+
+
+def _apply_spawn_equipment(m, game, spec):
+    """Grant Halo 3 starting equipment by APPENDING placements on the player spawns.
+
+    `spec` = {'groups': [[eqip tag path, ...], ...]}. Group i is placed on player
+    starting location i: group 0 on player 1's spawn, group 1 on player 2's. The
+    caller decides the split — with 2-player coop off it hands a single group holding
+    both players' items, so everything lands on spawn 0.
+
+    Appending rather than reusing a vanilla placement is the point: relocating an
+    existing one would delete that pickup from wherever the level put it."""
+    out = []
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    scnr_base = _scnr_base(m)
+    groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
+    if str(game).strip() != 'Halo 3' or not lay or scnr_base is None or not any(groups):
+        return out
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    N = max(0, m.i32(scnr_base + ioff))
+    base = _block_base(m, scnr_base + ioff)
+    if not N or not base:
+        return [{'effect': 'starting equipment', 'ok': False,
+                 'reason': 'level has no equipment placements to extend'}]
+
+    # A placement references the Equipment Palette by index, so a piece the level
+    # never uses can't be granted without also growing the palette.
+    pal = {}
+    pbase = _block_base(m, scnr_base + poff)
+    for i in range(max(0, m.i32(scnr_base + poff))) if pbase else []:
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if isinstance(nm, str):
+            pal[nm.replace('/', '\\').lower()] = i
+
+    spawns = h3_player_spawns(m)
+    if not spawns:
+        return [{'effect': 'starting equipment', 'ok': False,
+                 'reason': 'no player starting locations'}]
+
+    plan = []
+    for si, items in enumerate(groups):
+        if not items:
+            continue
+        if si >= len(spawns):
+            # a non-error outcome (a solo-only level, say): report as a skip, not a
+            # failure, so the summary doesn't flag it red
+            for tag in items:
+                out.append({'effect': 'starting equipment',
+                            'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
+                            'reason': f'no player starting location {si}'})
+            continue
+        pos, bsp = spawns[si]
+        for tag in items:
+            pi = pal.get(str(tag).replace('/', '\\').lower())
+            if pi is None:
+                out.append({'effect': 'starting equipment',
+                            'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
+                            'reason': 'not in this level\'s equipment palette'})
+                continue
+            plan.append((pi, pos, bsp, str(tag).rsplit('\\', 1)[-1], si))
+    if not plan:
+        return out
+
+    need = (N + len(plan)) * ies
+    dest = _h3_free_run(m, need)
+    if dest is None:
+        return out + [{'effect': 'starting equipment', 'ok': False,
+                       'reason': f'no free run of {need} bytes to relocate the block'}]
+
+    # A template that already spawns on its own, so the new elements inherit valid
+    # Type / Source / BSP Policy instead of guessed values.
+    tmpl = next((i for i in range(N)
+                 if not struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
+                 & (_PLACE_NOT_AUTO | _PLACE_NEVER)), None)
+    if tmpl is None:
+        return out + [{'effect': 'starting equipment', 'ok': False,
+                       'reason': 'no auto-spawning placement to use as a template'}]
+
+    m.data[dest:dest + N * ies] = m.data[base:base + N * ies]
+    uids = [m.u32(base + i * ies + _EQ_UID) for i in range(N)]
+    nxt = max(u & 0xFFFF for u in uids) + 1
+    salt = uids[tmpl] >> 16
+
+    for k, (pi, pos, bsp, label, si) in enumerate(plan):
+        e = dest + (N + k) * ies
+        m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
+        struct.pack_into('<h', m.data, e + _EQ_PALETTE, pi)
+        struct.pack_into('<h', m.data, e + _EQ_NAME, -1)
+        fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0] & ~(_PLACE_NOT_AUTO | _PLACE_NEVER)
+        struct.pack_into('<I', m.data, e + _EQ_FLAGS, fl)
+        # spread copies on one spawn around a tight ring so they don't interpenetrate,
+        # while staying well inside the pickup radius
+        ang = k * 1.9
+        struct.pack_into('<fff', m.data, e + _EQ_POS,
+                         pos[0] + 0.15 * math.cos(ang), pos[1] + 0.15 * math.sin(ang), pos[2])
+        struct.pack_into('<ii', m.data, e + _EQ_NODES, 0, 0)     # own no Node Orientations
+        struct.pack_into('<I', m.data, e + _EQ_UID, ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        struct.pack_into('<h', m.data, e + _EQ_FOLDER, -1)       # immune to object_destroy_folder
+        struct.pack_into('<H', m.data, e + _EQ_ATTACH, 1 << max(0, bsp))
+        struct.pack_into('<H', m.data, e + _EQ_GAMEFLAGS, 0)     # campaign, not MP-only
+        out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
+                    'old': 'not present',
+                    'new': f'placed on spawn {si}' + (' (coop)' if spec.get('coop') else '')})
+
+    # repoint last, so the map stays consistent if anything above raised
+    struct.pack_into('<i', m.data, scnr_base + ioff, N + len(plan))
+    struct.pack_into('<I', m.data, scnr_base + ioff + 4, m.off2data(dest))
+    return out
+
+
 def _spread_slots(N, counts):
     """Assign each (key, count) `count` placement slots EVENLY spread across [0, N)
     — evenly-spaced positions with collisions bumped to the nearest free slot, so a
@@ -1211,7 +1383,7 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
-              equipment_swaps=None):
+              equipment_swaps=None, spawn_equipment=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -1342,6 +1514,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # After the ops (so any Magazine effect is already in the weap tags),
         # set the player Starting Profile weapons + rounds from the run's picks.
         results.extend(_apply_starting_equipment(m, game, registry, starting))
+
+    if spawn_equipment:
+        # Halo 3 starting equipment. Structural (it grows the Equipment block by
+        # relocating it), so it runs after every value op — but before the zoom UI,
+        # which relocates HUD blocks and would otherwise compete for the same slack.
+        results.extend(_apply_spawn_equipment(m, game, spawn_equipment))
 
     if zoom_ui:
         # Structural growth LAST: copy a donor scope overlay into each scopeless
