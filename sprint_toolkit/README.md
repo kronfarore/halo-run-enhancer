@@ -96,3 +96,14 @@ H2/H3 tags like the energy sword corrupts H1 graphics.
 - Modified maps need MCC's anti-cheat **off** (play offline / campaign).
 - Self-contained maps are large (~40–275 MB each). Both full versions ≈ 4 GB.
 - Every built map must be **tuned with `--enable`** before it will sprint.
+
+## Credits
+
+Inspired by **Sprint Evolved** (Steam Workshop item `3594880812`) — the Halo 1 mod
+that first demonstrated sprint is achievable in H1 purely from tag data: an
+invisible weapon plus per-weapon movement penalties, driven by a flashlight-key
+script. This toolkit re-derives that technique independently, with its own assets
+and scripts (no files taken from the mod), and adds a tunable duration/cooldown
+model and a self-sufficient Python build pipeline. Full credit to Sprint Evolved's
+author for the original idea that made this possible.
+
