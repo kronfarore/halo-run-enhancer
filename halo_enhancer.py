@@ -85,7 +85,29 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
-               'hide_tags', 'hide_fields')
+               'hide_tags', 'hide_fields',
+               'sprint_feature', 'sprint_start_with', 'sprint_as_card',
+               'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
+               'sprint_cooldown_s')
+
+
+class _WheelGuard(QObject):
+    """App-wide filter so the mouse wheel doesn't nudge a number field the user is
+    only scrolling PAST. A spin box reacts to the wheel only while it holds focus
+    (click into it first); otherwise the scroll is redirected to the enclosing
+    scroll area, so the options list keeps scrolling and the value is left alone.
+    Clicking still focuses normally, so focus-then-scroll to adjust still works."""
+
+    def eventFilter(self, obj, ev):
+        if (ev.type() == QEvent.Wheel and isinstance(obj, QAbstractSpinBox)
+                and not obj.hasFocus()):
+            p = obj.parent()
+            while p is not None and not isinstance(p, QAbstractScrollArea):
+                p = p.parent()
+            if p is not None:
+                QApplication.sendEvent(p.viewport(), ev)
+            return True   # never let an unfocused spin box consume the wheel
+        return False
 
 
 def boss_mods_removed():
@@ -244,6 +266,17 @@ CONFIG = {
     # #7: offer map-replacement as a per-weapon CARD instead of the patcher's
     # sliders. The two are the same mechanism, so only one is shown at a time.
     "weapon_swap_cards": False,
+    # Sprint (New Features / Experimental). Only functions on maps built with the
+    # sprint mod; on a plain map these are inert. sprint_feature is the master
+    # switch; start-with vs card is how it enters a run; speed% scales the sprint
+    # boost, duration/cooldown are in seconds (converted to 30-tick script globals).
+    "sprint_feature": False,
+    "sprint_start_with": True,
+    "sprint_as_card": False,
+    "sprint_need_weapon": False,
+    "sprint_speed_pct": 150,
+    "sprint_duration_s": 3.0,
+    "sprint_cooldown_s": 2.0,
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -259,6 +292,9 @@ CONFIG = {
                                "Halo 3": ["Halo3MCC", "Halo3"]},
     "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
                         "Halo 3": "halo3/maps"},
+    # Halo 1 campaign scenario basenames, in order — used by the "Apply Sprint to
+    # maps" action to walk the whole campaign (mod maps live under the same folder).
+    "h1_campaign_maps": ["a10", "a30", "a50", "b30", "b40", "c10", "c20", "c40", "d20", "d40"],
     # #6: alternate internal names mapped to a canonical weapon. The alias
     # shares the canonical weapon's modifiers and is not treated as new.
     # e.g. {"Magnum": "Pistol"}
@@ -2818,6 +2854,22 @@ class MagnitudeEditorDialog(QDialog):
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
                 'null_respawn': null_coop}
 
+    def _sprint_spec(self):
+        """Sprint config for this patch, or None when the feature is off.
+
+        Base values come from the New Features options; the patcher no-ops on any
+        map not built with the sprint mod, so it's safe to pass for any game. The
+        gate is on when "Start with Sprint" is set. (Card-drafted enabling and the
+        Speed/Cooldown/Duration mod cards layer onto this once they're in halo.json.)"""
+        if not CONFIG.get('sprint_feature'):
+            return None
+        return {
+            'enabled': bool(CONFIG.get('sprint_start_with', True)),
+            'speed_pct': int(CONFIG.get('sprint_speed_pct', 150)),
+            'duration_ticks': max(1, round(float(CONFIG.get('sprint_duration_s', 3.0)) * 30)),
+            'cooldown_ticks': max(0, round(float(CONFIG.get('sprint_cooldown_s', 2.0)) * 30)),
+        }
+
     def _spawn_equipment_spec(self):
         """Halo 3 starting equipment: the equipment each player carries, appended as
         placements on their spawn.
@@ -3044,8 +3096,9 @@ class MagnitudeEditorDialog(QDialog):
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
+        sprint = self._sprint_spec()
         if (not plan and not starting and not weapon_swaps and not remove_cutscenes
-                and not skulls and not equip_swaps and not spawn_equipment):
+                and not skulls and not equip_swaps and not spawn_equipment and not sprint):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
@@ -3056,7 +3109,8 @@ class MagnitudeEditorDialog(QDialog):
                   + (["scatter map weapons"] if weapon_swaps else [])
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
-                  + ([f"apply skull: {', '.join(skulls)}"] if skulls else []))
+                  + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
+                  + ([("enable" if sprint['enabled'] else "disable") + " sprint"] if sprint else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -3074,7 +3128,8 @@ class MagnitudeEditorDialog(QDialog):
                 remove_cutscenes=remove_cutscenes,
                 skulls=skulls,
                 equipment_swaps=equip_swaps or None,
-                spawn_equipment=spawn_equipment))
+                spawn_equipment=spawn_equipment,
+                sprint=sprint))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -3525,6 +3580,96 @@ class OptionsDialog(QDialog):
         _sync_coop_respawn()
         layout.addWidget(coop_g)
 
+        # ---- New Features (Experimental) ----
+        # Sprint. Only functions on maps built with the sprint mod (weapon tag +
+        # global_scripts sprint.hsc); on a vanilla map these settings no-op. The
+        # patcher tunes it live: speed via matg/weapon fields, cooldown/duration via
+        # the sprint_ticks/sprint_cooldown script globals, and on/off via the
+        # sprint_enabled global. Offered in every game lacking inherent sprint.
+        exp_g = QGroupBox("New Features (Experimental)")
+        xform = QFormLayout(exp_g)
+        xform.setLabelAlignment(Qt.AlignRight)
+
+        self.sprint_cb = QCheckBox("Enable Sprint")
+        self.sprint_cb.setChecked(bool(CONFIG.get('sprint_feature')))
+        self.sprint_cb.setToolTip("Flashlight-key sprint (a held speed boost) for games that never "
+                                  "shipped with sprint. Requires maps built with the sprint mod; on a "
+                                  "plain map these options do nothing.")
+        xform.addRow("Sprint:", self.sprint_cb)
+
+        self.sprint_start_cb = QCheckBox("Start with Sprint")
+        self.sprint_start_cb.setChecked(bool(CONFIG.get('sprint_start_with', True)))
+        self.sprint_start_cb.setToolTip("Sprint is active from the first map. Turn off to make Sprint a "
+                                        "drafted Equipment card instead (see below).")
+        xform.addRow("    ↳ From the start:", self.sprint_start_cb)
+
+        self.sprint_cards_cb = QCheckBox("Offer Sprint as an Equipment card")
+        self.sprint_cards_cb.setChecked(bool(CONFIG.get('sprint_as_card')))
+        self.sprint_cards_cb.setToolTip("When not starting with Sprint, put it in the draft as an "
+                                        "Equipment card; sprint switches on once a player picks it.")
+        xform.addRow("    ↳ As a card:", self.sprint_cards_cb)
+
+        self.sprint_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
+        self.sprint_need_weapon_cb.setChecked(bool(CONFIG.get('sprint_need_weapon')))
+        self.sprint_need_weapon_cb.setToolTip("Keeps the Sprint card from being the first thing a player "
+                                              "picks up. Only applies while Sprint is offered as a card.")
+        xform.addRow("        ↳ Needs a gun:", self.sprint_need_weapon_cb)
+
+        self.sprint_speed = QSpinBox()
+        self.sprint_speed.setRange(105, 300)
+        self.sprint_speed.setSingleStep(5)
+        self.sprint_speed.setSuffix("%")
+        self.sprint_speed.setValue(int(CONFIG.get('sprint_speed_pct', 150)))
+        self.sprint_speed.setToolTip("Sprint speed as a percentage of normal run speed. 150% matches the "
+                                     "reference mod. Normal movement is unaffected — only sprinting scales.")
+        xform.addRow("    ↳ Speed:", self.sprint_speed)
+
+        self.sprint_duration = QDoubleSpinBox()
+        self.sprint_duration.setRange(0.5, 30.0)
+        self.sprint_duration.setSingleStep(0.5)
+        self.sprint_duration.setDecimals(1)
+        self.sprint_duration.setSuffix(" s")
+        self.sprint_duration.setValue(float(CONFIG.get('sprint_duration_s', 3.0)))
+        self.sprint_duration.setToolTip("How long a single sprint lasts before it auto-ends.")
+        xform.addRow("    ↳ Duration:", self.sprint_duration)
+
+        self.sprint_cooldown = QDoubleSpinBox()
+        self.sprint_cooldown.setRange(0.0, 30.0)
+        self.sprint_cooldown.setSingleStep(0.5)
+        self.sprint_cooldown.setDecimals(1)
+        self.sprint_cooldown.setSuffix(" s")
+        self.sprint_cooldown.setValue(float(CONFIG.get('sprint_cooldown_s', 2.0)))
+        self.sprint_cooldown.setToolTip("Delay after a sprint ends before you can sprint again.")
+        xform.addRow("    ↳ Cooldown:", self.sprint_cooldown)
+
+        self.sprint_apply_btn = QPushButton("Apply Sprint to maps…")
+        self.sprint_apply_btn.setToolTip("Write the sprint settings above into every Halo 1 map that was "
+                                         "built with the sprint mod, and turn sprint on. Maps without the "
+                                         "sprint weapon are skipped. Values are byte-patched — no rebuild.")
+        self.sprint_apply_btn.clicked.connect(self._apply_sprint_to_maps)
+        xform.addRow("", self.sprint_apply_btn)
+
+        # Start-with and card are two ways in; starting with sprint makes the card moot.
+        self.sprint_start_cb.toggled.connect(
+            lambda on: on and self.sprint_cards_cb.setChecked(False))
+        self.sprint_cards_cb.toggled.connect(
+            lambda on: on and self.sprint_start_cb.setChecked(False))
+
+        def _sync_sprint(_=False):
+            on = self.sprint_cb.isChecked()
+            for w in (self.sprint_start_cb, self.sprint_cards_cb, self.sprint_speed,
+                      self.sprint_duration, self.sprint_cooldown, self.sprint_apply_btn):
+                w.setEnabled(on)
+            # "Needs a gun" only matters when Sprint is a card.
+            card = on and self.sprint_cards_cb.isChecked()
+            self.sprint_need_weapon_cb.setEnabled(card)
+            if not card:
+                self.sprint_need_weapon_cb.setChecked(False)
+        self.sprint_cb.toggled.connect(_sync_sprint)
+        self.sprint_cards_cb.toggled.connect(_sync_sprint)
+        _sync_sprint()
+        layout.addWidget(exp_g)
+
         # ---- Card rolls ----
         rolls = QGroupBox("Card rolls")
         rform = QFormLayout(rolls)
@@ -3742,7 +3887,71 @@ class OptionsDialog(QDialog):
             'card_row_margin': self.card_row_margin.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
+            'sprint_feature': self.sprint_cb.isChecked(),
+            'sprint_start_with': self.sprint_start_cb.isChecked(),
+            'sprint_as_card': self.sprint_cards_cb.isChecked(),
+            'sprint_need_weapon': self.sprint_need_weapon_cb.isChecked(),
+            'sprint_speed_pct': self.sprint_speed.value(),
+            'sprint_duration_s': round(self.sprint_duration.value(), 1),
+            'sprint_cooldown_s': round(self.sprint_cooldown.value(), 1),
         }
+
+    def _apply_sprint_to_maps(self):
+        """Byte-patch the current sprint settings into every H1 campaign map that
+        carries the sprint mod, turning sprint on. Uses the live widget values (not
+        yet-saved), reuses halo_patch.apply_run(sprint=cfg) — which skips any map
+        without the sprint weapon (checked in _apply_sprint before any write)."""
+        import halo_patch
+        cfg = {
+            'enabled': True,          # applying from here means "turn sprint on"
+            'speed_pct': self.sprint_speed.value(),
+            'duration_ticks': max(1, round(self.sprint_duration.value() * 30)),
+            'cooldown_ticks': max(0, round(self.sprint_cooldown.value() * 30)),
+        }
+        root = mcc_root()
+        folder = CONFIG.get('map_game_folder', {}).get('Halo 1', 'halo1/maps')
+        maps = CONFIG.get('h1_campaign_maps', [])
+        paths = [(mid, halo_patch.default_map_path(root, folder, mid)) for mid in maps]
+        present = [(mid, p) for mid, p in paths if p and Path(p).is_file()]
+        if not present:
+            QMessageBox.warning(self, "No maps found",
+                                f"No Halo 1 maps under:\n{Path(root) / folder}\n\n"
+                                "Point the MCC folder (Options) at your install or the sprint mod.")
+            return
+        if QMessageBox.question(
+                self, "Apply Sprint to maps?",
+                f"Write sprint settings ({self.sprint_speed.value()}%, "
+                f"{self.sprint_duration.value():g}s / {self.sprint_cooldown.value():g}s cd) "
+                f"into up to {len(present)} Halo 1 map(s) under:\n{Path(root) / folder}\n\n"
+                "Maps without the sprint weapon are skipped. A one-time .bak is made "
+                "for each map changed.") != QMessageBox.Yes:
+            return
+
+        subdirs = CONFIG.get('plugin_subdirs_by_game', {}).get('Halo 1', ['Halo1MCC', 'Halo1'])
+        registry = halo_patch.PluginRegistry(CONFIG.get('assembly_plugins_dir'), subdirs)
+        difficulty = CONFIG.get('target_difficulty', 'Normal')
+        patched, skipped = [], []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for mid, mp in present:
+                try:
+                    results, _ = halo_patch.apply_run(mp, [], registry, difficulty,
+                                                      game='Halo 1', sprint=cfg)
+                except Exception as e:
+                    skipped.append(f"{mid}: error — {e}")
+                    continue
+                sres = next((r for r in results if r.get('field') == 'sprint'), None)
+                if sres and sres.get('ok') and not sres.get('skip'):
+                    patched.append(mid)
+                else:
+                    skipped.append(f"{mid}: {sres.get('reason', 'skipped') if sres else 'skipped'}")
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        msg = f"Sprint applied to {len(patched)} map(s): {', '.join(patched) or '—'}"
+        if skipped:
+            msg += "\n\nSkipped (no sprint mod):\n" + "\n".join(skipped)
+        QMessageBox.information(self, "Apply Sprint to maps", msg)
 
 
 class HaloGUI(QMainWindow):
@@ -5267,6 +5476,9 @@ def main():
         sys.stderr = _NullWriter()
     load_settings()
     app = QApplication(sys.argv)
+    # Stop the wheel from changing spin-box values unless the field is focused.
+    app._wheel_guard = _WheelGuard()
+    app.installEventFilter(app._wheel_guard)
     app.setStyle('Fusion')
     app.setStyleSheet("""
         QMainWindow, QWidget { background-color: #0a0a0a; }

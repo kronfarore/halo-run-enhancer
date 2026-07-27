@@ -1616,10 +1616,118 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     return out
 
 
+# --- Sprint (New Features / Experimental) ----------------------------------
+# Tunes a map that was BUILT with the sprint mod (invisible weapon + the
+# global_scripts sprint.hsc). All of it is field/byte edits, no rebuild:
+#   speed%      matg Run/Sneak Forward, and every player-held weapon's Forward
+#               Movement Penalty (the sprint weapon alone stays at 0, so holding
+#               it = full speed). Normal movement is unchanged.
+#   duration    sprint_ticks   short global   (seconds * 30)
+#   cooldown    sprint_cooldown short global   (seconds * 30)
+#   enabled     sprint_enabled  boolean global (the master gate)
+# See halo1-sprint-from-scratch memory for the storage format.
+_SPRINT_STOCK_RUN, _SPRINT_STOCK_SNEAK = 2.25, 0.9
+_SPRINT_WEAP = 'weapons\\sprint\\sprint'
+_SPRINT_AI_ONLY = ('weapons\\energy sword\\energy sword',
+                   'weapons\\fuel rod gun\\hunter fuel rod')
+
+
+def _sprint_player_held(name):
+    """Weapons the player can carry on foot get the movement penalty. Vehicle
+    guns and AI-only weapons must stay at 0 or they'd sprint permanently."""
+    return not name.startswith('vehicles\\') and name not in _SPRINT_AI_ONLY
+
+
+def set_global(m, name, value):
+    """Patch a Halo 1 script-global's init value in a built map, by name, no
+    rebuild. scnr Globals block (0x4A8, elem 0x5C): each global's Init Expression
+    Index (@0x28) indexes the Script Syntax Data blob (dataref @0x474; 56-byte
+    header, then 20-byte nodes). Value TYPE is int16 @node+0x04 (5=bool, 6=real,
+    7=short, 8=long); the constant is at node+0x10 (bool=1 byte, short=int16,
+    real=f32, long=i32). Returns (old, new) or None if the global is absent."""
+    scnr = next((k for k in m.tags if k[0] == 'scnr'), None)
+    if scnr is None:
+        return None
+    meta = m.tags[scnr]
+    syn = (m.u32(meta + 0x474 + 12) - m.magic) & 0xFFFFFFFF
+    cnt = m.i32(meta + 0x4A8)
+    ptr = (m.u32(meta + 0x4A8 + 4) - m.magic) & 0xFFFFFFFF
+    for i in range(cnt):
+        b = ptr + i * 0x5C
+        if m._cstr(b) != name:
+            continue
+        node = m.u32(b + 0x28) & 0xFFFF
+        nb = syn + 56 + node * 20
+        vtype = struct.unpack_from('<h', m.data, nb + 0x04)[0]
+        off = nb + 0x10
+        if vtype == 5:                                   # boolean: 1 byte
+            old = m.data[off]; m.data[off] = 1 if value else 0
+            return old, m.data[off]
+        if vtype == 6:                                   # real
+            old = struct.unpack_from('<f', m.data, off)[0]
+            struct.pack_into('<f', m.data, off, float(value)); return old, float(value)
+        if vtype == 8:                                   # long
+            old = struct.unpack_from('<i', m.data, off)[0]
+            struct.pack_into('<i', m.data, off, int(value)); return old, int(value)
+        old = struct.unpack_from('<h', m.data, off)[0]   # short (default)
+        struct.pack_into('<h', m.data, off, int(value)); return old, int(value)
+    return None
+
+
+def _sprint_null_ref(m, base, roff):
+    struct.pack_into('<I', m.data, base + roff + 0, 0xFFFFFFFF)
+    struct.pack_into('<I', m.data, base + roff + 12, 0xFFFFFFFF)
+
+
+def _apply_sprint(m, game, registry, cfg):
+    """Tune the pre-built sprint mod. cfg keys: enabled(bool), speed_pct(int),
+    duration_ticks(int), cooldown_ticks(int). No-op with a reported skip if the
+    map wasn't built with the mod (no sprint_enabled global / no sprint weapon)."""
+    label = 'Sprint'
+    ref = {'effect': label, 'tag': 'matg globals\\globals', 'field': 'sprint'}
+    # Guard: the map must carry the sprint weapon tag (and thus the mod). Checked
+    # BEFORE any write so a plain map is never touched.
+    if not m.find_tags('weap', _SPRINT_WEAP):
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': 'no sprint weapon on this map (not built with the mod)'}]
+    if set_global(m, 'sprint_enabled', bool(cfg.get('enabled'))) is None:
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': 'sprint script global missing (map not built with the mod)'}]
+    mg, wp = registry.get('matg'), registry.get('weap')
+    if mg is None or wp is None:
+        return [{**ref, 'ok': False, 'reason': 'matg/weap plugin missing'}]
+
+    mult = max(1.0, cfg.get('speed_pct', 150) / 100.0)
+    penalty = 1.0 - (1.0 / mult) if mult > 1.0 else 0.0
+    # Global run/sneak speed = sprint speed; a held real weapon penalises back to normal.
+    mg_ref = ('matg', 'globals\\globals')
+    m.apply_field(*mg_ref, 'Run Forward', 'set', _SPRINT_STOCK_RUN * mult, mg,
+                  block='Player Information')
+    m.apply_field(*mg_ref, 'Sneak Forward', 'set', _SPRINT_STOCK_SNEAK * mult, mg,
+                  block='Player Information')
+    for name, _ in m.read_all('weap', '*', 'Forward Movement Penalty', wp):
+        if not _sprint_player_held(name):
+            continue
+        val = 0.0 if name == _SPRINT_WEAP else penalty
+        m.apply_field('weap', name, 'Forward Movement Penalty', 'set', val, wp)
+    # Sprint weapon: no fast strafing, and empty first person (null the flag FP refs).
+    if m.find_tags('weap', _SPRINT_WEAP):
+        m.apply_field('weap', _SPRINT_WEAP, 'Sideways Movement Penalty', 'set', 0.5, wp)
+        wbase = m.find_tags('weap', _SPRINT_WEAP)[0][1]
+        _sprint_null_ref(m, wbase, 0x45C)    # First Person Model
+        _sprint_null_ref(m, wbase, 0x46C)    # First Person Animations
+    set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
+    set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
+    state = ('on %d%%, %.1fs / %.1fs cd' %
+             (cfg.get('speed_pct', 150), cfg.get('duration_ticks', 90) / 30.0,
+              cfg.get('cooldown_ticks', 60) / 30.0)) if cfg.get('enabled') else 'off'
+    return [{**ref, 'ok': True, 'old': 'sprint', 'new': state}]
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
-              equipment_swaps=None, spawn_equipment=None):
+              equipment_swaps=None, spawn_equipment=None, sprint=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -1779,6 +1887,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         else:
             r.update(ok=False, reason=rep.get('reason', 'cutscene removal failed'))
         results.append(r)
+
+    if sprint:
+        # Sprint tuning (speed + duration/cooldown/enable). Whole-map, value-only,
+        # so order among the structural passes doesn't matter — do it last.
+        results.extend(_apply_sprint(m, game, registry, sprint))
 
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):
