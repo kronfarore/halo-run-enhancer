@@ -1690,9 +1690,14 @@ def _apply_sprint(m, game, registry, cfg):
     if not m.find_tags('weap', _SPRINT_WEAP):
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'no sprint weapon on this map (not built with the mod)'}]
-    if set_global(m, 'sprint_enabled', bool(cfg.get('enabled'))) is None:
+    enabled = bool(cfg.get('enabled'))
+    if set_global(m, 'sprint_enabled', enabled) is None:
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'sprint script global missing (map not built with the mod)'}]
+    if not enabled:
+        # Disabling: just close the gate. Leave the map at its vanilla baseline speed
+        # (apply_run patches from the .bak baseline, so no speed edits = vanilla).
+        return [{**ref, 'ok': True, 'old': 'sprint', 'new': 'off'}]
     mg, wp = registry.get('matg'), registry.get('weap')
     if mg is None or wp is None:
         return [{**ref, 'ok': False, 'reason': 'matg/weap plugin missing'}]

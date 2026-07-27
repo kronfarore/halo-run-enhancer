@@ -2855,16 +2855,16 @@ class MagnitudeEditorDialog(QDialog):
                 'null_respawn': null_coop}
 
     def _sprint_spec(self):
-        """Sprint config for this patch, or None when the feature is off.
-
-        Base values come from the New Features options; the patcher no-ops on any
-        map not built with the sprint mod, so it's safe to pass for any game. The
-        gate is on when "Start with Sprint" is set. (Card-drafted enabling and the
-        Speed/Cooldown/Duration mod cards layer onto this once they're in halo.json.)"""
-        if not CONFIG.get('sprint_feature'):
+        """Sprint config for this patch. None for non-Halo-1 games (no sprint maps
+        exist elsewhere). For Halo 1 it ALWAYS returns a spec — so a patch also turns
+        sprint OFF when the feature is disabled — and the patcher no-ops on any map
+        without the sprint weapon, so this is safe. 'enabled' is on only when the
+        feature is on and "Start with Sprint" is set. (Sprint mod cards will layer
+        onto this once wired.)"""
+        if self.game != 'Halo 1':
             return None
         return {
-            'enabled': bool(CONFIG.get('sprint_start_with', True)),
+            'enabled': bool(CONFIG.get('sprint_feature')) and bool(CONFIG.get('sprint_start_with', True)),
             'speed_pct': int(CONFIG.get('sprint_speed_pct', 150)),
             'duration_ticks': max(1, round(float(CONFIG.get('sprint_duration_s', 3.0)) * 30)),
             'cooldown_ticks': max(0, round(float(CONFIG.get('sprint_cooldown_s', 2.0)) * 30)),
@@ -3097,8 +3097,11 @@ class MagnitudeEditorDialog(QDialog):
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
         sprint = self._sprint_spec()
+        # A disable-sprint spec rides along with other edits; it shouldn't force a
+        # patch on an otherwise-empty selection (only ENABLING sprint is standalone).
+        sprint_on = bool(sprint and sprint['enabled'])
         if (not plan and not starting and not weapon_swaps and not remove_cutscenes
-                and not skulls and not equip_swaps and not spawn_equipment and not sprint):
+                and not skulls and not equip_swaps and not spawn_equipment and not sprint_on):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
@@ -3110,7 +3113,7 @@ class MagnitudeEditorDialog(QDialog):
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
-                  + ([("enable" if sprint['enabled'] else "disable") + " sprint"] if sprint else []))
+                  + (["enable sprint"] if sprint_on else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
