@@ -41,19 +41,29 @@ GLOBALS = 'globals\\globals'
 MOVE = 'Player Information'
 SPRINT_WEAP = 'weapons\\sprint\\sprint'
 
-# Flashlight-key ability selector (matches sprint.hsc ability0/ability1).
-ABILITIES = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3, 'medikit': 4}
+# Flashlight-key ability selector (matches sprint.hsc ability0/ability1). Ability 4 is
+# "Regeneration" to the user; `medikit` stays as an internal alias (globals are medi_*).
+# Order matters: the first name for a value is the one we display.
+ABILITIES = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3,
+             'regeneration': 4, 'medikit': 4}
 
 # Vanilla stock values, so --mult is always applied to a known baseline rather
 # than to whatever a previous run left behind.
 STOCK_RUN_FORWARD = 2.25
 STOCK_SNEAK_FORWARD = 0.9
 
+# The engine's absolute vitality scale, measured in-game: a full body/shield is 75
+# units, and the unit_get_health/_shield getters return a [0,1] fraction OF THAT.
+# It has to be exact -- the regeneration write-back rewrites body/shield as
+# fraction*VIT_MAX every tick, so 76 ratchets both to full and 74 drains them.
+VIT_MAX = 75.0
+
 # Overshield: object_set_shield's raw value is awkward (a tiny number already
-# overshields). Calibrated in-game 2026-07-28: the raw value is LINEAR in the
-# overshield multiplier, v = mult * OS_SHIELD_BASE, so x2=0.0267, x3=0.04005,
-# x4=0.0534. Users pass a clean multiplier (--os-mult 2); we store the raw value.
-OS_SHIELD_BASE = 0.01335   # raw object_set_shield value for x1 (normal full shield)
+# overshields) because it too is in 1/VIT_MAX units -- one normal full shield is
+# 1/75. So the same constant drives both abilities; the in-game calibration
+# (x2=0.0267, x3=0.04005, x4=0.0534) is 2/75, 3/75, 4/75 to measurement error.
+# Users pass a clean multiplier (--os-mult 2); we store the raw value.
+OS_SHIELD_BASE = 1.0 / VIT_MAX   # raw object_set_shield value for x1 (normal full shield)
 
 # Only PLAYER-HELD weapons get the penalty. Anything left at zero is a
 # permanent-sprint weapon, so the exclusions matter:
@@ -124,29 +134,40 @@ def set_global(m, name, val):
     return None
 
 
-def set_profile_shield(m, value, skip_substr='sprint'):
-    """Set Starting Shield Modifier (spawn overshield multiplier) on every Player
-    Starting Profile whose name doesn't contain skip_substr. Also lifts a 0 health
-    modifier to 1.0 so a profile reset can't spawn the player dead. scnr Player Starting
-    Profile block @0x348, elem 0x68: Starting Health Modifier @0x20, Shield @0x24.
-    Returns [(name, old_shield)] for what was set."""
+# scnr Player Starting Profile block @0x348, element 0x68:
+#   Starting Health Modifier @0x20, Starting Shield Modifier @0x24.
+PROFILE_BLOCK = 0x348
+PROFILE_ELEM = 0x68
+PROFILE_FIELDS = {'health': 0x20, 'shield': 0x24}
+
+
+def set_profile_vitality(m, which, value, skip_substr='sprint'):
+    """Set a spawn modifier ('health' or 'shield') on every Player Starting Profile whose
+    name doesn't contain skip_substr. Setting shield also lifts a 0 health modifier to 1.0
+    so a profile reset can't spawn the player dead. Returns [(name, old)] for what was set."""
     import struct
+    off = PROFILE_FIELDS[which]
     scnr = [k for k in m.tags if k[0] == 'scnr'][0]
     meta = m.tags[scnr]
-    cnt = m.i32(meta + 0x348)
-    ptr = (m.u32(meta + 0x348 + 4) - m.magic) & 0xFFFFFFFF
+    cnt = m.i32(meta + PROFILE_BLOCK)
+    ptr = (m.u32(meta + PROFILE_BLOCK + 4) - m.magic) & 0xFFFFFFFF
     done = []
     for i in range(cnt):
-        b = ptr + i * 0x68
+        b = ptr + i * PROFILE_ELEM
         name = m._cstr(b)
         if skip_substr and skip_substr in name:
             continue
-        old = struct.unpack_from('<f', m.data, b + 0x24)[0]
-        struct.pack_into('<f', m.data, b + 0x24, float(value))
-        if struct.unpack_from('<f', m.data, b + 0x20)[0] <= 0.0:
+        old = struct.unpack_from('<f', m.data, b + off)[0]
+        struct.pack_into('<f', m.data, b + off, float(value))
+        if which == 'shield' and struct.unpack_from('<f', m.data, b + 0x20)[0] <= 0.0:
             struct.pack_into('<f', m.data, b + 0x20, 1.0)
         done.append((name, old))
     return done
+
+
+def set_profile_shield(m, value, skip_substr='sprint'):
+    """Back-compat wrapper: Starting Shield Modifier (spawn overshield multiplier)."""
+    return set_profile_vitality(m, 'shield', value, skip_substr)
 
 
 def read_global(m, name):
@@ -210,13 +231,28 @@ def main():
     ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
     ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
     ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
-    ap.add_argument('--medi-heal', type=float, help="medikit health while active (1.0 = full)")
-    ap.add_argument('--medi-duration', type=int, help="medikit window, ticks")
+    ap.add_argument('--medi-percent', type=float, help="Regeneration total heal as a PERCENT of "
+                    "max health (100 = a full heal), spread over --medi-duration. Preferred "
+                    "over --medi-heal.")
+    ap.add_argument('--medi-heal', type=float, help="Regeneration TOTAL heal in raw vitality "
+                    "units (%g = full health), spread evenly over --medi-duration" % VIT_MAX)
+    ap.add_argument('--medi-duration', type=int, help="Regeneration window, ticks "
+                    "(1 = instant; 90 = healed over 3s)")
+    ap.add_argument('--medi-rate', type=float, help="Regeneration PER-TICK heal, set outright "
+                    "(overrides --medi-heal/--medi-duration). 0 = no heal, for calibrating "
+                    "--vit-max.")
+    ap.add_argument('--vit-max', type=float, help="absolute vitality scale (default 100): what "
+                    "the [0,1] health/shield getters are multiplied by. MUST match the unit's "
+                    "true max -- too high and each tick rewrites health higher than it was, "
+                    "ratcheting to full regardless of the heal rate.")
     ap.add_argument('--medi-cooldown', type=int, help="medikit cooldown, ticks")
     ap.add_argument('--spawn-shield', type=float, default=None,
                     help="spawn OVERSHIELD: set Starting Shield Modifier on the player/coop "
                          "profiles (1=normal, 2=red 2x, 3=vanilla 3x). Real, gradually-"
                          "charging overshield applied on every spawn.")
+    ap.add_argument('--spawn-health', type=float, default=None,
+                    help="set Starting Health Modifier on the player/coop profiles "
+                         "(1 = normal). Spawn-time health multiplier.")
     ap.add_argument('--sprint-weap', default=SPRINT_WEAP,
                     help="sprint weapon tag path; override to inspect another "
                          "build, e.g. Sprint Evolved's altis\\weapons\\sprint\\sprint")
@@ -378,12 +414,30 @@ def main():
         os_shield_raw = a.os_mult * OS_SHIELD_BASE
         print('  overshield x%g -> object_set_shield %.5f' % (a.os_mult, os_shield_raw))
 
+    # Regeneration: the script adds a PER-TICK amount (medi_rate) rather than dividing in
+    # HSC. --medi-rate sets it outright; otherwise heal/duration derive it, falling back to
+    # whatever the map already carries for the half that wasn't passed.
+    medi_rate = a.medi_rate
+    medi_heal = a.medi_heal
+    if a.medi_percent is not None:      # percent of max wins over raw units
+        medi_heal = a.medi_percent / 100.0 * VIT_MAX
+        print('  regeneration %g%% of max -> %g vitality units' % (a.medi_percent, medi_heal))
+    if medi_rate is None and (medi_heal is not None or a.medi_duration is not None):
+        heal = medi_heal if medi_heal is not None else read_global(m, 'medi_heal')
+        ticks = a.medi_duration if a.medi_duration is not None else read_global(m, 'medi_ticks')
+        if heal is not None and ticks:
+            medi_rate = float(heal) / float(ticks)
+            print('  regeneration %g over %d ticks -> %.5f per tick'
+                  % (heal, int(ticks), medi_rate))
+
     # Powerup tuning globals (only those given). Real for magnitudes, short for ticks.
-    for gname, gval in (('os_shield', os_shield_raw), ('os_body', a.os_body),
+    for gname, gval in (('medi_rate', medi_rate),
+                        ('os_shield', os_shield_raw), ('os_body', a.os_body),
                         ('os_ticks', a.os_duration),
                         ('os_cooldown', a.os_cooldown), ('camo_ticks', a.camo_duration),
-                        ('camo_cooldown', a.camo_cooldown), ('medi_heal', a.medi_heal),
-                        ('medi_ticks', a.medi_duration), ('medi_cooldown', a.medi_cooldown)):
+                        ('camo_cooldown', a.camo_cooldown), ('medi_heal', medi_heal),
+                        ('medi_ticks', a.medi_duration), ('medi_cooldown', a.medi_cooldown),
+                        ('vit_max', a.vit_max)):
         if gval is None:
             continue
         res = set_global(m, gname, gval)
@@ -393,15 +447,18 @@ def main():
         else:
             print('  !! global %s not found (map lacks the ability script)' % gname)
 
-    # Spawn overshield: the vanilla mechanism -- Starting Shield Modifier on the player
-    # profiles. Not a script global; a scnr edit, so it works on any map with profiles.
-    if a.spawn_shield is not None:
-        done = set_profile_shield(m, a.spawn_shield)
+    # Spawn modifiers: the vanilla mechanism -- Starting Shield/Health Modifier on the
+    # player profiles. Not script globals; a scnr edit, so they work on any map with
+    # profiles (and stack with the flashlight abilities rather than replacing them).
+    for which, val in (('shield', a.spawn_shield), ('health', a.spawn_health)):
+        if val is None:
+            continue
+        done = set_profile_vitality(m, which, val)
         for name, old in done:
-            print('  spawn shield [%s] %.2f -> %.2f' % (name, old, a.spawn_shield))
+            print('  spawn %s [%s] %.2f -> %.2f' % (which, name, old, val))
         ok += len(done)
         if not done:
-            print('  !! no player profiles found to set spawn shield on')
+            print('  !! no player profiles found to set spawn %s on' % which)
 
     # Ability selection. --ability wins; --enable/--disable map to sprint/none; with
     # none of those, preserve whatever the live map already had (so a value-only tune

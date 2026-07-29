@@ -1674,39 +1674,158 @@ def set_global(m, name, value):
     return None
 
 
+def read_global(m, name):
+    """Read a Halo 1 script-global's init value by name. Same layout as set_global.
+    Returns the value, or None if the global isn't in this map."""
+    scnr = next((k for k in m.tags if k[0] == 'scnr'), None)
+    if scnr is None:
+        return None
+    meta = m.tags[scnr]
+    syn = (m.u32(meta + 0x474 + 12) - m.magic) & 0xFFFFFFFF
+    cnt = m.i32(meta + 0x4A8)
+    ptr = (m.u32(meta + 0x4A8 + 4) - m.magic) & 0xFFFFFFFF
+    for i in range(cnt):
+        b = ptr + i * 0x5C
+        if m._cstr(b) != name:
+            continue
+        nb = syn + 56 + (m.u32(b + 0x28) & 0xFFFF) * 20
+        vtype = struct.unpack_from('<h', m.data, nb + 0x04)[0]
+        off = nb + 0x10
+        if vtype == 5:
+            return bool(m.data[off])
+        if vtype == 6:
+            return struct.unpack_from('<f', m.data, off)[0]
+        if vtype == 8:
+            return struct.unpack_from('<i', m.data, off)[0]
+        return struct.unpack_from('<h', m.data, off)[0]
+    return None
+
+
+# Flashlight-key abilities, matching sprint.hsc's ability0/ability1 selector. Camo (3)
+# is deliberately not offered yet -- its duration is still unbounded.
+_ABILITY_IDS = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3, 'regeneration': 4}
+
+# The engine's absolute vitality scale, measured in-game: a full body/shield is 75
+# units. object_set_shield's argument is in 1/75 units (so x3 overshield = 3/75), and
+# regeneration's per-tick write-back must scale the [0,1] getters by exactly this.
+_VIT_MAX = 75.0
+_OS_SHIELD_BASE = 1.0 / _VIT_MAX
+
+
 def _sprint_null_ref(m, base, roff):
     struct.pack_into('<I', m.data, base + roff + 0, 0xFFFFFFFF)
     struct.pack_into('<I', m.data, base + roff + 12, 0xFFFFFFFF)
 
 
 def _apply_sprint(m, game, registry, cfg):
-    """Tune the pre-built sprint mod. cfg keys: enabled(bool), speed_pct(int),
-    duration_ticks(int), cooldown_ticks(int). No-op with a reported skip if the
-    map wasn't built with the mod (no sprint_enabled global / no sprint weapon)."""
-    label = 'Sprint'
-    ref = {'effect': label, 'tag': 'matg globals\\globals', 'field': 'sprint'}
+    """Tune the pre-built ability mod (flashlight-key abilities, one per player).
+
+    cfg keys, all optional:
+      player_abilities  {0: name, 1: name} where name is none/sprint/overshield/
+                        regeneration. Falls back to enabled_players/enabled, which
+                        mean sprint, so older callers keep working.
+      sprint            speed_pct, duration_ticks, cooldown_ticks
+      overshield        os_mult, os_duration_ticks, os_cooldown_ticks
+      regeneration      medi_percent, medi_duration_ticks, medi_cooldown_ticks
+
+    No-op with a reported skip if the map wasn't built with the toolkit."""
+    ref = {'effect': 'Abilities', 'tag': 'matg globals\\globals', 'field': 'ability'}
     # Guard: the map must carry the sprint weapon tag (and thus the mod). Checked
     # BEFORE any write so a plain map is never touched.
     if not m.find_tags('weap', _SPRINT_WEAP):
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'no sprint weapon on this map (not built with the mod)'}]
-    # Per-player enable. cfg carries `enabled_players` (a set of {0,1}); fall back to
-    # `enabled` (bool) = both. Newer maps have sprint_enabled0/1; a pre-rebuild map has
-    # only the single shared sprint_enabled, so set whichever globals exist.
-    ep = cfg.get('enabled_players')
-    if ep is None:
-        ep = {0, 1} if cfg.get('enabled') else set()
-    ep = set(ep)
-    r0 = set_global(m, 'sprint_enabled0', 1 if 0 in ep else 0)
-    r1 = set_global(m, 'sprint_enabled1', 1 if 1 in ep else 0)
-    if r0 is None and r1 is None:
-        if set_global(m, 'sprint_enabled', 1 if ep else 0) is None:
+    # Per-player ability. `player_abilities` is authoritative; otherwise fall back to
+    # the older enabled_players/enabled (a bool set meaning "sprint").
+    pa = cfg.get('player_abilities')
+    if pa is None:
+        ep = cfg.get('enabled_players')
+        if ep is None:
+            ep = {0, 1} if cfg.get('enabled') else set()
+        pa = {p: ('sprint' if p in set(ep) else 'none') for p in (0, 1)}
+    pa = {int(p): (n or 'none') for p, n in pa.items()}
+    active = {n for n in pa.values() if n != 'none'}
+
+    # Deployed maps span several script generations, so check that this map's script
+    # actually carries what each requested ability needs BEFORE writing anything --
+    # enabling regeneration on a map built before vit_max existed would silently
+    # ratchet health and shield to full.
+    needs = {'regeneration': ('medi_rate', 'vit_max'), 'overshield': ('os_shield',)}
+    for name in sorted(active):
+        missing = [g for g in needs.get(name, ()) if read_global(m, g) is None]
+        if missing:
             return [{**ref, 'ok': True, 'skip': True,
-                     'reason': 'sprint script global missing (map not built with the mod)'}]
-    if not ep:
-        # Disabling for everyone: close the gate(s). Leave the map at its vanilla
-        # baseline speed (apply_run patches from the .bak baseline).
-        return [{**ref, 'ok': True, 'old': 'sprint', 'new': 'off'}]
+                     'reason': '%s needs a map built with the current toolkit '
+                               '(missing %s)' % (name, ', '.join(missing))}]
+
+    # Maps built with the multi-ability script carry ability0/ability1. A pre-rebuild
+    # map only knows sprint, gated by sprint_enabled0/1 (or one shared sprint_enabled).
+    wrote = False
+    for p in (0, 1):
+        if set_global(m, 'ability%d' % p, _ABILITY_IDS.get(pa.get(p, 'none'), 0)) is not None:
+            wrote = True
+    if not wrote:
+        s0 = 1 if pa.get(0) == 'sprint' else 0
+        s1 = 1 if pa.get(1) == 'sprint' else 0
+        r0 = set_global(m, 'sprint_enabled0', s0)
+        r1 = set_global(m, 'sprint_enabled1', s1)
+        if r0 is None and r1 is None:
+            if set_global(m, 'sprint_enabled', 1 if (s0 or s1) else 0) is None:
+                return [{**ref, 'ok': True, 'skip': True,
+                         'reason': 'ability script globals missing '
+                                   '(map not built with the mod)'}]
+        if active - {'sprint'}:
+            return [{**ref, 'ok': True, 'skip': True,
+                     'reason': 'map predates the powerup abilities -- rebuild it to use '
+                               '%s' % ', '.join(sorted(active - {'sprint'}))}]
+
+    # --- tuning, written whenever supplied so a card can tune a shared value --------
+    # Regeneration heals a fixed amount PER TICK; the division is done here because
+    # dividing by a short global inside HaloScript misbehaved.
+    if cfg.get('medi_duration_ticks') is not None:
+        set_global(m, 'medi_ticks', max(1, int(cfg['medi_duration_ticks'])))
+    if cfg.get('medi_cooldown_ticks') is not None:
+        set_global(m, 'medi_cooldown', max(0, int(cfg['medi_cooldown_ticks'])))
+    if cfg.get('medi_percent') is not None:
+        heal = float(cfg['medi_percent']) / 100.0 * _VIT_MAX
+        ticks = cfg.get('medi_duration_ticks') or read_global(m, 'medi_ticks') or 150
+        set_global(m, 'medi_heal', heal)
+        set_global(m, 'medi_rate', heal / float(max(1, int(ticks))))
+    # The write-back scale has to match the unit's true max or regeneration ratchets.
+    set_global(m, 'vit_max', _VIT_MAX)
+
+    if cfg.get('os_mult') is not None:
+        set_global(m, 'os_shield', float(cfg['os_mult']) * _OS_SHIELD_BASE)
+    if cfg.get('os_duration_ticks') is not None:
+        set_global(m, 'os_ticks', max(1, int(cfg['os_duration_ticks'])))
+    if cfg.get('os_cooldown_ticks') is not None:
+        set_global(m, 'os_cooldown', max(0, int(cfg['os_cooldown_ticks'])))
+
+    set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
+    set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
+
+    results = []
+    if not active:
+        # Nothing enabled: close the gates and leave the map at its vanilla baseline
+        # speed (apply_run patches from the .bak baseline, so no speed edits = vanilla).
+        results.append({**ref, 'ok': True, 'old': 'ability', 'new': 'off'})
+    else:
+        for p in (0, 1):
+            if pa.get(p, 'none') == 'none':
+                continue
+            results.append({**ref, 'effect': pa[p].capitalize(),
+                            'ok': True, 'old': 'ability',
+                            'new': '%s on P%d' % (pa[p], p + 1)})
+    # The sprint SPEED mechanic is sprint-only: raising global run speed and penalising
+    # every real weapon back down. Powerups must leave the baseline alone, so if nobody
+    # has sprint we simply don't write it.
+    if 'sprint' not in active:
+        for cr in cfg.get('card_reports') or []:
+            results.append({'ok': True, 'tag': cr.get('tag') or ref['tag'],
+                            'effect': cr.get('effect', 'Ability'), 'field': cr.get('field', ''),
+                            'old': cr.get('old'), 'new': cr.get('new')})
+        return results
+
     mg, wp = registry.get('matg'), registry.get('weap')
     if mg is None or wp is None:
         return [{**ref, 'ok': False, 'reason': 'matg/weap plugin missing'}]
@@ -1730,13 +1849,13 @@ def _apply_sprint(m, game, registry, cfg):
         wbase = m.find_tags('weap', _SPRINT_WEAP)[0][1]
         _sprint_null_ref(m, wbase, 0x45C)    # First Person Model
         _sprint_null_ref(m, wbase, 0x46C)    # First Person Animations
-    set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
-    set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
-    who = 'P1+P2' if ep == {0, 1} else ('P1' if ep == {0} else ('P2' if ep == {1} else '-'))
+    sp = {p for p, n in pa.items() if n == 'sprint'}
+    who = 'P1+P2' if sp == {0, 1} else ('P1' if sp == {0} else ('P2' if sp == {1} else '-'))
     state = 'on %s %d%%, %.1fs / %.1fs cd' % (
         who, cfg.get('speed_pct', 150), cfg.get('duration_ticks', 90) / 30.0,
         cfg.get('cooldown_ticks', 60) / 30.0)
-    results = [{**ref, 'ok': True, 'old': 'sprint', 'new': state}]
+    results = [r for r in results if r.get('effect') != 'Sprint']
+    results.append({**ref, 'effect': 'Sprint', 'ok': True, 'old': 'sprint', 'new': state})
     # Each drafted tuning card (Speed/Duration/Cooldown) reports its own before→new
     # step, so it reads like a normal field edit in the summary instead of a skip.
     for cr in cfg.get('card_reports') or []:

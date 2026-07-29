@@ -83,7 +83,8 @@ def main():
     ap.add_argument('--weapons', default='none')
     ap.add_argument('--equipment', default='none')
     ap.add_argument('--speed', type=int, default=150)
-    ap.add_argument('--ability', choices=('none', 'sprint', 'overshield', 'camo', 'medikit'),
+    ap.add_argument('--ability', choices=('none', 'sprint', 'overshield', 'camo',
+                                          'regeneration', 'medikit'),
                     default='sprint',
                     help="flashlight-key ability to enable on the built map for BOTH "
                          "players (default sprint).")
@@ -97,8 +98,20 @@ def main():
     ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
     ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
     ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
-    ap.add_argument('--medi-duration', type=int, help="medikit window, ticks")
-    ap.add_argument('--medi-cooldown', type=int, help="medikit cooldown, ticks")
+    ap.add_argument('--medi-percent', type=float, help="Regeneration total heal as a percent of "
+                    "max health (100 = full heal), spread over --medi-duration")
+    ap.add_argument('--medi-heal', type=float, help="Regeneration total heal in raw vitality "
+                    "units (75 = full), spread over --medi-duration")
+    ap.add_argument('--medi-duration', type=int, help="Regeneration window, ticks (1 = instant)")
+    ap.add_argument('--medi-rate', type=float, help="Regeneration per-tick heal, set outright "
+                    "(overrides --medi-heal/--medi-duration)")
+    ap.add_argument('--vit-max', type=float, help="absolute vitality scale (default 75); must "
+                    "match the unit's true max or regeneration ratchets to full")
+    ap.add_argument('--spawn-shield', type=float, help="Starting Shield Modifier on the player "
+                    "profiles (1 = normal, 3 = vanilla 3x overshield on every spawn)")
+    ap.add_argument('--spawn-health', type=float, help="Starting Health Modifier on the player "
+                    "profiles (1 = normal)")
+    ap.add_argument('--medi-cooldown', type=int, help="Regeneration cooldown, ticks")
     ap.add_argument('--resources', choices=('none', 'read', 'read_write'), default=None,
                     help="shared resource-map usage. Default 'none' (self-contained) for "
                          "both graphics modes — a read_write build references the shared "
@@ -170,7 +183,11 @@ def main():
     for flag, val in (('--os-mult', a.os_mult), ('--os-shield', a.os_shield),
                       ('--os-duration', a.os_duration),
                       ('--os-cooldown', a.os_cooldown), ('--camo-duration', a.camo_duration),
-                      ('--camo-cooldown', a.camo_cooldown), ('--medi-duration', a.medi_duration),
+                      ('--camo-cooldown', a.camo_cooldown), ('--medi-percent', a.medi_percent),
+                      ('--medi-heal', a.medi_heal),
+                      ('--medi-duration', a.medi_duration), ('--medi-rate', a.medi_rate),
+                      ('--vit-max', a.vit_max), ('--spawn-shield', a.spawn_shield),
+                      ('--spawn-health', a.spawn_health),
                       ('--medi-cooldown', a.medi_cooldown)):
         if val is not None:
             extra += [flag, '%g' % val]

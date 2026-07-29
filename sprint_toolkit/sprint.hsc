@@ -19,11 +19,14 @@
 ;               refills health. os_body is retained but UNUSED for now.
 ;   camo        cheat_active_camouflage_local_player -- granted ONCE; ends on its own
 ;               natural duration (firing does NOT break it), then cooldown.
-;   medikit     unit_set_current_vitality <unit> medi_heal (unit_get_shield <unit>) -- set
-;               CURRENT body to medi_heal ([0,1]; 1.0 = full heal) while passing the current
-;               shield straight back so the shield is UNTOUCHED. Per-player; sets current not
-;               max (no nerf). Instant (medi_ticks=1). Scale of the body arg being [0,1] is
-;               the one thing to confirm in-game (getter/setter are a matched pair).
+;   medikit     "REGENERATION" to the user; medi_*/ability 4 stay the internal names.
+;               unit_set_current_vitality <unit> <body> <shield> -- HEAL OVER TIME. Its args
+;               are ABSOLUTE vitality units (vit_max ~= 100 = full), NOT the [0,1] the
+;               unit_get_health/_shield GETTERS return -- so every getter value must be
+;               scaled by vit_max before being passed back. (Feeding the raw [0,1] shield
+;               straight in is what drained the shield to ~1/100th.) Each tick while active
+;               it adds medi_rate to current body and writes the CURRENT shield back
+;               unchanged. medi_ticks=1 = instant full heal; larger = regen over time.
 ; Sprint (ability 1) is unchanged from the working build.
 ;
 ; COOLDOWNS ARE SET LOW (1s) FOR TESTING. The Enhancer/patcher will write real values.
@@ -41,9 +44,21 @@
 (global real  os_body 1.0)            ; UNUSED (was unit_set_maximum_vitality body arg; rejected)
 (global short camo_ticks 150)         ; 5.0s cap (also ends when you fire)
 (global short camo_cooldown 30)       ; 1.0s
-(global short medi_ticks 1)           ; instant heal, releases next tick
+(global short medi_ticks 150)         ; 5.0s heal-over-time window (1 = instant)
 (global short medi_cooldown 30)       ; 1.0s
-(global real  medi_heal 1.0)          ; current-body heal amount [0,1]; 1.0 = full heal
+(global real  medi_heal 75.0)         ; TOTAL heal in vitality units (75 = a 100% heal; more
+                                      ; is allowed and just heals past what one full bar is
+                                      ; worth). Bookkeeping only -- the script uses medi_rate.
+(global real  medi_rate 0.5)          ; PER-TICK heal, = medi_heal / medi_ticks. Computed by
+                                      ; the tuner in Python: dividing a real by a short GLOBAL
+                                      ; in HSC misbehaved (result overshot -> clamped to full
+                                      ; every tick, so medi_heal appeared to do nothing).
+(global real  vit_max 75.0)           ; absolute vitality scale: what unit_get_health/_shield
+                                      ; [0,1] must be multiplied by. MEASURED IN-GAME = 75, and
+                                      ; it must be EXACT: too high and the per-tick write-back
+                                      ; rewrites body/shield higher than they were (ratchets
+                                      ; both to full regardless of rate); too low and it drains
+                                      ; them. 74 drains, 76 regenerates, 75 holds steady.
 
 ; ---- per-player selected ability (0 none,1 sprint,2 overshield,3 camo,4 medikit) ----
 (global short ability0 0)
@@ -80,9 +95,7 @@
 			(set sl0 camo_ticks)
 			(cheat_active_camouflage_local_player 0)))           ; granted once; ends on fire
 	(if (= ability0 4)
-		(begin
-			(set sl0 medi_ticks)
-			(unit_set_current_vitality (player0) medi_heal (unit_get_shield (player0)))))  ; heal body, preserve shield
+		(set sl0 medi_ticks))                                ; medikit heals per tick (medi_tick0)
 	(player_action_test_reset))         ; clear any pending fire so sprint doesn't insta-cancel
 
 (script static void ability_stop0
@@ -108,9 +121,7 @@
 			(set sl1 camo_ticks)
 			(cheat_active_camouflage_local_player 1)))
 	(if (= ability1 4)
-		(begin
-			(set sl1 medi_ticks)
-			(unit_set_current_vitality (player1) medi_heal (unit_get_shield (player1)))))  ; heal body, preserve shield
+		(set sl1 medi_ticks))                                ; medikit heals per tick (medi_tick1)
 	(player_action_test_reset))
 
 (script static void ability_stop1
@@ -120,6 +131,23 @@
 	(if (= ability1 3) (set sc1 camo_cooldown))
 	(if (= ability1 4) (set sc1 medi_cooldown))
 	(if (= ability1 1) (objects_delete_by_definition "weapons\sprint\sprint")))
+
+;-----------------------------------------------------------------------------
+; Medikit heal tick -- one slice of the heal, shield written back untouched.
+; Everything is in ABSOLUTE vitality units, so the [0,1] getters are scaled by
+; vit_max on the way in. Body is clamped to vit_max so we never exceed the max.
+;-----------------------------------------------------------------------------
+(script static void medi_tick0
+	(unit_set_current_vitality (player0)
+		(min vit_max (+ (* (unit_get_health (player0)) vit_max)
+						medi_rate))
+		(* (unit_get_shield (player0)) vit_max)))
+
+(script static void medi_tick1
+	(unit_set_current_vitality (player1)
+		(min vit_max (+ (* (unit_get_health (player1)) vit_max)
+						medi_rate))
+		(* (unit_get_shield (player1)) vit_max)))
 
 ;-----------------------------------------------------------------------------
 ; Per-tick control.
@@ -139,7 +167,9 @@
 	(if sa0
 		(begin
 			(set sl0 (- sl0 1))
-			; Overshield is set once at activation; camo runs its natural duration.
+			; Overshield is set once at activation; camo runs its natural duration;
+			; the medikit heals a slice every tick of its window.
+			(if (= ability0 4) (medi_tick0))
 			(if (or (<= sl0 0)
 					(and (= ability0 1)
 						 (or ability_fired
@@ -160,6 +190,7 @@
 			(if sa1
 				(begin
 					(set sl1 (- sl1 1))
+					(if (= ability1 4) (medi_tick1))
 					(if (or (<= sl1 0)
 							(and (= ability1 1)
 								 (or ability_fired
