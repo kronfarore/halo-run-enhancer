@@ -102,15 +102,34 @@ class _WheelGuard(QObject):
     Clicking still focuses normally, so focus-then-scroll to adjust still works."""
 
     def eventFilter(self, obj, ev):
-        if (ev.type() == QEvent.Wheel and isinstance(obj, QAbstractSpinBox)
+        # Combo boxes need this as much as spin boxes: scrolling past a dropdown would
+        # otherwise silently change the selection. An OPEN popup is a separate view
+        # object, so this never blocks scrolling within the list itself.
+        if (ev.type() == QEvent.Wheel
+                and isinstance(obj, (QAbstractSpinBox, QComboBox))
                 and not obj.hasFocus()):
             p = obj.parent()
             while p is not None and not isinstance(p, QAbstractScrollArea):
                 p = p.parent()
             if p is not None:
                 QApplication.sendEvent(p.viewport(), ev)
-            return True   # never let an unfocused spin box consume the wheel
+            return True   # never let an unfocused field consume the wheel
         return False
+
+
+def tune_combo(cb, min_chars=14):
+    """Make a dropdown show its whole list and its longest label. Qt's defaults size the
+    popup from the closed box, so a short list can still end up scrolling."""
+    cb.setMaxVisibleItems(12)
+    cb.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+    fm = cb.fontMetrics()
+    widest = max([fm.horizontalAdvance(cb.itemText(i)) for i in range(cb.count())]
+                 or [0])
+    cb.setMinimumWidth(max(widest, fm.horizontalAdvance('x') * min_chars) + 44)
+    view = cb.view()
+    if view is not None:
+        view.setMinimumWidth(cb.minimumWidth())
+    return cb
 
 
 def boss_mods_removed():
@@ -588,6 +607,7 @@ def _fill_difficulty_combo(combo, current_internal):
         combo.addItem(pub, intern)
     i = combo.findData(current_internal)
     combo.setCurrentIndex(i if i >= 0 else 1)   # default Normal
+    tune_combo(combo)
 
 
 def _diff_flavor(target):
@@ -3908,6 +3928,7 @@ class OptionsDialog(QDialog):
         self.ability_start_combo.setCurrentIndex(
             max(0, self.ability_start_combo.findData(
                 CONFIG.get('ability_start_which', 'sprint'))))
+        tune_combo(self.ability_start_combo)
         self.ability_start_combo.setToolTip("Which ability both players get when starting with "
                                             "one, instead of drafting it.")
         xform.addRow("        ↳ Which ability:", self.ability_start_combo)
@@ -4539,9 +4560,16 @@ class HaloGUI(QMainWindow):
             avail = [w for w in weapons
                      if w not in exclude_weapons and w not in used_weapons]
             if not avail:
-                avail = [w for w in weapons if w not in exclude_weapons] or weapons
+                avail = [w for w in weapons if w not in exclude_weapons] or list(weapons)
+            if not avail:
+                # Nothing left to offer — e.g. the last candidate was just blacklisted.
+                # Leave the card as it is and say so, rather than raising on an empty
+                # random.choice and taking the whole selection down.
+                self.update_status("Nothing left to offer%s — un-blacklist a weapon to "
+                                   "reroll again." % player_label)
+                return
             card.pair_data['weapon'] = random.choice(avail)
-            card.pair_data['modifiers'] = ([] if is_sprint_item(card.pair_data['weapon'])
+            card.pair_data['modifiers'] = ([] if is_ability_item(card.pair_data['weapon'])
                                            else self.db.get_weapon_modifiers(card.pair_data['weapon']))
             card.pair_data['enemy_mod'] = self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             card.setup_ui()
@@ -4734,7 +4762,9 @@ class HaloGUI(QMainWindow):
         Dual wield and upgrades only unlock from their configured game onward.
         Blacklisted weapons are excluded (#1)."""
         owned = set(self.run_state.weapons_for(player))
-        pool = [w for w in self._game_weapon_pool() if w not in owned]
+        # Pass the player through: ability offers are per-player, so asking without one
+        # makes an ability drop out for BOTH players as soon as either takes one.
+        pool = [w for w in self._game_weapon_pool(player) if w not in owned]
         if self._game_at_least(CONFIG.get('dual_wield_from_game', 'Halo 2')):
             one_handed = CONFIG.get('one_handed_weapons', [])
             for w in self.run_state.weapons_for(player):
@@ -5164,7 +5194,7 @@ class HaloGUI(QMainWindow):
         self.update_status(f"{status_prefix} - Generate pairs manually")
 
     def change_weapon(self, player):
-        weapons = self._game_weapon_pool()
+        weapons = self._game_weapon_pool(player)
         if player == 'player1' and self.run_state.player2_weapon:
             available = [w for w in weapons if w != self.run_state.player2_weapon]
         elif player == 'player2' and self.run_state.player1_weapon:
@@ -5993,6 +6023,16 @@ def main():
         QComboBox { background-color: #1a1a1a; color: #e0e0e0; border: 1px solid #3a3a3a; padding: 5px; border-radius: 3px; }
         QComboBox::drop-down { border: none; }
         QComboBox QAbstractItemView { background-color: #1a1a1a; color: #e0e0e0; selection-background-color: #2a5a2a; border: 1px solid #2a5a2a; }
+        /* Give dropdown rows real height so a short list isn't squeezed into a
+           scrolling sliver — the popup then sizes to fit its options. */
+        QComboBox QAbstractItemView::item { min-height: 24px; padding: 2px 6px; }
+        /* Explicit colours above win over the palette, so a disabled control would
+           otherwise look exactly like a live one. Grey the whole row, label included. */
+        QLabel:disabled, QCheckBox:disabled, QRadioButton:disabled,
+        QGroupBox:disabled, QPushButton:disabled { color: #5c5c5c; }
+        QGroupBox::title:disabled { color: #5c5c5c; }
+        QComboBox:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled,
+        QLineEdit:disabled { color: #5c5c5c; background-color: #131313; border: 1px solid #262626; }
         QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 5px; margin-top: 10px; }
         QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }
         QTextEdit { background-color: #1a1a1a; color: #e0e0e0; border: 1px solid #2a2a2a; border-radius: 3px; }
