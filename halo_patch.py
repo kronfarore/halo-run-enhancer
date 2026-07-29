@@ -1808,7 +1808,10 @@ def _apply_sprint(m, game, registry, cfg):
     # Camo: the real duration is the equipment tag's Powerup Time, mirrored into the
     # script window. Only written when camo is actually in play -- the tag is shared
     # with any stock camo pickups in the level, so an unused ability must not touch it.
-    if 'camo' in active or cfg.get('camo_seconds') is not None:
+    # Gated on camo actually being in play, never on the cfg merely carrying a value:
+    # callers pass their defaults every time, and Powerup Time is a VANILLA tag shared
+    # with any stock camo pickups in the level.
+    if 'camo' in active:
         secs = float(cfg.get('camo_seconds') or _CAMO_SECONDS)
         eq = registry.get('eqip')
         if eq is not None and m.find_tags('eqip', _CAMO_TAG):

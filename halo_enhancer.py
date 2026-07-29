@@ -88,7 +88,9 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'hide_tags', 'hide_fields',
                'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
-               'sprint_cooldown_s')
+               'sprint_cooldown_s',
+               'abilities_offered', 'ability_start_which', 'overshield_mult',
+               'regen_percent', 'regen_duration_s', 'camo_duration_s', 'camo_cooldown_s')
 
 
 class _WheelGuard(QObject):
@@ -278,6 +280,16 @@ CONFIG = {
     "sprint_speed_pct": 150,
     "sprint_duration_s": 3.0,
     "sprint_cooldown_s": 2.0,
+    # Which flashlight-key abilities may appear in the weapon selection, and which one
+    # "start with an ability" grants. Powerups need a map built with the current
+    # toolkit; the patcher skips them (with a reason) on older builds.
+    "abilities_offered": ["sprint"],
+    "ability_start_which": "sprint",
+    "overshield_mult": 3.0,       # x normal shield
+    "regen_percent": 100.0,       # % of max health healed per use
+    "regen_duration_s": 5.0,      # healed over this long
+    "camo_duration_s": 5.0,
+    "camo_cooldown_s": 30.0,      # starts when the camo window ends
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
     # New Weapon card (only once the player already owns the base weapon).
     "one_handed_weapons": ["Pistol", "Plasma Pistol", "Plasma Rifle", "Needler", "SMG", "Brute Plasma Rifle"],
@@ -322,11 +334,45 @@ CONFIG = {
 CARD_CHROME_HEIGHT = 340
 
 
-# Pseudo-item that stands for the Sprint ability in the weapon-selection pool. It is
-# NOT a real weapon tag — it rides the pick-a-card flow the way H3 equipment does, and
-# picking it flips sprint on for that player (see _sprint_spec). Kept distinct from any
-# real weapon name so is_sprint_item / is_real_weapon can tell it apart everywhere.
+# Pseudo-items that stand for the flashlight-key abilities in the weapon-selection pool.
+# They are NOT real weapon tags — they ride the pick-a-card flow the way H3 equipment
+# does, and picking one turns that ability on for that player (see _sprint_spec). Kept
+# distinct from any real weapon name so is_ability_item / is_real_weapon can tell them
+# apart everywhere. The values are the patcher's ability names (halo_patch._ABILITY_IDS).
 SPRINT_ITEM = '⚡ Sprint'
+OVERSHIELD_ITEM = '🛡 Overshield'
+REGEN_ITEM = '✚ Regeneration'
+CAMO_ITEM = '👁 Camo'
+
+ABILITY_ITEMS = {
+    SPRINT_ITEM: 'sprint',
+    OVERSHIELD_ITEM: 'overshield',
+    REGEN_ITEM: 'regeneration',
+    CAMO_ITEM: 'camo',
+}
+ABILITY_ITEM_OF = {v: k for k, v in ABILITY_ITEMS.items()}
+
+ABILITY_BLURBS = {
+    'sprint': "Unlocks sprinting for this player (hold the flashlight key).",
+    'overshield': "Press the flashlight key for an instant overshield.",
+    'regeneration': "Press the flashlight key to regenerate health over a few seconds.",
+    'camo': "Press the flashlight key to turn invisible for a few seconds.",
+}
+
+# Sprint and camo each drive ONE shared world object — the sprint weapon, and the camo
+# pickup that gets created and handed over. Two players running them at once contend for
+# that object, so those two are limited to one player per run. Overshield and
+# regeneration are pure per-unit script calls, so both players may hold them.
+ABILITY_ONE_PER_RUN = {'sprint', 'camo'}
+
+
+def is_ability_item(name):
+    return name in ABILITY_ITEMS
+
+
+def ability_of_item(name):
+    """The patcher's ability name for a pool item, or None if it isn't an ability."""
+    return ABILITY_ITEMS.get(name)
 
 
 def is_sprint_item(name):
@@ -334,9 +380,9 @@ def is_sprint_item(name):
 
 
 def is_real_weapon(db, name):
-    """An actual gun — not a grenade, H3 equipment, or the Sprint ability item. Holding
-    only a Bubble Shield (or only Sprint) doesn't make a player armed."""
-    return (bool(name) and not is_sprint_item(name)
+    """An actual gun — not a grenade, H3 equipment, or an ability item. Holding only a
+    Bubble Shield (or only Sprint) doesn't make a player armed."""
+    return (bool(name) and not is_ability_item(name)
             and not db.is_grenade(name) and not db.is_equipment(name))
 
 
@@ -1334,21 +1380,24 @@ class WeaponSelectionCard(QGroupBox):
 
         layout.setSpacing(10)
         db = self.parent_widget.db if self.parent_widget else None
-        is_sprint = is_sprint_item(self.pair_data.get('weapon'))
-        is_equip = bool(db and db.is_equipment(self.pair_data.get('weapon')))
+        item = self.pair_data.get('weapon')
+        ability = ability_of_item(item)
+        is_sprint = bool(ability)          # any flashlight-key ability, not just sprint
+        is_equip = bool(db and db.is_equipment(item))
         player_text = "PLAYER 2" if self.is_player2 else "PLAYER 1"
         if self.mode == 'add':
-            heading = "⚡ SPRINT" if is_sprint else ("🎒 NEW EQUIPMENT" if is_equip else "🔫 NEW WEAPON")
+            heading = (item.split(' ', 1)[0] + " ABILITY" if ability
+                       else ("🎒 NEW EQUIPMENT" if is_equip else "🔫 NEW WEAPON"))
         else:
             heading = "CHOICE"
         title = QLabel(f"{player_text} - {heading} {self.pair_data['id']}")
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0;")
         layout.addWidget(title)
 
-        # Sprint is an ability, not a gun — render it with the equipment scheme, so it
-        # reads as the special pick it is, and describe it instead of listing modifiers.
+        # An ability is not a gun — render it with the equipment scheme, so it reads as
+        # the special pick it is, and describe it instead of listing modifiers.
         scheme = MOD_COLORS['equipment'] if (is_equip or is_sprint) else MOD_COLORS['green']
-        group_title = "SPRINT" if is_sprint else ("EQUIPMENT" if is_equip else "WEAPON")
+        group_title = "ABILITY" if is_sprint else ("EQUIPMENT" if is_equip else "WEAPON")
         weapon_group = QGroupBox(group_title)
         weapon_group.setStyleSheet(f"border: 2px solid #{scheme['border']}; border-radius: 4px; "
                                    f"padding: 10px; margin-top: 5px; background-color: #{scheme['bg']};")
@@ -1358,8 +1407,8 @@ class WeaponSelectionCard(QGroupBox):
         weapon_label.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_weapon']}px; "
                                    f"color: #{scheme['border']};")
         weapon_layout.addWidget(weapon_label)
-        if is_sprint:
-            sub = QLabel("Unlocks sprinting for this player (hold the flashlight key).")
+        if ability:
+            sub = QLabel(ABILITY_BLURBS.get(ability, "A flashlight-key ability."))
             sub.setWordWrap(True)
         else:
             mod_count = len(self.pair_data.get('modifiers', []))
@@ -2980,20 +3029,25 @@ class MagnitudeEditorDialog(QDialog):
                 'old': '%g%s' % (round(before, 3), unit[p]),
                 'new': '%g%s' % (round(after, 3), unit[p])})
         speed, dur, cd = vals['speed'], vals['duration'], vals['cooldown']
-        # Per-player enable.
-        enabled = set()
+        # Per-player ability. "Start with" gives both players the chosen ability;
+        # otherwise each player gets whichever ability item their arsenal holds.
+        player_abilities = {0: 'none', 1: 'none'}
         if feature:
             if bool(CONFIG.get('sprint_start_with', True)):
-                enabled = {0, 1}
+                which = CONFIG.get('ability_start_which', 'sprint')
+                if which in ABILITY_ITEM_OF:
+                    player_abilities = {0: which, 1: which}
             else:
-                # Card mode: the Sprint unlock is a weapon-selection pick — enable the
-                # player(s) whose arsenal holds the Sprint ability item.
                 rs = getattr(self.parent_gui, 'run_state', None)
                 if rs is not None:
-                    if any(is_sprint_item(w) for w in rs.weapons_for('player1')):
-                        enabled.add(0)
-                    if any(is_sprint_item(w) for w in rs.weapons_for('player2')):
-                        enabled.add(1)
+                    for idx, p in ((0, 'player1'), (1, 'player2')):
+                        for w in rs.weapons_for(p):
+                            ab = ability_of_item(w)
+                            if ab:
+                                player_abilities[idx] = ab
+                                break
+        # Sprint's own per-player set, kept for the speed mechanic and older maps.
+        enabled = {i for i, ab in player_abilities.items() if ab == 'sprint'}
         speed_pct = int(round(max(100.0, speed)))
         duration_ticks = max(1, round(max(0.5, dur) * 30))
         cooldown_ticks = max(0, round(max(0.0, cd) * 30))
@@ -3012,11 +3066,21 @@ class MagnitudeEditorDialog(QDialog):
                 card_reports[i]['new'] = '%s (clamped from %s)' % (
                     clamped[param], card_reports[i]['new'])
         return {
+            'player_abilities': player_abilities,
             'enabled_players': enabled,
             'enabled': bool(enabled),
             'speed_pct': speed_pct,
             'duration_ticks': duration_ticks,
             'cooldown_ticks': cooldown_ticks,
+            # Powerup tuning: the patcher converts these to its raw globals (the
+            # overshield multiplier to 1/75 units, the heal percent to a per-tick rate).
+            'os_mult': float(CONFIG.get('overshield_mult', 3.0)),
+            'medi_percent': float(CONFIG.get('regen_percent', 100.0)),
+            'medi_duration_ticks': max(1, round(float(
+                CONFIG.get('regen_duration_s', 5.0)) * 30)),
+            'camo_seconds': float(CONFIG.get('camo_duration_s', 5.0)),
+            'camo_cooldown_ticks': max(0, round(float(
+                CONFIG.get('camo_cooldown_s', 30.0)) * 30)),
             'card_reports': card_reports,
         }
 
@@ -3256,9 +3320,11 @@ class MagnitudeEditorDialog(QDialog):
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
         sprint = self._sprint_spec()
-        # A disable-sprint spec rides along with other edits; it shouldn't force a
-        # patch on an otherwise-empty selection (only ENABLING sprint is standalone).
-        sprint_on = bool(sprint and sprint['enabled'])
+        # A spec that turns everything OFF rides along with other edits; it shouldn't
+        # force a patch on an otherwise-empty selection (only ENABLING is standalone).
+        active_abilities = sorted({a for a in (sprint or {}).get(
+            'player_abilities', {}).values() if a and a != 'none'})
+        sprint_on = bool(active_abilities)
         if (not plan and not starting and not weapon_swaps and not remove_cutscenes
                 and not skulls and not equip_swaps and not spawn_equipment and not sprint_on):
             QMessageBox.information(self, "Nothing to apply",
@@ -3272,7 +3338,7 @@ class MagnitudeEditorDialog(QDialog):
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
-                  + (["enable sprint"] if sprint_on else []))
+                  + ([f"enable {', '.join(active_abilities)}"] if sprint_on else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -3759,25 +3825,25 @@ class OptionsDialog(QDialog):
         xform = QFormLayout(exp_g)
         xform.setLabelAlignment(Qt.AlignRight)
 
-        self.sprint_cb = QCheckBox("Enable Sprint")
+        self.sprint_cb = QCheckBox("Enable Abilities")
         self.sprint_cb.setChecked(bool(CONFIG.get('sprint_feature')))
-        self.sprint_cb.setToolTip("Flashlight-key sprint (a held speed boost) for games that never "
-                                  "shipped with sprint. Requires maps built with the sprint mod; on a "
-                                  "plain map these options do nothing.")
-        xform.addRow("Sprint:", self.sprint_cb)
+        self.sprint_cb.setToolTip("Flashlight-key abilities — Sprint, Overshield, Regeneration and "
+                                  "Camo — for games that never shipped with them. Requires maps built "
+                                  "with the ability mod; on a plain map these options do nothing.")
+        xform.addRow("Abilities:", self.sprint_cb)
 
-        self.sprint_start_cb = QCheckBox("Start with Sprint")
+        self.sprint_start_cb = QCheckBox("Start with an ability")
         self.sprint_start_cb.setChecked(bool(CONFIG.get('sprint_start_with', True)))
-        self.sprint_start_cb.setToolTip("Sprint is active from the first map. Turn off to make Sprint a "
-                                        "drafted Equipment card instead (see below).")
+        self.sprint_start_cb.setToolTip("Both players have the chosen ability from the first map. Turn "
+                                        "off to draft abilities in the weapon selection instead.")
         xform.addRow("    ↳ From the start:", self.sprint_start_cb)
 
-        self.sprint_cards_cb = QCheckBox("Offer Sprint in the weapon selection")
+        self.sprint_cards_cb = QCheckBox("Offer abilities in the weapon selection")
         self.sprint_cards_cb.setChecked(bool(CONFIG.get('sprint_as_card')))
-        self.sprint_cards_cb.setToolTip("When not starting with Sprint, it turns up as a pick in the "
+        self.sprint_cards_cb.setToolTip("Instead of starting with one, abilities turn up as picks in the "
                                         "weapon selection (initial pick and the New Weapon button), like "
-                                        "Halo 3 equipment. Sprint switches on once a player takes it, and "
-                                        "it's offered to only one player per run.")
+                                        "Halo 3 equipment. A player's ability switches on once they take "
+                                        "it, and each player ends up with at most one.")
         xform.addRow("    ↳ As a pick:", self.sprint_cards_cb)
 
         self.sprint_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
@@ -3822,10 +3888,96 @@ class OptionsDialog(QDialog):
         self.sprint_cooldown.setToolTip("Delay after a sprint ends before you can sprint again.")
         xform.addRow("    ↳ Cooldown:", self.sprint_cooldown)
 
-        self.sprint_apply_btn = QPushButton("Apply Sprint to maps…")
-        self.sprint_apply_btn.setToolTip("Write the sprint settings above into every Halo 1 map that was "
-                                         "built with the sprint mod, and turn sprint on. Maps without the "
-                                         "sprint weapon are skipped. Values are byte-patched — no rebuild.")
+        # --- the other flashlight-key abilities --------------------------------------
+        # One ability per player. Overshield and Regeneration are per-unit script calls,
+        # so both players can hold them; Sprint and Camo drive a shared world object and
+        # stay one-per-run. All of them need maps built with the current toolkit — the
+        # patcher skips the powerups (with a reason) on older builds.
+        self.ability_offer_cbs = {}
+        abil_row = QWidget()
+        abil_h = QHBoxLayout(abil_row)
+        abil_h.setContentsMargins(0, 0, 0, 0)
+        offered = set(CONFIG.get('abilities_offered') or ['sprint'])
+        for ab, label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
+                          ('regeneration', 'Regeneration'), ('camo', 'Camo')):
+            cb = QCheckBox(label)
+            cb.setChecked(ab in offered)
+            self.ability_offer_cbs[ab] = cb
+            abil_h.addWidget(cb)
+        abil_h.addStretch(1)
+        abil_row.setToolTip("Which abilities can turn up in the weapon selection. Each player "
+                            "ends up with at most one; Sprint and Camo are offered to only one "
+                            "player per run.")
+        xform.addRow("    ↳ Offer:", abil_row)
+
+        self.ability_start_combo = QComboBox()
+        for ab, label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
+                          ('regeneration', 'Regeneration'), ('camo', 'Camo')):
+            self.ability_start_combo.addItem(label, ab)
+        _start_ab = CONFIG.get('ability_start_which', 'sprint')
+        self.ability_start_combo.setCurrentIndex(
+            max(0, self.ability_start_combo.findData(_start_ab)))
+        self.ability_start_combo.setToolTip("Which ability both players get when starting with "
+                                            "one, instead of drafting it.")
+        xform.addRow("    ↳ Start-with ability:", self.ability_start_combo)
+
+        self.overshield_mult = QDoubleSpinBox()
+        self.overshield_mult.setRange(1.0, 10.0)
+        self.overshield_mult.setSingleStep(0.5)
+        self.overshield_mult.setDecimals(2)
+        self.overshield_mult.setPrefix("x")
+        self.overshield_mult.setValue(float(CONFIG.get('overshield_mult', 3.0)))
+        self.overshield_mult.setToolTip("Overshield strength as a multiple of a normal full "
+                                        "shield. 3x is the vanilla powerup; it is applied "
+                                        "outright, replacing whatever shield you had.")
+        xform.addRow("    ↳ Overshield:", self.overshield_mult)
+
+        self.regen_percent = QDoubleSpinBox()
+        self.regen_percent.setRange(1.0, 400.0)
+        self.regen_percent.setSingleStep(10.0)
+        self.regen_percent.setDecimals(0)
+        self.regen_percent.setSuffix("%")
+        self.regen_percent.setValue(float(CONFIG.get('regen_percent', 100.0)))
+        self.regen_percent.setToolTip("How much health one use restores, as a percentage of "
+                                      "max. Over 100% is allowed and simply heals past what a "
+                                      "full bar is worth.")
+        xform.addRow("    ↳ Regeneration:", self.regen_percent)
+
+        self.regen_duration = QDoubleSpinBox()
+        self.regen_duration.setRange(0.1, 30.0)
+        self.regen_duration.setSingleStep(0.5)
+        self.regen_duration.setDecimals(1)
+        self.regen_duration.setSuffix(" s")
+        self.regen_duration.setValue(float(CONFIG.get('regen_duration_s', 5.0)))
+        self.regen_duration.setToolTip("How long that heal is spread over. Short is a snap heal; "
+                                       "long is a slow regeneration that damage can out-pace.")
+        xform.addRow("        ↳ over:", self.regen_duration)
+
+        self.camo_duration = QDoubleSpinBox()
+        self.camo_duration.setRange(0.5, 60.0)
+        self.camo_duration.setSingleStep(1.0)
+        self.camo_duration.setDecimals(1)
+        self.camo_duration.setSuffix(" s")
+        self.camo_duration.setValue(float(CONFIG.get('camo_duration_s', 5.0)))
+        self.camo_duration.setToolTip("How long invisibility lasts (the camo powerup's own "
+                                      "duration; vanilla pickups are 45s). NOTE: this also "
+                                      "changes any camo pickups placed in the level.")
+        xform.addRow("    ↳ Camo:", self.camo_duration)
+
+        self.camo_cooldown = QDoubleSpinBox()
+        self.camo_cooldown.setRange(0.0, 120.0)
+        self.camo_cooldown.setSingleStep(5.0)
+        self.camo_cooldown.setDecimals(1)
+        self.camo_cooldown.setSuffix(" s")
+        self.camo_cooldown.setValue(float(CONFIG.get('camo_cooldown_s', 30.0)))
+        self.camo_cooldown.setToolTip("Delay before camo can be used again. It starts when the "
+                                      "camo runs out, so a full cycle is duration + cooldown.")
+        xform.addRow("        ↳ Cooldown:", self.camo_cooldown)
+
+        self.sprint_apply_btn = QPushButton("Apply abilities to maps…")
+        self.sprint_apply_btn.setToolTip("Write the settings above into every Halo 1 map built with the "
+                                         "ability mod, turning the start-with ability on for both players. "
+                                         "Maps built without it are skipped. Byte-patched — no rebuild.")
         self.sprint_apply_btn.clicked.connect(self._apply_sprint_to_maps)
         xform.addRow("", self.sprint_apply_btn)
 
@@ -3839,15 +3991,23 @@ class OptionsDialog(QDialog):
             on = self.sprint_cb.isChecked()
             for w in (self.sprint_start_cb, self.sprint_cards_cb, self.sprint_mod_cards_cb,
                       self.sprint_speed, self.sprint_duration, self.sprint_cooldown,
-                      self.sprint_apply_btn):
+                      self.sprint_apply_btn, self.ability_start_combo, self.overshield_mult,
+                      self.regen_percent, self.regen_duration, self.camo_duration,
+                      self.camo_cooldown):
                 w.setEnabled(on)
-            # "Needs a gun" only matters when Sprint is a card.
+            # "Needs a gun" only matters when abilities are drafted.
             card = on and self.sprint_cards_cb.isChecked()
             self.sprint_need_weapon_cb.setEnabled(card)
             if not card:
                 self.sprint_need_weapon_cb.setChecked(False)
+            # The offer list only applies to drafting; the start-with pick only to the
+            # other way in. Grey out whichever isn't in play.
+            for cb in self.ability_offer_cbs.values():
+                cb.setEnabled(card)
+            self.ability_start_combo.setEnabled(on and self.sprint_start_cb.isChecked())
         self.sprint_cb.toggled.connect(_sync_sprint)
         self.sprint_cards_cb.toggled.connect(_sync_sprint)
+        self.sprint_start_cb.toggled.connect(_sync_sprint)
         _sync_sprint()
         layout.addWidget(exp_g)
 
@@ -4076,6 +4236,14 @@ class OptionsDialog(QDialog):
             'sprint_speed_pct': self.sprint_speed.value(),
             'sprint_duration_s': round(self.sprint_duration.value(), 1),
             'sprint_cooldown_s': round(self.sprint_cooldown.value(), 1),
+            'abilities_offered': [ab for ab, cb in self.ability_offer_cbs.items()
+                                  if cb.isChecked()],
+            'ability_start_which': self.ability_start_combo.currentData(),
+            'overshield_mult': round(self.overshield_mult.value(), 2),
+            'regen_percent': round(self.regen_percent.value(), 1),
+            'regen_duration_s': round(self.regen_duration.value(), 1),
+            'camo_duration_s': round(self.camo_duration.value(), 1),
+            'camo_cooldown_s': round(self.camo_cooldown.value(), 1),
         }
 
     def _apply_sprint_to_maps(self):
@@ -4084,11 +4252,19 @@ class OptionsDialog(QDialog):
         yet-saved), reuses halo_patch.apply_run(sprint=cfg) — which skips any map
         without the sprint weapon (checked in _apply_sprint before any write)."""
         import halo_patch
+        which = self.ability_start_combo.currentData() or 'sprint'
         cfg = {
-            'enabled': True,          # applying from here means "turn sprint on"
+            # Applying from here means "turn the start-with ability on for both players".
+            'player_abilities': {0: which, 1: which},
+            'enabled': True,
             'speed_pct': self.sprint_speed.value(),
             'duration_ticks': max(1, round(self.sprint_duration.value() * 30)),
             'cooldown_ticks': max(0, round(self.sprint_cooldown.value() * 30)),
+            'os_mult': self.overshield_mult.value(),
+            'medi_percent': self.regen_percent.value(),
+            'medi_duration_ticks': max(1, round(self.regen_duration.value() * 30)),
+            'camo_seconds': self.camo_duration.value(),
+            'camo_cooldown_ticks': max(0, round(self.camo_cooldown.value() * 30)),
         }
         root = mcc_root()
         folder = CONFIG.get('map_game_folder', {}).get('Halo 1', 'halo1/maps')
@@ -4100,12 +4276,19 @@ class OptionsDialog(QDialog):
                                 f"No Halo 1 maps under:\n{Path(root) / folder}\n\n"
                                 "Point the MCC folder (Options) at your install or the sprint mod.")
             return
+        detail = {'sprint': f"{self.sprint_speed.value()}%, "
+                            f"{self.sprint_duration.value():g}s / "
+                            f"{self.sprint_cooldown.value():g}s cd",
+                  'overshield': f"x{self.overshield_mult.value():g}",
+                  'regeneration': f"{self.regen_percent.value():g}% over "
+                                  f"{self.regen_duration.value():g}s",
+                  'camo': f"{self.camo_duration.value():g}s / "
+                          f"{self.camo_cooldown.value():g}s cd"}.get(which, '')
         if QMessageBox.question(
-                self, "Apply Sprint to maps?",
-                f"Write sprint settings ({self.sprint_speed.value()}%, "
-                f"{self.sprint_duration.value():g}s / {self.sprint_cooldown.value():g}s cd) "
-                f"into up to {len(present)} Halo 1 map(s) under:\n{Path(root) / folder}\n\n"
-                "Maps without the sprint weapon are skipped. A one-time .bak is made "
+                self, "Apply abilities to maps?",
+                f"Turn on {which} ({detail}) for both players "
+                f"in up to {len(present)} Halo 1 map(s) under:\n{Path(root) / folder}\n\n"
+                "Maps not built with the ability mod are skipped. A one-time .bak is made "
                 "for each map changed.") != QMessageBox.Yes:
             return
 
@@ -4219,14 +4402,18 @@ class HaloGUI(QMainWindow):
         choices = []
         used_weapons = set()
         used_enemies = set()
-        # Sprint is a one-per-run pick: never offer it once either player owns it, no
-        # matter which pool fed us. This is the single choke point every selection card
-        # (P1, P2, New Weapon, reroll) passes through, so enforcing it here guarantees
-        # it — a backstop to _sprint_offer_ok rather than a substitute for it.
+        # Sprint and camo are one-per-run picks: never offer them once either player owns
+        # them, no matter which pool fed us. This is the single choke point every
+        # selection card (P1, P2, New Weapon, reroll) passes through, so enforcing it
+        # here guarantees it — a backstop to _ability_offer_pool, not a substitute.
         rs = getattr(self, 'run_state', None)
-        if rs is not None and any(is_sprint_item(w) for w in
-                                  rs.weapons_for('player1') + rs.weapons_for('player2')):
-            weapons = [w for w in weapons if not is_sprint_item(w)]
+        if rs is not None:
+            held = {ability_of_item(w) for w in
+                    rs.weapons_for('player1') + rs.weapons_for('player2')
+                    if is_ability_item(w)}
+            gone = held & ABILITY_ONE_PER_RUN
+            if gone:
+                weapons = [w for w in weapons if ability_of_item(w) not in gone]
         for i in range(count):
             available = [w for w in weapons if w not in used_weapons]
             if not available:
@@ -4236,7 +4423,7 @@ class HaloGUI(QMainWindow):
             choices.append({
                 'id': i + 1,
                 'weapon': weapon,
-                'modifiers': [] if is_sprint_item(weapon) else self.db.get_weapon_modifiers(weapon),
+                'modifiers': [] if is_ability_item(weapon) else self.db.get_weapon_modifiers(weapon),
                 'enemy_mod': self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             })
         return choices
@@ -4282,34 +4469,42 @@ class HaloGUI(QMainWindow):
                 if not self._blacklisted_weapon(w) and w not in upgrades]
         pool = strip_denied_equipment(self.db, pool)
         pool = gate_offer_pool(self.db, pool, self.run_state, player)
-        if self._sprint_offer_ok(player):
-            pool = pool + [SPRINT_ITEM]
+        pool = pool + self._ability_offer_pool(player)
         return pool
 
-    def _sprint_offer_ok(self, player=None):
-        """Whether the Sprint ability should be offered in a weapon selection. H1 only,
-        and only when Sprint is configured as a drafted card (not 'Start with Sprint').
-        Offered to just ONE player total, so it drops out once either player owns it.
-        With 'requires a gun' on it's gated to players who already hold a real weapon —
-        which also keeps it out of the very first (initial) pick, when nobody is armed."""
+    def _ability_offer_pool(self, player=None):
+        """The ability items offerable in a weapon selection. H1 only, and only when
+        abilities are configured as a drafted pick (not 'start with'). A player who
+        already holds an ability isn't offered another — one ability per player, since
+        the script runs exactly one per player. Sprint and camo additionally drop out
+        once EITHER player owns them (see ABILITY_ONE_PER_RUN). With 'requires a gun' on
+        it's gated to players who already hold a real weapon, which also keeps abilities
+        out of the very first pick, when nobody is armed."""
         if self._current_game() != 'Halo 1':
-            return False
+            return []
         if not (CONFIG.get('sprint_feature') and CONFIG.get('sprint_as_card')):
-            return False
+            return []
         if CONFIG.get('sprint_start_with'):
-            return False                    # already always on — a card would be moot
+            return []                       # already always on — a card would be moot
         rs = self.run_state
         if rs is None:
-            return False
-        if any(is_sprint_item(w) for w in
-               rs.weapons_for('player1') + rs.weapons_for('player2')):
-            return False                    # one player total already has it
+            return []
+        players = [player] if player else ['player1', 'player2']
+        if any(any(is_ability_item(w) for w in rs.weapons_for(p)) for p in players):
+            return []                       # that player already has their one ability
         if CONFIG.get('sprint_need_weapon'):
-            players = [player] if player else ['player1', 'player2']
             if not all(any(is_real_weapon(self.db, w) for w in rs.weapons_for(p))
                        for p in players):
-                return False
-        return True
+                return []
+        held = {ability_of_item(w) for w in
+                rs.weapons_for('player1') + rs.weapons_for('player2') if is_ability_item(w)}
+        offered = CONFIG.get('abilities_offered') or ['sprint']
+        return [item for item, ab in ABILITY_ITEMS.items()
+                if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)]
+
+    def _sprint_offer_ok(self, player=None):
+        """Back-compat shim: is any ability offerable to this player."""
+        return bool(self._ability_offer_pool(player))
 
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)
