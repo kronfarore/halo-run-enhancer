@@ -3620,6 +3620,19 @@ class OptionsDialog(QDialog):
             QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 5px;
                         margin-top: 10px; padding: 10px 6px 6px 6px; }
             QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 4px; }
+            /* Disabled variants MUST live here, not only in the app stylesheet: a
+               widget's own stylesheet wins over the application one for its children,
+               so the enabled colours above would otherwise keep an inert row looking
+               exactly like a live one. Every colour set above needs its counterpart. */
+            QLabel:disabled, QCheckBox:disabled, QGroupBox:disabled { color: #5c5c5c; }
+            QGroupBox::title:disabled { color: #5c5c5c; }
+            QComboBox:disabled, QDoubleSpinBox:disabled, QSpinBox:disabled {
+                background-color: #131313; color: #5c5c5c; border: 1px solid #262626;
+            }
+            QCheckBox::indicator:disabled { border: 1px solid #333333;
+                                            background-color: #141414; }
+            QCheckBox::indicator:checked:disabled { background-color: #2f5b31;
+                                                    border: 1px solid #2f5b31; }
         """)
         outer = QVBoxLayout(self)
         _scroll = QScrollArea()
@@ -4125,16 +4138,12 @@ class OptionsDialog(QDialog):
                 self.sprint_need_weapon_cb.setChecked(False)
             _row(xform, offer_row, card)
             _row(xform, self.ability_start_combo, start)
-            # Each ability's own values are live only when that ability can actually turn
-            # up: it's the start-with pick, or it's offered as a draft.
-            picked = self.ability_start_combo.currentData()
-            for ab, box in (('sprint', self.sprint_box),
-                            ('overshield', self.overshield_box),
-                            ('regeneration', self.regen_box),
-                            ('camo', self.camo_box)):
-                usable = on and ((start and picked == ab)
-                                 or (card and self.ability_offer_cbs[ab].isChecked()))
-                box.setEnabled(usable)
+            # Enabling abilities is the gate for their starting values: you set them up
+            # before deciding how an ability enters the run, so they stay editable
+            # whichever way in is chosen (and even before one is).
+            for box in (self.sprint_box, self.overshield_box,
+                        self.regen_box, self.camo_box):
+                box.setEnabled(on)
         self.sprint_cb.toggled.connect(_sync_sprint)
         self.sprint_cards_cb.toggled.connect(_sync_sprint)
         self.sprint_start_cb.toggled.connect(_sync_sprint)
