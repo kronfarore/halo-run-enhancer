@@ -26,6 +26,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import paths  # noqa: E402  (install paths — edit paths.py)
 import h1_loosetag as L  # noqa: E402
+import install_script  # noqa: E402  (keeps global_scripts.hsc in sync with sprint.hsc)
 
 HCEEK = paths.HCEEK
 SCNR_XML = paths.SCNR_XML
@@ -86,7 +87,12 @@ def build_one(mp, cfg, outdir, speed):
         os.remove(built + '.bak')
     t = subprocess.run([sys.executable, TUNE, built, '--mult', '%g' % (speed / 100.0),
                         '--enable'], capture_output=True, text=True)
-    if 'sprint_enabled -> true' not in (t.stdout or ''):
+    # sprint_tune enables the sprint ability: "ability0/1 -> sprint" on ability maps,
+    # or the old "sprint_enabled(0/1) -> true" on pre-rebuild sprint-only maps.
+    out = t.stdout or ''
+    if ('ability0/1 -> sprint' not in out
+            and 'sprint_enabled0/1 -> true' not in out
+            and 'sprint_enabled -> true' not in out):
         return False, 'tune failed'
 
     os.makedirs(outdir, exist_ok=True)
@@ -101,6 +107,13 @@ def main():
     ap.add_argument('--speed', type=int, default=150)
     ap.add_argument('--out', default=os.path.join(HERE, 'out'))
     a = ap.parse_args()
+
+    # Sync sprint.hsc into global_scripts.hsc once, before any build, so every map
+    # in the batch is compiled with the current sprint logic (idempotent).
+    try:
+        install_script.install(paths.GLOBAL_SCRIPTS)
+    except RuntimeError as e:
+        sys.exit('script install: %s' % e)
 
     versions = list(VERSIONS) if a.version == 'both' else [a.version]
     maps = [m.strip() for m in a.maps.split(',') if m.strip()] or MAPS

@@ -26,3 +26,8 @@ TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SCNR_XML = os.path.join(PLUGINS, 'Halo1', 'scnr.xml')
 TOOL_EXE = os.path.join(HCEEK, 'tool.exe')
+
+# The compiled-into-every-level script file. sprint.hsc is (re)installed into this
+# by install_script.py before each build, so the built maps always carry the
+# current sprint logic. tool.exe reads it from data\ at build time.
+GLOBAL_SCRIPTS = os.path.join(HCEEK, 'data', 'global_scripts.hsc')

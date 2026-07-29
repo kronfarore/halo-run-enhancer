@@ -29,6 +29,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import paths  # noqa: E402  (install paths — edit paths.py)
 import h1_loosetag as L  # noqa: E402
+import install_script  # noqa: E402  (keeps global_scripts.hsc in sync with sprint.hsc)
 
 HCEEK = paths.HCEEK
 MCC = paths.MCC
@@ -82,16 +83,41 @@ def main():
     ap.add_argument('--weapons', default='none')
     ap.add_argument('--equipment', default='none')
     ap.add_argument('--speed', type=int, default=150)
+    ap.add_argument('--ability', choices=('none', 'sprint', 'overshield', 'camo', 'medikit'),
+                    default='sprint',
+                    help="flashlight-key ability to enable on the built map for BOTH "
+                         "players (default sprint).")
+    # Optional powerup tuning, passed straight through to sprint_tune so ONE command
+    # builds + enables + tunes (durations/cooldowns in ticks, 30/sec).
+    ap.add_argument('--os-mult', type=float, help="overshield strength as a clean multiplier "
+                    "(x2, x3, ...); converted to the raw object_set_shield value internally")
+    ap.add_argument('--os-shield', type=float, help="RAW object_set_shield value (advanced; "
+                    "use --os-mult). ~0.0267 = x2")
+    ap.add_argument('--os-duration', type=int, help="overshield active window, ticks")
+    ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
+    ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
+    ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
+    ap.add_argument('--medi-duration', type=int, help="medikit window, ticks")
+    ap.add_argument('--medi-cooldown', type=int, help="medikit cooldown, ticks")
     ap.add_argument('--resources', choices=('none', 'read', 'read_write'), default=None,
-                    help="shared resource-map usage. Default: 'none' for classic "
-                         "(self-contained; avoids the remastered bitmaps.map that "
-                         "corrupts classic graphics), 'read_write' for remastered.")
+                    help="shared resource-map usage. Default 'none' (self-contained) for "
+                         "both graphics modes — a read_write build references the shared "
+                         "bitmaps.map and corrupts the UI/classic view.")
     ap.add_argument('--build-only', action='store_true')
     a = ap.parse_args()
-    # Classic builds MUST NOT read the remastered shared bitmaps.map (corrupts the
-    # map) — default them to self-contained. Remastered matches the shared maps.
+    # Build SELF-CONTAINED by default, for BOTH graphics modes (matches batch_build).
+    # A read_write build references the shared bitmaps.map by index, which corrupts the
+    # UI and the classic view; a self-contained ('none') build renders correctly in
+    # both the remastered and classic in-game views. Overridable via --resources.
     if a.resources is None:
-        a.resources = 'none' if a.graphics == 'classic' else 'read_write'
+        a.resources = 'none'
+
+    # Sync the sprint script into global_scripts.hsc so the build carries the
+    # current sprint.hsc (idempotent — a no-op once it's already current).
+    try:
+        install_script.install(paths.GLOBAL_SCRIPTS)
+    except RuntimeError as e:
+        sys.exit('script install: %s' % e)
 
     weapons = _resolve(a.weapons, WEAPONS, {'human': HUMAN, 'alien': ALIEN})
     equip = _resolve(a.equipment, EQUIP, {})
@@ -137,13 +163,27 @@ def main():
             os.remove(stale)
     print('deployed to halo1\\maps\\%s.map' % a.map)
 
+    # Powerups don't use the sprint speed mechanic, so leave run speed vanilla for
+    # them (mult 1.0); only the sprint ability raises it.
+    mult = a.speed / 100.0 if a.ability == 'sprint' else 1.0
+    extra = []
+    for flag, val in (('--os-mult', a.os_mult), ('--os-shield', a.os_shield),
+                      ('--os-duration', a.os_duration),
+                      ('--os-cooldown', a.os_cooldown), ('--camo-duration', a.camo_duration),
+                      ('--camo-cooldown', a.camo_cooldown), ('--medi-duration', a.medi_duration),
+                      ('--medi-cooldown', a.medi_cooldown)):
+        if val is not None:
+            extra += [flag, '%g' % val]
     r = subprocess.run([sys.executable, os.path.join(HERE, 'sprint_tune.py'), gamemap,
-                        '--mult', '%g' % (a.speed / 100.0), '--enable'],
+                        '--mult', '%g' % mult, '--ability', a.ability] + extra,
                        capture_output=True, text=True)
     for line in (r.stdout or '').splitlines():
-        if 'sprint_enabled' in line or 'wrote' in line:
+        if 'ability' in line or 'enabled' in line or 'wrote' in line or '!!' in line:
             print(' ', line.strip())
-    print('DONE - test %s in-game (%s, sprint %d%%).' % (a.map, a.graphics, a.speed))
+    how = 'vanilla (no ability)' if a.ability == 'none' else \
+        ('sprint %d%% — hold movement + flashlight key' % a.speed if a.ability == 'sprint'
+         else '%s — press the flashlight key to use it' % a.ability)
+    print('DONE - test %s in-game (%s). Ability: %s.' % (a.map, a.graphics, how))
 
 
 if __name__ == '__main__':

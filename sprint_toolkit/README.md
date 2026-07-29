@@ -32,9 +32,17 @@ the built map (`sprint_tune.py`, or the Enhancer's "Apply Sprint to maps" button
 1. **Edit `paths.py`** — set `HCEEK`, `MCC`, and `PLUGINS` for your machine.
 2. **Install the sprint weapon tag:** copy `assets/sprint.weapon` to
    `HCEEK\tags\weapons\sprint\sprint.weapon`.
-3. **Install the sprint script:** append `sprint.hsc` to
-   `HCEEK\data\global_scripts.hsc` (back that file up first). It compiles into every
-   level and is inert until a map is tuned to enable it.
+3. **Install the sprint script:** *automatic.* Every build (`sprint_build.py` /
+   `batch_build.py`) syncs `sprint.hsc` into `HCEEK\data\global_scripts.hsc` first,
+   wrapped in `;>>> SPRINT TOOLKIT` markers, so the built maps always carry the
+   current script and re-running never duplicates it. The first sync backs the file
+   up to `global_scripts.hsc.presprint`. To install it by hand without building, run
+   `python install_script.py`. It compiles into every level and stays inert until a
+   map is tuned to enable it.
+
+   > If you followed an older version of this README and pasted `sprint.hsc` into
+   > `global_scripts.hsc` by hand, delete that block once — the installer refuses to
+   > run while an unmarked copy is present, so it can't create a duplicate.
 
 ## Usage
 
@@ -75,8 +83,7 @@ mismatch that corrupts graphics):
 - **`remastered_alien`** — Covenant weapons + equipment, **remastered** (renders
   correctly in *both* in-game graphics views).
 
-Only weapons the player can normally use are added (the Enhancer's H1 pool); adding
-H2/H3 tags like the energy sword corrupts H1 graphics.
+Only weapons the player can normally use are added (the Enhancer's H1 pool).
 
 ## Files
 
@@ -99,8 +106,8 @@ H2/H3 tags like the energy sword corrupts H1 graphics.
 
 ## Credits
 
-Inspired by **Sprint Evolved** (Steam Workshop item `3594880812`) — the Halo 1 mod
-that first demonstrated sprint is achievable in H1 purely from tag data: an
+Inspired by **Sprint Evolved** (`https://steamcommunity.com/sharedfiles/filedetails/?id=3594880812`) — this Halo 1 mod
+first demonstrated sprint is achievable in H1 purely from tag data to me: an
 invisible weapon plus per-weapon movement penalties, driven by a flashlight-key
 script. This toolkit re-derives that technique independently, with its own assets
 and scripts (no files taken from the mod), and adds a tunable duration/cooldown

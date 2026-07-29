@@ -41,10 +41,19 @@ GLOBALS = 'globals\\globals'
 MOVE = 'Player Information'
 SPRINT_WEAP = 'weapons\\sprint\\sprint'
 
+# Flashlight-key ability selector (matches sprint.hsc ability0/ability1).
+ABILITIES = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3, 'medikit': 4}
+
 # Vanilla stock values, so --mult is always applied to a known baseline rather
 # than to whatever a previous run left behind.
 STOCK_RUN_FORWARD = 2.25
 STOCK_SNEAK_FORWARD = 0.9
+
+# Overshield: object_set_shield's raw value is awkward (a tiny number already
+# overshields). Calibrated in-game 2026-07-28: the raw value is LINEAR in the
+# overshield multiplier, v = mult * OS_SHIELD_BASE, so x2=0.0267, x3=0.04005,
+# x4=0.0534. Users pass a clean multiplier (--os-mult 2); we store the raw value.
+OS_SHIELD_BASE = 0.01335   # raw object_set_shield value for x1 (normal full shield)
 
 # Only PLAYER-HELD weapons get the penalty. Anything left at zero is a
 # permanent-sprint weapon, so the exclusions matter:
@@ -56,6 +65,21 @@ AI_ONLY = (
     'weapons\\energy sword\\energy sword',
     'weapons\\fuel rod gun\\hunter fuel rod',
 )
+
+
+def resolve_map(arg):
+    """Find the map the user meant. Accepts a full path (with or without .map) or a
+    bare id like 'a10', which resolves to the DEPLOYED game map under
+    <MCC>\\halo1\\maps — the copy the game actually loads, which is what you tune."""
+    p = Path(arg)
+    cands = [p, Path(str(p) + '.map')]
+    if os.sep not in arg and '/' not in arg:      # bare id -> deployed game map
+        base = Path(paths.MCC) / 'halo1' / 'maps'
+        cands += [base / arg, base / (arg + '.map')]
+    for c in cands:
+        if c.is_file():
+            return c
+    return p
 
 
 def player_held(name):
@@ -100,6 +124,58 @@ def set_global(m, name, val):
     return None
 
 
+def set_profile_shield(m, value, skip_substr='sprint'):
+    """Set Starting Shield Modifier (spawn overshield multiplier) on every Player
+    Starting Profile whose name doesn't contain skip_substr. Also lifts a 0 health
+    modifier to 1.0 so a profile reset can't spawn the player dead. scnr Player Starting
+    Profile block @0x348, elem 0x68: Starting Health Modifier @0x20, Shield @0x24.
+    Returns [(name, old_shield)] for what was set."""
+    import struct
+    scnr = [k for k in m.tags if k[0] == 'scnr'][0]
+    meta = m.tags[scnr]
+    cnt = m.i32(meta + 0x348)
+    ptr = (m.u32(meta + 0x348 + 4) - m.magic) & 0xFFFFFFFF
+    done = []
+    for i in range(cnt):
+        b = ptr + i * 0x68
+        name = m._cstr(b)
+        if skip_substr and skip_substr in name:
+            continue
+        old = struct.unpack_from('<f', m.data, b + 0x24)[0]
+        struct.pack_into('<f', m.data, b + 0x24, float(value))
+        if struct.unpack_from('<f', m.data, b + 0x20)[0] <= 0.0:
+            struct.pack_into('<f', m.data, b + 0x20, 1.0)
+        done.append((name, old))
+    return done
+
+
+def read_global(m, name):
+    """Read a script-global's current value without writing. Same layout as
+    set_global. Returns the value, or None if the global isn't in this map."""
+    import struct
+    scnr = [k for k in m.tags if k[0] == 'scnr'][0]
+    meta = m.tags[scnr]
+    syn = (m.u32(meta + 0x474 + 12) - m.magic) & 0xFFFFFFFF
+    cnt = m.i32(meta + 0x4A8)
+    ptr = (m.u32(meta + 0x4A8 + 4) - m.magic) & 0xFFFFFFFF
+    for i in range(cnt):
+        b = ptr + i * 0x5C
+        if m._cstr(b) != name:
+            continue
+        node = m.u32(b + 0x28) & 0xFFFF
+        nb = syn + 56 + node * 20
+        vtype = struct.unpack_from('<h', m.data, nb + 0x04)[0]
+        off = nb + 0x10
+        if vtype == 5:
+            return m.data[off]
+        if vtype == 6:
+            return struct.unpack_from('<f', m.data, off)[0]
+        if vtype == 8:
+            return struct.unpack_from('<i', m.data, off)[0]
+        return struct.unpack_from('<h', m.data, off)[0]
+    return None
+
+
 def main():
     global SPRINT_WEAP
     ap = argparse.ArgumentParser()
@@ -116,18 +192,44 @@ def main():
     ap.add_argument('--cooldown', type=int, default=None,
                     help="sprint cooldown in TICKS (30/sec); patches sprint_cooldown")
     ap.add_argument('--enable', dest='enable', action='store_true', default=None,
-                    help="set sprint_enabled true (simulates Start with Sprint)")
+                    help="give BOTH players the sprint ability (same as --ability sprint)")
     ap.add_argument('--disable', dest='enable', action='store_false',
-                    help="set sprint_enabled false (map behaves vanilla)")
+                    help="clear both players' ability (map behaves vanilla)")
+    ap.add_argument('--ability', choices=list(ABILITIES), default=None,
+                    help="set BOTH players' flashlight-key ability: "
+                         "none/sprint/overshield/camo/medikit")
+    # Powerup tuning (durations/cooldowns in TICKS, 30/sec; magnitudes in engine units).
+    ap.add_argument('--os-mult', type=float, help="overshield strength as a clean MULTIPLIER "
+                    "(x2, x3, ...); converted to the raw object_set_shield value internally "
+                    "(v = mult * %g). Prefer this over --os-shield." % OS_SHIELD_BASE)
+    ap.add_argument('--os-shield', type=float, help="RAW object_set_shield value (advanced; "
+                    "use --os-mult instead). ~0.0267 = x2, 0.0534 = x4.")
+    ap.add_argument('--os-body', type=float, help="UNUSED (retired unit_set_maximum_vitality "
+                    "body arg; overshield uses object_set_shield now)")
+    ap.add_argument('--os-duration', type=int, help="overshield window, ticks")
+    ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
+    ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
+    ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
+    ap.add_argument('--medi-heal', type=float, help="medikit health while active (1.0 = full)")
+    ap.add_argument('--medi-duration', type=int, help="medikit window, ticks")
+    ap.add_argument('--medi-cooldown', type=int, help="medikit cooldown, ticks")
+    ap.add_argument('--spawn-shield', type=float, default=None,
+                    help="spawn OVERSHIELD: set Starting Shield Modifier on the player/coop "
+                         "profiles (1=normal, 2=red 2x, 3=vanilla 3x). Real, gradually-"
+                         "charging overshield applied on every spawn.")
     ap.add_argument('--sprint-weap', default=SPRINT_WEAP,
                     help="sprint weapon tag path; override to inspect another "
                          "build, e.g. Sprint Evolved's altis\\weapons\\sprint\\sprint")
     a = ap.parse_args()
     SPRINT_WEAP = a.sprint_weap
 
-    path = Path(a.map_path)
+    path = resolve_map(a.map_path)
     if not path.is_file():
-        sys.exit(f"no such map: {path}")
+        base = os.path.join(paths.MCC, 'halo1', 'maps')
+        sys.exit("no such map: %s\n"
+                 "   Pass the DEPLOYED game map (this is what you play in-game), e.g.\n"
+                 "   a bare id resolves automatically:  python sprint_tune.py a10 ...\n"
+                 "   or the full path:  \"%s\\a10.map\"" % (a.map_path, base))
     bak = Path(str(path) + '.bak')
 
     reg = hp.PluginRegistry(PLUGINS, ['Halo1MCC', 'Halo1'])
@@ -153,7 +255,9 @@ def main():
         print('    weapons: %d total, %d player-held' % (len(pens), len(held)))
         for name, v in sorted(held):
             print('      %-45s %.4f' % (name, v))
-        if loose:
+        # Zero penalty only means "permanent sprint" when run speed is actually raised
+        # above vanilla. At --mult 1.0 (e.g. a powerup test) it's just normal movement.
+        if loose and a.mult > 1.0:
             print('    !! %d player weapon(s) at zero penalty = permanent sprint'
                   % len(loose))
         has_sprint = bool(m.find_tags('weap', SPRINT_WEAP))
@@ -162,6 +266,17 @@ def main():
     if a.show:
         report(hp.open_map(str(path), 'Halo 1'), f"{path.name} (live):")
         return
+
+    # If no ability was specified, preserve whatever the LIVE (deployed) map already
+    # has, so re-tuning just a value (e.g. --os-shield) doesn't silently turn the
+    # ability off by rebuilding from the pristine .bak baseline. Read before patching.
+    preserved_ability = None
+    if a.ability is None and a.enable is None:
+        live = hp.open_map(str(path), 'Halo 1')
+        preserved_ability = read_global(live, 'ability0')
+        if preserved_ability is None:
+            preserved_ability = 1 if read_global(live, 'sprint_enabled0') else 0
+        del live
 
     if not bak.is_file():
         shutil.copy2(path, bak)
@@ -256,13 +371,64 @@ def main():
             ok += 1
         else:
             print('  !! global %s not found (map lacks the sprint script)' % gname)
-    if a.enable is not None:
-        res = set_global(m, 'sprint_enabled', a.enable)
+    # Overshield strength: a clean multiplier (--os-mult) converts to the raw
+    # object_set_shield value; --os-shield stays as a raw override. --os-mult wins.
+    os_shield_raw = a.os_shield
+    if a.os_mult is not None:
+        os_shield_raw = a.os_mult * OS_SHIELD_BASE
+        print('  overshield x%g -> object_set_shield %.5f' % (a.os_mult, os_shield_raw))
+
+    # Powerup tuning globals (only those given). Real for magnitudes, short for ticks.
+    for gname, gval in (('os_shield', os_shield_raw), ('os_body', a.os_body),
+                        ('os_ticks', a.os_duration),
+                        ('os_cooldown', a.os_cooldown), ('camo_ticks', a.camo_duration),
+                        ('camo_cooldown', a.camo_cooldown), ('medi_heal', a.medi_heal),
+                        ('medi_ticks', a.medi_duration), ('medi_cooldown', a.medi_cooldown)):
+        if gval is None:
+            continue
+        res = set_global(m, gname, gval)
         if res:
-            print('  sprint_enabled -> %s' % ('true' if a.enable else 'false'))
+            print('  %s %s -> %s' % (gname, res[0], res[1]))
             ok += 1
         else:
-            print('  !! sprint_enabled not found (map lacks the sprint script)')
+            print('  !! global %s not found (map lacks the ability script)' % gname)
+
+    # Spawn overshield: the vanilla mechanism -- Starting Shield Modifier on the player
+    # profiles. Not a script global; a scnr edit, so it works on any map with profiles.
+    if a.spawn_shield is not None:
+        done = set_profile_shield(m, a.spawn_shield)
+        for name, old in done:
+            print('  spawn shield [%s] %.2f -> %.2f' % (name, old, a.spawn_shield))
+        ok += len(done)
+        if not done:
+            print('  !! no player profiles found to set spawn shield on')
+
+    # Ability selection. --ability wins; --enable/--disable map to sprint/none; with
+    # none of those, preserve whatever the live map already had (so a value-only tune
+    # doesn't disable the ability).
+    ability = ABILITIES[a.ability] if a.ability is not None else (
+        1 if a.enable is True else (0 if a.enable is False else preserved_ability))
+    if ability is not None:
+        name = next((k for k, v in ABILITIES.items() if v == ability), 'ability %d' % ability)
+        # Both players (this CLI is the whole-map toggle). Newer maps have ability0/1;
+        # a pre-rebuild map only has the old sprint_enabled(0/1) booleans.
+        r0 = set_global(m, 'ability0', ability)
+        r1 = set_global(m, 'ability1', ability)
+        if r0 is not None or r1 is not None:
+            print('  ability0/1 -> %s (%d)' % (name, ability))
+            ok += 1
+        else:
+            on = ability == 1
+            r0 = set_global(m, 'sprint_enabled0', on)
+            r1 = set_global(m, 'sprint_enabled1', on)
+            if r0 is not None or r1 is not None:
+                print('  sprint_enabled0/1 -> %s (old map: sprint only)' % ('true' if on else 'false'))
+                ok += 1
+            elif set_global(m, 'sprint_enabled', on) is not None:
+                print('  sprint_enabled -> %s (old map: sprint only)' % ('true' if on else 'false'))
+                ok += 1
+            else:
+                print('  !! ability global not found (map lacks the ability script)')
 
     if not ok:
         sys.exit("nothing resolved -- refusing to save")
