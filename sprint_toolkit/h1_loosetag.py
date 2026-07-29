@@ -103,6 +103,9 @@ def locate_root_blocks(data, plugin_path):
 PROFILE_OFF = 0x348    # Player Starting Profile (elem 0x68: Name@0, Primary weap@0x28)
 PALETTE_OFF = 0x27C    # Weapon Palette          (elem 0x30: Name weap@0)
 EQUIP_PALETTE_OFF = 0x264   # Equipment Palette   (elem 0x30: Name eqip@0)
+OBJECT_NAMES_OFF = 0x204    # Object Names        (elem 0x24: Name@0, Type@0x20, Place@0x22)
+EQUIPMENT_OFF = 0x258       # Equipment placed    (elem 0x28: Pal@0, Name@2, Flags@4, Pos@8)
+PLAYER_START_OFF = 0x354    # Player Starting Locations (elem 0x34: Position@0)
 
 # Player-usable weapon tags, split by the H1 remastered restriction: adding a
 # HUMAN weapon to a map forces a CLASSIC-graphics build; alien (Covenant) weapons
@@ -222,6 +225,107 @@ def add_sprint(data, plugin_path):
         return
     insert_block_element(data, plugin_path, PROFILE_OFF,
                          make_profile('sprint_profile', SPRINT_WEAPON), SPRINT_WEAPON)
+
+
+CAMO_TAG = 'powerups\\active camouflage'
+CAMO_OBJECT_NAME = 'camo_ability'    # our inserted, non-auto-spawning pickup
+
+
+def _block(data, plugin_path, off):
+    info = locate_root_blocks(data, plugin_path).get(off)
+    if info is None:
+        raise ValueError('root block 0x%X not found' % off)
+    return info
+
+
+def object_names(data, plugin_path):
+    """Names in the Object Names block, in index order."""
+    array, count, es, _ = _block(data, plugin_path, OBJECT_NAMES_OFF)
+    return [bytes(data[array + i * es:array + i * es + 32]).split(b'\x00')[0].decode('latin1')
+            for i in range(count)]
+
+
+def make_object_name(name, otype, placement_index):
+    """A 0x24 Object Names element: Name[32], Type enum16 @0x20, Placement Index @0x22.
+    All scalars big-endian, as everywhere in a loose tag."""
+    e = bytearray(0x24)
+    nb = name.encode('latin1')[:31]
+    e[0:len(nb)] = nb
+    struct.pack_into('>h', e, 0x20, otype)
+    struct.pack_into('>h', e, 0x22, placement_index)
+    return bytes(e)
+
+
+def make_equipment_placement(pal_index, name_index, pos, flags=1, bsp_flags=0x0):
+    """A 0x28 Equipment placement. flags bit0 = "Not Automatically", so the pickup does
+    NOT spawn at level load and only appears when a script object_creates it.
+    BSP flags are 0 to match every stock placement in the campaign scenarios (the
+    editor leaves them clear and the engine resolves the BSP from the position)."""
+    e = bytearray(0x28)
+    struct.pack_into('>h', e, 0x00, pal_index)
+    struct.pack_into('>h', e, 0x02, name_index)
+    struct.pack_into('>H', e, 0x04, flags)
+    struct.pack_into('>fff', e, 0x08, *pos)
+    struct.pack_into('>H', e, 0x20, bsp_flags)
+    struct.pack_into('>H', e, 0x22, 1)          # Initially At Rest (doesn't fall)
+    return bytes(e)
+
+
+def find_placement(data, plugin_path, block_off, palette_off, tag_substr):
+    """Index of the first placement in `block_off` whose palette tag contains
+    `tag_substr`, or None. Placement elem: Palette Index (BE int16) @0x0."""
+    pal = read_block_paths(data, plugin_path, palette_off)
+    array, count, es, _ = _block(data, plugin_path, block_off)
+    for i in range(count):
+        pi = struct.unpack_from('>h', data, array + i * es)[0]
+        if 0 <= pi < len(pal) and tag_substr in pal[pi]:
+            return i
+    return None
+
+
+def name_placement(data, plugin_path, block_off, placement_index, otype, name):
+    """Give an EXISTING placement an object name so scripts can address it. Inserts the
+    Object Names element first, then re-locates the placement block (the insert shifts
+    everything after it) and writes the placement's Name Index."""
+    if name in object_names(data, plugin_path):
+        return False
+    name_index = _block(data, plugin_path, OBJECT_NAMES_OFF)[1]
+    insert_block_element(data, plugin_path, OBJECT_NAMES_OFF,
+                         make_object_name(name, otype, placement_index), None)
+    array, _, es, _ = _block(data, plugin_path, block_off)
+    struct.pack_into('>h', data, array + placement_index * es + 0x02, name_index)
+    return True
+
+
+def player_start_position(data, plugin_path):
+    """Position of the first Player Starting Location -- a spot guaranteed to be inside
+    the level, used as the camo pickup's nominal home before it is attached."""
+    array, count, es, _ = _block(data, plugin_path, PLAYER_START_OFF)
+    if not count:
+        return (0.0, 0.0, 0.0)
+    return struct.unpack_from('>fff', data, array)
+
+
+def add_camo_ability(data, plugin_path):
+    """Insert a NAMED, non-auto-spawning active-camouflage pickup so a script can
+    `object_create camo_ability` and attach it to a player, granting the REAL equipment
+    camo (which has a genuine 45s duration) instead of the permanent cheat camo.
+    Idempotent. Returns True if it inserted anything."""
+    if CAMO_OBJECT_NAME in object_names(data, plugin_path):
+        return False
+    add_palette_entries(data, plugin_path, EQUIP_PALETTE_OFF, b'eqip', [CAMO_TAG])
+    pal = read_block_paths(data, plugin_path, EQUIP_PALETTE_OFF)
+    pal_index = pal.index(CAMO_TAG)
+    # The two blocks cross-reference by index, and each new element lands at the end,
+    # so both indices are the counts taken BEFORE inserting.
+    placement_index = _block(data, plugin_path, EQUIPMENT_OFF)[1]
+    name_index = _block(data, plugin_path, OBJECT_NAMES_OFF)[1]
+    pos = player_start_position(data, plugin_path)
+    insert_block_element(data, plugin_path, EQUIPMENT_OFF,
+                         make_equipment_placement(pal_index, name_index, pos), None)
+    insert_block_element(data, plugin_path, OBJECT_NAMES_OFF,
+                         make_object_name(CAMO_OBJECT_NAME, 3, placement_index), None)
+    return True
 
 
 def outfit(data, plugin_path, alien_only=False):

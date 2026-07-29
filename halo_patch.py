@@ -1701,9 +1701,15 @@ def read_global(m, name):
     return None
 
 
-# Flashlight-key abilities, matching sprint.hsc's ability0/ability1 selector. Camo (3)
-# is deliberately not offered yet -- its duration is still unbounded.
+# Flashlight-key abilities, matching sprint.hsc's ability0/ability1 selector.
 _ABILITY_IDS = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3, 'regeneration': 4}
+
+# Camo's duration is not a script global: it's the Powerup Time on the camo equipment
+# tag (stock 45s), mirrored into the script's camo window. Cooldown is separate and
+# starts when that window ends, so a full cycle is duration + cooldown.
+_CAMO_TAG = 'powerups\\active camouflage'
+_CAMO_SECONDS = 5.0
+_CAMO_COOLDOWN_TICKS = 900      # 30s
 
 # The engine's absolute vitality scale, measured in-game: a full body/shield is 75
 # units. object_set_shield's argument is in 1/75 units (so x3 overshield = 3/75), and
@@ -1750,7 +1756,12 @@ def _apply_sprint(m, game, registry, cfg):
     # actually carries what each requested ability needs BEFORE writing anything --
     # enabling regeneration on a map built before vit_max existed would silently
     # ratchet health and shield to full.
-    needs = {'regeneration': ('medi_rate', 'vit_max'), 'overshield': ('os_shield',)}
+    needs = {'regeneration': ('medi_rate', 'vit_max'), 'overshield': ('os_shield',),
+             'camo': ('camo_ticks',)}
+    if 'camo' in active and not m.find_tags('eqip', _CAMO_TAG):
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': 'camo needs a map built with the camo pickup '
+                           '(rebuild with the current toolkit)'}]
     for name in sorted(active):
         missing = [g for g in needs.get(name, ()) if read_global(m, g) is None]
         if missing:
@@ -1793,6 +1804,19 @@ def _apply_sprint(m, game, registry, cfg):
         set_global(m, 'medi_rate', heal / float(max(1, int(ticks))))
     # The write-back scale has to match the unit's true max or regeneration ratchets.
     set_global(m, 'vit_max', _VIT_MAX)
+
+    # Camo: the real duration is the equipment tag's Powerup Time, mirrored into the
+    # script window. Only written when camo is actually in play -- the tag is shared
+    # with any stock camo pickups in the level, so an unused ability must not touch it.
+    if 'camo' in active or cfg.get('camo_seconds') is not None:
+        secs = float(cfg.get('camo_seconds') or _CAMO_SECONDS)
+        eq = registry.get('eqip')
+        if eq is not None and m.find_tags('eqip', _CAMO_TAG):
+            m.apply_field('eqip', _CAMO_TAG, 'Powerup Time', 'set', secs, eq)
+        set_global(m, 'camo_ticks', max(1, int(cfg.get('camo_duration_ticks')
+                                               or round(secs * 30))))
+        set_global(m, 'camo_cooldown',
+                   max(0, int(cfg.get('camo_cooldown_ticks', _CAMO_COOLDOWN_TICKS))))
 
     if cfg.get('os_mult') is not None:
         set_global(m, 'os_shield', float(cfg['os_mult']) * _OS_SHIELD_BASE)

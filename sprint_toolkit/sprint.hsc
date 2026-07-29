@@ -17,8 +17,18 @@
 ;               overshield? unit_set_maximum_vitality was REJECTED (in-game 2026-07-28): its
 ;               args are absolute (~100), it only grows the NORMAL shield, and it force-
 ;               refills health. os_body is retained but UNUSED for now.
-;   camo        cheat_active_camouflage_local_player -- granted ONCE; ends on its own
-;               natural duration (firing does NOT break it), then cooldown.
+;   camo        create -> attach -> DETACH a NAMED camo pickup (camo_ability, a "Not
+;               Automatically" equipment placement inserted at build time). The player
+;               then collects the REAL equipment and gets its genuine 45s duration,
+;               tunable via the eqip Powerup Time field.
+;               ALL THREE STEPS ARE REQUIRED, confirmed in-game: attach alone does
+;               NOTHING because an attached object is parented to the unit and never
+;               runs pickup collision; detaching drops it at the player's feet as a free
+;               object, which is collected normally. cheat_active_camouflage_local_player
+;               is deliberately NOT used -- it grants PERMANENT camo and H1 has no
+;               camo-off function (verified against hs_doc + the engine DLL), which is
+;               why camo never expired. ability_stop destroys the pickup if it somehow
+;               went uncollected.
 ;   medikit     "REGENERATION" to the user; medi_*/ability 4 stay the internal names.
 ;               unit_set_current_vitality <unit> <body> <shield> -- HEAL OVER TIME. Its args
 ;               are ABSOLUTE vitality units (vit_max ~= 100 = full), NOT the [0,1] the
@@ -42,8 +52,12 @@
 (global short os_cooldown 30)         ; 1.0s
 (global real  os_shield 3.0)          ; object_set_shield value (current shield); "any positive -> purple"?
 (global real  os_body 1.0)            ; UNUSED (was unit_set_maximum_vitality body arg; rejected)
-(global short camo_ticks 150)         ; 5.0s cap (also ends when you fire)
-(global short camo_cooldown 30)       ; 1.0s
+(global short camo_ticks 150)         ; 5.0s duration -- matches the tag's Powerup Time
+(global short camo_cooldown 900)      ; 30.0s, begins when the 5s window ends
+; camo_ticks is the camo DURATION and tracks the camo tag's Powerup Time; camo_cooldown
+; is separate and starts once that window ends, so a full cycle is duration + cooldown.
+; (Re-triggering mid-camo would drop a pickup that can't be collected and just lies
+; there as an empty prop -- harmless, and the cooldown keeps it from happening anyway.)
 (global short medi_ticks 150)         ; 5.0s heal-over-time window (1 = instant)
 (global short medi_cooldown 30)       ; 1.0s
 (global real  medi_heal 75.0)         ; TOTAL heal in vitality units (75 = a 100% heal; more
@@ -93,7 +107,9 @@
 	(if (= ability0 3)
 		(begin
 			(set sl0 camo_ticks)
-			(cheat_active_camouflage_local_player 0)))           ; granted once; ends on fire
+			(object_create camo_ability)
+			(objects_attach (player0) "" camo_ability "")
+			(objects_detach (player0) camo_ability)))
 	(if (= ability0 4)
 		(set sl0 medi_ticks))                                ; medikit heals per tick (medi_tick0)
 	(player_action_test_reset))         ; clear any pending fire so sprint doesn't insta-cancel
@@ -104,6 +120,7 @@
 	(if (= ability0 2) (set sc0 os_cooldown))
 	(if (= ability0 3) (set sc0 camo_cooldown))
 	(if (= ability0 4) (set sc0 medi_cooldown))
+	(if (= ability0 3) (object_destroy camo_ability))     ; clear it if it wasn't picked up
 	(if (= ability0 1) (objects_delete_by_definition "weapons\sprint\sprint")))
 
 (script static void ability_start1
@@ -119,7 +136,9 @@
 	(if (= ability1 3)
 		(begin
 			(set sl1 camo_ticks)
-			(cheat_active_camouflage_local_player 1)))
+			(object_create camo_ability)
+			(objects_attach (player1) "" camo_ability "")
+			(objects_detach (player1) camo_ability)))
 	(if (= ability1 4)
 		(set sl1 medi_ticks))                                ; medikit heals per tick (medi_tick1)
 	(player_action_test_reset))
@@ -130,6 +149,7 @@
 	(if (= ability1 2) (set sc1 os_cooldown))
 	(if (= ability1 3) (set sc1 camo_cooldown))
 	(if (= ability1 4) (set sc1 medi_cooldown))
+	(if (= ability1 3) (object_destroy camo_ability))     ; clear it if it wasn't picked up
 	(if (= ability1 1) (objects_delete_by_definition "weapons\sprint\sprint")))
 
 ;-----------------------------------------------------------------------------

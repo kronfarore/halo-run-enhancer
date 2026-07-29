@@ -26,6 +26,7 @@ repeats never compound -- the same discipline halo_patch.apply_run uses.
 import argparse
 import os
 import shutil
+import struct
 import sys
 from pathlib import Path
 
@@ -40,6 +41,10 @@ PLUGINS = paths.PLUGINS
 GLOBALS = 'globals\\globals'
 MOVE = 'Player Information'
 SPRINT_WEAP = 'weapons\\sprint\\sprint'
+
+# Camo's real duration is the equipment tag's Powerup Time (eqip @0x30C, stock 45s).
+CAMO_TAG = 'powerups\\active camouflage'
+EQIP_POWERUP_TIME = 0x30C
 
 # Flashlight-key ability selector (matches sprint.hsc ability0/ability1). Ability 4 is
 # "Regeneration" to the user; `medikit` stays as an internal alias (globals are medi_*).
@@ -229,7 +234,12 @@ def main():
                     "body arg; overshield uses object_set_shield now)")
     ap.add_argument('--os-duration', type=int, help="overshield window, ticks")
     ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
-    ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
+    ap.add_argument('--camo-duration', type=int, help="camo window, ticks. Keep it >= the "
+                    "camo tag's Powerup Time (--camo-seconds), or re-triggering mid-camo "
+                    "drops a pickup that can't be collected.")
+    ap.add_argument('--camo-seconds', type=float, help="REAL camo duration: the eqip "
+                    "Powerup Time on powerups\\active camouflage (stock 45). Also sets the "
+                    "ability window to match.")
     ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
     ap.add_argument('--medi-percent', type=float, help="Regeneration total heal as a PERCENT of "
                     "max health (100 = a full heal), spread over --medi-duration. Preferred "
@@ -253,6 +263,9 @@ def main():
     ap.add_argument('--spawn-health', type=float, default=None,
                     help="set Starting Health Modifier on the player/coop profiles "
                          "(1 = normal). Spawn-time health multiplier.")
+    ap.add_argument('--start-weapon', default=None,
+                    help="give the player a starting weapon, e.g. 'assault rifle' or a full "
+                         "tag path. Handy on levels that start you unarmed (a10).")
     ap.add_argument('--sprint-weap', default=SPRINT_WEAP,
                     help="sprint weapon tag path; override to inspect another "
                          "build, e.g. Sprint Evolved's altis\\weapons\\sprint\\sprint")
@@ -417,6 +430,18 @@ def main():
     # Regeneration: the script adds a PER-TICK amount (medi_rate) rather than dividing in
     # HSC. --medi-rate sets it outright; otherwise heal/duration derive it, falling back to
     # whatever the map already carries for the half that wasn't passed.
+    # Camo's REAL duration lives on the equipment tag (Powerup Time), not in a global.
+    # The script's window only gates re-triggering, so it has to cover that duration.
+    camo_ticks = a.camo_duration
+    if a.camo_seconds is not None:
+        for _p, base in m.find_tags('eqip', CAMO_TAG):
+            old = struct.unpack_from('<f', m.data, base + EQIP_POWERUP_TIME)[0]
+            struct.pack_into('<f', m.data, base + EQIP_POWERUP_TIME, float(a.camo_seconds))
+            print('  camo Powerup Time %.1fs -> %.1fs' % (old, a.camo_seconds))
+            ok += 1
+        if camo_ticks is None:
+            camo_ticks = int(round(a.camo_seconds * 30))
+
     medi_rate = a.medi_rate
     medi_heal = a.medi_heal
     if a.medi_percent is not None:      # percent of max wins over raw units
@@ -434,7 +459,8 @@ def main():
     for gname, gval in (('medi_rate', medi_rate),
                         ('os_shield', os_shield_raw), ('os_body', a.os_body),
                         ('os_ticks', a.os_duration),
-                        ('os_cooldown', a.os_cooldown), ('camo_ticks', a.camo_duration),
+                        ('os_cooldown', a.os_cooldown),
+                        ('camo_ticks', camo_ticks),
                         ('camo_cooldown', a.camo_cooldown), ('medi_heal', medi_heal),
                         ('medi_ticks', a.medi_duration), ('medi_cooldown', a.medi_cooldown),
                         ('vit_max', a.vit_max)):
@@ -446,6 +472,23 @@ def main():
             ok += 1
         else:
             print('  !! global %s not found (map lacks the ability script)' % gname)
+
+    # Starting weapon, via the patcher's own Starting Profile writer. A bare name like
+    # "assault rifle" expands to the usual weapons\<n>\<n> tag path.
+    if a.start_weapon:
+        w = a.start_weapon
+        if '\\' not in w:
+            w = 'weapons\\%s\\%s' % (w, w)
+        if not m.find_tags('weap', w):
+            print('  !! no such weapon tag on this map: %s' % w)
+        else:
+            # _apply_starting_equipment takes halo.json-style "<class> <path>" tags.
+            res = hp._apply_starting_equipment(m, 'Halo 1', reg,
+                                               {'primary': 'weap ' + w, 'secondary': None})
+            for r in res:
+                print('  start weapon: %s %s' % (r.get('field', ''),
+                                                 r.get('new') or r.get('reason', '')))
+                ok += 1 if r.get('ok') else 0
 
     # Spawn modifiers: the vanilla mechanism -- Starting Shield/Health Modifier on the
     # player profiles. Not script globals; a scnr edit, so they work on any map with

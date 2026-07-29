@@ -36,6 +36,10 @@ MCC = paths.MCC
 SCNR_XML = paths.SCNR_XML
 TOOL = paths.TOOL_EXE
 
+# Camo defaults: 5s of camo, then a 30s cooldown that starts when it ends.
+CAMO_SECONDS = 5.0
+CAMO_COOLDOWN_TICKS = 900
+
 # Short name -> tag path. ONLY the Enhancer's H1 pool (weapons with real H1 assets).
 WEAPONS = {
     'assault rifle': 'weapons\\assault rifle\\assault rifle',
@@ -96,7 +100,10 @@ def main():
                     "use --os-mult). ~0.0267 = x2")
     ap.add_argument('--os-duration', type=int, help="overshield active window, ticks")
     ap.add_argument('--os-cooldown', type=int, help="overshield cooldown, ticks")
-    ap.add_argument('--camo-duration', type=int, help="camo window, ticks")
+    ap.add_argument('--camo-duration', type=int, help="camo window in ticks; normally left "
+                    "alone so it tracks --camo-seconds")
+    ap.add_argument('--camo-seconds', type=float, help="camo DURATION in seconds (the camo "
+                    "tag's Powerup Time; stock 45, default here 5)")
     ap.add_argument('--camo-cooldown', type=int, help="camo cooldown, ticks")
     ap.add_argument('--medi-percent', type=float, help="Regeneration total heal as a percent of "
                     "max health (100 = full heal), spread over --medi-duration")
@@ -111,6 +118,8 @@ def main():
                     "profiles (1 = normal, 3 = vanilla 3x overshield on every spawn)")
     ap.add_argument('--spawn-health', type=float, help="Starting Health Modifier on the player "
                     "profiles (1 = normal)")
+    ap.add_argument('--start-weapon', help="give the player a starting weapon, e.g. "
+                    "'assault rifle' (useful on levels that start you unarmed)")
     ap.add_argument('--medi-cooldown', type=int, help="Regeneration cooldown, ticks")
     ap.add_argument('--resources', choices=('none', 'read', 'read_write'), default=None,
                     help="shared resource-map usage. Default 'none' (self-contained) for "
@@ -145,10 +154,14 @@ def main():
     L.add_sprint(data, SCNR_XML)
     aw = L.add_palette_entries(data, SCNR_XML, L.PALETTE_OFF, b'weap', weapons)
     ae = L.add_palette_entries(data, SCNR_XML, L.EQUIP_PALETTE_OFF, b'eqip', equip)
+    # A named, non-auto-spawning camo pickup the camo ability creates and attaches, so
+    # camo comes from the real equipment (45s duration) not the permanent cheat.
+    ac = L.add_camo_ability(data, SCNR_XML)
     open(scn, 'wb').write(data)
     short = lambda p: p.split('\\')[-1]
-    print('scenario: sprint_profile + %d weapon(s) %s + %d equipment %s'
-          % (len(aw), [short(w) for w in aw], len(ae), [short(e) for e in ae]))
+    print('scenario: sprint_profile + %d weapon(s) %s + %d equipment %s%s'
+          % (len(aw), [short(w) for w in aw], len(ae), [short(e) for e in ae],
+             ' + camo_ability' if ac else ''))
 
     print('building %s (%s)...' % (a.map, a.graphics))
     r = subprocess.run([TOOL, 'build-cache-file', 'levels\\%s\\%s' % (a.map, a.map),
@@ -179,18 +192,26 @@ def main():
     # Powerups don't use the sprint speed mechanic, so leave run speed vanilla for
     # them (mult 1.0); only the sprint ability raises it.
     mult = a.speed / 100.0 if a.ability == 'sprint' else 1.0
+    # Camo duration lives on a tag shared with any stock camo pickups in the level, so
+    # only set it when camo is the ability being built.
+    if a.ability == 'camo':
+        if a.camo_seconds is None:
+            a.camo_seconds = CAMO_SECONDS
+        if a.camo_cooldown is None:
+            a.camo_cooldown = CAMO_COOLDOWN_TICKS
     extra = []
     for flag, val in (('--os-mult', a.os_mult), ('--os-shield', a.os_shield),
                       ('--os-duration', a.os_duration),
                       ('--os-cooldown', a.os_cooldown), ('--camo-duration', a.camo_duration),
+                      ('--camo-seconds', a.camo_seconds),
                       ('--camo-cooldown', a.camo_cooldown), ('--medi-percent', a.medi_percent),
                       ('--medi-heal', a.medi_heal),
                       ('--medi-duration', a.medi_duration), ('--medi-rate', a.medi_rate),
                       ('--vit-max', a.vit_max), ('--spawn-shield', a.spawn_shield),
-                      ('--spawn-health', a.spawn_health),
+                      ('--spawn-health', a.spawn_health), ('--start-weapon', a.start_weapon),
                       ('--medi-cooldown', a.medi_cooldown)):
         if val is not None:
-            extra += [flag, '%g' % val]
+            extra += [flag, val if isinstance(val, str) else '%g' % val]
     r = subprocess.run([sys.executable, os.path.join(HERE, 'sprint_tune.py'), gamemap,
                         '--mult', '%g' % mult, '--ability', a.ability] + extra,
                        capture_output=True, text=True)
