@@ -351,6 +351,46 @@
 				"targets": [
 					{ "field": "Enable sprint", "sprint": "enable" }
 				]
+			},
+			"Overshield Strength": {
+				"desc": "A stronger overshield. Tunes the base multiplier from Options with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Overshield strength", "sprint": "os_mult" }
+				]
+			},
+			"Regeneration Amount": {
+				"desc": "Regenerate more health per use. Tunes the base percentage with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Regeneration amount", "sprint": "regen_percent" }
+				]
+			},
+			"Regeneration Speed": {
+				"desc": "Regenerate faster - a shorter heal window. Tunes the base duration with an operator (-x or *0.x to cut it) in the patcher. Halo 1 ability maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Regeneration window", "sprint": "regen_duration" }
+				]
+			},
+			"Camo Duration": {
+				"desc": "Stay invisible longer. Tunes the base camo duration with an operator (+/-/*/=) in the patcher. Halo 1 ability maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Camo duration", "sprint": "camo_duration" }
+				]
+			},
+			"Camo Cooldown": {
+				"desc": "Shorter wait between camo uses. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 ability maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Camo cooldown", "sprint": "camo_cooldown" }
+				]
 			}
 		},
 		"Specific Weapon Modifier": {

@@ -89,8 +89,9 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
                'sprint_cooldown_s',
-               'abilities_offered', 'ability_start_which', 'overshield_mult',
-               'regen_percent', 'regen_duration_s', 'camo_duration_s', 'camo_cooldown_s')
+               'abilities_offered', 'ability_cards_for', 'ability_start_which',
+               'overshield_mult', 'regen_percent', 'regen_duration_s',
+               'camo_duration_s', 'camo_cooldown_s')
 
 
 class _WheelGuard(QObject):
@@ -284,6 +285,7 @@ CONFIG = {
     # "start with an ability" grants. Powerups need a map built with the current
     # toolkit; the patcher skips them (with a reason) on older builds.
     "abilities_offered": ["sprint"],
+    "ability_cards_for": ["sprint"],   # whose tuning cards may enter the pool
     "ability_start_which": "sprint",
     "overshield_mult": 3.0,       # x normal shield
     "regen_percent": 100.0,       # % of max health healed per use
@@ -359,11 +361,34 @@ ABILITY_BLURBS = {
     'camo': "Press the flashlight key to turn invisible for a few seconds.",
 }
 
-# Sprint and camo each drive ONE shared world object — the sprint weapon, and the camo
-# pickup that gets created and handed over. Two players running them at once contend for
-# that object, so those two are limited to one player per run. Overshield and
-# regeneration are pure per-unit script calls, so both players may hold them.
-ABILITY_ONE_PER_RUN = {'sprint', 'camo'}
+# Abilities limited to one player per run. Empty: every ability is per-player now.
+# Sprint is confirmed working in co-op, and camo gained a pickup per player
+# (camo_ability0/1) so two players no longer contend over one shared object.
+ABILITY_ONE_PER_RUN = set()
+
+
+# halo.json tuning cards carry a `sprint` marker on their target whose value is the
+# parameter they tune; this maps each parameter to the ability it belongs to, so a card
+# is only offered to a player who actually has that ability.
+ABILITY_CARD_PARAMS = {
+    'speed': 'sprint', 'duration': 'sprint', 'cooldown': 'sprint', 'enable': 'sprint',
+    'os_mult': 'overshield',
+    'regen_percent': 'regeneration', 'regen_duration': 'regeneration',
+    'camo_duration': 'camo', 'camo_cooldown': 'camo',
+}
+
+
+def ability_of_param(param):
+    return ABILITY_CARD_PARAMS.get(param)
+
+
+def ability_cards_for():
+    """Abilities whose tuning cards may enter the pool. Falls back to the older
+    sprint_mod_cards boolean so settings saved before the per-ability list still work."""
+    v = CONFIG.get('ability_cards_for')
+    if v is None:
+        return ['sprint'] if CONFIG.get('sprint_mod_cards', True) else []
+    return list(v)
 
 
 def is_ability_item(name):
@@ -1124,30 +1149,29 @@ class ModifierDatabase:
                 weapon_mods.extend(self.get_equipment_modifiers_filtered(w, blacklist, game))
             else:
                 weapon_mods.extend(self.get_weapon_modifiers_filtered(w, blacklist, game))
-        # Sprint tuning cards are gated by the New Features options: nothing unless the
-        # feature is on, then the Speed/Duration/Cooldown cards whenever it is. (The
-        # Sprint unlock itself is offered in the weapon selection, not here.)
+        # Ability tuning cards are gated by the New Features options: nothing unless the
+        # feature is on, then only the cards for an ability this player actually has,
+        # and only for abilities enabled in "Offer cards for". (The ability unlocks
+        # themselves are offered in the weapon selection, not here.)
         def _sprint_card_ok(m):
             params = {t.get('sprint') for t in (m.get('targets') or [])
                       if isinstance(t, dict) and t.get('sprint')}
             if not params:
-                return True                      # not a sprint card
+                return True                      # not an ability card
             if not CONFIG.get('sprint_feature'):
                 return False
             if 'enable' in params:
-                # The Sprint unlock is offered in the weapon selection now (like H3
-                # equipment), never in the modifier-card draft.
+                # The unlock is offered in the weapon selection now (like H3 equipment),
+                # never in the modifier-card draft.
                 return False
-            # Speed/Duration/Cooldown tuning cards — gated by their own option.
-            if not CONFIG.get('sprint_mod_cards', True):
+            abilities = {ability_of_param(p) for p in params} - {None}
+            if not abilities & set(ability_cards_for()):
                 return False
-            # Only offer sprint tuning to a player who actually sprints: everyone when
-            # 'Start with Sprint' is on, otherwise only the player holding the Sprint
-            # equipment (it's a one-player pick, so the other player never sees them).
-            if not CONFIG.get('sprint_start_with', True):
-                if not any(is_sprint_item(w) for w in (weapons or [])):
-                    return False
-            return True
+            # Only offer tuning for an ability the player actually has: the start-with
+            # ability when starting with one, else whichever ability item they hold.
+            if CONFIG.get('sprint_start_with', True):
+                return CONFIG.get('ability_start_which', 'sprint') in abilities
+            return bool(abilities & {ability_of_item(w) for w in (weapons or [])})
 
         # Copy each general mod before tagging it so we never mutate the
         # shared pool entries that random.choice hands back elsewhere.
@@ -2153,15 +2177,21 @@ class MagnitudeEditorDialog(QDialog):
             except Exception:
                 return "reload animation"
         if target.get('sprint'):
-            # Not a tag field — routes into the sprint config. Show the Options base
+            # Not a tag field — routes into the ability config. Show the Options base
             # this card nudges (and stacks onto), or that the enabler unlocks sprint.
             p = target['sprint']
             if p == 'enable':
                 return 'drafting this unlocks sprint for the rest of the run'
             base = {'speed': '%s%%' % CONFIG.get('sprint_speed_pct', 150),
                     'duration': '%ss' % CONFIG.get('sprint_duration_s', 3.0),
-                    'cooldown': '%ss' % CONFIG.get('sprint_cooldown_s', 2.0)}.get(p, '')
-            return 'sprint %s — Options base %s; apply an operator (+x/-x/*x/=x)' % (p, base)
+                    'cooldown': '%ss' % CONFIG.get('sprint_cooldown_s', 2.0),
+                    'os_mult': 'x%s' % CONFIG.get('overshield_mult', 3.0),
+                    'regen_percent': '%s%%' % CONFIG.get('regen_percent', 100.0),
+                    'regen_duration': '%ss' % CONFIG.get('regen_duration_s', 5.0),
+                    'camo_duration': '%ss' % CONFIG.get('camo_duration_s', 5.0),
+                    'camo_cooldown': '%ss' % CONFIG.get('camo_cooldown_s', 30.0)}.get(p, '')
+            return '%s %s — Options base %s; apply an operator (+x/-x/*x/=x)' % (
+                ability_of_param(p) or 'ability', p, base)
         plugin = self.registry.get(cls)
         if plugin is None:
             return "no plugin"
@@ -2684,15 +2714,20 @@ class MagnitudeEditorDialog(QDialog):
                 le.setStyleSheet("background-color: #101010; color: #d0a24a; "
                                  "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
             elif t.get('sprint'):
-                # Sprint tuning card — a full operator applied to the Options base for
+                # Ability tuning card — a full operator applied to the Options base for
                 # this value (in row order, so multiple cards stack). Same operator
                 # grammar as any other field: -x / +x / *x / =x. Lower cooldown is the
                 # improvement, so cut it with -x or *0.x.
                 unit = {'speed': '% of run speed', 'duration': 'seconds',
-                        'cooldown': 'seconds'}.get(t['sprint'], '')
+                        'cooldown': 'seconds', 'os_mult': 'x normal shield',
+                        'regen_percent': '% of max health', 'regen_duration': 'seconds',
+                        'camo_duration': 'seconds',
+                        'camo_cooldown': 'seconds'}.get(t['sprint'], '')
                 le.setPlaceholderText("-x / +x / *x / =x")
-                le.setToolTip("An operator on the base sprint %s (in %s): +x/-x add or "
-                              "subtract, *x scales, =x sets." % (t['sprint'], unit))
+                le.setToolTip("An operator on the base %s %s (in %s): +x/-x add or "
+                              "subtract, *x scales, =x sets."
+                              % (ability_of_param(t['sprint']) or 'ability',
+                                 t['sprint'], unit))
                 key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
                 if key in self.presets and not isinstance(self.presets[key], list):
                     le.setText(str(self.presets[key]))
@@ -3009,12 +3044,19 @@ class MagnitudeEditorDialog(QDialog):
         # summary can show it (matching a normal field's "old -> new" line).
         vals = {'speed': float(CONFIG.get('sprint_speed_pct', 150)),
                 'duration': float(CONFIG.get('sprint_duration_s', 3.0)),
-                'cooldown': float(CONFIG.get('sprint_cooldown_s', 2.0))}
-        unit = {'speed': '%', 'duration': 's', 'cooldown': 's'}
+                'cooldown': float(CONFIG.get('sprint_cooldown_s', 2.0)),
+                'os_mult': float(CONFIG.get('overshield_mult', 3.0)),
+                'regen_percent': float(CONFIG.get('regen_percent', 100.0)),
+                'regen_duration': float(CONFIG.get('regen_duration_s', 5.0)),
+                'camo_duration': float(CONFIG.get('camo_duration_s', 5.0)),
+                'camo_cooldown': float(CONFIG.get('camo_cooldown_s', 30.0))}
+        unit = {'speed': '%', 'duration': 's', 'cooldown': 's', 'os_mult': 'x',
+                'regen_percent': '%', 'regen_duration': 's',
+                'camo_duration': 's', 'camo_cooldown': 's'}
         card_reports = []
         for _eff, t, le in self.rows:
             p = t.get('sprint')
-            if p not in ('speed', 'duration', 'cooldown'):
+            if p not in vals:
                 continue
             parsed = self._hp.hm.parse_operator(le.text())
             if not parsed:
@@ -3023,11 +3065,13 @@ class MagnitudeEditorDialog(QDialog):
             before = vals[p]
             after = self._hp.hm.OP_FUNCS[op](before, v)
             vals[p] = after
+            pre = 'x' if unit[p] == 'x' else ''
+            suf = '' if unit[p] == 'x' else unit[p]
             card_reports.append({
-                'effect': _eff.get('name', 'Sprint'), 'tag': _eff.get('tag'),
-                'field': 'sprint %s' % p,
-                'old': '%g%s' % (round(before, 3), unit[p]),
-                'new': '%g%s' % (round(after, 3), unit[p])})
+                'effect': _eff.get('name', 'Ability'), 'tag': _eff.get('tag'),
+                'field': '%s %s' % (ability_of_param(p) or 'ability', p),
+                'old': '%s%g%s' % (pre, round(before, 3), suf),
+                'new': '%s%g%s' % (pre, round(after, 3), suf)})
         speed, dur, cd = vals['speed'], vals['duration'], vals['cooldown']
         # Per-player ability. "Start with" gives both players the chosen ability;
         # otherwise each player gets whichever ability item their arsenal holds.
@@ -3052,12 +3096,23 @@ class MagnitudeEditorDialog(QDialog):
         duration_ticks = max(1, round(max(0.5, dur) * 30))
         cooldown_ticks = max(0, round(max(0.0, cd) * 30))
         # If a card pushed a value past its floor (speed <100%, duration <0.5s,
-        # cooldown <0s), the engine can't apply the raw figure — show the last card
-        # for that value landing on the clamped result, noting the pre-clamp figure.
-        floor_hit = {'speed': speed < 100.0, 'duration': dur < 0.5, 'cooldown': cd < 0.0}
+        # cooldown <0s, an overshield below normal, and so on), the engine can't apply
+        # the raw figure — show the last card for that value landing on the clamped
+        # result, noting the pre-clamp figure.
+        floor_hit = {'speed': speed < 100.0, 'duration': dur < 0.5, 'cooldown': cd < 0.0,
+                     'os_mult': vals['os_mult'] < 1.0,
+                     'regen_percent': vals['regen_percent'] < 1.0,
+                     'regen_duration': vals['regen_duration'] < 0.1,
+                     'camo_duration': vals['camo_duration'] < 0.5,
+                     'camo_cooldown': vals['camo_cooldown'] < 0.0}
         clamped = {'speed': '%g%%' % speed_pct,
                    'duration': '%gs' % round(duration_ticks / 30.0, 3),
-                   'cooldown': '%gs' % round(cooldown_ticks / 30.0, 3)}
+                   'cooldown': '%gs' % round(cooldown_ticks / 30.0, 3),
+                   'os_mult': 'x%g' % max(1.0, vals['os_mult']),
+                   'regen_percent': '%g%%' % max(1.0, vals['regen_percent']),
+                   'regen_duration': '%gs' % max(0.1, vals['regen_duration']),
+                   'camo_duration': '%gs' % max(0.5, vals['camo_duration']),
+                   'camo_cooldown': '%gs' % max(0.0, vals['camo_cooldown'])}
         last_of = {}
         for i, cr in enumerate(card_reports):
             last_of[cr['field'].split()[-1]] = i
@@ -3072,15 +3127,14 @@ class MagnitudeEditorDialog(QDialog):
             'speed_pct': speed_pct,
             'duration_ticks': duration_ticks,
             'cooldown_ticks': cooldown_ticks,
-            # Powerup tuning: the patcher converts these to its raw globals (the
-            # overshield multiplier to 1/75 units, the heal percent to a per-tick rate).
-            'os_mult': float(CONFIG.get('overshield_mult', 3.0)),
-            'medi_percent': float(CONFIG.get('regen_percent', 100.0)),
-            'medi_duration_ticks': max(1, round(float(
-                CONFIG.get('regen_duration_s', 5.0)) * 30)),
-            'camo_seconds': float(CONFIG.get('camo_duration_s', 5.0)),
-            'camo_cooldown_ticks': max(0, round(float(
-                CONFIG.get('camo_cooldown_s', 30.0)) * 30)),
+            # Powerup tuning, drafted cards already folded in. The patcher converts
+            # these to its raw globals (the multiplier to 1/75 units, the heal percent
+            # to a per-tick rate).
+            'os_mult': max(1.0, vals['os_mult']),
+            'medi_percent': max(1.0, vals['regen_percent']),
+            'medi_duration_ticks': max(1, round(max(0.1, vals['regen_duration']) * 30)),
+            'camo_seconds': max(0.5, vals['camo_duration']),
+            'camo_cooldown_ticks': max(0, round(max(0.0, vals['camo_cooldown']) * 30)),
             'card_reports': card_reports,
         }
 
@@ -3767,6 +3821,15 @@ class OptionsDialog(QDialog):
         layout.addWidget(equip_g)
 
         # ---- Coop (#6) ----
+        # A form row is only obviously inert if its LABEL greys out too — Qt disables the
+        # field alone, which leaves the caption at full contrast and the row still looking
+        # editable. Use this everywhere a row is conditionally enabled.
+        def _row(form, widget, on):
+            widget.setEnabled(on)
+            lab = form.labelForField(widget)
+            if lab is not None:
+                lab.setEnabled(on)
+
         coop_g = QGroupBox("Coop")
         cform = QFormLayout(coop_g)
         cform.setLabelAlignment(Qt.AlignRight)
@@ -3808,7 +3871,7 @@ class OptionsDialog(QDialog):
         def _sync_coop_respawn(_=False):
             on = self.starting_weapons_cb.isChecked()
             for cb in (self.coop_no_start_cb, self.coop_null_cb):
-                cb.setEnabled(on)
+                _row(cform, cb, on)
                 if not on:
                     cb.setChecked(False)
         self.starting_weapons_cb.toggled.connect(_sync_coop_respawn)
@@ -3838,6 +3901,17 @@ class OptionsDialog(QDialog):
                                         "off to draft abilities in the weapon selection instead.")
         xform.addRow("    ↳ From the start:", self.sprint_start_cb)
 
+        self.ability_start_combo = QComboBox()
+        for _ab, _label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
+                            ('regeneration', 'Regeneration'), ('camo', 'Camo')):
+            self.ability_start_combo.addItem(_label, _ab)
+        self.ability_start_combo.setCurrentIndex(
+            max(0, self.ability_start_combo.findData(
+                CONFIG.get('ability_start_which', 'sprint'))))
+        self.ability_start_combo.setToolTip("Which ability both players get when starting with "
+                                            "one, instead of drafting it.")
+        xform.addRow("        ↳ Which ability:", self.ability_start_combo)
+
         self.sprint_cards_cb = QCheckBox("Offer abilities in the weapon selection")
         self.sprint_cards_cb.setChecked(bool(CONFIG.get('sprint_as_card')))
         self.sprint_cards_cb.setToolTip("Instead of starting with one, abilities turn up as picks in the "
@@ -3854,13 +3928,43 @@ class OptionsDialog(QDialog):
                                               "is offered as a pick.")
         xform.addRow("        ↳ Needs a gun:", self.sprint_need_weapon_cb)
 
-        self.sprint_mod_cards_cb = QCheckBox("Add cards that improve sprint to the pool")
-        self.sprint_mod_cards_cb.setChecked(bool(CONFIG.get('sprint_mod_cards', True)))
-        self.sprint_mod_cards_cb.setToolTip("Draftable player cards that tune sprint for the run — Sprint "
-                                            "Speed, Duration and Cooldown — each stacking onto the base "
-                                            "values below.")
-        xform.addRow("    ↳ Improve-sprint cards:", self.sprint_mod_cards_cb)
+        def _ability_checkbox_row(selected, tip):
+            """A row of one checkbox per ability, returned with its {ability: box} map."""
+            row = QWidget()
+            h = QHBoxLayout(row)
+            h.setContentsMargins(0, 0, 0, 0)
+            boxes = {}
+            for ab, label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
+                              ('regeneration', 'Regeneration'), ('camo', 'Camo')):
+                cb = QCheckBox(label)
+                cb.setChecked(ab in selected)
+                boxes[ab] = cb
+                h.addWidget(cb)
+            h.addStretch(1)
+            row.setToolTip(tip)
+            return row, boxes
 
+        offer_row, self.ability_offer_cbs = _ability_checkbox_row(
+            set(CONFIG.get('abilities_offered') or ['sprint']),
+            "Which abilities can turn up in the weapon selection. Each player ends up with "
+            "at most one.")
+        xform.addRow("        ↳ Offer:", offer_row)
+
+        cards_row, self.ability_cards_cbs = _ability_checkbox_row(
+            set(ability_cards_for()),
+            "Draftable player cards that tune an ability for the run — each stacking onto "
+            "the base values below. A card is only offered to a player who has that ability.")
+        xform.addRow("    ↳ Offer cards for:", cards_row)
+
+        # Per-ability starting values, one subsection each. Disabling a box greys the
+        # whole group (title included), so it's obvious which tuning is in play.
+        def _ability_box(title):
+            box = QGroupBox(title)
+            form = QFormLayout(box)
+            form.setLabelAlignment(Qt.AlignRight)
+            return box, form
+
+        self.sprint_box, sform = _ability_box("Sprint")
         self.sprint_speed = QSpinBox()
         self.sprint_speed.setRange(105, 300)
         self.sprint_speed.setSingleStep(5)
@@ -3868,7 +3972,7 @@ class OptionsDialog(QDialog):
         self.sprint_speed.setValue(int(CONFIG.get('sprint_speed_pct', 150)))
         self.sprint_speed.setToolTip("Sprint speed as a percentage of normal run speed. 150% matches the "
                                      "reference mod. Normal movement is unaffected — only sprinting scales.")
-        xform.addRow("    ↳ Speed:", self.sprint_speed)
+        sform.addRow("Speed:", self.sprint_speed)
 
         self.sprint_duration = QDoubleSpinBox()
         self.sprint_duration.setRange(0.5, 30.0)
@@ -3877,7 +3981,7 @@ class OptionsDialog(QDialog):
         self.sprint_duration.setSuffix(" s")
         self.sprint_duration.setValue(float(CONFIG.get('sprint_duration_s', 3.0)))
         self.sprint_duration.setToolTip("How long a single sprint lasts before it auto-ends.")
-        xform.addRow("    ↳ Duration:", self.sprint_duration)
+        sform.addRow("Duration:", self.sprint_duration)
 
         self.sprint_cooldown = QDoubleSpinBox()
         self.sprint_cooldown.setRange(0.0, 30.0)
@@ -3886,41 +3990,10 @@ class OptionsDialog(QDialog):
         self.sprint_cooldown.setSuffix(" s")
         self.sprint_cooldown.setValue(float(CONFIG.get('sprint_cooldown_s', 2.0)))
         self.sprint_cooldown.setToolTip("Delay after a sprint ends before you can sprint again.")
-        xform.addRow("    ↳ Cooldown:", self.sprint_cooldown)
+        sform.addRow("Cooldown:", self.sprint_cooldown)
+        xform.addRow(self.sprint_box)
 
-        # --- the other flashlight-key abilities --------------------------------------
-        # One ability per player. Overshield and Regeneration are per-unit script calls,
-        # so both players can hold them; Sprint and Camo drive a shared world object and
-        # stay one-per-run. All of them need maps built with the current toolkit — the
-        # patcher skips the powerups (with a reason) on older builds.
-        self.ability_offer_cbs = {}
-        abil_row = QWidget()
-        abil_h = QHBoxLayout(abil_row)
-        abil_h.setContentsMargins(0, 0, 0, 0)
-        offered = set(CONFIG.get('abilities_offered') or ['sprint'])
-        for ab, label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
-                          ('regeneration', 'Regeneration'), ('camo', 'Camo')):
-            cb = QCheckBox(label)
-            cb.setChecked(ab in offered)
-            self.ability_offer_cbs[ab] = cb
-            abil_h.addWidget(cb)
-        abil_h.addStretch(1)
-        abil_row.setToolTip("Which abilities can turn up in the weapon selection. Each player "
-                            "ends up with at most one; Sprint and Camo are offered to only one "
-                            "player per run.")
-        xform.addRow("    ↳ Offer:", abil_row)
-
-        self.ability_start_combo = QComboBox()
-        for ab, label in (('sprint', 'Sprint'), ('overshield', 'Overshield'),
-                          ('regeneration', 'Regeneration'), ('camo', 'Camo')):
-            self.ability_start_combo.addItem(label, ab)
-        _start_ab = CONFIG.get('ability_start_which', 'sprint')
-        self.ability_start_combo.setCurrentIndex(
-            max(0, self.ability_start_combo.findData(_start_ab)))
-        self.ability_start_combo.setToolTip("Which ability both players get when starting with "
-                                            "one, instead of drafting it.")
-        xform.addRow("    ↳ Start-with ability:", self.ability_start_combo)
-
+        self.overshield_box, oform = _ability_box("Overshield")
         self.overshield_mult = QDoubleSpinBox()
         self.overshield_mult.setRange(1.0, 10.0)
         self.overshield_mult.setSingleStep(0.5)
@@ -3930,8 +4003,10 @@ class OptionsDialog(QDialog):
         self.overshield_mult.setToolTip("Overshield strength as a multiple of a normal full "
                                         "shield. 3x is the vanilla powerup; it is applied "
                                         "outright, replacing whatever shield you had.")
-        xform.addRow("    ↳ Overshield:", self.overshield_mult)
+        oform.addRow("Strength:", self.overshield_mult)
+        xform.addRow(self.overshield_box)
 
+        self.regen_box, rform = _ability_box("Regeneration")
         self.regen_percent = QDoubleSpinBox()
         self.regen_percent.setRange(1.0, 400.0)
         self.regen_percent.setSingleStep(10.0)
@@ -3941,7 +4016,7 @@ class OptionsDialog(QDialog):
         self.regen_percent.setToolTip("How much health one use restores, as a percentage of "
                                       "max. Over 100% is allowed and simply heals past what a "
                                       "full bar is worth.")
-        xform.addRow("    ↳ Regeneration:", self.regen_percent)
+        rform.addRow("Amount:", self.regen_percent)
 
         self.regen_duration = QDoubleSpinBox()
         self.regen_duration.setRange(0.1, 30.0)
@@ -3951,8 +4026,10 @@ class OptionsDialog(QDialog):
         self.regen_duration.setValue(float(CONFIG.get('regen_duration_s', 5.0)))
         self.regen_duration.setToolTip("How long that heal is spread over. Short is a snap heal; "
                                        "long is a slow regeneration that damage can out-pace.")
-        xform.addRow("        ↳ over:", self.regen_duration)
+        rform.addRow("Spread over:", self.regen_duration)
+        xform.addRow(self.regen_box)
 
+        self.camo_box, cform2 = _ability_box("Camo")
         self.camo_duration = QDoubleSpinBox()
         self.camo_duration.setRange(0.5, 60.0)
         self.camo_duration.setSingleStep(1.0)
@@ -3962,7 +4039,7 @@ class OptionsDialog(QDialog):
         self.camo_duration.setToolTip("How long invisibility lasts (the camo powerup's own "
                                       "duration; vanilla pickups are 45s). NOTE: this also "
                                       "changes any camo pickups placed in the level.")
-        xform.addRow("    ↳ Camo:", self.camo_duration)
+        cform2.addRow("Duration:", self.camo_duration)
 
         self.camo_cooldown = QDoubleSpinBox()
         self.camo_cooldown.setRange(0.0, 120.0)
@@ -3972,7 +4049,8 @@ class OptionsDialog(QDialog):
         self.camo_cooldown.setValue(float(CONFIG.get('camo_cooldown_s', 30.0)))
         self.camo_cooldown.setToolTip("Delay before camo can be used again. It starts when the "
                                       "camo runs out, so a full cycle is duration + cooldown.")
-        xform.addRow("        ↳ Cooldown:", self.camo_cooldown)
+        cform2.addRow("Cooldown:", self.camo_cooldown)
+        xform.addRow(self.camo_box)
 
         self.sprint_apply_btn = QPushButton("Apply abilities to maps…")
         self.sprint_apply_btn.setToolTip("Write the settings above into every Halo 1 map built with the "
@@ -3989,25 +4067,35 @@ class OptionsDialog(QDialog):
 
         def _sync_sprint(_=False):
             on = self.sprint_cb.isChecked()
-            for w in (self.sprint_start_cb, self.sprint_cards_cb, self.sprint_mod_cards_cb,
-                      self.sprint_speed, self.sprint_duration, self.sprint_cooldown,
-                      self.sprint_apply_btn, self.ability_start_combo, self.overshield_mult,
-                      self.regen_percent, self.regen_duration, self.camo_duration,
-                      self.camo_cooldown):
-                w.setEnabled(on)
-            # "Needs a gun" only matters when abilities are drafted.
             card = on and self.sprint_cards_cb.isChecked()
-            self.sprint_need_weapon_cb.setEnabled(card)
+            start = on and self.sprint_start_cb.isChecked()
+            _row(xform, self.sprint_start_cb, on)
+            _row(xform, self.sprint_cards_cb, on)
+            _row(xform, self.sprint_apply_btn, on)
+            _row(xform, cards_row, on)
+            # "Needs a gun" and the offer list only matter when abilities are drafted;
+            # the start-with pick only matters the other way round.
+            _row(xform, self.sprint_need_weapon_cb, card)
             if not card:
                 self.sprint_need_weapon_cb.setChecked(False)
-            # The offer list only applies to drafting; the start-with pick only to the
-            # other way in. Grey out whichever isn't in play.
-            for cb in self.ability_offer_cbs.values():
-                cb.setEnabled(card)
-            self.ability_start_combo.setEnabled(on and self.sprint_start_cb.isChecked())
+            _row(xform, offer_row, card)
+            _row(xform, self.ability_start_combo, start)
+            # Each ability's own values are live only when that ability can actually turn
+            # up: it's the start-with pick, or it's offered as a draft.
+            picked = self.ability_start_combo.currentData()
+            for ab, box in (('sprint', self.sprint_box),
+                            ('overshield', self.overshield_box),
+                            ('regeneration', self.regen_box),
+                            ('camo', self.camo_box)):
+                usable = on and ((start and picked == ab)
+                                 or (card and self.ability_offer_cbs[ab].isChecked()))
+                box.setEnabled(usable)
         self.sprint_cb.toggled.connect(_sync_sprint)
         self.sprint_cards_cb.toggled.connect(_sync_sprint)
         self.sprint_start_cb.toggled.connect(_sync_sprint)
+        self.ability_start_combo.currentIndexChanged.connect(_sync_sprint)
+        for _cb in self.ability_offer_cbs.values():
+            _cb.toggled.connect(_sync_sprint)
         _sync_sprint()
         layout.addWidget(exp_g)
 
@@ -4229,7 +4317,9 @@ class OptionsDialog(QDialog):
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
             'sprint_feature': self.sprint_cb.isChecked(),
-            'sprint_mod_cards': self.sprint_mod_cards_cb.isChecked(),
+            # Legacy mirror of the per-ability card list, so older settings files (and
+            # anything still reading the flag) stay consistent with the checkboxes.
+            'sprint_mod_cards': self.ability_cards_cbs['sprint'].isChecked(),
             'sprint_start_with': self.sprint_start_cb.isChecked(),
             'sprint_as_card': self.sprint_cards_cb.isChecked(),
             'sprint_need_weapon': self.sprint_need_weapon_cb.isChecked(),
@@ -4237,6 +4327,8 @@ class OptionsDialog(QDialog):
             'sprint_duration_s': round(self.sprint_duration.value(), 1),
             'sprint_cooldown_s': round(self.sprint_cooldown.value(), 1),
             'abilities_offered': [ab for ab, cb in self.ability_offer_cbs.items()
+                                  if cb.isChecked()],
+            'ability_cards_for': [ab for ab, cb in self.ability_cards_cbs.items()
                                   if cb.isChecked()],
             'ability_start_which': self.ability_start_combo.currentData(),
             'overshield_mult': round(self.overshield_mult.value(), 2),

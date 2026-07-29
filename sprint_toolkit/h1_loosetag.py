@@ -228,7 +228,9 @@ def add_sprint(data, plugin_path):
 
 
 CAMO_TAG = 'powerups\\active camouflage'
-CAMO_OBJECT_NAME = 'camo_ability'    # our inserted, non-auto-spawning pickup
+# One inserted, non-auto-spawning pickup per player, so co-op camo doesn't contend.
+CAMO_OBJECT_NAMES = ('camo_ability0', 'camo_ability1')
+CAMO_OBJECT_NAME = CAMO_OBJECT_NAMES[0]
 
 
 def _block(data, plugin_path, off):
@@ -307,24 +309,28 @@ def player_start_position(data, plugin_path):
 
 
 def add_camo_ability(data, plugin_path):
-    """Insert a NAMED, non-auto-spawning active-camouflage pickup so a script can
-    `object_create camo_ability` and attach it to a player, granting the REAL equipment
-    camo (which has a genuine 45s duration) instead of the permanent cheat camo.
-    Idempotent. Returns True if it inserted anything."""
-    if CAMO_OBJECT_NAME in object_names(data, plugin_path):
+    """Insert the NAMED, non-auto-spawning active-camouflage pickups the camo ability
+    hands to players: `object_create camo_abilityN` -> attach -> detach grants the REAL
+    equipment camo (a genuine, tag-tunable duration) instead of the permanent cheat camo.
+
+    ONE PICKUP PER PLAYER (camo_ability0, camo_ability1). A single shared object breaks
+    co-op: both players creating and consuming the same one contend, and destroying it
+    for one player yanks it from the other. Idempotent; returns True if it inserted."""
+    if CAMO_OBJECT_NAMES[0] in object_names(data, plugin_path):
         return False
     add_palette_entries(data, plugin_path, EQUIP_PALETTE_OFF, b'eqip', [CAMO_TAG])
     pal = read_block_paths(data, plugin_path, EQUIP_PALETTE_OFF)
     pal_index = pal.index(CAMO_TAG)
-    # The two blocks cross-reference by index, and each new element lands at the end,
-    # so both indices are the counts taken BEFORE inserting.
-    placement_index = _block(data, plugin_path, EQUIPMENT_OFF)[1]
-    name_index = _block(data, plugin_path, OBJECT_NAMES_OFF)[1]
     pos = player_start_position(data, plugin_path)
-    insert_block_element(data, plugin_path, EQUIPMENT_OFF,
-                         make_equipment_placement(pal_index, name_index, pos), None)
-    insert_block_element(data, plugin_path, OBJECT_NAMES_OFF,
-                         make_object_name(CAMO_OBJECT_NAME, 3, placement_index), None)
+    for name in CAMO_OBJECT_NAMES:
+        # The two blocks cross-reference by index, and each new element lands at the
+        # end, so both indices are the counts taken BEFORE inserting this pair.
+        placement_index = _block(data, plugin_path, EQUIPMENT_OFF)[1]
+        name_index = _block(data, plugin_path, OBJECT_NAMES_OFF)[1]
+        insert_block_element(data, plugin_path, EQUIPMENT_OFF,
+                             make_equipment_placement(pal_index, name_index, pos), None)
+        insert_block_element(data, plugin_path, OBJECT_NAMES_OFF,
+                             make_object_name(name, 3, placement_index), None)
     return True
 
 
