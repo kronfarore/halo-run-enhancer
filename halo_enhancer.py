@@ -102,26 +102,47 @@ class _WheelGuard(QObject):
     Clicking still focuses normally, so focus-then-scroll to adjust still works."""
 
     def eventFilter(self, obj, ev):
+        if ev.type() != QEvent.Wheel:
+            return False
+        # The wheel is delivered to whatever sits under the cursor, which for a spin box
+        # is usually its internal QLineEdit and for a combo can be its line edit too --
+        # matching only the control itself let the event through to the parent, which
+        # then changed the value. So walk UP to the owning control.
+        ctl, node = None, obj
+        while isinstance(node, QWidget):
+            if isinstance(node, (QAbstractSpinBox, QComboBox)):
+                ctl = node
+                break
+            if isinstance(node, QAbstractScrollArea):
+                break            # reached the scrolling list: not over a field
+            node = node.parentWidget()
+        if ctl is None or ctl.hasFocus():
+            return False         # focus-then-scroll still adjusts, as before
         # Combo boxes need this as much as spin boxes: scrolling past a dropdown would
-        # otherwise silently change the selection. An OPEN popup is a separate view
-        # object, so this never blocks scrolling within the list itself.
-        if (ev.type() == QEvent.Wheel
-                and isinstance(obj, (QAbstractSpinBox, QComboBox))
-                and not obj.hasFocus()):
-            p = obj.parent()
-            while p is not None and not isinstance(p, QAbstractScrollArea):
-                p = p.parent()
-            if p is not None:
-                QApplication.sendEvent(p.viewport(), ev)
-            return True   # never let an unfocused field consume the wheel
-        return False
+        # otherwise silently change the selection. An OPEN popup is a separate top-level
+        # view, so this never blocks scrolling within the list itself.
+        p = ctl.parentWidget()
+        while p is not None and not isinstance(p, QAbstractScrollArea):
+            p = p.parentWidget()
+        if p is not None:
+            QApplication.sendEvent(p.viewport(), ev)
+        return True              # never let an unfocused field consume the wheel
+
+
+# Height of one dropdown row — must match the QComboBox item min-height in the app
+# stylesheet, since the popup height is computed from it.
+COMBO_ROW_PX = 30
 
 
 def tune_combo(cb, min_chars=14):
-    """Make a dropdown show its whole list and its longest label. Qt's defaults size the
-    popup from the closed box, so a short list can still end up scrolling."""
+    """Make a dropdown show its whole list and its longest label. Qt sizes the popup
+    from the closed box, so a short list still ends up scrolling in a sliver; give the
+    view an explicit height for the rows it actually has."""
     cb.setMaxVisibleItems(12)
     cb.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+    # The wheel must never focus these (spin boxes and combos default to WheelFocus),
+    # or scrolling the options list would grab a field and start changing it.
+    cb.setFocusPolicy(Qt.StrongFocus)
     fm = cb.fontMetrics()
     widest = max([fm.horizontalAdvance(cb.itemText(i)) for i in range(cb.count())]
                  or [0])
@@ -129,6 +150,9 @@ def tune_combo(cb, min_chars=14):
     view = cb.view()
     if view is not None:
         view.setMinimumWidth(cb.minimumWidth())
+        rows = min(cb.count(), cb.maxVisibleItems())
+        if rows:
+            view.setMinimumHeight(rows * COMBO_ROW_PX + 8)
     return cb
 
 
@@ -4290,6 +4314,13 @@ class OptionsDialog(QDialog):
         buttons.rejected.connect(self.reject)
         outer.addWidget(buttons)
 
+        # Spin boxes and combos default to WheelFocus, i.e. scrolling over one FOCUSES
+        # it — after which the wheel guard rightly lets the wheel through and the value
+        # starts changing. Downgrading to StrongFocus means only a click or Tab focuses
+        # them, so scrolling the options list can never grab a field.
+        for w in (self.findChildren(QAbstractSpinBox) + self.findChildren(QComboBox)):
+            w.setFocusPolicy(Qt.StrongFocus)
+
     def done(self, r):
         # Remember the size on close, including on Cancel — it's a window preference,
         # not one of the options. Reading it here (rather than tracking resizeEvent)
@@ -4630,7 +4661,7 @@ class HaloGUI(QMainWindow):
         return CONFIG.get('weapon_choice_negatives', True)
 
     def show_weapon_selection(self):
-        weapons = self._game_weapon_pool()
+        weapons = self._game_weapon_pool('player1')
         if len(weapons) < 2:
             QMessageBox.warning(self, "Error", "Not enough weapons available!")
             return
@@ -4665,13 +4696,16 @@ class HaloGUI(QMainWindow):
         finally:
             self.pairs_container.setUpdatesEnabled(True)
 
+    # Both rerolls ask for their OWN player's pool, like every other offer path: the
+    # ability items are per-player, so a player-less pool hides them for both players
+    # once either one has an ability.
     def reroll_weapon_choice_p1(self, choice_id):
-        self._reroll_weapon_choice(choice_id, weapon_pool=self._game_weapon_pool(),
+        self._reroll_weapon_choice(choice_id, weapon_pool=self._game_weapon_pool('player1'),
                                    player_label=" for Player 1",
                                    with_enemy=self._weapon_choice_negatives())
 
     def reroll_weapon_choice_p2(self, choice_id):
-        self._reroll_weapon_choice(choice_id, weapon_pool=self._game_weapon_pool(),
+        self._reroll_weapon_choice(choice_id, weapon_pool=self._game_weapon_pool('player2'),
                                    exclude_weapons={self.run_state.player1_weapon},
                                    player_label=" for Player 2",
                                    with_enemy=self._weapon_choice_negatives())
@@ -4693,7 +4727,9 @@ class HaloGUI(QMainWindow):
         self.show_player2_weapon_selection()
 
     def show_player2_weapon_selection(self):
-        available_weapons = [w for w in self._game_weapon_pool()
+        # Ask for PLAYER 2's pool: ability offers are per-player, so asking without a
+        # player would hide every ability the moment player 1 took one.
+        available_weapons = [w for w in self._game_weapon_pool('player2')
                              if w != self.run_state.player1_weapon]
         if len(available_weapons) < 1:
             QMessageBox.warning(self, "Error", "No weapons available for Player 2!")
@@ -6025,14 +6061,21 @@ def main():
         QComboBox QAbstractItemView { background-color: #1a1a1a; color: #e0e0e0; selection-background-color: #2a5a2a; border: 1px solid #2a5a2a; }
         /* Give dropdown rows real height so a short list isn't squeezed into a
            scrolling sliver — the popup then sizes to fit its options. */
-        QComboBox QAbstractItemView::item { min-height: 24px; padding: 2px 6px; }
+        QComboBox QAbstractItemView::item { min-height: 30px; padding: 3px 6px; }
+        /* Spin boxes need a BASE rule, not just a :disabled one: without it Qt paints
+           them through the native style and the disabled colour never reaches the text
+           (which lives in the spin box's internal line edit). */
+        QAbstractSpinBox { background-color: #1a1a1a; color: #e0e0e0;
+                           border: 1px solid #3a3a3a; padding: 3px; border-radius: 3px; }
         /* Explicit colours above win over the palette, so a disabled control would
            otherwise look exactly like a live one. Grey the whole row, label included. */
         QLabel:disabled, QCheckBox:disabled, QRadioButton:disabled,
         QGroupBox:disabled, QPushButton:disabled { color: #5c5c5c; }
         QGroupBox::title:disabled { color: #5c5c5c; }
-        QComboBox:disabled, QSpinBox:disabled, QDoubleSpinBox:disabled,
-        QLineEdit:disabled { color: #5c5c5c; background-color: #131313; border: 1px solid #262626; }
+        QAbstractSpinBox:disabled, QComboBox:disabled, QLineEdit:disabled
+            { color: #5c5c5c; background-color: #131313; border: 1px solid #262626; }
+        QAbstractSpinBox::up-button:disabled, QAbstractSpinBox::down-button:disabled
+            { background-color: #131313; }
         QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a; border-radius: 5px; margin-top: 10px; }
         QGroupBox::title { subcontrol-origin: margin; left: 10px; padding: 0 5px; }
         QTextEdit { background-color: #1a1a1a; color: #e0e0e0; border: 1px solid #2a2a2a; border-radius: 3px; }
