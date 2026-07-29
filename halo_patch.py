@@ -1690,13 +1690,22 @@ def _apply_sprint(m, game, registry, cfg):
     if not m.find_tags('weap', _SPRINT_WEAP):
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'no sprint weapon on this map (not built with the mod)'}]
-    enabled = bool(cfg.get('enabled'))
-    if set_global(m, 'sprint_enabled', enabled) is None:
-        return [{**ref, 'ok': True, 'skip': True,
-                 'reason': 'sprint script global missing (map not built with the mod)'}]
-    if not enabled:
-        # Disabling: just close the gate. Leave the map at its vanilla baseline speed
-        # (apply_run patches from the .bak baseline, so no speed edits = vanilla).
+    # Per-player enable. cfg carries `enabled_players` (a set of {0,1}); fall back to
+    # `enabled` (bool) = both. Newer maps have sprint_enabled0/1; a pre-rebuild map has
+    # only the single shared sprint_enabled, so set whichever globals exist.
+    ep = cfg.get('enabled_players')
+    if ep is None:
+        ep = {0, 1} if cfg.get('enabled') else set()
+    ep = set(ep)
+    r0 = set_global(m, 'sprint_enabled0', 1 if 0 in ep else 0)
+    r1 = set_global(m, 'sprint_enabled1', 1 if 1 in ep else 0)
+    if r0 is None and r1 is None:
+        if set_global(m, 'sprint_enabled', 1 if ep else 0) is None:
+            return [{**ref, 'ok': True, 'skip': True,
+                     'reason': 'sprint script global missing (map not built with the mod)'}]
+    if not ep:
+        # Disabling for everyone: close the gate(s). Leave the map at its vanilla
+        # baseline speed (apply_run patches from the .bak baseline).
         return [{**ref, 'ok': True, 'old': 'sprint', 'new': 'off'}]
     mg, wp = registry.get('matg'), registry.get('weap')
     if mg is None or wp is None:
@@ -1723,10 +1732,18 @@ def _apply_sprint(m, game, registry, cfg):
         _sprint_null_ref(m, wbase, 0x46C)    # First Person Animations
     set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
     set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
-    state = ('on %d%%, %.1fs / %.1fs cd' %
-             (cfg.get('speed_pct', 150), cfg.get('duration_ticks', 90) / 30.0,
-              cfg.get('cooldown_ticks', 60) / 30.0)) if cfg.get('enabled') else 'off'
-    return [{**ref, 'ok': True, 'old': 'sprint', 'new': state}]
+    who = 'P1+P2' if ep == {0, 1} else ('P1' if ep == {0} else ('P2' if ep == {1} else '-'))
+    state = 'on %s %d%%, %.1fs / %.1fs cd' % (
+        who, cfg.get('speed_pct', 150), cfg.get('duration_ticks', 90) / 30.0,
+        cfg.get('cooldown_ticks', 60) / 30.0)
+    results = [{**ref, 'ok': True, 'old': 'sprint', 'new': state}]
+    # Each drafted tuning card (Speed/Duration/Cooldown) reports its own before→new
+    # step, so it reads like a normal field edit in the summary instead of a skip.
+    for cr in cfg.get('card_reports') or []:
+        results.append({'ok': True, 'tag': cr.get('tag') or ref['tag'],
+                        'effect': cr.get('effect', 'Sprint'), 'field': cr.get('field', ''),
+                        'old': cr.get('old'), 'new': cr.get('new')})
+    return results
 
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,

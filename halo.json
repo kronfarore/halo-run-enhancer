@@ -319,6 +319,38 @@
 					{ "field": "Damage Upper Bound" },
 					{ "field": "Damage Upper Bound Max" }
 				]
+			},
+			"Sprint Speed": {
+				"desc": "Sprint faster. Tunes the base sprint speed from Options with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Sprint speed", "sprint": "speed" }
+				]
+			},
+			"Sprint Duration": {
+				"desc": "Sprint longer before it runs out. Tunes the base duration with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Sprint duration", "sprint": "duration" }
+				]
+			},
+			"Sprint Cooldown": {
+				"desc": "Shorter wait between sprints. Tunes the base cooldown with an operator (-x or *0.x to cut it) in the patcher. Halo 1 sprint maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Sprint cooldown", "sprint": "cooldown" }
+				]
+			},
+			"Sprint": {
+				"desc": "Unlock sprinting for the rest of the run (press the flashlight key). Halo 1 sprint maps only.",
+				"game": "Halo 1",
+				"tag": "matg globals\\globals",
+				"targets": [
+					{ "field": "Enable sprint", "sprint": "enable" }
+				]
 			}
 		},
 		"Specific Weapon Modifier": {

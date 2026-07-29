@@ -86,7 +86,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'hide_tags', 'hide_fields',
-               'sprint_feature', 'sprint_start_with', 'sprint_as_card',
+               'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
                'sprint_cooldown_s')
 
@@ -274,6 +274,7 @@ CONFIG = {
     "sprint_start_with": True,
     "sprint_as_card": False,
     "sprint_need_weapon": False,
+    "sprint_mod_cards": True,     # offer the Speed/Duration/Cooldown tuning cards
     "sprint_speed_pct": 150,
     "sprint_duration_s": 3.0,
     "sprint_cooldown_s": 2.0,
@@ -321,10 +322,22 @@ CONFIG = {
 CARD_CHROME_HEIGHT = 340
 
 
+# Pseudo-item that stands for the Sprint ability in the weapon-selection pool. It is
+# NOT a real weapon tag — it rides the pick-a-card flow the way H3 equipment does, and
+# picking it flips sprint on for that player (see _sprint_spec). Kept distinct from any
+# real weapon name so is_sprint_item / is_real_weapon can tell it apart everywhere.
+SPRINT_ITEM = '⚡ Sprint'
+
+
+def is_sprint_item(name):
+    return name == SPRINT_ITEM
+
+
 def is_real_weapon(db, name):
-    """An actual gun — neither a grenade nor a piece of H3 equipment. Holding only
-    a Bubble Shield doesn't make a player armed."""
-    return bool(name) and not db.is_grenade(name) and not db.is_equipment(name)
+    """An actual gun — not a grenade, H3 equipment, or the Sprint ability item. Holding
+    only a Bubble Shield (or only Sprint) doesn't make a player armed."""
+    return (bool(name) and not is_sprint_item(name)
+            and not db.is_grenade(name) and not db.is_equipment(name))
 
 
 def strip_denied_equipment(db, items):
@@ -1065,10 +1078,36 @@ class ModifierDatabase:
                 weapon_mods.extend(self.get_equipment_modifiers_filtered(w, blacklist, game))
             else:
                 weapon_mods.extend(self.get_weapon_modifiers_filtered(w, blacklist, game))
+        # Sprint tuning cards are gated by the New Features options: nothing unless the
+        # feature is on, then the Speed/Duration/Cooldown cards whenever it is. (The
+        # Sprint unlock itself is offered in the weapon selection, not here.)
+        def _sprint_card_ok(m):
+            params = {t.get('sprint') for t in (m.get('targets') or [])
+                      if isinstance(t, dict) and t.get('sprint')}
+            if not params:
+                return True                      # not a sprint card
+            if not CONFIG.get('sprint_feature'):
+                return False
+            if 'enable' in params:
+                # The Sprint unlock is offered in the weapon selection now (like H3
+                # equipment), never in the modifier-card draft.
+                return False
+            # Speed/Duration/Cooldown tuning cards — gated by their own option.
+            if not CONFIG.get('sprint_mod_cards', True):
+                return False
+            # Only offer sprint tuning to a player who actually sprints: everyone when
+            # 'Start with Sprint' is on, otherwise only the player holding the Sprint
+            # equipment (it's a one-player pick, so the other player never sees them).
+            if not CONFIG.get('sprint_start_with', True):
+                if not any(is_sprint_item(w) for w in (weapons or [])):
+                    return False
+            return True
+
         # Copy each general mod before tagging it so we never mutate the
         # shared pool entries that random.choice hands back elsewhere.
         general_mods = [{**m, 'source': 'General'}
-                        for m in self.filter_blacklisted(self.positive_pool, blacklist, game)]
+                        for m in self.filter_blacklisted(self.positive_pool, blacklist, game)
+                        if _sprint_card_ok(m)]
         return weapon_mods + general_mods
 
     def resolve_equipment(self, name):
@@ -1295,26 +1334,38 @@ class WeaponSelectionCard(QGroupBox):
 
         layout.setSpacing(10)
         db = self.parent_widget.db if self.parent_widget else None
+        is_sprint = is_sprint_item(self.pair_data.get('weapon'))
         is_equip = bool(db and db.is_equipment(self.pair_data.get('weapon')))
         player_text = "PLAYER 2" if self.is_player2 else "PLAYER 1"
-        heading = ("🎒 NEW EQUIPMENT" if is_equip else "🔫 NEW WEAPON") if self.mode == 'add' else "CHOICE"
+        if self.mode == 'add':
+            heading = "⚡ SPRINT" if is_sprint else ("🎒 NEW EQUIPMENT" if is_equip else "🔫 NEW WEAPON")
+        else:
+            heading = "CHOICE"
         title = QLabel(f"{player_text} - {heading} {self.pair_data['id']}")
         title.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_title']}px; color: #e0e0e0;")
         layout.addWidget(title)
 
-        scheme = MOD_COLORS['equipment'] if is_equip else MOD_COLORS['green']
-        weapon_group = QGroupBox("EQUIPMENT" if is_equip else "WEAPON")
+        # Sprint is an ability, not a gun — render it with the equipment scheme, so it
+        # reads as the special pick it is, and describe it instead of listing modifiers.
+        scheme = MOD_COLORS['equipment'] if (is_equip or is_sprint) else MOD_COLORS['green']
+        group_title = "SPRINT" if is_sprint else ("EQUIPMENT" if is_equip else "WEAPON")
+        weapon_group = QGroupBox(group_title)
         weapon_group.setStyleSheet(f"border: 2px solid #{scheme['border']}; border-radius: 4px; "
                                    f"padding: 10px; margin-top: 5px; background-color: #{scheme['bg']};")
         weapon_layout = QVBoxLayout(weapon_group)
-        weapon_label = QLabel(f"{'Equipment' if is_equip else 'Weapon'}: {self.pair_data['weapon']}")
+        kind = "Ability" if is_sprint else ("Equipment" if is_equip else "Weapon")
+        weapon_label = QLabel(f"{kind}: {self.pair_data['weapon']}")
         weapon_label.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_weapon']}px; "
                                    f"color: #{scheme['border']};")
         weapon_layout.addWidget(weapon_label)
-        mod_count = len(self.pair_data.get('modifiers', []))
-        mod_label = QLabel(f"Available modifiers: {mod_count}")
-        mod_label.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
-        weapon_layout.addWidget(mod_label)
+        if is_sprint:
+            sub = QLabel("Unlocks sprinting for this player (hold the flashlight key).")
+            sub.setWordWrap(True)
+        else:
+            mod_count = len(self.pair_data.get('modifiers', []))
+            sub = QLabel(f"Available modifiers: {mod_count}")
+        sub.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
+        weapon_layout.addWidget(sub)
         layout.addWidget(weapon_group)
 
         if self.pair_data['enemy_mod']:
@@ -1670,6 +1721,11 @@ class PairCard(QGroupBox):
         elif dual:
             scheme = MOD_COLORS['dual']
             border_width = 3
+        # Sprint cards read as H3-style equipment — give them the equipment border.
+        if any(isinstance(t, dict) and t.get('sprint')
+               for t in (mod_data.get('targets') or [])):
+            scheme = MOD_COLORS['equipment']
+            border_width = 2
         # #7: skull cards get the glyph as a faint background watermark.
         bg_img = ''
         if skull:
@@ -2047,6 +2103,16 @@ class MagnitudeEditorDialog(QDialog):
                 return "\n".join(labels)
             except Exception:
                 return "reload animation"
+        if target.get('sprint'):
+            # Not a tag field — routes into the sprint config. Show the Options base
+            # this card nudges (and stacks onto), or that the enabler unlocks sprint.
+            p = target['sprint']
+            if p == 'enable':
+                return 'drafting this unlocks sprint for the rest of the run'
+            base = {'speed': '%s%%' % CONFIG.get('sprint_speed_pct', 150),
+                    'duration': '%ss' % CONFIG.get('sprint_duration_s', 3.0),
+                    'cooldown': '%ss' % CONFIG.get('sprint_cooldown_s', 2.0)}.get(p, '')
+            return 'sprint %s — Options base %s; apply an operator (+x/-x/*x/=x)' % (p, base)
         plugin = self.registry.get(cls)
         if plugin is None:
             return "no plugin"
@@ -2561,6 +2627,26 @@ class MagnitudeEditorDialog(QDialog):
                 le.setToolTip("Always set to %s whenever this effect is patched." % t['set'])
                 le.setStyleSheet("background-color: #101010; color: #d0a24a; "
                                  "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
+            elif t.get('sprint') == 'enable':
+                # Enabler card: no magnitude — drafting it unlocks sprint for the run.
+                le.setReadOnly(True)
+                le.setText("= on")
+                le.setToolTip("Unlocks sprint for the rest of the run when this card is drafted.")
+                le.setStyleSheet("background-color: #101010; color: #d0a24a; "
+                                 "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
+            elif t.get('sprint'):
+                # Sprint tuning card — a full operator applied to the Options base for
+                # this value (in row order, so multiple cards stack). Same operator
+                # grammar as any other field: -x / +x / *x / =x. Lower cooldown is the
+                # improvement, so cut it with -x or *0.x.
+                unit = {'speed': '% of run speed', 'duration': 'seconds',
+                        'cooldown': 'seconds'}.get(t['sprint'], '')
+                le.setPlaceholderText("-x / +x / *x / =x")
+                le.setToolTip("An operator on the base sprint %s (in %s): +x/-x add or "
+                              "subtract, *x scales, =x sets." % (t['sprint'], unit))
+                key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+                if key in self.presets and not isinstance(self.presets[key], list):
+                    le.setText(str(self.presets[key]))
             else:
                 le.setPlaceholderText("-x / +x / *x / =x")
                 key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
@@ -2830,7 +2916,8 @@ class MagnitudeEditorDialog(QDialog):
             # (weap_tag_for would already return None for either — this just documents
             # why, and skips the lookup)
             def _startable(w):
-                return bool(w) and not db.is_grenade(w) and not db.is_equipment(w)
+                return (bool(w) and not is_sprint_item(w)
+                        and not db.is_grenade(w) and not db.is_equipment(w))
             prim = db.weap_tag_for(p1, self.game) if _startable(p1) else None
             sec = db.weap_tag_for(p2, self.game) if _startable(p2) else None
         # #8: Halo 3 has two playable characters. With 2-player coop on, each pick
@@ -2858,16 +2945,79 @@ class MagnitudeEditorDialog(QDialog):
         """Sprint config for this patch. None for non-Halo-1 games (no sprint maps
         exist elsewhere). For Halo 1 it ALWAYS returns a spec — so a patch also turns
         sprint OFF when the feature is disabled — and the patcher no-ops on any map
-        without the sprint weapon, so this is safe. 'enabled' is on only when the
-        feature is on and "Start with Sprint" is set. (Sprint mod cards will layer
-        onto this once wired.)"""
+        without the sprint weapon, so this is safe.
+
+        `enabled_players` (a set of {0,1}) is PER PLAYER: both on "Start with Sprint",
+        else just the player(s) who drafted the Sprint card (co-op). Speed/duration/
+        cooldown are engine-global (shared), so the tuning cards stack for everyone."""
         if self.game != 'Halo 1':
             return None
+        feature = bool(CONFIG.get('sprint_feature'))
+        # Shared tuning: fold the drafted Speed/Duration/Cooldown cards onto the
+        # Options base. Each card takes a full operator (+ - * =) just like any other
+        # card and they apply in row order, so they stack the same way stacked field
+        # ops do. `card_reports` records each card's before→after step so the patch
+        # summary can show it (matching a normal field's "old -> new" line).
+        vals = {'speed': float(CONFIG.get('sprint_speed_pct', 150)),
+                'duration': float(CONFIG.get('sprint_duration_s', 3.0)),
+                'cooldown': float(CONFIG.get('sprint_cooldown_s', 2.0))}
+        unit = {'speed': '%', 'duration': 's', 'cooldown': 's'}
+        card_reports = []
+        for _eff, t, le in self.rows:
+            p = t.get('sprint')
+            if p not in ('speed', 'duration', 'cooldown'):
+                continue
+            parsed = self._hp.hm.parse_operator(le.text())
+            if not parsed:
+                continue
+            op, v = parsed
+            before = vals[p]
+            after = self._hp.hm.OP_FUNCS[op](before, v)
+            vals[p] = after
+            card_reports.append({
+                'effect': _eff.get('name', 'Sprint'), 'tag': _eff.get('tag'),
+                'field': 'sprint %s' % p,
+                'old': '%g%s' % (round(before, 3), unit[p]),
+                'new': '%g%s' % (round(after, 3), unit[p])})
+        speed, dur, cd = vals['speed'], vals['duration'], vals['cooldown']
+        # Per-player enable.
+        enabled = set()
+        if feature:
+            if bool(CONFIG.get('sprint_start_with', True)):
+                enabled = {0, 1}
+            else:
+                # Card mode: the Sprint unlock is a weapon-selection pick — enable the
+                # player(s) whose arsenal holds the Sprint ability item.
+                rs = getattr(self.parent_gui, 'run_state', None)
+                if rs is not None:
+                    if any(is_sprint_item(w) for w in rs.weapons_for('player1')):
+                        enabled.add(0)
+                    if any(is_sprint_item(w) for w in rs.weapons_for('player2')):
+                        enabled.add(1)
+        speed_pct = int(round(max(100.0, speed)))
+        duration_ticks = max(1, round(max(0.5, dur) * 30))
+        cooldown_ticks = max(0, round(max(0.0, cd) * 30))
+        # If a card pushed a value past its floor (speed <100%, duration <0.5s,
+        # cooldown <0s), the engine can't apply the raw figure — show the last card
+        # for that value landing on the clamped result, noting the pre-clamp figure.
+        floor_hit = {'speed': speed < 100.0, 'duration': dur < 0.5, 'cooldown': cd < 0.0}
+        clamped = {'speed': '%g%%' % speed_pct,
+                   'duration': '%gs' % round(duration_ticks / 30.0, 3),
+                   'cooldown': '%gs' % round(cooldown_ticks / 30.0, 3)}
+        last_of = {}
+        for i, cr in enumerate(card_reports):
+            last_of[cr['field'].split()[-1]] = i
+        for param, i in last_of.items():
+            if floor_hit.get(param):
+                card_reports[i]['new'] = '%s (clamped from %s)' % (
+                    clamped[param], card_reports[i]['new'])
         return {
-            'enabled': bool(CONFIG.get('sprint_feature')) and bool(CONFIG.get('sprint_start_with', True)),
-            'speed_pct': int(CONFIG.get('sprint_speed_pct', 150)),
-            'duration_ticks': max(1, round(float(CONFIG.get('sprint_duration_s', 3.0)) * 30)),
-            'cooldown_ticks': max(0, round(float(CONFIG.get('sprint_cooldown_s', 2.0)) * 30)),
+            'enabled_players': enabled,
+            'enabled': bool(enabled),
+            'speed_pct': speed_pct,
+            'duration_ticks': duration_ticks,
+            'cooldown_ticks': cooldown_ticks,
+            'card_reports': card_reports,
         }
 
     def _spawn_equipment_spec(self):
@@ -3043,11 +3193,20 @@ class MagnitudeEditorDialog(QDialog):
                 bucket = equip_swaps if t.get('map_equip') else card_swaps
                 bucket[eff['tag']] = bucket.get(eff['tag'], 0.0) + pct / 100.0
 
+        # Sprint tuning rows fold into the sprint spec (_sprint_spec) rather than
+        # becoming plan ops, so like the swap rows above they're skipped below — but
+        # their entered delta should still be remembered so reopening the dialog
+        # restores it. The enabler row is read-only, so nothing to save there.
+        for eff, t, le in self.rows:
+            if t.get('sprint') in ('speed', 'duration', 'cooldown'):
+                self.presets[self._hp.preset_key(
+                    eff['tag'], eff['name'], t['field'], self.game)] = le.text().strip()
+
         plan_map = {}
         for eff, t, le in self.rows:
             if (t.get('derived') or t.get('set') is not None
-                    or t.get('map_swap') or t.get('map_equip')):
-                continue          # display-only / fixed-set / swap; handled separately
+                    or t.get('map_swap') or t.get('map_equip') or t.get('sprint')):
+                continue          # display-only / fixed-set / swap / sprint; handled separately
             txt = le.text().strip()
             # #11: remember the input as-is, including an empty one — an empty entry is
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
@@ -3144,6 +3303,13 @@ class MagnitudeEditorDialog(QDialog):
         planned = {(i.get('tag'), i.get('name')) for i in plan}
         for eff in self.effects:
             if (eff.get('tag'), eff.get('name')) in planned or eff.get('skull'):
+                continue
+            # Sprint effects (the enabler + the Speed/Duration/Cooldown tuning cards)
+            # never become plan ops — they're reported by _apply_sprint instead (an
+            # aggregate line plus a per-card old→new line), so don't add a stray
+            # "no value changed" skip for them here.
+            if any(isinstance(t, dict) and t.get('sprint')
+                   for t in (eff.get('targets') or [])):
                 continue
             results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
                             'ok': True, 'skip': True, 'reason': 'no value changed'})
@@ -3606,17 +3772,28 @@ class OptionsDialog(QDialog):
                                         "drafted Equipment card instead (see below).")
         xform.addRow("    ↳ From the start:", self.sprint_start_cb)
 
-        self.sprint_cards_cb = QCheckBox("Offer Sprint as an Equipment card")
+        self.sprint_cards_cb = QCheckBox("Offer Sprint in the weapon selection")
         self.sprint_cards_cb.setChecked(bool(CONFIG.get('sprint_as_card')))
-        self.sprint_cards_cb.setToolTip("When not starting with Sprint, put it in the draft as an "
-                                        "Equipment card; sprint switches on once a player picks it.")
-        xform.addRow("    ↳ As a card:", self.sprint_cards_cb)
+        self.sprint_cards_cb.setToolTip("When not starting with Sprint, it turns up as a pick in the "
+                                        "weapon selection (initial pick and the New Weapon button), like "
+                                        "Halo 3 equipment. Sprint switches on once a player takes it, and "
+                                        "it's offered to only one player per run.")
+        xform.addRow("    ↳ As a pick:", self.sprint_cards_cb)
 
         self.sprint_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")
         self.sprint_need_weapon_cb.setChecked(bool(CONFIG.get('sprint_need_weapon')))
-        self.sprint_need_weapon_cb.setToolTip("Keeps the Sprint card from being the first thing a player "
-                                              "picks up. Only applies while Sprint is offered as a card.")
+        self.sprint_need_weapon_cb.setToolTip("Keeps Sprint out of the initial pick (when no gun is held "
+                                              "yet) — it only appears via the New Weapon button once the "
+                                              "player already has a real weapon. Only applies while Sprint "
+                                              "is offered as a pick.")
         xform.addRow("        ↳ Needs a gun:", self.sprint_need_weapon_cb)
+
+        self.sprint_mod_cards_cb = QCheckBox("Add cards that improve sprint to the pool")
+        self.sprint_mod_cards_cb.setChecked(bool(CONFIG.get('sprint_mod_cards', True)))
+        self.sprint_mod_cards_cb.setToolTip("Draftable player cards that tune sprint for the run — Sprint "
+                                            "Speed, Duration and Cooldown — each stacking onto the base "
+                                            "values below.")
+        xform.addRow("    ↳ Improve-sprint cards:", self.sprint_mod_cards_cb)
 
         self.sprint_speed = QSpinBox()
         self.sprint_speed.setRange(105, 300)
@@ -3660,8 +3837,9 @@ class OptionsDialog(QDialog):
 
         def _sync_sprint(_=False):
             on = self.sprint_cb.isChecked()
-            for w in (self.sprint_start_cb, self.sprint_cards_cb, self.sprint_speed,
-                      self.sprint_duration, self.sprint_cooldown, self.sprint_apply_btn):
+            for w in (self.sprint_start_cb, self.sprint_cards_cb, self.sprint_mod_cards_cb,
+                      self.sprint_speed, self.sprint_duration, self.sprint_cooldown,
+                      self.sprint_apply_btn):
                 w.setEnabled(on)
             # "Needs a gun" only matters when Sprint is a card.
             card = on and self.sprint_cards_cb.isChecked()
@@ -3891,6 +4069,7 @@ class OptionsDialog(QDialog):
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
             'sprint_feature': self.sprint_cb.isChecked(),
+            'sprint_mod_cards': self.sprint_mod_cards_cb.isChecked(),
             'sprint_start_with': self.sprint_start_cb.isChecked(),
             'sprint_as_card': self.sprint_cards_cb.isChecked(),
             'sprint_need_weapon': self.sprint_need_weapon_cb.isChecked(),
@@ -4040,6 +4219,14 @@ class HaloGUI(QMainWindow):
         choices = []
         used_weapons = set()
         used_enemies = set()
+        # Sprint is a one-per-run pick: never offer it once either player owns it, no
+        # matter which pool fed us. This is the single choke point every selection card
+        # (P1, P2, New Weapon, reroll) passes through, so enforcing it here guarantees
+        # it — a backstop to _sprint_offer_ok rather than a substitute for it.
+        rs = getattr(self, 'run_state', None)
+        if rs is not None and any(is_sprint_item(w) for w in
+                                  rs.weapons_for('player1') + rs.weapons_for('player2')):
+            weapons = [w for w in weapons if not is_sprint_item(w)]
         for i in range(count):
             available = [w for w in weapons if w not in used_weapons]
             if not available:
@@ -4049,7 +4236,7 @@ class HaloGUI(QMainWindow):
             choices.append({
                 'id': i + 1,
                 'weapon': weapon,
-                'modifiers': self.db.get_weapon_modifiers(weapon),
+                'modifiers': [] if is_sprint_item(weapon) else self.db.get_weapon_modifiers(weapon),
                 'enemy_mod': self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             })
         return choices
@@ -4075,7 +4262,8 @@ class HaloGUI(QMainWindow):
             if not avail:
                 avail = [w for w in weapons if w not in exclude_weapons] or weapons
             card.pair_data['weapon'] = random.choice(avail)
-            card.pair_data['modifiers'] = self.db.get_weapon_modifiers(card.pair_data['weapon'])
+            card.pair_data['modifiers'] = ([] if is_sprint_item(card.pair_data['weapon'])
+                                           else self.db.get_weapon_modifiers(card.pair_data['weapon']))
             card.pair_data['enemy_mod'] = self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             card.setup_ui()
             self.update_status(f"Rerolled choice {choice_id}{player_label}")
@@ -4093,7 +4281,35 @@ class HaloGUI(QMainWindow):
         pool = [w for w in self.db.get_game_weapons(self._current_game())
                 if not self._blacklisted_weapon(w) and w not in upgrades]
         pool = strip_denied_equipment(self.db, pool)
-        return gate_offer_pool(self.db, pool, self.run_state, player)
+        pool = gate_offer_pool(self.db, pool, self.run_state, player)
+        if self._sprint_offer_ok(player):
+            pool = pool + [SPRINT_ITEM]
+        return pool
+
+    def _sprint_offer_ok(self, player=None):
+        """Whether the Sprint ability should be offered in a weapon selection. H1 only,
+        and only when Sprint is configured as a drafted card (not 'Start with Sprint').
+        Offered to just ONE player total, so it drops out once either player owns it.
+        With 'requires a gun' on it's gated to players who already hold a real weapon —
+        which also keeps it out of the very first (initial) pick, when nobody is armed."""
+        if self._current_game() != 'Halo 1':
+            return False
+        if not (CONFIG.get('sprint_feature') and CONFIG.get('sprint_as_card')):
+            return False
+        if CONFIG.get('sprint_start_with'):
+            return False                    # already always on — a card would be moot
+        rs = self.run_state
+        if rs is None:
+            return False
+        if any(is_sprint_item(w) for w in
+               rs.weapons_for('player1') + rs.weapons_for('player2')):
+            return False                    # one player total already has it
+        if CONFIG.get('sprint_need_weapon'):
+            players = [player] if player else ['player1', 'player2']
+            if not all(any(is_real_weapon(self.db, w) for w in rs.weapons_for(p))
+                       for p in players):
+                return False
+        return True
 
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)

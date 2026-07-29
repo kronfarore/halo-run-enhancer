@@ -245,7 +245,7 @@ def check_resolution():
             for t in targets:
                 if not isinstance(t, dict) or any(
                         t.get(k) for k in ('reload_anim', 'map_swap', 'map_equip',
-                                           'equip_drop')):
+                                           'equip_drop', 'sprint')):
                     continue
                 if t.get('games') and game not in t['games']:
                     continue
