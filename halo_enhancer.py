@@ -42,6 +42,59 @@ def app_data_dir():
     return Path.cwd()
 
 
+def presets_path():
+    return app_data_dir() / "magnitude_presets.json"
+
+
+def load_presets():
+    try:
+        with open(presets_path(), encoding='utf-8') as f:
+            data = json.load(f)
+        return data if isinstance(data, dict) else {}
+    except Exception:
+        return {}
+
+
+def run_magnitudes(rounds, mission_id, presets=None):
+    """The remembered magnitudes belonging to a run's own effects.
+
+    A saved run holds the draft but NOT the numbers typed for it -- those live in
+    magnitude_presets.json -- which is why sharing a run meant sending that whole file
+    too, overwriting the other player's unrelated values. This pulls out just this
+    run's entries so they can travel inside the run file.
+
+    Preset keys are 'tag||name||field||game', so every entry for an effect is matched
+    by its 'tag||name||' prefix. That deliberately avoids re-deriving field names
+    (per-game dicts, difficulty suffixes, fallbacks), which is where a mismatch would
+    silently drop a magnitude."""
+    import halo_patch          # imported lazily, as everywhere else in this module
+    presets = load_presets() if presets is None else presets
+    effects = halo_patch.collect_effects(rounds or [], mission_id)
+    prefixes = tuple('%s||%s||' % (e.get('tag'), e.get('name')) for e in effects
+                     if e.get('tag'))
+    if not prefixes:
+        return {}
+    return {k: v for k, v in presets.items() if k.startswith(prefixes)}
+
+
+def merge_presets(incoming):
+    """Merge shared magnitudes into the local presets, keeping every local entry the
+    bundle doesn't mention. Returns how many keys were written."""
+    if not incoming:
+        return 0
+    local = load_presets()
+    changed = {k: v for k, v in incoming.items() if local.get(k) != v}
+    if not changed:
+        return 0
+    local.update(changed)
+    try:
+        with open(presets_path(), 'w', encoding='utf-8') as f:
+            json.dump(local, f, indent=2, ensure_ascii=False)
+    except Exception:
+        return 0
+    return len(changed)
+
+
 class _NullWriter:
     """Stand-in for sys.stdout/err in a windowed (--noconsole) build where they
     are None, so diagnostic print() calls never raise."""
@@ -181,7 +234,8 @@ ZOOM_DONOR_WEAPONS = {
 # 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
 # found under (per-game subfolder); defaults to the tool's parent when unset.
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
-                 'options_dialog_size', 'patcher_dialog_size') + OPTION_KEYS
+                 'options_dialog_size', 'patcher_dialog_size',
+                 'shared_session_dir', 'shared_session_autosave') + OPTION_KEYS
 
 
 def mcc_root():
@@ -327,6 +381,11 @@ CONFIG = {
     # Which flashlight-key abilities may appear in the weapon selection, and which one
     # "start with an ability" grants. Powerups need a map built with the current
     # toolkit; the patcher skips them (with a reason) on older builds.
+    # Co-op sharing: a folder both machines can see (a cloud-synced one works best).
+    # After a patch the run is written there, magnitudes included, so the other machine
+    # can pick it up with one click instead of passing two files around by hand.
+    "shared_session_dir": "",
+    "shared_session_autosave": True,
     "abilities_offered": ["sprint"],
     "ability_cards_for": ["sprint"],   # whose tuning cards may enter the pool
     "ability_start_which": "sprint",
@@ -1997,6 +2056,26 @@ class StartDialog(QDialog):
         """)
         load_btn.clicked.connect(self.load_saved_run)
         layout.addWidget(load_btn)
+        # Co-op shortcut: grab whatever the other machine shared most recently.
+        if (CONFIG.get('shared_session_dir') or '').strip():
+            shared_btn = QPushButton("🤝 Load Latest Shared Session")
+            shared_btn.setToolTip("Open the newest run in the shared session folder, "
+                                  "magnitudes included.")
+            shared_btn.setStyleSheet("""
+                QPushButton {
+                    background-color: #2a4a5a;
+                    color: white;
+                    font-weight: bold;
+                    padding: 15px;
+                    border-radius: 5px;
+                    font-size: 14px;
+                }
+                QPushButton:hover {
+                    background-color: #3a6a7a;
+                }
+            """)
+            shared_btn.clicked.connect(self.load_latest_shared)
+            layout.addWidget(shared_btn)
         cancel_btn = QPushButton("Cancel")
         cancel_btn.clicked.connect(self.reject)
         cancel_btn.setStyleSheet("""
@@ -2017,31 +2096,61 @@ class StartDialog(QDialog):
         self.accept()
     
     def load_saved_run(self):
+        start = (CONFIG.get('shared_session_dir') or '').strip() or "selections/"
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Select Saved Run",
-            "selections/",
+            start,
             "Halo Run (*.run);;JSON Files (*.json)"
         )
         if file_path:
-            try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    data = json.load(f)
-            except Exception as e:
-                QMessageBox.critical(self, "Not a valid run",
-                                     f"Couldn't read this file as a run:\n{e}")
-                return
-            if not is_valid_run(data):
-                QMessageBox.critical(self, "Not a valid run",
-                                     "This file isn't a Halo Run Enhancer save "
-                                     "(missing the run marker/structure).")
-                return
-            try:
-                self.loaded_state = RunState.from_dict(data)
-                self.choice = 'load'
-                self.accept()
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to load run:\n{str(e)}")
+            self._open_run_file(file_path)
+
+    def load_latest_shared(self):
+        """One-click pickup of the newest run in the shared folder — the other machine's
+        end of the sharing workflow."""
+        folder = (CONFIG.get('shared_session_dir') or '').strip()
+        if not folder:
+            QMessageBox.information(self, "No shared folder",
+                                    "Set a shared session folder in Options first "
+                                    "(point both machines at the same synced folder).")
+            return
+        runs = sorted(Path(folder).glob('*.run'), key=lambda p: p.stat().st_mtime,
+                      reverse=True) if Path(folder).is_dir() else []
+        if not runs:
+            QMessageBox.information(self, "Nothing shared yet",
+                                    f"No .run files in:\n{folder}")
+            return
+        self._open_run_file(str(runs[0]))
+
+    def _open_run_file(self, file_path):
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+        except Exception as e:
+            QMessageBox.critical(self, "Not a valid run",
+                                 f"Couldn't read this file as a run:\n{e}")
+            return
+        if not is_valid_run(data):
+            QMessageBox.critical(self, "Not a valid run",
+                                 "This file isn't a Halo Run Enhancer save "
+                                 "(missing the run marker/structure).")
+            return
+        try:
+            self.loaded_state = RunState.from_dict(data)
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"Failed to load run:\n{str(e)}")
+            return
+        # Merge any magnitudes the run carries, so the patch reproduces the sharer's
+        # numbers without touching this machine's other remembered values.
+        n = merge_presets(data.get('magnitudes') or {})
+        if n:
+            QMessageBox.information(self, "Run loaded",
+                                    f"Loaded {Path(file_path).name}\n\n"
+                                    f"{n} shared magnitude(s) merged — patching this run "
+                                    "will reproduce the same values.")
+        self.choice = 'load'
+        self.accept()
 
 
 class MagnitudeEditorDialog(QDialog):
@@ -3489,6 +3598,13 @@ class MagnitudeEditorDialog(QDialog):
             for eff in self.effects:
                 rs.patched_effect_keys.add((eff.get('tag'), eff.get('name')))
             self._populate()
+            # Hand the run (magnitudes included) to the shared folder, so the co-op
+            # partner's machine can pick up this exact patch with one click. Done after
+            # save_presets above, so the values written into it are the ones just used.
+            if CONFIG.get('shared_session_autosave', True):
+                exporter = getattr(self.parent_gui, 'export_shared_session', None)
+                if exporter is not None:
+                    self._shared_path = exporter()
 
         self._show_results(results, backup)
 
@@ -3509,6 +3625,11 @@ class MagnitudeEditorDialog(QDialog):
         lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
         if backup:
             lines.append(f"Backup: {backup}")
+        shared = getattr(self, '_shared_path', None)
+        if shared:
+            lines.append(f"Shared with co-op: {shared.name}  "
+                         f"(other machine: Load Latest Shared Session)")
+            self._shared_path = None
         lines.append("")
         def _fmt(x):
             return round(x, 4) if isinstance(x, (int, float)) else x
@@ -3934,6 +4055,52 @@ class OptionsDialog(QDialog):
         self.starting_weapons_cb.toggled.connect(_sync_coop_respawn)
         _sync_coop_respawn()
         layout.addWidget(coop_g)
+
+        # ---- Coop session sharing ----
+        # One machine drafts and patches; the other needs the same run AND the same
+        # magnitudes. Run files now carry their own magnitudes, so pointing both
+        # machines at one synced folder turns the handover into a single click.
+        share_g = QGroupBox("Coop session sharing")
+        shform = QFormLayout(share_g)
+        shform.setLabelAlignment(Qt.AlignRight)
+
+        share_row = QWidget()
+        share_h = QHBoxLayout(share_row)
+        share_h.setContentsMargins(0, 0, 0, 0)
+        self.share_dir_edit = QLineEdit(CONFIG.get('shared_session_dir', '') or '')
+        self.share_dir_edit.setPlaceholderText("e.g. a Dropbox / OneDrive / Drive folder "
+                                               "both players sync")
+        share_browse = QPushButton("Browse…")
+        share_browse.setMaximumWidth(90)
+
+        def _browse_share():
+            start = self.share_dir_edit.text().strip() or str(app_data_dir())
+            p = QFileDialog.getExistingDirectory(self, "Select the shared session folder",
+                                                 start)
+            if p:
+                self.share_dir_edit.setText(p)
+        share_browse.clicked.connect(_browse_share)
+        share_h.addWidget(self.share_dir_edit)
+        share_h.addWidget(share_browse)
+        share_row.setToolTip("A folder both machines can see. Runs written here carry the "
+                             "magnitudes typed for them, so the other machine reproduces "
+                             "the same patch — no second file to copy. Leave empty to keep "
+                             "sharing files by hand.")
+        shform.addRow("Shared folder:", share_row)
+
+        self.share_autosave_cb = QCheckBox("Write the run there after every patch")
+        self.share_autosave_cb.setChecked(bool(CONFIG.get('shared_session_autosave', True)))
+        self.share_autosave_cb.setToolTip("After a successful patch, drop this run into the "
+                                          "shared folder automatically. The other machine "
+                                          "picks it up with “Load Latest Shared Session”.")
+        shform.addRow("    ↳ Auto-share:", self.share_autosave_cb)
+
+        def _sync_share(_=False):
+            on = bool(self.share_dir_edit.text().strip())
+            _row(shform, self.share_autosave_cb, on)
+        self.share_dir_edit.textChanged.connect(_sync_share)
+        _sync_share()
+        layout.addWidget(share_g)
 
         # ---- New Features (Experimental) ----
         # Sprint. Only functions on maps built with the sprint mod (weapon tag +
@@ -4387,6 +4554,8 @@ class OptionsDialog(QDialog):
             'sprint_speed_pct': self.sprint_speed.value(),
             'sprint_duration_s': round(self.sprint_duration.value(), 1),
             'sprint_cooldown_s': round(self.sprint_cooldown.value(), 1),
+            'shared_session_dir': self.share_dir_edit.text().strip(),
+            'shared_session_autosave': self.share_autosave_cb.isChecked(),
             'abilities_offered': [ab for ab, cb in self.ability_offer_cbs.items()
                                   if cb.isChecked()],
             'ability_cards_for': [ab for ab, cb in self.ability_cards_cbs.items()
@@ -5676,6 +5845,40 @@ class HaloGUI(QMainWindow):
                 self.display_pairs(*self._last_display)
             self.update_status("Options updated.")
 
+    def _run_bundle(self):
+        """A run file that is SELF-CONTAINED: the draft plus the magnitudes typed for
+        it. Sharing one of these is enough for the other machine to patch identically —
+        no separate magnitude_presets.json to copy (and clobber)."""
+        data = self.run_state.to_dict()
+        data['format'] = RUN_FILE_MARKER    # tag it so loading can validate the file
+        mags = run_magnitudes(self.run_state.rounds, self.run_state.mission_id)
+        if mags:
+            data['magnitudes'] = mags
+        return data
+
+    def export_shared_session(self, quiet=True):
+        """Drop the current run into the shared session folder, if one is configured.
+        Called after a patch so the other machine can pick it up with one click —
+        point this at a cloud-synced folder and the transfer happens by itself."""
+        folder = (CONFIG.get('shared_session_dir') or '').strip()
+        if not folder or self.run_state.phase != 'complete':
+            return None
+        try:
+            d = Path(folder)
+            d.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            mission = self.run_state.mission_id or 'run'
+            path = d / f"session_{mission}_{ts}.run"
+            with open(path, 'w', encoding='utf-8') as f:
+                json.dump(self._run_bundle(), f, indent=2, ensure_ascii=False)
+            self.update_status(f"Shared session written: {path.name}")
+            return path
+        except Exception as e:
+            if not quiet:
+                QMessageBox.warning(self, "Shared folder",
+                                    f"Couldn't write the shared session:\n{e}")
+            return None
+
     def on_save(self):
         if self.run_state.phase != 'complete':
             QMessageBox.warning(self, "Not Complete", "Both players must select before saving!")
@@ -5684,8 +5887,7 @@ class HaloGUI(QMainWindow):
         selections_dir = app_data_dir() / "selections"
         selections_dir.mkdir(exist_ok=True)
 
-        save_data = self.run_state.to_dict()
-        save_data['format'] = RUN_FILE_MARKER   # tag it so loading can validate the file
+        save_data = self._run_bundle()
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         default_name = f"selection_{timestamp}.run"
         file_path, _ = QFileDialog.getSaveFileName(
