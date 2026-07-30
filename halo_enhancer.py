@@ -2586,13 +2586,53 @@ class MagnitudeEditorDialog(QDialog):
         next_empty_btn.setToolTip("Jump to the next blank operator field")
         next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
         next_empty_btn.clicked.connect(self._jump_to_next_empty)
+        keep_btn = QPushButton("⭳ Save magnitudes to presets")
+        keep_btn.setToolTip("Write the magnitudes typed here into the global preset file "
+                            "now, without patching. Handy after loading a shared run, or "
+                            "to keep values you've tuned but aren't ready to apply — "
+                            "otherwise they're only remembered when you patch.")
+        keep_btn.setStyleSheet("background-color: #2a4a3a; color: white; padding: 8px 14px; border-radius: 5px;")
+        keep_btn.clicked.connect(self._save_magnitudes_now)
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(self.reject)
         btns.addWidget(apply_btn)
         btns.addWidget(next_empty_btn)
+        btns.addWidget(keep_btn)
         btns.addStretch()
         btns.addWidget(close_btn)
         layout.addLayout(btns)
+
+    def _save_magnitudes_now(self):
+        """Write the magnitudes typed in this dialog into the global preset file, without
+        patching. Magnitudes are otherwise only remembered as a side effect of applying,
+        so a run loaded from a co-op partner (or values tuned but not yet applied) would
+        be lost by closing the dialog."""
+        written, cleared = 0, 0
+        for eff, t, le in self.rows:
+            if le is None or le.isReadOnly() or t.get('set') is not None:
+                continue                      # derived/fixed rows carry no user value
+            key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+            txt = le.text().strip()
+            if txt:
+                if self.presets.get(key) != txt:
+                    written += 1
+                self.presets[key] = txt
+            elif isinstance(self.presets.get(key), str) and self.presets[key]:
+                # An emptied field is a deliberate "leave this alone" — mirror it, so
+                # reopening (or a partner loading the run) doesn't resurrect the number.
+                self.presets[key] = ''
+                cleared += 1
+        self._hp.save_presets(self.presets_path, self.presets)
+        bits = []
+        if written:
+            bits.append(f"{written} value(s) saved")
+        if cleared:
+            bits.append(f"{cleared} cleared")
+        msg = ", ".join(bits) if bits else "nothing changed — presets already match"
+        self.results.setPlainText(
+            f"Magnitudes → {Path(self.presets_path).name}: {msg}.\n"
+            "These are now the remembered defaults for these effects, and travel with "
+            "the run when you save or share it.")
 
     def _jump_to_next_empty(self):
         """Scroll to and focus the next blank operator field (wrapping around). Uses a
@@ -3469,7 +3509,10 @@ class MagnitudeEditorDialog(QDialog):
         # their entered delta should still be remembered so reopening the dialog
         # restores it. The enabler row is read-only, so nothing to save there.
         for eff, t, le in self.rows:
-            if t.get('sprint') in ('speed', 'duration', 'cooldown'):
+            # Every ability parameter, not just the sprint three — a new one added to
+            # ABILITY_CARD_PARAMS would otherwise silently fail to be remembered.
+            p = t.get('sprint')
+            if p and p != 'enable' and p in ABILITY_CARD_PARAMS:
                 self.presets[self._hp.preset_key(
                     eff['tag'], eff['name'], t['field'], self.game)] = le.text().strip()
 
