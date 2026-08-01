@@ -70,11 +70,22 @@ def run_magnitudes(rounds, mission_id, presets=None):
     import halo_patch          # imported lazily, as everywhere else in this module
     presets = load_presets() if presets is None else presets
     effects = halo_patch.collect_effects(rounds or [], mission_id)
-    prefixes = tuple('%s||%s||' % (e.get('tag'), e.get('name')) for e in effects
-                     if e.get('tag'))
+    # A run is collected UNRESOLVED (the patcher resolves per-game dicts for the game
+    # being patched; saving has no single game in hand), so an effect's tag may still
+    # be a {game: tag} dict. Take every variant: preset keys end in the game, so the
+    # extra prefixes only match that effect's own entries, and the magnitude still
+    # travels if the run is later patched for a different game.
+    prefixes = []
+    for e in effects:
+        tag = e.get('tag')
+        if not tag:
+            continue
+        for one in ([tag] if isinstance(tag, str) else list(tag.values())):
+            if isinstance(one, str):
+                prefixes.append('%s||%s||' % (one, e.get('name')))
     if not prefixes:
         return {}
-    return {k: v for k, v in presets.items() if k.startswith(prefixes)}
+    return {k: v for k, v in presets.items() if k.startswith(tuple(prefixes))}
 
 
 def merge_presets(incoming):

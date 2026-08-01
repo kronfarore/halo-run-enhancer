@@ -74,7 +74,12 @@ def collect_effects(rounds, mission_id=None):
         tag = mod.get('tag')
         if not tag:
             return
-        key = (tag, mod.get('name'))
+        # A tag may still be a per-GAME dict ({'Halo 1': ..., 'Halo 3': ...}) when the
+        # caller hasn't resolved it for a specific game — the patcher resolves first,
+        # but the save path collects straight off the raw run. A dict can't be a dict
+        # key, so flatten it for identity only; the entry keeps the original value.
+        key = (tag if isinstance(tag, str) else repr(sorted(tag.items())),
+               mod.get('name'))
         if key not in seen:
             seen[key] = {'name': mod.get('name'), 'desc': mod.get('desc', ''),
                          'desc_overrides': mod.get('desc_overrides'),  # #7
