@@ -120,6 +120,32 @@ def collect_effects(rounds, mission_id=None):
     return [seen[k] for k in order]
 
 
+def _tag_variants(tag):
+    """Every concrete tag string a mod's `tag` can stand for. A run holds effects
+    UNRESOLVED, so the tag may still be a {game: tag} dict (see collect_effects)."""
+    if isinstance(tag, str):
+        return [tag]
+    if isinstance(tag, dict):
+        return [v for v in tag.values() if isinstance(v, str)]
+    return []
+
+
+def latest_round_keys(rounds, mission_id=None):
+    """(tag, name) for every effect picked in the LAST round, so the patcher can
+    highlight this round's picks — including ones drafted in an earlier round too,
+    which carry no other visual cue and are otherwise hard to find in a long list.
+
+    Built by running collect_effects over just that round, so it follows exactly the
+    same slots (both players, enemies, wildcards, bosses, exhausts) automatically."""
+    if not rounds:
+        return set()
+    keys = set()
+    for e in collect_effects(rounds[-1:], mission_id):
+        for tag in _tag_variants(e.get('tag')):
+            keys.add((tag, e.get('name')))
+    return keys
+
+
 def group_effects(effects):
     """Group effects by their source group, ordered (weapons, player, specific
     enemies, enemy-general, friend, boss), then by group name. Returns an

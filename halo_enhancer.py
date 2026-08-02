@@ -2019,6 +2019,7 @@ class StartDialog(QDialog):
         super().__init__(parent)
         self.choice = None
         self.loaded_state = None
+        self.loaded_path = None     # where a loaded run came from (see _open_run_file)
         self.setWindowTitle("Halo Run Enhancer")
         self.setModal(True)
         self.setMinimumWidth(400)
@@ -2152,6 +2153,9 @@ class StartDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"Failed to load run:\n{str(e)}")
             return
+        # Remember where it came from, so saving offers to write back to the SAME file
+        # instead of proposing a fresh timestamped name every round.
+        self.loaded_path = file_path
         # Merge any magnitudes the run carries, so the patch reproduces the sharer's
         # numbers without touching this machine's other remembered values.
         n = merge_presets(data.get('magnitudes') or {})
@@ -2181,6 +2185,7 @@ class MagnitudeEditorDialog(QDialog):
         self.subdirs = subdirs
         self.map_subdir = map_subdir      # per-game maps folder, for re-finding on root change
         self.mission_id = mission_id
+        self._round_keys = None     # lazily built by _this_round_keys()
         self.presets_path = presets_path
         self.presets = halo_patch.load_presets(presets_path)
         self.target_difficulty = target_difficulty
@@ -2558,7 +2563,9 @@ class MagnitudeEditorDialog(QDialog):
                         f"{_r}▼</span> lowering makes it harder &nbsp; &nbsp;"
                         f"{_g}▲</span> raising makes it easier &nbsp; &nbsp;"
                         f"{_g}▼</span> lowering makes it easier &nbsp; "
-                        "(shown per field where the direction isn't obvious)")
+                        "(shown per field where the direction isn't obvious)"
+                        "<br>Effects: &nbsp;🔆 picked this round &nbsp; &nbsp;"
+                        "🆕 not patched to a map yet")
         legend.setStyleSheet("color: #c8c8c8; font-size: 12px; padding: 2px;")
         legend.setWordWrap(True)
         head.addWidget(legend)
@@ -2744,6 +2751,20 @@ class MagnitudeEditorDialog(QDialog):
     def _is_new(self, eff):
         return (eff.get('tag'), eff.get('name')) not in self._patched_keys()
 
+    def _this_round_keys(self):
+        """(tag, name) of everything picked in the latest round, cached per dialog."""
+        if getattr(self, '_round_keys', None) is None:
+            rs = getattr(self.parent_gui, 'run_state', None)
+            rounds = getattr(rs, 'rounds', None) or []
+            self._round_keys = self._hp.latest_round_keys(rounds, self.mission_id)
+        return self._round_keys
+
+    def _is_this_round(self, eff):
+        """Picked in the round just drafted. Distinct from _is_new: an effect picked
+        again this round may well have been patched already, which is exactly the case
+        that was hard to find in the list."""
+        return (eff.get('tag'), eff.get('name')) in self._this_round_keys()
+
     def _populate(self):
         self._clear_layout(self.form)
         self.rows = []
@@ -2796,9 +2817,19 @@ class MagnitudeEditorDialog(QDialog):
 
     def _effect_box(self, eff):
         is_new = self._is_new(eff)
-        title = f"{'🆕 ' if is_new else ''}{eff['name']}   ×{eff['count']}"
+        is_now = self._is_this_round(eff)
+        title = ('🆕 ' if is_new else '') + ('🔆 ' if is_now else '') \
+            + f"{eff['name']}   ×{eff['count']}"
         box = QGroupBox(title)
-        if is_new:
+        if is_now:
+            # Picked this round — amber, and it WINS over the "new" border: an effect
+            # drafted again after being patched shows no other cue, and finding this
+            # round's picks quickly is the point.
+            box.setStyleSheet("QGroupBox { border: 2px solid #e0a94a; border-radius: 5px; "
+                              "margin-top: 8px; } QGroupBox::title { color: #e0a94a; }")
+            box.setToolTip("Picked in the latest round" + (" (not patched yet)" if is_new else
+                                                          " (already patched in an earlier round)"))
+        elif is_new:
             # #6: highlight effects not yet applied to a map; cleared on the next patch.
             box.setStyleSheet("QGroupBox { border: 2px solid #8fb8ff; border-radius: 5px; "
                               "margin-top: 8px; } QGroupBox::title { color: #8fb8ff; }")
@@ -4724,6 +4755,7 @@ class HaloGUI(QMainWindow):
         # rather than showing a half-constructed window that crashes later.
         self.db = ModifierDatabase()
         self.run_state = RunState()
+        self.loaded_run_path = None   # set when a run is loaded; steers the save default
         self.enhancer = RunEnhancer(self.db, self.run_state)
         self.pair_cards = []
         self.pending_player2_selection = False
@@ -4739,7 +4771,7 @@ class HaloGUI(QMainWindow):
             if dialog.choice == 'new':
                 self.show_weapon_selection()
             elif dialog.choice == 'load':
-                self.load_run_state(dialog.loaded_state)
+                self.load_run_state(dialog.loaded_state, getattr(dialog, 'loaded_path', None))
         else:
             self.close()
 
@@ -4757,11 +4789,12 @@ class HaloGUI(QMainWindow):
         if dialog.exec() != QDialog.Accepted:
             return
         if dialog.choice == 'load':
-            self.load_run_state(dialog.loaded_state)
+            self.load_run_state(dialog.loaded_state, getattr(dialog, 'loaded_path', None))
         elif dialog.choice == 'new':
             # Fresh run on the level that's currently selected in the dropdowns.
             mid = self.mission_combo.currentData() or self.run_state.mission_id
             self.run_state = RunState()
+            self.loaded_run_path = None   # a new run isn't the loaded file any more
             self.run_state.mission_id = mid
             info = self.db.mission_enemies.get(mid)
             if info:
@@ -5175,8 +5208,10 @@ class HaloGUI(QMainWindow):
             self.on_reroll_modifier(pair_id, mod_type)
 
     # ---- Load ----
-    def load_run_state(self, state):
+    def load_run_state(self, state, path=None):
         self.run_state = state
+        # Saving defaults back to the file this run came from (see on_save).
+        self.loaded_run_path = path or None
         self.enhancer = RunEnhancer(self.db, self.run_state)
         # Sync the Game + Level dropdowns to the loaded mission (no signals).
         game = self.db.get_game_for_mission(self.run_state.mission_id)
@@ -5964,16 +5999,23 @@ class HaloGUI(QMainWindow):
         selections_dir.mkdir(exist_ok=True)
 
         save_data = self._run_bundle()
-        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        default_name = f"selection_{timestamp}.run"
+        # Default to the file this run was loaded from, so passing a session back and
+        # forth keeps ONE file per run instead of a new timestamped one every round.
+        # A fresh run still gets a timestamped name.
+        prev = getattr(self, 'loaded_run_path', None)
+        if prev:
+            default_path = prev
+        else:
+            timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            default_path = str(selections_dir / f"selection_{timestamp}.run")
         file_path, _ = QFileDialog.getSaveFileName(
-            self, "Save Run",
-            str(selections_dir / default_name),
-            "Halo Run (*.run)"
+            self, "Save Run", default_path, "Halo Run (*.run)"
         )
         if file_path:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(save_data, f, indent=2, ensure_ascii=False)
+            # Subsequent saves follow the file the user actually chose.
+            self.loaded_run_path = file_path
             self.update_status(f"✅ Selection saved to {file_path}")
             QMessageBox.information(self, "Saved!", f"Selection saved to:\n{file_path}")
             
