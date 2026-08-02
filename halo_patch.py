@@ -1935,6 +1935,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         elif s == 'eyepatch':
             results.extend(_apply_eyepatch(m, str(game).strip(), registry))
     for item in plan:
+        if item.get('missing_in_db'):
+            # The effect was removed or renamed out of halo.json since this run was
+            # drafted, so all we hold is the frozen snapshot taken when it was picked.
+            # Its tag/fields may no longer mean what they did — patching from stale
+            # data is worse than not patching, so report it as skipped and move on.
+            results.append({'effect': item['name'], 'tag': item['tag'], 'field': '',
+                            'ok': True, 'skip': True,
+                            'reason': 'no longer in halo.json — skipped '
+                                      '(remove it from the run, or re-add the effect)'})
+            continue
         cls, path = hm.split_tag(item['tag'])
         plugin = registry.get(cls)
         if item.get('init_defaults'):

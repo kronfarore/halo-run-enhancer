@@ -134,16 +134,16 @@
 				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "SMG", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"]
 			},
-			"07b": {
-				"name": "High Charity",
-				"enemies": ["Brute", "Bugger", "Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Jackal"],
-				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
-				"grenades": ["Frag Grenade", "Plasma Grenade"]
-			},
 			"08a": {
 				"name": "Uprising",
 				"enemies": ["Brute", "Bugger", "Elite", "Grunt", "Hunter", "Jackal"],
 				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"07b": {
+				"name": "High Charity",
+				"enemies": ["Brute", "Bugger", "Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Jackal"],
+				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"]
 			},
 			"08b": {

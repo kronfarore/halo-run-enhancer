@@ -2166,7 +2166,7 @@ class StartDialog(QDialog):
 
 class MagnitudeEditorDialog(QDialog):
     """Per-run editor: lists the selected effects grouped by tag, shows each
-    field's vanilla value, takes a typed operator (-x/+x/*x/=x) per target
+    field's vanilla value, takes a typed operator (-n/+n/*n or xn/=n) per target
     (pre-filled from the presets library), then backs up and patches the .map."""
 
     _CUSTOM = '__custom__'
@@ -2354,7 +2354,7 @@ class MagnitudeEditorDialog(QDialog):
                     'regen_duration': '%ss' % CONFIG.get('regen_duration_s', 5.0),
                     'camo_duration': '%ss' % CONFIG.get('camo_duration_s', 5.0),
                     'camo_cooldown': '%ss' % CONFIG.get('camo_cooldown_s', 30.0)}.get(p, '')
-            return '%s %s — Options base %s; apply an operator (+x/-x/*x/=x)' % (
+            return '%s %s — Options base %s; apply an operator (+n/-n/*n or xn/=n)' % (
                 ability_of_param(p) or 'ability', p, base)
         plugin = self.registry.get(cls)
         if plugin is None:
@@ -2492,6 +2492,15 @@ class MagnitudeEditorDialog(QDialog):
     def _build(self, map_path):
         layout = QVBoxLayout(self)
 
+        # The setup rows (folders, map, difficulty, legend, search) SCROLL WITH the
+        # effect list rather than being pinned above it — pinned, they permanently ate
+        # the vertical space the effect list needs. They go in their own widget inside
+        # the scroll area, kept separate from `self.form` because _populate() clears
+        # that layout on every repopulate (difficulty change, reload, reorder).
+        head_w = QWidget()
+        head = QVBoxLayout(head_w)
+        head.setContentsMargins(0, 0, 0, 0)
+
         mrow = QHBoxLayout()
         mrow.addWidget(QLabel("MCC folder:"))
         self.mcc_edit = QLineEdit(mcc_root())
@@ -2501,7 +2510,7 @@ class MagnitudeEditorDialog(QDialog):
         mbrowse = QPushButton("Browse…")
         mbrowse.clicked.connect(self._browse_mcc_root)
         mrow.addWidget(mbrowse)
-        layout.addLayout(mrow)
+        head.addLayout(mrow)
 
         prow = QHBoxLayout()
         prow.addWidget(QLabel("Assembly plugins folder:"))
@@ -2510,7 +2519,7 @@ class MagnitudeEditorDialog(QDialog):
         pbrowse = QPushButton("Browse…")
         pbrowse.clicked.connect(self._browse_plugins)
         prow.addWidget(pbrowse)
-        layout.addLayout(prow)
+        head.addLayout(prow)
 
         maprow = QHBoxLayout()
         maprow.addWidget(QLabel("Map file:"))
@@ -2523,7 +2532,7 @@ class MagnitudeEditorDialog(QDialog):
         reload_btn.setToolTip("Re-read vanilla values with the current paths")
         reload_btn.clicked.connect(self._reload)
         maprow.addWidget(reload_btn)
-        layout.addLayout(maprow)
+        head.addLayout(maprow)
 
         drow = QHBoxLayout()
         drow.addWidget(QLabel("Difficulty:"))
@@ -2532,12 +2541,15 @@ class MagnitudeEditorDialog(QDialog):
         self.diff_combo.currentIndexChanged.connect(
             lambda _=0: self._on_difficulty_changed(self.diff_combo.currentData()))
         drow.addWidget(self.diff_combo)
-        help_lbl = QLabel("operators:  =x set   +x add   -x subtract   *x multiply   (blank = skip)")
+        # "n" stands for the number, so the multiply alias reads as an alias rather
+        # than as literal text to type (the old "*x multiply" invited typing "*x").
+        help_lbl = QLabel("operators:  =n set   +n add   -n subtract   *n or xn multiply"
+                          "   (blank = skip)")
         help_lbl.setStyleSheet("color: #aaa; font-size: 12px;")
         drow.addSpacing(16)
         drow.addWidget(help_lbl)
         drow.addStretch()
-        layout.addLayout(drow)
+        head.addLayout(drow)
 
         _r = f'<span style="color: {HARDER_RED};">'
         _g = f'<span style="color: {EASIER_GREEN};">'
@@ -2549,15 +2561,15 @@ class MagnitudeEditorDialog(QDialog):
                         "(shown per field where the direction isn't obvious)")
         legend.setStyleSheet("color: #c8c8c8; font-size: 12px; padding: 2px;")
         legend.setWordWrap(True)
-        layout.addWidget(legend)
+        head.addWidget(legend)
 
         swap_group = self._build_weapon_swap_group()
         if swap_group:
-            layout.addWidget(swap_group)
+            head.addWidget(swap_group)
 
         zoom_row = self._build_zoom_source_row()
         if zoom_row:
-            layout.addWidget(zoom_row)
+            head.addWidget(zoom_row)
 
         # #5/#7: search-to-effect + "show new effects first" toggle.
         srow = QHBoxLayout()
@@ -2573,12 +2585,19 @@ class MagnitudeEditorDialog(QDialog):
         self.new_top_cb.setChecked(bool(CONFIG.get('show_new_at_top')))
         self.new_top_cb.toggled.connect(self._toggle_new_top)
         srow.addWidget(self.new_top_cb)
-        layout.addLayout(srow)
+        head.addLayout(srow)
 
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
         self._cont = QWidget()
-        self.form = QVBoxLayout(self._cont)
+        cont_v = QVBoxLayout(self._cont)
+        cont_v.setContentsMargins(0, 0, 0, 0)
+        cont_v.addWidget(head_w)
+        # self.form holds ONLY the effect rows: _populate() clears it wholesale, so
+        # the header above must not live in it.
+        self.form = QVBoxLayout()
+        cont_v.addLayout(self.form)
+        cont_v.addStretch(1)
         self._scroll.setWidget(self._cont)
         layout.addWidget(self._scroll, 1)
         self._populate()
@@ -2927,16 +2946,16 @@ class MagnitudeEditorDialog(QDialog):
                         'regen_percent': '% of max health', 'regen_duration': 'seconds',
                         'camo_duration': 'seconds',
                         'camo_cooldown': 'seconds'}.get(t['sprint'], '')
-                le.setPlaceholderText("-x / +x / *x / =x")
-                le.setToolTip("An operator on the base %s %s (in %s): +x/-x add or "
-                              "subtract, *x scales, =x sets."
+                le.setPlaceholderText("-n / +n / *n (or xn) / =n")
+                le.setToolTip("An operator on the base %s %s (in %s): +n/-n add or "
+                              "subtract, *n (or xn) scales, =n sets."
                               % (ability_of_param(t['sprint']) or 'ability',
                                  t['sprint'], unit))
                 key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
                 if key in self.presets and not isinstance(self.presets[key], list):
                     le.setText(str(self.presets[key]))
             else:
-                le.setPlaceholderText("-x / +x / *x / =x")
+                le.setPlaceholderText("-n / +n / *n (or xn) / =n")
                 key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
                 if key in self.presets and not isinstance(self.presets[key], list):
                     le.setText(str(self.presets[key]))
@@ -3541,7 +3560,10 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             key = (eff['tag'], eff['name'])
             plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
-                                      'init_defaults': eff.get('init_defaults')})
+                                      'init_defaults': eff.get('init_defaults'),
+                                      # carried so the patcher can report it as skipped
+                                      # rather than patching from a stale snapshot
+                                      'missing_in_db': bool(eff.get('_missing_in_db'))})
             plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                          **_diff_flavor(t),
                                          'index': t.get('index', 0), 'op_str': txt,
