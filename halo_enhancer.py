@@ -3,6 +3,7 @@
 import copy
 import html
 import json
+import os
 import random
 import sys
 import threading
@@ -2623,6 +2624,12 @@ class MagnitudeEditorDialog(QDialog):
         next_empty_btn.setToolTip("Jump to the next blank operator field")
         next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
         next_empty_btn.clicked.connect(self._jump_to_next_empty)
+        log_btn = QPushButton("📂 Patch log")
+        log_btn.setToolTip("Open the patch log written for this map — the effects, fields "
+                           "and old → new values of the last patch — to check them by "
+                           "hand. Opens the patches folder if nothing is logged yet.")
+        log_btn.setStyleSheet("background-color: #3a3a2a; color: white; padding: 8px 14px; border-radius: 5px;")
+        log_btn.clicked.connect(self._open_patch_file)
         keep_btn = QPushButton("⭳ Save magnitudes to presets")
         keep_btn.setToolTip("Write the magnitudes typed here into the global preset file "
                             "now, without patching. Handy after loading a shared run, or "
@@ -2635,6 +2642,7 @@ class MagnitudeEditorDialog(QDialog):
         btns.addWidget(apply_btn)
         btns.addWidget(next_empty_btn)
         btns.addWidget(keep_btn)
+        btns.addWidget(log_btn)
         btns.addStretch()
         btns.addWidget(close_btn)
         layout.addLayout(btns)
@@ -3790,9 +3798,46 @@ class MagnitudeEditorDialog(QDialog):
         self._srcmap = None  # map changed on disk; re-read vanilla next time
         self._show_results(results, backup)
 
+    def _patch_dir(self):
+        return app_data_dir() / "patches"
+
+    def _latest_patch_file(self):
+        """The patch log this run most recently wrote, else the newest one for this
+        map (patching happens per map, so that's the relevant history)."""
+        if getattr(self, '_last_patch_file', None) and Path(self._last_patch_file).is_file():
+            return Path(self._last_patch_file)
+        mission = Path(self.map_edit.text().strip() or '').stem
+        if not mission:
+            return None
+        found = sorted(self._patch_dir().glob(f"patch_{mission}_*.json"),
+                       key=lambda p: p.stat().st_mtime, reverse=True)
+        return found[0] if found else None
+
+    def _open_patch_file(self):
+        """#13: open the patch log for this run so its effects can be checked by hand."""
+        target = self._latest_patch_file()
+        if target is None:
+            d = self._patch_dir()
+            if not d.is_dir():
+                QMessageBox.information(self, "No patch log yet",
+                                        "Nothing has been patched yet — the log is written "
+                                        "when you apply to a map.")
+                return
+            target = d          # fall back to the folder
+        try:
+            if sys.platform == 'win32':
+                os.startfile(str(target))            # noqa: S606 - user-invoked
+            else:
+                import subprocess
+                subprocess.Popen(['xdg-open' if sys.platform.startswith('linux') else 'open',
+                                  str(target)])
+        except Exception as e:
+            QMessageBox.warning(self, "Couldn't open it",
+                                f"{target}\n\n{e}")
+
     def _write_patch_file(self, map_path, plan, results, backup):
         try:
-            patch_dir = app_data_dir() / "patches"
+            patch_dir = self._patch_dir()
             patch_dir.mkdir(exist_ok=True)
             mission = Path(map_path).stem
             ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -3802,8 +3847,10 @@ class MagnitudeEditorDialog(QDialog):
             data = {"tool_version": VERSION, "map": map_path, "backup": backup,
                     "target_difficulty": self.target_difficulty,
                     "timestamp": ts, "groups": grouped, "results": results}
-            with open(patch_dir / f"patch_{mission}_{ts}.json", 'w', encoding='utf-8') as f:
+            out = patch_dir / f"patch_{mission}_{ts}.json"
+            with open(out, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=2, ensure_ascii=False)
+            self._last_patch_file = str(out)     # what "open patch log" reaches for
         except Exception:
             pass  # patch-log failure shouldn't block the actual patch
 
