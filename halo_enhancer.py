@@ -878,6 +878,12 @@ class ModifierDatabase:
         self.weapon_mods = {}
         self.enemy_mods = {}
         self.boss_mods = {}         # boss name -> mods (Boss enemy modifier section)
+        # {game: {tag}} for enemy tags that AREN'T enemy-specific — the same tag used by
+        # two or more enemies, e.g. H2's `char ai\generic`, which several species share.
+        # Editing one there hits every AI that shares it, so such an effect belongs
+        # under "general" rather than the enemy it happened to be drafted from.
+        # It is per GAME: Flood Carrier's Accuracy is its own tag in H1, generic in H2.
+        self.generic_enemy_tags = {}
         self.mission_enemies = {}
         self.mission_list = []
         self.games = []             # game names in JSON order
@@ -916,6 +922,36 @@ class ModifierDatabase:
         if isinstance(value, str):
             return [value]
         return list(value)
+
+    def _index_generic_enemy_tags(self):
+        """Find enemy tags that several enemies share, PER GAME.
+
+        A "specific enemy" effect can still resolve to a tag that isn't specific at
+        all: in Halo 2, Accuracy for Brute, Bugger and both Flood forms all point at
+        `char ai\\generic`. Patching it from one of those cards changes every AI that
+        shares the tag, and two such cards drafted from different enemies are really
+        the same edit — which is why they stacked, filed under whichever enemy was
+        drafted first. Detected by structure rather than a hand-maintained list, so a
+        newly-added shared effect classifies itself."""
+        games = self.get_games() or []
+        seen = {}       # (game, tag) -> {enemy}
+        for enemy, mods in self.enemy_mods.items():
+            for mod in mods:
+                for g in games:
+                    tag = resolve_gamed(mod.get('tag'), g, games)
+                    if isinstance(tag, str) and tag:
+                        seen.setdefault((g, tag), set()).add(enemy)
+        self.generic_enemy_tags = {}
+        for (g, tag), enemies in seen.items():
+            if len(enemies) > 1:
+                self.generic_enemy_tags.setdefault(g, set()).add(tag)
+
+    def is_generic_enemy_mod(self, mod, game):
+        """True if this enemy effect's tag is shared with other enemies in `game`."""
+        if not isinstance(mod, dict) or not mod.get('enemy'):
+            return False
+        tag = resolve_gamed(mod.get('tag'), game, self.get_games())
+        return isinstance(tag, str) and tag in self.generic_enemy_tags.get(game, ())
 
     def _build_mod(self, mod_name, mod_data, extra=None):
         mod = {
@@ -1009,6 +1045,9 @@ class ModifierDatabase:
                                                      else list(boss) if boss else [])
                     self.mission_list.append((mission_id, mission_data.get('name', mission_id)))
         self.mission_list.sort(key=lambda x: x[0])
+        # After Missions, because the games list it builds is what the per-game tag
+        # resolution needs.
+        self._index_generic_enemy_tags()
         print(f"✅ Categorized: {len(self.positive_pool)} general positive, "
               f"{len(self.negative_pool)} general negative, "
               f"{len(self.wildcard_pool)} wildcard, "
@@ -5823,13 +5862,19 @@ class HaloGUI(QMainWindow):
         return "—"
 
     @staticmethod
-    def _enemy_effect_label(mod):
+    def _enemy_effect_label(self, mod):
         """Round-summary label for an enemy modifier: the effect name plus which
         enemy it was picked for — 'Cover Chance (Elite)' for a specific enemy, or
-        'Perception (general)' for a general enemy modifier. 'None' if no mod."""
+        'Perception (general)' for a general enemy modifier. 'None' if no mod.
+
+        An effect drafted from one enemy but resolving to a tag several enemies share
+        (H2's `char ai\\generic`) is reported as generic, because that is what it
+        actually edits — naming the enemy there is misleading."""
         if not isinstance(mod, dict):
             return "None"
         who = mod.get('enemy') or "general"
+        if mod.get('enemy') and self.db.is_generic_enemy_mod(mod, self._current_game()):
+            who = f"generic, from {mod['enemy']}"
         return f"{mod.get('name', '?')} ({who})"
 
     @staticmethod
@@ -5839,7 +5884,14 @@ class HaloGUI(QMainWindow):
         if pdata.get('gained_weapon'):
             return f"{pdata.get('weapon')} (+🔫 {pdata['gained_weapon']})"
         mod = pdata.get('mod')
-        return f"{pdata.get('weapon')} - {mod['name']}" if mod else f"{pdata.get('weapon')}"
+        if not mod:
+            return f"{pdata.get('weapon')}"
+        # Name the weapon (or equipment) the effect ACTUALLY belongs to. pdata['weapon']
+        # is the player's current weapon, so an effect drafted for their second weapon
+        # was being reported against the first one — which made it impossible to tell
+        # what had changed.
+        owner = mod.get('weapon') or mod.get('equipment') or pdata.get('weapon')
+        return f"{owner} - {mod['name']}"
 
     def update_history(self):
         text = ""
@@ -5872,6 +5924,13 @@ class HaloGUI(QMainWindow):
                     text += f", Wildcard: {', '.join(names)}"
                 if boss1 or boss2:
                     text += f", Boss: {boss1['name'] if boss1 else 'None'}, {boss2['name'] if boss2 else 'None'}"
+                # Exhausts are one-map negatives and were missing from the summary
+                # entirely, so a round could show fewer effects than it actually had.
+                exhausts = [e for e in (round_data.get('exhaust1'), round_data.get('exhaust2'))
+                            if isinstance(e, dict)]
+                if exhausts:
+                    names = list(dict.fromkeys(e.get('name', '?') for e in exhausts))
+                    text += f", Exhaust: {', '.join(names)}"
                 text += "\n"
 
         self.history_text.setText(text)
@@ -6169,6 +6228,13 @@ class HaloGUI(QMainWindow):
                     # effects there by default (option in the run settings).
                     mod['_game_excluded'] = True
                     continue
+                # Flagged BEFORE the tag is resolved, since genericness is decided per
+                # game from the unresolved per-game tag. collect_effects then files it
+                # under the general group instead of the enemy it was drafted from —
+                # which is what it actually edits, and stops two such picks from
+                # different enemies stacking under whichever came first.
+                if self.db.is_generic_enemy_mod(mod, game):
+                    mod['_generic_target'] = True
                 for key in ('tag', 'field', 'harder_when', 'easier_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)
@@ -6192,7 +6258,11 @@ class HaloGUI(QMainWindow):
                 mod['targets'] = [t for t in (mod.get('targets') or [])
                                   if (not t.get('games') or game in t['games'])
                                   and t.get('field') is not None]
-        effects = halo_patch.collect_effects(rounds, self.run_state.mission_id)
+        # Bosses that this mission can't field are dropped: their edits couldn't do
+        # anything here, and they made the list harder to read.
+        effects = halo_patch.collect_effects(
+            rounds, self.run_state.mission_id,
+            valid_bosses=set(self.db.bosses_for(self.run_state.mission_id)))
         if not effects:
             QMessageBox.information(self, "No effects yet",
                                     "Select some effects first — there's nothing to patch.")

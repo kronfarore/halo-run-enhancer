@@ -59,13 +59,20 @@ class PluginRegistry:
         return plugin
 
 
-def collect_effects(rounds, mission_id=None):
+def collect_effects(rounds, mission_id=None, valid_bosses=None):
     """Unique patchable effects from a run's rounds, in first-seen order, each
     with a selection `count`, and a source `group`/`cat` (specific weapon,
     player-general, specific enemy, enemy-general, friend, boss, exhaust) for
     display. Exhausts are one-map negatives: an exhaust is only included when
     patching the mission it was rolled in (mission_id), so leaving that mission
-    drops it automatically (paired with apply_run's idempotent re-patch)."""
+    drops it automatically (paired with apply_run's idempotent re-patch).
+
+    `valid_bosses` works the same way for bosses: pass the boss names the mission
+    being patched can actually field, and effects for a boss that no longer turns up
+    are left out instead of cluttering the list with edits that can't do anything.
+    They come back on their own if a later mission fields that boss again. Omit it
+    (None) to keep every boss — callers without the database in hand, such as the
+    magnitude collector, shouldn't silently drop effects."""
     seen, order = {}, []
 
     def add(mod, group, cat):
@@ -106,12 +113,20 @@ def collect_effects(rounds, mission_id=None):
         for k in ('enemy1', 'enemy2'):
             mod = rd.get(k)
             if isinstance(mod, dict):
-                add(mod, mod['enemy'] if mod.get('enemy') else 'Enemy (general)',
-                    2 if mod.get('enemy') else 3)
+                # An effect whose tag several enemies share edits all of them, so it
+                # belongs under the general group even though it was drafted from one
+                # enemy's card (flagged upstream, where the game is known).
+                specific = mod.get('enemy') and not mod.get('_generic_target')
+                add(mod, mod['enemy'] if specific else 'Enemy (general)',
+                    2 if specific else 3)
         add(rd.get('wildcard'), 'Friend / Wildcard', 4)
         add(rd.get('wildcard2'), 'Friend / Wildcard', 4)   # player 2's wildcard slot
         for k in ('boss1', 'boss2'):
-            add(rd.get(k), 'Boss', 5)
+            b = rd.get(k)
+            if isinstance(b, dict) and valid_bosses is not None:
+                if b.get('boss') and b['boss'] not in valid_bosses:
+                    continue        # that boss doesn't appear in this mission
+            add(b, 'Boss', 5)
         for k in ('exhaust1', 'exhaust2'):
             ex = rd.get(k)
             if isinstance(ex, dict) and (mission_id is None
