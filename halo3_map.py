@@ -496,7 +496,8 @@ class Halo3Map:
         except Exception:
             return None
 
-    def apply_tag_field(self, tag_base, field, op, value, plugin, block=None, index=0, nth=0):
+    def apply_tag_field(self, tag_base, field, op, value, plugin, block=None, index=0, nth=0,
+                        scale=1.0, offset=0.0):
         base_r = {'field': field}
         fld = plugin.find(field, block, nth)
         if not fld:
@@ -512,7 +513,9 @@ class Halo3Map:
             for base in leaves:
                 off = base + fld['offset']
                 old = hm.raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
-                new = hm.OP_FUNCS[op](old, value)
+                # operate in the MEANING the magnitude is expressed in, then map back
+                # (see HaloMap.apply_field); defaults are the identity
+                new = (hm.OP_FUNCS[op](scale * old + offset, value) - offset) / scale
                 new = float(new) if is_float else int(round(new))
                 struct.pack_into(fmt, self.data, off, hm.display_to_raw(ftype, new))
                 if first_old is None:
@@ -524,7 +527,8 @@ class Halo3Map:
         except Exception as e:
             return {**base_r, 'ok': False, 'reason': str(e)}
 
-    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0):
+    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
+                    scale=1.0, offset=0.0):
         """Apply an operator to a field across every tag matching (cls, path).
         Plain per-tag (no char parent-inheritance walk yet — H3 AI mapping is TBD;
         add a _data_holder like halo2_map if H3 char variants need it)."""
@@ -534,7 +538,8 @@ class Halo3Map:
             return [{'tag': ref, 'field': field, 'ok': False, 'reason': 'not present in this map'}]
         results = []
         for tpath, base in tags:
-            r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth)
+            r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth,
+                                          scale, offset)
             if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
                 # char variant with an empty block inherits it from its base — not a
                 # failure; the base variant in this same set carries (and gets) the edit.
