@@ -3836,6 +3836,13 @@ class MagnitudeEditorDialog(QDialog):
         skipped = [r for r in results if r.get('skip')]
         failed = [r for r in results if not r.get('ok') and not r.get('skip')]
         lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
+        # #10: a short code standing for what was written, so two players can check
+        # they ended up with the same patch instead of comparing lists by eye.
+        code = self._hp.patch_signature(results, self.map_edit.text().strip(),
+                                        self.target_difficulty)
+        if code:
+            lines.append(f"Patch code: {code}   (same code = same patch; compare with "
+                         f"your co-op partner)")
         if backup:
             lines.append(f"Backup: {backup}")
         shared = getattr(self, '_shared_path', None)
@@ -3944,6 +3951,10 @@ class MagnitudeEditorDialog(QDialog):
                 grouped.setdefault(self._hp.hm.split_tag(item['tag'])[0], []).append(item)
             data = {"tool_version": VERSION, "map": map_path, "backup": backup,
                     "target_difficulty": self.target_difficulty,
+                    # same code the results box shows, so a past patch can still be
+                    # compared with a partner after the fact
+                    "patch_code": self._hp.patch_signature(results, map_path,
+                                                           self.target_difficulty),
                     "timestamp": ts, "groups": grouped, "results": results}
             out = patch_dir / f"patch_{mission}_{ts}.json"
             with open(out, 'w', encoding='utf-8') as f:
@@ -4901,6 +4912,7 @@ class HaloGUI(QMainWindow):
         self.db = ModifierDatabase()
         self.run_state = RunState()
         self.loaded_run_path = None   # set when a run is loaded; steers the save default
+        self.shared_run_path = None   # this run's file in the shared folder, re-used
         self.enhancer = RunEnhancer(self.db, self.run_state)
         self.pair_cards = []
         self.pending_player2_selection = False
@@ -4939,7 +4951,9 @@ class HaloGUI(QMainWindow):
             # Fresh run on the level that's currently selected in the dropdowns.
             mid = self.mission_combo.currentData() or self.run_state.mission_id
             self.run_state = RunState()
-            self.loaded_run_path = None   # a new run isn't the loaded file any more
+            # A new run isn't the loaded/shared file any more.
+            self.loaded_run_path = None
+            self.shared_run_path = None
             self.run_state.mission_id = mid
             info = self.db.mission_enemies.get(mid)
             if info:
@@ -5355,8 +5369,17 @@ class HaloGUI(QMainWindow):
     # ---- Load ----
     def load_run_state(self, state, path=None):
         self.run_state = state
-        # Saving defaults back to the file this run came from (see on_save).
+        # Saving defaults back to the file this run came from (see on_save), and if it
+        # came from the shared folder, that is also the file this run writes back to.
         self.loaded_run_path = path or None
+        self.shared_run_path = None
+        folder = (CONFIG.get('shared_session_dir') or '').strip()
+        if path and folder:
+            try:
+                if Path(path).parent.resolve() == Path(folder).resolve():
+                    self.shared_run_path = str(path)
+            except Exception:
+                pass
         self.enhancer = RunEnhancer(self.db, self.run_state)
         # Sync the Game + Level dropdowns to the loaded mission (no signals).
         game = self.db.get_game_for_mission(self.run_state.mission_id)
@@ -5514,6 +5537,22 @@ class HaloGUI(QMainWindow):
         self.save_btn.clicked.connect(self.on_save)
         self._sync_save_button()
         button_layout.addWidget(self.save_btn)
+
+        self.quicksave_btn = QPushButton("⇄ QUICKSAVE (shared)")
+        self.quicksave_btn.setToolTip("Write this run straight into the shared session "
+                                      "folder, re-using this run's file there so the "
+                                      "folder keeps one file per session. Confirms the "
+                                      "name first, and can save under a different one.")
+        self.quicksave_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2a4a3a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #3a6a52; }
+            QPushButton:disabled { background-color: #444; color: #888; }
+        """)
+        self.quicksave_btn.clicked.connect(self.quicksave_shared)
+        button_layout.addWidget(self.quicksave_btn)
 
         self.patch_btn = QPushButton("🛠 PATCH MAP")
         self.patch_btn.setToolTip("Set magnitudes for this run's effects and write them into the level's .map")
@@ -5784,6 +5823,11 @@ class HaloGUI(QMainWindow):
         rs = getattr(self, 'run_state', None)
         in_round = bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
         self.save_btn.setEnabled(not in_round)
+        qb = getattr(self, 'quicksave_btn', None)
+        if qb is not None:
+            # Quicksave writes a completed run for the partner to pick up, so it needs
+            # the same completeness the shared export does.
+            qb.setEnabled(bool(rs) and rs.phase == 'complete')
 
     def on_pair_selected(self, pair_id):
         player = self.run_state.current_turn
@@ -6132,21 +6176,45 @@ class HaloGUI(QMainWindow):
             data['magnitudes'] = mags
         return data
 
+    def _shared_run_path(self):
+        """The file in the shared folder that IS this run, if we know it — either one
+        loaded from there or one already written for it. None if the run has no file
+        there yet, or the folder isn't configured."""
+        folder = (CONFIG.get('shared_session_dir') or '').strip()
+        if not folder:
+            return None
+        known = getattr(self, 'shared_run_path', None) or getattr(self, 'loaded_run_path', None)
+        if not known:
+            return None
+        try:
+            p = Path(known)
+            # Only counts if it actually lives in the shared folder.
+            return p if p.parent.resolve() == Path(folder).resolve() else None
+        except Exception:
+            return None
+
+    def _default_shared_name(self):
+        mission = self.run_state.mission_id or 'run'
+        return f"session_{mission}_{datetime.now():%Y-%m-%d_%H-%M-%S}.run"
+
     def export_shared_session(self, quiet=True):
         """Drop the current run into the shared session folder, if one is configured.
         Called after a patch so the other machine can pick it up with one click —
-        point this at a cloud-synced folder and the transfer happens by itself."""
+        point this at a cloud-synced folder and the transfer happens by itself.
+
+        Writes back to the SAME file for the rest of the run: a session handed back and
+        forth used to leave one timestamped file per patch, so the folder filled up and
+        "the newest one" got harder to trust."""
         folder = (CONFIG.get('shared_session_dir') or '').strip()
         if not folder or self.run_state.phase != 'complete':
             return None
         try:
             d = Path(folder)
             d.mkdir(parents=True, exist_ok=True)
-            ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-            mission = self.run_state.mission_id or 'run'
-            path = d / f"session_{mission}_{ts}.run"
+            path = self._shared_run_path() or (d / self._default_shared_name())
             with open(path, 'w', encoding='utf-8') as f:
                 json.dump(self._run_bundle(), f, indent=2, ensure_ascii=False)
+            self.shared_run_path = str(path)
             self.update_status(f"Shared session written: {path.name}")
             return path
         except Exception as e:
@@ -6154,6 +6222,60 @@ class HaloGUI(QMainWindow):
                 QMessageBox.warning(self, "Shared folder",
                                     f"Couldn't write the shared session:\n{e}")
             return None
+
+    def quicksave_shared(self):
+        """#9: one-press save into the shared folder, confirming the name first.
+
+        Re-uses this run's file so the folder keeps one file per session, but always
+        says which file it is and offers a different name — silently overwriting the
+        partner's file would be the worse failure."""
+        folder = (CONFIG.get('shared_session_dir') or '').strip()
+        if not folder:
+            QMessageBox.information(self, "No shared folder",
+                                    "Set a shared session folder in Options first "
+                                    "(point both machines at the same synced folder).")
+            return None
+        if self.run_state.phase != 'complete':
+            QMessageBox.warning(self, "Not Complete",
+                                "Both players must select before saving!")
+            return None
+        existing = self._shared_run_path()
+        name = existing.name if existing else self._default_shared_name()
+        box = QMessageBox(self)
+        box.setWindowTitle("Quicksave to shared folder")
+        box.setText(f"Save to {name}?")
+        box.setInformativeText(("This overwrites the run already there."
+                                if existing else "This creates a new file.")
+                               + f"\n\n{folder}")
+        save_b = box.addButton("Save", QMessageBox.AcceptRole)
+        rename_b = box.addButton("Save as…", QMessageBox.ActionRole)
+        box.addButton("Cancel", QMessageBox.RejectRole)
+        box.setDefaultButton(save_b)
+        box.exec()
+        clicked = box.clickedButton()
+        if clicked is rename_b:
+            chosen, _ = QFileDialog.getSaveFileName(
+                self, "Save run to the shared folder",
+                str(Path(folder) / name), "Halo Run (*.run)")
+            if not chosen:
+                return None
+            target = Path(chosen)
+        elif clicked is save_b:
+            target = existing or (Path(folder) / name)
+        else:
+            return None
+        try:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with open(target, 'w', encoding='utf-8') as f:
+                json.dump(self._run_bundle(), f, indent=2, ensure_ascii=False)
+        except Exception as e:
+            QMessageBox.warning(self, "Shared folder", f"Couldn't write it:\n{e}")
+            return None
+        # Later saves (and the post-patch autosave) follow this file.
+        self.shared_run_path = str(target)
+        self.loaded_run_path = str(target)
+        self.update_status(f"✅ Quicksaved to {target.name}")
+        return target
 
     def on_save(self):
         if self.run_state.phase != 'complete':

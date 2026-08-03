@@ -3,8 +3,11 @@
 # and applies typed operators to the map with a per-insert success/failure report.
 # No GUI dependency; safe to unit-test headless.
 
+import base64
+import hashlib
 import json
 import math
+import os
 import re
 import shutil
 import struct
@@ -133,6 +136,41 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                                          or ex.get('_exhaust_mission') == mission_id):
                 add(ex, 'Exhaust', 6)
     return [seen[k] for k in order]
+
+
+# Bump when the MEANING of a written value changes, so codes from before and after
+# don't compare equal and quietly suggest two players are in sync when they aren't.
+SIGNATURE_VERSION = 1
+
+
+def patch_signature(results, map_path=None, difficulty=None):
+    """A short code identifying WHAT a patch wrote, for two players to compare.
+
+    Built from the writes that actually landed — tag, field and the resulting value —
+    not from the typed magnitudes, because the same magnitude on a different starting
+    value produces different gameplay, and that is the disagreement worth catching.
+    Sorted, so the order effects happen to be applied in can't change it, and rounded,
+    so float noise can't either. The map and difficulty are folded in as well: the same
+    edits on another level or difficulty are not the same patch.
+
+    Codes are only comparable between the same tool version, since a change to how a
+    value is computed SHOULD produce a different code — hence SIGNATURE_VERSION, bumped
+    whenever the way values are computed changes."""
+    lines = []
+    for r in results or []:
+        if not (r.get('ok') and not r.get('skip')):
+            continue                       # skips/failures wrote nothing
+        new = r.get('new')
+        if isinstance(new, float):
+            new = f"{new:.4f}"
+        lines.append(f"{r.get('tag', '')}|{r.get('field', '')}|{new}")
+    if not lines:
+        return None
+    head = f"{os.path.basename(str(map_path or ''))}|{difficulty or ''}|{SIGNATURE_VERSION}"
+    blob = head + '\n' + '\n'.join(sorted(lines))
+    digest = hashlib.sha256(blob.encode('utf-8')).digest()
+    code = base64.b32encode(digest).decode('ascii').rstrip('=')[:8]
+    return f"{code[:4]}-{code[4:8]}"
 
 
 def _tag_variants(tag):
