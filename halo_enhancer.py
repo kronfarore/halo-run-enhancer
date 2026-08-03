@@ -2302,6 +2302,7 @@ class MagnitudeEditorDialog(QDialog):
                          target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
         if v is None:
             return "field?"
+        v = self._shown_value(target, v)        # stored -> the units shown/typed
         return f"{round(v, 4)}" if isinstance(v, float) else str(v)
 
     def _vanilla_num(self, tag, field, block=None, nth=0):
@@ -2331,6 +2332,24 @@ class MagnitudeEditorDialog(QDialog):
             return db.resolve_weapon(w) not in db.get_game_weapons(self.game)
         games = eff.get('games') or []
         return bool(games) and self.game not in games
+
+    @staticmethod
+    def _shown_value(target, v):
+        """Map a STORED value into the units the row's magnitude works in.
+
+        Only matters where a game stores the setting against a different zero or
+        direction than the label implies — Halo 2 keeps Starting Health as a *Damage*
+        (0 = normal, falling) while the row is labelled, and now operated on, as a
+        *Modifier* (1 = normal, rising). Showing the raw 0 next to a field the user
+        multiplies as a modifier reads as a contradiction. Identity for every other
+        field, since only these targets declare negate/offset."""
+        if not isinstance(v, (int, float)) or isinstance(v, bool):
+            return v
+        scale = -1.0 if target.get('negate') else 1.0
+        offset = float(target.get('offset') or 0.0)
+        if scale == 1.0 and offset == 0.0:
+            return v
+        return scale * v + offset
 
     def _difficulty_values_str(self, tag, target):
         """Every difficulty's value for a per-difficulty field, e.g.
@@ -2450,6 +2469,7 @@ class MagnitudeEditorDialog(QDialog):
         def fmtval(x):
             if isinstance(x, int) and x in enum_names:
                 return enum_names[x]
+            x = self._shown_value(target, x)    # stored -> the units shown/typed
             return round(x, 4) if isinstance(x, float) else x
         default_line = self._init_default_line(eff, target, field, m, plugin, fmtval)
         rows = m.read_all_leaves(cls, path, field, plugin, target.get('block'),
