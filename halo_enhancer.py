@@ -150,6 +150,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
+               'upgrade_inherits_base',
                'hide_tags', 'hide_fields',
                'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
@@ -433,6 +434,11 @@ CONFIG = {
     # unless the upgrade has its own entry in the JSON). Picking an upgrade while
     # dual-wielding the base also grants "Dual <upgrade>".
     "weapon_upgrades": {"Brute Plasma Rifle": "Plasma Rifle"},
+    # An upgrade weapon is a marginal variant of its base (Brute Plasma Rifle vs
+    # Plasma Rifle), so it uses the BASE's effects: the base's cards patch the
+    # upgrade's tag as well, and the upgrade stops offering its own duplicate cards.
+    # The upgrade is still offered as a WEAPON — only its effect cards go away.
+    "upgrade_inherits_base": True,
     # Upgrades / dual-wields that exist in only SOME games, beyond the blanket
     # *_from_game gates above. Key = the offered weapon, value = the games where it
     # may be offered. Halo 3 dropped the Brute Plasma Rifle and made the Needler
@@ -1044,7 +1050,10 @@ class ModifierDatabase:
                     self.mission_boss[mission_id] = ([boss] if isinstance(boss, str)
                                                      else list(boss) if boss else [])
                     self.mission_list.append((mission_id, mission_data.get('name', mission_id)))
-        self.mission_list.sort(key=lambda x: x[0])
+        # Kept in halo.json order, NOT sorted by mission id: Halo 2's ids don't run in
+        # campaign order (Gravemind 07a -> Uprising 08a -> High Charity 07b), so sorting
+        # listed the missions in an order the game never plays them in — and silently
+        # undid a hand-fixed order in the file.
         # After Missions, because the games list it builds is what the per-game tag
         # resolution needs.
         self._index_generic_enemy_tags()
@@ -1069,6 +1078,38 @@ class ModifierDatabase:
         if name not in self.weapon_mods:
             name = CONFIG.get('weapon_upgrades', {}).get(name, name)
         return name
+
+    @staticmethod
+    def base_for_upgrade(weapon):
+        """The weapon an upgrade is a variant of ('Brute Plasma Rifle' -> 'Plasma
+        Rifle'), or None — for the upgrade itself, when the inherit option is on.
+        None when the option is off, so everything behaves as it did."""
+        if not CONFIG.get('upgrade_inherits_base', True):
+            return None
+        return CONFIG.get('weapon_upgrades', {}).get(weapon)
+
+    def upgrades_of(self, weapon):
+        """Upgrade weapons that treat `weapon` as their base, when inheriting is on."""
+        if not CONFIG.get('upgrade_inherits_base', True):
+            return []
+        return [up for up, base in CONFIG.get('weapon_upgrades', {}).items()
+                if base == weapon]
+
+    def upgrade_twin_tag(self, weapon, effect_name, game):
+        """The tag an upgrade's OWN copy of `effect_name` uses, so a base-weapon card
+        can patch the upgrade too. Read from the upgrade's entry rather than guessed,
+        because the right tag differs per effect (a damage effect points at a jpt!,
+        a projectile one at a proj), and returns None when the upgrade simply has no
+        counterpart for that effect."""
+        for up in self.upgrades_of(weapon):
+            twin = next((m for m in self.weapon_mods.get(up, [])
+                         if m.get('name') == effect_name), None)
+            if not twin:
+                continue
+            tag = resolve_gamed(twin.get('tag'), game, self.get_games())
+            if isinstance(tag, str) and tag:
+                return tag
+        return None
 
     def weapon_label(self, weapon):
         """Blacklist label for a weapon (distinct from modifier labels)."""
@@ -1302,6 +1343,15 @@ class ModifierDatabase:
             if self.is_equipment(w):
                 weapon_mods.extend(self.get_equipment_modifiers_filtered(w, blacklist, game))
             else:
+                # An upgrade weapon draws the BASE's effects instead of its own, so the
+                # two don't offer near-identical cards; the patch mirrors them onto the
+                # upgrade's tag. Skipped entirely if the player also holds the base, or
+                # the same cards would be offered twice.
+                base = self.base_for_upgrade(w)
+                if base and base not in (weapons or []):
+                    w = base
+                elif base:
+                    continue
                 weapon_mods.extend(self.get_weapon_modifiers_filtered(w, blacklist, game))
         # Ability tuning cards are gated by the New Features options: nothing unless the
         # feature is on, then only the cards for an ability this player actually has,
@@ -3697,6 +3747,9 @@ class MagnitudeEditorDialog(QDialog):
             key = (eff['tag'], eff['name'])
             plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
                                       'init_defaults': eff.get('init_defaults'),
+                                      # whose effect this is, so a base weapon's edits
+                                      # can be mirrored onto its upgrade's tag below
+                                      'weapon': eff.get('weapon'),
                                       # carried so the patcher can report it as skipped
                                       # rather than patching from a stale snapshot
                                       'missing_in_db': bool(eff.get('_missing_in_db'))})
@@ -3729,6 +3782,19 @@ class MagnitudeEditorDialog(QDialog):
                                              'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
                                              **_diff_flavor(t), 'set': t['set']})
         plan = list(plan_map.values())
+        # An upgrade weapon is a variant of its base, so the base's cards patch the
+        # upgrade's tag as well — one card, both weapons. The upgrade's OWN tag for
+        # that effect is read from its halo.json entry rather than guessed, since it
+        # differs per effect; effects the upgrade has no counterpart for are left
+        # alone, and a map without the upgrade reports the usual "not present".
+        db = getattr(self.parent_gui, 'db', None)
+        if db is not None and CONFIG.get('upgrade_inherits_base', True):
+            for item in list(plan):
+                if item.get('missing_in_db') or not item.get('weapon'):
+                    continue
+                twin_tag = db.upgrade_twin_tag(item['weapon'], item['name'], self.game)
+                if twin_tag and twin_tag != item['tag']:
+                    plan.append({**item, 'tag': twin_tag, 'mirrored_to_upgrade': True})
         starting = self._starting_weapons_spec()
         # Cards and sliders are the same mechanism and never both shown, so whichever
         # is active supplies the swaps.
@@ -4058,6 +4124,16 @@ class OptionsDialog(QDialog):
         self.negatives_cb.setToolTip("When you deliberately choose a weapon, an enemy card is tied to that "
                                      "choice — taking what you want costs you something.")
         wform.addRow("Weapon-choice negatives:", self.negatives_cb)
+
+        self.upgrade_inherit_cb = QCheckBox("Upgrade weapons use their base weapon's effects")
+        self.upgrade_inherit_cb.setChecked(bool(CONFIG.get('upgrade_inherits_base', True)))
+        self.upgrade_inherit_cb.setToolTip(
+            "An upgrade weapon (Brute Plasma Rifle) is a marginal variant of its base "
+            "(Plasma Rifle), so it inherits every upgrade the base gets: the base's "
+            "cards patch the upgrade's tag too, and the upgrade stops offering its own "
+            "near-duplicate effect cards. The upgrade is still offered as a WEAPON — "
+            "only its effect cards go away.")
+        wform.addRow("Upgrade inherits base:", self.upgrade_inherit_cb)
 
         self.swap_cards_cb = QCheckBox("Offer map weapon replacement as per-weapon cards")
         self.swap_cards_cb.setChecked(bool(CONFIG.get('weapon_swap_cards')))
@@ -4789,6 +4865,7 @@ class OptionsDialog(QDialog):
             'remove_invincibility_invisibility': self.no_invinc_invis_cb.isChecked(),
             'denied_equipment_as_enemy_mods': self.denied_as_enemy_cb.isChecked(),
             'weapon_swap_cards': self.swap_cards_cb.isChecked(),
+            'upgrade_inherits_base': self.upgrade_inherit_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
             'set_starting_weapons': self.starting_weapons_cb.isChecked(),
