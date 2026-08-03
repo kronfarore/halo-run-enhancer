@@ -2332,6 +2332,41 @@ class MagnitudeEditorDialog(QDialog):
         games = eff.get('games') or []
         return bool(games) and self.game not in games
 
+    def _difficulty_values_str(self, tag, target):
+        """Every difficulty's value for a per-difficulty field, e.g.
+        'Easy 0.4 · Normal 0.5 · ▶Heroic 0.6 · Legendary 0.7'.
+
+        Only these fields have one value per difficulty; the row otherwise shows just
+        the one being patched, which gives no sense of the scale it sits on. The
+        difficulty actually being written is marked. A tier the game doesn't define
+        (there is no Easy accuracy tier, for instance) shows as '—' rather than being
+        hidden, so its absence is visible. Empty string when the field isn't
+        per-difficulty, so callers can append it unconditionally."""
+        if not any(target.get(k) for k in DIFF_FLAVOR_KEYS):
+            return ''
+        m = self._read_source()
+        if not m:
+            return ''
+        cls, path = self._hp.hm.split_tag(tag)
+        plugin = self.registry.get(cls)
+        if plugin is None or not m.find_tags(cls, path):
+            return ''
+        parts, seen_any = [], False
+        for pub, intern in DIFF_DISPLAY:
+            field = self._hp.apply_difficulty(target['field'], target, intern)
+            v = m.read_first(cls, path, field, plugin, target.get('block'),
+                             target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
+            if v is None:
+                shown = '—'
+            else:
+                shown = f"{round(v, 4)}" if isinstance(v, float) else str(v)
+                seen_any = True
+            mark = '▶' if intern == self.target_difficulty else ''
+            parts.append(f"{mark}{pub} {shown}")
+        # All four unreadable means the field name is wrong for every tier; the row's
+        # normal "field?" reporting covers that better than a row of dashes.
+        return ('all difficulties:  ' + '  ·  '.join(parts)) if seen_any else ''
+
     def _variant_values_str(self, tag, target, eff=None):
         """List every matching variant's vanilla value(s) as 'values (variants)',
         collapsing variants that share the same value(s) onto one line. When a target
@@ -3065,8 +3100,11 @@ class MagnitudeEditorDialog(QDialog):
             leftw = self._wrap(left)
             leftw.setMinimumWidth(240)
             row.addWidget(leftw)
-            # #1/#2: variant values on the right, one line per distinct value.
-            variants = QLabel(self._variant_values_str(eff['tag'], t, eff))
+            # #1/#2: variant values on the right, one line per distinct value, plus
+            # every difficulty's value where the field has one per difficulty.
+            _vals = self._variant_values_str(eff['tag'], t, eff)
+            _diffs = self._difficulty_values_str(eff['tag'], t)
+            variants = QLabel(_vals + ('\n' + _diffs if _diffs else ''))
             variants.setStyleSheet("color: #7aa0c0; font-size: 12px; font-family: monospace;")
             variants.setWordWrap(True)
             variants.setAlignment(Qt.AlignTop)
@@ -3646,6 +3684,7 @@ class MagnitudeEditorDialog(QDialog):
                                          **_diff_flavor(t),
                                          'index': t.get('index', 0), 'op_str': txt,
                                          'negate': t.get('negate'),
+                                         'offset': t.get('offset'),
                                          'reload_anim': t.get('reload_anim'),
                                          'equip_drop': t.get('equip_drop'),
                                          'nth': t.get('nth', 0) or 0})
@@ -6247,7 +6286,7 @@ class HaloGUI(QMainWindow):
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
                 for t in mod.get('targets') or []:
-                    for key in ('field', 'block', 'negate', 'nth', 'index'):
+                    for key in ('field', 'block', 'negate', 'nth', 'index', 'offset'):
                         if isinstance(t.get(key), dict):
                             t[key] = resolve_gamed(t[key], game, games)
                 # A target may be limited to specific games (e.g. the derived

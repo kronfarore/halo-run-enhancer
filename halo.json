@@ -243,7 +243,7 @@
 				"tag": "scnr levels\\*",
 				"easier_when": "increased",
 				"targets": [
-					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "label": "Starting Health Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
+					{ "field": { "Halo 1": "Starting Health Modifier", "Halo 2": "Starting Health Damage" }, "label": "Starting Health Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true }, "offset": { "Halo 1": 0, "Halo 2": 1 } }
 				],
 				"special": true
 			},
@@ -252,7 +252,7 @@
 				"tag": "scnr levels\\*",
 				"easier_when": "increased",
 				"targets": [
-					{ "field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" }, "label": "Starting Shield Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true } }
+					{ "field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" }, "label": "Starting Shield Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true }, "offset": { "Halo 1": 0, "Halo 2": 1 } }
 				],
 				"special": true
 			},

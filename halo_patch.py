@@ -2061,21 +2061,24 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
                 continue
             oper, val = parsed
+            # `negate`/`offset` describe how this game STORES the setting relative to
+            # what the magnitude means: meaning = scale * stored + offset. H1 keeps a
+            # modifier that is 1 when normal and rises; H2 keeps a damage that is 0
+            # when normal and falls, i.e. meaning = -stored + 1. Expressing it as a
+            # mapping (rather than flipping the typed number, which only ever worked
+            # for + and -) is what makes '*' and '=' agree across the two games: on
+            # the base-0 field, '*2' used to multiply 0 and change nothing.
             negate = bool(op.get('negate'))
-            if negate:
-                # H2 onward wants this value negative no matter what's typed (a
-                # positive input here has been observed to do nothing useful, for
-                # reasons that aren't clear from the tag data alone) -- force the
-                # sign rather than just flipping it, so a negative input doesn't
-                # silently flip back to positive.
-                val = -abs(val)
+            scale = -1.0 if negate else 1.0
+            offset = float(op.get('offset') or 0.0)
             field = apply_difficulty(op['field'], op, target_difficulty)
             for r in m.apply_field(cls, path, field, oper, val, plugin,
                                    block=op.get('block'), index=op.get('index', 0) or 0,
-                                   nth=op.get('nth', 0) or 0):
+                                   nth=op.get('nth', 0) or 0,
+                                   scale=scale, offset=offset):
                 r['effect'] = item['name']
-                if negate:
-                    r['negated'] = True
+                if negate or offset:
+                    r['negated'] = True     # summary marks the remapped write
                 results.append(r)
 
     if starting:

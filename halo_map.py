@@ -283,10 +283,21 @@ class HaloMap:
         off = self.tags.get((cls, path))
         return [(path, off)] if off is not None else []
 
-    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0):
+    def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
+                    scale=1.0, offset=0.0):
         """Apply an operator to a field across every tag matching (cls, path).
         Never raises for missing tags/fields — returns a list of result dicts
-        (ok/old/new or ok=False/reason) so a summary can be shown at the end."""
+        (ok/old/new or ok=False/reason) so a summary can be shown at the end.
+
+        `scale`/`offset` map the STORED value onto the units the typed magnitude is
+        expressed in — meaning = scale * stored + offset — and map back afterwards.
+        The same setting can be stored differently per game: Halo 1's Starting Health
+        *Modifier* is 1 when normal and rises, Halo 2's Starting Health *Damage* is 0
+        when normal and falls, so meaning = -stored + 1 there (scale -1, offset 1).
+        Doing it as a mapping rather than by flipping the magnitude is what makes '*'
+        and '=' come out right: on the base-0 field '*2' was multiplying 0 and
+        therefore doing nothing at all. Defaults are the identity, so every other
+        field behaves exactly as before."""
         ref = f"{cls} {path}"
         tags = self.find_tags(cls, path)
         if not tags:
@@ -312,7 +323,9 @@ class HaloMap:
                 for base in leaves:                 # patch every selected element
                     off = base + fld['offset']
                     old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
-                    new = OP_FUNCS[op](old, value)   # operate in display units (deg for angles)
+                    # operate in display units (deg for angles), in the MEANING the
+                    # magnitude is expressed in, then map back (see the docstring)
+                    new = (OP_FUNCS[op](scale * old + offset, value) - offset) / scale
                     new = float(new) if is_float else int(round(new))
                     struct.pack_into(fmt, self.data, off, display_to_raw(ftype, new))
                     if first_old is None:
