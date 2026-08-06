@@ -20,6 +20,7 @@ the tag-side approach; see h2_loosetag.py for the format and the history.
 """
 import argparse
 import os
+import re
 import subprocess
 import sys
 import time
@@ -88,24 +89,29 @@ def mission_hsc(level):
                         level + '_mission.hsc')
 
 
+_MARKER_RE = re.compile('^(?:%s)' % '|'.join(re.escape(m) for m in _MARKERS), re.M)
+
+
 def _strip_existing(text):
     """Cut any previous ability block. Refuses if the tail holds anything other than
-    our two script definitions, so an edit that landed mid-file is never truncated."""
-    lines = text.splitlines()
-    first = None
-    for i, ln in enumerate(lines):
-        if any(ln.startswith(m) for m in _MARKERS):
-            first = i
-            break
-    if first is None:
+    our two script definitions, so an edit that landed mid-file is never truncated.
+
+    Slices the text rather than splitting it into lines. str.splitlines() breaks on
+    Unicode line boundaries, and 05a_deltaapproach_mission.hsc carries a raw 0x85 (NEL)
+    byte inside the comment `;after cortana says "<0x85>such nice places."` -- splitting
+    and rejoining there cut the comment in half, left `such nice places."` as a live
+    expression, and broke the stock script 6500 lines above anything we wrote.
+    """
+    m = _MARKER_RE.search(text)
+    if m is None:
         return text.rstrip() + '\n'
-    tail = '\n'.join(lines[first:])
+    tail = text[m.start():]
     defs = tail.count('(script ')
     if defs > 2 or 'ab_camo_spawn' not in tail or 'ab_sprint_give' not in tail:
-        raise SystemExit('refusing to edit %s: the text after the first Run Enhancer '
-                         'marker is not just the two ability scripts (found %d script '
-                         'definitions). Fix it by hand.' % ('<hsc>', defs))
-    return '\n'.join(lines[:first]).rstrip() + '\n'
+        raise SystemExit('refusing to edit this script: the text after the first Run '
+                         'Enhancer marker is not just the two ability scripts (found %d '
+                         'script definitions). Fix it by hand.' % defs)
+    return text[:m.start()].rstrip() + '\n'
 
 
 def install_stub(level, verbose=True):
