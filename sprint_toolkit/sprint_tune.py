@@ -208,6 +208,23 @@ def main():
     ap.add_argument('map_path')
     ap.add_argument('--mult', type=float, default=1.5,
                     help="sprint speed as a multiple of vanilla run (default 1.5)")
+    ap.add_argument('--fx-ready', type=int,
+                    help="effect id flashed once when a cooldown expires; 0 = off")
+    ap.add_argument('--fx-ready-n', type=int,
+                    help='how many flashes the ready cue fires (default 3)')
+    ap.add_argument('--fx-ready-gap', type=int,
+                    help='ticks between those flashes (default 5)')
+    ap.add_argument('--fx-ladder', type=int,
+                    help="1 = advance fx_kind on every activation, so one build "
+                         "can be walked through the whole candidate list in game")
+    ap.add_argument('--fx-min', type=int, help='ladder lower bound')
+    ap.add_argument('--fx-max', type=int, help='ladder upper bound')
+    ap.add_argument('--fx-kind', type=int,
+                    help="regeneration pulse effect: 0 off, 1 co-op teleport, "
+                         "2 teleportation, 3 teleportation short, 4 teleport light, "
+                         "5 cyborg shield, 6 monitor glow rings")
+    ap.add_argument('--fx-every', type=int,
+                    help="ticks between regeneration pulses (30/sec)")
     ap.add_argument('--show', action='store_true')
     ap.add_argument('--restore', action='store_true')
     ap.add_argument('--fp-none', action='store_true',
@@ -463,7 +480,12 @@ def main():
                         ('camo_ticks', camo_ticks),
                         ('camo_cooldown', a.camo_cooldown), ('medi_heal', medi_heal),
                         ('medi_ticks', a.medi_duration), ('medi_cooldown', a.medi_cooldown),
-                        ('vit_max', a.vit_max)):
+                        ('vit_max', a.vit_max),
+                        ('fx_kind', a.fx_kind), ('fx_every', a.fx_every),
+                        ('fx_ready', a.fx_ready), ('fx_ready_n', a.fx_ready_n),
+                        ('fx_ready_gap', a.fx_ready_gap),
+                        ('fx_ladder', a.fx_ladder), ('fx_min', a.fx_min),
+                        ('fx_max', a.fx_max)):
         if gval is None:
             continue
         res = set_global(m, gname, gval)

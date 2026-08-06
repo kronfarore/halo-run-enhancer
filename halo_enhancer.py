@@ -157,6 +157,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'sprint_cooldown_s',
                'abilities_offered', 'ability_cards_for', 'ability_start_which',
                'overshield_mult', 'regen_percent', 'regen_duration_s',
+               'regen_fx_every',
                'camo_duration_s', 'camo_cooldown_s')
 
 
@@ -405,6 +406,9 @@ CONFIG = {
     "overshield_mult": 3.0,       # x normal shield
     "regen_percent": 100.0,       # % of max health healed per use
     "regen_duration_s": 5.0,      # healed over this long
+    # Regeneration feedback pulse, in ticks between flashes. Per game: the effects and
+    # how dense they read differ (H1 cyborg shimmer vs H2 teleport).
+    "regen_fx_every": {"Halo 1": 10, "Halo 2": 45},
     "camo_duration_s": 5.0,
     "camo_cooldown_s": 30.0,      # starts when the camo window ends
     # #7: one-handed weapons that can be offered as "Dual <Weapon>" in the
@@ -3542,6 +3546,7 @@ class MagnitudeEditorDialog(QDialog):
             'os_mult': max(1.0, vals['os_mult']),
             'medi_percent': max(1.0, vals['regen_percent']),
             'medi_duration_ticks': max(1, round(max(0.1, vals['regen_duration']) * 30)),
+            'regen_fx_every_by_game': CONFIG.get('regen_fx_every') or {},
             'camo_seconds': max(0.5, vals['camo_duration']),
             'camo_cooldown_ticks': max(0, round(max(0.0, vals['camo_cooldown']) * 30)),
             'card_reports': card_reports,
@@ -4591,6 +4596,27 @@ class OptionsDialog(QDialog):
         self.regen_duration.setToolTip("How long that heal is spread over. Short is a snap heal; "
                                        "long is a slow regeneration that damage can out-pace.")
         rform.addRow("Spread over:", self.regen_duration)
+
+        # Feedback pulse. Halo 2 has no health bar at all, so without this the ability
+        # gives the player nothing to go on; H1 has a bar but the pulse still reads
+        # better, and in co-op it is the only way to see a partner regenerating. The
+        # rate is per game because the effects differ (different tag sets entirely) and
+        # so does how dense they look: H1's cyborg shimmer wants ~10 ticks, H2's
+        # teleport ~45. The effect ids themselves live in halo_patch.
+        self.regen_fx_every = {}
+        _fx_cfg = CONFIG.get('regen_fx_every', {})
+        if not isinstance(_fx_cfg, dict):
+            _fx_cfg = {}
+        for _g, _default in (('Halo 1', 10), ('Halo 2', 45)):
+            box = QSpinBox()
+            box.setRange(1, 120)
+            box.setSingleStep(5)
+            box.setSuffix(" ticks")
+            box.setValue(int(_fx_cfg.get(_g, _default)))
+            box.setToolTip("How often the regeneration effect flashes in %s, in ticks "
+                           "(30 = once a second). Lower is a denser pulse." % _g)
+            self.regen_fx_every[_g] = box
+            rform.addRow("Effect every (%s):" % _g, box)
         xform.addRow(self.regen_box)
 
         self.camo_box, cform2 = _ability_box("Camo")
@@ -4904,6 +4930,7 @@ class OptionsDialog(QDialog):
             'overshield_mult': round(self.overshield_mult.value(), 2),
             'regen_percent': round(self.regen_percent.value(), 1),
             'regen_duration_s': round(self.regen_duration.value(), 1),
+            'regen_fx_every': {g: b.value() for g, b in self.regen_fx_every.items()},
             'camo_duration_s': round(self.camo_duration.value(), 1),
             'camo_cooldown_s': round(self.camo_cooldown.value(), 1),
         }
@@ -4925,6 +4952,8 @@ class OptionsDialog(QDialog):
             'os_mult': self.overshield_mult.value(),
             'medi_percent': self.regen_percent.value(),
             'medi_duration_ticks': max(1, round(self.regen_duration.value() * 30)),
+            'regen_fx_every_by_game': {g: b.value()
+                                       for g, b in self.regen_fx_every.items()},
             'camo_seconds': self.camo_duration.value(),
             'camo_cooldown_ticks': max(0, round(self.camo_cooldown.value() * 30)),
         }

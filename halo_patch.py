@@ -1801,6 +1801,32 @@ _CAMO_COOLDOWN_TICKS = 900      # 30s
 _VIT_MAX = 75.0
 _OS_SHIELD_BASE = 1.0 / _VIT_MAX
 
+# ...but only in Halo 1. Measured the same way in Halo 2 (no health bar there, so the
+# SHIELD is the instrument: x1/x2/x3 came out at 0.01425/0.0285/0.04275, i.e. 1/70) the
+# scale is 70. Close enough to 75 to look plausible and wrong enough to drift, so
+# nothing measured in one game may be assumed to carry to the other.
+_VIT_MAX_BY_GAME = {'Halo 1': 75.0, 'Halo 2': 70.0}
+
+# Regeneration plays a pulsing effect so the ability is legible -- essential in H2,
+# which shows no health at all, and clearer than a creeping bar in H1. The effect ids
+# are per game (different tag sets entirely) and were picked by testing every
+# candidate in-game; see the tables in sprint.hsc / global_scripts.hsc. Only
+# self-contained effects show on a player: impact/contact and weapon effects resolve
+# against a surface or their own markers and silently draw nothing.
+# 'kind'/'every' drive the regeneration pulse; 'ready' is the burst fired when a
+# cooldown expires, which is a different shape of cue and wanted a different effect in
+# both games. All four ids were chosen by walking candidate ladders in-game.
+_FX_BY_GAME = {
+    'Halo 1': {'kind': 5, 'every': 10,      # cyborg shield depletion
+               'ready': 30, 'ready_n': 3, 'ready_gap': 5},    # jackal shield depletion
+    'Halo 2': {'kind': 8, 'every': 45,      # regret teleport
+               'ready': 2, 'ready_n': 3, 'ready_gap': 10},    # elite shield recharge
+}
+
+
+def _vit_max(game):
+    return _VIT_MAX_BY_GAME.get(str(game).strip(), _VIT_MAX)
+
 
 def _sprint_null_ref(m, base, roff):
     struct.pack_into('<I', m.data, base + roff + 0, 0xFFFFFFFF)
@@ -1882,12 +1908,30 @@ def _apply_sprint(m, game, registry, cfg):
     if cfg.get('medi_cooldown_ticks') is not None:
         set_global(m, 'medi_cooldown', max(0, int(cfg['medi_cooldown_ticks'])))
     if cfg.get('medi_percent') is not None:
-        heal = float(cfg['medi_percent']) / 100.0 * _VIT_MAX
+        heal = float(cfg['medi_percent']) / 100.0 * _vit_max(game)
         ticks = cfg.get('medi_duration_ticks') or read_global(m, 'medi_ticks') or 150
         set_global(m, 'medi_heal', heal)
         set_global(m, 'medi_rate', heal / float(max(1, int(ticks))))
     # The write-back scale has to match the unit's true max or regeneration ratchets.
-    set_global(m, 'vit_max', _VIT_MAX)
+    set_global(m, 'vit_max', _vit_max(game))
+
+    # Regeneration pulse. Rate is user-facing (per game); the effect id falls back to
+    # the tested default. Written only when the globals exist, so maps built before the
+    # pulse was added still patch cleanly.
+    fx = _FX_BY_GAME.get(str(game).strip(), _FX_BY_GAME['Halo 1'])
+    if read_global(m, 'fx_every') is not None:
+        per_game = cfg.get('regen_fx_every_by_game') or {}
+        every = per_game.get(str(game).strip()) or cfg.get('regen_fx_every') or fx['every']
+        set_global(m, 'fx_every', max(1, int(every)))
+        set_global(m, 'fx_kind', int(cfg.get('regen_fx_kind') or fx['kind']))
+        # The ready cue is pointless when the ability returns before it finishes, so
+        # suppress it rather than firing into the middle of the effect.
+        dur = int(cfg.get('medi_duration_ticks') or read_global(m, 'medi_ticks') or 150)
+        cool = int(cfg.get('medi_cooldown_ticks') or read_global(m, 'medi_cooldown') or 0)
+        if read_global(m, 'fx_ready') is not None:
+            set_global(m, 'fx_ready', fx['ready'] if cool > dur else 0)
+            set_global(m, 'fx_ready_n', fx['ready_n'])
+            set_global(m, 'fx_ready_gap', fx['ready_gap'])
 
     # Camo: the real duration is the equipment tag's Powerup Time, mirrored into the
     # script window. Only written when camo is actually in play -- the tag is shared
