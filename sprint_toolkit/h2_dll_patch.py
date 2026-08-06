@@ -138,7 +138,39 @@ PATCHES = {
         'patched': bytes.fromhex('90' * 7),
         'note': "Arbiter camo fix, PART 2 of 2 (apply with no-camo-grant)",
     },
+    'coop-no-forced-iron': {
+        # Halo 2 ENFORCES Iron on Legendary co-op -- it is not a skull and not an
+        # option, so there is no way to decline it in game. Both sites gate on the same
+        # pair of tests, and both have to go or the rule survives in the other path:
+        #     mov eax, [rip+...]           ; game globals
+        #     cmp dword [rax+8], 1         ; campaign
+        #     cmp word [rax+0x2c6], 3      ; difficulty == Legendary
+        # +6A5D67 then returns FALSE for that combination; NOPing the branch lets it
+        # fall through to `mov al,1`, so it answers the same as every other difficulty.
+        # +8F74DA picks the Legendary-only variant of a following call; forcing the jump
+        # takes the ordinary path instead.
+        #
+        # Recovered by diffing the user's own halo2.dll backups (halo2.dll.bak and
+        # halo2.dll.backup are vanilla; .prepatch.bak already had this applied), so
+        # these bytes are the exact edit that was confirmed working in game.
+        'sites': [
+            {'offset': 0x006A5167, 'original': bytes.fromhex('7407'),
+             'patched': bytes.fromhex('9090')},
+            {'offset': 0x006A68DA, 'original': bytes.fromhex('75'),
+             'patched': bytes.fromhex('eb')},
+        ],
+        'note': 'Legendary co-op no longer forces Iron (2 sites)',
+    },
 }
+
+
+def _sites(p):
+    """Normalise an entry to a list of (offset, original, patched). Some fixes need
+    several edits that only make sense together -- the Arbiter camo needs three, the
+    co-op Iron two -- so an entry may carry 'sites' instead of a single offset."""
+    if 'sites' in p:
+        return [(s['offset'], s['original'], s['patched']) for s in p['sites']]
+    return [(p['offset'], p['original'], p['patched'])]
 
 
 def _read(path):
@@ -146,39 +178,66 @@ def _read(path):
         return bytearray(f.read())
 
 
+def state_of(name, d=None, path=DLL):
+    """'APPLIED', 'not applied', 'PARTIAL' or 'UNRECOGNISED'. A multi-site fix is only
+    APPLIED when every one of its sites is."""
+    d = _read(path) if d is None else d
+    seen = set()
+    for off, original, patched in _sites(PATCHES[name]):
+        cur = bytes(d[off:off + len(original)])
+        seen.add('APPLIED' if cur == patched else
+                 'not applied' if cur == original else 'UNRECOGNISED')
+    if 'UNRECOGNISED' in seen:
+        return 'UNRECOGNISED'
+    return seen.pop() if len(seen) == 1 else 'PARTIAL'
+
+
 def status(path=DLL):
     d = _read(path)
     for name, p in PATCHES.items():
-        cur = bytes(d[p['offset']:p['offset'] + len(p['original'])])
-        state = ('APPLIED' if cur == p['patched'] else
-                 'not applied' if cur == p['original'] else 'UNRECOGNISED')
-        print('  %-18s %-14s %s' % (name, state, p['note']))
-        if state == 'UNRECOGNISED':
-            print('    expected %s or %s, found %s'
-                  % (p['original'].hex(), p['patched'].hex(), cur.hex()))
+        st = state_of(name, d)
+        n = len(_sites(p))
+        print('  %-24s %-14s %s' % (name, st, p['note']))
+        if st in ('UNRECOGNISED', 'PARTIAL'):
+            for off, original, patched in _sites(p):
+                cur = bytes(d[off:off + len(original)])
+                print('    0x%08X found %-16s expected %s or %s'
+                      % (off, cur.hex(), original.hex(), patched.hex()))
 
 
 def apply(name, revert=False, path=DLL):
     p = PATCHES[name]
-    want = p['patched'] if revert else p['original']
-    make = p['original'] if revert else p['patched']
     d = _read(path)
-    cur = bytes(d[p['offset']:p['offset'] + len(want)])
-    if cur == make:
+    st = state_of(name, d)
+    if st == 'UNRECOGNISED':
+        raise SystemExit('refusing to write %s: the bytes are neither the original nor '
+                         'the patched form. Is this a different halo2.dll?' % name)
+    if st == ('not applied' if revert else 'APPLIED'):
         print('%s is already %s' % (name, 'reverted' if revert else 'applied'))
         return
-    if cur != want:
-        raise SystemExit('refusing to write: bytes at 0x%X are %s, expected %s. '
-                         'Is this a different halo2.dll?' % (p['offset'], cur.hex(), want.hex()))
+    # Verify EVERY site before writing ANY, so a multi-site fix can never land half on.
+    writes = []
+    for off, original, patched in _sites(p):
+        want = patched if revert else original
+        make = original if revert else patched
+        cur = bytes(d[off:off + len(want)])
+        if cur == make:
+            continue
+        if cur != want:
+            raise SystemExit('refusing to write: bytes at 0x%X are %s, expected %s.'
+                             % (off, cur.hex(), want.hex()))
+        writes.append((off, make, cur))
     bak = path + '.prepatch.bak'
     if not os.path.exists(bak):
         shutil.copyfile(path, bak)
         print('backed up -> %s' % os.path.basename(bak))
-    d[p['offset']:p['offset'] + len(make)] = make
+    for off, make, cur in writes:
+        d[off:off + len(make)] = make
+        print('  0x%08X %s -> %s' % (off, cur.hex(), make.hex()))
     with open(path, 'wb') as f:
         f.write(bytes(d))
-    print('%s %s at 0x%X (%s -> %s)'
-          % ('reverted' if revert else 'applied', name, p['offset'], cur.hex(), make.hex()))
+    print('%s %s (%d site%s)' % ('reverted' if revert else 'applied', name,
+                                 len(writes), '' if len(writes) == 1 else 's'))
 
 
 def main(argv=None):

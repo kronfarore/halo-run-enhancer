@@ -30,7 +30,13 @@ import h2_loosetag as L    # noqa: E402
 
 H2EK = r'C:\Program Files (x86)\Steam\steamapps\common\H2EK'
 TOOL = os.path.join(H2EK, 'tool.exe')
-CACHE_FLAGS = 'compress|resource_sharing|multilingual_sounds|remastered_support'
+# Self-contained, single-language. The EK's own script adds resource_sharing and
+# multilingual_sounds; both are wrong here. resource_sharing offloads bitmaps and sounds
+# into H2EK's shared .dat databases, which the MCC install does not have (54 MB map
+# against ~90 MB stock, assets missing in game), and multilingual_sounds bundles every
+# language set (1636 MB). This lands 05a at 608 MB, in the same range as the maps
+# already confirmed working in game.
+CACHE_FLAGS = 'compress|remastered_support'
 PLATFORM = 'win64'
 MAPS_OUT = os.path.join(H2EK, 'h2_maps_win64_dx11')
 
@@ -157,7 +163,13 @@ def apply_tag(level, verbose=True):
         return False, 'no scenario_equipment_resource'
     _backup(res, verbose)
     rdata = bytearray(open(res, 'rb').read())
-    camo = L.add_camo_to_resource(rdata)
+    try:
+        camo = L.add_camo_to_resource(rdata)
+    except NotImplementedError as e:
+        # 08b_deltacontrol ships no equipment at all, so there is no chunk to extend and
+        # nothing to copy an element from. Report it and keep the sprint profile, rather
+        # than aborting the whole batch over one level.
+        return True, 'profile=%s  camo SKIPPED (%s)' % (profile, e)
     if camo:
         open(res, 'wb').write(bytes(rdata))
 
