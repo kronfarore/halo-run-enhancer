@@ -31,13 +31,23 @@ import h2_loosetag as L    # noqa: E402
 
 H2EK = r'C:\Program Files (x86)\Steam\steamapps\common\H2EK'
 TOOL = os.path.join(H2EK, 'tool.exe')
-# Self-contained, single-language. The EK's own script adds resource_sharing and
-# multilingual_sounds; both are wrong here. resource_sharing offloads bitmaps and sounds
-# into H2EK's shared .dat databases, which the MCC install does not have (54 MB map
-# against ~90 MB stock, assets missing in game), and multilingual_sounds bundles every
-# language set (1636 MB). This lands 05a at 608 MB, in the same range as the maps
-# already confirmed working in game.
-CACHE_FLAGS = 'compress|remastered_support'
+# Self-contained, single-language, and NOT asking for remastered.
+#
+# The EK's own script uses `compress|resource_sharing|multilingual_sounds|
+# remastered_support`. All three extras are wrong here:
+#   resource_sharing    offloads bitmaps and sounds into H2EK's shared .dat databases,
+#                       which the MCC install does not have -- a 54 MB map against ~90 MB
+#                       stock, with assets missing in game.
+#   multilingual_sounds bundles every language set (1636 MB).
+#   remastered_support  does NOTHING. Measured: building twice with identical flags
+#                       differs in exactly the same 18 MB-chunks as building with the
+#                       flag against without it (chunk 0 and a timestamped tail), so the
+#                       whole difference is build nondeterminism. That figures -- the EK
+#                       ships the classic 2004 tags, and the H2A art lives separately in
+#                       groundhog/maps/shared.map keyed to the maps Bungie shipped. A
+#                       rebuilt map has no remastered binding and plays classic-only,
+#                       which is true of every map this toolkit builds.
+CACHE_FLAGS = 'compress'
 PLATFORM = 'win64'
 MAPS_OUT = os.path.join(H2EK, 'h2_maps_win64_dx11')
 
