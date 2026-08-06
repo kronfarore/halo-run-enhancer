@@ -4035,6 +4035,37 @@ class MagnitudeEditorDialog(QDialog):
             pass  # patch-log failure shouldn't block the actual patch
 
 
+# The halo2.dll fixes worth exposing, grouped the way they have to be applied. The
+# Arbiter camo fix is three edits that are meaningless apart: two stop him cloaking on
+# his own (either alone does nothing, they are separate sites) and the third removes the
+# difficulty-scaled 8s cap that was cutting the powerup to 4s on Legendary. The
+# diagnostics in h2_dll_patch, and camo-no-difficulty-scale (the conservative
+# alternative to the third edit), are deliberately not offered here.
+H2_PATCH_SETS = [
+    ("Arbiter camo fix (no native cloak, no 4s cap)",
+     ['no-camo-grant', 'no-arbiter-camo', 'camo-duration-unlimited'],
+     "Halo 2 Arbiter levels: the Arbiter cloaks on his own, which blocks the camo "
+     "powerup entirely, and the engine cuts any cloak to 8s scaled by difficulty "
+     "(4s on Legendary). This disables his native cloak and the cap, so the Camo "
+     "ability behaves the same as on Chief levels."),
+    ("Legendary co-op: no forced Iron",
+     ['coop-no-forced-iron'],
+     "Halo 2 ENFORCES the Iron skull on Legendary co-op -- it is not a skull you can "
+     "turn off and not an option. This makes it behave like every other difficulty."),
+]
+
+
+def _h2_dll_patch():
+    """The dll patcher, imported lazily so the Enhancer still starts on a machine
+    without the Halo 2 toolkit."""
+    import importlib
+    import sys as _sys
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+    if here not in _sys.path:
+        _sys.path.insert(0, here)
+    return importlib.import_module('h2_dll_patch')
+
+
 class OptionsDialog(QDialog):
     """Edits the run options in OPTION_KEYS. Reads current values from CONFIG;
     values() returns the edited set. The caller persists them (global + per-run)."""
@@ -4759,6 +4790,36 @@ class OptionsDialog(QDialog):
 
         layout.addWidget(patchg)
 
+        # ---- Halo 2 engine patches ----
+        # These edit halo2.dll, not a map, so they do NOT ride on the dialog's OK the
+        # way every other option does: they take effect outside any run and outlive it.
+        # Hence their own Apply button, and a reminder that the dll is mapped at process
+        # start -- reloading a level is not enough, MCC has to be restarted.
+        h2g = QGroupBox("Halo 2 engine patches (halo2.dll)")
+        h2form = QFormLayout(h2g)
+        h2form.setLabelAlignment(Qt.AlignRight)
+
+        self.h2_patch_boxes = {}
+        for label, keys, tip in H2_PATCH_SETS:
+            cb = QCheckBox(label)
+            cb.setToolTip(tip)
+            self.h2_patch_boxes[label] = (cb, keys)
+            h2form.addRow("", cb)
+
+        self.h2_patch_status = QLabel("")
+        self.h2_patch_status.setWordWrap(True)
+        self.h2_patch_status.setStyleSheet("color:#9a9a9a; font-size:11px;")
+        h2form.addRow("", self.h2_patch_status)
+
+        h2_btn = QPushButton("Apply to halo2.dll")
+        h2_btn.setToolTip("Writes the selected patches to halo2.dll and reverts the "
+                          "unselected ones. MCC must be CLOSED, and must be restarted "
+                          "afterwards for the change to take effect.")
+        h2_btn.clicked.connect(self._apply_h2_patches)
+        h2form.addRow("", h2_btn)
+        self._refresh_h2_patches()
+        layout.addWidget(h2g)
+
         # ---- Advanced ----
         adv = QGroupBox("Advanced")
         vform = QFormLayout(adv)
@@ -4869,6 +4930,58 @@ class OptionsDialog(QDialog):
         CONFIG['options_dialog_size'] = [self.width(), self.height()]
         save_settings()
         super().done(r)
+
+    def _refresh_h2_patches(self):
+        """Tick each box from what is actually in the dll right now. This is live state,
+        not a saved preference -- the dll may have been patched by the command-line tool
+        or restored by a game update since the last run."""
+        try:
+            hp2 = _h2_dll_patch()
+            states = {}
+            for label, (cb, keys) in self.h2_patch_boxes.items():
+                st = {hp2.state_of(k) for k in keys}
+                cb.setEnabled(True)
+                cb.setChecked(st == {'APPLIED'})
+                states[label] = ('applied' if st == {'APPLIED'} else
+                                 'not applied' if st == {'not applied'} else
+                                 'PARTIAL/UNRECOGNISED — re-apply to fix')
+            self.h2_patch_status.setText(
+                '  •  '.join('%s: %s' % (l.split(' (')[0], s) for l, s in states.items())
+                + '\nMCC must be closed to apply, and restarted for it to take effect.')
+        except Exception as e:
+            for cb, _keys in self.h2_patch_boxes.values():
+                cb.setEnabled(False)
+            self.h2_patch_status.setText('halo2.dll not available: %s' % e)
+
+    def _apply_h2_patches(self):
+        try:
+            hp2 = _h2_dll_patch()
+        except Exception as e:
+            QMessageBox.warning(self, "Halo 2 patches", "Could not load the patcher:\n%s" % e)
+            return
+        done, failed = [], []
+        for label, (cb, keys) in self.h2_patch_boxes.items():
+            want = cb.isChecked()
+            for k in keys:
+                try:
+                    if (hp2.state_of(k) == 'APPLIED') != want:
+                        hp2.apply(k, revert=not want)
+                        done.append('%s %s' % ('applied' if want else 'reverted', k))
+                except SystemExit as e:          # refused: bytes did not match
+                    failed.append('%s: %s' % (k, e))
+                except PermissionError:
+                    failed.append('%s: halo2.dll is in use — close MCC first' % k)
+                except Exception as e:
+                    failed.append('%s: %s' % (k, e))
+        self._refresh_h2_patches()
+        if failed:
+            QMessageBox.warning(self, "Halo 2 patches",
+                                "Some patches could not be written:\n\n" + '\n'.join(failed))
+        else:
+            QMessageBox.information(
+                self, "Halo 2 patches",
+                ('\n'.join(done) if done else 'Nothing to change.')
+                + '\n\nRestart MCC for this to take effect.')
 
     def values(self):
         return {
