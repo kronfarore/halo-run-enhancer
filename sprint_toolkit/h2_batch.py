@@ -19,6 +19,7 @@ the tag-side approach; see h2_loosetag.py for the format and the history.
   python h2_batch.py                        # all 13 missions
 """
 import argparse
+import glob
 import os
 import re
 import subprocess
@@ -91,8 +92,16 @@ def scenario_path(level):
 
 
 def mission_hsc(level):
-    return os.path.join(H2EK, 'data', 'scenarios', 'solo', level, 'scripts',
-                        level + '_mission.hsc')
+    """This level's mission script. Most are <level>_mission.hsc, but several drop the
+    level number -- 06a_sentinelwalls holds sentinelwalls_mission.hsc, 07b holds
+    forerunnership_mission.hsc. Prefer the exact name, since 03a carries both its own
+    and the shared earthcity_mission.hsc."""
+    d = os.path.join(H2EK, 'data', 'scenarios', 'solo', level, 'scripts')
+    exact = os.path.join(d, level + '_mission.hsc')
+    if os.path.isfile(exact):
+        return exact
+    hits = sorted(glob.glob(os.path.join(d, '*_mission.hsc')))
+    return hits[0] if hits else exact
 
 
 _MARKER_RE = re.compile('^(?:%s)' % '|'.join(re.escape(m) for m in _MARKERS), re.M)

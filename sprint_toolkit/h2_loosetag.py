@@ -304,18 +304,68 @@ def child_run(data, chunk, count, elem_size):
     return run, region_end
 
 
-def insert_element(data, root_off, elem_size, elem, paths=(), tagref_offsets=()):
+def _root_size(data):
+    """Size of the tag's root struct, from the root chunk header at HEADER."""
+    return struct.unpack_from('<I', data, HEADER + 12)[0]
+
+
+def block_end(data, root_off, elem_size, tagref_offsets=()):
+    """Offset just past everything belonging to a block: its element array, its pooled
+    tagref strings and its per-element descriptor runs. None if the block is empty."""
+    c = locate(data, root_off, elem_size)
+    if c is None:
+        return None
+    n = root_count(data, root_off)
+    if not tagref_offsets:
+        run, region_end = child_run(data, c, n, elem_size)
+        if run:
+            return region_end
+    return _pool_end(data, c, n, elem_size, tagref_offsets)
+
+
+# The equipment resource's root blocks in FIELD ORDER, with the chunk version each one
+# is written with. Order matters: blocks are laid out depth-first in field order, so a
+# chunk created for an empty block has to land at the boundary its neighbours define.
+RES_ORDER = ((RES_NAMES, NES, (), 0),
+             (RES_UNKNOWN, 0x54, (), 1),
+             (RES_PALETTE, PES, (0x0,), 0),
+             (RES_EQUIPMENT, IES, (), 2))
+
+
+def ensure_res_block(data, root_off):
+    """Chunk offset for a resource block, CREATING an empty chunk when the block has
+    none. Most campaign resources ship no named equipment at all, so the object-names
+    block is usually absent -- and an absent block emits no chunk header to extend.
+
+    The new chunk goes at the end of the last non-empty block before it, or immediately
+    after the root struct when nothing precedes it."""
+    spec = {o: (es, tr, ver) for o, es, tr, ver in RES_ORDER}
+    elem_size, trefs, version = spec[root_off]
+    c = locate(data, root_off, elem_size)
+    if c is not None:
+        return c
+    at = ROOT + _root_size(data)
+    for o2, es2, tr2, _v in RES_ORDER:
+        if o2 >= root_off:
+            break
+        end = block_end(data, o2, es2, tr2)
+        if end is not None:
+            at = end
+    data[at:at] = SIG + struct.pack('<III', version, 0, elem_size)
+    return at
+
+
+def insert_element(data, root_off, elem_size, elem, paths=(), tagref_offsets=(),
+                   chunk=None):
     """Append one element to a root block. `paths` are the new element's pooled tagref
     strings in field order. Bumps the count in BOTH the chunk header and the root
     struct. `data` is a bytearray, edited in place; re-locates each call, so repeated
     inserts compose."""
     n = root_count(data, root_off)
-    chunk = locate(data, root_off, elem_size)
     if chunk is None:
-        raise NotImplementedError(
-            'root+0x%X is empty in this scenario, so it has no chunk header to extend. '
-            'Creating one means placing it at the right depth-first position; only '
-            '08b_deltacontrol needs this (it ships no equipment at all).' % root_off)
+        chunk = locate(data, root_off, elem_size)
+    if chunk is None:
+        raise ValueError('root+0x%X has no chunk; call ensure_res_block first' % root_off)
     array_end = chunk + CHUNK + n * elem_size
     pool_end = _pool_end(data, chunk, n, elem_size, tagref_offsets)
     # Pooled strings and per-element descriptor runs are alternatives, never both, so
@@ -430,28 +480,59 @@ def add_camo_to_resource(data, names=CAMO_OBJECT_NAMES, tag=CAMO_TAG):
             ln = struct.unpack_from('<I', data, c + CHUNK + i * PES + 8)[0]
             paths.append(bytes(data[pool:pool + ln]).decode('latin-1') if ln else '')
             pool += ln + 1 if ln else 0
-    pal = paths.index(tag) if tag in paths else insert_element(
-        data, RES_PALETTE, PES, make_palette(tag), paths=(tag,), tagref_offsets=(0x0,))
+    if tag in paths:
+        pal = paths.index(tag)
+    else:
+        pal = insert_element(data, RES_PALETTE, PES, make_palette(tag), paths=(tag,),
+                             tagref_offsets=(0x0,),
+                             chunk=ensure_res_block(data, RES_PALETTE))
 
-    added = []
-    for nm in names:
-        if nm in names_in(data, RES_NAMES, NES):
-            continue
-        chunk = locate(data, RES_EQUIPMENT, IES)
-        if chunk is None:
-            raise NotImplementedError('resource has no equipment placement to copy from')
-        elem = bytearray(data[chunk + CHUNK:chunk + CHUNK + IES])
-        struct.pack_into('<hh', elem, 0x0, pal, len(names_in(data, RES_NAMES, NES)))
+    # Placements FIRST, names LAST. Both blocks may have to be created, and the names
+    # block sits earlier in the file, so creating it would shift the placement chunk out
+    # from under us. Going back to front keeps every offset we hold valid.
+    have_names = names_in(data, RES_NAMES, NES)
+    todo = [n for n in names if n not in have_names]
+
+    placements = []
+    for _ in todo:
+        chunk = ensure_res_block(data, RES_EQUIPMENT)
+        n = root_count(data, RES_EQUIPMENT)
+        if n:
+            elem = bytearray(data[chunk + CHUNK:chunk + CHUNK + IES])
+        else:
+            elem = bytearray(_donor_placement())     # nothing here to copy from
+        struct.pack_into('<hh', elem, 0x0, pal, len(have_names) + len(placements))
         struct.pack_into('<I', elem, 0x4, FLAG_CREATE_AT_REST | FLAG_NOT_AUTOMATICALLY)
         high = struct.unpack_from('<I', elem, UNIQUE_ID)[0] & 0xFFFF0000
         top = max((struct.unpack_from('<I', data, o + UNIQUE_ID)[0] & 0xFFFF
                    for _, o in elements(data, RES_EQUIPMENT, IES)), default=0)
         struct.pack_into('<I', elem, UNIQUE_ID, high | ((top + 1) & 0xFFFF))
-        placement = insert_element(data, RES_EQUIPMENT, IES, bytes(elem))
+        placements.append(insert_element(data, RES_EQUIPMENT, IES, bytes(elem),
+                                         chunk=chunk))
+
+    chunk = ensure_res_block(data, RES_NAMES) if todo else None
+    for nm, placement in zip(todo, placements):
         insert_element(data, RES_NAMES, NES,
-                       make_object_name(nm, TYPE_EQUIPMENT, placement))
-        added.append(nm)
-    return added
+                       make_object_name(nm, TYPE_EQUIPMENT, placement), chunk=chunk)
+    return todo
+
+
+_DONOR = '05a_deltaapproach'
+
+
+def _donor_placement(h2ek=None):
+    """A stock equipment placement to seed a resource that has none. 08b_deltacontrol
+    ships no equipment at all, so there is no local element whose unknown fields we can
+    preserve -- borrow one from a level that does."""
+    h2ek = h2ek or os.environ.get('H2EK', r'C:\Program Files (x86)\Steam\steamapps'
+                                          r'\common\H2EK')
+    d = bytearray(open(resource_path(h2ek, _DONOR) + '.preability', 'rb').read()
+                  if os.path.exists(resource_path(h2ek, _DONOR) + '.preability')
+                  else open(resource_path(h2ek, _DONOR), 'rb').read())
+    c = locate(d, RES_EQUIPMENT, IES)
+    if c is None:
+        raise RuntimeError('donor %s has no equipment placements' % _DONOR)
+    return bytes(d[c + CHUNK:c + CHUNK + IES])
 
 
 def outfit(data):
