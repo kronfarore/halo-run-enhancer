@@ -133,21 +133,37 @@ def install_stub(level, verbose=True):
     return True, 'stub written'
 
 
-def apply_tag(level, verbose=True):
-    path = scenario_path(level)
-    data = bytearray(open(path, 'rb').read())
+def _backup(path, verbose):
     bak = path + '.preability'
     if not os.path.exists(bak):
-        open(bak, 'wb').write(bytes(data))
+        open(bak, 'wb').write(open(path, 'rb').read())
         if verbose:
             print('    backed up -> %s' % os.path.basename(bak))
-    before = len(data)
-    r = L.outfit(data)
-    if not r['profile'] and not r['camo']:
+
+
+def apply_tag(level, verbose=True):
+    """The sprint profile goes in the SCENARIO; the camo pickups go in the equipment
+    RESOURCE. They are different files because tool.exe stomps the scenario's placement
+    blocks with the resource at build time -- see the RES_* note in h2_loosetag."""
+    scn = scenario_path(level)
+    _backup(scn, verbose)
+    data = bytearray(open(scn, 'rb').read())
+    profile = L.add_sprint_profile(data)
+    if profile:
+        open(scn, 'wb').write(bytes(data))
+
+    res = L.resource_path(H2EK, level)
+    if not os.path.isfile(res):
+        return False, 'no scenario_equipment_resource'
+    _backup(res, verbose)
+    rdata = bytearray(open(res, 'rb').read())
+    camo = L.add_camo_to_resource(rdata)
+    if camo:
+        open(res, 'wb').write(bytes(rdata))
+
+    if not profile and not camo:
         return True, 'tag already plumbed'
-    open(path, 'wb').write(bytes(data))
-    return True, 'tag +%d bytes (profile=%s camo=%s)' % (
-        len(data) - before, r['profile'], ','.join(r['camo']) or 'present')
+    return True, 'profile=%s  camo=%s' % (profile, ','.join(camo) or 'present')
 
 
 def _tool(args, log):
@@ -185,7 +201,9 @@ def show():
     print('%-20s %-7s %-7s %-9s %s' % ('map', 'tag', 'script', 'built', 'profiles'))
     for short, lvl in LEVELS:
         d = bytearray(open(scenario_path(lvl), 'rb').read())
-        names = L.object_names(d)
+        res = L.resource_path(H2EK, lvl)
+        names = (L.names_in(bytearray(open(res, 'rb').read()), L.RES_NAMES, L.NES)
+                 if os.path.isfile(res) else [])
         tag = 'YES' if all(n in names for n in L.CAMO_OBJECT_NAMES) \
                        and L.SPRINT_PROFILE in L.profile_names(d) else '-'
         h = mission_hsc(lvl)

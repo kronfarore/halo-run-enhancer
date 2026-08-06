@@ -71,6 +71,28 @@ CAMO_OBJECT_NAMES = ('ab_camo0', 'ab_camo1')
 SPRINT_PROFILE = 'ab_sprint'
 
 
+# --- scenario_equipment_resource ----------------------------------------------
+# THE THING THAT MADE TAG-SIDE INSERTION LOOK IMPOSSIBLE. H2 splits the scenario's
+# placement data out into sibling RESOURCE tags (resources/<level>.scenario_*_resource)
+# and tool.exe merges them over the main scenario at build time. So edits to the main
+# scenario's equipment / palette / object-name blocks are silently overwritten -- which
+# is exactly why appended object names were invisible to the script compiler while an
+# appended starting PROFILE worked: there is no profile resource.
+#
+# The resource uses the identical chunk format; only the root struct differs (0x4C, six
+# tagblocks). Its palette and placement counts match the BUILT CACHE exactly on every
+# campaign map, which is what confirms it is the authority.
+RES_NAMES = 0x00        # object names, elem NES -- only the equipment-typed ones
+RES_UNKNOWN = 0x18      # elem 0x54, unnamed
+RES_PALETTE = 0x24      # elem PES
+RES_EQUIPMENT = 0x30    # elem IES
+
+
+def resource_path(h2ek, level):
+    return os.path.join(h2ek, 'tags', 'scenarios', 'solo', level, 'resources',
+                        level + '.scenario_equipment_resource')
+
+
 # --- reading ------------------------------------------------------------------
 
 def chunks(data):
@@ -118,6 +140,8 @@ _VALIDATE = {
     OBJECT_NAMES: lambda d, c, n: _printable_names(d, c, n, NES),
     PROFILES: lambda d, c, n: _printable_names(d, c, n, PRS),
     EQUIP_PALETTE: lambda d, c, n: _tagref_class(d, c + CHUNK) == b'eqip',
+    RES_NAMES: lambda d, c, n: _printable_names(d, c, n, NES),
+    RES_PALETTE: lambda d, c, n: _tagref_class(d, c + CHUNK) == b'eqip',
 }
 
 
@@ -185,8 +209,14 @@ def _pool_end(data, chunk, count, elem_size, tagref_offsets):
 # --- writing ------------------------------------------------------------------
 
 def make_tagref(cls, path):
-    """A 16-byte in-struct tagref. path='' gives an empty ref, which pools nothing."""
-    return cls + b'\x00\x00\x00\x00' + struct.pack('<I', len(path)) + b'\xff\xff\xff\xff'
+    """A 16-byte in-struct tagref. path='' gives an empty ref, which pools nothing.
+
+    The class magic is stored REVERSED, like every other 4CC in this format ('eqip' is
+    written 'piqe'). Getting this wrong is silent until the tag is actually loaded, and
+    then tool.exe fails the whole build with "the group tag 'piqe' does not exist".
+    """
+    return cls[::-1] + b'\x00\x00\x00\x00' + struct.pack('<I', len(path)) \
+        + b'\xff\xff\xff\xff'
 
 
 def make_palette(path, cls=b'eqip'):
@@ -383,8 +413,50 @@ def add_camo_ability(data, names=CAMO_OBJECT_NAMES, offset=(0.0, 0.0, 0.5)):
     return added
 
 
+def add_camo_to_resource(data, names=CAMO_OBJECT_NAMES, tag=CAMO_TAG):
+    """Insert the camo pickups into a scenario_equipment_resource: palette entry, one
+    non-auto placement per player, and an object name for each. This is the copy that
+    actually reaches the build -- see the RES_* note above."""
+    have = names_in(data, RES_NAMES, NES)
+    if all(n in have for n in names):
+        return []
+
+    paths = []
+    c = locate(data, RES_PALETTE, PES)
+    if c is not None:
+        n = root_count(data, RES_PALETTE)
+        pool = c + CHUNK + n * PES
+        for i in range(n):
+            ln = struct.unpack_from('<I', data, c + CHUNK + i * PES + 8)[0]
+            paths.append(bytes(data[pool:pool + ln]).decode('latin-1') if ln else '')
+            pool += ln + 1 if ln else 0
+    pal = paths.index(tag) if tag in paths else insert_element(
+        data, RES_PALETTE, PES, make_palette(tag), paths=(tag,), tagref_offsets=(0x0,))
+
+    added = []
+    for nm in names:
+        if nm in names_in(data, RES_NAMES, NES):
+            continue
+        chunk = locate(data, RES_EQUIPMENT, IES)
+        if chunk is None:
+            raise NotImplementedError('resource has no equipment placement to copy from')
+        elem = bytearray(data[chunk + CHUNK:chunk + CHUNK + IES])
+        struct.pack_into('<hh', elem, 0x0, pal, len(names_in(data, RES_NAMES, NES)))
+        struct.pack_into('<I', elem, 0x4, FLAG_CREATE_AT_REST | FLAG_NOT_AUTOMATICALLY)
+        high = struct.unpack_from('<I', elem, UNIQUE_ID)[0] & 0xFFFF0000
+        top = max((struct.unpack_from('<I', data, o + UNIQUE_ID)[0] & 0xFFFF
+                   for _, o in elements(data, RES_EQUIPMENT, IES)), default=0)
+        struct.pack_into('<I', elem, UNIQUE_ID, high | ((top + 1) & 0xFFFF))
+        placement = insert_element(data, RES_EQUIPMENT, IES, bytes(elem))
+        insert_element(data, RES_NAMES, NES,
+                       make_object_name(nm, TYPE_EQUIPMENT, placement))
+        added.append(nm)
+    return added
+
+
 def outfit(data):
-    """Everything a mission scenario needs for the ability set. Idempotent."""
+    """Everything a mission SCENARIO needs. The camo pickups live in the equipment
+    RESOURCE, not here -- see add_camo_to_resource."""
     return {'profile': add_sprint_profile(data), 'camo': add_camo_ability(data)}
 
 
