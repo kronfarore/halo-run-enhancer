@@ -34,15 +34,24 @@ NODE_SIZE = 20
 NODE_VALUE = 0x10
 TYPE_REAL, TYPE_SHORT, TYPE_LONG, TYPE_BOOL = 6, 7, 8, 5
 
-# Every knob the ability script exposes, with the flag that drives it.
+# Every knob the ability script exposes, with the flag that drives it. Names track
+# sprint.hsc (Halo 1) since the per-player rewrite -- ability0/ability1 rather than one
+# shared ab_kind, and a cooldown per ability rather than one ab_cooldown.
 KNOBS = [
-    ('ab_kind', '--kind', int, '0 none, 2 overshield, 3 camo, 4 regeneration, '
-                               '5 shield calibration ladder'),
-    ('ab_shield', '--shield', float, 'overshield magnitude, engine units'),
+    ('ability0', '--p1', int, 'player 1: 0 none, 1 sprint, 2 overshield, 3 camo, '
+                              '4 regeneration'),
+    ('ability1', '--p2', int, 'player 2: same ids (needs the p2-vision-trigger '
+                              'halo2.dll patch to be triggerable)'),
+    ('os_shield', '--shield', float, 'overshield magnitude, engine units'),
+    ('os_ticks', '--os-duration', int, 'overshield window before the cooldown starts'),
     ('vit_max', '--vit-max', float, 'engine vitality scale (75 in Halo 1)'),
     ('medi_ticks', '--duration', int, 'regeneration duration, ticks (30/sec)'),
     ('medi_rate', '--rate', float, 'health added per tick, vitality units'),
-    ('ab_cooldown', '--cooldown', int, 'ticks before the button re-arms'),
+    ('sprint_ticks', '--sprint-duration', int, 'sprint window, ticks (30/sec)'),
+    ('sprint_cooldown', '--sprint-cooldown', int, 'ticks before sprint re-arms'),
+    ('os_cooldown', '--os-cooldown', int, 'ticks before overshield re-arms'),
+    ('medi_cooldown', '--medi-cooldown', int, 'ticks before regeneration re-arms'),
+    ('camo_cooldown', '--camo-cooldown', int, 'ticks before camo re-arms'),
     ('camo_ticks', '--camo-duration', int, 'total camo duration in ticks (30/sec)'),
     ('camo_reapply', '--camo-reapply', int,
      'ticks between camo re-applications; must stay under the ~4s engine cap'),
@@ -121,14 +130,18 @@ def main(argv=None):
 
     m = hp.open_map(a.map, 'Halo 2')
     present = _globals(m)
-    if 'ab_kind' not in present:
+    if 'ability0' not in present and 'ab_kind' not in present:
         raise SystemExit('%s has no ability script -- is it a Run Enhancer build?'
+                         % os.path.basename(a.map))
+    if 'ability0' not in present:
+        raise SystemExit('%s was built before per-player abilities (it carries ab_kind, '
+                         'not ability0/ability1). Rebuild it with h2_batch.py.'
                          % os.path.basename(a.map))
 
     if a.show or not any(getattr(a, f.lstrip('-').replace('-', '_')) is not None
                          for _, f, _, _ in KNOBS):
         for name, flag, _, helptext in KNOBS:
-            print('  %-12s %-10s %s' % (name, read_global(m, name), helptext))
+            print('  %-16s %-10s %s' % (name, read_global(m, name), helptext))
         return
 
     changed = False
@@ -138,7 +151,7 @@ def main(argv=None):
             continue
         before = read_global(m, name)
         after = write_global(m, name, val)
-        print('  %-12s %s -> %s' % (name, before, after))
+        print('  %-16s %s -> %s' % (name, before, after))
         changed = True
 
     if changed:

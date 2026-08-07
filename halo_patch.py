@@ -1818,15 +1818,18 @@ _CAMO_TAG_BY_GAME = {
 }
 # Halo 1 global name -> the Halo 2 script's name, or None where H2 has no counterpart
 # and the write is simply dropped.
+#
+# Nearly identity now: the per-player rewrite (h2_genscript.py) put the H2 script on H1
+# naming, so ability0/ability1, os_shield, os_ticks and the four separate cooldowns all
+# exist under their H1 names. Only the two H1 bookkeeping globals have no H2 twin.
+#
+# Maps built BEFORE that rewrite still carry the old shared names (ab_kind, ab_shield,
+# ab_cooldown). They are handled in _apply_sprint by falling back to ab_kind rather than
+# by aliasing here, so a stale deployed map keeps working and just runs one ability for
+# both players.
 _GLOBAL_ALIASES_H2 = {
-    'os_shield': 'ab_shield',
-    'sprint_cooldown': 'ab_cooldown',
-    'os_cooldown': 'ab_cooldown',
-    'medi_cooldown': 'ab_cooldown',
-    'camo_cooldown': 'ab_cooldown',
     'medi_heal': None,      # H2 heals purely from medi_rate
-    'os_ticks': None,       # H2's overshield is a one-shot set, with no duration
-    'os_body': None,
+    'os_body': None,        # H1-only, and unused there too
 }
 
 
@@ -1920,7 +1923,9 @@ def _apply_sprint(m, game, registry, cfg):
     # Halo 2 reuses the stock `unarmed` token, which every map has, so the ability
     # SCRIPT is the tell there instead.
     if is_h2:
-        if read_global(m, 'ab_kind') is None:
+        # `ability0` is the current per-player script; `ab_kind` is the older shared one,
+        # still accepted so a map deployed before the rewrite keeps working.
+        if read_global(m, 'ability0') is None and read_global(m, 'ab_kind') is None:
             return [{**ref, 'ok': True, 'skip': True,
                      'reason': 'no ability script on this map (not built with the mod)'}]
     elif not m.find_tags('weap', _SPRINT_WEAP_BY_GAME.get(gname, _SPRINT_WEAP)):
@@ -1955,28 +1960,31 @@ def _apply_sprint(m, game, registry, cfg):
                      'reason': '%s needs a map built with the current toolkit '
                                '(missing %s)' % (name, ', '.join(missing))}]
 
-    # Maps built with the multi-ability script carry ability0/ability1. A pre-rebuild
-    # map only knows sprint, gated by sprint_enabled0/1 (or one shared sprint_enabled).
-    # Halo 2 runs ONE ability for both players, and not by choice: it has no per-player
-    # input at all. H1 discriminates with unit_get_current_flashlight_state <unit>,
-    # edge-detected per player; H2 has no such function, and every one of its
-    # player_action_test_* verbs takes no argument and answers "did ANY player do this"
-    # (player_flashlight_on is documented as "true if any player has a flashlight on").
-    # So player 1's pick wins, and player 2's is reported as ignored rather than
-    # silently dropped.
+    # Maps built with the multi-ability script carry ability0/ability1 -- BOTH games now.
+    # A pre-rebuild map only knows sprint, gated by sprint_enabled0/1 (or one shared
+    # sprint_enabled).
+    #
+    # Halo 2 used to run ONE ability for both players, because the script API has no
+    # per-player input: H1 discriminates with unit_get_current_flashlight_state <unit>,
+    # and H2 has no such verb -- every player_action_test_* takes no argument. That is
+    # lifted by the `p2-vision-trigger` halo2.dll patch, which repoints the unused
+    # unit_get_enterable_by_player at player 2's slot of the action bitfield (see
+    # sprint_toolkit/h2_dll_patch.py). Maps rebuilt since then carry ability0/ability1
+    # like H1; maps deployed before it still carry ab_kind and fall back below.
     chosen = None
-    if is_h2:
+    wrote = False
+    for p in (0, 1):
+        if set_global(m, 'ability%d' % p,
+                      _ABILITY_IDS.get(pa.get(p, 'none'), 0)) is not None:
+            wrote = True
+    if not wrote and is_h2 and read_global(m, 'ab_kind') is not None:
+        # Legacy shared-ability map: player 1's pick wins, and player 2's is reported as
+        # ignored rather than silently dropped.
         chosen = pa.get(0, 'none')
         if chosen == 'none':
             chosen = pa.get(1, 'none')
         set_global(m, 'ab_kind', _ABILITY_IDS.get(chosen, 0))
         wrote = True
-    else:
-        wrote = False
-        for p in (0, 1):
-            if set_global(m, 'ability%d' % p,
-                          _ABILITY_IDS.get(pa.get(p, 'none'), 0)) is not None:
-                wrote = True
     if not wrote:
         s0 = 1 if pa.get(0) == 'sprint' else 0
         s1 = 1 if pa.get(1) == 'sprint' else 0
@@ -2051,10 +2059,11 @@ def _apply_sprint(m, game, registry, cfg):
     set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
     set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
 
-    # H2 has a single ab_cooldown rather than one per ability, and every *_cooldown
-    # above aliases onto it -- so whichever was written last would win by accident.
-    # Write the ACTIVE ability's cooldown here, after them all, so it wins on purpose.
-    if is_h2 and chosen and chosen != 'none':
+    # A LEGACY H2 map has a single ab_cooldown rather than one per ability, and every
+    # *_cooldown above aliases onto it -- so whichever was written last would win by
+    # accident. Write the ACTIVE ability's cooldown here, after them all, so it wins on
+    # purpose. Rebuilt maps carry the four separate cooldowns and skip this.
+    if chosen and chosen != 'none':
         cool = {'sprint': cfg.get('cooldown_ticks', 60),
                 'overshield': cfg.get('os_cooldown_ticks'),
                 'regeneration': cfg.get('medi_cooldown_ticks'),
@@ -2067,16 +2076,18 @@ def _apply_sprint(m, game, registry, cfg):
         # Nothing enabled: close the gates and leave the map at its vanilla baseline
         # speed (apply_run patches from the .bak baseline, so no speed edits = vanilla).
         results.append({**ref, 'ok': True, 'old': 'ability', 'new': 'off'})
-    elif is_h2:
-        # One selector for both players, so report what actually happens rather than
-        # echoing a per-player choice the engine cannot honour.
+    elif chosen:
+        # LEGACY H2 map, built before the per-player rewrite: one selector for both
+        # players, so report what actually happens rather than echoing a per-player
+        # choice this map cannot honour.
         results.append({**ref, 'effect': chosen.capitalize(), 'ok': True,
                         'old': 'ability', 'new': '%s on both players' % chosen})
         other = [pa.get(p, 'none') for p in (0, 1) if pa.get(p, 'none') not in ('none', chosen)]
         if other:
             results.append({**ref, 'ok': True, 'skip': True,
-                            'reason': 'Halo 2 has no per-player input, so one ability '
-                                      'runs for both players -- %s was not applied'
+                            'reason': 'this Halo 2 map predates per-player abilities, so '
+                                      'one runs for both players -- %s was not applied '
+                                      '(rebuild it to use both)'
                                       % ', '.join(sorted(set(other)))})
     else:
         for p in (0, 1):

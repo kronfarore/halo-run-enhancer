@@ -138,6 +138,40 @@ PATCHES = {
         'patched': bytes.fromhex('90' * 7),
         'note': "Arbiter camo fix, PART 2 of 2 (apply with no-camo-grant)",
     },
+    'p2-vision-trigger': {
+        'offset': 0x93ED10,            # VA 0x18093F910
+        # PER-PLAYER INPUT FOR HALO 2. The script API cannot tell the two co-op players
+        # apart: every `player_action_test_*` verb takes no argument, and there is no
+        # equivalent of Halo 1's `unit_get_current_flashlight_state <unit>`. So one
+        # unused script verb gets its meaning replaced.
+        #
+        # The action tests all read one bitfield through the global pointer at
+        # 0x1815E40D0, e.g. `player_action_test_vision_trigger` (+789160 -> +6C0580):
+        #     mov rax, [rip+0xF23B49]   ; -> 0x1815E40D0
+        #     mov eax, [rax+4]          ; action bits
+        #     shr eax, 0x14 / and al,1  ; bit 20 = vision trigger (flashlight)
+        # That target is an ARRAY with stride 0xB8 per player -- the writer at +6BFDD3
+        # indexes it as `imul rcx, player_index, 0xB8`. The readers use no index, so
+        # they read element 0: PLAYER 1 ONLY, despite what hs_doc.txt claims.
+        #
+        # `unit_get_enterable_by_player <unit>` (+785470, boolean) is used ZERO times by
+        # any campaign script, so its predicate is free. That predicate, +93F910, has
+        # exactly ONE caller -- the verb's own wrapper at +78548C -- so it can be
+        # rewritten in place with no collateral. It becomes the same five-instruction
+        # read at index 1:
+        #     mov rax, [rip+0xCA47B9]   ; -> 0x1815E40D0
+        #     mov eax, [rax+0xBC]       ; 0xB8 (stride) + 4 = PLAYER 2's bitfield
+        #     shr eax, 0x14 / and al,1  ; same bit 20
+        # The wrapper still evaluates and discards the <unit> argument, and still
+        # returns false when it is invalid, so the verb stays type-correct to the
+        # compiler. Pass any unit; the answer is about player 2 either way.
+        #
+        # The script then has both halves and can edge-detect per player exactly as
+        # Halo 1 does with fp0/fp1: vision_trigger = P1 held, this verb = P2 held.
+        'original': bytes.fromhex('4883ec28' '83f9ff' '7439' '488b05787af700' '488b50'),
+        'patched': bytes.fromhex('488b05b947ca00' '8b80bc000000' 'c1e814' '2401' 'c3'),
+        'note': 'unit_get_enterable_by_player now reads PLAYER 2 flashlight (per-player abilities)',
+    },
     'coop-no-forced-iron': {
         # Halo 2 ENFORCES Iron on Legendary co-op -- it is not a skull and not an
         # option, so there is no way to decline it in game. Both sites gate on the same
