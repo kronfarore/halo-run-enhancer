@@ -1728,7 +1728,11 @@ def set_global(m, name, value):
     Index (@0x28) indexes the Script Syntax Data blob (dataref @0x474; 56-byte
     header, then 20-byte nodes). Value TYPE is int16 @node+0x04 (5=bool, 6=real,
     7=short, 8=long); the constant is at node+0x10 (bool=1 byte, short=int16,
-    real=f32, long=i32). Returns (old, new) or None if the global is absent."""
+    real=f32, long=i32). Returns (old, new) or None if the global is absent.
+
+    Halo 2 keeps its globals somewhere else entirely, so those go through h2_tune."""
+    if _is_h2_map(m):
+        return _h2_global(m, name, value, write=True)
     scnr = next((k for k in m.tags if k[0] == 'scnr'), None)
     if scnr is None:
         return None
@@ -1759,8 +1763,10 @@ def set_global(m, name, value):
 
 
 def read_global(m, name):
-    """Read a Halo 1 script-global's init value by name. Same layout as set_global.
+    """Read a script-global's init value by name. Same layout as set_global.
     Returns the value, or None if the global isn't in this map."""
+    if _is_h2_map(m):
+        return _h2_global(m, name)
     scnr = next((k for k in m.tags if k[0] == 'scnr'), None)
     if scnr is None:
         return None
@@ -1794,6 +1800,67 @@ _ABILITY_IDS = {'none': 0, 'sprint': 1, 'overshield': 2, 'camo': 3, 'regeneratio
 _CAMO_TAG = 'powerups\\active camouflage'
 _CAMO_SECONDS = 5.0
 _CAMO_COOLDOWN_TICKS = 900      # 30s
+
+# --- per game ------------------------------------------------------------------
+# The two games' ability scripts were written years apart and do NOT share names or
+# shape. Halo 1 selects an ability PER PLAYER (ability0/ability1) and gives each its own
+# cooldown; Halo 2 runs one ability for both players (ab_kind) behind a single
+# ab_cooldown, and has no separate overshield duration. Only vit_max, medi_rate,
+# medi_ticks, sprint_ticks, camo_ticks and the fx_* set are spelled the same.
+_SPRINT_WEAP_BY_GAME = {
+    'Halo 1': _SPRINT_WEAP,
+    # H2 already shipped an invisible token -- the weapon melee-only characters carry.
+    'Halo 2': 'objects\\weapons\\melee\\unarmed\\unarmed',
+}
+_CAMO_TAG_BY_GAME = {
+    'Halo 1': _CAMO_TAG,
+    'Halo 2': 'objects\\powerups\\active_camouflage\\active_camouflage',
+}
+# Halo 1 global name -> the Halo 2 script's name, or None where H2 has no counterpart
+# and the write is simply dropped.
+_GLOBAL_ALIASES_H2 = {
+    'os_shield': 'ab_shield',
+    'sprint_cooldown': 'ab_cooldown',
+    'os_cooldown': 'ab_cooldown',
+    'medi_cooldown': 'ab_cooldown',
+    'camo_cooldown': 'ab_cooldown',
+    'medi_heal': None,      # H2 heals purely from medi_rate
+    'os_ticks': None,       # H2's overshield is a one-shot set, with no duration
+    'os_body': None,
+}
+
+
+def _is_h2_map(m):
+    """Halo 2 maps get the second-gen parser, which is also how the script globals are
+    laid out differently -- see _h2_global()."""
+    return type(m).__name__ == 'Halo2Map'
+
+
+def _h2_tune():
+    """Imported lazily: h2_tune imports THIS module, so a top-level import would be
+    circular."""
+    import importlib
+    import sys as _sys
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+    if here not in _sys.path:
+        _sys.path.insert(0, here)
+    return importlib.import_module('h2_tune')
+
+
+def _h2_global(m, name, value=None, write=False):
+    """Read or write a Halo 2 script global, going through h2_tune so the second-gen
+    layout lives in exactly one place (globals at scnr+0x1C0 elem 0x28, and the syntax
+    node table at scnr+0x23C -- NOT the 0x1A8 the Assembly plugin lists)."""
+    name = _GLOBAL_ALIASES_H2.get(name, name)
+    if name is None:
+        return None
+    t = _h2_tune()
+    if t.read_global(m, name) is None:
+        return None
+    if not write:
+        return t.read_global(m, name)
+    old = t.read_global(m, name)
+    return old, t.write_global(m, name, value)
 
 # The engine's absolute vitality scale, measured in-game: a full body/shield is 75
 # units. object_set_shield's argument is in 1/75 units (so x3 overshield = 3/75), and
@@ -1846,9 +1913,17 @@ def _apply_sprint(m, game, registry, cfg):
 
     No-op with a reported skip if the map wasn't built with the toolkit."""
     ref = {'effect': 'Abilities', 'tag': 'matg globals\\globals', 'field': 'ability'}
-    # Guard: the map must carry the sprint weapon tag (and thus the mod). Checked
-    # BEFORE any write so a plain map is never touched.
-    if not m.find_tags('weap', _SPRINT_WEAP):
+    gname = str(game).strip()
+    is_h2 = _is_h2_map(m)
+    # Guard: the map must actually carry the mod. Checked BEFORE any write so a plain
+    # map is never touched. Halo 1 is identified by its purpose-built sprint weapon;
+    # Halo 2 reuses the stock `unarmed` token, which every map has, so the ability
+    # SCRIPT is the tell there instead.
+    if is_h2:
+        if read_global(m, 'ab_kind') is None:
+            return [{**ref, 'ok': True, 'skip': True,
+                     'reason': 'no ability script on this map (not built with the mod)'}]
+    elif not m.find_tags('weap', _SPRINT_WEAP_BY_GAME.get(gname, _SPRINT_WEAP)):
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'no sprint weapon on this map (not built with the mod)'}]
     # Per-player ability. `player_abilities` is authoritative; otherwise fall back to
@@ -1868,7 +1943,8 @@ def _apply_sprint(m, game, registry, cfg):
     # ratchet health and shield to full.
     needs = {'regeneration': ('medi_rate', 'vit_max'), 'overshield': ('os_shield',),
              'camo': ('camo_ticks',)}
-    if 'camo' in active and not m.find_tags('eqip', _CAMO_TAG):
+    camo_tag = _CAMO_TAG_BY_GAME.get(gname, _CAMO_TAG)
+    if 'camo' in active and not m.find_tags('eqip', camo_tag):
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'camo needs a map built with the camo pickup '
                            '(rebuild with the current toolkit)'}]
@@ -1881,10 +1957,26 @@ def _apply_sprint(m, game, registry, cfg):
 
     # Maps built with the multi-ability script carry ability0/ability1. A pre-rebuild
     # map only knows sprint, gated by sprint_enabled0/1 (or one shared sprint_enabled).
-    wrote = False
-    for p in (0, 1):
-        if set_global(m, 'ability%d' % p, _ABILITY_IDS.get(pa.get(p, 'none'), 0)) is not None:
-            wrote = True
+    # Halo 2 runs ONE ability for both players, and not by choice: it has no per-player
+    # input at all. H1 discriminates with unit_get_current_flashlight_state <unit>,
+    # edge-detected per player; H2 has no such function, and every one of its
+    # player_action_test_* verbs takes no argument and answers "did ANY player do this"
+    # (player_flashlight_on is documented as "true if any player has a flashlight on").
+    # So player 1's pick wins, and player 2's is reported as ignored rather than
+    # silently dropped.
+    chosen = None
+    if is_h2:
+        chosen = pa.get(0, 'none')
+        if chosen == 'none':
+            chosen = pa.get(1, 'none')
+        set_global(m, 'ab_kind', _ABILITY_IDS.get(chosen, 0))
+        wrote = True
+    else:
+        wrote = False
+        for p in (0, 1):
+            if set_global(m, 'ability%d' % p,
+                          _ABILITY_IDS.get(pa.get(p, 'none'), 0)) is not None:
+                wrote = True
     if not wrote:
         s0 = 1 if pa.get(0) == 'sprint' else 0
         s1 = 1 if pa.get(1) == 'sprint' else 0
@@ -1942,8 +2034,8 @@ def _apply_sprint(m, game, registry, cfg):
     if 'camo' in active:
         secs = float(cfg.get('camo_seconds') or _CAMO_SECONDS)
         eq = registry.get('eqip')
-        if eq is not None and m.find_tags('eqip', _CAMO_TAG):
-            m.apply_field('eqip', _CAMO_TAG, 'Powerup Time', 'set', secs, eq)
+        if eq is not None and m.find_tags('eqip', camo_tag):
+            m.apply_field('eqip', camo_tag, 'Powerup Time', 'set', secs, eq)
         set_global(m, 'camo_ticks', max(1, int(cfg.get('camo_duration_ticks')
                                                or round(secs * 30))))
         set_global(m, 'camo_cooldown',
@@ -1959,11 +2051,33 @@ def _apply_sprint(m, game, registry, cfg):
     set_global(m, 'sprint_ticks', int(cfg.get('duration_ticks', 90)))
     set_global(m, 'sprint_cooldown', int(cfg.get('cooldown_ticks', 60)))
 
+    # H2 has a single ab_cooldown rather than one per ability, and every *_cooldown
+    # above aliases onto it -- so whichever was written last would win by accident.
+    # Write the ACTIVE ability's cooldown here, after them all, so it wins on purpose.
+    if is_h2 and chosen and chosen != 'none':
+        cool = {'sprint': cfg.get('cooldown_ticks', 60),
+                'overshield': cfg.get('os_cooldown_ticks'),
+                'regeneration': cfg.get('medi_cooldown_ticks'),
+                'camo': cfg.get('camo_cooldown_ticks', _CAMO_COOLDOWN_TICKS)}.get(chosen)
+        if cool is not None:
+            set_global(m, 'ab_cooldown', max(0, int(cool)))
+
     results = []
     if not active:
         # Nothing enabled: close the gates and leave the map at its vanilla baseline
         # speed (apply_run patches from the .bak baseline, so no speed edits = vanilla).
         results.append({**ref, 'ok': True, 'old': 'ability', 'new': 'off'})
+    elif is_h2:
+        # One selector for both players, so report what actually happens rather than
+        # echoing a per-player choice the engine cannot honour.
+        results.append({**ref, 'effect': chosen.capitalize(), 'ok': True,
+                        'old': 'ability', 'new': '%s on both players' % chosen})
+        other = [pa.get(p, 'none') for p in (0, 1) if pa.get(p, 'none') not in ('none', chosen)]
+        if other:
+            results.append({**ref, 'ok': True, 'skip': True,
+                            'reason': 'Halo 2 has no per-player input, so one ability '
+                                      'runs for both players -- %s was not applied'
+                                      % ', '.join(sorted(set(other)))})
     else:
         for p in (0, 1):
             if pa.get(p, 'none') == 'none':
