@@ -39,14 +39,18 @@ TOOL = os.path.join(H2EK, 'tool.exe')
 #                       which the MCC install does not have -- a 54 MB map against ~90 MB
 #                       stock, with assets missing in game.
 #   multilingual_sounds bundles every language set (1636 MB).
-#   remastered_support  does NOTHING. Measured: building twice with identical flags
-#                       differs in exactly the same 18 MB-chunks as building with the
-#                       flag against without it (chunk 0 and a timestamped tail), so the
-#                       whole difference is build nondeterminism. That figures -- the EK
-#                       ships the classic 2004 tags, and the H2A art lives separately in
-#                       groundhog/maps/shared.map keyed to the maps Bungie shipped. A
-#                       rebuilt map has no remastered binding and plays classic-only,
-#                       which is true of every map this toolkit builds.
+#   remastered_support  does NOTHING to the output. Measured: building twice with
+#                       identical flags differs in exactly the same 18 MB-chunks as
+#                       building with the flag against without it (chunk 0 and a
+#                       timestamped tail), so the whole difference is build
+#                       nondeterminism.
+#
+# That does NOT mean rebuilt maps are classic-only -- they are not. Confirmed in game:
+# every deployed map offers BOTH classic and remastered view. The H2A art lives in
+# groundhog/maps/ (shared.map is 1.3 GB) and is bound to the LEVEL, not to anything
+# inside the classic map, so rebuilding the gameplay side leaves the remastered layer
+# working. Which is exactly why the flag is a no-op: there is no remastered content in
+# this map for it to include or omit.
 CACHE_FLAGS = 'compress'
 PLATFORM = 'win64'
 MAPS_OUT = os.path.join(H2EK, 'h2_maps_win64_dx11')
