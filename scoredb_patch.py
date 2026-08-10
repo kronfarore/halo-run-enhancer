@@ -50,7 +50,113 @@ ENEMY_TO_BUCKET = {
     'Flood Infection Form': None,
 }
 
+# Bosses need class+type precision: Tartarus is not "every brute", he is the
+# hero/brute entry. `None` means the boss has no scoredb entry at all.
+BOSS_TO_BUCKET = {
+    'Prophet Regret': ('leader', 'elite'),
+    'Heretic Leader': ('leader', 'elite'),
+    'Brute Chieftain': ('hero', 'brute'),
+    'Tartarus': ('hero', 'brute'),
+    'Sentinel Enforcer': ('*', 'sentinel'),
+    # 343 Guilty Spark is not a scored kill in scoredb.xml.
+    '343 Guilty Spark': None,
+}
+
 GENERIC_TAG_HINT = 'generic'
+
+# One weight per category instead of 245 per-effect lines. Set by the user
+# 2026-08-10 after reviewing the category overview; the scale is RELATIVE (it only
+# ranks enemies against each other), with overall payout controlled separately by
+# `step` and the Options multiplier.
+CATEGORY_WEIGHTS = {
+    'durability': 5,
+    'rate_of_fire': 5,
+    'damage': 4,
+    'ranks': 4,
+    'accuracy': 3,
+    'range': 3,
+    'grenades': 3,
+    'flood_forms': 3,
+    'positioning': 2,
+    'senses': 1,
+    'aggression': 1,
+    'equipment': 1,
+}
+
+# Effect name -> category. Every one of halo.json's 103 enemy-effect names is here
+# exactly once; `test_scoredb` fails if halo.json grows a name this map lacks, so a
+# new effect cannot silently score zero.
+CATEGORIES = {
+    'durability': [
+        'Body Vitality', 'Shield Vitality', 'Shield Recharge', 'Body Recharge',
+        'Enemy Vitality', 'Enemy Shield', 'Enemy Recharge', 'Enforcer Chassis',
+        'Hologram Body Vitality', 'Hologram Shield Vitality',
+    ],
+    'damage': [
+        'Weapon Damage Modifier', 'Melee Damage', 'Beam Damage', 'Enemy damage',
+        'Pop Damage', 'Explosion Damage', 'Hunter Fuel Rod Damage',
+        'Gravity Cannon', 'Gravity Cannon Projectile',
+        'Beam', 'Beam Projectile', 'Needler', 'Needler Damage',
+        'Needler Projectile', 'Rocket', 'Rocket Damage', 'Rocket Projectile',
+        'Chieftain Hammer Damage', 'Gravity Hammer Damage',
+    ],
+    'accuracy': [
+        'Accuracy', 'Target Tracking & Leading', 'Projectile Error', 'Burst Error',
+        'Guidance Vs Player', 'Hologram Accuracy',
+        'Hologram Target Tracking & Leading', 'AI Projectile Speed',
+    ],
+    'rate_of_fire': [
+        'Rate of Fire', 'Firing Patterns', 'Burst Seperation', 'Special Fire Delay',
+        'New Target Delay', 'Special-Case Firing', 'Overcharge Chance',
+        'Hologram Rate of Fire', 'Beam Rate of Fire',
+        'Hunter Fuel Rod Rounds per Second', 'Hunter Fuel Rod Charging Time',
+        'Hunter Fuel Rod Projectiles Per Shot',
+    ],
+    'senses': [
+        'Vision', 'Hearing Distance', 'Perception', 'Suicide Sensing Distance',
+    ],
+    'range': [
+        'Maximum Firing Distance', 'Maximum Firing Distance Hunter Fuel Rod',
+        'Projectile Range Hunter Fuel Rod', 'Pop Radius', 'Explosion Radius',
+        'Beam Range', 'Chieftain Hammer Radius', 'Gravity Hammer Radius',
+    ],
+    'aggression': [
+        'Melee Behavior', 'Melee Leap', 'Melee Delay Scale', 'Berserk',
+        'Elite Berserk', 'Hunter Berserk', 'Combatform Berserk',
+        'Shield down Berserk', 'More Berserking', 'Kamikaze', 'Leader Charge',
+        'Gravity Throne', 'Grapple Melee',
+    ],
+    'positioning': [
+        'Cover Properties', 'Cover Chance', 'Firing Positions',
+        'Dive From Grenade Chance', 'Retreat', 'Leader Leash',
+        'Placement Properties', 'Movement Switching', 'Panic', 'Stun Behavior',
+        'Player Stun Time', 'Player Vehicle Ram Chance',
+    ],
+    'grenades': [
+        'Grenades', 'Grenades Chance', 'Grenade Scales', 'Grenade Properties',
+    ],
+    'ranks': [
+        'Upgrade Chance', 'Major Upgrades (Normal)', 'Major Upgrades (Few)',
+        'Major Upgrades (Many)',
+    ],
+    'equipment': [
+        'Deployable Shield Use', 'Equipment Use Chance',
+    ],
+    'flood_forms': [
+        'Infection Forms', 'Infestation Speed', 'Stealth Morphs', 'Tank Form',
+        'Stalker Form', 'Ranged Form', 'Group Morph',
+    ],
+}
+
+NAME_TO_CATEGORY = {n: c for c, names in CATEGORIES.items() for n in names}
+
+
+def weight_of(effect_name, weights=None):
+    """The score weight of an effect, or 0 if its name is not categorised."""
+    cat = NAME_TO_CATEGORY.get(effect_name)
+    if not cat:
+        return 0
+    return (weights or CATEGORY_WEIGHTS).get(cat, 0)
 
 
 def _fields(target_list):
@@ -143,8 +249,69 @@ def parse_entries(xml_text):
 
 
 def bucket_of(attrs):
+    """(class, type) for an entry, e.g. ('hero', 'brute')."""
     t = attrs.get('type', '')
-    return t.rsplit('_type_', 1)[-1] if '_type_' in t else None
+    c = attrs.get('class', '')
+    return (c.rsplit('_class_', 1)[-1] if '_class_' in c else None,
+            t.rsplit('_type_', 1)[-1] if '_type_' in t else None)
+
+
+def _lookup(multipliers, bucket):
+    """Exact (class, type) wins; ('*', type) applies to every class of that type."""
+    cls, typ = bucket
+    if (cls, typ) in multipliers:
+        return multipliers[(cls, typ)]
+    return multipliers.get(('*', typ))
+
+
+def multipliers_for(effects, specific_group, weights=None, step=0.05,
+                    cap_mult=None):
+    """Turn a run's applied effects into a per-bucket score multiplier.
+
+    `effects` is halo_patch.collect_effects output. Each enemy effect adds its
+    category weight to every enemy it actually reaches -- which for a generic-tag
+    effect means only the enemies that have NOT overridden its fields. The summed
+    weight becomes `1 + step * total`, so a run that stacks nasty effects on Elites
+    pays more for Elites specifically.
+    """
+    totals = {}
+    for eff in effects or []:
+        if eff.get('cat') not in (2, 3, 5):      # enemy-specific / enemy-general / boss
+            continue
+        w = weight_of(eff.get('name'), weights)
+        if not w:
+            continue
+        w *= max(1, int(eff.get('count') or 1))
+        if eff.get('cat') == 5:
+            bucket = BOSS_TO_BUCKET.get(eff.get('enemy') or eff.get('boss'))
+            if bucket:
+                totals[bucket] = totals.get(bucket, 0) + w
+            continue
+        if eff.get('cat') == 2 and not eff.get('_generic_target'):
+            names = [eff.get('enemy')]
+        else:
+            names = effect_targets(eff, eff.get('enemy'), specific_group)
+        for nm in names:
+            b = ENEMY_TO_BUCKET.get(nm)
+            if not b:
+                continue                          # e.g. Flood Infection Form
+            totals[('*', b)] = totals.get(('*', b), 0) + w
+
+    # A boss bucket is a SUBSET of its type, not an alternative to it: effects that
+    # buffed every Brute also buffed Tartarus, so his (hero, brute) weight has to
+    # include the type-wide total. Without this the exact key shadows the wider one
+    # in _lookup and a boss can end up worth LESS than a rank-and-file enemy.
+    for (cls, typ) in list(totals):
+        if cls != '*':
+            totals[(cls, typ)] += totals.get(('*', typ), 0)
+
+    out = {}
+    for bucket, total in totals.items():
+        m = 1.0 + step * total
+        if cap_mult:
+            m = min(m, cap_mult)
+        out[bucket] = m
+    return out
 
 
 def scale_xml(xml_text, multipliers, cap=None):
@@ -158,7 +325,7 @@ def scale_xml(xml_text, multipliers, cap=None):
     last = 0
     changed = 0
     for (start, end), attrs in entries:
-        mult = multipliers.get(bucket_of(attrs))
+        mult = _lookup(multipliers, bucket_of(attrs))
         if not mult or mult == 1:
             continue
         chunk = xml_text[start:end]
