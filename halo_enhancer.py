@@ -5207,22 +5207,28 @@ class HaloGUI(QMainWindow):
         used_enemies.add(enemy.get('name', ''))
         return enemy
 
+    def _drop_taken_one_per_run(self, weapons):
+        """Sprint and camo are one-per-run picks: never offer them once either player
+        owns them, no matter which pool fed us. A backstop to _ability_offer_pool, not
+        a substitute — every card an offer path can PUT ON SCREEN must pass through
+        here, which means both the initial build and the rerolls, since rerolls do not
+        go through _build_weapon_choices."""
+        rs = getattr(self, 'run_state', None)
+        if rs is None:
+            return weapons
+        held = {ability_of_item(w) for w in
+                rs.weapons_for('player1') + rs.weapons_for('player2')
+                if is_ability_item(w)}
+        gone = held & ABILITY_ONE_PER_RUN
+        if not gone:
+            return weapons
+        return [w for w in weapons if ability_of_item(w) not in gone]
+
     def _build_weapon_choices(self, weapons, enemy_mods, count=3, with_enemy=True):
         choices = []
         used_weapons = set()
         used_enemies = set()
-        # Sprint and camo are one-per-run picks: never offer them once either player owns
-        # them, no matter which pool fed us. This is the single choke point every
-        # selection card (P1, P2, New Weapon, reroll) passes through, so enforcing it
-        # here guarantees it — a backstop to _ability_offer_pool, not a substitute.
-        rs = getattr(self, 'run_state', None)
-        if rs is not None:
-            held = {ability_of_item(w) for w in
-                    rs.weapons_for('player1') + rs.weapons_for('player2')
-                    if is_ability_item(w)}
-            gone = held & ABILITY_ONE_PER_RUN
-            if gone:
-                weapons = [w for w in weapons if ability_of_item(w) not in gone]
+        weapons = self._drop_taken_one_per_run(weapons)
         for i in range(count):
             available = [w for w in weapons if w not in used_weapons]
             if not available:
@@ -5240,6 +5246,8 @@ class HaloGUI(QMainWindow):
     def _reroll_weapon_choice(self, choice_id, weapon_pool=None, exclude_weapons=(),
                               player_label="", with_enemy=True):
         weapons = weapon_pool if weapon_pool is not None else self.db.get_available_weapons()
+        # Same backstop the initial build applies — a reroll is an offer path too.
+        weapons = self._drop_taken_one_per_run(weapons)
         exclude_weapons = set(exclude_weapons)
         enemy_mods = self._enemy_pool()
         for card in self.pair_cards:
@@ -5256,7 +5264,12 @@ class HaloGUI(QMainWindow):
             avail = [w for w in weapons
                      if w not in exclude_weapons and w not in used_weapons]
             if not avail:
-                avail = [w for w in weapons if w not in exclude_weapons] or list(weapons)
+                # Relaxing used_weapons is fine — two cards showing the same weapon is
+                # only cosmetic. exclude_weapons is NOT relaxable: it carries the other
+                # player's weapon (P2's reroll) and the player's own owned weapons (the
+                # manual path), so falling back to the whole pool would offer a weapon
+                # the caller specifically said is not offerable. Better to say so below.
+                avail = [w for w in weapons if w not in exclude_weapons]
             if not avail:
                 # Nothing left to offer — e.g. the last candidate was just blacklisted.
                 # Leave the card as it is and say so, rather than raising on an empty
