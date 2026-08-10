@@ -149,6 +149,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h3_equipment_in_rolls', 'equipment_need_weapon',
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
+               'score_scaling', 'score_step', 'score_cap_mult',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -379,6 +380,13 @@ CONFIG = {
     "auto_new_weapon_abilities": False,
     "auto_new_weapon_duals": False,
     "auto_new_weapon_upgrades": False,
+    # Metagame scoring: pay more per kill for enemies the run has made nastier.
+    # This edits <mcc_root>\Data\UI\scoredb.xml, OUTSIDE the map folders, and MCC
+    # only re-reads that file at startup — so it is opt-in and off by default, and
+    # every place it surfaces must say a restart is required.
+    "score_scaling": False,
+    "score_step": 0.05,        # multiplier per point of summed effect weight
+    "score_cap_mult": 0.0,     # 0 = uncapped; otherwise the largest multiplier
     # Deny specific equipment to the player. Grouped the way they play: two
     # "deny the enemy information" pieces, two "become untouchable" pieces.
     "remove_superflare_jammer": False,
@@ -2956,6 +2964,47 @@ class MagnitudeEditorDialog(QDialog):
             elif item.layout():
                 self._clear_layout(item.layout())
 
+    def _apply_score_scaling(self):
+        """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
+
+        Returns result rows rather than raising: this writes a different file than the
+        map patch, and a map patch that actually succeeded must not be reported as
+        failed because a side file could not be written (missing MCC root, the file
+        read-only after a Steam verify, and so on)."""
+        import scoredb_patch
+        rows = []
+        path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+        if not os.path.exists(path):
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                     'ok': False, 'reason': 'not found under the MCC folder — set '
+                                            'the MCC root in Options'}]
+        db = getattr(self.parent_gui, 'db', None)
+        data = getattr(db, 'data', None) or {}
+        spec = (data.get('Enemy modifiers') or {}).get('Specific Enemy modifier') or {}
+        if not spec:
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                     'ok': False, 'reason': 'halo.json enemy data unavailable'}]
+        try:
+            cap = float(CONFIG.get('score_cap_mult') or 0) or None
+            mults = scoredb_patch.multipliers_for(
+                self.effects, spec,
+                step=float(CONFIG.get('score_step', 0.05)), cap_mult=cap)
+            if not mults:
+                return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                         'ok': True, 'skip': True,
+                         'reason': 'no enemy effects in this run to score'}]
+            changed, _ = scoredb_patch.apply(path, mults, cap=None)
+        except Exception as e:
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                     'ok': False, 'reason': str(e)}]
+        top = sorted(mults.items(), key=lambda kv: -kv[1])[:3]
+        detail = ', '.join('%s x%.2f' % (b[1], m) for b, m in top)
+        rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
+                     'ok': True,
+                     'reason': '%d entries rescaled (%s) — RESTART MCC to apply'
+                               % (changed, detail)})
+        return rows
+
     def _remove_effect(self, eff):
         """Delete an effect from the run itself, not just from this patch session.
 
@@ -3928,7 +3977,9 @@ class MagnitudeEditorDialog(QDialog):
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
-                  + ([f"enable {', '.join(active_abilities)}"] if sprint_on else []))
+                  + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
+                  + (["rescale metagame scores (needs an MCC restart)"]
+                     if CONFIG.get('score_scaling') else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -3969,6 +4020,12 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
                             'ok': True, 'skip': True, 'reason': 'no value changed'})
+
+        # Metagame scores last, and never fatally: it writes a different file than the
+        # map patch, so a failure here must not make a SUCCESSFUL map patch look failed.
+        # Reported as a normal result row so the summary and the patch log both record it.
+        if CONFIG.get('score_scaling'):
+            results.extend(self._apply_score_scaling())
 
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
@@ -4923,6 +4980,61 @@ class OptionsDialog(QDialog):
 
         layout.addWidget(patchg)
 
+        # ---- Metagame scoring ----
+        # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
+        # to <mcc_root>\Data\UI\scoredb.xml, and MCC parses that file only at startup.
+        # So it is off by default and the restart requirement is stated on the group
+        # itself, not buried in a tooltip -- a patch applied to a running game does
+        # nothing at all and otherwise just looks broken.
+        scoreg = QGroupBox("Metagame score (Data\\UI\\scoredb.xml)")
+        sform = QFormLayout(scoreg)
+        sform.setLabelAlignment(Qt.AlignRight)
+
+        self.score_scaling_cb = QCheckBox("Enemies made nastier are worth more points")
+        self.score_scaling_cb.setChecked(bool(CONFIG.get('score_scaling')))
+        self.score_scaling_cb.setToolTip(
+            "On patch, scale each enemy's campaign metagame score by the effects the "
+            "run has applied to it. An effect's weight comes from its category "
+            "(durability and rate of fire count most, senses and aggression least).\n\n"
+            "Effects on a shared 'generic' tag only raise the score of the enemies "
+            "that actually use it — an enemy that overrides those fields on its own "
+            "tag is left out.\n\n"
+            "The original file is backed up as scoredb.xml.bak and every patch "
+            "re-scales from that baseline, so this never compounds.")
+        sform.addRow("Scale scores:", self.score_scaling_cb)
+
+        self.score_step = QDoubleSpinBox()
+        self.score_step.setRange(0.0, 1.0)
+        self.score_step.setSingleStep(0.01)
+        self.score_step.setDecimals(3)
+        self.score_step.setValue(float(CONFIG.get('score_step', 0.05)))
+        self.score_step.setToolTip("How much one point of effect weight is worth: the "
+                                   "multiplier is 1 + step x total weight. At 0.05 a "
+                                   "heavily modified enemy lands around 2x.")
+        sform.addRow("    ↳ Per weight point:", self.score_step)
+
+        self.score_cap = QDoubleSpinBox()
+        self.score_cap.setRange(0.0, 50.0)
+        self.score_cap.setSingleStep(0.5)
+        self.score_cap.setDecimals(1)
+        self.score_cap.setValue(float(CONFIG.get('score_cap_mult', 0.0)))
+        self.score_cap.setToolTip("Largest multiplier any enemy may reach. 0 = no cap.")
+        sform.addRow("    ↳ Cap multiplier:", self.score_cap)
+
+        score_note = QLabel("MCC reads this file only at startup — restart the game "
+                            "for a score change to take effect.")
+        score_note.setWordWrap(True)
+        score_note.setStyleSheet("color:#c8a45a; font-size:11px;")
+        sform.addRow("", score_note)
+
+        def _sync_score(_=False):
+            on = self.score_scaling_cb.isChecked()
+            self.score_step.setEnabled(on)
+            self.score_cap.setEnabled(on)
+        self.score_scaling_cb.toggled.connect(_sync_score)
+        _sync_score()
+        layout.addWidget(scoreg)
+
         # ---- Halo 2 engine patches ----
         # These edit halo2.dll, not a map, so they do NOT ride on the dialog's OK the
         # way every other option does: they take effect outside any run and outlive it.
@@ -5132,6 +5244,9 @@ class OptionsDialog(QDialog):
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
+            'score_scaling': self.score_scaling_cb.isChecked(),
+            'score_step': round(self.score_step.value(), 3),
+            'score_cap_mult': round(self.score_cap.value(), 1),
             'auto_new_weapon_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
