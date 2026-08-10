@@ -6183,7 +6183,9 @@ class HaloGUI(QMainWindow):
             return f"{mod.get('weapon', primary_weapon)} - {mod['name']}"
         return "—"
 
-    @staticmethod
+    # NOT a @staticmethod, unlike its neighbours here: the generic-tag check needs
+    # self.db and the current game. It carried the decorator anyway, which made every
+    # call bind the mod to `self` and raise as soon as a round history existed.
     def _enemy_effect_label(self, mod):
         """Round-summary label for an enemy modifier: the effect name plus which
         enemy it was picked for — 'Cover Chance (Elite)' for a specific enemy, or
