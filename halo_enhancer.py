@@ -147,6 +147,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
+               'auto_new_weapon_abilities', 'auto_new_weapon_duals',
+               'auto_new_weapon_upgrades',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -370,6 +372,13 @@ CONFIG = {
     "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
     "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
     "equipment_need_weapon": False,     # ...and only once the player holds a real gun
+    # What the AUTOMATIC new-weapon rolls (new_weapon_chance) may offer beyond the
+    # level's plain weapon pool. The New Weapon BUTTON always offers duals and
+    # upgrades; these three let the automatic rolls do the same. Default False, which
+    # is exactly what the automatic rolls did before the options existed.
+    "auto_new_weapon_abilities": False,
+    "auto_new_weapon_duals": False,
+    "auto_new_weapon_upgrades": False,
     # Deny specific equipment to the player. Grouped the way they play: two
     # "deny the enemy information" pieces, two "become untouchable" pieces.
     "remove_superflare_jammer": False,
@@ -564,6 +573,87 @@ def gate_offer_pool(db, weapons, run_state, player=None):
     return [w for w in weapons
             if not (gate_gren and db.is_grenade(w))
             and not (gate_equip and db.is_equipment(w))]
+
+
+# ---------------------------------------------------------------------------
+# Offer-pool rules shared by BOTH new-weapon sources: the New Weapon button
+# (MainWindow._weapon_offer_pool) and the automatic per-pair rolls
+# (RunEnhancer._new_weapon_pool). They used to exist only in the button's path,
+# which is why the automatic rolls silently never offered abilities, duals or
+# upgrades. Keep the rule here and let both paths call it, so the two cannot
+# drift apart again.
+# ---------------------------------------------------------------------------
+
+def game_at_least(db, game, min_game):
+    """True if `game` is `min_game` or later in JSON game order."""
+    games = db.get_games()
+    if game in games and min_game in games:
+        return games.index(game) >= games.index(min_game)
+    return True                             # unknown ordering -> don't restrict
+
+
+def upgrade_allowed_here(game, weapon):
+    """False if `weapon` is restricted to games other than `game`. Covers weapons
+    that simply don't exist in a later game (the Brute Plasma Rifle) or stopped
+    being dual-wieldable (the Halo 3 Needler)."""
+    allowed = CONFIG.get('weapon_only_in_games', {}).get(weapon)
+    return True if not allowed else game in allowed
+
+
+def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
+    """The items a player unlocks by what they ALREADY own: 'Dual <W>' for each
+    owned one-handed weapon (#7), and upgrade weapons whose base is owned (#3).
+    Both only from their configured game onward. `owned` is that player's weapons;
+    `blacklist` is the run blacklist (labels)."""
+    owned = set(owned)
+    out = []
+    if duals and game_at_least(db, game, CONFIG.get('dual_wield_from_game', 'Halo 2')):
+        one_handed = CONFIG.get('one_handed_weapons', [])
+        for w in owned:
+            if w in one_handed and not w.startswith('Dual '):
+                dual = f"Dual {w}"
+                if (dual not in owned and db.weapon_label(dual) not in blacklist
+                        and upgrade_allowed_here(game, dual)):
+                    out.append(dual)
+    if upgrades and game_at_least(db, game, CONFIG.get('upgrades_from_game', 'Halo 2')):
+        for upgrade, base in CONFIG.get('weapon_upgrades', {}).items():
+            if not upgrade_allowed_here(game, upgrade):
+                continue
+            if (base in owned and upgrade not in owned
+                    and db.weapon_label(upgrade) not in blacklist):
+                out.append(upgrade)
+    return out
+
+
+def ability_offer_pool(db, game, run_state, player=None):
+    """The ability items offerable in a weapon selection. H1 only, and only when
+    abilities are configured as a drafted pick (not 'start with'). A player who
+    already holds an ability isn't offered another — one ability per player, since
+    the script runs exactly one per player. Sprint and camo additionally drop out
+    once EITHER player owns them (see ABILITY_ONE_PER_RUN). With 'requires a gun' on
+    it's gated to players who already hold a real weapon, which also keeps abilities
+    out of the very first pick, when nobody is armed."""
+    if game != 'Halo 1':
+        return []
+    if not (CONFIG.get('sprint_feature') and CONFIG.get('sprint_as_card')):
+        return []
+    if CONFIG.get('sprint_start_with'):
+        return []                       # already always on — a card would be moot
+    if run_state is None:
+        return []
+    players = [player] if player else ['player1', 'player2']
+    if any(any(is_ability_item(w) for w in run_state.weapons_for(p)) for p in players):
+        return []                       # that player already has their one ability
+    if CONFIG.get('sprint_need_weapon'):
+        if not all(any(is_real_weapon(db, w) for w in run_state.weapons_for(p))
+                   for p in players):
+            return []
+    held = {ability_of_item(w) for w in
+            run_state.weapons_for('player1') + run_state.weapons_for('player2')
+            if is_ability_item(w)}
+    offered = CONFIG.get('abilities_offered') or ['sprint']
+    return [item for item, ab in ABILITY_ITEMS.items()
+            if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)]
 
 
 def card_metrics():
@@ -4760,6 +4850,40 @@ class OptionsDialog(QDialog):
                                           "same number of new-weapon cards. 0 disables.")
         rform.addRow("New-weapon chance:", self.new_weapon_chance)
 
+        # What an automatic new-weapon card may draw beyond the level's plain weapon
+        # pool. The New Weapon BUTTON always offers duals and upgrades; without these
+        # the automatic rolls silently could not.
+        self.auto_nw_abilities_cb = QCheckBox("Abilities")
+        self.auto_nw_abilities_cb.setChecked(bool(CONFIG.get('auto_new_weapon_abilities')))
+        self.auto_nw_abilities_cb.setToolTip("Let an automatic new-weapon card offer an ability "
+                                             "(Sprint / Overshield / Regeneration / Camo), not just "
+                                             "the New Weapon button. Halo 1 only, and still subject "
+                                             "to the ability options: one per player, and Sprint and "
+                                             "Camo only once per run.")
+        rform.addRow("    ↳ Rolls may offer:", self.auto_nw_abilities_cb)
+
+        self.auto_nw_duals_cb = QCheckBox("Dual-wield versions of weapons already held")
+        self.auto_nw_duals_cb.setChecked(bool(CONFIG.get('auto_new_weapon_duals')))
+        self.auto_nw_duals_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
+                                         "a 'Dual <Weapon>' turns up only once the player holds "
+                                         "that one-handed weapon.")
+        rform.addRow("", self.auto_nw_duals_cb)
+
+        self.auto_nw_upgrades_cb = QCheckBox("Upgrade weapons whose base is already held")
+        self.auto_nw_upgrades_cb.setChecked(bool(CONFIG.get('auto_new_weapon_upgrades')))
+        self.auto_nw_upgrades_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
+                                            "an upgrade weapon is offered only once its base "
+                                            "weapon is owned.")
+        rform.addRow("", self.auto_nw_upgrades_cb)
+
+        def _sync_auto_nw(_=False):
+            on = self.new_weapon_chance.value() > 0
+            for cb in (self.auto_nw_abilities_cb, self.auto_nw_duals_cb,
+                       self.auto_nw_upgrades_cb):
+                cb.setEnabled(on)           # nothing to widen if rolls are disabled
+        self.new_weapon_chance.valueChanged.connect(_sync_auto_nw)
+        _sync_auto_nw()
+
         self.special_rate = QDoubleSpinBox()
         self.special_rate.setRange(0.0, 2.0)
         self.special_rate.setSingleStep(0.05)
@@ -4999,6 +5123,9 @@ class OptionsDialog(QDialog):
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
+            'auto_new_weapon_abilities': self.auto_nw_abilities_cb.isChecked(),
+            'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
+            'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
             'equipment_need_weapon': self.equipment_need_weapon_cb.isChecked(),
             'remove_superflare_jammer': self.no_flare_jammer_cb.isChecked(),
             'remove_invincibility_invisibility': self.no_invinc_invis_cb.isChecked(),
@@ -5302,34 +5429,8 @@ class HaloGUI(QMainWindow):
         return pool
 
     def _ability_offer_pool(self, player=None):
-        """The ability items offerable in a weapon selection. H1 only, and only when
-        abilities are configured as a drafted pick (not 'start with'). A player who
-        already holds an ability isn't offered another — one ability per player, since
-        the script runs exactly one per player. Sprint and camo additionally drop out
-        once EITHER player owns them (see ABILITY_ONE_PER_RUN). With 'requires a gun' on
-        it's gated to players who already hold a real weapon, which also keeps abilities
-        out of the very first pick, when nobody is armed."""
-        if self._current_game() != 'Halo 1':
-            return []
-        if not (CONFIG.get('sprint_feature') and CONFIG.get('sprint_as_card')):
-            return []
-        if CONFIG.get('sprint_start_with'):
-            return []                       # already always on — a card would be moot
-        rs = self.run_state
-        if rs is None:
-            return []
-        players = [player] if player else ['player1', 'player2']
-        if any(any(is_ability_item(w) for w in rs.weapons_for(p)) for p in players):
-            return []                       # that player already has their one ability
-        if CONFIG.get('sprint_need_weapon'):
-            if not all(any(is_real_weapon(self.db, w) for w in rs.weapons_for(p))
-                       for p in players):
-                return []
-        held = {ability_of_item(w) for w in
-                rs.weapons_for('player1') + rs.weapons_for('player2') if is_ability_item(w)}
-        offered = CONFIG.get('abilities_offered') or ['sprint']
-        return [item for item, ab in ABILITY_ITEMS.items()
-                if ab in offered and not (ab in ABILITY_ONE_PER_RUN and ab in held)]
+        """This window's view of the shared ability rule — see ability_offer_pool."""
+        return ability_offer_pool(self.db, self._current_game(), self.run_state, player)
 
     def _sprint_offer_ok(self, player=None):
         """Back-compat shim: is any ability offerable to this player."""
@@ -5456,19 +5557,10 @@ class HaloGUI(QMainWindow):
 
     # ---- New Weapon button (#3) — both players draw from the game pool ----
     def _game_at_least(self, min_game):
-        """True if the current game is `min_game` or later in JSON game order."""
-        games = self.db.get_games()
-        cur = self._current_game()
-        if cur in games and min_game in games:
-            return games.index(cur) >= games.index(min_game)
-        return True  # unknown ordering -> don't restrict
+        return game_at_least(self.db, self._current_game(), min_game)
 
     def _upgrade_allowed_here(self, weapon):
-        """False if `weapon` is restricted to games other than the current one.
-        Covers weapons that simply don't exist in a later game (the Brute Plasma
-        Rifle) or stopped being dual-wieldable (the Halo 3 Needler)."""
-        allowed = CONFIG.get('weapon_only_in_games', {}).get(weapon)
-        return True if not allowed else self._current_game() in allowed
+        return upgrade_allowed_here(self._current_game(), weapon)
 
     def _weapon_offer_pool(self, player):
         """Game weapon pool minus owned, plus 'Dual <Weapon>' options for owned
@@ -5479,20 +5571,10 @@ class HaloGUI(QMainWindow):
         # Pass the player through: ability offers are per-player, so asking without one
         # makes an ability drop out for BOTH players as soon as either takes one.
         pool = [w for w in self._game_weapon_pool(player) if w not in owned]
-        if self._game_at_least(CONFIG.get('dual_wield_from_game', 'Halo 2')):
-            one_handed = CONFIG.get('one_handed_weapons', [])
-            for w in self.run_state.weapons_for(player):
-                if w in one_handed and not w.startswith('Dual '):
-                    dual = f"Dual {w}"
-                    if (dual not in owned and not self._blacklisted_weapon(dual)
-                            and self._upgrade_allowed_here(dual)):
-                        pool.append(dual)
-        if self._game_at_least(CONFIG.get('upgrades_from_game', 'Halo 2')):
-            for upgrade, base in CONFIG.get('weapon_upgrades', {}).items():
-                if not self._upgrade_allowed_here(upgrade):
-                    continue
-                if base in owned and upgrade not in owned and not self._blacklisted_weapon(upgrade):
-                    pool.append(upgrade)
+        # The button always offers both; the automatic rolls gate them behind the
+        # auto_new_weapon_* options. Same rule, one definition.
+        pool += unlocked_offer_items(self.db, self._current_game(), owned,
+                                     self.run_state.blacklist)
         # The NEW WEAPON button draws from here, not from RunEnhancer._new_weapon_pool
         # (which only feeds the automatic per-pair rolls) — equipment has to be added
         # to BOTH or the button never offers any.
@@ -6732,9 +6814,22 @@ class RunEnhancer:
         game = self.db.get_game_for_mission(self.run_state.mission_id)
         if game == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
             pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
+        # Duals and upgrades: the New Weapon BUTTON has always offered these, the
+        # automatic rolls never did. Opt in per kind, so an existing run's rolls keep
+        # behaving as before unless the option is turned on.
+        pool += unlocked_offer_items(self.db, game, owned, bl,
+                                     duals=bool(CONFIG.get('auto_new_weapon_duals')),
+                                     upgrades=bool(CONFIG.get('auto_new_weapon_upgrades')))
         pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
         pool = strip_denied_equipment(self.db, pool)
-        return gate_offer_pool(self.db, pool, self.run_state, player)
+        pool = gate_offer_pool(self.db, pool, self.run_state, player)
+        # Abilities last: they are their own gate (ability_offer_pool already checks
+        # the sprint feature, per-player ownership and the one-per-run pair), and they
+        # must not be filtered by the equipment/grenade gates above.
+        if CONFIG.get('auto_new_weapon_abilities'):
+            pool += [w for w in ability_offer_pool(self.db, game, self.run_state, player)
+                     if w not in owned and self.db.weapon_label(w) not in bl]
+        return pool
 
     def _weighted_pick(self, mods):
         """Pick a player mod. A special effect's weight equals its counter =
