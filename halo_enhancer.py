@@ -1758,18 +1758,20 @@ class WeaponSelectionCard(QGroupBox):
         reroll_btn.clicked.connect(self.on_reroll)
         layout.addWidget(reroll_btn)
 
-        if self.mode == 'add':
-            blacklist_btn = QPushButton("🚫 Blacklist Weapon")
-            blacklist_btn.setToolTip("Never offer this weapon again this run")
-            blacklist_btn.setStyleSheet(f"""
-                QPushButton {{
-                    background-color: #5a2a2a; color: white; font-weight: bold;
-                    font-size: {CONFIG['font_size_desc']}px; padding: 8px; border-radius: 5px;
-                }}
-                QPushButton:hover {{ background-color: #7a3a3a; }}
-            """)
-            blacklist_btn.clicked.connect(self.on_blacklist_weapon)
-            layout.addWidget(blacklist_btn)
+        # Every weapon card can blacklist, not just the New Weapon ones — the
+        # blacklist is a run-long control and the starting pick is where a weapon
+        # you never want to see is most likely to turn up.
+        blacklist_btn = QPushButton("🚫 Blacklist Weapon")
+        blacklist_btn.setToolTip("Never offer this weapon again this run")
+        blacklist_btn.setStyleSheet(f"""
+            QPushButton {{
+                background-color: #5a2a2a; color: white; font-weight: bold;
+                font-size: {CONFIG['font_size_desc']}px; padding: 8px; border-radius: 5px;
+            }}
+            QPushButton:hover {{ background-color: #7a3a3a; }}
+        """)
+        blacklist_btn.clicked.connect(self.on_blacklist_weapon)
+        layout.addWidget(blacklist_btn)
 
         select_btn = QPushButton("ADD WEAPON" if self.mode == 'add' else "SELECT WEAPON")
         select_btn.setStyleSheet(f"""
@@ -1882,9 +1884,16 @@ class WeaponSelectionCard(QGroupBox):
             self.parent_widget.reroll_weapon_choice_p1(self.pair_data['id'])
 
     def on_blacklist_weapon(self):
-        if self.parent_widget:
-            player = 'player2' if self.is_player2 else 'player1'
-            self.parent_widget.blacklist_manual_weapon(self.pair_data['weapon'], self.pair_data['id'], player)
+        # Mirrors on_reroll: blacklisting rerolls the card, so it has to reroll
+        # through the SAME path this card's reroll button uses.
+        if not self.parent_widget:
+            return
+        player = 'player2' if self.is_player2 else 'player1'
+        weapon = self.pair_data['weapon']
+        if self.mode == 'add':
+            self.parent_widget.blacklist_manual_weapon(weapon, self.pair_data['id'], player)
+        else:
+            self.parent_widget.blacklist_weapon_choice(weapon, self.pair_data['id'], player)
 
     def on_blacklist(self, mod_data, source=None):
         if self.parent_widget:
@@ -5488,6 +5497,19 @@ class HaloGUI(QMainWindow):
                                    exclude_weapons={self.run_state.player1_weapon},
                                    player_label=" for Player 2",
                                    with_enemy=self._weapon_choice_negatives())
+
+    def blacklist_weapon_choice(self, weapon, choice_id, player):
+        """Initial-selection twin of blacklist_manual_weapon: blacklist, then reroll
+        the card through that player's own initial-selection reroll, so the pool the
+        replacement comes from is the one this screen offers."""
+        label = self.db.weapon_label(weapon)
+        if label not in self.run_state.blacklist:
+            self.run_state.blacklist.add(label)
+            self.update_status(f"Blacklisted weapon: {weapon}")
+        if player == 'player2':
+            self.reroll_weapon_choice_p2(choice_id)
+        else:
+            self.reroll_weapon_choice_p1(choice_id)
 
     def on_weapon_selected(self, choice_id):
         selected = None
