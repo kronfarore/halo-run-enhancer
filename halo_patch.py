@@ -2387,6 +2387,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                    clamp_min=None if cmin is None else float(cmin),
                                    clamp_max=None if cmax is None else float(cmax)):
                 r['effect'] = item['name']
+                if op.get('redirected_from'):
+                    # say where the write actually landed; a Starting Shield card
+                    # silently raising health would read as a bug
+                    r['inherited_from'] = op['redirected_from']
                 if negate or offset:
                     r['negated'] = True     # summary marks the remapped write
                 if ((cmin is not None or cmax is not None)

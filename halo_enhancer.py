@@ -151,7 +151,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
-               'odst_downgrade_unupgraded',
+               'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -409,6 +409,14 @@ CONFIG = {
     # upgrade card is what actually grants it rather than the map doing it anyway.
     "odst_downgrade_unupgraded": False,
     "odst_variant_bases": {"Auto Magnum": "Magnum", "Silenced SMG": "SMG"},
+    # ODST's player has no shield -- it has stamina, which is not in the tags. The
+    # Starting Shield field still exists and still takes a write, it just does not
+    # do anything useful: a 10x starting shield was confirmed in game to drain
+    # immediately. With this on, a Starting Shield card spends itself on Starting
+    # Health instead, so drafting one is not a wasted pick.
+    "odst_shield_into_health": True,
+    "odst_shield_into_health_pair": {"from": "Starting Shield Modifier",
+                                     "to": "Starting Health Modifier"},
     # The only differences between Halo 2's Brute Plasma Rifle and its plasma rifle.
     # Rounds Per Second is a range, so both ends move; Error Angle likewise. Minimum
     # Error and Error Angle are defined TWICE in Barrels -- dual wield first, single
@@ -3065,6 +3073,59 @@ class MagnitudeEditorDialog(QDialog):
             elif item.layout():
                 self._clear_layout(item.layout())
 
+    def _odst_shield_into_health(self, plan):
+        """In ODST, spend a Starting Shield card on Starting Health instead.
+
+        ODST's player has stamina, not a shield. The shield field is still there and
+        still accepts a write; it just does nothing useful — a 10x starting shield
+        was confirmed in game to drain immediately. Redirecting means drafting the
+        card is not a wasted pick.
+
+        Done on the finished plan, where the effect is still identifiable by name and
+        the health field can be taken from the health effect's OWN target rather than
+        hardcoded — the two fields differ per game and are both remapped values
+        (negate/offset), so copying the real target keeps that mapping intact.
+        """
+        if self.game != 'Halo 3: ODST' or not CONFIG.get('odst_shield_into_health'):
+            return plan
+        pair = CONFIG.get('odst_shield_into_health_pair') or {}
+        src, dst = pair.get('from'), pair.get('to')
+        if not src or not dst:
+            return plan
+        # The health effect's own target, taken from the DATABASE rather than from
+        # this run's rows: the redirect has to work whether or not the player also
+        # drafted the health card, and usually they have not.
+        db = getattr(self.parent_gui, 'db', None)
+        games = db.get_games() if db else None
+        donor = None
+        for mod in (getattr(db, 'positive_pool', None) or []):
+            if mod.get('name') != dst:
+                continue
+            tl = mod.get('targets')
+            tl = resolve_gamed(tl, self.game, games) if isinstance(tl, dict) else tl
+            if tl:
+                donor = tl[0]
+            break
+        if donor is None:
+            return plan
+        fld = resolve_gamed(donor.get('field'), self.game, games)
+        if not fld:
+            return plan
+        for item in plan:
+            if item.get('name') != src:
+                continue
+            for op in item['ops']:
+                op['field'] = fld
+                op['block'] = resolve_gamed(donor.get('block'), self.game, games)
+                # negate/offset belong to the DESTINATION field's mapping, not the
+                # source's — both are stored as "damage" (0 = normal, falling) and
+                # presented as a rising modifier, and using the shield's mapping on
+                # the health field would write the value backwards.
+                op['negate'] = resolve_gamed(donor.get('negate'), self.game, games)
+                op['offset'] = resolve_gamed(donor.get('offset'), self.game, games)
+                op['redirected_from'] = src
+        return plan
+
     def _odst_downgrade_keep(self):
         """Variants to LEAVE placed, or None when the downgrade is not in play.
 
@@ -4102,6 +4163,7 @@ class MagnitudeEditorDialog(QDialog):
                                              'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
                                              **_diff_flavor(t), 'set': t['set']})
         plan = list(plan_map.values())
+        plan = self._odst_shield_into_health(plan)
         # An upgrade weapon is a variant of its base, so the base's cards patch the
         # upgrade's tag as well — one card, both weapons. The upgrade's OWN tag for
         # that effect is read from its halo.json entry rather than guessed, since it
@@ -5188,6 +5250,16 @@ class OptionsDialog(QDialog):
         _sync_odst_variants()
         form.addRow("", self.odst_downgrade_cb)
 
+        self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
+        self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
+        self.odst_shield_health_cb.setToolTip(
+            "ODST's player has stamina, not a shield. The Starting Shield field still "
+            "exists and still accepts a write, it just does nothing useful — a 10x "
+            "starting shield drains immediately.\n\nWith this on, a Starting Shield "
+            "card spends itself on Starting Health in ODST, so drafting one is not a "
+            "wasted pick. Other games are unaffected.")
+        form.addRow("ODST shields:", self.odst_shield_health_cb)
+
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
@@ -5455,6 +5527,7 @@ class OptionsDialog(QDialog):
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
             'odst_downgrade_unupgraded': self.odst_downgrade_cb.isChecked(),
+            'odst_shield_into_health': self.odst_shield_health_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
