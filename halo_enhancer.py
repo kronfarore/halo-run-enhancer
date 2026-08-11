@@ -1356,10 +1356,13 @@ class ModifierDatabase:
         return self.mission_games.get(mission_id)
 
     def get_missions_for_game(self, game):
-        result = [(mid, self.mission_enemies[mid]['name'])
-                  for mid, g in self.mission_games.items() if g == game]
-        result.sort(key=lambda x: x[0])
-        return result
+        """In halo.json order, NOT sorted by mission id — the same rule mission_list
+        already follows, and for the same reason. Sorting broke Halo 2 (Gravemind 07a
+        -> Uprising 08a -> High Charity 07b) and breaks ODST harder still, where
+        Coastal Highway (l300) would land before Tayari Plaza (sc100). mission_games
+        is built by walking halo.json, so plain iteration is already the right order."""
+        return [(mid, self.mission_enemies[mid]['name'])
+                for mid, g in self.mission_games.items() if g == game]
 
     def get_mission_list(self):
         return self.mission_list
