@@ -2976,14 +2976,14 @@ class MagnitudeEditorDialog(QDialog):
         path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
         if not os.path.exists(path):
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
-                     'ok': False, 'reason': 'not found under the MCC folder — set '
+                     'ok': False, 'field': 'scores', 'reason':'not found under the MCC folder — set '
                                             'the MCC root in Options'}]
         db = getattr(self.parent_gui, 'db', None)
         data = getattr(db, 'data', None) or {}
         spec = (data.get('Enemy modifiers') or {}).get('Specific Enemy modifier') or {}
         if not spec:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
-                     'ok': False, 'reason': 'halo.json enemy data unavailable'}]
+                     'ok': False, 'field': 'scores', 'reason':'halo.json enemy data unavailable'}]
         try:
             cap = float(CONFIG.get('score_cap_mult') or 0) or None
             mults = scoredb_patch.multipliers_for(
@@ -2996,13 +2996,18 @@ class MagnitudeEditorDialog(QDialog):
             changed, _ = scoredb_patch.apply(path, mults, cap=None)
         except Exception as e:
             return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
-                     'ok': False, 'reason': str(e)}]
-        top = sorted(mults.items(), key=lambda kv: -kv[1])[:3]
+                     'ok': False, 'field': 'scores', 'reason':str(e)}]
+        # The summary renders applied rows as "<effect>: <field>  <old> -> <new>", so
+        # this has to speak that shape or it prints "None -> None". Old/new carry the
+        # actual story: which enemies went up and by how much.
+        top = sorted(mults.items(), key=lambda kv: -kv[1])[:4]
         detail = ', '.join('%s x%.2f' % (b[1], m) for b, m in top)
+        more = '' if len(mults) <= len(top) else ', +%d more' % (len(mults) - len(top))
         rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': True,
-                     'reason': '%d entries rescaled (%s) — RESTART MCC to apply'
-                               % (changed, detail)})
+                     'field': '%d entries' % changed,
+                     'old': 'base scores',
+                     'new': 'raised %s%s — RESTART MCC to apply' % (detail, more)})
         return rows
 
     def _remove_effect(self, eff):
