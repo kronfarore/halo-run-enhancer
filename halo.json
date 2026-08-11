@@ -241,7 +241,8 @@
 				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"]
+				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc100": {
 				"name": "Tayari Plaza",
@@ -249,6 +250,7 @@
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Spike Rifle"],
 				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Plasma Cannon"]
 			},
 			"sc110": {
@@ -256,21 +258,24 @@
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
-				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"]
+				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc120": {
 				"name": "Kizingo Boulevard",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Frag Grenade", "Plasma Grenade"]
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc130": {
 				"name": "Oni Alpha Site",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
-				"grenades": ["Frag Grenade"]
+				"grenades": ["Frag Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc140": {
 				"name": "NMPD HQ",
@@ -278,6 +283,7 @@
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Machine Gun", "Missile Pod", "Plasma Cannon"]
 			},
 			"sc150": {
@@ -285,7 +291,8 @@
 				"enemies": ["Brute", "Engineer", "Grunt", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Spike Rifle"],
-				"grenades": ["Frag Grenade", "Plasma Grenade"]
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Jammer", "Power Drain", "Regenerator", "Superflare"]
 			},
 			"l200": {
 				"name": "Data Hive",
@@ -293,6 +300,7 @@
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Flamethrower", "Plasma Cannon"]
 			},
 			"l300": {
@@ -300,7 +308,8 @@
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Frag Grenade"]
+				"grenades": ["Frag Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			}
 		}
 	},

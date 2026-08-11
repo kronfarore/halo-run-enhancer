@@ -892,6 +892,40 @@ def map_equipment_placement_count(m, game):
     return max(0, m.i32(scnr_base + lay['items'][0]))
 
 
+def _append_equipment_palette(m, lay, scnr_base, datums):
+    """Append entries to the scenario Equipment Palette; returns {datum: index}.
+
+    Only the palette is relocated — swapping rewrites existing placements' indices,
+    so the placement block itself does not grow. Same mechanism
+    _apply_spawn_equipment uses: an H3-derived map stores block pointers as
+    realVA>>2 resolved through the partition table, so a grown block has to move
+    into partition slack rather than being extended in place.
+
+    Needed for ODST, where NO Halo 3 equipment is in any level's palette even
+    though every level carries the tags.
+    """
+    poff, pes = lay['palette']
+    pc = max(0, m.i32(scnr_base + poff))
+    pbase = _block_base(m, scnr_base + poff)
+    if not pbase or not datums:
+        return {}
+    got = _h3_reserve(m, [(pc + len(datums)) * pes])
+    if got is None:
+        return None
+    pdest = got[0]
+    m.data[pdest:pdest + pc * pes] = m.data[pbase:pbase + pc * pes]
+    tmpl = m.data[pbase:pbase + pes]                # an eqip tagRef, for the group id
+    out = {}
+    for j, datum in enumerate(datums):
+        off = pdest + (pc + j) * pes
+        m.data[off:off + pes] = tmpl
+        struct.pack_into('<I', m.data, off + lay['pal_id_at'], datum)
+        out[datum] = pc + j
+    struct.pack_into('<i', m.data, scnr_base + poff, pc + len(datums))
+    struct.pack_into('<I', m.data, scnr_base + poff + 4, m.off2data(pdest))
+    return out
+
+
 def _apply_equipment_swaps(m, game, swaps):
     """Replace a share of the level's EQUIPMENT placements, scattered evenly.
     `swaps` = {eqip-tag: rate 0..1}. Same idea as _apply_weapon_swaps, minus the
@@ -913,6 +947,31 @@ def _apply_equipment_swaps(m, game, swaps):
     pal = {i: _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
            for i in range(pcount)}
 
+    # Pieces the level never stocks: ODST places NO Halo 3 equipment at all, so
+    # without this every ODST swap would report "not in this level's palette" and do
+    # nothing — even though the tags are all there and placing one works.
+    want = {}
+    for tag, rate in (swaps or {}).items():
+        if not rate or rate <= 0:
+            continue
+        _, name = hm.split_tag(tag)
+        if any(n == name for n in pal.values()):
+            continue
+        datum = _h3_tag_datum(m, 'eqip', name)
+        if datum is not None:
+            want.setdefault(datum, name)
+    if want and hasattr(m, 'off2data'):      # H3-derived maps only
+        added = _append_equipment_palette(m, lay, scnr_base, list(want))
+        if added is None:
+            out.append({'effect': 'map equipment', 'ok': False,
+                        'reason': 'no free run to grow the equipment palette'})
+        else:
+            for datum, idx in added.items():
+                pal[idx] = want[datum]
+                out.append({'effect': 'map equipment',
+                            'field': want[datum].rsplit(chr(92), 1)[-1], 'ok': True,
+                            'old': 'not in this level', 'new': 'added to the palette'})
+
     assign = []
     for tag, rate in (swaps or {}).items():
         if not rate or rate <= 0:
@@ -920,7 +979,7 @@ def _apply_equipment_swaps(m, game, swaps):
         _, name = hm.split_tag(tag)
         short = name.rsplit(chr(92), 1)[-1]
         pi = next((i for i, n in pal.items() if n == name), None)
-        if pi is None:                       # SAFETY NET: not in this level's palette
+        if pi is None:                       # SAFETY NET: still not resolvable
             out.append({'effect': 'map equipment', 'field': short, 'ok': False,
                         'reason': "equipment not in this level's palette"})
             continue
@@ -1147,15 +1206,28 @@ _EQ_NODES, _EQ_UID, _EQ_FOLDER, _EQ_ATTACH, _EQ_GAMEFLAGS = 0x24, 0x38, 0x42, 0x
 _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 
 
-def h3_player_spawns(m):
+# ODST's Player Starting Locations block moved and grew, and it has NO BSP Index --
+# where Halo 3 has one at 0x14, ODST has an Insertion Point Index, matching the
+# cell/insertion-point structure its scenario uses throughout. Reading 0x14 as a BSP
+# index there would silently produce a nonsense mask, so ODST reports BSP -1 and the
+# callers treat that as "no BSP gating known".
+_SPAWNS_BY_GAME = {
+    'Halo 3': {'block': (0x24C, 0x18), 'bsp': 0x14},
+    'Halo 3: ODST': {'block': (0x280, 0x1C), 'bsp': None},
+}
+
+
+def h3_player_spawns(m, game='Halo 3'):
     """The level's Player Starting Locations as [(position, bsp_index), ...].
 
     Deliberately index-based, NOT filtered by Campaign Player Type: every H3 map has
     exactly four, but seven maps label them {chief, dervish, 4, 4} while Tsavo
     Highway, Floodgate and Cortana label all four as type 0. Matching on type would
     silently place nothing for player 2 on those levels. Index 0 is the solo spawn."""
+    lay = _SPAWNS_BY_GAME.get(str(game).strip(), _SPAWNS_BY_GAME['Halo 3'])
+    boff, esize = lay['block']
+    bsp_at = lay['bsp']
     scnr_base = _scnr_base(m)
-    boff, esize = _H3_SPAWNS
     if scnr_base is None:
         return []
     base = _block_base(m, scnr_base + boff)
@@ -1164,8 +1236,9 @@ def h3_player_spawns(m):
     out = []
     for i in range(max(0, m.i32(scnr_base + boff))):
         e = base + i * esize
-        out.append((struct.unpack_from('<fff', m.data, e),
-                    struct.unpack_from('<h', m.data, e + _H3_SPAWN_BSP)[0]))
+        bsp = (struct.unpack_from('<h', m.data, e + bsp_at)[0]
+               if bsp_at is not None else -1)
+        out.append((struct.unpack_from('<fff', m.data, e), bsp))
     return out
 
 
@@ -1245,10 +1318,10 @@ _H3_NO_START_STREAM = {
 }
 
 
-def _h3_mask_at(m, pos):
+def _h3_mask_at(m, pos, game='Halo 3'):
     """Attach mask of the nearest vanilla weapon to `pos` — approximates which BSP is
     loaded there, so a placement dropped at pos attaches to the right BSP."""
-    lay = _MAP_WEAPONS['Halo 3']
+    lay = _MAP_WEAPONS.get(str(game).strip(), _MAP_WEAPONS['Halo 3'])
     wo, we = lay['weapons']
     scnr = _scnr_base(m)
     wN, wb = max(0, m.i32(scnr + wo)), _block_base(m, scnr + wo)
@@ -1352,7 +1425,8 @@ def _apply_spawn_equipment(m, game, spec):
     lay = _MAP_EQUIPMENT.get(str(game).strip())
     scnr_base = _scnr_base(m)
     groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
-    if str(game).strip() != 'Halo 3' or not lay or scnr_base is None or not any(groups):
+    if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST')
+            or not lay or scnr_base is None or not any(groups)):
         return out
     ioff, ies = lay['items']
     poff, pes = lay['palette']
@@ -1376,7 +1450,7 @@ def _apply_spawn_equipment(m, game, spec):
         if isinstance(nm, str):
             pal[nm.replace('/', '\\').lower()] = i
 
-    spawns = h3_player_spawns(m)
+    spawns = h3_player_spawns(m, game)
     if not spawns:
         return [{'effect': 'starting equipment', 'ok': False,
                  'reason': 'no player starting locations'}]
@@ -1384,7 +1458,7 @@ def _apply_spawn_equipment(m, game, spec):
     map_id = str(getattr(m, 'internal_name', '') or '')
     anchor = _H3_LOADOUT_ANCHOR.get(map_id)
     skip = _H3_NO_START_STREAM.get(map_id, frozenset())
-    anchor_mask = _h3_mask_at(m, anchor) if anchor else None
+    anchor_mask = _h3_mask_at(m, anchor, game) if anchor else None
 
     def _resolve_pi(tag, key, label):
         """Palette index for a tag (appending an entry if needed), or (None, None) with
@@ -1422,7 +1496,12 @@ def _apply_spawn_equipment(m, game, spec):
                             'reason': f'no player starting location {si}'})
             continue
         base_pos = anchor if anchor else spawns[si][0]
-        base_mask = anchor_mask if anchor else (1 << max(0, spawns[si][1]))
+        # ODST spawns carry no BSP index (they use insertion points), so the BSP a
+        # placement must attach to is derived from the nearest vanilla weapon there
+        # instead — the same approximation the curated anchors already use.
+        base_mask = (anchor_mask if anchor
+                     else (1 << spawns[si][1]) if spawns[si][1] >= 0
+                     else _h3_mask_at(m, base_pos, game))
         bkey = 'anchor' if anchor else si
         for tag in items:
             key = str(tag).replace('/', '\\').lower()

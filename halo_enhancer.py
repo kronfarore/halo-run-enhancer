@@ -655,6 +655,18 @@ def game_at_least(db, game, min_game):
     return True                             # unknown ordering -> don't restrict
 
 
+def has_equipment(game):
+    """Games with the Halo 3 equipment sandbox.
+
+    ODST was long assumed to be Halo 3 only. It is not: every level carries the
+    equipment tags (8 or 9 of the 9 levels have all eleven), and placing a Bubble
+    Shield in Tayari Plaza was confirmed in game to spawn, be picked up and work.
+    What ODST does NOT do is hand it out — no level places any, and although its
+    Brutes list the equipment at drop chance 1.0 the drop never happens.
+    """
+    return str(game).strip() in ('Halo 3', 'Halo 3: ODST')
+
+
 def weapon_upgrades():
     """The upgrade -> base map, including ODST's variants when they are modelled as
     upgrades rather than as the base weapons themselves.
@@ -6070,7 +6082,7 @@ class HaloGUI(QMainWindow):
         # The NEW WEAPON button draws from here, not from RunEnhancer._new_weapon_pool
         # (which only feeds the automatic per-pair rolls) — equipment has to be added
         # to BOTH or the button never offers any.
-        if self._current_game() == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
+        if has_equipment(self._current_game()) and CONFIG.get('h3_equipment_in_rolls'):
             for e in (self.db.mission_equipment.get(self.run_state.mission_id) or []):
                 if e not in owned and not self._blacklisted_weapon(e):
                     pool.append(e)
@@ -7304,7 +7316,7 @@ class RunEnhancer:
         # has no weapon mods of its own (get_weapon_modifiers degrades to []), so a
         # picked piece just grants the item, same as a weapon with no mods would.
         game = self.db.get_game_for_mission(self.run_state.mission_id)
-        if game == 'Halo 3' and CONFIG.get('h3_equipment_in_rolls'):
+        if has_equipment(game) and CONFIG.get('h3_equipment_in_rolls'):
             pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
         # Duals and upgrades: the New Weapon BUTTON has always offered these, the
         # automatic rolls never did. Opt in per kind, so an existing run's rolls keep
