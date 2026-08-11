@@ -1028,7 +1028,69 @@ _MAP_WEAPONS = {
     # tagRefs (ident at +0xC) like the rest of H3.
     'Halo 3': {'weapons': (0x114, 0xA8), 'palette': (0x120, 0x10), 'pal_id_at': 0xC,
                'palette_index': 0x0, 'rounds_left': 0x6C, 'rounds_loaded': 0x6E},
+    # ODST moved the scenario blocks (Weapons 0x114 -> 0x130, palette 0x120 -> 0x13C)
+    # while keeping the same entry sizes, so the within-entry offsets carry over.
+    'Halo 3: ODST': {'weapons': (0x130, 0xA8), 'palette': (0x13C, 0x10), 'pal_id_at': 0xC,
+                     'palette_index': 0x0, 'rounds_left': 0x6C, 'rounds_loaded': 0x6E},
 }
+
+# ODST's Auto Magnum / Silenced SMG and the base weapons they stand in for. Both
+# bases sit in every level's weapon palette already -- they are simply never
+# placed -- so a placement can be pointed at them without adding a palette entry.
+_ODST_VARIANT_TAGS = {
+    'Auto Magnum': (r'objects\weapons\pistol\automag\automag',
+                    r'objects\weapons\pistol\magnum\magnum'),
+    # both SMGs live under rifle\, not smg\ -- verified against the shipped maps
+    'Silenced SMG': (r'objects\weapons\rifle\smg_silenced\smg_silenced',
+                     r'objects\weapons\rifle\smg\smg'),
+}
+
+
+def apply_odst_downgrade(m, keep=()):
+    """Rewrite Auto Magnum / Silenced SMG placements to the base weapon.
+
+    ODST hands out the upgraded sidearm and SMG everywhere, which makes an upgrade
+    CARD for them meaningless -- the map grants it anyway. With this on, the map
+    only stocks the base weapon until a player actually drafts the upgrade, so the
+    card is what grants it.
+
+    `keep` names the variants a player has drafted; those are left placed.
+    """
+    lay = _MAP_WEAPONS['Halo 3: ODST']
+    scnr = _scnr_base(m)
+    if scnr is None:
+        return [{'effect': 'ODST base weapons', 'ok': False, 'reason': 'no scenario tag'}]
+    poff, pel = lay['palette']
+    names = []
+    for el in m.follow_all(scnr, [poff], [pel], 'all'):
+        ident = struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0]
+        names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+
+    swaps = {}
+    for label, (variant, base) in _ODST_VARIANT_TAGS.items():
+        if label in keep:
+            continue
+        try:
+            vi, bi = names.index(variant), names.index(base)
+        except ValueError:
+            continue                      # this level stocks neither, nothing to do
+        swaps[vi] = (bi, label)
+    if not swaps:
+        return []
+
+    woff, wel = lay['weapons']
+    counts = {}
+    for pl in m.follow_all(scnr, [woff], [wel], 'all'):
+        idx = struct.unpack_from('<h', m.data, pl + lay['palette_index'])[0]
+        if idx in swaps:
+            bi, label = swaps[idx]
+            struct.pack_into('<h', m.data, pl + lay['palette_index'], bi)
+            counts[label] = counts.get(label, 0) + 1
+    if not counts:
+        return []
+    return [{'effect': 'ODST base weapons', 'ok': True, 'tag': 'scnr weapon placements',
+             'field': 'Palette Index', 'old': 'upgraded variant',
+             'new': ', '.join('%d %s -> base' % (n, l) for l, n in sorted(counts.items()))}]
 
 
 def _tag_name_by_id(m, rid):
@@ -2182,7 +2244,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, sprint=None,
-              red_plasma=None):
+              red_plasma=None, odst_downgrade=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -2371,6 +2433,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Sprint tuning (speed + duration/cooldown/enable). Whole-map, value-only,
         # so order among the structural passes doesn't matter — do it last.
         results.extend(_apply_sprint(m, game, registry, sprint))
+    if odst_downgrade is not None:
+        # Placement rewrite, so it belongs with the structural passes rather than the
+        # value ops. `keep` is the variants a player actually drafted.
+        results.extend(apply_odst_downgrade(m, odst_downgrade))
     if red_plasma:
         # ODST only. After the per-field ops so it composes on top of whatever the
         # run patched onto the plasma rifle, rather than being overwritten by it.

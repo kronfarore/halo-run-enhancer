@@ -150,7 +150,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult',
-               'odst_red_plasma_as_brute',
+               'odst_red_plasma_as_brute', 'odst_variants_as_base',
+               'odst_downgrade_unupgraded',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -393,6 +394,21 @@ CONFIG = {
     # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
     # the red tag either way -- that is in the tag data, not this option.
     "odst_red_plasma_as_brute": False,
+    # ODST replaces the sidearm and SMG outright: plain magnum and smg are in every
+    # level's palette but never placed and never carried, only automag and
+    # smg_silenced are. Two ways to model that, and they are alternatives:
+    #
+    #   odst_variants_as_base (ON)  - they ARE the Magnum and the SMG. One ordinary
+    #       weapon card; picking it gives the ODST variant. No upgrade cards.
+    #   odst_variants_as_base (OFF) - they are UPGRADES of the Magnum and SMG, with
+    #       their own cards, and odst_downgrade_unupgraded then decides whether the
+    #       map still hands them out for free.
+    "odst_variants_as_base": True,
+    # Only meaningful while the above is OFF. Rewrites every automag / smg_silenced
+    # PLACEMENT to the base weapon unless a player drafted that upgrade, so the
+    # upgrade card is what actually grants it rather than the map doing it anyway.
+    "odst_downgrade_unupgraded": False,
+    "odst_variant_bases": {"Auto Magnum": "Magnum", "Silenced SMG": "SMG"},
     # The only differences between Halo 2's Brute Plasma Rifle and its plasma rifle.
     # Rounds Per Second is a range, so both ends move; Error Angle likewise. Minimum
     # Error and Error Angle are defined TWICE in Barrels -- dual wield first, single
@@ -622,6 +638,21 @@ def game_at_least(db, game, min_game):
     return True                             # unknown ordering -> don't restrict
 
 
+def weapon_upgrades():
+    """The upgrade -> base map, including ODST's variants when they are modelled as
+    upgrades rather than as the base weapons themselves.
+
+    ODST's Auto Magnum and Silenced SMG are the only sidearm and SMG the game
+    actually places, so whether they are "the Magnum" or "an upgrade to the Magnum"
+    is a design choice, not a fact about the data. Resolved per call so the option
+    takes effect without reloading halo.json.
+    """
+    ups = dict(CONFIG.get('weapon_upgrades', {}))
+    if not CONFIG.get('odst_variants_as_base', True):
+        ups.update(CONFIG.get('odst_variant_bases', {}))
+    return ups
+
+
 def upgrade_allowed_here(game, weapon):
     """False if `weapon` is restricted to games other than `game`. Covers weapons
     that simply don't exist in a later game (the Brute Plasma Rifle) or stopped
@@ -646,7 +677,7 @@ def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
                         and upgrade_allowed_here(game, dual)):
                     out.append(dual)
     if upgrades and game_at_least(db, game, CONFIG.get('upgrades_from_game', 'Halo 2')):
-        for upgrade, base in CONFIG.get('weapon_upgrades', {}).items():
+        for upgrade, base in weapon_upgrades().items():
             if not upgrade_allowed_here(game, upgrade):
                 continue
             if (base in owned and upgrade not in owned
@@ -1200,7 +1231,17 @@ class ModifierDatabase:
             name = name[len('Dual '):]
         name = CONFIG.get('weapon_aliases', {}).get(name, name)
         if name not in self.weapon_mods:
-            name = CONFIG.get('weapon_upgrades', {}).get(name, name)
+            # ODST's variants fall back to their base for MODS whichever way they are
+            # modelled: which effects apply is a data question, not a design one, and
+            # a run saved under one setting must still resolve under the other.
+            name = (weapon_upgrades().get(name)
+                    or CONFIG.get('odst_variant_bases', {}).get(name)
+                    or name)
+            # An upgrade's base may itself be an alias: ODST's Auto Magnum bases on
+            # Magnum, which is an alias of Pistol. Without a second alias pass it
+            # resolved to a name with no mods and the weapon was dropped from every
+            # offer pool in silence.
+            name = CONFIG.get('weapon_aliases', {}).get(name, name)
         return name
 
     @staticmethod
@@ -1210,13 +1251,13 @@ class ModifierDatabase:
         None when the option is off, so everything behaves as it did."""
         if not CONFIG.get('upgrade_inherits_base', True):
             return None
-        return CONFIG.get('weapon_upgrades', {}).get(weapon)
+        return weapon_upgrades().get(weapon)
 
     def upgrades_of(self, weapon):
         """Upgrade weapons that treat `weapon` as their base, when inheriting is on."""
         if not CONFIG.get('upgrade_inherits_base', True):
             return []
-        return [up for up, base in CONFIG.get('weapon_upgrades', {}).items()
+        return [up for up, base in weapon_upgrades().items()
                 if base == weapon]
 
     def upgrade_twin_tag(self, weapon, effect_name, game):
@@ -1317,6 +1358,13 @@ class ModifierDatabase:
         disabled in CONFIG), restricted to entries that resolve to real mods.
         Aliases collapse to their canonical weapon. Falls back to all weapons."""
         wl = list(self.mission_weapons.get(mission_id) or [])
+        # ODST's Auto Magnum / Silenced SMG. Treated as the base weapon, the level
+        # offers the ordinary card (the variant is what the player actually gets, in
+        # the map); treated as upgrades, the base card is what the level offers and
+        # the variant is only reachable through the upgrade.
+        if self.mission_games.get(mission_id) == 'Halo 3: ODST':
+            bases = CONFIG.get('odst_variant_bases', {})
+            wl = [bases.get(w, w) for w in wl]
         # ODST's obtainable plasma rifle is the tag Halo 2 shipped as the Brute
         # Plasma Rifle, so with that option on the level offers it under that name
         # wherever it stocks a plasma rifle. Resolved per call, like bosses_for, so
@@ -1854,7 +1902,7 @@ class WeaponSelectionCard(QGroupBox):
         if weapon.startswith('Dual '):
             self.setStyleSheet("QGroupBox { border: 3px double #FFD700; border-radius: 8px; "
                                "padding: 15px; background-color: #12100a; }")
-        elif weapon in CONFIG.get('weapon_upgrades', {}):
+        elif weapon in weapon_upgrades():
             self.setStyleSheet("QGroupBox { border: 3px double #FF8C00; border-radius: 8px; "
                                "padding: 15px; background-color: #120c08; }")
         else:
@@ -3017,6 +3065,26 @@ class MagnitudeEditorDialog(QDialog):
             elif item.layout():
                 self._clear_layout(item.layout())
 
+    def _odst_downgrade_keep(self):
+        """Variants to LEAVE placed, or None when the downgrade is not in play.
+
+        None rather than an empty set is the "do nothing" signal: an empty set means
+        downgrade everything, which is exactly what a fresh run wants, so the two
+        cannot be conflated.
+        """
+        if self.game != 'Halo 3: ODST':
+            return None
+        if CONFIG.get('odst_variants_as_base', True):
+            return None          # they ARE the base weapons; nothing to downgrade
+        if not CONFIG.get('odst_downgrade_unupgraded'):
+            return None
+        rs = getattr(self.parent_gui, 'run_state', None)
+        held = set()
+        if rs is not None:
+            for p in ('player1', 'player2'):
+                held |= {w for w in rs.weapons_for(p)}
+        return {v for v in CONFIG.get('odst_variant_bases', {}) if v in held}
+
     def _apply_score_scaling(self):
         """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
 
@@ -4103,7 +4171,8 @@ class MagnitudeEditorDialog(QDialog):
                 sprint=sprint,
                 red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                             if (CONFIG.get('odst_red_plasma_as_brute')
-                                and self.game == 'Halo 3: ODST') else None)))
+                                and self.game == 'Halo 3: ODST') else None),
+                odst_downgrade=self._odst_downgrade_keep()))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -5089,6 +5158,36 @@ class OptionsDialog(QDialog):
             "this option.")
         form.addRow("Red plasma rifle:", self.red_plasma_cb)
 
+        self.odst_variants_cb = QCheckBox("ODST: Auto Magnum and Silenced SMG ARE the Magnum and SMG")
+        self.odst_variants_cb.setChecked(bool(CONFIG.get('odst_variants_as_base', True)))
+        self.odst_variants_cb.setToolTip(
+            "ODST never places the plain magnum or smg — only the Auto Magnum and "
+            "Silenced SMG — so they are the game's sidearm and SMG.\n\nOn: one ordinary "
+            "weapon card each; picking it gives the ODST variant, and there are no "
+            "upgrade cards.\n\nOff: they become UPGRADES of the Magnum and SMG with "
+            "their own cards.")
+        form.addRow("ODST variants:", self.odst_variants_cb)
+
+        self.odst_downgrade_cb = QCheckBox("…and the map only stocks the base until it is drafted")
+        self.odst_downgrade_cb.setChecked(bool(CONFIG.get('odst_downgrade_unupgraded')))
+        self.odst_downgrade_cb.setToolTip(
+            "Only while the variants are treated as upgrades. ODST hands the upgraded "
+            "sidearm and SMG out everywhere, which makes an upgrade card for them "
+            "meaningless — the map grants it anyway.\n\nWith this on, every Auto Magnum "
+            "and Silenced SMG placement is rewritten to the base weapon until a player "
+            "actually drafts that upgrade. Both bases are already in every level's "
+            "palette, so nothing is added to the map.")
+
+        def _sync_odst_variants(_=False):
+            # only meaningful while they are modelled as upgrades
+            on = not self.odst_variants_cb.isChecked()
+            self.odst_downgrade_cb.setEnabled(on)
+            if not on:
+                self.odst_downgrade_cb.setChecked(False)
+        self.odst_variants_cb.toggled.connect(_sync_odst_variants)
+        _sync_odst_variants()
+        form.addRow("", self.odst_downgrade_cb)
+
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
@@ -5354,6 +5453,8 @@ class OptionsDialog(QDialog):
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
+            'odst_variants_as_base': self.odst_variants_cb.isChecked(),
+            'odst_downgrade_unupgraded': self.odst_downgrade_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
@@ -5662,7 +5763,7 @@ class HaloGUI(QMainWindow):
         change): the game's weapon pool minus blacklisted weapons AND minus
         upgrade weapons (#3), which must only be reachable via the New Weapon
         button's explicit "base already owned" check in `_weapon_offer_pool`."""
-        upgrades = CONFIG.get('weapon_upgrades', {})
+        upgrades = weapon_upgrades()
         pool = [w for w in self.db.get_game_weapons(self._current_game())
                 if not self._blacklisted_weapon(w) and w not in upgrades]
         pool = strip_denied_equipment(self.db, pool)
@@ -5844,7 +5945,7 @@ class HaloGUI(QMainWindow):
         """Add a weapon; if it's an upgrade and the player dual-wields the base,
         also grant the dual version of the upgrade (#3)."""
         self.run_state.add_weapon(player, weapon)
-        base = CONFIG.get('weapon_upgrades', {}).get(weapon)
+        base = weapon_upgrades().get(weapon)
         if base and f"Dual {base}" in self.run_state.weapons_for(player):
             self.run_state.add_weapon(player, f"Dual {weapon}")
 
