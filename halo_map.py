@@ -284,7 +284,7 @@ class HaloMap:
         return [(path, off)] if off is not None else []
 
     def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
-                    scale=1.0, offset=0.0):
+                    scale=1.0, offset=0.0, clamp_min=None, clamp_max=None):
         """Apply an operator to a field across every tag matching (cls, path).
         Never raises for missing tags/fields — returns a list of result dicts
         (ok/old/new or ok=False/reason) so a summary can be shown at the end.
@@ -325,7 +325,18 @@ class HaloMap:
                     old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
                     # operate in display units (deg for angles), in the MEANING the
                     # magnitude is expressed in, then map back (see the docstring)
-                    new = (OP_FUNCS[op](scale * old + offset, value) - offset) / scale
+                    meaning = OP_FUNCS[op](scale * old + offset, value)
+                    # Clamp in MEANING units, not stored units — a field declared
+                    # 0..1 is a probability whatever the tag happens to store, and
+                    # on an inverted mapping (scale -1) the stored bounds are the
+                    # other way round. Clamping is silent by design: the point is a
+                    # chance of 1.4 or -0.2 never reaching the map, and the summary
+                    # already reports the value that was actually written.
+                    if clamp_min is not None:
+                        meaning = max(meaning, clamp_min)
+                    if clamp_max is not None:
+                        meaning = min(meaning, clamp_max)
+                    new = (meaning - offset) / scale
                     new = float(new) if is_float else int(round(new))
                     struct.pack_into(fmt, self.data, off, display_to_raw(ftype, new))
                     if first_old is None:

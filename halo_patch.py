@@ -2279,13 +2279,24 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             scale = -1.0 if negate else 1.0
             offset = float(op.get('offset') or 0.0)
             field = apply_difficulty(op['field'], op, target_difficulty)
+            # Optional bounds from halo.json. A probability field is 0..1 whatever
+            # the operator says, and a grouped row applies one magnitude to several
+            # fields at once, which makes overshoot easier to reach by accident.
+            cmin = op.get('min')
+            cmax = op.get('max')
             for r in m.apply_field(cls, path, field, oper, val, plugin,
                                    block=op.get('block'), index=op.get('index', 0) or 0,
                                    nth=op.get('nth', 0) or 0,
-                                   scale=scale, offset=offset):
+                                   scale=scale, offset=offset,
+                                   clamp_min=None if cmin is None else float(cmin),
+                                   clamp_max=None if cmax is None else float(cmax)):
                 r['effect'] = item['name']
                 if negate or offset:
                     r['negated'] = True     # summary marks the remapped write
+                if ((cmin is not None or cmax is not None)
+                        and isinstance(r.get('new'), (int, float))
+                        and r.get('ok')):
+                    r['clamped'] = (cmin, cmax)
                 results.append(r)
 
     if starting:

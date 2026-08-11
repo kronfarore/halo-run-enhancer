@@ -4423,16 +4423,16 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Dive Into Cover Chance" },
-							{ "field": "Emerge From Cover Chance" }
+							{ "field": "Dive Into Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Emerge From Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 2": [
-							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 3: ODST": [
-							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						]
 					}
 				},
@@ -4991,16 +4991,16 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Dive Into Cover Chance" },
-							{ "field": "Emerge From Cover Chance" }
+							{ "field": "Dive Into Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Emerge From Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 2": [
-							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 3: ODST": [
-							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						]
 					}
 				},
@@ -5274,16 +5274,16 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Dive Into Cover Chance" },
-							{ "field": "Emerge From Cover Chance" }
+							{ "field": "Dive Into Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Emerge From Cover Chance", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 2": [
-							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						],
 						"Halo 3: ODST": [
-							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 						]
 					}
 				},
@@ -6016,10 +6016,10 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
-						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Cover Properties": {
@@ -6339,10 +6339,10 @@
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
 					},
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
-						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Cover Properties": {
@@ -6443,13 +6443,13 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Shielded Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
-						{ "field": "Shielded Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
-						{ "field": "Shield Depleted Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
-						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
-						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Shielded Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Shielded Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Shield Depleted Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "group": "Cover Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Cover Properties": {
@@ -6637,8 +6637,8 @@
 					"game": "Halo 3: ODST",
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
-						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Retreat": {
@@ -7102,8 +7102,8 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Cover Properties": {

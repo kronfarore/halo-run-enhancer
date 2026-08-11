@@ -3102,6 +3102,36 @@ class MagnitudeEditorDialog(QDialog):
         that was hard to find in the list."""
         return (eff.get('tag'), eff.get('name')) in self._this_round_keys()
 
+    @staticmethod
+    def _group_targets(targets):
+        """[(representative, [members])] — targets sharing a `group` collapse to one row.
+
+        Opt-in via an explicit `"group"` key rather than by inferring it from equal
+        labels, so adding a group to one effect cannot silently merge rows in another.
+
+        The point is fields that are one CONCEPT split across several plugin fields:
+        Cover Chance is Cover Chance + its Max + the shielded and depleted variants
+        (and Cover Chance Time in ODST), and asking for five numbers that should all
+        move together is just five chances to set them inconsistently.
+
+        Order is by first appearance, so the display order the file implies is kept.
+        """
+        order = []
+        groups = {}
+        for t in targets:
+            key = t.get('group') if isinstance(t, dict) else None
+            if not key:
+                order.append(('', t))          # ungrouped: its own row, as before
+                continue
+            if key not in groups:
+                groups[key] = []
+                order.append((key, t))
+            groups[key].append(t)
+        out = []
+        for key, first in order:
+            out.append((first, groups[key] if key else [first]))
+        return out
+
     def _populate(self):
         self._clear_layout(self.form)
         self.rows = []
@@ -3229,7 +3259,7 @@ class MagnitudeEditorDialog(QDialog):
             v.addWidget(note)
 
         local_rows = []   # (target, line-edit) of THIS effect, for derived wiring
-        for t in targets:
+        for t, _members in self._group_targets(targets):
             row = QHBoxLayout()
             derived = t.get('derived')
             # per-field direction symbols (target overrides the mod's). harder_when
@@ -3250,7 +3280,10 @@ class MagnitudeEditorDialog(QDialog):
             # per-game-resolved field the patch actually reads/writes (e.g. H2's
             # "Starting Health Damage" internally, shown to the user as the more
             # meaningful "Starting Health Modifier").
-            fname = (t.get('label') or t['field']) + (
+            # `group` names the row when several fields share one input; `label`
+            # still renames a single field. Both are display only — t['field'] stays
+            # the real per-game-resolved field the patch reads and writes.
+            fname = (t.get('group') or t.get('label') or t['field']) + (
                 f"  [{_DIFF_TO_PUBLIC.get(self.target_difficulty, self.target_difficulty)}]"
                 if t.get('difficulty') else "")
             if t.get('diff_suffix') or t.get('diff_prefix'):
@@ -3365,7 +3398,12 @@ class MagnitudeEditorDialog(QDialog):
             variants.setAlignment(Qt.AlignTop)
             row.addWidget(variants, 1)
             v.addWidget(self._wrap(row))
-            self.rows.append((eff, t, le))
+            # Every member of the group is registered against the SAME input, so one
+            # value drives them all. self.rows is what builds the patch plan, so
+            # grouping needs no change there — each field is still planned
+            # individually, they just share where their operator came from.
+            for _mt in _members:
+                self.rows.append((eff, _mt, le))
             local_rows.append((t, le))
 
         # Wire derived rows: live-recompute from the source rows' vanilla values
@@ -3946,6 +3984,9 @@ class MagnitudeEditorDialog(QDialog):
                                          'offset': t.get('offset'),
                                          'reload_anim': t.get('reload_anim'),
                                          'equip_drop': t.get('equip_drop'),
+                                         # optional bounds on the RESULT (e.g. a
+                                         # probability is 0..1 whatever was typed)
+                                         'min': t.get('min'), 'max': t.get('max'),
                                          'nth': t.get('nth', 0) or 0})
         # Auto-computed fields: recompute whenever their effect has any edit.
         # Appended after the normal ops so the sources are already patched.
