@@ -19,7 +19,10 @@ import halo_map as hm
 # Games that use the second-generation (Halo 2 MCC) cache format.
 SECOND_GEN_GAMES = {'Halo 2'}
 # Games that use the third-generation (Halo 3 MCC) cache format.
-THIRD_GEN_GAMES = {'Halo 3'}
+# ODST is a third-generation build and its maps parse with Halo3Map. Leaving it out
+# sent open_map to the Halo 1 parser, which failed with "Tag index 'tags' magic
+# missing" — every ODST patch died before it started.
+THIRD_GEN_GAMES = {'Halo 3', 'Halo 3: ODST'}
 
 
 def open_map(map_path, game=None):
@@ -394,6 +397,12 @@ _STARTING_SLOTS = {
     'Halo 3': {'ref_size': 16, 'id_at': 0xC,
                'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
                'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
+    # ODST's Player Starting Profile is byte-identical to Halo 3's: same 0x58
+    # element, same Primary/Secondary Weapon tagRefs at 0x28/0x3C. Checked against
+    # both plugins rather than assumed, since almost every other ODST block moved.
+    'Halo 3: ODST': {'ref_size': 16, 'id_at': 0xC,
+                     'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
+                     'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
 }
 
 # H3 tag idents are (index + salt) << 16 | index. Sampling every tagRef in the
@@ -453,7 +462,7 @@ def _h3_profile_role(index, name):
 def _weap_ref_id(m, name, game=None, salt=None):
     """Full tag ident (H1/H3) / datum (H2) for a weap tag by name, or None if that
     tag isn't in this map — the safety net for a picked weapon the map lacks."""
-    if game == 'Halo 3':                                    # H3: mint the ident
+    if str(game).strip() in THIRD_GEN_GAMES:                # H3/ODST: mint the ident
         for t in getattr(m, 'tags', []):
             if t.get('class') == 'weap' and t.get('name') == name:
                 i = t['index']
@@ -555,7 +564,8 @@ def _apply_starting_equipment(m, game, registry, starting):
     boff = bf['block_offsets'][-1]
     esize = bf['block_sizes'][-1]
     count = m.i32(scnr_base + boff)
-    salt = _h3_ident_salt(m, scnr_base, boff, esize, count) if game == 'Halo 3' else None
+    third_gen = str(game).strip() in THIRD_GEN_GAMES
+    salt = _h3_ident_salt(m, scnr_base, boff, esize, count) if third_gen else None
 
     def _null_profiles(idxs, label):
         for i in idxs:
@@ -596,11 +606,11 @@ def _apply_starting_equipment(m, game, registry, starting):
         # Pre-H3, and H3 with coop off: both picks go on the same profile(s), P1 as
         # Primary and P2 as Secondary. H3 uses profile 0 only — its other profiles
         # belong to the second character or to NPCs.
-        default = [0] if game == 'Halo 3' else [0, 1]
+        default = [0] if third_gen else [0, 1]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
         profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
-        if game == 'Halo 3':
+        if third_gen:
             profiles = [i for i in profiles if i == 0]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
@@ -999,7 +1009,7 @@ def _apply_equipment_swaps(m, game, swaps):
     # In Halo 3 a placement only renders where the swapped-in model streams, so confine
     # each piece to placements in a BSP where vanilla already puts it. H1/H2 have no
     # such per-zone streaming, so they spread across every slot as before.
-    if str(game).strip() == 'Halo 3':
+    if str(game).strip() in THIRD_GEN_GAMES:
         slot_masks = [struct.unpack_from('<H', m.data, ibase + i * ies + _EQ_ATTACH)[0]
                       for i in range(N)]
         slots = _spread_slots_bsp(N, slot_masks,
