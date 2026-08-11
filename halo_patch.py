@@ -606,11 +606,24 @@ def _apply_starting_equipment(m, game, registry, starting):
         # Pre-H3, and H3 with coop off: both picks go on the same profile(s), P1 as
         # Primary and P2 as Secondary. H3 uses profile 0 only — its other profiles
         # belong to the second character or to NPCs.
-        default = [0] if third_gen else [0, 1]
+        odst = str(game).strip() == 'Halo 3: ODST'
+        if odst:
+            # ODST keeps one profile per INSERTION POINT -- 16 to 19 of them, all
+            # holding the same smg_silenced/automag loadout -- and which one you get
+            # depends on where the mission starts. Writing only profile 0, right for
+            # Halo 3, wrote to one the game never starts you in: the picks were in the
+            # map and simply never reached the player. So every player profile is
+            # written. Ally profiles (profile_pod_*_allies_*, carrying an assault
+            # rifle) are left alone -- they arm marines, not the Rookie.
+            default = [i for i in range(count)
+                       if 'allies' not in _cstr_at(m, m.follow(scnr_base, [boff],
+                                                              [esize], i) or 0).lower()]
+        else:
+            default = [0] if third_gen else [0, 1]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
         profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
-        if third_gen:
+        if third_gen and not odst:
             profiles = [i for i in profiles if i == 0]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
@@ -1546,8 +1559,16 @@ def _apply_spawn_equipment(m, game, spec):
                  if not struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
                  & (_PLACE_NOT_AUTO | _PLACE_NEVER)), None)
     if tmpl is None:
+        # Preferring an auto-spawning placement is only about inheriting sane flags,
+        # and the copy clears NOT_AUTO/NEVER on the new element anyway (below). What
+        # the template really supplies is Type, Source and BSP Policy, which every
+        # placement has. Mombasa Streets and ONI Alpha Site flag ALL their equipment
+        # non-auto — script-spawned — and refusing there meant no starting equipment
+        # at all on two levels for no real reason.
+        tmpl = 0 if N else None
+    if tmpl is None:
         return out + [{'effect': 'starting equipment', 'ok': False,
-                       'reason': 'no auto-spawning placement to use as a template'}]
+                       'reason': 'no equipment placement to use as a template'}]
 
     # Reserve slack for both grown blocks in one run so neither clobbers the other.
     items_need = (N + len(plan)) * ies
