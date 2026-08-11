@@ -63,28 +63,22 @@ def _placement_counts(m, scnr, npal):
 
 
 def _find_ident(m, short):
-    """A VALID datum id for an eqip tag, lifted from a reference that already exists.
+    """A valid datum id for an eqip tag.
 
-    Idents are (salt << 16) | row and the salt is not derivable from the tag list, so
-    rather than constructing one, borrow it: ODST's Brutes reference the Halo 3
-    equipment in their Equipment Definitions, and those tagrefs carry exactly the
-    ident the scenario palette needs.
-
-    Limit: only equipment some character in THAT map references can be borrowed. In
-    sc100 that covers bubbleshield, regenerator, tripmine, powerdrain, superflare,
-    jammer and invincibility, but not invisibility -- no Brute there carries one.
+    Uses halo_patch._h3_tag_datum, which builds the ident properly and works on ODST
+    maps unchanged. An earlier version borrowed one from a char Equipment Definitions
+    tagref, which only reached equipment some character in that map referenced --
+    invisibility_equipment has no such carrier in sc100 and was unreachable.
     """
     import halo_patch as HP
     for t in m.tags:
-        if t['class'] != 'char' or not t.get('name'):
+        if t['class'] != 'eqip' or not t.get('name'):
             continue
-        for el in m.follow_all(t['base'], [CHAR_EQUIP_BLOCK], [CHAR_EQUIP_ELEM], 'all'):
-            ident = struct.unpack_from('<I', m.data, el + CHAR_EQUIP_ID)[0]
-            if ident in (0, 0xFFFFFFFF):
-                continue
-            nm = HP._tag_name_by_id(m, ident)
-            if nm and nm.rsplit('\\', 1)[-1] == short:
-                return ident, nm
+        if t['name'].rsplit('\\', 1)[-1] != short:
+            continue
+        datum = HP._h3_tag_datum(m, 'eqip', t['name'])
+        if datum is not None:
+            return datum, t['name']
     return None, None
 
 
