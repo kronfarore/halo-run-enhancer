@@ -6597,6 +6597,7 @@
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" , "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Vitality Fraction Bubbleshield", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
 						{ "field": "Recent Damage Shield Equipment", "block": "Cover Properties", "index": "all" }
 					]
 				},

@@ -21,6 +21,32 @@ import xml.etree.ElementTree as ET
 
 PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
            r"\Assembly-1-2023-11-29-1702446457\Plugins")
+# The SAME fallback chain PluginRegistry uses: the MCC folder first, then the base
+# one. Looking only at the MCC folders reported jpt! as missing from both games,
+# when in fact only the MCC overrides lack it and both fall back to jpt!.xml in
+# Halo3/ and ODST/. A diff that does not resolve the way the patcher resolves will
+# keep inventing absences like that.
+H3_DIRS = ['Halo3MCC', 'Halo3']
+ODST_DIRS = ['ODSTMCC', 'ODST']
+
+
+def _plugin(dirs, cls):
+    for d in dirs:
+        p = os.path.join(PLUGINS, d, cls + '.xml')
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def _classes_in(dirs):
+    out = set()
+    for d in dirs:
+        p = os.path.join(PLUGINS, d)
+        if os.path.isdir(p):
+            out |= {f[:-4] for f in os.listdir(p) if f.endswith('.xml')}
+    return out
+
+
 H3 = os.path.join(PLUGINS, 'Halo3MCC')
 ODST = os.path.join(PLUGINS, 'ODSTMCC')
 
@@ -114,8 +140,8 @@ def used_classes(path='halo.json'):
 
 
 def classes():
-    h3 = {f[:-4] for f in os.listdir(H3) if f.endswith('.xml')}
-    od = {f[:-4] for f in os.listdir(ODST) if f.endswith('.xml')}
+    h3 = _classes_in(H3_DIRS)
+    od = _classes_in(ODST_DIRS)
     return sorted(h3 & od), sorted(od - h3), sorted(h3 - od)
 
 
@@ -142,8 +168,8 @@ def main(argv=None):
                          'Halo 3 only' if c in h3_only else 'NO PLUGIN IN EITHER')
                 print('=== %-6s %s -- cannot diff' % (c, where))
                 continue
-            f3 = fields(os.path.join(H3, c + '.xml'))
-            fo = fields(os.path.join(ODST, c + '.xml'))
+            f3 = fields(_plugin(H3_DIRS, c))
+            fo = fields(_plugin(ODST_DIRS, c))
             new = sorted(set(fo) - set(f3))
             gone = sorted(set(f3) - set(fo))
             print('=== %-6s  +%d new  -%d removed' % (c, len(new), len(gone)))
@@ -163,8 +189,8 @@ def main(argv=None):
     targets = a.cls or shared
     rows = []
     for c in targets:
-        f3 = fields(os.path.join(H3, c + '.xml'))
-        fo = fields(os.path.join(ODST, c + '.xml'))
+        f3 = fields(_plugin(H3_DIRS, c))
+        fo = fields(_plugin(ODST_DIRS, c))
         new = sorted(set(fo) - set(f3))
         gone = sorted(set(f3) - set(fo))
         moved = sorted(k for k in (set(f3) & set(fo))
