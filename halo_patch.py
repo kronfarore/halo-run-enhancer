@@ -854,7 +854,13 @@ def _apply_eyepatch(m, game, registry):
 
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
-_EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14}}
+_EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
+               # ODST moved the block (0x1B0 -> 0x1D4) and kept the element, so the
+               # within-element offsets carry over. Its Brutes really do carry the
+               # Halo 3 equipment: a Tayari Plaza brute_captain drops a Bubble Shield
+               # at chance 1.0 with no patching at all.
+               'Halo 3: ODST': {'block': 0x1D4, 'elem': 0x24, 'id_at': 0xC,
+                                'chance': 0x14}}
 # Only Brutes carry equipment at all, so that's the whole search space.
 _EQUIP_CARRIER_TAG = 'objects' + chr(92) + 'characters' + chr(92) + 'brute' + chr(92) + '*'
 
@@ -868,6 +874,11 @@ _MAP_EQUIPMENT = {
                'palette_index': 0x0},
     'Halo 3': {'items': (0xFC, 0x8C), 'palette': (0x108, 0x10), 'pal_id_at': 0xC,
                'palette_index': 0x0},
+    # ODST's scenario blocks all shifted; entry sizes are unchanged. Note its levels
+    # stock only health packs, ammo and grenades in the equipment palette, so a swap
+    # to a Halo 3 piece still reports "not in this level's palette" — correctly.
+    'Halo 3: ODST': {'items': (0x118, 0x8C), 'palette': (0x124, 0x10), 'pal_id_at': 0xC,
+                     'palette_index': 0x0},
 }
 
 

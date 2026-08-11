@@ -152,6 +152,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'score_scaling', 'score_step', 'score_cap_mult',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
+               'odst_patch_hub',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -415,6 +416,14 @@ CONFIG = {
     # immediately. With this on, a Starting Shield card spends itself on Starting
     # Health instead, so drafting one is not a wasted pick.
     "odst_shield_into_health": True,
+    # ODST returns to Mombasa Streets between every story mission, so a run that
+    # only ever patches the mission leaves the hub vanilla — the level the player
+    # spends the most time in. With this on, patching an ODST mission patches the
+    # hub with the SAME plan. Effects for enemies the hub does not field are
+    # harmless no-ops, and because patching runs from the .bak baseline the hub
+    # always carries the current run rather than accumulating old ones.
+    "odst_patch_hub": True,
+    "odst_hub_mission": "h100",
     "odst_shield_into_health_pair": {"from": "Starting Shield Modifier",
                                      "to": "Starting Health Modifier"},
     # The only differences between Halo 2's Brute Plasma Rifle and its plasma rifle.
@@ -3073,6 +3082,23 @@ class MagnitudeEditorDialog(QDialog):
             elif item.layout():
                 self._clear_layout(item.layout())
 
+    def _odst_hub_path(self, map_path):
+        """Path to Mombasa Streets, or None when the hub patch does not apply.
+
+        None when: not ODST, the option is off, the mission BEING patched already IS
+        the hub (patching it twice would be pointless and would double-report), or
+        the hub map is not on disk.
+        """
+        if self.game != 'Halo 3: ODST' or not CONFIG.get('odst_patch_hub', True):
+            return None
+        hub_id = CONFIG.get('odst_hub_mission') or 'h100'
+        if self.mission_id == hub_id:
+            return None
+        p = self._hp.default_map_path(mcc_root(),
+                                      CONFIG.get('map_game_folder', {}).get(self.game, ''),
+                                      hub_id)
+        return p if p and os.path.exists(p) else None
+
     def _odst_shield_into_health(self, plan):
         """In ODST, spend a Starting Shield card on Starting Health instead.
 
@@ -4211,7 +4237,9 @@ class MagnitudeEditorDialog(QDialog):
                      if CONFIG.get('score_scaling') else [])
                   + (["retune the plasma rifle to the Brute Plasma Rifle"]
                      if (CONFIG.get('odst_red_plasma_as_brute')
-                         and self.game == 'Halo 3: ODST') else []))
+                         and self.game == 'Halo 3: ODST') else [])
+                  + (["also patch Mombasa Streets (the hub)"]
+                     if self._odst_hub_path(map_path) else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -4238,6 +4266,28 @@ class MagnitudeEditorDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
+
+        # Mombasa Streets gets the same plan, so the level the player passes through
+        # between every mission is not left vanilla. Never fatal: the story mission
+        # has already been written, and a hub failure must not report it as failed.
+        hub = self._odst_hub_path(map_path)
+        if hub:
+            try:
+                hub_results, _ = self._run_busy(lambda: self._hp.apply_run(
+                    hub, plan, self.registry,
+                    self.target_difficulty, game=self.game,
+                    skulls=skulls,
+                    red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
+                                if CONFIG.get('odst_red_plasma_as_brute') else None),
+                    odst_downgrade=self._odst_downgrade_keep()))
+                ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
+                results.append({'effect': 'Mombasa Streets (hub)',
+                                'tag': Path(hub).name, 'ok': True,
+                                'field': '%d edit(s)' % ok,
+                                'old': 'vanilla', 'new': 'patched with this run'})
+            except Exception as e:
+                results.append({'effect': 'Mombasa Streets (hub)', 'field': 'patch',
+                                'ok': False, 'reason': str(e)})
 
         # Effects that were on screen but had no value typed produced no ops, so the
         # patcher never saw them and they'd otherwise stay "new" forever. Report them
@@ -5260,6 +5310,18 @@ class OptionsDialog(QDialog):
             "wasted pick. Other games are unaffected.")
         form.addRow("ODST shields:", self.odst_shield_health_cb)
 
+        self.odst_hub_cb = QCheckBox("ODST: patch Mombasa Streets alongside the mission")
+        self.odst_hub_cb.setChecked(bool(CONFIG.get('odst_patch_hub', True)))
+        self.odst_hub_cb.setToolTip(
+            "ODST returns to Mombasa Streets between every story mission, so a run "
+            "that only patches the mission leaves the hub — often the level you spend "
+            "the most time in — completely vanilla.\n\nWith this on, patching any ODST "
+            "mission writes the same plan into Mombasa Streets too. Effects for enemies "
+            "the hub does not field are harmless no-ops, and because patching runs from "
+            "the .bak baseline the hub always carries the CURRENT run rather than "
+            "accumulating older ones.")
+        form.addRow("ODST hub:", self.odst_hub_cb)
+
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
@@ -5528,6 +5590,7 @@ class OptionsDialog(QDialog):
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
             'odst_downgrade_unupgraded': self.odst_downgrade_cb.isChecked(),
             'odst_shield_into_health': self.odst_shield_health_cb.isChecked(),
+            'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
