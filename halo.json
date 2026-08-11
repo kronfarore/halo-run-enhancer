@@ -4429,6 +4429,10 @@
 						"Halo 2": [
 							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
 							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						],
+						"Halo 3: ODST": [
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
 						]
 					}
 				},
@@ -4993,6 +4997,10 @@
 						"Halo 2": [
 							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
 							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						],
+						"Halo 3: ODST": [
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
 						]
 					}
 				},
@@ -5272,6 +5280,10 @@
 						"Halo 2": [
 							{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
 							{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						],
+						"Halo 3: ODST": [
+							{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
+							{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
 						]
 					}
 				},
@@ -6004,8 +6016,10 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
 					]
 				},
 				"Cover Properties": {
@@ -6325,8 +6339,10 @@
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
 					},
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
 					]
 				},
 				"Cover Properties": {
@@ -6427,11 +6443,13 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 2", "Halo 3"] },
 						{ "field": "Shielded Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
 						{ "field": "Shielded Cover Chance Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
-						{ "field": "Shield Depleted Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] }
+						{ "field": "Shield Depleted Cover Chance", "block": "Cover Properties", "index": "all", "games": ["Halo 3"] },
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] }
 					]
 				},
 				"Cover Properties": {
@@ -6558,7 +6576,7 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" , "games": ["Halo 2", "Halo 3"] },
 						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" }
 					]
@@ -6578,7 +6596,7 @@
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" },
+						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" , "games": ["Halo 2", "Halo 3"] },
 						{ "field": "Recent Damage Shield Equipment", "block": "Cover Properties", "index": "all" }
 					]
 				},

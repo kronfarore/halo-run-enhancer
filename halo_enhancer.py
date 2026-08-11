@@ -440,9 +440,14 @@ CONFIG = {
     "target_difficulty": "Impossible",   # which difficulty slot difficulty-effects write to
     "assembly_plugins_dir": r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
     "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"],
-                               "Halo 3": ["Halo3MCC", "Halo3"]},
+                               "Halo 3": ["Halo3MCC", "Halo3"],
+                               "Halo 3: ODST": ["ODSTMCC", "ODST"]},
     "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
-                        "Halo 3": "halo3/maps"},
+                        "Halo 3": "halo3/maps", "Halo 3: ODST": "halo3odst/maps"},
+    # A game that reuses another's effects. ODST is a later Halo 3 build sharing its
+    # tag paths, so effects authored for Halo 3 apply there unless a field ODST
+    # removed says otherwise. See HaloDB._game_ok.
+    "game_inherits": {"Halo 3: ODST": "Halo 3"},
     # Halo 1 campaign scenario basenames, in order — used by the "Apply Sprint to
     # maps" action to walk the whole campaign (mod maps live under the same folder).
     "h1_campaign_maps": ["a10", "a30", "a50", "b30", "b40", "c10", "c20", "c40", "d20", "d40"],
@@ -1370,7 +1375,27 @@ class ModifierDatabase:
     @staticmethod
     def _game_ok(mod, game):
         games = mod.get('games')
-        return (not games) or (game is None) or (game in games)
+        if (not games) or (game is None) or (game in games):
+            return True
+        # A game may INHERIT another's effects. ODST is a later Halo 3 build and
+        # shares its tag paths and nearly all its fields, so an effect written for
+        # Halo 3 applies there too. Doing it here rather than by adding
+        # "Halo 3: ODST" to ~60 halo.json entries keeps the data honest about which
+        # engine an effect was authored for, and means an effect added for Halo 3
+        # later works in ODST without a second edit that is easy to forget.
+        #
+        # resolve_gamed already assumes exactly this: a tag or field missing for a
+        # game falls back to the nearest EARLIER game, so ODST resolves Halo 3's
+        # values with no per-effect entry.
+        #
+        # Fields ODST actually removed are excluded per effect in halo.json, since
+        # inheriting them would only fail later at patch time.
+        parent = CONFIG.get('game_inherits', {}).get(game)
+        while parent:
+            if parent in games:
+                return True
+            parent = CONFIG.get('game_inherits', {}).get(parent)
+        return False
 
     @staticmethod
     def _is_single_game_mod(mod):

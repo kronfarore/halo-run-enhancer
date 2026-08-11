@@ -75,6 +75,44 @@ def fields(path, keep_dupes=False):
     return out
 
 
+def used_classes(path='halo.json'):
+    """Tag classes halo.json actually targets, as `{class: [example tags]}`.
+
+    Diffing all 100+ shared classes buries the answer. What matters is the classes
+    effects already touch -- everything else is noise until an effect needs it.
+    A tag string starts with its 4-character class, e.g. `char objects\\...`,
+    `matg globals\\globals`, `weap objects\\weapons\\...`.
+    """
+    import json
+    with open(path, encoding='utf-8') as f:
+        data = json.load(f)
+    out = {}
+
+    def note(tag):
+        if isinstance(tag, dict):
+            for v in tag.values():
+                note(v)
+            return
+        if not isinstance(tag, str) or not tag.strip():
+            return
+        cls = tag.split(' ', 1)[0].strip()
+        if cls:
+            out.setdefault(cls, set()).add(tag[:60])
+
+    def walk(node):
+        if isinstance(node, dict):
+            if 'tag' in node:
+                note(node['tag'])
+            for v in node.values():
+                walk(v)
+        elif isinstance(node, list):
+            for v in node:
+                walk(v)
+
+    walk(data)
+    return {k: sorted(v) for k, v in sorted(out.items())}
+
+
 def classes():
     h3 = {f[:-4] for f in os.listdir(H3) if f.endswith('.xml')}
     od = {f[:-4] for f in os.listdir(ODST) if f.endswith('.xml')}
@@ -89,7 +127,32 @@ def main(argv=None):
     ap.add_argument('--moved', action='store_true')
     ap.add_argument('--min-new', type=int, default=1,
                     help='summary: only list classes with at least this many new fields')
+    ap.add_argument('--used', action='store_true',
+                    help='only the tag classes halo.json targets, with full detail')
     a = ap.parse_args(argv)
+
+    if a.used:
+        used = used_classes()
+        shared_all, odst_only, h3_only = classes()
+        print('halo.json targets %d tag class(es): %s\n'
+              % (len(used), ', '.join(used)))
+        for c in used:
+            if c not in shared_all:
+                where = ('ODST only' if c in odst_only else
+                         'Halo 3 only' if c in h3_only else 'NO PLUGIN IN EITHER')
+                print('=== %-6s %s -- cannot diff' % (c, where))
+                continue
+            f3 = fields(os.path.join(H3, c + '.xml'))
+            fo = fields(os.path.join(ODST, c + '.xml'))
+            new = sorted(set(fo) - set(f3))
+            gone = sorted(set(f3) - set(fo))
+            print('=== %-6s  +%d new  -%d removed' % (c, len(new), len(gone)))
+            for k in gone:
+                print('    REMOVED  %s' % k)
+            for k in new:
+                print('    new      %-56s %s' % (k, fo[k][1]))
+            print()
+        return 0
 
     shared, odst_only, h3_only = classes()
     if odst_only:

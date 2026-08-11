@@ -48,6 +48,9 @@ ENEMY_TO_BUCKET = {
     # gap in the data, not a bug here. Kept explicit so it is not "fixed" by
     # guessing a bucket.
     'Flood Infection Form': None,
+    # ODST only. Engineers are not enemies in Halo 3, but they are in Mombasa
+    # Streets, Kikowani Station and Data Hive, and scoredb.xml already scores them.
+    'Engineer': 'engineer',
 }
 
 # Bosses need class+type precision: Tartarus is not "every brute", he is the
@@ -91,6 +94,9 @@ CATEGORIES = {
         'Body Vitality', 'Shield Vitality', 'Shield Recharge', 'Body Recharge',
         'Enemy Vitality', 'Enemy Shield', 'Enemy Recharge', 'Enforcer Chassis',
         'Hologram Body Vitality', 'Hologram Shield Vitality',
+        # ODST Engineer: shields every ally around it, so it is durability -- and
+        # for the whole squad, not just itself.
+        'Shield Boost',
     ],
     'damage': [
         'Weapon Damage Modifier', 'Melee Damage', 'Beam Damage', 'Enemy damage',
@@ -99,6 +105,9 @@ CATEGORIES = {
         'Beam', 'Beam Projectile', 'Needler', 'Needler Damage',
         'Needler Projectile', 'Rocket', 'Rocket Damage', 'Rocket Projectile',
         'Chieftain Hammer Damage', 'Gravity Hammer Damage',
+        # ODST Engineer: its corpse rises and detonates, so this is what killing
+        # one does TO you rather than a durability trait.
+        'Death',
     ],
     'accuracy': [
         'Accuracy', 'Target Tracking & Leading', 'Projectile Error', 'Burst Error',
