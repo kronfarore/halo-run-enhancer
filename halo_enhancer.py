@@ -3973,7 +3973,7 @@ class MagnitudeEditorDialog(QDialog):
         on spawn 0 and player 2's on spawn 1; with 2-player coop off both merge onto
         spawn 0. By default only each player's first equipment is placed; the
         'all selected' option places everything they carry."""
-        if self.game != 'Halo 3' or not CONFIG.get('set_starting_equipment'):
+        if not has_equipment(self.game) or not CONFIG.get('set_starting_equipment'):
             return None
         rs = getattr(self.parent_gui, 'run_state', None)
         db = getattr(self.parent_gui, 'db', None)
