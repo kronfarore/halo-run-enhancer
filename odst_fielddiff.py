@@ -37,9 +37,22 @@ def _int(s):
         return None
 
 
-def fields(path):
-    """{'Block>Sub>Field': (offset, type)} for one plugin file."""
+def fields(path, keep_dupes=False):
+    """{'Block>Sub>Field': (offset, type)} for one plugin file.
+
+    A plugin can define the SAME field name twice in one block -- weap's Barrels
+    carries two `Minimum Error` / `Error Angle` pairs, the first for dual wielding
+    and the second for single. Keyed naively they collapse and the first one
+    disappears, so repeats get a `#n` suffix. `keep_dupes=False` still returns one
+    entry per name for diffing, but the suffixed keys make the repeat visible.
+    """
     out = {}
+    seen = {}
+
+    def add(key, val):
+        n = seen.get(key, 0)
+        seen[key] = n + 1
+        out[key if n == 0 else '%s#%d' % (key, n + 1)] = val
 
     def walk(node, prefix):
         for ch in node:
@@ -48,12 +61,12 @@ def fields(path):
                 continue
             key = (prefix + '>' + nm) if prefix else nm
             if ch.tag.lower() in BLOCKS:
-                out[key + '/'] = (_int(ch.get('offset')),
-                                  'block:' + str(_int(ch.get('entrySize')
-                                                      or ch.get('elementSize'))))
+                add(key + '/', (_int(ch.get('offset')),
+                                'block:' + str(_int(ch.get('entrySize')
+                                                    or ch.get('elementSize')))))
                 walk(ch, key)
             else:
-                out[key] = (_int(ch.get('offset')), ch.tag.lower())
+                add(key, (_int(ch.get('offset')), ch.tag.lower()))
 
     try:
         walk(ET.parse(path).getroot(), '')

@@ -6592,6 +6592,69 @@
 						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all" }
 					]
 				}
+			},
+			"Engineer": {
+				"Leader Leash": {
+					"desc": "How far they stray from their pack leader",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Maximum Leader Distance", "block": "General Properties" },
+						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and the vitality threshold that triggers it.",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Cover Chance": {
+					"desc": "Chance of seeking cover.",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Cover Chance Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Chance Time Max", "block": "Cover Properties", "index": "all" }
+					]
+				},
+				"Retreat": {
+					"desc": "Cower time and flee chance when a leader or peers die.",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+					]
+				},
+				"Death": {
+					"desc": "How high it rises when killed, how long the rise takes, and the delay and body vitality of the detonation.",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Death Height", "block": "Engineer Properties", "index": "all" },
+						{ "field": "Death Rise Time", "block": "Engineer Properties", "index": "all" },
+						{ "field": "Death Detonation Time", "block": "Engineer Properties", "index": "all" },
+						{ "field": "Detonation Body Vitality", "block": "Engineer Properties", "index": "all" }
+					]
+				},
+				"Shield Boost": {
+					"desc": "Radius, refresh period and strength of the shields it grants nearby allies.",
+					"game": "Halo 3: ODST",
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{ "field": "Shield Boost Radius Maximum", "block": "Engineer Properties", "index": "all" },
+						{ "field": "Shield Boost Period", "block": "Engineer Properties", "index": "all" },
+						{ "field": "Shield Boost Strength", "block": "Engineer Properties", "index": "all" }
+					]
+				}
 			}
 		},
 		"Boss enemy modifier": {
