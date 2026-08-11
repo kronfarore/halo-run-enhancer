@@ -150,6 +150,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult',
+               'odst_red_plasma_as_brute',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -387,6 +388,22 @@ CONFIG = {
     "score_scaling": False,
     "score_step": 0.05,        # multiplier per point of summed effect weight
     "score_cap_mult": 0.0,     # 0 = uncapped; otherwise the largest multiplier
+    # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
+    # separate Brute Plasma Rifle. With this on it is offered under that name and
+    # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
+    # the red tag either way -- that is in the tag data, not this option.
+    "odst_red_plasma_as_brute": False,
+    # The only differences between Halo 2's Brute Plasma Rifle and its plasma rifle.
+    # Rounds Per Second is a range, so both ends move; Error Angle likewise. Minimum
+    # Error and Error Angle are defined TWICE in Barrels -- dual wield first, single
+    # second -- and nth 0 is the dual pair, which is the one that differs.
+    "odst_brute_plasma_tuning": [
+        {"field": "Rounds Per Second", "block": "Barrels", "op": "+", "value": 2.0},
+        {"field": "Rounds Per Second Max", "block": "Barrels", "op": "+", "value": 2.0},
+        {"field": "Minimum Error", "block": "Barrels", "nth": 0, "op": "-", "value": 0.5},
+        {"field": "Error Angle", "block": "Barrels", "nth": 0, "op": "-", "value": 0.5},
+        {"field": "Error Angle Max", "block": "Barrels", "nth": 0, "op": "-", "value": 0.5}
+    ],
     # Deny specific equipment to the player. Grouped the way they play: two
     # "deny the enemy information" pieces, two "become untouchable" pieces.
     "remove_superflare_jammer": False,
@@ -1300,6 +1317,14 @@ class ModifierDatabase:
         disabled in CONFIG), restricted to entries that resolve to real mods.
         Aliases collapse to their canonical weapon. Falls back to all weapons."""
         wl = list(self.mission_weapons.get(mission_id) or [])
+        # ODST's obtainable plasma rifle is the tag Halo 2 shipped as the Brute
+        # Plasma Rifle, so with that option on the level offers it under that name
+        # wherever it stocks a plasma rifle. Resolved per call, like bosses_for, so
+        # toggling the option takes effect without reloading halo.json.
+        if (CONFIG.get('odst_red_plasma_as_brute')
+                and self.mission_games.get(mission_id) == 'Halo 3: ODST'
+                and 'Plasma Rifle' in wl and 'Brute Plasma Rifle' not in wl):
+            wl.append('Brute Plasma Rifle')
         if CONFIG.get('include_grenades', True):
             wl += [g for g in (self.mission_grenades.get(mission_id) or []) if g not in wl]
         result = []
@@ -4053,7 +4078,10 @@ class MagnitudeEditorDialog(QDialog):
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
                   + (["rescale metagame scores (needs an MCC restart)"]
-                     if CONFIG.get('score_scaling') else []))
+                     if CONFIG.get('score_scaling') else [])
+                  + (["retune the plasma rifle to the Brute Plasma Rifle"]
+                     if (CONFIG.get('odst_red_plasma_as_brute')
+                         and self.game == 'Halo 3: ODST') else []))
         confirm = QMessageBox.question(
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
@@ -4072,7 +4100,10 @@ class MagnitudeEditorDialog(QDialog):
                 skulls=skulls,
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
-                sprint=sprint))
+                sprint=sprint,
+                red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
+                            if (CONFIG.get('odst_red_plasma_as_brute')
+                                and self.game == 'Halo 3: ODST') else None)))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -5046,6 +5077,18 @@ class OptionsDialog(QDialog):
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
+        self.red_plasma_cb = QCheckBox("ODST: treat the plasma rifle as the Brute Plasma Rifle")
+        self.red_plasma_cb.setChecked(bool(CONFIG.get('odst_red_plasma_as_brute')))
+        self.red_plasma_cb.setToolTip(
+            "ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as a "
+            "separate, stronger Brute Plasma Rifle.\n\nWith this on it is also offered "
+            "under that name in ODST, and on patch its base values are retuned to match "
+            "Halo 2's: +2 rounds per second at both ends of the range, and 0.5 less "
+            "minimum error and error angle on the dual-wield pair.\n\nNormal Plasma "
+            "Rifle effects reach the red tag either way — that is in the tag data, not "
+            "this option.")
+        form.addRow("Red plasma rifle:", self.red_plasma_cb)
+
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
@@ -5310,6 +5353,7 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
+            'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),

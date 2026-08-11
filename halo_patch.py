@@ -791,6 +791,39 @@ _AIM_ASSIST_FIELDS = ('Autoaim Angle', 'Autoaim Range', 'Autoaim Falloff Range',
                       'Magnetism Angle', 'Magnetism Range', 'Magnetism Falloff Range')
 
 
+_RED_PLASMA_TAG = ('objects' + chr(92) + 'weapons' + chr(92) + 'rifle' + chr(92)
+                   + 'plasma_rifle_red' + chr(92) + 'plasma_rifle_red')
+
+
+def apply_red_plasma_as_brute(m, registry, tuning):
+    """Retune ODST's red plasma rifle to Halo 2's Brute Plasma Rifle.
+
+    ODST ships the red tag as its ordinary plasma rifle, where Halo 2 shipped the
+    same weapon as a separate, stronger Brute Plasma Rifle. The differences are
+    only these few fields, so the option reproduces them rather than importing a
+    tag: faster fire and tighter dual-wield error.
+
+    Applied from the map's CURRENT values by operator, so it composes with whatever
+    plasma rifle effects the run also patched, and the .bak baseline model means it
+    does not compound across repatches.
+    """
+    plugin = registry.get('weap')
+    if plugin is None:
+        return [{'effect': 'Brute Plasma Rifle', 'ok': False, 'reason': 'no weap plugin'}]
+    if not m.find_tags('weap', _RED_PLASMA_TAG):
+        return [{'effect': 'Brute Plasma Rifle', 'ok': False,
+                 'reason': 'red plasma rifle not in this map'}]
+    out = []
+    for spec in tuning or []:
+        op = {'+': 'add', '-': 'sub', '*': 'mul', '=': 'set'}.get(spec.get('op'), 'add')
+        for r in m.apply_field('weap', _RED_PLASMA_TAG, spec['field'], op,
+                               float(spec['value']), plugin,
+                               block=spec.get('block'), nth=spec.get('nth', 0) or 0):
+            r['effect'] = 'Brute Plasma Rifle'
+            out.append(r)
+    return out
+
+
 def _apply_eyepatch(m, game, registry):
     """Zero the aim-assist fields on every weap tag in the map."""
     plugin = registry.get('weap')
@@ -2148,7 +2181,8 @@ def _apply_sprint(m, game, registry, cfg):
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
-              equipment_swaps=None, spawn_equipment=None, sprint=None):
+              equipment_swaps=None, spawn_equipment=None, sprint=None,
+              red_plasma=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -2337,6 +2371,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Sprint tuning (speed + duration/cooldown/enable). Whole-map, value-only,
         # so order among the structural passes doesn't matter — do it last.
         results.extend(_apply_sprint(m, game, registry, sprint))
+    if red_plasma:
+        # ODST only. After the per-field ops so it composes on top of whatever the
+        # run patched onto the plasma rifle, rather than being overwritten by it.
+        results.extend(apply_red_plasma_as_brute(m, registry, red_plasma))
 
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):

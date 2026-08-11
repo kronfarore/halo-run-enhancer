@@ -1019,7 +1019,8 @@
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1032,7 +1033,8 @@
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
@@ -1089,7 +1091,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": {
 						"Halo 1": [
@@ -1108,7 +1111,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1121,7 +1125,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start" },
@@ -1133,7 +1138,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1147,7 +1153,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1159,7 +1166,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1170,7 +1178,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -1183,7 +1192,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -2001,7 +2011,8 @@
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold" },
@@ -2013,7 +2024,8 @@
 					"desc": "Magnification Levels and Range",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -2025,7 +2037,8 @@
 					"desc": "When Misifirng starts and how likely it is",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start" },
@@ -2036,7 +2049,8 @@
 					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels" },
@@ -2049,7 +2063,8 @@
 					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 2": "Barrels" } },
@@ -2060,7 +2075,8 @@
 					"desc": "Projectiles per shot",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
@@ -2070,7 +2086,8 @@
 					"desc": "Weapon Spread",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
@@ -2082,7 +2099,8 @@
 					"desc": "Heat and Age generated per shot",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
@@ -2093,7 +2111,8 @@
 					"desc": "Weapon Spread while dual wielding",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -2106,7 +2125,8 @@
 					"desc": "Damage dealt while dual wielding",
 					"game": "Halo 2",
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
