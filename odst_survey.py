@@ -128,10 +128,28 @@ def survey(level, lay):
                 for iw in m.follow_all(dc, [0x20], [0x10], 'all'):
                     note(weaps, struct.unpack_from('<h', m.data, iw + 0xC)[0], used_w)
 
+    # Ground pickups come from the Weapons/Equipment PLACEMENT blocks, each entry
+    # holding a palette index at +0. The palettes themselves are useless for this:
+    # they are near-identical across all nine maps (every one stocks a golf club,
+    # a flamethrower and a missile pod), so they describe the game, not the level.
+    def placements(block, palette):
+        off, esize = lay[block]
+        c = collections.Counter()
+        for el in m.follow_all(scnr, [off], [esize], 'all'):
+            i = struct.unpack_from('<h', m.data, el)[0]
+            if 0 <= i < len(palette) and palette[i]:
+                c[palette[i]] += 1
+        return c
+
+    weap_ground = placements('Weapons', weaps)
+    equip_ground = placements('Equipment', equip)
+
     fam_counts = collections.Counter()
     for tag, n in used_c.items():
         fam_counts[family(tag)] += n
     return {
+        'weapons_on_ground': dict(weap_ground),
+        'equipment_on_ground': dict(equip_ground),
         'level': level,
         'internal': m.internal_name,
         'family_counts': dict(fam_counts),
@@ -141,6 +159,51 @@ def survey(level, lay):
         'weapons_in_palette': sorted(n for n in weaps if n),
         'equipment_in_palette': sorted(n for n in equip if n),
     }
+
+
+def weapon_carriers(level, lay):
+    """weapon tag -> the character families that spawn holding it.
+
+    Needed because a weapon appearing in a loadout is only evidence the player can
+    get it if the CARRIER really spawns. sentinel_gun is carried solely by
+    floodcombat_elite and energy_blade solely by elite -- both leftovers -- so
+    without this they would enter halo.json as ODST weapons.
+    """
+    from halo3_map import Halo3Map
+    import halo_patch as HP
+    m = Halo3Map(os.path.join(MAPS, level + '.map'))
+    scnr = HP._scnr_base(m)
+    chars = palette_names(m, scnr, *lay['Character Palette'])
+    weaps = palette_names(m, scnr, *lay['Weapon Palette'])
+    sq_off, sq_size = lay['Squads']
+    sub = lay['_squad_sub']
+    out = collections.defaultdict(set)
+
+    def pair(wi, fams):
+        if 0 <= wi < len(weaps) and weaps[wi]:
+            out[weaps[wi]] |= fams
+
+    for sq in m.follow_all(scnr, [sq_off], [sq_size], 'all'):
+        for cell in ('Designer Cells', 'Templated Cells'):
+            if cell not in sub:
+                continue
+            o, e = sub[cell]
+            for dc in m.follow_all(sq, [o], [e], 'all'):
+                fams = set()
+                for ct in m.follow_all(dc, [0x14], [0x10], 'all'):
+                    i = struct.unpack_from('<h', m.data, ct + 0xC)[0]
+                    if 0 <= i < len(chars) and chars[i]:
+                        fams.add(family(chars[i]))
+                for iw in m.follow_all(dc, [0x20], [0x10], 'all'):
+                    pair(struct.unpack_from('<h', m.data, iw + 0xC)[0], fams)
+        if 'Single Locations' in sub:
+            o, e = sub['Single Locations']
+            for sl in m.follow_all(sq, [o], [e], 'all'):
+                ci = struct.unpack_from('<h', m.data, sl + 0x32)[0]
+                if 0 <= ci < len(chars) and chars[ci]:
+                    pair(struct.unpack_from('<h', m.data, sl + 0x34)[0],
+                         {family(chars[ci])})
+    return out
 
 
 def family(tag):

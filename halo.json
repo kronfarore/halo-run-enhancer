@@ -234,6 +234,74 @@
 				"equipment": ["Auto Turret", "Invincibility"],
 				"turret": ["Machine Gun", "Flamethrower"]
 			}
+		},
+		"Halo 3: ODST": {
+			"h100": {
+				"name": "Mombasa Streets",
+				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"]
+			},
+			"sc100": {
+				"name": "Tayari Plaza",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"turret": ["Plasma Cannon"]
+			},
+			"sc110": {
+				"name": "Uplift Reserve",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"]
+			},
+			"sc120": {
+				"name": "Kizingo Boulevard",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"sc130": {
+				"name": "Oni Alpha Site",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Frag Grenade"]
+			},
+			"sc140": {
+				"name": "NMPD HQ",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Missile Pod", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
+				"turret": ["Machine Gun", "Plasma Cannon"]
+			},
+			"sc150": {
+				"name": "Kikowani Station",
+				"enemies": ["Brute", "Engineer", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"l200": {
+				"name": "Data Hive",
+				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Flamethrower", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"turret": ["Plasma Cannon"]
+			},
+			"l300": {
+				"name": "Coastal Highway",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade"]
+			}
 		}
 	},
 	"Player Modifiers": {
