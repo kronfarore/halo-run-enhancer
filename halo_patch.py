@@ -606,24 +606,18 @@ def _apply_starting_equipment(m, game, registry, starting):
         # Pre-H3, and H3 with coop off: both picks go on the same profile(s), P1 as
         # Primary and P2 as Secondary. H3 uses profile 0 only — its other profiles
         # belong to the second character or to NPCs.
-        odst = str(game).strip() == 'Halo 3: ODST'
-        if odst:
-            # ODST keeps one profile per INSERTION POINT -- 16 to 19 of them, all
-            # holding the same smg_silenced/automag loadout -- and which one you get
-            # depends on where the mission starts. Writing only profile 0, right for
-            # Halo 3, wrote to one the game never starts you in: the picks were in the
-            # map and simply never reached the player. So every player profile is
-            # written. Ally profiles (profile_pod_*_allies_*, carrying an assault
-            # rifle) are left alone -- they arm marines, not the Rookie.
-            default = [i for i in range(count)
-                       if 'allies' not in _cstr_at(m, m.follow(scnr_base, [boff],
-                                                              [esize], i) or 0).lower()]
-        else:
-            default = [0] if third_gen else [0, 1]
+        # Profile 0 for third-generation games. ODST was briefly given every profile
+        # not named *allies*, on the theory that its per-insertion-point profiles meant
+        # profile 0 was never the live one. That was wrong: a profile problem would
+        # fail every weapon uniformly, and in practice one weapon failed everywhere
+        # while another worked on most maps. It was also unsafe — ODST names NPC
+        # profiles 'dutch', 'buck', 'odst02', 'Player' and plain 'a', so "not allies"
+        # armed squadmates.
+        default = [0] if third_gen else [0, 1]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
         profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
-        if third_gen and not odst:
+        if third_gen:
             profiles = [i for i in profiles if i == 0]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
