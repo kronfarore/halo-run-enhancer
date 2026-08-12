@@ -273,7 +273,7 @@ def drop_weapons(m, wanted, radius=3.0, at=None):
     return used
 
 
-def repalette_nearest(m, want):
+def repalette_nearest(m, want, donor=None):
     """Change ONE field -- the Palette Index of the placement nearest the real start.
 
     Position, placement flags, attach mask and editor folder are left exactly as
@@ -305,11 +305,15 @@ def repalette_nearest(m, want):
     for i in range(max(0, wn)):
         e = wbase + i * wes
         pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+        pi = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
+        cur = names[pi].rsplit('\\', 1)[-1].lower() if 0 <= pi < pc else ''
+        if donor and donor.lower() not in cur:
+            continue                       # only overwrite the named donor placement
         d = math.dist(pos, REAL)
         if bestd is None or d < bestd:
             best, bestd = i, d
     if best is None:
-        print('  !! no weapon placements')
+        print('  !! no weapon placement matching donor %r' % (donor or 'any'))
         return None
 
     e = wbase + best * wes
@@ -461,6 +465,9 @@ def main(argv=None):
     ap.add_argument('--repalette', metavar='WEAPON',
                     help='change only the Palette Index of the placement nearest the '
                          'real start, leaving position/flags/folder as shipped')
+    ap.add_argument('--repalette-donor', metavar='WEAPON',
+                    help='which existing placement to overwrite, by the weapon it '
+                         'currently holds (e.g. covenant_carbine). Default: nearest.')
     ap.add_argument('--drop-at', metavar='X,Y,Z',
                     help='where to drop, instead of the measured start. Negative '
                          'coordinates need the = form: --drop-at=-313.3,190.6,5.1')
@@ -503,7 +510,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
-    repal = repalette_nearest(m, a.repalette) if a.repalette else None
+    repal = (repalette_nearest(m, a.repalette, a.repalette_donor)
+             if a.repalette else None)
     at = [float(v) for v in a.drop_at.split(',')] if a.drop_at else None
     dropped = drop_weapons(m, [w.strip() for w in a.drop.split(',') if w.strip()],
                            a.drop_radius, at) if a.drop else None
@@ -517,8 +525,8 @@ def main(argv=None):
     print('\nwritten. Load Kikowani Station and report:')
     if repal is not None:
         print('  - an AUTO MAGNUM in hand confirms the patched map actually loaded')
-        print('  - walk to where the level normally leaves a SHOTGUN, a few steps')
-        print('    from where you land: is it a %s instead?' % a.repalette)
+        print('  - go to where the %s normally lies: is it a %s now?'
+              % (a.repalette_donor or 'nearest weapon', a.repalette))
     if dropped:
         print('  - what, if anything, is IN YOUR HANDS when the intro ends?')
         print('  - are the dropped weapons lying on the ground where you land,')
