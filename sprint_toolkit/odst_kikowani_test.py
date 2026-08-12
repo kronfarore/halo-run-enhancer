@@ -122,12 +122,157 @@ def write_equipment(m):
           % (len(added), len(inner), len(outer), mask))
 
 
+def carbine_test(m):
+    """Repalette every Covenant Carbine placement to the rocket launcher, and move the
+    equipment onto the carbine nearest the real start.
+
+    The point is that a vanilla placement is a spot the level definitely streams. If
+    the rocket launcher appears where a carbine was, weapon tags render fine on sc150
+    and the empty hands are a starting-profile problem. If it does not appear even
+    there, the weapon cannot render on this map at all and the profile is innocent --
+    which is the same streaming gate that stopped H3's auto turret.
+
+    Repaletting an existing placement needs no block growth; only the palette may have
+    to gain one entry."""
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+
+    names = []
+    for i in range(pc):
+        nm = HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        names.append(str(nm) if nm else '')
+    rocket = next((i for i, nm in enumerate(names) if 'rocket_launcher' in nm.lower()), None)
+    if rocket is None:
+        print('  !! rocket launcher is not in the weapon palette; using the shotgun')
+        rocket = next((i for i, nm in enumerate(names) if 'shotgun' in nm.lower()), None)
+    if rocket is None:
+        print('  !! neither rocket launcher nor shotgun in the palette -- skipping')
+        return None
+
+    carbines = []
+    for i in range(max(0, wn)):
+        e = wbase + i * wes
+        pi = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
+        if 0 <= pi < len(names) and 'carbine' in names[pi].lower():
+            pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+            att = struct.unpack_from('<H', m.data, e + HP._EQ_ATTACH)[0]
+            fl = struct.unpack_from('<I', m.data, e + HP._EQ_FLAGS)[0]
+            carbines.append((i, pos, att, fl))
+    if not carbines:
+        print('  !! no carbine placements found')
+        return None
+
+    carbines.sort(key=lambda c: math.dist(c[1], REAL))
+    print('  %d carbine placement(s); nearest to the real start:' % len(carbines))
+    for i, pos, att, fl in carbines[:5]:
+        print('    [%3d] (%8.1f,%8.1f,%6.1f) mask 0x%04X flags 0x%X  %.0f units'
+              % (i, pos[0], pos[1], pos[2], att, fl, math.dist(pos, REAL)))
+
+    for i, _pos, _att, fl in carbines:
+        e = wbase + i * wes
+        struct.pack_into('<h', m.data, e + lay['palette_index'], rocket)
+        # clear Not Automatically / Never Placed so it spawns at load
+        struct.pack_into('<I', m.data, e + HP._EQ_FLAGS,
+                         fl & ~(HP._PLACE_NOT_AUTO | HP._PLACE_NEVER))
+    print('  every carbine -> palette[%d] %s' % (rocket, names[rocket].rsplit('\\', 1)[-1]))
+    return carbines[0]
+
+
+def equipment_at(m, spot, label, radius=2.0):
+    """Ring the already-appended equipment around a given point."""
+    lay = HP._MAP_EQUIPMENT[GAME]
+    scnr = HP._scnr_base(m)
+    io, ies = lay['items']
+    n, base = m.i32(scnr + io), HP._block_base(m, scnr + io)
+    pos, mask = spot[1], spot[2]
+    count = min(5, n)
+    for k, i in enumerate(range(n - count, n)):
+        e = base + i * ies
+        ang = k * (2 * math.pi / count)
+        struct.pack_into('<fff', m.data, e + HP._EQ_POS,
+                         pos[0] + radius * math.cos(ang),
+                         pos[1] + radius * math.sin(ang), pos[2])
+        struct.pack_into('<H', m.data, e + HP._EQ_ATTACH, mask)
+    print('  %d equipment moved to the %s carbine at (%.1f, %.1f, %.1f), r=%.1f, mask 0x%04X'
+          % (count, label, pos[0], pos[1], pos[2], radius, mask))
+
+
+# scnr Squads: name @0x0, Team @0x24. Each squad holds Designer Cells @0x54 and
+# Templated Cells @0x60 (both 0x84 bytes), and a cell carries its loadout as one-entry
+# BLOCKS of a 16-byte tagRef: Initial Weapon @0x20, Secondary @0x2C, Equipment @0x38.
+_SQUADS = (0x3B8, 0x6C)
+_SQ_NAME, _SQ_TEAM = 0x0, 0x24
+_CELL_BLOCKS = ((0x54, 0x84), (0x60, 0x84))
+_CELL_PRIMARY, _CELL_SECONDARY = 0x20, 0x2C
+_FRIENDLY_TEAMS = {1, 2}                 # Player, Human
+
+
+def arm_friendlies(m, path):
+    """Give every friendly squad's cells the named weapon.
+
+    An NPC gets its weapon from a completely different place than the player does --
+    the squad cell's Initial Weapon, not a starting profile -- so if the tag is alive
+    on this map a marine will visibly carry it. If nobody carries it either, the tag
+    is dead on sc150 the way the Battle Rifle is dead ODST-wide, and no amount of
+    fixing the player's loadout path will ever produce it."""
+    datum = HP._h3_tag_datum(m, 'weap', path)
+    if datum is None:
+        print('  !! %s is not in this map at all' % path)
+        return
+    scnr = HP._scnr_base(m)
+    soff, ses = _SQUADS
+    n, base = m.i32(scnr + soff), HP._block_base(m, scnr + soff)
+    if not base or n <= 0:
+        print('  !! no squads')
+        return
+    armed = cells = 0
+    teams = {}
+    for i in range(n):
+        se = base + i * ses
+        team = struct.unpack_from('<h', m.data, se + _SQ_TEAM)[0]
+        nm = bytes(m.data[se:se + 32]).split(b'\0')[0].decode('latin-1')
+        teams[team] = teams.get(team, 0) + 1
+        if team not in _FRIENDLY_TEAMS:
+            continue
+        armed += 1
+        for coff, ces in _CELL_BLOCKS:
+            cn, cbase = m.i32(se + coff), HP._block_base(m, se + coff)
+            if not cbase or cn <= 0:
+                continue
+            for c in range(cn):
+                ce = cbase + c * ces
+                # primary only: leaving the secondary alone keeps the change legible
+                wn, wbase = m.i32(ce + _CELL_PRIMARY), HP._block_base(m, ce + _CELL_PRIMARY)
+                if not wbase or wn <= 0:
+                    continue
+                struct.pack_into('<I', m.data, wbase, HP._WEAP_MAGIC)
+                struct.pack_into('<II', m.data, wbase + 4, 0, 0)
+                struct.pack_into('<I', m.data, wbase + 0xC, datum)
+                cells += 1
+        if armed <= 6:
+            print('    squad "%s" (team %d)' % (nm, team))
+    print('  squads by team: %s' % dict(sorted(teams.items())))
+    print('  armed %d friendly squad(s), %d cell weapon slot(s) -> %s'
+          % (armed, cells, path.rsplit('\\', 1)[-1]))
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--profiles', default='all',
                     help='"all", "none", or a comma list like 0,4,8,12')
     ap.add_argument('--no-equipment', action='store_true')
+    ap.add_argument('--carbines', action='store_true',
+                    help='repalette every carbine to a rocket launcher and put the '
+                         'equipment on the carbine nearest the real start')
+    ap.add_argument('--arm-friendlies', action='store_true',
+                    help='give every Player/Human squad the rocket launcher')
+    ap.add_argument('--ring', type=float, default=2.0,
+                    help='equipment ring radius in world units (default 2.0)')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args(argv)
 
@@ -152,10 +297,19 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    spot = carbine_test(m) if a.carbines else None
+    if spot and not a.no_equipment:
+        equipment_at(m, spot, 'nearest', a.ring)
+    if a.arm_friendlies:
+        arm_friendlies(m, PRIMARY)
     m.save(MAP)
     print('\nwritten. Load Kikowani Station and report:')
-    print('  - rocket launcher + shotgun in hand at the start?')
-    print('  - a ring of equipment where you are standing?')
+    if a.carbines:
+        print('  - is there a ROCKET LAUNCHER where the carbine near the start was?')
+        print('  - equipment ringed around that same spot?')
+    else:
+        print('  - rocket launcher + shotgun in hand at the start?')
+        print('  - a ring of equipment where you are standing?')
     print('undo with:  python odst_kikowani_test.py --restore')
     return 0
 
