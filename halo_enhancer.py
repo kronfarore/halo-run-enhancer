@@ -424,6 +424,22 @@ CONFIG = {
     # always carries the current run rather than accumulating old ones.
     "odst_patch_hub": True,
     "odst_hub_mission": "h100",
+    # Which tag a weapon IS, when that differs from whose effects it borrows. Only
+    # starting weapons care: they write one tagRef, where an effect may legitimately
+    # name several tags at once. ODST files its sidearm and SMG under their own tags
+    # while taking the Magnum's and SMG's mods, and its live plasma rifle is the RED
+    # tag -- the plain one is present but never placed and never carried.
+    "weapon_tag_overrides": {
+        "Halo 3: ODST": {
+            "Magnum": "weap objects\\weapons\\pistol\\automag\\automag",
+            "Pistol": "weap objects\\weapons\\pistol\\automag\\automag",
+            "Auto Magnum": "weap objects\\weapons\\pistol\\automag\\automag",
+            "SMG": "weap objects\\weapons\\rifle\\smg_silenced\\smg_silenced",
+            "Silenced SMG": "weap objects\\weapons\\rifle\\smg_silenced\\smg_silenced",
+            "Plasma Rifle": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+            "Brute Plasma Rifle": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+        }
+    },
     "odst_shield_into_health_pair": {"from": "Starting Shield Modifier",
                                      "to": "Starting Health Modifier"},
     # The only differences between Halo 2's Brute Plasma Rifle and its plasma rifle.
@@ -1321,11 +1337,26 @@ class ModifierDatabase:
 
     def weap_tag_for(self, weapon_name, game):
         """The `weap ...` tag for a weapon in the given game, taken from any of its
-        effects (used to set the scenario's starting weapons). None if unknown."""
+        effects (used to set the scenario's starting weapons). None if unknown.
+
+        Returns exactly ONE tag. An effect may name several with ' & ' so it patches
+        them together — ODST's Plasma Rifle covers both the dead plasma_rifle and the
+        live plasma_rifle_red that way — but a starting weapon is a single tagRef, and
+        writing the joined string looked up a tag that does not exist.
+
+        A game may also file a weapon under its own tag while borrowing another's
+        effects: ODST's Silenced SMG and Auto Magnum take the SMG's and Magnum's mods,
+        so without an override they resolved to the base weapon, which ODST does not
+        even ship in every level."""
+        override = (CONFIG.get('weapon_tag_overrides', {}).get(game, {})
+                    .get(weapon_name))
+        if override:
+            return override
         for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
             tag = resolve_gamed(mod.get('tag'), game, self.get_games())
             if isinstance(tag, str) and tag.startswith('weap '):
-                return tag
+                # first of a multi-tag effect; they are variants of one weapon
+                return tag.split(' & ')[0].strip()
         return None
 
     def eqip_tag_for(self, name, game):
