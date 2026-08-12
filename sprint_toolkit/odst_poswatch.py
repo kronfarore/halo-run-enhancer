@@ -105,8 +105,18 @@ def cmd_scan(args):
                       + (z.astype(np.float64) - near[2]) ** 2)
             ok &= np.nan_to_num(d2, nan=np.inf, posinf=np.inf) <= args.radius ** 2
         idx = np.flatnonzero(ok)
+        # Collapse runs of consecutive offsets. A float ARRAY satisfies the test at
+        # every 4-byte alignment, so one buffer of coordinates yields a candidate per
+        # float and the list fills with the same numbers shifted by one. Keeping the
+        # first of each run leaves one entry per buffer.
+        prev = None
         for i in idx:
-            a = base + int(i) * 4
+            i = int(i)
+            if prev is not None and i - prev <= 2:
+                prev = i
+                continue
+            prev = i
+            a = base + i * 4
             found.append(a)
             vals[a] = (float(x[i]), float(y[i]), float(z[i]))
             if len(found) > args.cap:
@@ -123,32 +133,103 @@ def cmd_scan(args):
         print('move, then run:  moved      (or stand still and run:  still)')
 
 
+def _read_many(h, addrs, page=0x10000):
+    """Values for many addresses with one read per 64 KB page.
+
+    A narrowing pass over a few hundred thousand candidates is one
+    ReadProcessMemory each otherwise, which takes minutes and makes the
+    move/stand-still rhythm impossible to keep."""
+    out = {}
+    cache = {}
+    for a in sorted(addrs):
+        base = a & ~(page - 1)
+        blob = cache.get(base)
+        if blob is None:
+            if len(cache) > 64:
+                cache.clear()
+            blob = M.read(h, base, page + 16) or b''
+            cache[base] = blob
+        off = a - base
+        if off + 12 <= len(blob):
+            out[a] = struct.unpack_from('<fff', blob, off)
+    return out
+
+
 def _narrow(args, want_change):
     addrs, old = _load()
     h = attach()
+    cur = _read_many(h, addrs)
     keep, vals = [], {}
     for a in addrs:
-        t = _read(h, a)
+        t = cur.get(a)
         if t is None or not _plausible(t):
             continue
         moved = a in old and math.dist(t, old[a]) > args.eps
         if moved == want_change:
             keep.append(a)
             vals[a] = t
-    print('%s: %d -> %d candidate(s)'
-          % ('moved' if want_change else 'still', len(addrs), len(keep)))
+    step = 'moved' if want_change else 'still'
+    print('%s: %d -> %d candidate(s)' % (step, len(addrs), len(keep)))
+    if not want_change and len(keep) == len(addrs):
+        # `still` keeps whatever did NOT change, and while you stand still almost
+        # nothing does, so it discriminates poorly on its own. `moved` is what
+        # narrows: only something tracking the player changes while you walk.
+        print('  nothing was filtered — `still` cannot narrow much by itself.')
+        print('  MOVE a good distance, then run:  moved')
+    print('  log: %s' % _write_log(step, keep, vals, dict(old)))
     _save(keep, vals)
     if keep and len(keep) < 30:
         cmd_list(args)
 
 
+LOG = os.path.join(os.environ.get('TEMP', '.'), 'odst_poswatch_log.txt')
+
+
+def _write_log(step, addrs, cur, prev):
+    """Every candidate with its value and how far it moved since the last step.
+
+    The console only shows the first 40, and the interesting column is usually the
+    delta -- a candidate that never moves across several steps is static data, not
+    a player."""
+    cap = 2000
+    with open(LOG, 'w') as f:
+        f.write('# %s -- %d candidate(s)  %s\n' % (step, len(addrs),
+                                                   time.strftime('%Y-%m-%d %H:%M:%S')))
+        if len(addrs) > cap:
+            f.write('# showing the %d that moved most; narrow further with `moved`\n' % cap)
+        f.write('# address        x        y        z       moved-since-last\n')
+        listed = sorted(addrs)
+        if len(listed) > cap:
+            # when there are too many to read, the ones that MOVED are the interesting
+            # ones -- a player position is never among the static majority
+            listed.sort(key=lambda a: -(math.dist(cur[a], prev[a])
+                                        if a in cur and a in prev else 0))
+            listed = listed[:cap]
+        for a in listed:
+            t = cur.get(a)
+            if t is None:
+                continue
+            d = math.dist(t, prev[a]) if a in prev else float('nan')
+            f.write('0x%012X  %9.2f %9.2f %9.2f   %s\n'
+                    % (a, t[0], t[1], t[2],
+                       '-' if d != d else '%.3f' % d))
+    return LOG
+
+
 def cmd_list(args):
     addrs, vals = _load()
     h = attach()
+    cur = {}
+    for a in addrs:
+        t = _read(h, a)
+        if t:
+            cur[a] = t
     print('\n%d candidate(s):' % len(addrs))
     for a in sorted(addrs)[:40]:
-        t = _read(h, a)
-        print('  0x%012X  (%.2f, %.2f, %.2f)' % ((a,) + (t or (0, 0, 0))))
+        print('  0x%012X  (%.2f, %.2f, %.2f)' % ((a,) + (cur.get(a) or (0, 0, 0))))
+    if len(addrs) > 40:
+        print('  ... %d more' % (len(addrs) - 40))
+    print('\nfull list written to %s' % _write_log('list', addrs, cur, vals))
 
 
 def cmd_watch(args):
