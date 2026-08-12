@@ -33,7 +33,15 @@ UNATTACHED_ZONESET = 0x94
 ZS_ELEM = 0x78
 ZS_NAME = 0x44
 ZS_REQUIRED_TAG_POOL = 0x54      # tagblock of 4-byte words, one bit per tag
+ZS_OPTIONAL_TAG_POOL = 0x60      # reading Required alone is NOT enough -- sc150's
+                                 # shotgun renders in vanilla with its Required bit
+                                 # clear, so residency is Required OR Optional
 ZS_REQUIRED_RAW_POOL = 0x0
+ZS_OPTIONAL_RAW_POOL = 0x18
+ZS_OPTIONAL_RAW_POOL2 = 0x24
+TAG_POOLS = (('req', ZS_REQUIRED_TAG_POOL), ('opt', ZS_OPTIONAL_TAG_POOL))
+RAW_POOLS = (('req', ZS_REQUIRED_RAW_POOL), ('opt', ZS_OPTIONAL_RAW_POOL),
+             ('opt2', ZS_OPTIONAL_RAW_POOL2))
 
 
 def _zone_tag(m):
@@ -85,21 +93,41 @@ def _write_pool(m, elem, off, words):
         struct.pack_into('<I', m.data, base + i * 4, w)
 
 
-def load_always(m, zone_base, want):
-    """Make `want` resident for the whole level by folding a zone set that already
-    carries it into GLOBAL.
+TAG_RESOURCES = 0x64             # zone tag's own chunk table; RAW pool bits index it
+TR_ELEM = 0x40
 
-    GLOBAL is the set the engine keeps loaded everywhere, and on sc150 it holds
-    exactly three player weapons -- assault_rifle, smg_silenced, automag -- which is
-    exactly the set that can be granted as a starting weapon. Everything else lives
-    in a designer set (loaded only in its part of the level) or in UNATTACHED.
 
-    A weapon needs its whole tag family, not just the `weap` tag, so rather than try
-    to compute a dependency closure this ORs in the ENTIRE zone set that carries it:
-    that set already contains every tag and every raw chunk the weapon needs, because
-    the level streams it successfully somewhere. Blunt, but complete and verifiable.
+def chunks_by_tag(m, zone_base):
+    """{tag row: [chunk index]} from the zone tag's Tag Resources block.
 
-    Returns a report dict.
+    This mapping is exact -- every chunk names its Parent Tag -- unlike the TAG pool,
+    whose bit-to-tag mapping is NOT established. Sanity checks fail on it: the
+    scenario, every sbsp, and the brute biped have no bit set in any pool, yet all of
+    them plainly load. Treat tag-pool readings as a lead, never as proof.
+    """
+    n = m.i32(zone_base + TAG_RESOURCES)
+    base = HP._block_base(m, zone_base + TAG_RESOURCES)
+    out = {}
+    for i in range(max(0, n)) if base else []:
+        out.setdefault(m.u32(base + i * TR_ELEM + 0xC) & 0xFFFF, []).append(i)
+    return out
+
+
+def load_always(m, zone_base, want, whole_donor=False):
+    """Try to make `want` resident everywhere by setting its bits in GLOBAL.
+
+    Default is a NARROW fold: only the weapon's own tag family (every tag whose path
+    contains the weapon's basename -- Bungie files a weapon's model, animations,
+    first-person set, projectile, sounds and shaders under its own folder) plus
+    exactly the raw chunks those tags own.
+
+    `whole_donor` is the original blunt version, which ORed an entire donor zone set
+    in. On sc150 that added 2400 tags and left the map on a black screen after the
+    intro, so the size of the fold is implicated: the narrow one adds ~90.
+
+    NOTE the semantics here are NOT confirmed. The tag pool's bit mapping does not
+    survive sanity checks, so a failure of this function is as likely to mean "wrong
+    table" as "not enough bits".
     """
     sets = zonesets(m, zone_base)
     labels = [lab for lab, _ in sets]
@@ -111,39 +139,52 @@ def load_always(m, zone_base, want):
                 and str(t['name']).rsplit('\\', 1)[-1].lower() == want.lower()), None)
     if row is None:
         return {'ok': False, 'reason': '%s has no weap tag in this map' % want}
-
-    pools = [_pool(m, e, ZS_REQUIRED_TAG_POOL) for _, e in sets]
-    if _has(pools[gi], row):
-        return {'ok': True, 'reason': 'already in GLOBAL', 'weapon': want, 'row': row}
-    donors = [i for i, w in enumerate(pools) if i != gi and _has(w, row)]
-    if not donors:
-        return {'ok': False, 'weapon': want, 'row': row,
-                'reason': 'in NO zone set at all -- its resources are not in this map, '
-                          'so it cannot be loaded here by any bit flip'}
-
     gelem = sets[gi][1]
+
+    if whole_donor:
+        pools = [_pool(m, e, ZS_REQUIRED_TAG_POOL) for _, e in sets]
+        donors = [i for i, w in enumerate(pools) if i != gi and _has(w, row)]
+        if not donors:
+            return {'ok': False, 'weapon': want, 'reason': 'no donor zone set'}
+        added_t = added_r = 0
+        for src in donors:
+            for off in (ZS_REQUIRED_TAG_POOL, ZS_REQUIRED_RAW_POOL):
+                dst, donor = _pool(m, gelem, off), _pool(m, sets[src][1], off)
+                if not dst or not donor:
+                    continue
+                n = min(len(dst), len(donor))
+                gained = sum(bin(donor[i] & ~dst[i]).count('1') for i in range(n))
+                for i in range(n):
+                    dst[i] |= donor[i]
+                _write_pool(m, gelem, off, dst[:n])
+                added_t += gained if off == ZS_REQUIRED_TAG_POOL else 0
+                added_r += gained if off == ZS_REQUIRED_RAW_POOL else 0
+        return {'ok': True, 'weapon': want, 'mode': 'whole-donor',
+                'donors': [labels[i] for i in donors],
+                'tags_added': added_t, 'raw_added': added_r}
+
+    family = [t['index'] for t in m.tags
+              if t.get('name') and want.lower() in str(t['name']).lower()]
+    owned = chunks_by_tag(m, zone_base)
+    chunk_ids = [c for r in family for c in owned.get(r, [])]
+
+    tags = _pool(m, gelem, ZS_REQUIRED_TAG_POOL)
+    raws = _pool(m, gelem, ZS_REQUIRED_RAW_POOL)
     added_t = added_r = 0
-    for src in donors:
-        selem = sets[src][1]
-        for off in (ZS_REQUIRED_TAG_POOL, ZS_REQUIRED_RAW_POOL):
-            dst = _pool(m, gelem, off)
-            donor = _pool(m, selem, off)
-            if not dst or not donor:
-                continue
-            n = min(len(dst), len(donor))
-            gained = 0
-            for i in range(n):
-                merged = dst[i] | donor[i]
-                gained += bin(merged & ~dst[i]).count('1')
-                dst[i] = merged
-            _write_pool(m, gelem, off, dst[:n])
-            if off == ZS_REQUIRED_TAG_POOL:
-                added_t += gained
-            else:
-                added_r += gained
-    return {'ok': True, 'weapon': want, 'row': row,
-            'donors': [labels[i] for i in donors],
-            'tags_added': added_t, 'raw_added': added_r}
+    for r in family:
+        w, b = divmod(r, 32)
+        if w < len(tags) and not (tags[w] & (1 << b)):
+            tags[w] |= 1 << b
+            added_t += 1
+    for c in chunk_ids:
+        w, b = divmod(c, 32)
+        if w < len(raws) and not (raws[w] & (1 << b)):
+            raws[w] |= 1 << b
+            added_r += 1
+    _write_pool(m, gelem, ZS_REQUIRED_TAG_POOL, tags)
+    _write_pool(m, gelem, ZS_REQUIRED_RAW_POOL, raws)
+    return {'ok': True, 'weapon': want, 'mode': 'narrow', 'family': len(family),
+            'chunks': len(chunk_ids), 'tags_added': added_t, 'raw_added': added_r}
 
 
 def main(argv=None):
@@ -158,6 +199,9 @@ def main(argv=None):
     ap.add_argument('--load-always', metavar='WEAPON', action='append', default=[],
                     help='fold a zone set that carries this weapon into GLOBAL, so it '
                          'is resident everywhere. Repeatable. Writes the map.')
+    ap.add_argument('--whole-donor', action='store_true',
+                    help='the blunt fold: OR an entire donor zone set into GLOBAL. On '
+                         'sc150 this black-screened the map after the intro.')
     a = ap.parse_args(argv)
 
     path = os.path.join(MAPS[a.game], a.map + '.map')
@@ -180,7 +224,7 @@ def main(argv=None):
         if a.bak:
             raise SystemExit('refusing to write the .bak baseline; drop --bak')
         for want in a.load_always:
-            r = load_always(m, zb, want)
+            r = load_always(m, zb, want, whole_donor=a.whole_donor)
             print('  load-always %-18s %s' % (want, r))
         m.save(path)
         after = [(lab, _pool(m, e, ZS_REQUIRED_TAG_POOL)) for lab, e in zonesets(m, zb)]
