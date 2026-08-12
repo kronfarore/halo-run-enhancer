@@ -1335,9 +1335,61 @@ _H3_NO_START_STREAM = {
 }
 
 
+# Every object placement carries the same Can Attach To BSP Flags at 0x50 and the
+# same position at 0x8, so any of them can say which BSP is live somewhere. Weapons
+# alone are far too sparse: at Uplift Reserve's start the nearest is 241 units away
+# and in a different BSP, and at Kikowani Station 225 — which is why equipment
+# patched cleanly there and then never appeared. Scenery and crates sit within 9-39
+# units on both, and on every level that already worked the nearest placement of any
+# type agrees with the weapon-derived answer.
+_PLACEMENT_BLOCKS = {
+    'Halo 3': {'scenery': (0xB4, 0xB4), 'bipeds': (0xCC, 0x74),
+               'vehicles': (0xE4, 0xA8), 'equipment': (0xFC, 0x8C),
+               'weapons': (0x114, 0xA8), 'crates': (0x5BC, 0xB0)},
+    'Halo 3: ODST': {'scenery': (0xD0, 0xB4), 'bipeds': (0xE8, 0x74),
+                     'vehicles': (0x100, 0xA8), 'equipment': (0x118, 0x8C),
+                     'weapons': (0x130, 0xA8), 'crates': (0x5FC, 0xB0)},
+}
+_PLACE_POS, _PLACE_ATTACH = 0x8, 0x50
+
+
+def _nearest_placement_mask(m, pos, game):
+    """Attach mask of the nearest placement of ANY type, or None."""
+    blocks = _PLACEMENT_BLOCKS.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not blocks or scnr is None:
+        return None
+    best = None
+    for off, esize in blocks.values():
+        n = m.i32(scnr + off)
+        base = _block_base(m, scnr + off)
+        if not base or n <= 0:
+            continue
+        for i in range(n):
+            e = base + i * esize
+            att = struct.unpack_from('<H', m.data, e + _PLACE_ATTACH)[0]
+            if not att:
+                continue
+            p = struct.unpack_from('<fff', m.data, e + _PLACE_POS)
+            d = sum((a - b) ** 2 for a, b in zip(p, pos))
+            if best is None or d < best[0]:
+                best = (d, att)
+    return best[1] if best else None
+
+
 def _h3_mask_at(m, pos, game='Halo 3'):
-    """Attach mask of the nearest vanilla weapon to `pos` — approximates which BSP is
-    loaded there, so a placement dropped at pos attaches to the right BSP."""
+    """Attach mask of the nearest vanilla placement to `pos` — approximates which BSP
+    is loaded there, so a placement dropped at pos attaches to the right BSP.
+
+    ODST looks at every placement type; Halo 3 keeps its weapons-only behaviour, whose
+    curated start anchors were tuned in-game against exactly that answer. Widening it
+    there would change masks on maps that already work, with no evidence of a problem
+    to fix — the ODST tables are present so it can be switched over if that changes.
+    """
+    if str(game).strip() == 'Halo 3: ODST':
+        got = _nearest_placement_mask(m, pos, game)
+        if got:
+            return got
     lay = _MAP_WEAPONS.get(str(game).strip(), _MAP_WEAPONS['Halo 3'])
     wo, we = lay['weapons']
     scnr = _scnr_base(m)
