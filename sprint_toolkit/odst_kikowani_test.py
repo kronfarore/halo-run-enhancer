@@ -195,7 +195,7 @@ def carbine_test(m):
     return carbines[0]
 
 
-def drop_weapons(m, wanted, radius=3.0):
+def drop_weapons(m, wanted, radius=3.0, at=None):
     """Repalette and move the level's own weapon placements onto the real start.
 
     This is the test for the zone-set explanation AND the prototype of the fix.
@@ -212,6 +212,14 @@ def drop_weapons(m, wanted, radius=3.0):
     still be laid on the ground at the player's feet. Empty hands then become the
     delivery mechanism rather than the bug: Halo auto-equips a weapon walked over
     while a slot is free.
+
+    `at` overrides the drop point. Dropping on the measured start (-326, 184, 4.6)
+    produced NOTHING in-game, and that spot has never actually been confirmed to
+    render anything -- the equipment result everyone remembers as "works at the start"
+    was on a vanilla pickup 17 units away, not here. So the coordinate is a suspect in
+    its own right, and `--drop-at` aims at a spot the level itself already renders a
+    weapon on (its shotgun, at -313.3, 190.6, 5.1) to separate "placement is broken"
+    from "that position is bad".
 
     Returns the placements used, or None.
     """
@@ -236,15 +244,16 @@ def drop_weapons(m, wanted, radius=3.0):
         print('  !! nothing to drop (%d placement(s) available)' % max(0, wn))
         return None
 
-    mask = HP._h3_mask_at(m, REAL, GAME) or 0x0002
+    spot = tuple(at) if at else REAL
+    mask = HP._h3_mask_at(m, spot, GAME) or 0x0002
     used = []
     for k, (want, pi) in enumerate(picks[:wn]):
         e = wbase + k * wes
         ang = k * (2 * math.pi / min(len(picks), wn))
         struct.pack_into('<h', m.data, e + lay['palette_index'], pi)
         struct.pack_into('<fff', m.data, e + HP._EQ_POS,
-                         REAL[0] + radius * math.cos(ang),
-                         REAL[1] + radius * math.sin(ang), REAL[2])
+                         spot[0] + radius * math.cos(ang),
+                         spot[1] + radius * math.sin(ang), spot[2])
         struct.pack_into('<H', m.data, e + HP._EQ_ATTACH, mask)
         fl = struct.unpack_from('<I', m.data, e + HP._EQ_FLAGS)[0]
         struct.pack_into('<I', m.data, e + HP._EQ_FLAGS,
@@ -254,11 +263,61 @@ def drop_weapons(m, wanted, radius=3.0):
         # destroys folders by name.
         struct.pack_into('<h', m.data, e + 0x42, -1)
         used.append((k, want))
-    print('  %d weapon placement(s) moved onto the real start %s, r=%.1f, mask 0x%04X:'
-          % (len(used), REAL, radius, mask))
+    print('  %d weapon placement(s) moved to (%.1f, %.1f, %.1f), r=%.1f, mask 0x%04X:'
+          % (len(used), spot[0], spot[1], spot[2], radius, mask))
     for k, want in used:
         print('    placement[%d] -> %s' % (k, want))
     return used
+
+
+def repalette_nearest(m, want):
+    """Change ONE field -- the Palette Index of the placement nearest the real start.
+
+    Position, placement flags, attach mask and editor folder are left exactly as
+    shipped, so this is the strictly-one-variable version of --drop. sc150's own
+    shotgun sits 14 units from where the level teleports the players, in editor
+    folder 41 `wp_basin_1a`, which no `object_destroy_folder` call touches -- so that
+    spot definitely renders a weapon in vanilla.
+
+    If the new weapon appears there, repaletting works and the earlier --drop failure
+    was the coordinate. If it does not appear even here, then weapon placements do not
+    behave like the equipment placements that are already solved, and the drop-at-feet
+    fix is dead in the water.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    names = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) or '')
+             for i in range(pc)]
+    idx = next((i for i, nm in enumerate(names)
+                if nm.rsplit('\\', 1)[-1].lower() == want.lower()), None)
+    if idx is None:
+        print('  !! %s is not in the Weapon Palette' % want)
+        return None
+
+    best, bestd = None, None
+    for i in range(max(0, wn)):
+        e = wbase + i * wes
+        pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+        d = math.dist(pos, REAL)
+        if bestd is None or d < bestd:
+            best, bestd = i, d
+    if best is None:
+        print('  !! no weapon placements')
+        return None
+
+    e = wbase + best * wes
+    was = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
+    pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+    struct.pack_into('<h', m.data, e + lay['palette_index'], idx)
+    print('  placement[%d] at (%.1f, %.1f, %.1f), %.0fu from the real start:'
+          % (best, pos[0], pos[1], pos[2], bestd))
+    print('    palette index %d %s -> %d %s   (nothing else touched)'
+          % (was, names[was].rsplit('\\', 1)[-1] if 0 <= was < pc else '?', idx, want))
+    return best
 
 
 def equipment_at(m, spot, label, radius=2.0):
@@ -396,6 +455,12 @@ def main(argv=None):
                     help='lay these weapons (palette basenames) on the ground at the '
                          'real start by repaletting the level\'s own placements')
     ap.add_argument('--drop-radius', type=float, default=3.0)
+    ap.add_argument('--repalette', metavar='WEAPON',
+                    help='change only the Palette Index of the placement nearest the '
+                         'real start, leaving position/flags/folder as shipped')
+    ap.add_argument('--drop-at', metavar='X,Y,Z',
+                    help='where to drop, instead of the measured start. Negative '
+                         'coordinates need the = form: --drop-at=-313.3,190.6,5.1')
     ap.add_argument('--ring', type=float, default=2.0,
                     help='equipment ring radius in world units (default 2.0)')
     ap.add_argument('--restore', action='store_true')
@@ -435,8 +500,10 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    repal = repalette_nearest(m, a.repalette) if a.repalette else None
+    at = [float(v) for v in a.drop_at.split(',')] if a.drop_at else None
     dropped = drop_weapons(m, [w.strip() for w in a.drop.split(',') if w.strip()],
-                           a.drop_radius) if a.drop else None
+                           a.drop_radius, at) if a.drop else None
     spot = carbine_test(m) if a.carbines else None
     if spot and not a.no_equipment:
         equipment_at(m, spot, 'nearest', a.ring)
@@ -445,6 +512,10 @@ def main(argv=None):
         arm_friendlies(m, fw)
     m.save(MAP)
     print('\nwritten. Load Kikowani Station and report:')
+    if repal is not None:
+        print('  - an AUTO MAGNUM in hand confirms the patched map actually loaded')
+        print('  - walk to where the level normally leaves a SHOTGUN, a few steps')
+        print('    from where you land: is it a %s instead?' % a.repalette)
     if dropped:
         print('  - what, if anything, is IN YOUR HANDS when the intro ends?')
         print('  - are the dropped weapons lying on the ground where you land,')
