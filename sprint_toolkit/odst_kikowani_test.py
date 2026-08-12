@@ -12,6 +12,9 @@ and 12. A stride of 4 across 16 entries looks like 4 players x 4 of something
 (difficulty, or insertion point). If the level reads a profile other than 0, writing
 profile 0 is simply writing the wrong row.
 
+The secondary slot is fine, by the way: an early reading that it was "dead" came from
+only ever putting weapons in it that this map cannot grant in either slot.
+
     --profiles all      write every profile (proves whether ANY row is read)
     --profiles 0,4,8,12 write the stride-4 rows only
     --profiles 0        the current behaviour, as a control
