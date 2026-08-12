@@ -48,12 +48,20 @@ def attach():
     return h
 
 
+MIN_AXES = 2          # how many components must be genuinely non-zero
+AXIS_MIN = 1.0
+
+
 def _plausible(t):
     for v in t:
         if v != v or abs(v) > LIMIT:         # NaN or out of world
             return False
-    # all-zero and tiny triples are everywhere and are never a player position
-    return any(abs(v) > 0.01 for v in t)
+    # A world position has at least two substantial components -- a level spans
+    # hundreds of units in x and y. Triples like (0, 0, 2.23) are velocities, up
+    # vectors and scales; they change when the player moves and settle when the
+    # player stops, so movement-based narrowing selects for them exactly as hard as
+    # it does for a position, and they are what a run converges to otherwise.
+    return sum(1 for v in t if abs(v) >= AXIS_MIN) >= MIN_AXES
 
 
 def _save(addrs, vals):
@@ -257,10 +265,16 @@ def main(argv=None):
     s.add_argument('--radius', type=float, default=25.0)
     s.add_argument('--cap', type=int, default=200000)
     s.set_defaults(func=cmd_scan)
-    for name, want in (('moved', True), ('still', False)):
-        p = sub.add_parser(name)
-        p.add_argument('--eps', type=float, default=0.05)
-        p.set_defaults(func=lambda a, w=want: _narrow(a, w))
+    # `still` is deliberately slack: a standing player is not perfectly still --
+    # idle sway, settling and physics jitter move the position by small amounts, so
+    # a tight epsilon throws away the very thing being hunted. `moved` is the step
+    # that narrows; `still` is only there to drop things that drift on their own.
+    p = sub.add_parser('moved')
+    p.add_argument('--eps', type=float, default=0.05)
+    p.set_defaults(func=lambda a: _narrow(a, True))
+    p = sub.add_parser('still')
+    p.add_argument('--eps', type=float, default=0.5)
+    p.set_defaults(func=lambda a: _narrow(a, False))
     sub.add_parser('list').set_defaults(func=cmd_list, eps=0.05)
     w = sub.add_parser('watch')
     w.add_argument('addr')
