@@ -1377,6 +1377,59 @@ def _nearest_placement_mask(m, pos, game):
     return best[1] if best else None
 
 
+# A Player Starting Location the game never uses sits in empty space. Measured across
+# all 19 H3 and ODST levels, spawn 0 is 0.2-9.9 units from the nearest placement on
+# seventeen of them and then jumps to 28.6 (Kikowani Station) and 30.0 (040_voi) -- a
+# real gap, not a threshold fitted to one map. Kikowani is the confirmed case: a live
+# scan put the player ~240 units from its spawn, among crates and decals, while the
+# spawn itself has nothing near it but the other three spawns. So isolation finds a
+# dead spawn without hand-picking an anchor per map, which is what Halo 3 needs today.
+_DEAD_SPAWN_UNITS = 15.0
+
+
+def _spawn_is_dead(m, pos, game):
+    """True if nothing in the level sits near this spawn, so the game cannot be
+    starting the player there."""
+    blocks = _PLACEMENT_BLOCKS.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not blocks or scnr is None:
+        return False
+    limit = _DEAD_SPAWN_UNITS ** 2
+    for off, esize in blocks.values():
+        n, base = m.i32(scnr + off), _block_base(m, scnr + off)
+        if not base or n <= 0:
+            continue
+        for i in range(n):
+            p = struct.unpack_from('<fff', m.data, base + i * esize + _PLACE_POS)
+            if any(v != v for v in p):
+                continue
+            if sum((a - b) ** 2 for a, b in zip(p, pos)) <= limit:
+                return False
+    return True
+
+
+def _live_equipment_spot(m, game):
+    """Position and mask of an equipment placement that actually renders.
+
+    Used when the spawn is dead: a pickup spot the level itself uses is somewhere
+    the player demonstrably goes. A zero attach mask means the placement never
+    renders, so those are skipped -- on Kikowani that is exactly what separates the
+    two far-flung placements from the four beside the real start."""
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not lay or scnr is None:
+        return None
+    off, esize = lay['items']
+    n, base = m.i32(scnr + off), _block_base(m, scnr + off)
+    for i in range(max(0, n)):
+        e = base + i * esize
+        att = struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+        if not att:
+            continue
+        return struct.unpack_from('<fff', m.data, e + _EQ_POS), att
+    return None
+
+
 def _h3_mask_at(m, pos, game='Halo 3'):
     """Attach mask of the nearest vanilla placement to `pos` — approximates which BSP
     is loaded there, so a placement dropped at pos attaches to the right BSP.
@@ -1528,6 +1581,30 @@ def _apply_spawn_equipment(m, game, spec):
     anchor = _H3_LOADOUT_ANCHOR.get(map_id)
     skip = _H3_NO_START_STREAM.get(map_id, frozenset())
     anchor_mask = _h3_mask_at(m, anchor, game) if anchor else None
+    dead_spawn = None
+
+    # Some levels keep a Player Starting Location the game never uses. Kikowani
+    # Station's four sit in empty space ~240 units from where the player actually
+    # starts, so anything dropped on them is placed somewhere nobody goes. Detect that
+    # instead of curating another anchor by hand, and fall back to a pickup spot the
+    # level itself uses -- on Kikowani those land ~12 units from the real start.
+    # ODST only for now. 040_voi's spawn is just as isolated (30.0 units), but Halo 3
+    # levels have not been re-tested against this and H3 starting equipment works
+    # today, so moving its drop point is a separate, verifiable change.
+    if (not anchor and str(game).strip() == 'Halo 3: ODST'
+            and _spawn_is_dead(m, spawns[0][0], game)):
+        spot = _live_equipment_spot(m, game)
+        if spot:
+            anchor, anchor_mask = spot
+            dead_spawn = spawns[0][0]
+            out.append({'effect': 'starting equipment', 'field': 'anchor', 'ok': True,
+                        'note': 'player start (%.0f, %.0f, %.0f) is unused by this '
+                                'level; dropping at (%.0f, %.0f, %.0f) instead'
+                                % (tuple(dead_spawn) + tuple(anchor))})
+        else:
+            return [{'effect': 'starting equipment', 'ok': False,
+                     'reason': 'player start is unused by this level and it has no '
+                               'placed equipment to fall back to'}]
 
     def _resolve_pi(tag, key, label):
         """Palette index for a tag (appending an entry if needed), or (None, None) with
