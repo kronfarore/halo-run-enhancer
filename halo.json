@@ -257,7 +257,7 @@
 				"name": "Uplift Reserve",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
@@ -273,7 +273,7 @@
 				"name": "Oni Alpha Site",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"weapons": ["Assault Rifle", "Auto Magnum", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
