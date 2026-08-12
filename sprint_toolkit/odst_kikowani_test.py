@@ -195,6 +195,72 @@ def carbine_test(m):
     return carbines[0]
 
 
+def drop_weapons(m, wanted, radius=3.0):
+    """Repalette and move the level's own weapon placements onto the real start.
+
+    This is the test for the zone-set explanation AND the prototype of the fix.
+    sc150's script `ins_basin_1a` loads in `set_intro` -- a cinematic zone set on
+    BSP 0 -- plays the intro, and only THEN switches to `set_basin_1a` and teleports
+    the players to where the level really begins. The starting profile is applied
+    while `set_intro` is loaded, so the only weapons that can be created are the ones
+    that cinematic streams: Buck's assault rifle and Dutch/Mickey's silenced SMG.
+    That is exactly the set that works, and it is why a carbine sitting 23 units from
+    the start still cannot be granted.
+
+    Placements are read AFTER the teleport, in `set_basin_1a`, where the level's own
+    shotgun sits 14 units from the player. So a weapon the profile cannot grant can
+    still be laid on the ground at the player's feet. Empty hands then become the
+    delivery mechanism rather than the bug: Halo auto-equips a weapon walked over
+    while a slot is free.
+
+    Returns the placements used, or None.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    names = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) or '')
+             for i in range(pc)]
+
+    picks = []
+    for want in wanted:
+        idx = next((i for i, nm in enumerate(names)
+                    if nm.rsplit('\\', 1)[-1].lower() == want.lower()), None)
+        if idx is None:
+            print('  !! %s is not in the Weapon Palette -- skipping' % want)
+            continue
+        picks.append((want, idx))
+    if not picks or wn <= 0:
+        print('  !! nothing to drop (%d placement(s) available)' % max(0, wn))
+        return None
+
+    mask = HP._h3_mask_at(m, REAL, GAME) or 0x0002
+    used = []
+    for k, (want, pi) in enumerate(picks[:wn]):
+        e = wbase + k * wes
+        ang = k * (2 * math.pi / min(len(picks), wn))
+        struct.pack_into('<h', m.data, e + lay['palette_index'], pi)
+        struct.pack_into('<fff', m.data, e + HP._EQ_POS,
+                         REAL[0] + radius * math.cos(ang),
+                         REAL[1] + radius * math.sin(ang), REAL[2])
+        struct.pack_into('<H', m.data, e + HP._EQ_ATTACH, mask)
+        fl = struct.unpack_from('<I', m.data, e + HP._EQ_FLAGS)[0]
+        struct.pack_into('<I', m.data, e + HP._EQ_FLAGS,
+                         fl & ~(HP._PLACE_NOT_AUTO | HP._PLACE_NEVER))
+        # -1 = no editor folder, so no object_destroy_folder can sweep it away.
+        # sc150's own weapon placements sit in folders 41/42 and the intro script
+        # destroys folders by name.
+        struct.pack_into('<h', m.data, e + 0x42, -1)
+        used.append((k, want))
+    print('  %d weapon placement(s) moved onto the real start %s, r=%.1f, mask 0x%04X:'
+          % (len(used), REAL, radius, mask))
+    for k, want in used:
+        print('    placement[%d] -> %s' % (k, want))
+    return used
+
+
 def equipment_at(m, spot, label, radius=2.0):
     """Ring the already-appended equipment around a given point."""
     lay = HP._MAP_EQUIPMENT[GAME]
@@ -326,6 +392,10 @@ def main(argv=None):
     ap.add_argument('--friendly-weapon', default='rocket_launcher',
                     help='what friendlies carry; defaults to a weapon sc150 never '
                          'places or carries, so it stays a control on the player test')
+    ap.add_argument('--drop', metavar='W1,W2',
+                    help='lay these weapons (palette basenames) on the ground at the '
+                         'real start by repaletting the level\'s own placements')
+    ap.add_argument('--drop-radius', type=float, default=3.0)
     ap.add_argument('--ring', type=float, default=2.0,
                     help='equipment ring radius in world units (default 2.0)')
     ap.add_argument('--restore', action='store_true')
@@ -340,8 +410,12 @@ def main(argv=None):
         print('restored sc150.map')
         return 0
     if not os.path.exists(PRISTINE):
-        shutil.copy2(MAP, PRISTINE)
-        print('saved a pristine copy: %s' % PRISTINE)
+        # Seed from the GUI's .bak, which IS vanilla. Seeding from sc150.map captured
+        # whatever the last enhancer run had written (an earlier copy carried a
+        # gravity_hammer secondary), which then silently rode along in every test.
+        src = MAP + '.bak' if os.path.exists(MAP + '.bak') else MAP
+        shutil.copy2(src, PRISTINE)
+        print('saved a pristine copy from %s: %s' % (os.path.basename(src), PRISTINE))
     shutil.copy2(PRISTINE, MAP)        # always build from pristine, never stack patches
 
     m = HP.open_map(MAP, GAME)
@@ -361,6 +435,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    dropped = drop_weapons(m, [w.strip() for w in a.drop.split(',') if w.strip()],
+                           a.drop_radius) if a.drop else None
     spot = carbine_test(m) if a.carbines else None
     if spot and not a.no_equipment:
         equipment_at(m, spot, 'nearest', a.ring)
@@ -369,6 +445,10 @@ def main(argv=None):
         arm_friendlies(m, fw)
     m.save(MAP)
     print('\nwritten. Load Kikowani Station and report:')
+    if dropped:
+        print('  - what, if anything, is IN YOUR HANDS when the intro ends?')
+        print('  - are the dropped weapons lying on the ground where you land,')
+        print('    and can you pick them up and fire them?')
     if a.carbines:
         print('  - is there a ROCKET LAUNCHER where the carbine near the start was?')
         print('  - equipment ringed around that same spot?')
