@@ -1,4 +1,20 @@
-r"""Which TAGS does each zone set actually load? Read straight out of the `zone` tag.
+r"""Read the `zone` tag's zone-set pools. READING is useful; WRITING them does not work.
+
+DEAD LEAD -- do not retry --load-always without a new idea about what the bits mean.
+Two in-game attempts on sc150, both failures:
+  --whole-donor (+2400 tags in GLOBAL) -> black screen after the intro cutscene
+  narrow family fold (+79 tags, +60 raw chunks) -> FATAL ERROR on load
+The narrow fold failing harder than the blunt one says the problem is not fold size;
+it is that these bits do not mean what the plugin comment says, or that flipping them
+without updating the `play` page/segment tables is inherently invalid.
+
+The TAG pool's bit mapping is separately known to be unsound: the scenario tag, every
+sbsp, and the brute biped have no bit set in any pool of any zone set, yet all of them
+obviously load. sc150's shotgun likewise has no bit anywhere and is present at its
+spawn in vanilla. Only the RAW chunk mapping is exact -- `Tag Resources` @0x64 names
+each chunk's Parent Tag -- so chunks_by_tag() is trustworthy and the pool bits are not.
+
+Which TAGS does each zone set claim to load? Read straight out of the `zone` tag.
 
 The Kikowani starting-weapon wall kept coming back to streaming, but every earlier
 argument about it was inference from placements. This reads the authority. The `zone`
@@ -198,7 +214,10 @@ def main(argv=None):
     ap.add_argument('--sets', action='store_true', help='just the zone-set inventory')
     ap.add_argument('--load-always', metavar='WEAPON', action='append', default=[],
                     help='fold a zone set that carries this weapon into GLOBAL, so it '
-                         'is resident everywhere. Repeatable. Writes the map.')
+                         'is resident everywhere. Repeatable. Writes the map. '
+                         'KNOWN BROKEN -- see the module docstring; needs --i-know.')
+    ap.add_argument('--i-know', action='store_true',
+                    help='acknowledge that --load-always has failed in-game twice')
     ap.add_argument('--whole-donor', action='store_true',
                     help='the blunt fold: OR an entire donor zone set into GLOBAL. On '
                          'sc150 this black-screened the map after the intro.')
@@ -223,6 +242,11 @@ def main(argv=None):
     if a.load_always:
         if a.bak:
             raise SystemExit('refusing to write the .bak baseline; drop --bak')
+        if not a.i_know:
+            raise SystemExit(
+                '--load-always has failed in-game twice (black screen, then a fatal\n'
+                'error on load). The zone-set bits do not mean what they appear to.\n'
+                'Read the module docstring; pass --i-know to try anyway.')
         for want in a.load_always:
             r = load_always(m, zb, want, whole_donor=a.whole_donor)
             print('  load-always %-18s %s' % (want, r))
