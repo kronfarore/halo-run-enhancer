@@ -67,7 +67,15 @@ def _profile_block(m, reg):
 
 
 def _palette_path(m, want):
-    """Full tag path of the Weapon Palette entry matching `want`, or None."""
+    """Full tag path for `want`: the Weapon Palette first, then any weap tag.
+
+    A starting profile references a weapon by tagRef, not by palette index, so it can
+    grant anything whose tag is in the map. That matters for weapons restored by
+    rebuilding with the Editing Kit -- the battle rifle's tags and resources are all
+    present after a rebuild even though nothing added it to the palette, so a palette
+    lookup alone would refuse a weapon the map can perfectly well hand over.
+    (Placements DO index the palette, so they still need an entry.)
+    """
     lay = HP._MAP_WEAPONS[GAME]
     scnr = HP._scnr_base(m)
     poff, pes = lay['palette']
@@ -75,6 +83,12 @@ def _palette_path(m, want):
     for i in range(n) if base else []:
         nm = HP._tag_name_by_id(m, m.u32(base + i * pes + 0xC))
         if nm and str(nm).rsplit('\\', 1)[-1].lower() == want.lower():
+            return str(nm)
+    for t in m.tags:
+        nm = t.get('name')
+        if t.get('class') == 'weap' and nm \
+                and str(nm).rsplit('\\', 1)[-1].lower() == want.lower():
+            print('  (%s is not in the palette; using its tag directly)' % want)
             return str(nm)
     return None
 
