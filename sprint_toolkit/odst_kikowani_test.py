@@ -327,6 +327,57 @@ def repalette_nearest(m, want, donor=None):
     return best
 
 
+def stock_nearest(m, wanted):
+    """Put the chosen weapons on the level's own nearest weapon spawns.
+
+    The delivery route that actually works. The starting profile can only grant a
+    weapon the engine considers resident at the instant the player is created, which
+    on sc150 is three weapons and no amount of patching object_new or the
+    give-weapon-to-unit rejects changed that. But a PLACEMENT is read after the intro,
+    once the level has switched zones -- proven in-game by swapping the shotgun and
+    carbine spawns for an SMG and an assault rifle and finding both.
+
+    sc150's nearest spawn is 14 units from where the players land, which is a couple
+    of seconds' walk, and unlike a moved placement it sits on a spot the level already
+    renders -- no invented coordinate to get wrong.
+
+    Only offer weapons whose resource pages exist; check with
+    `h3_raw_residency.py MAP --survey` first.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    names = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) or '')
+             for i in range(pc)]
+    short = [n.rsplit('\\', 1)[-1].lower() for n in names]
+
+    order = sorted(range(max(0, wn)),
+                   key=lambda i: math.dist(
+                       struct.unpack_from('<fff', m.data, wbase + i * wes + HP._EQ_POS),
+                       REAL))
+    out = []
+    for k, want in enumerate(wanted):
+        if k >= len(order):
+            print('  !! only %d weapon placement(s) on this level' % len(order))
+            break
+        if want.lower() not in short:
+            print('  !! %s is not in the Weapon Palette' % want)
+            continue
+        i = order[k]
+        e = wbase + i * wes
+        was = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
+        pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+        struct.pack_into('<h', m.data, e + lay['palette_index'], short.index(want.lower()))
+        print('    spawn[%d] %.0fu out at (%.1f, %.1f, %.1f):  %s -> %s'
+              % (i, math.dist(pos, REAL), pos[0], pos[1], pos[2],
+                 short[was] if 0 <= was < pc else '?', want))
+        out.append((i, want))
+    return out
+
+
 def swap_spawns(m, pairs):
     """Repalette placements by name: --swap old=new, repeatable.
 
@@ -510,6 +561,9 @@ def main(argv=None):
                     help='lay these weapons (palette basenames) on the ground at the '
                          'real start by repaletting the level\'s own placements')
     ap.add_argument('--drop-radius', type=float, default=3.0)
+    ap.add_argument('--stock', metavar='W1,W2',
+                    help='put these weapons on the level\'s nearest weapon spawns, '
+                         'closest first -- the delivery route that works')
     ap.add_argument('--swap', metavar='OLD=NEW', action='append', default=[],
                     help='repalette every placement holding OLD to NEW. Repeatable. '
                          'A health check on the repalette path when NEW is a weapon '
@@ -562,6 +616,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    stocked = (stock_nearest(m, [w.strip() for w in a.stock.split(',') if w.strip()])
+               if a.stock else None)
     swapped = swap_spawns(m, a.swap) if a.swap else None
     repal = (repalette_nearest(m, a.repalette, a.repalette_donor)
              if a.repalette else None)
@@ -576,6 +632,9 @@ def main(argv=None):
         arm_friendlies(m, fw)
     m.save(MAP)
     print('\nwritten. Load Kikowani Station and report:')
+    if stocked:
+        print('  - a few steps from where you land, are the level\'s weapon spawns')
+        print('    now %s?' % ' and '.join(w for _, w in stocked))
     if swapped:
         print('  HEALTH CHECK -- at the two weapon spawns near the start, do you now')
         print('  find %s?' % ', '.join('a %s where the %s was' % (n, o)
