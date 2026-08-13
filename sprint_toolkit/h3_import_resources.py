@@ -126,13 +126,24 @@ def import_page(dst, src, page_index, gaps, orphans):
     if sp is None or sp[0] >= 0:
         return None
     size = sp[2]
-    spot = next((g for g in gaps if g[1] >= size), None)
+    # Only write where the file is genuinely empty, and keep the page block-aligned:
+    # raw pages start on 0x1000 boundaries everywhere in these caches, so an unaligned
+    # borrowed page is a plausible way to make the engine reject the map.
+    spot, off = None, None
+    for g in gaps:
+        start = (g[0] + 0xFFF) & ~0xFFF
+        if start + size > g[0] + g[1]:
+            continue
+        if any(dst.m.data[start:start + size]):
+            continue                       # not actually free -- something lives here
+        spot, off = g, start
+        break
     if spot is None or not orphans:
         return None
-    off = spot[0]
     gaps.remove(spot)
-    if spot[1] - size > 64:
-        gaps.append((off + size, spot[1] - size))
+    tail = spot[0] + spot[1] - (off + size)
+    if tail > 64:
+        gaps.append((off + size, tail))
         gaps.sort()
     dst.m.data[off:off + size] = src.m.data[sp[1]:sp[1] + size]
     new_index = orphans.pop(0)
@@ -198,6 +209,11 @@ def main(argv=None):
     ap.add_argument('--weapon', required=True, help='basename, e.g. rocket_launcher')
     ap.add_argument('--game', default='Halo 3: ODST', choices=sorted(Z.MAPS))
     ap.add_argument('--write', action='store_true', help='actually patch the map')
+    ap.add_argument('--skip-missing', action='store_true',
+                    help='import the chunks whose pages this map already has, instead '
+                         'of refusing because some other chunk needs a page it lacks')
+    ap.add_argument('--no-page-import', action='store_true',
+                    help='never copy a donor page into this map\'s file')
     a = ap.parse_args(argv)
 
     dst = Cache(a.to, a.game)
@@ -209,7 +225,10 @@ def main(argv=None):
     # be carried over, since it is not in a shared cache both maps already reference.
     _, missing0, _ = plan(dst, src, a.weapon)
     remap = {}
-    if missing0:
+    if missing0 and a.no_page_import:
+        print('  %d donor page(s) absent here; --no-page-import, so those chunks are '
+              'left alone' % len({pi for _, pi, _, _ in missing0}))
+    elif missing0:
         need = sorted({pi for _, pi, _, _ in missing0})
         gaps, orphans = in_map_gaps(dst), orphan_pages(dst)
         print('  %d donor page(s) absent here: %s' % (len(need), need))
@@ -236,10 +255,14 @@ def main(argv=None):
               % (nm.rsplit('\\', 1)[-1], pi, want_pg, got))
     for nm, why in skipped[:10]:
         print('    -- skipped %s (%s)' % (nm.rsplit('\\', 1)[-1], why))
-    if missing:
-        print('  REFUSING: %d page(s) are not present here, so the bytes really are '
-              'absent and a segment copy would point at nothing.' % len(missing))
+    if missing and not a.skip_missing:
+        print('  REFUSING: %d chunk(s) need a page that is not present here, so a '
+              'segment copy would point at nothing. --skip-missing imports the rest.'
+              % len(missing))
         return 1
+    if missing:
+        print('  skipping %d chunk(s) whose page is absent; importing the other %d'
+              % (len(missing), len(todo)))
     if not a.write:
         print('\n  dry run. Re-run with --write to apply.')
         return 0
