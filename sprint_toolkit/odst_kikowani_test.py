@@ -407,7 +407,10 @@ def stock_nearest(m, wanted, lift=0.0):
                        struct.unpack_from('<fff', m.data, wbase + i * wes + HP._EQ_POS),
                        REAL))
     out = []
-    for k, want in enumerate(wanted):
+    for k, spec in enumerate(wanted):
+        want, _, own = spec.partition(':')
+        want = want.strip()
+        this_lift = float(own) if own else lift
         if k >= len(order):
             print('  !! only %d weapon placement(s) on this level' % len(order))
             break
@@ -419,15 +422,15 @@ def stock_nearest(m, wanted, lift=0.0):
         was = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
         pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
         struct.pack_into('<h', m.data, e + lay['palette_index'], short.index(want.lower()))
-        if lift:
+        if this_lift:
             # Weapons do not settle under gravity, so a model whose shape clips the
             # rack it sits on can fail to spawn where a differently shaped one is fine.
             # The spartan laser refuses the 23u spawn that takes the rocket launcher,
             # and its bounding radius is SMALLER (0.215 vs 0.250), so size is not it.
-            struct.pack_into('<f', m.data, e + HP._EQ_POS + 8, pos[2] + lift)
+            struct.pack_into('<f', m.data, e + HP._EQ_POS + 8, pos[2] + this_lift)
         print('    spawn[%d] %.0fu out at (%.1f, %.1f, %.1f%s):  %s -> %s'
               % (i, math.dist(pos, REAL), pos[0], pos[1], pos[2],
-                 ' +%.2f' % lift if lift else '',
+                 ' +%.2f' % this_lift if this_lift else '',
                  short[was] if 0 <= was < pc else '?', want))
         out.append((i, want))
     return out
