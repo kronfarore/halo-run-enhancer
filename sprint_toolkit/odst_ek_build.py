@@ -31,8 +31,7 @@ EK = r"C:\Program Files (x86)\Steam\steamapps\common\H3ODSTEK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
 SCENARIO = r"levels\atlas\%s\%s"
-# Keep the pre-EK map under its own name. `.bak` belongs to the GUI patcher and must
-# stay the shipped baseline, so it is never touched here.
+# The map that was in place before the first EK install, kept under its own name.
 SAVED = '.working'
 
 
@@ -54,13 +53,26 @@ def build(name, platform='pc', extra=()):
 def status(name):
     for label, path in (('game   ', os.path.join(GAME, name + '.map')),
                         ('saved  ', os.path.join(GAME, name + '.map' + SAVED)),
-                        ('shipped', os.path.join(GAME, name + '.map.bak')),
+                        ('baseline', os.path.join(GAME, name + '.map.bak')),
+                        ('shipped ', os.path.join(GAME, name + '.map.shipped')),
                         ('EK     ', os.path.join(EK, 'maps', name + '.map'))):
         print('  %s %s' % (label, ('%d bytes' % os.path.getsize(path))
                            if os.path.exists(path) else '(absent)'))
 
 
-def install(name):
+def install(name, baseline=True):
+    """Install the EK build, and make it the patcher's baseline.
+
+    halo_patch.apply_run patches FROM `<map>.bak` whenever that exists and saves the
+    result over `<map>`. sc150's .bak is the shipped 235 MB map, so the first GUI patch
+    after installing a rebuild would rebuild from the SHIPPED baseline and overwrite the
+    421 MB rebuild -- silently destroying every restored weapon, with no error.
+
+    Rather than teach apply_run about rebuilds, point .bak at the rebuild: it is the
+    pristine state now, since nothing in a run should ever undo the rebuild. The
+    shipped original is kept as `<map>.map.shipped`, a name apply_run never looks at,
+    so nothing is lost and Steam verification is not needed to get it back.
+    """
     src = os.path.join(EK, 'maps', name + '.map')
     dst = os.path.join(GAME, name + '.map')
     if not os.path.exists(src):
@@ -71,6 +83,14 @@ def install(name):
         print('  saved the current map as %s' % os.path.basename(saved))
     shutil.copy2(src, dst)
     print('  installed the EK build (%d bytes)' % os.path.getsize(dst))
+    if not baseline:
+        return
+    bak, shipped = dst + '.bak', dst + '.shipped'
+    if os.path.exists(bak) and not os.path.exists(shipped):
+        shutil.copy2(bak, shipped)
+        print('  preserved the shipped map as %s' % os.path.basename(shipped))
+    shutil.copy2(src, bak)
+    print('  .bak now points at the rebuild, so apply_run patches from it')
 
 
 def restore(name):
@@ -91,11 +111,13 @@ def main(argv=None):
     ap.add_argument('--restore')
     ap.add_argument('--status')
     ap.add_argument('--platform', default='pc')
+    ap.add_argument('--no-baseline', action='store_true',
+                    help='install without repointing .bak at the rebuild')
     a = ap.parse_args(argv)
     if a.build:
         build(a.build, a.platform)
     if a.install:
-        install(a.install)
+        install(a.install, baseline=not a.no_baseline)
     if a.restore:
         restore(a.restore)
     if a.status:
