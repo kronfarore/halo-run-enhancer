@@ -77,6 +77,45 @@ def map_dir(game):
     return os.path.join(ROOT, MAP_FOLDER[game].replace('/', os.sep))
 
 
+def resolve(game, name):
+    """The map file for a halo.json key. Halo 2 names its files `03a_oldmombasa.map`
+    where the key is just `03a`, so fall back to a prefix match."""
+    d = map_dir(game)
+    exact = os.path.join(d, name + '.map')
+    if os.path.exists(exact):
+        return exact
+    if os.path.isdir(d):
+        hits = sorted(f for f in os.listdir(d)
+                      if f.lower().startswith(name.lower() + '_') and f.lower().endswith('.map'))
+        if len(hits) == 1:
+            return os.path.join(d, hits[0])
+    return None
+
+
+def originals(game, path):
+    """Candidate pristine copies for a map, best first.
+
+    Conventions differ per game. H1/H3/ODST keep `<map>.bak` beside the map (and this
+    toolkit adds `<map>.shipped`), while Halo 2 keeps a whole parallel directory,
+    `h2_maps_win64_dx11_bak`, holding both `.map.bak` and `.map.vanilla.bak`.
+    `.vanilla.bak` is the most explicit claim of all, so it wins.
+    """
+    out = []
+    for suffix in ('.vanilla.bak', '.shipped', '.bak'):
+        cand = path + suffix
+        if os.path.exists(cand):
+            out.append((cand, suffix.lstrip('.')))
+    d, base = os.path.split(path)
+    alt = d + '_bak'
+    if os.path.isdir(alt):
+        for suffix in ('.vanilla.bak', '.bak'):
+            cand = os.path.join(alt, base + suffix)
+            if os.path.exists(cand):
+                out.append((cand, os.path.basename(alt) + '/' + suffix.lstrip('.')))
+    order = {'vanilla.bak': 0, 'shipped': 1, 'bak': 2}
+    return sorted(out, key=lambda t: order.get(t[1].split('/')[-1], 9))
+
+
 def sha256(path, cap=None):
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -116,69 +155,101 @@ def survey(game, do_hash=False):
         print('  (folder not found)')
         return []
     rows = []
-    print('  %-10s %10s  %-16s %-9s %-8s %s'
-          % ('map', 'MB', 'modified', 'shipped?', 'rebuilt?', 'verdict'))
+    print('  %-8s %8s %-16s %-8s  %-22s %s'
+          % ('map', 'MB', 'modified', 'rebuilt?', 'original kept as', 'verdict'))
     for name in maps_for(game):
-        p = os.path.join(d, name + '.map')
-        if not os.path.exists(p):
-            print('  %-10s %10s  %s' % (name, '-', '(absent)'))
+        p = resolve(game, name)
+        if not p:
+            print('  %-8s %8s (absent)' % (name, '-'))
             continue
         size = os.path.getsize(p)
         mtime = time.strftime('%Y-%m-%d %H:%M', time.localtime(os.path.getmtime(p)))
-        shipped = os.path.exists(p + '.shipped')
         rebuilt = looks_rebuilt(p, game)
-        if shipped:
-            verdict = 'PACK .shipped'
+        origs = originals(game, p)
+        src = origs[0] if origs else None
+        # An "original" that is itself a rebuild is not one. That is exactly this
+        # install: odst_ek_build points .bak at the rebuilt map on purpose.
+        src_rebuilt = looks_rebuilt(src[0], game) if src else None
+        if src and not src_rebuilt:
+            verdict = 'PACK from ' + src[1]
+        elif src and src_rebuilt:
+            verdict = 'its .bak IS a rebuild - no original here'
         elif rebuilt:
-            verdict = 'REBUILT - no original kept'
+            verdict = 'REBUILT, no original kept'
         else:
-            verdict = 'unverified - confirm before packing'
-        print('  %-10s %10.1f  %-16s %-9s %-8s %s'
-              % (name, size / 1048576.0, mtime, 'yes' if shipped else 'no',
-                 {True: 'yes', False: 'no', None: '?'}[rebuilt], verdict))
-        rows.append({'map': name, 'path': p, 'size': size, 'shipped': shipped,
-                     'rebuilt': rebuilt,
+            verdict = 'no original kept - confirm before packing'
+        print('  %-8s %8.1f %-16s %-8s  %-22s %s'
+              % (name, size / 1048576.0, mtime,
+                 {True: 'yes', False: 'no', None: '?'}[rebuilt],
+                 src[1] if src else '-', verdict))
+        rows.append({'map': name, 'path': p, 'size': size, 'rebuilt': rebuilt,
+                     'original': src[0] if src else None,
                      'sha256': sha256(p) if do_hash else None})
     return rows
 
 
-def pack(game, source='shipped', only=None, yes=False):
-    d, out = map_dir(game), os.path.join(VAULT, game.replace(':', '').replace(' ', '_') + '.zip')
+def pack(game, source='original', only=None, yes=False):
+    """Archive the pristine copy of each map. Refuses to guess.
+
+    The source is whatever `originals()` found -- `.vanilla.bak`, `.shipped` or `.bak`,
+    in that order of explicitness -- and a candidate that is itself an Editing Kit
+    rebuild is rejected, because that is not an original. `--from map` overrides and
+    trusts the live file, which is the only way to archive a map whose original was
+    never kept, and it says so loudly.
+
+    Entries are stored under the map's REAL filename, so Halo 2's `03a_oldmombasa.map`
+    round-trips even though halo.json calls it `03a`.
+    """
+    out = os.path.join(VAULT, game.replace(':', '').replace(' ', '_') + '.zip')
     os.makedirs(VAULT, exist_ok=True)
     names = [n for n in maps_for(game) if not only or n in only]
     picked, skipped = [], []
     for n in names:
-        live = os.path.join(d, n + '.map')
-        ship = live + '.shipped'
-        if os.path.exists(ship):
-            picked.append((n, ship, 'shipped'))
-        elif source == 'map' and os.path.exists(live):
-            picked.append((n, live, 'live map'))
+        live = resolve(game, n)
+        if not live:
+            skipped.append((n, 'map not found'))
+            continue
+        arcname = os.path.basename(live)
+        if source == 'map':
+            picked.append((n, live, 'THE LIVE MAP', arcname))
+            continue
+        chosen = None
+        for cand, why in originals(game, live):
+            if looks_rebuilt(cand, game):
+                skipped.append((n, '%s is a rebuild, not an original' % why))
+                continue
+            chosen = (cand, why)
+            break
+        if chosen:
+            picked.append((n, chosen[0], chosen[1], arcname))
         else:
-            skipped.append(n)
+            skipped.append((n, 'no original kept'))
     print('%s -> %s' % (game, out))
-    for n, p, why in picked:
-        print('  will pack %-10s from the %s (%.1f MB)' % (n, why, os.path.getsize(p) / 1048576.0))
-    for n in skipped:
-        print('  SKIP %-10s (no .shipped original; pass --from map --yes to trust the '
-              'live file)' % n)
+    for n, p_, why, _arc in picked:
+        print('  will pack %-8s from %-24s %7.1f MB'
+              % (n, why, os.path.getsize(p_) / 1048576.0))
+    for n, why in skipped:
+        print('  SKIP      %-8s %s' % (n, why))
     if not picked:
         raise SystemExit('nothing to pack')
+    total = sum(os.path.getsize(p_) for _, p_, _, _ in picked)
+    print('  %d of %d map(s), %.1f MB in' % (len(picked), len(names), total / 1048576.0))
     if not yes:
-        print('\n  dry run -- nothing written. Re-run with --yes.')
+        print('')
+        print('  dry run -- nothing written. Re-run with --yes.')
         return
-    if any(why == 'live map' for _, _, why in picked):
-        print('\n  NOTE: packing live maps as originals. If any of them is modified, '
-              'the archive is wrong and there is no second copy to fall back on.')
+    if source == 'map':
+        print('  NOTE: archiving LIVE maps as originals. If any is modified, the '
+              'archive is wrong and there is no second copy to fall back on.')
     man = {'game': game, 'created': time.strftime('%Y-%m-%d %H:%M:%S'), 'entries': {}}
     comp = COMPRESS.get(game, zipfile.ZIP_STORED)
     with zipfile.ZipFile(out, 'w', compression=comp, allowZip64=True) as z:
-        for n, p, why in picked:
-            digest = sha256(p)
-            man['entries'][n] = {'sha256': digest, 'size': os.path.getsize(p),
-                                 'source': why}
-            z.write(p, n + '.map')
-            print('  packed %-10s %s' % (n, digest[:16]))
+        for n, p_, why, arc in picked:
+            digest = sha256(p_)
+            man['entries'][n] = {'sha256': digest, 'size': os.path.getsize(p_),
+                                 'source': why, 'filename': arc}
+            z.write(p_, arc)
+            print('  packed %-8s %s' % (n, digest[:16]))
         z.writestr(MANIFEST, json.dumps(man, indent=2))
     print('  wrote %.1f MB (%s)' % (os.path.getsize(out) / 1048576.0,
                                     'deflated' if comp == zipfile.ZIP_DEFLATED else 'stored'))
@@ -199,7 +270,7 @@ def verify(game):
         bad = 0
         for n, meta in sorted(man['entries'].items()):
             h = hashlib.sha256()
-            with z.open(n + '.map') as f:
+            with z.open(meta.get('filename', n + '.map')) as f:
                 for chunk in iter(lambda: f.read(1 << 20), b''):
                     h.update(chunk)
             ok = h.hexdigest() == meta['sha256']
@@ -216,8 +287,9 @@ def unpack(game, only=None, to_shipped=False):
         for n in sorted(man['entries']):
             if only and n not in only:
                 continue
-            dst = os.path.join(d, n + '.map' + ('.shipped' if to_shipped else ''))
-            with z.open(n + '.map') as f, open(dst, 'wb') as g:
+            arc = man['entries'][n].get('filename', n + '.map')
+            dst = os.path.join(d, arc + ('.shipped' if to_shipped else ''))
+            with z.open(arc) as f, open(dst, 'wb') as g:
                 while True:
                     b = f.read(1 << 20)
                     if not b:
@@ -233,7 +305,8 @@ def main(argv=None):
     ap.add_argument('--pack', metavar='GAME')
     ap.add_argument('--verify', metavar='GAME')
     ap.add_argument('--unpack', metavar='GAME')
-    ap.add_argument('--from', dest='source', default='shipped', choices=('shipped', 'map'),
+    ap.add_argument('--from', dest='source', default='original',
+                    choices=('original', 'map'),
                     help='where a pack takes its bytes; "map" trusts the live file')
     ap.add_argument('--only', help='comma list of map basenames')
     ap.add_argument('--to-shipped', action='store_true',
