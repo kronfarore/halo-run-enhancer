@@ -341,6 +341,40 @@ def repalette_nearest(m, want, donor=None):
     return best
 
 
+_WEAP_HUD = 0x418          # weap "HUD Interface" tagRef; datum at +0xC
+
+
+def hud_set(m, specs):
+    """Point a weapon's HUD Interface at a chud tag: WEAPON=CHUDNAME.
+
+    ODST never shipped `ui\\chud\\magnum` or `ui\\chud\\smg`, so weapons restored from
+    Halo 3 come back with a NULL HUD Interface and no ammo counter or reticle -- the
+    "missing UI elements". Every weapon that works points at a real chud. The nearest
+    ODST siblings are automag for the magnum and smg_silenced for the SMG, and the
+    field is a plain tagRef in the built map, so this is one datum write.
+    """
+    done = []
+    for spec in specs:
+        want, chud = (s.strip() for s in spec.split('=', 1))
+        wt = next((t for t in m.tags if t.get('class') == 'weap' and t.get('name')
+                   and str(t['name']).rsplit('\\', 1)[-1].lower() == want.lower()), None)
+        if wt is None:
+            print('  !! no weap tag named %s' % want)
+            continue
+        ct = next((t for t in m.tags if t.get('class') == 'chdt' and t.get('name')
+                   and str(t['name']).rsplit('\\', 1)[-1].lower() == chud.lower()), None)
+        if ct is None:
+            print('  !! no chud tag named %s in this map' % chud)
+            continue
+        datum = HP._h3_tag_datum(m, 'chdt', str(ct['name']))
+        was = m.u32(wt['base'] + _WEAP_HUD + 0xC)
+        struct.pack_into('<I', m.data, wt['base'] + _WEAP_HUD + 0xC, datum)
+        print('    %s HUD %s -> ui\\chud\\%s (0x%08X)'
+              % (want, 'NULL' if was == 0xFFFFFFFF else '0x%08X' % was, chud, datum))
+        done.append((want, chud))
+    return done
+
+
 def palette_set(m, specs):
     """Point an existing Weapon Palette slot at a different weap tag: OLD=NEW.
 
@@ -619,6 +653,9 @@ def main(argv=None):
                     help='lay these weapons (palette basenames) on the ground at the '
                          'real start by repaletting the level\'s own placements')
     ap.add_argument('--drop-radius', type=float, default=3.0)
+    ap.add_argument('--hud', metavar='WEAPON=CHUD', action='append', default=[],
+                    help='point a weapon HUD Interface at a chud tag, for weapons '
+                         'restored from Halo 3 whose chud ODST never shipped')
     ap.add_argument('--palette-set', metavar='OLD=NEW', action='append', default=[],
                     help='point an unused Weapon Palette slot at another weap tag, so '
                          'a weapon absent from the palette becomes placeable')
@@ -688,6 +725,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    if a.hud:
+        hud_set(m, a.hud)
     if a.palette_set:
         palette_set(m, a.palette_set)
     stocked = (stock_nearest(m, [w.strip() for w in a.stock.split(',') if w.strip()],
