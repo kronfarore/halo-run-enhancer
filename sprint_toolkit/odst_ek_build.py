@@ -73,34 +73,82 @@ def install(name, baseline=True):
     shipped original is kept as `<map>.map.shipped`, a name apply_run never looks at,
     so nothing is lost and Steam verification is not needed to get it back.
     """
-    src = os.path.join(EK, 'maps', name + '.map')
     dst = os.path.join(GAME, name + '.map')
-    if not os.path.exists(src):
-        raise SystemExit('no EK build at %s' % src)
-    saved = dst + SAVED
-    if not os.path.exists(saved):
-        shutil.copy2(dst, saved)
-        print('  saved the current map as %s' % os.path.basename(saved))
-    shutil.copy2(src, dst)
-    print('  installed the EK build (%d bytes)' % os.path.getsize(dst))
-    if not baseline:
-        return
     bak, shipped = dst + '.bak', dst + '.shipped'
-    if os.path.exists(bak) and not os.path.exists(shipped):
+    src = os.path.join(EK, 'maps', name + '.map')
+    if not os.path.exists(src):
+        # The build output is pruned after a successful install, so reinstalling
+        # sources from .bak instead -- which holds the same rebuild.
+        shipped_size = os.path.getsize(shipped) if os.path.exists(shipped) else -1
+        if os.path.exists(bak) and os.path.getsize(bak) != shipped_size:
+            src = bak
+            print('  no EK build; reinstalling from the .bak baseline')
+        else:
+            raise SystemExit('no EK build at %s, and .bak is not a rebuild' % src)
+    if not os.path.exists(shipped) and os.path.exists(bak):
         shutil.copy2(bak, shipped)
         print('  preserved the shipped map as %s' % os.path.basename(shipped))
-    shutil.copy2(src, bak)
-    print('  .bak now points at the rebuild, so apply_run patches from it')
+    if src != dst:
+        shutil.copy2(src, dst)
+    print('  installed the EK build (%d bytes)' % os.path.getsize(dst))
+    if baseline and src != bak:
+        shutil.copy2(src, bak)
+        print('  .bak now points at the rebuild, so apply_run patches from it')
+    prune(name)
 
 
-def restore(name):
+# Scratch copies that duplicate something already kept. `.shipped` is the vanilla
+# original and `.bak` is the rebuild, so anything else is a second copy of one of them.
+PRUNABLE = ('.working', '.kikotest')
+
+
+def prune(name):
+    """Delete redundant per-map copies once .shipped and .bak both exist.
+
+    A single ODST level was costing ~1.9 GB across five files -- live map, baseline,
+    vanilla, a pre-EK copy and a test baseline -- plus the build output. Two of those
+    are byte-for-byte duplicates of the vanilla original and one duplicates the
+    rebuild, which matters on a disk with 16 GB free.
+    """
     dst = os.path.join(GAME, name + '.map')
-    saved = dst + SAVED
-    if not os.path.exists(saved):
-        raise SystemExit('nothing saved at %s' % saved)
-    shutil.copy2(saved, dst)
-    print('  restored %d bytes from %s' % (os.path.getsize(dst),
-                                           os.path.basename(saved)))
+    if not (os.path.exists(dst + '.shipped') and os.path.exists(dst + '.bak')):
+        print('  not pruning: .shipped and .bak must both exist first')
+        return
+    freed = 0
+    for suffix in PRUNABLE:
+        p = dst + suffix
+        if os.path.exists(p):
+            freed += os.path.getsize(p)
+            os.remove(p)
+            print('  pruned %s' % os.path.basename(p))
+    # The build output is now held by both .map and .bak, and --install can source
+    # from .bak, so keeping a third copy in the kit buys nothing.
+    ek = os.path.join(EK, 'maps', name + '.map')
+    if os.path.exists(ek):
+        freed += os.path.getsize(ek)
+        os.remove(ek)
+        print('  pruned the EK build output')
+    if freed:
+        print('  freed %.1f MB' % (freed / 1048576.0))
+
+
+def restore(name, stock=False):
+    """Put back the pre-EK map, or the shipped original with --stock.
+
+    `.working` is pruned once `.shipped` exists, so the vanilla original is the
+    fallback -- and the honest one, since that IS what the map was before any of this.
+    """
+    dst = os.path.join(GAME, name + '.map')
+    for src in ([dst + '.shipped'] if stock else [dst + SAVED, dst + '.shipped']):
+        if os.path.exists(src):
+            shutil.copy2(src, dst)
+            print('  restored %d bytes from %s'
+                  % (os.path.getsize(dst), os.path.basename(src)))
+            if src.endswith('.shipped'):
+                print('  NOTE: .bak still holds the rebuild -- delete it too for a '
+                      'fully stock map, or the next GUI patch restores the rebuild')
+            return
+    raise SystemExit('nothing to restore for %s' % name)
 
 
 def main(argv=None):
@@ -109,7 +157,10 @@ def main(argv=None):
     ap.add_argument('--build')
     ap.add_argument('--install')
     ap.add_argument('--restore')
+    ap.add_argument('--stock', action='store_true',
+                    help='--restore puts back the shipped original, not the pre-EK map')
     ap.add_argument('--status')
+    ap.add_argument('--prune', help='delete the redundant copies for this map')
     ap.add_argument('--platform', default='pc')
     ap.add_argument('--no-baseline', action='store_true',
                     help='install without repointing .bak at the rebuild')
@@ -118,11 +169,13 @@ def main(argv=None):
         build(a.build, a.platform)
     if a.install:
         install(a.install, baseline=not a.no_baseline)
+    if a.prune:
+        prune(a.prune)
     if a.restore:
-        restore(a.restore)
+        restore(a.restore, stock=a.stock)
     if a.status:
         status(a.status)
-    if not any((a.build, a.install, a.restore, a.status)):
+    if not any((a.build, a.install, a.restore, a.status, a.prune)):
         ap.print_help()
     return 0
 

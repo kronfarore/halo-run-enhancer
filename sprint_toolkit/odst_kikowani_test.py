@@ -43,7 +43,10 @@ import halo_patch as HP                                          # noqa: E402
 ODST = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
 MAP = os.path.join(ODST, 'sc150.map')
-PRISTINE = MAP + '.kikotest'          # our own baseline, so the GUI's .bak is untouched
+# The baseline to rebuild from. This used to be a private .kikotest copy so the GUI's
+# .bak stayed untouched, but .bak IS the right baseline now -- odst_ek_build points it
+# at the rebuilt map -- and a second 427 MB copy per level is not worth keeping.
+PRISTINE = MAP + '.bak'
 GAME = 'Halo 3: ODST'
 REAL = (-326.0, 184.0, 4.6)           # from odst_poswatch, live
 
@@ -699,14 +702,9 @@ def main(argv=None):
         print('editing sc150.map in place (%d bytes)' % os.path.getsize(MAP))
     else:
         if not os.path.exists(PRISTINE):
-            # Seed from the GUI's .bak, which IS vanilla. Seeding from sc150.map
-            # captured whatever the last enhancer run had written (an earlier copy
-            # carried a gravity_hammer secondary), which rode along in every test.
-            src = MAP + '.bak' if os.path.exists(MAP + '.bak') else MAP
-            shutil.copy2(src, PRISTINE)
-            print('saved a pristine copy from %s: %s'
-                  % (os.path.basename(src), PRISTINE))
-        shutil.copy2(PRISTINE, MAP)    # build from pristine, never stack patches
+            raise SystemExit('no baseline at %s -- run odst_ek_build.py --install '
+                             'first, or pass --keep-current' % PRISTINE)
+        shutil.copy2(PRISTINE, MAP)    # build from the baseline, never stack patches
 
     m = HP.open_map(MAP, GAME)
     reg = HP.PluginRegistry(PLUGINS, ['ODSTMCC', 'ODST'])
