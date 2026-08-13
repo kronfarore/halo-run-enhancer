@@ -327,6 +327,54 @@ def repalette_nearest(m, want, donor=None):
     return best
 
 
+def swap_spawns(m, pairs):
+    """Repalette placements by name: --swap old=new, repeatable.
+
+    A health check on the whole repalette path, using weapons that are known to work.
+    The level's carbine and shotgun spawns become an assault rifle and a silenced SMG
+    -- both active at level start, both grantable, both certain to render if the
+    machinery is sound. If they appear, repaletting is proven good and the earlier
+    "rocket launcher never showed at the carbine spot" result isolates the WEAPON
+    rather than the mechanism. If they do not appear, the mechanism was the problem
+    all along and every placement conclusion in this file needs re-reading.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    names = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) or '')
+             for i in range(pc)]
+    short = [n.rsplit('\\', 1)[-1].lower() for n in names]
+
+    done = []
+    for spec in pairs:
+        if '=' not in spec:
+            print('  !! --swap wants old=new, got %r' % spec)
+            continue
+        old, new = (s.strip().lower() for s in spec.split('=', 1))
+        if new not in short:
+            print('  !! %s is not in the Weapon Palette' % new)
+            continue
+        ni = short.index(new)
+        hit = 0
+        for i in range(max(0, wn)):
+            e = wbase + i * wes
+            pi = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
+            if not (0 <= pi < pc) or short[pi] != old:
+                continue
+            pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
+            struct.pack_into('<h', m.data, e + lay['palette_index'], ni)
+            print('    placement[%d] at (%.1f, %.1f, %.1f), %.0fu out:  %s -> %s'
+                  % (i, pos[0], pos[1], pos[2], math.dist(pos, REAL), old, new))
+            hit += 1
+        if not hit:
+            print('  !! no placement currently holds %s' % old)
+        done.append((old, new, hit))
+    return done
+
+
 def equipment_at(m, spot, label, radius=2.0):
     """Ring the already-appended equipment around a given point."""
     lay = HP._MAP_EQUIPMENT[GAME]
@@ -462,6 +510,10 @@ def main(argv=None):
                     help='lay these weapons (palette basenames) on the ground at the '
                          'real start by repaletting the level\'s own placements')
     ap.add_argument('--drop-radius', type=float, default=3.0)
+    ap.add_argument('--swap', metavar='OLD=NEW', action='append', default=[],
+                    help='repalette every placement holding OLD to NEW. Repeatable. '
+                         'A health check on the repalette path when NEW is a weapon '
+                         'that definitely works, e.g. --swap shotgun=smg_silenced')
     ap.add_argument('--repalette', metavar='WEAPON',
                     help='change only the Palette Index of the placement nearest the '
                          'real start, leaving position/flags/folder as shipped')
@@ -510,6 +562,7 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    swapped = swap_spawns(m, a.swap) if a.swap else None
     repal = (repalette_nearest(m, a.repalette, a.repalette_donor)
              if a.repalette else None)
     at = [float(v) for v in a.drop_at.split(',')] if a.drop_at else None
@@ -523,6 +576,11 @@ def main(argv=None):
         arm_friendlies(m, fw)
     m.save(MAP)
     print('\nwritten. Load Kikowani Station and report:')
+    if swapped:
+        print('  HEALTH CHECK -- at the two weapon spawns near the start, do you now')
+        print('  find %s?' % ', '.join('a %s where the %s was' % (n, o)
+                                       for o, n, k in swapped if k))
+        print('  If yes, repaletting works and only the WEAPON was ever the problem.')
     if repal is not None:
         print('  - an AUTO MAGNUM in hand confirms the patched map actually loaded')
         print('  - go to where the %s normally lies: is it a %s now?'

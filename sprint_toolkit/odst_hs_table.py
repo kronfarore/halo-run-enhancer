@@ -114,9 +114,28 @@ def main(argv=None):
     ap.add_argument('--table', action='store_true')
     ap.add_argument('--at', help='disassemble at this VA (hex), e.g. 0x1802192B0')
     ap.add_argument('--count', type=int, default=80)
+    ap.add_argument('--callers', help='VA (hex) whose E8-call sites to list')
     ap.add_argument('--raw', action='store_true',
                     help='keep disassembling past jmp/ret instead of stopping')
     a = ap.parse_args(argv)
+
+    if a.callers:
+        img = Image(a.dll)
+        target = int(a.callers, 16)
+        # E8 rel32: the call is 5 bytes, so target = va_of_call + 5 + rel32.
+        text = next(s for s in img.sections if s[4] == '.text')
+        rva, vsize, praw, sraw, _ = text
+        hits = 0
+        for off in range(praw, praw + sraw - 5):
+            if img.data[off] != 0xE8:
+                continue
+            rel = struct.unpack_from('<i', img.data, off + 1)[0]
+            va = img.off2va(off)
+            if va is not None and va + 5 + rel == target:
+                print('  call site va 0x%X  file 0x%08X' % (va, off))
+                hits += 1
+        print('  %d caller(s) of 0x%X' % (hits, target))
+        return 0
 
     if a.at:
         img = Image(a.dll)

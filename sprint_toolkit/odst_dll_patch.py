@@ -74,6 +74,29 @@ PATCHES = {
         'note': 'object_new stops refusing to build a tag the zone set has not '
                 'marked active -- the Kikowani starting-weapon fix',
     },
+    # object_new's residency gate is now known to be the ONLY one in that function --
+    # the "active tags" bitmap at +0x2A2F8 is read from exactly one place besides the
+    # code that builds it. So with `allow-inactive-weapon` on, object_new hands back a
+    # real object and the refusal has to be downstream, in the give-weapon-to-unit
+    # routine 0x18039CA58, whose two early rejects these are. When it returns false the
+    # caller immediately deletes the object again (0x18039C893 -> 0x18037E4A4), which
+    # looks identical to "never created": empty hands, no error.
+    'weapon-handover-pending': {
+        'offset': 0x0039BED8,          # VA 0x18039CAD8, in give-weapon-to-unit
+        # jne reject -- taken when byte [weapon + 0x155] is non-zero. The sibling field
+        # +0x154 is where the profile code ORs in bit 4, so this pair is object state;
+        # +0x155 is the best candidate for "resources not ready yet".
+        'original': bytes.fromhex('0f8538040000'),
+        'patched': bytes.fromhex('909090909090'),
+        'note': 'give-weapon-to-unit stops rejecting an object whose +0x155 is set',
+    },
+    'weapon-handover-flag': {
+        'offset': 0x0039BECB,          # VA 0x18039CACB, same function, first reject
+        # jne reject -- bit 7 of dword [weapon + 4].
+        'original': bytes.fromhex('0f8545040000'),
+        'patched': bytes.fromhex('909090909090'),
+        'note': 'give-weapon-to-unit stops rejecting on object flag bit 7',
+    },
     'tag-always-active': {
         'offset': 0x0014C8ED,          # VA 0x18014D4ED, inside tag_is_active
         # jae not_active -- the bitmap test itself. Blunter: EVERY caller in the
