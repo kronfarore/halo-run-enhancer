@@ -145,11 +145,11 @@ def unresolved_tags(m, zone_base):
     behind it. That is the difference between the run that worked and the runs that
     did not: the successful one left those tags alone.
     """
-    pb = _play_base(m)
-    if pb is None:
-        return set()
-    sbase = HP._block_base(m, pb + PLAY_SEGMENTS)
-    scount = m.i32(pb + PLAY_SEGMENTS)
+    # A map built standalone by the Editing Kit keeps Segments in the `zone` tag, not
+    # `play`, so ask for whichever owns them -- otherwise every tag looks unresolved
+    # and --only-resolved would refuse to mark anything resident.
+    import h3_raw_residency as _R
+    sbase, scount = _R.resource_tables(m)['seg']
     n = m.i32(zone_base + TAG_RESOURCES)
     base = HP._block_base(m, zone_base + TAG_RESOURCES)
     bad = set()

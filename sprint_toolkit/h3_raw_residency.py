@@ -50,6 +50,35 @@ def _play_tag(m):
     return next((t for t in m.tags if t.get('class') == 'play'), None)
 
 
+# The zone tag carries the same two blocks as the play tag. A shipped map leaves them
+# to `play` and reaches into shared.map / campaign.map; a map built standalone by the
+# Editing Kit has an EMPTY play tag and keeps everything in `zone` instead, inlined.
+ZONE_RAW_PAGES = 0x34
+ZONE_SEGMENTS = 0x58
+
+
+def resource_tables(m):
+    """(base, count) of the Segments and Raw Pages blocks, whichever tag owns them.
+
+    Returns {'seg': (base, count), 'page': (base, count), 'owner': 'play'|'zone'}.
+    """
+    pt = _play_tag(m)
+    if pt and pt.get('base'):
+        pb = pt['base']
+        return {'owner': 'play',
+                'seg': (HP._block_base(m, pb + PLAY_SEGMENTS), m.i32(pb + PLAY_SEGMENTS)),
+                'page': (HP._block_base(m, pb + PLAY_RAW_PAGES),
+                         m.i32(pb + PLAY_RAW_PAGES))}
+    zt = next((t for t in m.tags if t.get('class') == 'zone'), None)
+    if not zt or not zt.get('base'):
+        return {'owner': None, 'seg': (None, 0), 'page': (None, 0)}
+    zb = zt['base']
+    return {'owner': 'zone',
+            'seg': (HP._block_base(m, zb + ZONE_SEGMENTS), m.i32(zb + ZONE_SEGMENTS)),
+            'page': (HP._block_base(m, zb + ZONE_RAW_PAGES),
+                     m.i32(zb + ZONE_RAW_PAGES))}
+
+
 def externals(m, pb):
     n, base = m.i32(pb + PLAY_EXTERNAL), HP._block_base(m, pb + PLAY_EXTERNAL)
     out = []

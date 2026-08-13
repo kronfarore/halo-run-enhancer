@@ -579,6 +579,10 @@ def main(argv=None):
                          'coordinates need the = form: --drop-at=-313.3,190.6,5.1')
     ap.add_argument('--ring', type=float, default=2.0,
                     help='equipment ring radius in world units (default 2.0)')
+    ap.add_argument('--keep-current', action='store_true',
+                    help='edit the map as it stands instead of rebuilding from the '
+                         'pristine baseline -- needed when the map in place is an '
+                         'Editing Kit build rather than the shipped one')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args(argv)
 
@@ -590,14 +594,18 @@ def main(argv=None):
         shutil.copy2(PRISTINE, MAP)
         print('restored sc150.map')
         return 0
-    if not os.path.exists(PRISTINE):
-        # Seed from the GUI's .bak, which IS vanilla. Seeding from sc150.map captured
-        # whatever the last enhancer run had written (an earlier copy carried a
-        # gravity_hammer secondary), which then silently rode along in every test.
-        src = MAP + '.bak' if os.path.exists(MAP + '.bak') else MAP
-        shutil.copy2(src, PRISTINE)
-        print('saved a pristine copy from %s: %s' % (os.path.basename(src), PRISTINE))
-    shutil.copy2(PRISTINE, MAP)        # always build from pristine, never stack patches
+    if a.keep_current:
+        print('editing sc150.map in place (%d bytes)' % os.path.getsize(MAP))
+    else:
+        if not os.path.exists(PRISTINE):
+            # Seed from the GUI's .bak, which IS vanilla. Seeding from sc150.map
+            # captured whatever the last enhancer run had written (an earlier copy
+            # carried a gravity_hammer secondary), which rode along in every test.
+            src = MAP + '.bak' if os.path.exists(MAP + '.bak') else MAP
+            shutil.copy2(src, PRISTINE)
+            print('saved a pristine copy from %s: %s'
+                  % (os.path.basename(src), PRISTINE))
+        shutil.copy2(PRISTINE, MAP)    # build from pristine, never stack patches
 
     m = HP.open_map(MAP, GAME)
     reg = HP.PluginRegistry(PLUGINS, ['ODSTMCC', 'ODST'])
