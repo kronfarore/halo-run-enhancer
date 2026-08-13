@@ -165,7 +165,8 @@ def unresolved_tags(m, zone_base):
     return bad
 
 
-def load_always(m, zone_base, want, whole_donor=False, only_resolved=False):
+def load_always(m, zone_base, want, whole_donor=False, only_resolved=False,
+                classes=None):
     """Try to make `want` resident everywhere by setting its bits in GLOBAL.
 
     Default is a NARROW fold: only the weapon's own tag family (every tag whose path
@@ -216,7 +217,8 @@ def load_always(m, zone_base, want, whole_donor=False, only_resolved=False):
                 'tags_added': added_t, 'raw_added': added_r}
 
     family = [t['index'] for t in m.tags
-              if t.get('name') and want.lower() in str(t['name']).lower()]
+              if t.get('name') and want.lower() in str(t['name']).lower()
+              and (not classes or (t.get('class') or '').strip() in classes)]
     dropped = 0
     if only_resolved:
         bad = unresolved_tags(m, zone_base)
@@ -263,6 +265,9 @@ def main(argv=None):
                     help='mark EVERY weapon in the scenario palette resident, so any '
                          'of them can be granted or placed. Only sound on a rebuilt '
                          'map, where every chunk resolves.')
+    ap.add_argument('--classes', help='comma list of tag classes to fold, e.g. '
+                    'weap,hlmt,mode,coll,phmo,jmad,proj -- folding a whole weapon '
+                    'family black-screened the map, so bisect with this')
     ap.add_argument('--i-know', action='store_true',
                     help='acknowledge that --load-always has failed in-game twice')
     ap.add_argument('--only-resolved', action='store_true',
@@ -311,7 +316,8 @@ def main(argv=None):
                 'Read the module docstring; pass --i-know to try anyway.')
         for want in a.load_always:
             r = load_always(m, zb, want, whole_donor=a.whole_donor,
-                            only_resolved=a.only_resolved)
+                            only_resolved=a.only_resolved,
+                            classes=set(a.classes.split(',')) if a.classes else None)
             print('  load-always %-18s %s' % (want, r))
         m.save(path)
         after = [(lab, _pool(m, e, ZS_REQUIRED_TAG_POOL)) for lab, e in zonesets(m, zb)]
