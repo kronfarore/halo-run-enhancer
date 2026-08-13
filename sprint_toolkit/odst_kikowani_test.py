@@ -341,6 +341,40 @@ def repalette_nearest(m, want, donor=None):
     return best
 
 
+def palette_set(m, specs):
+    """Point an existing Weapon Palette slot at a different weap tag: OLD=NEW.
+
+    A placement indexes the palette, so a weapon absent from it cannot be placed --
+    and `tool` appears to prune palette entries no placement references, which is why
+    the battle rifle's tags are in the rebuilt map while the palette still has the
+    same 17 entries (Assembly agrees). Growing the block would mean relocating it into
+    slack; overwriting a slot the level never uses costs one tagRef write and no
+    block growth at all.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    poff, pes = lay['palette']
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    short = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + 0xC)) or '')
+             .rsplit('\\', 1)[-1].lower() for i in range(pc)]
+    done = []
+    for spec in specs:
+        old, new = (s.strip() for s in spec.split('=', 1))
+        if old.lower() not in short:
+            print('  !! %s is not a palette entry' % old)
+            continue
+        path = _palette_path(m, new)
+        datum = HP._h3_tag_datum(m, 'weap', path) if path else None
+        if datum is None:
+            print('  !! no weap tag for %s' % new)
+            continue
+        i = short.index(old.lower())
+        struct.pack_into('<I', m.data, pbase + i * pes + 0xC, datum)
+        print('    palette[%d] %s -> %s  (datum 0x%08X)' % (i, old, new, datum))
+        done.append((i, new))
+    return done
+
+
 def stock_nearest(m, wanted, lift=0.0):
     """Put the chosen weapons on the level's own nearest weapon spawns.
 
@@ -582,6 +616,9 @@ def main(argv=None):
                     help='lay these weapons (palette basenames) on the ground at the '
                          'real start by repaletting the level\'s own placements')
     ap.add_argument('--drop-radius', type=float, default=3.0)
+    ap.add_argument('--palette-set', metavar='OLD=NEW', action='append', default=[],
+                    help='point an unused Weapon Palette slot at another weap tag, so '
+                         'a weapon absent from the palette becomes placeable')
     ap.add_argument('--stock', metavar='W1,W2',
                     help='put these weapons on the level\'s nearest weapon spawns, '
                          'closest first -- the delivery route that works')
@@ -648,6 +685,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
+    if a.palette_set:
+        palette_set(m, a.palette_set)
     stocked = (stock_nearest(m, [w.strip() for w in a.stock.split(',') if w.strip()],
                              a.stock_lift)
                if a.stock else None)
