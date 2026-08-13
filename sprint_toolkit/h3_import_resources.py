@@ -102,12 +102,26 @@ def in_map_gaps(cache):
     gap that is both aligned and empty, so that write landed on live data and the map
     was rejected -- the level loaded and bounced straight back to the main menu.
 
-    This scans the whole file for genuinely empty aligned blocks instead. The window
-    just past the raw data is full on sc150, and the low run at 0x1000 is header space,
-    so the search starts at HEADER_GUARD and takes the largest run -- on sc150 that is
-    36 KB of zero padding at the tail of the last partition (233615360).
+    Placing it OUTSIDE the raw region does not work: 170962944 (aligned, verified
+    empty, past the last partition) made the engine reject the map -- the level loaded
+    and bounced to the main menu, twice. Being inside the region matters more than
+    being aligned, so inter-page padding inside the raw region is tried first even
+    though every real page starts on a 0x1000 boundary. On sc150 exactly one such gap
+    is empty: 2941 bytes at 92050563.
+
+    The aligned-run scan is kept as a fallback, skipping the first 64 KB because the
+    zero run at 0x1000 is header space, not free space.
     """
     data = cache.m.data
+    spans = sorted((p[1], p[1] + p[2]) for p in
+                   (cache.page(i) for i in range(cache.page_count))
+                   if p and p[0] < 0 and p[2] > 0)
+    inside = []
+    for (a_start, a_end), (b_start, _) in zip(spans, spans[1:]):
+        if b_start > a_end and not any(data[a_end:b_start]):
+            inside.append((a_end, b_start - a_end))
+    inside.sort(key=lambda r: -r[1])
+
     runs, start = [], None
     for off in range(HEADER_GUARD, (len(data) // BLOCK) * BLOCK, BLOCK):
         if any(data[off:off + BLOCK]):
@@ -119,7 +133,7 @@ def in_map_gaps(cache):
     if start is not None:
         runs.append((start, len(data) - start))
     runs.sort(key=lambda r: -r[1])
-    return runs
+    return inside + runs
 
 
 def orphan_pages(cache):
@@ -153,9 +167,8 @@ def import_page(dst, src, page_index, gaps, orphans):
     if spot is None or not orphans:
         return None
     gaps.remove(spot)
-    used = (size + BLOCK - 1) // BLOCK * BLOCK        # keep the next page aligned too
-    if spot[1] - used >= BLOCK:
-        gaps.insert(0, (off + used, spot[1] - used))
+    if spot[1] - size > BLOCK:
+        gaps.insert(0, (off + size, spot[1] - size))
     dst.m.data[off:off + size] = src.m.data[sp[1]:sp[1] + size]
     new_index = orphans.pop(0)
     # Copy the donor's whole record -- hashes and CRC come along unchanged because the
