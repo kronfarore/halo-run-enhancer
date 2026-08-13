@@ -255,7 +255,8 @@ ZOOM_DONOR_WEAPONS = {
 # found under (per-game subfolder); defaults to the tool's parent when unset.
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
-                 'shared_session_dir', 'shared_session_autosave') + OPTION_KEYS
+                 'shared_session_dir', 'shared_session_autosave',
+                 'vault_dir') + OPTION_KEYS
 
 
 def mcc_root():
@@ -5165,6 +5166,15 @@ class OptionsDialog(QDialog):
         self.sprint_apply_btn.clicked.connect(self._apply_sprint_to_maps)
         xform.addRow("", self.sprint_apply_btn)
 
+        self.vault_btn = QPushButton("Archive vanilla maps…")
+        self.vault_btn.setToolTip(
+            "Copy each game's PRISTINE campaign maps into one archive per game, in a "
+            "folder you pick, so the originals live somewhere safe instead of as loose "
+            ".bak copies. The map list comes from halo.json, so it covers exactly the "
+            "maps the patcher touches. Nothing is deleted and nothing is overwritten.")
+        self.vault_btn.clicked.connect(self._archive_vanilla_maps)
+        xform.addRow("", self.vault_btn)
+
         # Start-with and card are two ways in; starting with sprint makes the card moot.
         self.sprint_start_cb.toggled.connect(
             lambda on: on and self.sprint_cards_cb.setChecked(False))
@@ -5696,6 +5706,99 @@ class OptionsDialog(QDialog):
             'camo_duration_s': round(self.camo_duration.value(), 1),
             'camo_cooldown_s': round(self.camo_cooldown.value(), 1),
         }
+
+    def _archive_vanilla_maps(self):
+        """Archive each game's pristine campaign maps into one zip per game.
+
+        A modded install accumulates copies: the originals sit around as .bak (Halo 1,
+        Halo 3, ODST) or in a parallel _bak folder (Halo 2), several GB per game. This
+        puts them somewhere chosen, verified, and out of the way.
+
+        The destination is ASKED for rather than assumed — on a play machine this tool
+        folder does not exist, and an archive on the same disk as the maps protects
+        against nothing.
+
+        Nothing is packed on a guess. A map is archived only from a copy that claims to
+        be pristine (.vanilla.bak, then .shipped, then .bak), never from the live file,
+        and a candidate that is itself an Editing Kit rebuild is rejected. An archive
+        that enshrines a modified map as "the original" is the one mistake here with no
+        way back.
+        """
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import map_vault
+        except Exception as e:
+            QMessageBox.warning(self, "Archive vanilla maps",
+                                "Could not load the vault tool:\n%s" % e)
+            return
+
+        dest = QFileDialog.getExistingDirectory(
+            self, "Where should the map archives go?",
+            CONFIG.get('vault_dir') or str(Path.home()))
+        if not dest:
+            return
+
+        games = list(map_vault.MAP_FOLDER)
+        plans = {}
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for g in games:
+                try:
+                    plans[g] = map_vault.plan_pack(g)
+                except Exception as e:
+                    plans[g] = ([], [("—", str(e))], 0)
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        lines, ready = [], []
+        for g in games:
+            picked, skipped, total = plans[g]
+            mb = sum(os.path.getsize(p) for _, p, _, _ in picked) / 1048576.0
+            lines.append("{}: {} of {} map(s), {:,.0f} MB".format(
+                g, len(picked), total, mb))
+            for n, why in skipped:
+                lines.append("      skipped %s — %s" % (n, why))
+            if picked:
+                ready.append(g)
+        if not ready:
+            QMessageBox.information(
+                self, "Archive vanilla maps",
+                "No pristine originals found for any game.\n\n" + "\n".join(lines))
+            return
+
+        warn = ""
+        if any(plans[g][1] for g in ready):
+            warn = ("\n\nNOTE: some maps have no preserved original and are skipped, "
+                    "so those games archive INCOMPLETE.")
+        if QMessageBox.question(
+                self, "Archive vanilla maps?",
+                "Write one archive per game into:\n%s\n\n%s%s"
+                % (dest, "\n".join(lines), warn)) != QMessageBox.Yes:
+            return
+
+        CONFIG['vault_dir'] = dest          # remembered via SETTINGS_KEYS
+        save_settings()
+
+        written, failed = [], []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for g in ready:
+                try:
+                    out = map_vault.pack(g, dest=dest, yes=True, echo=False)
+                    ok = map_vault.verify(g, dest=dest)
+                    written.append("%s: %s%s" % (g, Path(out).name,
+                                                 "" if ok else "   (VERIFY FAILED)"))
+                except Exception as e:
+                    failed.append("%s: %s" % (g, e))
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        msg = ("Archived:\n" + "\n".join(written)) if written else "Nothing archived."
+        if failed:
+            msg += "\n\nFailed:\n" + "\n".join(failed)
+        msg += ("\n\nThe originals are still in place — nothing was deleted. "
+                "Open the archive and check it before removing anything.")
+        QMessageBox.information(self, "Archive vanilla maps", msg)
 
     def _apply_sprint_to_maps(self):
         """Byte-patch the current sprint settings into every H1 campaign map that

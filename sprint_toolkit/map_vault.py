@@ -147,20 +147,26 @@ def looks_rebuilt(path, game):
         return None
 
 
-def survey(game, do_hash=False):
-    """Read-only. Report what is in the map folder and how confident we can be."""
+def survey(game, do_hash=False, echo=True):
+    """Read-only. Report what is in the map folder and how confident we can be.
+
+    Returns a row per map so a caller (the enhancer's GUI) can render it itself;
+    `echo=False` silences the CLI printing."""
+    def say(*a):
+        if echo:
+            print(*a)
     d = map_dir(game)
-    print('%s  ->  %s' % (game, d))
+    say('%s  ->  %s' % (game, d))
     if not os.path.isdir(d):
-        print('  (folder not found)')
+        say('  (folder not found)')
         return []
     rows = []
-    print('  %-8s %8s %-16s %-8s  %-22s %s'
+    say('  %-8s %8s %-16s %-8s  %-22s %s'
           % ('map', 'MB', 'modified', 'rebuilt?', 'original kept as', 'verdict'))
     for name in maps_for(game):
         p = resolve(game, name)
         if not p:
-            print('  %-8s %8s (absent)' % (name, '-'))
+            say('  %-8s %8s (absent)' % (name, '-'))
             continue
         size = os.path.getsize(p)
         mtime = time.strftime('%Y-%m-%d %H:%M', time.localtime(os.path.getmtime(p)))
@@ -178,17 +184,19 @@ def survey(game, do_hash=False):
             verdict = 'REBUILT, no original kept'
         else:
             verdict = 'no original kept - confirm before packing'
-        print('  %-8s %8.1f %-16s %-8s  %-22s %s'
+        say('  %-8s %8.1f %-16s %-8s  %-22s %s'
               % (name, size / 1048576.0, mtime,
                  {True: 'yes', False: 'no', None: '?'}[rebuilt],
                  src[1] if src else '-', verdict))
         rows.append({'map': name, 'path': p, 'size': size, 'rebuilt': rebuilt,
                      'original': src[0] if src else None,
+                     'source': src[1] if src else None, 'verdict': verdict,
+                     'packable': bool(src and not src_rebuilt),
                      'sha256': sha256(p) if do_hash else None})
     return rows
 
 
-def pack(game, source='original', only=None, yes=False):
+def plan_pack(game, source='original', only=None):
     """Archive the pristine copy of each map. Refuses to guess.
 
     The source is whatever `originals()` found -- `.vanilla.bak`, `.shipped` or `.bak`,
@@ -200,8 +208,6 @@ def pack(game, source='original', only=None, yes=False):
     Entries are stored under the map's REAL filename, so Halo 2's `03a_oldmombasa.map`
     round-trips even though halo.json calls it `03a`.
     """
-    out = os.path.join(VAULT, game.replace(':', '').replace(' ', '_') + '.zip')
-    os.makedirs(VAULT, exist_ok=True)
     names = [n for n in maps_for(game) if not only or n in only]
     picked, skipped = [], []
     for n in names:
@@ -224,23 +230,41 @@ def pack(game, source='original', only=None, yes=False):
             picked.append((n, chosen[0], chosen[1], arcname))
         else:
             skipped.append((n, 'no original kept'))
-    print('%s -> %s' % (game, out))
+    return picked, skipped, len(names)
+
+
+def archive_path(game, dest=None):
+    return os.path.join(dest or VAULT,
+                        game.replace(':', '').replace(' ', '_') + '.zip')
+
+
+def pack(game, dest=None, source='original', only=None, yes=False, echo=True):
+    """Write the archive. `dest` is the destination folder -- on a play machine the
+    tool folder does not exist, and an archive on the same disk as the maps protects
+    against nothing, so the caller chooses."""
+    def say(*a):
+        if echo:
+            print(*a)
+    picked, skipped, total_names = plan_pack(game, source, only)
+    out = archive_path(game, dest)
+    os.makedirs(os.path.dirname(out) or '.', exist_ok=True)
+    say('%s -> %s' % (game, out))
     for n, p_, why, _arc in picked:
-        print('  will pack %-8s from %-24s %7.1f MB'
-              % (n, why, os.path.getsize(p_) / 1048576.0))
+        say('  will pack %-8s from %-24s %7.1f MB'
+            % (n, why, os.path.getsize(p_) / 1048576.0))
     for n, why in skipped:
-        print('  SKIP      %-8s %s' % (n, why))
+        say('  SKIP      %-8s %s' % (n, why))
     if not picked:
         raise SystemExit('nothing to pack')
     total = sum(os.path.getsize(p_) for _, p_, _, _ in picked)
-    print('  %d of %d map(s), %.1f MB in' % (len(picked), len(names), total / 1048576.0))
+    say('  %d of %d map(s), %.1f MB in' % (len(picked), total_names, total / 1048576.0))
     if not yes:
-        print('')
-        print('  dry run -- nothing written. Re-run with --yes.')
-        return
+        say('')
+        say('  dry run -- nothing written. Re-run with --yes.')
+        return None
     if source == 'map':
-        print('  NOTE: archiving LIVE maps as originals. If any is modified, the '
-              'archive is wrong and there is no second copy to fall back on.')
+        say('  NOTE: archiving LIVE maps as originals. If any is modified, the '
+            'archive is wrong and there is no second copy to fall back on.')
     man = {'game': game, 'created': time.strftime('%Y-%m-%d %H:%M:%S'), 'entries': {}}
     comp = COMPRESS.get(game, zipfile.ZIP_STORED)
     with zipfile.ZipFile(out, 'w', compression=comp, allowZip64=True) as z:
@@ -249,21 +273,22 @@ def pack(game, source='original', only=None, yes=False):
             man['entries'][n] = {'sha256': digest, 'size': os.path.getsize(p_),
                                  'source': why, 'filename': arc}
             z.write(p_, arc)
-            print('  packed %-8s %s' % (n, digest[:16]))
+            say('  packed %-8s %s' % (n, digest[:16]))
         z.writestr(MANIFEST, json.dumps(man, indent=2))
-    print('  wrote %.1f MB (%s)' % (os.path.getsize(out) / 1048576.0,
-                                    'deflated' if comp == zipfile.ZIP_DEFLATED else 'stored'))
+    say('  wrote %.1f MB (%s)' % (os.path.getsize(out) / 1048576.0,
+                                  'deflated' if comp == zipfile.ZIP_DEFLATED else 'stored'))
+    return out
 
 
-def _open(game):
-    out = os.path.join(VAULT, game.replace(':', '').replace(' ', '_') + '.zip')
+def _open(game, dest=None):
+    out = archive_path(game, dest)
     if not os.path.exists(out):
         raise SystemExit('no vault at %s' % out)
     return out
 
 
-def verify(game):
-    out = _open(game)
+def verify(game, dest=None):
+    out = _open(game, dest)
     with zipfile.ZipFile(out) as z:
         man = json.loads(z.read(MANIFEST))
         print('%s  created %s' % (out, man['created']))
@@ -280,8 +305,8 @@ def verify(game):
         return bad == 0
 
 
-def unpack(game, only=None, to_shipped=False):
-    out, d = _open(game), map_dir(game)
+def unpack(game, only=None, to_shipped=False, dest=None):
+    out, d = _open(game, dest), map_dir(game)
     with zipfile.ZipFile(out) as z:
         man = json.loads(z.read(MANIFEST))
         for n in sorted(man['entries']):
@@ -312,17 +337,18 @@ def main(argv=None):
     ap.add_argument('--to-shipped', action='store_true',
                     help='unpack to <map>.shipped instead of over the live map')
     ap.add_argument('--hash', action='store_true', help='survey also hashes each map')
+    ap.add_argument('--dest', help='destination folder for the archive')
     ap.add_argument('--yes', action='store_true', help='actually write the archive')
     a = ap.parse_args(argv)
     only = set(a.only.split(',')) if a.only else None
     if a.survey:
         survey(a.survey, a.hash)
     if a.pack:
-        pack(a.pack, a.source, only, a.yes)
+        pack(a.pack, a.dest, a.source, only, a.yes)
     if a.verify:
-        verify(a.verify)
+        verify(a.verify, a.dest)
     if a.unpack:
-        unpack(a.unpack, only, a.to_shipped)
+        unpack(a.unpack, only, a.to_shipped, a.dest)
     if not any((a.survey, a.pack, a.verify, a.unpack)):
         ap.print_help()
     return 0
