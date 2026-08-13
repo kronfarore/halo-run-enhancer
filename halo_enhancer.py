@@ -4614,6 +4614,21 @@ class OptionsDialog(QDialog):
         _scroll.setWidget(_cont)
         outer.addWidget(_scroll, 1)
 
+        # ---- Map archive: first, because it is about protecting what everything
+        # below it edits, and it is the one action here that touches nothing else ----
+        vault_g = QGroupBox("Map archive")
+        vform = QFormLayout(vault_g)
+        vform.setLabelAlignment(Qt.AlignRight)
+        self.vault_btn = QPushButton("Archive vanilla maps…")
+        self.vault_btn.setToolTip(
+            "Copy each game's PRISTINE campaign maps into one archive per game, in a "
+            "folder you pick, so the originals live somewhere safe instead of as loose "
+            ".bak copies. The map list comes from halo.json, so it covers exactly the "
+            "maps the patcher touches. Nothing is deleted and nothing is overwritten.")
+        self.vault_btn.clicked.connect(self._archive_vanilla_maps)
+        vform.addRow("Originals:", self.vault_btn)
+        layout.addWidget(vault_g)
+
         # ---- Run rules ----
         func = QGroupBox("Run rules")
         form = QFormLayout(func)
@@ -5166,14 +5181,6 @@ class OptionsDialog(QDialog):
         self.sprint_apply_btn.clicked.connect(self._apply_sprint_to_maps)
         xform.addRow("", self.sprint_apply_btn)
 
-        self.vault_btn = QPushButton("Archive vanilla maps…")
-        self.vault_btn.setToolTip(
-            "Copy each game's PRISTINE campaign maps into one archive per game, in a "
-            "folder you pick, so the originals live somewhere safe instead of as loose "
-            ".bak copies. The map list comes from halo.json, so it covers exactly the "
-            "maps the patcher touches. Nothing is deleted and nothing is overwritten.")
-        self.vault_btn.clicked.connect(self._archive_vanilla_maps)
-        xform.addRow("", self.vault_btn)
 
         # Start-with and card are two ways in; starting with sprint makes the card moot.
         self.sprint_start_cb.toggled.connect(
