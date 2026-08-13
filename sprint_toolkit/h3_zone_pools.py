@@ -259,6 +259,10 @@ def main(argv=None):
                     help='fold a zone set that carries this weapon into GLOBAL, so it '
                          'is resident everywhere. Repeatable. Writes the map. '
                          'KNOWN BROKEN -- see the module docstring; needs --i-know.')
+    ap.add_argument('--all-weapons', action='store_true',
+                    help='mark EVERY weapon in the scenario palette resident, so any '
+                         'of them can be granted or placed. Only sound on a rebuilt '
+                         'map, where every chunk resolves.')
     ap.add_argument('--i-know', action='store_true',
                     help='acknowledge that --load-always has failed in-game twice')
     ap.add_argument('--only-resolved', action='store_true',
@@ -285,6 +289,18 @@ def main(argv=None):
         tags_on = sum(bin(w).count('1') for w in words)
         raw_on = sum(bin(w).count('1') for w in raw)
         print('  %-34s tags=%4d/%-5d raw=%4d' % (label, tags_on, len(words) * 32, raw_on))
+    if a.all_weapons:
+        lay = HP._MAP_WEAPONS[a.game]
+        scnr = HP._scnr_base(m)
+        poff, pes = lay['palette']
+        pc = max(0, m.i32(scnr + poff))
+        pbase = HP._block_base(m, scnr + poff)
+        for i in range(pc):
+            nm = HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+            if nm:
+                a.load_always.append(str(nm).rsplit('\\', 1)[-1])
+        print('  palette gives %d weapon(s)' % pc)
+
     if a.load_always:
         if a.bak:
             raise SystemExit('refusing to write the .bak baseline; drop --bak')
