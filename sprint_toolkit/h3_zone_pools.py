@@ -129,7 +129,43 @@ def chunks_by_tag(m, zone_base):
     return out
 
 
-def load_always(m, zone_base, want, whole_donor=False):
+PLAY_SEGMENTS = 0x3C
+PLAY_SEG_ELEM = 0x10
+
+
+def _play_base(m):
+    t = next((t for t in m.tags if t.get('class') == 'play'), None)
+    return t['base'] if t else None
+
+
+def unresolved_tags(m, zone_base):
+    """Tag rows that own at least one chunk whose segment names no page.
+
+    Marking such a tag resident tells the engine to load a chunk that has no bytes
+    behind it. That is the difference between the run that worked and the runs that
+    did not: the successful one left those tags alone.
+    """
+    pb = _play_base(m)
+    if pb is None:
+        return set()
+    sbase = HP._block_base(m, pb + PLAY_SEGMENTS)
+    scount = m.i32(pb + PLAY_SEGMENTS)
+    n = m.i32(zone_base + TAG_RESOURCES)
+    base = HP._block_base(m, zone_base + TAG_RESOURCES)
+    bad = set()
+    for i in range(max(0, n)) if base else []:
+        e = base + i * TR_ELEM
+        seg = struct.unpack_from('<h', m.data, e + 0x22)[0]
+        ok = False
+        if sbase and 0 <= seg < scount:
+            p, s = struct.unpack_from('<hh', m.data, sbase + seg * PLAY_SEG_ELEM)
+            ok = p >= 0 or s >= 0
+        if not ok:
+            bad.add(m.u32(e + 0xC) & 0xFFFF)
+    return bad
+
+
+def load_always(m, zone_base, want, whole_donor=False, only_resolved=False):
     """Try to make `want` resident everywhere by setting its bits in GLOBAL.
 
     Default is a NARROW fold: only the weapon's own tag family (every tag whose path
@@ -181,6 +217,12 @@ def load_always(m, zone_base, want, whole_donor=False):
 
     family = [t['index'] for t in m.tags
               if t.get('name') and want.lower() in str(t['name']).lower()]
+    dropped = 0
+    if only_resolved:
+        bad = unresolved_tags(m, zone_base)
+        before = len(family)
+        family = [r for r in family if r not in bad]
+        dropped = before - len(family)
     owned = chunks_by_tag(m, zone_base)
     chunk_ids = [c for r in family for c in owned.get(r, [])]
 
@@ -200,7 +242,8 @@ def load_always(m, zone_base, want, whole_donor=False):
     _write_pool(m, gelem, ZS_REQUIRED_TAG_POOL, tags)
     _write_pool(m, gelem, ZS_REQUIRED_RAW_POOL, raws)
     return {'ok': True, 'weapon': want, 'mode': 'narrow', 'family': len(family),
-            'chunks': len(chunk_ids), 'tags_added': added_t, 'raw_added': added_r}
+            'left_unresolved': dropped, 'chunks': len(chunk_ids),
+            'tags_added': added_t, 'raw_added': added_r}
 
 
 def main(argv=None):
@@ -218,6 +261,9 @@ def main(argv=None):
                          'KNOWN BROKEN -- see the module docstring; needs --i-know.')
     ap.add_argument('--i-know', action='store_true',
                     help='acknowledge that --load-always has failed in-game twice')
+    ap.add_argument('--only-resolved', action='store_true',
+                    help='do not mark resident any tag that owns a chunk with no page '
+                         'behind it -- the engine would try to load nothing')
     ap.add_argument('--whole-donor', action='store_true',
                     help='the blunt fold: OR an entire donor zone set into GLOBAL. On '
                          'sc150 this black-screened the map after the intro.')
@@ -248,7 +294,8 @@ def main(argv=None):
                 'error on load). The zone-set bits do not mean what they appear to.\n'
                 'Read the module docstring; pass --i-know to try anyway.')
         for want in a.load_always:
-            r = load_always(m, zb, want, whole_donor=a.whole_donor)
+            r = load_always(m, zb, want, whole_donor=a.whole_donor,
+                            only_resolved=a.only_resolved)
             print('  load-always %-18s %s' % (want, r))
         m.save(path)
         after = [(lab, _pool(m, e, ZS_REQUIRED_TAG_POOL)) for lab, e in zonesets(m, zb)]
