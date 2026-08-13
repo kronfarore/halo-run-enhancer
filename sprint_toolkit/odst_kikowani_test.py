@@ -327,7 +327,7 @@ def repalette_nearest(m, want, donor=None):
     return best
 
 
-def stock_nearest(m, wanted):
+def stock_nearest(m, wanted, lift=0.0):
     """Put the chosen weapons on the level's own nearest weapon spawns.
 
     The delivery route that actually works. The starting profile can only grant a
@@ -371,8 +371,15 @@ def stock_nearest(m, wanted):
         was = struct.unpack_from('<h', m.data, e + lay['palette_index'])[0]
         pos = struct.unpack_from('<fff', m.data, e + HP._EQ_POS)
         struct.pack_into('<h', m.data, e + lay['palette_index'], short.index(want.lower()))
-        print('    spawn[%d] %.0fu out at (%.1f, %.1f, %.1f):  %s -> %s'
+        if lift:
+            # Weapons do not settle under gravity, so a model whose shape clips the
+            # rack it sits on can fail to spawn where a differently shaped one is fine.
+            # The spartan laser refuses the 23u spawn that takes the rocket launcher,
+            # and its bounding radius is SMALLER (0.215 vs 0.250), so size is not it.
+            struct.pack_into('<f', m.data, e + HP._EQ_POS + 8, pos[2] + lift)
+        print('    spawn[%d] %.0fu out at (%.1f, %.1f, %.1f%s):  %s -> %s'
               % (i, math.dist(pos, REAL), pos[0], pos[1], pos[2],
+                 ' +%.2f' % lift if lift else '',
                  short[was] if 0 <= was < pc else '?', want))
         out.append((i, want))
     return out
@@ -564,6 +571,9 @@ def main(argv=None):
     ap.add_argument('--stock', metavar='W1,W2',
                     help='put these weapons on the level\'s nearest weapon spawns, '
                          'closest first -- the delivery route that works')
+    ap.add_argument('--stock-lift', type=float, default=0.0,
+                    help='raise stocked weapons by this many units, to test whether a '
+                         'model is clipping the surface it is placed on')
     ap.add_argument('--swap', metavar='OLD=NEW', action='append', default=[],
                     help='repalette every placement holding OLD to NEW. Repeatable. '
                          'A health check on the repalette path when NEW is a weapon '
@@ -624,7 +634,8 @@ def main(argv=None):
         write_weapons(m, reg, which)
     if not a.no_equipment:
         write_equipment(m)
-    stocked = (stock_nearest(m, [w.strip() for w in a.stock.split(',') if w.strip()])
+    stocked = (stock_nearest(m, [w.strip() for w in a.stock.split(',') if w.strip()],
+                             a.stock_lift)
                if a.stock else None)
     swapped = swap_spawns(m, a.swap) if a.swap else None
     repal = (repalette_nearest(m, a.repalette, a.repalette_donor)
