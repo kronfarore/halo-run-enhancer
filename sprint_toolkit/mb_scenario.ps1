@@ -8,12 +8,18 @@
 #
 # Guerilla is a GUI, so this drives Bungie's own ManagedBlam API instead.
 #
-# INITIALISATION MATTERS. Calling ManagedBlamSystem.InitializeProject() on its own
-# crashes with "Assert hit ... result < 1ull << 32" -- its memory system is never
-# configured. The working sequence is Start(projectRoot, crashCallback, parameters)
-# with InitializationLevel = TagsOnly. The callback is a real delegate, which Windows
-# PowerShell 5.1 cannot build from a scriptblock, so the work is done in C# compiled
-# by Add-Type and this file is only a thin wrapper.
+# STATUS: DOES NOT WORK against the H3ODSTEK build. Both Start() overloads throw
+# NotImplementedException, and while InitializeProject(TagsOnly, root) returns fine,
+# the next TagFile.Load kills the process natively -- no .NET exception, the script
+# just stops. Interactively it shows "Assert hit ... result < 1ull << 32".
+# Untried lead: ManagedBlamSystem.kVirtualToPhysicalBaseOffset, since the assert is
+# about a value not fitting in 32 bits. Until that is cracked, edit the scenario in
+# Guerilla instead; the rebuild half of the pipeline works fine.
+#
+# Two sub-problems ARE solved here and are worth keeping: the crash callback has to be
+# a real delegate (Windows PowerShell 5.1 cannot make one from a scriptblock, hence the
+# C# via Add-Type), and managedblam must be bound with an AssemblyResolve handler
+# because .NET resolves it against the host's directory, not the kit's.
 #
 #   powershell -File mb_scenario.ps1 -Action fields -Scenario levels\atlas\sc150\sc150
 #   powershell -File mb_scenario.ps1 -Action list   -Scenario ... -Block "weapon palette"
@@ -25,6 +31,7 @@ param(
     [string]$Block = 'weapon palette',
     [string[]]$Entries = @(),
     [string]$Type = 'weap',
+    [string]$Filter = '',
     [string]$EK = 'C:\Program Files (x86)\Steam\steamapps\common\H3ODSTEK'
 )
 
@@ -52,13 +59,41 @@ public static class MBScenario
         Console.WriteLine("   ManagedBlam crash callback: " + info);
     }
 
-    public static void Start(string projectRoot)
+    // This build does not implement every entry point: the three-argument Start throws
+    // NotImplementedException, and InitializeProject on its own asserts
+    // "result < 1ull << 32". So try them in order and report which one takes, rather
+    // than assuming.
+    public static string Start(string projectRoot)
     {
-        if (started) return;
-        var p = new ManagedBlamStartupParameters();
-        p.InitializationLevel = InitializationType.TagsOnly;
-        ManagedBlamSystem.Start(projectRoot, new ManagedBlamCrashCallback(OnCrash), p);
+        if (started) return "already started";
+        var log = new StringBuilder();
+        var cb = new ManagedBlamCrashCallback(OnCrash);
+
+        try
+        {
+            var p = new ManagedBlamStartupParameters();
+            p.InitializationLevel = InitializationType.TagsOnly;
+            ManagedBlamSystem.Start(projectRoot, cb, p);
+            started = true;
+            return "started via Start(root, callback, parameters)";
+        }
+        catch (Exception e) { log.AppendLine("   Start(root,cb,params): " + e.GetType().Name); }
+
+        try
+        {
+            ManagedBlamSystem.Start(projectRoot, cb);
+            started = true;
+            return log + "started via Start(root, callback)";
+        }
+        catch (Exception e) { log.AppendLine("   Start(root,cb): " + e.GetType().Name); }
+
+        // Both Start overloads are NotImplemented in the H3ODSTEK build, so
+        // InitializeProject is the real entry point -- and it pops a modal
+        // "Assert hit ... result < 1ull << 32" dialog. Click OK, then decline the
+        // debugger, and it carries on. Nothing is written by a read action.
+        ManagedBlamSystem.InitializeProject(InitializationType.TagsOnly, projectRoot);
         started = true;
+        return log + "started via InitializeProject(TagsOnly, root)";
     }
 
     static TagFile Open(string scenario)
@@ -72,10 +107,17 @@ public static class MBScenario
     public static string Fields(string scenario, string filter)
     {
         var sb = new StringBuilder();
+        var tp = TagPath.FromPathAndType(scenario, "scnr*");
+        sb.AppendLine("   tagpath   : " + tp.RelativePathWithExtension);
+        sb.AppendLine("   accessible: " + tp.IsTagFileAccessible());
         var f = Open(scenario);
         try
         {
-            foreach (var fld in f.Root.Fields)
+            sb.AppendLine("   file.Fields: " + (f.Fields == null ? "null" : f.Fields.Length.ToString()));
+            sb.AppendLine("   root       : " + (f.Root == null ? "null" : "ok"));
+            if (f.Root != null)
+                sb.AppendLine("   root.Fields: " + (f.Root.Fields == null ? "null" : f.Root.Fields.Length.ToString()));
+            foreach (var fld in (f.Root != null ? f.Root.Fields : f.Fields))
             {
                 var n = fld.FieldName ?? "";
                 if (filter.Length == 0 || n.ToLower().Contains(filter.ToLower()))
@@ -137,11 +179,26 @@ public static class MBScenario
 }
 '@
 
-Add-Type -TypeDefinition $source -ReferencedAssemblies $dll -Language CSharp | Out-Null
-[MBScenario]::Start($EK)
+# The C# compiled below references managedblam by display name, and .NET resolves that
+# against the host's directory -- PowerShell's -- not the kit's. PATH does not affect
+# assembly resolution, so bind it explicitly or Start() fails with
+# "Could not load file or assembly 'managedblam'".
+[Reflection.Assembly]::LoadFrom($dll) | Out-Null
+$resolver = [System.ResolveEventHandler] {
+    param($sender, $e)
+    if ($e.Name -like 'managedblam*') { return [Reflection.Assembly]::LoadFrom($script:dll) }
+    return $null
+}
+[AppDomain]::CurrentDomain.add_AssemblyResolve($resolver)
 
+Add-Type -TypeDefinition $source -ReferencedAssemblies $dll -Language CSharp | Out-Null
+Write-Output ([MBScenario]::Start($EK))
+
+Write-Output "-- running action '$Action' on '$Scenario' --"
+try {
 switch ($Action) {
-    'fields' { Write-Output ([MBScenario]::Fields($Scenario, 'palette')) }
+    'fields' { Write-Output ([MBScenario]::Fields($Scenario, $Filter)) }
     'list'   { Write-Output ([MBScenario]::List($Scenario, $Block)) }
     'add'    { Write-Output ([MBScenario]::Add($Scenario, $Block, $Entries, $Type)) }
 }
+} catch { Write-Output ('ACTION FAILED: ' + $_.Exception.GetType().Name + ': ' + $_.Exception.Message) }
