@@ -203,44 +203,118 @@ def fix_huds(m, weapons, overrides=None):
     return done
 
 
-def make_placeable(m, weapons):
-    """Point unused Weapon Palette slots at weapons that are not in the palette.
+# Squads 0x3B8 elem 0x6C; each squad holds Designer Cells 0x54 and Templated Cells
+# 0x60, both 0x84 elements. A cell's Initial Weapon / Initial Secondary are one-entry
+# tagblocks holding an int16 palette INDEX at +0xC -- the SAME Weapon Palette the
+# placements index.
+_SQUADS = (0x3B8, 0x6C)
+_CELL_BLOCKS = ((0x54, 0x84), (0x60, 0x84))
+_CELL_WEAPON_FIELDS = (0x20, 0x2C)
+_CELL_IDX_AT = 0xC
 
-    Placements index the palette, so a weapon absent from it cannot be placed even
-    though a starting profile can still grant it. `tool` prunes palette entries no
-    placement references, which is why a restored weapon is missing from it after a
-    rebuild. Overwriting a slot the level never places costs one tagRef and no block
-    growth.
+
+def palette_in_use(m):
+    """Palette indices something already depends on: placements AND AI loadouts.
+
+    Repurposing a slot an enemy squad references would silently rearm the enemies --
+    the squad cells index this same palette, so "no placement uses it" is not enough
+    to call a slot free.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    used = set()
+    woff, wes = lay['weapons']
+    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
+    for i in range(max(0, wn)) if wbase else []:
+        used.add(struct.unpack_from('<h', m.data, wbase + i * wes)[0])
+    soff, ses = _SQUADS
+    sn, sbase = m.i32(scnr + soff), HP._block_base(m, scnr + soff)
+    for i in range(max(0, sn)) if sbase else []:
+        se = sbase + i * ses
+        for coff, ces in _CELL_BLOCKS:
+            cn, cbase = m.i32(se + coff), HP._block_base(m, se + coff)
+            for c in range(max(0, cn)) if cbase else []:
+                ce = cbase + c * ces
+                for foff in _CELL_WEAPON_FIELDS:
+                    fn, fbase = m.i32(ce + foff), HP._block_base(m, ce + foff)
+                    for k in range(max(0, fn)) if fbase else []:
+                        used.add(struct.unpack_from(
+                            '<h', m.data, fbase + k * 0x10 + _CELL_IDX_AT)[0])
+    used.discard(-1)
+    return used
+
+
+def grow_palette(m, datums):
+    """Relocate the Weapon Palette into partition slack and append entries.
+
+    Stealing "unused" slots cannot work: sc150 has 17 slots against 23 player weapons,
+    so every steal costs another weapon its place. Growing is the only way to have them
+    all, and H3 stores tagblock pointers as realVA>>2 through the partition table, so a
+    grown block has to move into an existing zero run rather than extend in place --
+    the same dance _append_equipment_palette does for equipment.
+
+    Returns {datum: new index}, or None if there is no run big enough.
     """
     lay = HP._MAP_WEAPONS[GAME]
     scnr = HP._scnr_base(m)
     poff, pes = lay['palette']
     pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
-    names = [str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + 0xC)) or '')
-             .rsplit('\\', 1)[-1].lower() for i in range(pc)]
-    woff, wes = lay['weapons']
-    used = set()
-    wn, wbase = m.i32(scnr + woff), HP._block_base(m, scnr + woff)
-    for i in range(max(0, wn)):
-        used.add(struct.unpack_from('<h', m.data, wbase + i * wes)[0])
-    spare = [i for i in range(pc) if i not in used]
-    done = []
+    if not pbase or not datums:
+        return {}
+    got = HP._h3_reserve(m, [(pc + len(datums)) * pes])
+    if got is None:
+        return None
+    dest = got[0]
+    m.data[dest:dest + pc * pes] = m.data[pbase:pbase + pc * pes]
+    tmpl = bytes(m.data[pbase:pbase + pes])          # a weap tagRef, for the group id
+    out = {}
+    for j, datum in enumerate(datums):
+        off = dest + (pc + j) * pes
+        m.data[off:off + pes] = tmpl
+        struct.pack_into('<I', m.data, off + lay['pal_id_at'], datum)
+        out[datum] = pc + j
+    struct.pack_into('<i', m.data, scnr + poff, pc + len(datums))
+    struct.pack_into('<I', m.data, scnr + poff + 4, m.off2data(dest))
+    return out
+
+
+def make_placeable(m, weapons):
+    """Give every named weapon a Weapon Palette entry, growing the block to fit.
+
+    A starting profile references a weapon by tagRef, but a PLACEMENT indexes the
+    palette -- so a weapon missing from it can be put in the player's hands and never
+    left on the ground. The palette is also what AI squad cells index, which is why
+    slots are never repurposed here: an apparently free slot may be what an enemy
+    carries, and 17 slots cannot hold 23 weapons anyway.
+    """
+    lay = HP._MAP_WEAPONS[GAME]
+    scnr = HP._scnr_base(m)
+    poff, pes = lay['palette']
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    have = {str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + 0xC)) or '')
+            .rsplit('\\', 1)[-1].lower() for i in range(pc)}
+    want, datums = [], []
     for w in weapons:
-        if w.lower() in names:
-            print('    palette %-14s already present' % w)
-            continue
-        if not spare:
-            print('    !! no unused palette slot left for %s' % w)
+        if w.lower() in have:
             continue
         wt = _weap(m, w)
         if not wt:
             continue
-        i = spare.pop(0)
-        datum = HP._h3_tag_datum(m, 'weap', str(wt['name']))
-        struct.pack_into('<I', m.data, pbase + i * pes + 0xC, datum)
-        print('    palette[%d] %s -> %s' % (i, names[i] or '(empty)', w))
-        done.append(w)
-    return done
+        d = HP._h3_tag_datum(m, 'weap', str(wt['name']))
+        if d is not None:
+            want.append(w)
+            datums.append(d)
+    if not want:
+        print('    palette: all %d weapon(s) already present' % len(weapons))
+        return []
+    added = grow_palette(m, datums)
+    if added is None:
+        print('    !! no partition slack to grow the palette; %d weapon(s) stay '
+              'grant-only: %s' % (len(want), ', '.join(want)))
+        return []
+    print('    palette: grew %d -> %d, added %s'
+          % (pc, pc + len(want), ', '.join(want)))
+    return want
 
 
 def report(m, zone_base, weapons):
@@ -326,8 +400,10 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
     print('    residency: %d weapon(s), %d tag bit(s) added' % (len(wanted), added))
 
     fix_huds(m, ok, hud_overrides)
-    if placeable:
-        make_placeable(m, [w for w in placeable if w in ok])
+    # Every weapon should be placeable, not just grantable: a starting profile
+    # uses a tagRef but a placement indexes the palette, so a weapon missing from
+    # it can be handed to the player but never left on the ground.
+    make_placeable(m, [w for w in (placeable or ok) if w in ok])
 
     m.save(path)
     # .bak must carry the same preparation, or the first patch rebuilds without it.
@@ -349,8 +425,8 @@ def main(argv=None):
     ap.add_argument('--skip-build', action='store_true',
                     help='the map is already built and installed')
     ap.add_argument('--verify-only', action='store_true', help='report, change nothing')
-    ap.add_argument('--placeable', help='comma list: also give these a palette slot, '
-                                        'so they can be placed as well as granted')
+    ap.add_argument('--placeable', help='comma list to limit which weapons get a '
+                                        'palette slot; default is every one that can')
     ap.add_argument('--hud', metavar='WEAPON=CHUD', action='append', default=[],
                     help='force a HUD donor instead of the magnification-matched pick')
     a = ap.parse_args(argv)
