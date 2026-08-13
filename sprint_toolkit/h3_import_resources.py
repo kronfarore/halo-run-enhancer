@@ -88,25 +88,38 @@ class Cache:
         return (shared, off, comp, unc)
 
 
-def in_map_gaps(cache):
-    """(offset, size) of the padding between in-map raw pages.
+BLOCK = 0x1000
+# Never place a borrowed page in the first 64 KB: the run of zeroes at 0x1000 is header
+# space, not free space, and the header is the last thing worth corrupting.
+HEADER_GUARD = 0x10000
 
-    Raw pages are block-aligned, so a page holding 23 bytes still owns its whole
-    block. That padding is dead space inside the file, which is where a borrowed page
-    can be written without appending to the file or moving anything.
+
+def in_map_gaps(cache):
+    """0x1000-aligned, verified all-zero runs where a borrowed raw page can live.
+
+    The first version of this looked at the space between the compressed extents of
+    consecutive in-map pages and treated it as padding. It is not: sc150 has NO such
+    gap that is both aligned and empty, so that write landed on live data and the map
+    was rejected -- the level loaded and bounced straight back to the main menu.
+
+    This scans the whole file for genuinely empty aligned blocks instead. The window
+    just past the raw data is full on sc150, and the low run at 0x1000 is header space,
+    so the search starts at HEADER_GUARD and takes the largest run -- on sc150 that is
+    36 KB of zero padding at the tail of the last partition (233615360).
     """
-    spans = []
-    for i in range(cache.page_count):
-        p = cache.page(i)
-        if p and p[0] < 0 and p[2] > 0:
-            spans.append((p[1], p[1] + p[2]))
-    spans.sort()
-    gaps, prev = [], None
-    for start, end in spans:
-        if prev is not None and start > prev:
-            gaps.append((prev, start - prev))
-        prev = max(prev or 0, end)
-    return gaps
+    data = cache.m.data
+    runs, start = [], None
+    for off in range(HEADER_GUARD, (len(data) // BLOCK) * BLOCK, BLOCK):
+        if any(data[off:off + BLOCK]):
+            if start is not None:
+                runs.append((start, off - start))
+                start = None
+        elif start is None:
+            start = off
+    if start is not None:
+        runs.append((start, len(data) - start))
+    runs.sort(key=lambda r: -r[1])
+    return runs
 
 
 def orphan_pages(cache):
@@ -131,20 +144,18 @@ def import_page(dst, src, page_index, gaps, orphans):
     # borrowed page is a plausible way to make the engine reject the map.
     spot, off = None, None
     for g in gaps:
-        start = (g[0] + 0xFFF) & ~0xFFF
-        if start + size > g[0] + g[1]:
+        if g[1] < size:
             continue
-        if any(dst.m.data[start:start + size]):
+        if any(dst.m.data[g[0]:g[0] + size]):
             continue                       # not actually free -- something lives here
-        spot, off = g, start
+        spot, off = g, g[0]
         break
     if spot is None or not orphans:
         return None
     gaps.remove(spot)
-    tail = spot[0] + spot[1] - (off + size)
-    if tail > 64:
-        gaps.append((off + size, tail))
-        gaps.sort()
+    used = (size + BLOCK - 1) // BLOCK * BLOCK        # keep the next page aligned too
+    if spot[1] - used >= BLOCK:
+        gaps.insert(0, (off + used, spot[1] - used))
     dst.m.data[off:off + size] = src.m.data[sp[1]:sp[1] + size]
     new_index = orphans.pop(0)
     # Copy the donor's whole record -- hashes and CRC come along unchanged because the
