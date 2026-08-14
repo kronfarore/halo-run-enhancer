@@ -397,7 +397,25 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
     for w in wanted:
         r = Z.load_always(m, zb, w, only_resolved=True)
         added += r.get('tags_added', 0) if r.get('ok') else 0
-    print('    residency: %d weapon(s), %d tag bit(s) added' % (len(wanted), added))
+    # Equipment is refused by object_new for exactly the same reason weapons were:
+    # only the grenades ship resident, so a prepared map would place grenades and
+    # nothing else. Every eqip tag whose model has geometry gets the same treatment.
+    owned = Z.chunks_by_tag(m, zb)
+    eqip = []
+    for t in m.tags:
+        if t.get('class') != 'eqip' or not t.get('name'):
+            continue
+        base = str(t['name']).rsplit('\\', 1)[-1]
+        stem = base[:-10] if base.endswith('_equipment') else base
+        models = [x for x in m.tags if x['class'] == 'mode'
+                  and stem.lower() in (x.get('name') or '').lower()]
+        if any(owned.get(x['index']) for x in models):
+            eqip.append(base)
+    for e in sorted(set(eqip)):
+        r = Z.load_always(m, zb, e, only_resolved=True, cls='eqip')
+        added += r.get('tags_added', 0) if r.get('ok') else 0
+    print('    residency: %d weapon(s), %d equipment, %d tag bit(s) added'
+          % (len(wanted), len(set(eqip)), added))
 
     fix_huds(m, ok, hud_overrides)
     # Every weapon should be placeable, not just grantable: a starting profile

@@ -166,7 +166,7 @@ def unresolved_tags(m, zone_base):
 
 
 def load_always(m, zone_base, want, whole_donor=False, only_resolved=False,
-                classes=None):
+                classes=None, cls='weap'):
     """Try to make `want` resident everywhere by setting its bits in GLOBAL.
 
     Default is a NARROW fold: only the weapon's own tag family (every tag whose path
@@ -187,11 +187,14 @@ def load_always(m, zone_base, want, whole_donor=False, only_resolved=False,
     gi = next((i for i, lab in enumerate(labels) if lab.startswith('GLOBAL')), None)
     if gi is None:
         return {'ok': False, 'reason': 'no GLOBAL zone set'}
+    # `cls` because equipment needs exactly the same treatment as weapons: an eqip tag
+    # whose residency bit is clear is refused by object_new just the same, which is why
+    # a prepared map would place grenades and nothing else.
     row = next((t['index'] for t in m.tags
-                if t.get('class') == 'weap' and t.get('name')
+                if t.get('class') == cls and t.get('name')
                 and str(t['name']).rsplit('\\', 1)[-1].lower() == want.lower()), None)
     if row is None:
-        return {'ok': False, 'reason': '%s has no weap tag in this map' % want}
+        return {'ok': False, 'reason': '%s has no %s tag in this map' % (want, cls)}
     gelem = sets[gi][1]
 
     if whole_donor:
