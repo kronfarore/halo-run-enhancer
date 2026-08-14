@@ -56,10 +56,27 @@ HUD_DONORS = ('assault_rifle', 'smg_silenced', 'automag', 'battle_rifle',
               'needler', 'brute_shot', 'sniper_rifle', 'carbine')
 
 
+def _holdable(m, t):
+    """True if this weap tag has a first-person model, i.e. a player can hold it."""
+    blk = HP._block_base(m, t['base'] + WEAP_FIRST_PERSON)
+    n = m.i32(t['base'] + WEAP_FIRST_PERSON)
+    return bool(blk and n > 0 and m.u32(blk + 0xC) != 0xFFFFFFFF)
+
+
 def _weap(m, base):
-    """The weap tag whose filename is exactly `base`."""
-    return next((t for t in m.tags if t.get('class') == 'weap' and t.get('name')
-                 and str(t['name']).rsplit('\\', 1)[-1].lower() == base.lower()), None)
+    """The weap tag named `base`, preferring the one a player can actually hold.
+
+    Basenames are NOT unique. sc100 carries two weap tags called `flak_cannon` --
+    `objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon` and
+    `objects\\weapons\\support_high\\flak_cannon\\flak_cannon` -- and taking the first
+    match found the Hunter's, which has no first-person animation, so a perfectly
+    healthy weapon was reported as having no geometry.
+    """
+    hits = [t for t in m.tags if t.get('class') == 'weap' and t.get('name')
+            and str(t['name']).rsplit('\\', 1)[-1].lower() == base.lower()]
+    if not hits:
+        return None
+    return next((t for t in hits if _holdable(m, t)), hits[0])
 
 
 def geometry(m, zone_base, base):
