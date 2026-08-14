@@ -131,6 +131,69 @@ def ek_weapon_universe():
     return sorted(found)
 
 
+def ek_equipment_universe():
+    """Deployable-equipment pickups the Editing Kit can supply.
+
+    `objects\\equipment\\<name>_equipment\\<name>_equipment.equipment` is the PICKUP --
+    the thing that gets placed and collected -- while `objects\\equipment\\<name>\\<name>`
+    is the deployed object it turns into. The pickup is what a level needs in order to
+    offer the piece, so that is what is reported. Multiplayer and special variants
+    (_mp, _hc, _permanent) are left out.
+    """
+    root = os.path.join(EK.EK, 'tags', 'objects', 'equipment')
+    found = set()
+    for dirpath, _dirs, files in os.walk(root):
+        for f in files:
+            if not f.lower().endswith('.equipment'):
+                continue
+            stem = f[:-10]
+            if not stem.lower().endswith('_equipment'):
+                continue
+            if stem.lower().endswith(('_mp', '_hc', '_permanent')):
+                continue
+            found.add(stem)
+    return sorted(found)
+
+
+def equipment_report(m, zone_base):
+    """Per deployable-equipment piece: is it here, does it have geometry, is it
+    resident, is it in the equipment palette. Mirrors the weapon table so a Guerilla
+    session can fix weapons and equipment in one pass.
+    """
+    owned = Z.chunks_by_tag(m, zone_base)
+    g = [e for lab, e in Z.zonesets(m, zone_base) if lab.startswith('GLOBAL')][0]
+    pool = Z._pool(m, g, Z.ZS_REQUIRED_TAG_POOL)
+    lay = HP._MAP_EQUIPMENT[GAME]
+    scnr = HP._scnr_base(m)
+    poff, pes = lay['palette']
+    pc, pbase = max(0, m.i32(scnr + poff)), HP._block_base(m, scnr + poff)
+    pal = {str(HP._tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) or '')
+           .rsplit('\\', 1)[-1].lower() for i in range(pc)}
+    here = {str(t['name']).rsplit('\\', 1)[-1].lower(): t for t in m.tags
+            if t.get('class') == 'eqip' and t.get('name')}
+
+    print('    %-24s %-9s %-9s %s' % ('equipment', 'geometry', 'resident', 'palette'))
+    absent, ok = [], True
+    for name in ek_equipment_universe():
+        t = here.get(name.lower())
+        if t is None:
+            absent.append(name)
+            continue
+        stem = name[:-len('_equipment')]
+        chunks = sum(len(owned.get(x['index'], [])) for x in m.tags
+                     if x['class'] == 'mode' and stem.lower() in (x.get('name') or '').lower())
+        res = Z._has(pool, t['index'])
+        good = bool(chunks and res)
+        ok &= good
+        print('    %-24s %-9s %-9s %-8s %s'
+              % (name, 'm%d' % chunks, 'yes' if res else 'NO',
+                 'yes' if name.lower() in pal else 'no', '' if good else '<-- check'))
+    if absent:
+        print('    not in this map at all (add in Guerilla alongside the weapons): %s'
+              % ', '.join(absent))
+    return ok, absent
+
+
 def present(m, zone_base):
     """Player weapons in this map, split by whether they actually have geometry."""
     ok, missing = [], []
@@ -382,6 +445,7 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
               'any you want): %s' % ', '.join(absent))
     if verify_only:
         report(m, zb, ok + missing)
+        equipment_report(m, zb)
         return not missing
 
     # Residency: every palette weapon, plus the restored ones (which are not in the
@@ -430,7 +494,10 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
     print('    saved, and .bak updated to match')
 
     m2 = HP.open_map(path, GAME)
-    good = report(m2, Z._zone_tag(m2)['base'], ok)
+    zb2 = Z._zone_tag(m2)['base']
+    good = report(m2, zb2, ok)
+    eq_ok, _eq_absent = equipment_report(m2, zb2)
+    good = good and eq_ok
     print('  %s: %s' % (name, 'READY' if good and not missing else 'NEEDS ATTENTION'))
     return good and not missing
 
