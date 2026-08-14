@@ -45,6 +45,8 @@ GAME = 'Halo 3: ODST'
 WEAP_HUD = 0x418                    # weap "HUD Interface" tagRef; datum at +0xC
 WEAP_FIRST_PERSON = 0x40C           # block; a player weapon has an fp model here
 WEAP_MAGNIFICATION = 0x32E          # int16 "Magnification Levels" -- 0 means no scope
+WEAP_MODEL = 0x34                   # tagRef to the hlmt
+HLMT_RENDER_MODEL = 0x0             # tagRef to the mode inside that hlmt
 
 # Preference order when a weapon needs a borrowed HUD. Only donors with the SAME
 # magnification level count are eligible, so a weapon without a scope never inherits a
@@ -87,20 +89,31 @@ def geometry(m, zone_base, base):
     what black-screens the game, so this is the gate everything else hangs off.
     """
     owned = Z.chunks_by_tag(m, zone_base)
+    wt = _weap(m, base)
+
+    def chunks_of(tag_id):
+        return len(owned.get(tag_id & 0xFFFF, [])) if tag_id != 0xFFFFFFFF else 0
+
+    # Follow the model reference rather than matching names. A variant reuses the base
+    # weapon's model -- l300 carries rocket_launcher_vm, the Vidmaster launcher, whose
+    # own folder holds no `mode` at all -- so counting models by name reports zero and
+    # condemns a weapon that is perfectly fine.
     mode = 0
-    # Match a whole path segment, not a substring: `smg` must not sweep in
-    # `smg_silenced`, which is a different weapon that is always present.
-    want = {base.lower(), 'fp_' + base.lower(), 'lod_' + base.lower()}
-    for t in m.tags:
-        nm = (t.get('name') or '').lower()
-        if (want & set(nm.split('\\'))) and t['class'] == 'mode':
-            mode += len(owned.get(t['index'], []))
+    if wt:
+        hlmt_id = m.u32(wt['base'] + WEAP_MODEL + 0xC)
+        if hlmt_id != 0xFFFFFFFF:
+            ht = m.tag(hlmt_id & 0xFFFF) if hasattr(m, 'tag') else None
+            if ht and ht.get('base'):
+                mode += chunks_of(m.u32(ht['base'] + HLMT_RENDER_MODEL + 0xC))
+        blk = HP._block_base(m, wt['base'] + WEAP_FIRST_PERSON)
+        n = m.i32(wt['base'] + WEAP_FIRST_PERSON)
+        for i in range(max(0, n)) if blk else []:
+            mode += chunks_of(m.u32(blk + i * 0x20 + 0xC))      # First Person Model
     # Animations must be followed, not name-matched: a variant shares another weapon's
     # graph -- plasma_rifle_red animates from fp_plasma_rifle, sentinel_gun from
     # fp_sentinel_beam -- so counting jmad chunks under its own name reports zero and
     # looks broken when it is perfectly fine.
     jmad = 0
-    wt = _weap(m, base)
     if wt:
         blk = HP._block_base(m, wt['base'] + WEAP_FIRST_PERSON)
         n = m.i32(wt['base'] + WEAP_FIRST_PERSON)
