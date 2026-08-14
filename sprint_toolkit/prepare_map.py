@@ -219,9 +219,13 @@ def equipment_report(m, zone_base):
               % (name, 'm%d' % chunks, 'yes' if res else 'NO',
                  'yes' if name.lower() in pal else 'no', '' if good else '<-- check'))
     if absent:
-        print('    not in this map at all (add in Guerilla alongside the weapons): %s'
-              % ', '.join(absent))
-    return ok, absent
+        print('    MISSING from this map: %s' % ', '.join(absent))
+        print('    -- a run that offers one of those has nothing to place, so the '
+              'level is not finished')
+    # Absent equipment counts against the level. It used to be reported and ignored,
+    # which let sc150 pass as "ready" while four pieces the enhancer offers could never
+    # appear on it.
+    return (ok and not absent), absent
 
 
 def present(m, zone_base):
@@ -474,9 +478,9 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
         print('  not in this map at all (add a starting profile in Guerilla to restore '
               'any you want): %s' % ', '.join(absent))
     if verify_only:
-        report(m, zb, ok + missing)
-        equipment_report(m, zb)
-        return not missing
+        w_ok = report(m, zb, ok + missing)
+        eq_ok, _absent = equipment_report(m, zb)
+        return w_ok and eq_ok and not missing
 
     # Residency: every palette weapon, plus the restored ones (which are not in the
     # palette). --only-resolved is what keeps a tag with a dead chunk out of the pool.
