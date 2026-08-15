@@ -25,7 +25,7 @@ except ImportError as e:
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
 # bump only the last component for changes; the middle 2 becomes 3 only when
 # support reaches the next Halo game. Stamped into saved runs and patch logs.
-VERSION = "0.3.120"
+VERSION = "0.3.121"
 
 
 def resource_path(filename):

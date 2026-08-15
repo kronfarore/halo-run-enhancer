@@ -283,7 +283,7 @@ class Halo2Map:
             return None
 
     def apply_tag_field(self, tag_base, field, op, value, plugin, block=None, index=0, nth=0,
-                        scale=1.0, offset=0.0):
+                        scale=1.0, offset=0.0, clamp_min=None, clamp_max=None):
         """Apply an operator to a tag field. Returns a result dict mirroring
         halo_map.HaloMap.apply_field entries (ok/old/new or ok=False/reason)."""
         base_r = {'field': field}
@@ -304,7 +304,16 @@ class Halo2Map:
                 old = hm.raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
                 # operate in display units (deg for angles), in the MEANING the
                 # magnitude is expressed in, then map back (see HaloMap.apply_field)
-                new = (hm.OP_FUNCS[op](scale * old + offset, value) - offset) / scale
+                meaning = hm.OP_FUNCS[op](scale * old + offset, value)
+                # Clamp in MEANING units, exactly as HaloMap does. Without these the
+                # bounds declared in halo.json applied to Halo 1 only, and passing them
+                # to this class raised "unexpected keyword argument 'clamp_min'" --
+                # which broke patching for Halo 2, Halo 3 and ODST outright.
+                if clamp_min is not None:
+                    meaning = max(meaning, clamp_min)
+                if clamp_max is not None:
+                    meaning = min(meaning, clamp_max)
+                new = (meaning - offset) / scale
                 new = float(new) if is_float else int(round(new))
                 struct.pack_into(fmt, self.data, off, hm.display_to_raw(ftype, new))
                 if first_old is None:
@@ -515,7 +524,7 @@ class Halo2Map:
         return None
 
     def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
-                    scale=1.0, offset=0.0):
+                    scale=1.0, offset=0.0, clamp_min=None, clamp_max=None):
         ref = f"{cls} {path}"
         tags = self.find_tags(cls, path)
         if not tags:
@@ -534,7 +543,7 @@ class Halo2Map:
                 if follow_parents else base
             if holder is None:
                 r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth,
-                                          scale, offset)
+                                          scale, offset, clamp_min, clamp_max)
                 if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
                     # variant inherits this block from outside its own tag set (e.g. the
                     # shared ai\generic base) — not a failure, just nothing to write here.
@@ -545,7 +554,8 @@ class Halo2Map:
             if holder not in applied:
                 applied[holder] = self.apply_tag_field(holder, field, op, value, plugin,
                                                        block, index, nth,
-                                                       scale, offset)
+                                                       scale, offset,
+                                                       clamp_min, clamp_max)
             hr = applied[holder]
             r = dict(hr)
             r['tag'] = f"{cls} {tpath}"
