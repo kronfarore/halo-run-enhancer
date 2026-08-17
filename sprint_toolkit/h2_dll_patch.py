@@ -138,8 +138,56 @@ PATCHES = {
         'patched': bytes.fromhex('90' * 7),
         'note': "Arbiter camo fix, PART 2 of 2 (apply with no-camo-grant)",
     },
+    'per-player-flashlight': {
+        'offset': 0x93ED10,            # VA 0x18093F910, the whole predicate
+        # THE REPLACEMENT FOR p2-vision-trigger -- revert that one first.
+        #
+        # p2-vision-trigger read the LOCAL INPUT array, and that was the wrong source.
+        # `player_action_test_*` state is local controller state: in networked co-op a
+        # remote player's presses never enter the local machine's array at all, so slot 1
+        # stays zero forever and player 2 is permanently dead. Halo 1 does not have this
+        # problem because unit_get_current_flashlight_state reads the UNIT, and unit state
+        # replicates. This makes Halo 2 read the unit too.
+        #
+        # `player_flashlight_on` (+789160 -> +69C600) gave up the field: it walks the
+        # player list, resolves each player's unit through the object table, and does
+        #     movss   xmm0, [unit+0x278]
+        #     ucomiss xmm0, [rip+...]        ; the constant is 1.0
+        #     je      -> true
+        # So unit+0x278 is the flashlight, 1.0 = on.
+        #
+        # The stock predicate for `unit_get_enterable_by_player` ALREADY resolves the
+        # <unit> argument through that same object table (+8D7000) -- it just finishes by
+        # reading a flag bit at unit+0x138. So only the tail changes, and the engine's own
+        # handle resolution is reused rather than reimplemented:
+        #     movss xmm0,[rax+0x278] / ucomiss xmm0,[rip+0x2F2ED3] / sete al
+        # The invalid-unit branch is flipped from `mov al,1` to `xor al,al`, so a bad unit
+        # answers FALSE and cannot trigger an ability.
+        #
+        # The whole 0x50-byte function is written as ONE site so the patch verifies as a
+        # unit. It fits exactly: the new code ends at 0x18093F960, using all 7 bytes of
+        # the int3 padding, and the next function begins there.
+        #
+        # The verb is now genuinely per unit, so the script passes (player0) or (player1)
+        # and both players are read the same way -- symmetric with Halo 1, and safe to
+        # edge-detect, since this is a state rather than a latch that something must clear.
+        'original': bytes.fromhex(
+            '4883ec2883f9ff7439488b05787af700488b50484885d274064c8d0402eb03'
+            '4533c00fb7c9488d0449498d0c80e8be76f9ff8b8038010000c1e80c240148'
+            '83c428c3b0014883c428c3cccccccccccccc'),
+        'patched': bytes.fromhex(
+            '4883ec2883f9ff7440488b05787af700488b50484885d274064c8d0402eb03'
+            '4533c00fb7c9488d0449498d0c80e8be76f9fff30f1080780200000f2e05d3'
+            '2e2f000f94c04883c428c332c04883c428c3'),
+        'note': 'unit_get_enterable_by_player reads THAT UNIT\'s flashlight (replicates)',
+    },
     'p2-vision-trigger': {
         'offset': 0x93ED10,            # VA 0x18093F910
+        # SUPERSEDED by per-player-flashlight -- kept only so an install that already has
+        # it can revert. Do not apply: it reads the local input array, which never carries
+        # a remote player's presses, so player 2 is inert in networked co-op. Confirmed in
+        # game 2026-08-10. The two patches overlap, so only one can be applied at a time.
+        'superseded_by': 'per-player-flashlight',
         # PER-PLAYER INPUT FOR HALO 2. The script API cannot tell the two co-op players
         # apart: every `player_action_test_*` verb takes no argument, and there is no
         # equivalent of Halo 1's `unit_get_current_flashlight_state <unit>`. So one
@@ -213,9 +261,16 @@ def _read(path):
 
 
 def state_of(name, d=None, path=DLL):
-    """'APPLIED', 'not applied', 'PARTIAL' or 'UNRECOGNISED'. A multi-site fix is only
-    APPLIED when every one of its sites is."""
+    """'APPLIED', 'not applied', 'PARTIAL', 'superseded' or 'UNRECOGNISED'. A multi-site
+    fix is only APPLIED when every one of its sites is.
+
+    Two patches may occupy the same bytes -- per-player-flashtlight replaced
+    p2-vision-trigger in place. The older one then matches neither of its own forms, which
+    is correct but reads as damage, so it is reported as superseded instead of alarming."""
     d = _read(path) if d is None else d
+    sup = PATCHES[name].get('superseded_by')
+    if sup and state_of(sup, d) == 'APPLIED':
+        return 'superseded'
     seen = set()
     for off, original, patched in _sites(PATCHES[name]):
         cur = bytes(d[off:off + len(original)])
