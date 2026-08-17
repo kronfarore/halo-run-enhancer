@@ -1121,39 +1121,107 @@ _MAP_WEAPONS = {
                      'palette_index': 0x0, 'rounds_left': 0x6C, 'rounds_loaded': 0x6E},
 }
 
-# ODST's Auto Magnum / Silenced SMG and the base weapons they stand in for. Both
-# bases sit in every level's weapon palette already -- they are simply never
-# placed -- so a placement can be pointed at them without adding a palette entry.
+# ODST's Auto Magnum / Silenced SMG / red Plasma Rifle and the base weapons they
+# stand in for. The bases are in the weapon palette but never placed and never
+# carried -- and on the PREPARED maps the plain magnum/smg/plasma_rifle are real,
+# resident tags, which is what makes pointing something at them actually work.
 _ODST_VARIANT_TAGS = {
     'Auto Magnum': (r'objects\weapons\pistol\automag\automag',
                     r'objects\weapons\pistol\magnum\magnum'),
     # both SMGs live under rifle\, not smg\ -- verified against the shipped maps
     'Silenced SMG': (r'objects\weapons\rifle\smg_silenced\smg_silenced',
                      r'objects\weapons\rifle\smg\smg'),
+    # ODST's only obtainable plasma rifle is the red tag (Halo 2's Brute Plasma
+    # Rifle). Only downgraded when the run models it as that separate upgrade --
+    # otherwise the red tag simply IS the Plasma Rifle and must stay put.
+    'Brute Plasma Rifle': (r'objects\weapons\rifle\plasma_rifle_red\plasma_rifle_red',
+                           r'objects\weapons\rifle\plasma_rifle\plasma_rifle'),
 }
+
+# Where an ODST scenario names a weapon, beyond the placement list:
+#   Squads (0x3B8, 0x6C) -> cell blocks (0x54 / 0x60, 0x84 elements) -> the cell's
+#   Initial Weapon / Initial Secondary blocks (0x20 / 0x2C), whose 0x10 elements
+#   carry an int16 index into the SAME Weapon Palette at +0xC.
+# Confirmed by distribution rather than assumed: across h100's 2719 cell entries the
+# index histogram is exactly ODST's Covenant loadout mix (plasma pistol, needler,
+# carbine, red plasma rifle, spiker, flak cannon) with nothing implausible in it.
+_ODST_SQUADS = (0x3B8, 0x6C)
+_ODST_CELL_BLOCKS = ((0x54, 0x84), (0x60, 0x84))
+_ODST_CELL_WEAPONS = (0x20, 0x2C)
+_ODST_CELL_IDX_AT = 0xC
+
+
+ODST_WEAP_FIRST_PERSON = 0x40C      # block; a player weapon has an fp model here
+
+
+def odst_player_weapons(m):
+    """Every weapon in the map a player can hold, by tag basename.
+
+    The test is structural: a player weapon has a first-person model in its `First
+    Person` block, which is exactly what separates the real weapons from turrets and
+    vehicle guns. Derived per map because levels differ in what they carry -- a fixed
+    list built from one level would silently miss whatever another level is short of.
+
+    Lives here rather than in prepare_map so the preparation tool and the enhancer's
+    offer pool cannot drift apart on what "this level supports" means.
+    """
+    out = set()
+    for t in m.tags:
+        if t.get('class') != 'weap' or not t.get('name'):
+            continue
+        base = t['base']
+        blk = _block_base(m, base + ODST_WEAP_FIRST_PERSON)
+        if not blk or m.i32(base + ODST_WEAP_FIRST_PERSON) <= 0:
+            continue
+        if m.u32(blk + 0xC) == 0xFFFFFFFF:              # no fp model = not holdable
+            continue
+        out.add(str(t['name']).rsplit(chr(92), 1)[-1])
+    return sorted(out)
+
+
+def _odst_squad_weapon_slots(m, scnr):
+    """File offsets of every int16 weapon-palette index an AI squad cell holds."""
+    soff, sel = _ODST_SQUADS
+    sn, sbase = m.i32(scnr + soff), _block_base(m, scnr + soff)
+    for i in range(max(0, sn)) if sbase else []:
+        se = sbase + i * sel
+        for coff, cel in _ODST_CELL_BLOCKS:
+            cn, cbase = m.i32(se + coff), _block_base(m, se + coff)
+            for c in range(max(0, cn)) if cbase else []:
+                ce = cbase + c * cel
+                for foff in _ODST_CELL_WEAPONS:
+                    fn, fbase = m.i32(ce + foff), _block_base(m, ce + foff)
+                    for k in range(max(0, fn)) if fbase else []:
+                        yield fbase + k * 0x10 + _ODST_CELL_IDX_AT
 
 
 def apply_odst_downgrade(m, keep=()):
-    """Rewrite Auto Magnum / Silenced SMG placements to the base weapon.
+    """Rewrite ODST's upgraded variants to their base weapon, map-wide.
 
-    ODST hands out the upgraded sidearm and SMG everywhere, which makes an upgrade
-    CARD for them meaningless -- the map grants it anyway. With this on, the map
-    only stocks the base weapon until a player actually drafts the upgrade, so the
+    ODST hands out the upgraded sidearm, SMG and plasma rifle everywhere, which makes
+    an upgrade CARD for them meaningless -- the map grants it anyway. With this on the
+    map only stocks the base weapon until a player actually drafts the upgrade, so the
     card is what grants it.
 
-    `keep` names the variants a player has drafted; those are left placed.
+    Placements alone are not enough, and that is why this used to be a silent no-op:
+    ODST barely places these at all (sc150 places none of the three). They reach the
+    player through AI loadouts -- what you pick up off a corpse -- and through the
+    starting profiles. All three sites are rewritten here.
+
+    `keep` names the variants a player has drafted; those are left alone entirely.
     """
     lay = _MAP_WEAPONS['Halo 3: ODST']
     scnr = _scnr_base(m)
     if scnr is None:
         return [{'effect': 'ODST base weapons', 'ok': False, 'reason': 'no scenario tag'}]
     poff, pel = lay['palette']
-    names = []
+    names, idents = [], []
     for el in m.follow_all(scnr, [poff], [pel], 'all'):
         ident = struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0]
         names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+        idents.append(ident)
 
-    swaps = {}
+    swaps, by_ident = {}, {}
     for label, (variant, base) in _ODST_VARIANT_TAGS.items():
         if label in keep:
             continue
@@ -1162,22 +1230,51 @@ def apply_odst_downgrade(m, keep=()):
         except ValueError:
             continue                      # this level stocks neither, nothing to do
         swaps[vi] = (bi, label)
+        by_ident[idents[vi]] = (idents[bi], label)
     if not swaps:
         return []
 
-    woff, wel = lay['weapons']
     counts = {}
-    for pl in m.follow_all(scnr, [woff], [wel], 'all'):
-        idx = struct.unpack_from('<h', m.data, pl + lay['palette_index'])[0]
+
+    def _bump(label, site):
+        counts.setdefault(label, {}).setdefault(site, 0)
+        counts[label][site] += 1
+
+    def _rewrite_index(off, site):
+        idx = struct.unpack_from('<h', m.data, off)[0]
         if idx in swaps:
             bi, label = swaps[idx]
-            struct.pack_into('<h', m.data, pl + lay['palette_index'], bi)
-            counts[label] = counts.get(label, 0) + 1
+            struct.pack_into('<h', m.data, off, bi)
+            _bump(label, site)
+
+    woff, wel = lay['weapons']
+    for pl in m.follow_all(scnr, [woff], [wel], 'all'):
+        _rewrite_index(pl + lay['palette_index'], 'placed')
+    for off in _odst_squad_weapon_slots(m, scnr):
+        _rewrite_index(off, 'carried')
+
+    # Starting profiles name the weapon by tagRef, not by palette index. The run's own
+    # starting-weapon picks are written before this runs; they can only collide by
+    # naming a variant, and a variant the run picked is a variant a player drafted, so
+    # `keep` has already excluded it.
+    slots = _STARTING_SLOTS['Halo 3: ODST']
+    pbase, pcount = _block_base(m, scnr + 0x274), m.i32(scnr + 0x274)
+    for i in range(max(0, pcount)) if pbase else []:
+        pe = pbase + i * 0x58
+        for slot in ('primary', 'secondary'):
+            ro = pe + slots[slot]['ref'] + slots['id_at']
+            hit = by_ident.get(struct.unpack_from('<I', m.data, ro)[0])
+            if hit:
+                struct.pack_into('<I', m.data, ro, hit[0])
+                _bump(hit[1], 'start')
     if not counts:
         return []
-    return [{'effect': 'ODST base weapons', 'ok': True, 'tag': 'scnr weapon placements',
-             'field': 'Palette Index', 'old': 'upgraded variant',
-             'new': ', '.join('%d %s -> base' % (n, l) for l, n in sorted(counts.items()))}]
+    return [{'effect': 'ODST base weapons', 'ok': True, 'tag': 'scnr',
+             'field': 'placements / AI loadouts / starting profiles',
+             'old': 'upgraded variant',
+             'new': '; '.join('%s -> base (%s)' % (l, ', '.join(
+                 '%d %s' % (n, s) for s, n in sorted(sites.items())))
+                 for l, sites in sorted(counts.items()))}]
 
 
 def _tag_name_by_id(m, rid):
@@ -1894,7 +1991,106 @@ _ZOOM_UI = {
                'blocks': [
                    {'off': 0x8, 'elem': 0x64, 'sel': ('and', 0x8, 0b11 << 7), 'child': None},
                ]},
+    # H3 and ODST share the chud_definition layout. Their scope is NOT a flat block on
+    # the HUD like the earlier games': it is a set of Bitmap/Text widgets NESTED inside
+    # top-level HUD Widgets, so these use the nested copier below rather than 'blocks'.
+    'Halo 3': {'hud_ref': 0x418, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
+               'donor_pref': ('sniper_rifle', 'beam_rifle', 'battle_rifle', 'carbine',
+                              'spartan_laser', 'rocket_launcher')},
+    'Halo 3: ODST': {'hud_ref': 0x418, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
+                     'donor_pref': ('sniper_rifle', 'beam_rifle', 'battle_rifle',
+                                    'carbine', 'automag', 'smg_silenced')},
 }
+
+# chud_definition, per the ODSTMCC plugin. A widget's State Data carries "Unit Zoom
+# State" at +0x26: bit0 Unzoomed, bit1 Zoom Lvl 1, bit2 Zoom Lvl 2. A widget whose
+# every state demands zoom IS the scope. Checked against all twelve ODST weapon HUDs:
+# the six scoped ones have such widgets, the six unscoped ones have exactly zero.
+_H3_CHUD_WIDGETS = (0x0, 0x50)
+_H3_CHUD_BITMAPS = (0x38, 0x54)
+_H3_CHUD_TEXTS = (0x44, 0x48)
+_H3_CHUD_STATES = (0x8, 0x3C)
+_H3_CHUD_ZOOM_AT = 0x26
+_H3_ZOOM_LEVELS, _H3_UNZOOMED = 0b110, 0b001
+
+
+def _h3_chud_elems(m, base, blk):
+    """File offsets of one chud sub-block's elements."""
+    off, esz = blk
+    n = m.i32(base + off)
+    b = _block_base(m, base + off)
+    return [b + i * esz for i in range(max(0, n))] if (b and n > 0) else []
+
+
+def _h3_zoom_only(m, widget):
+    """True if this widget only ever renders while zoomed -- i.e. it is scope."""
+    states = _h3_chud_elems(m, widget, _H3_CHUD_STATES)
+    if not states:
+        return False
+    for sd in states:
+        z = m.u32(sd + _H3_CHUD_ZOOM_AT) & 0xFFFF
+        if not (z & _H3_ZOOM_LEVELS) or (z & _H3_UNZOOMED):
+            return False
+    return True
+
+
+def _h3_scope_parts(m, hud_base):
+    """[(widget, [scope bitmaps], [scope texts])] for every widget owning scope."""
+    out = []
+    for w in _h3_chud_elems(m, hud_base, _H3_CHUD_WIDGETS):
+        bms = [b for b in _h3_chud_elems(m, w, _H3_CHUD_BITMAPS) if _h3_zoom_only(m, b)]
+        txt = [t for t in _h3_chud_elems(m, w, _H3_CHUD_TEXTS) if _h3_zoom_only(m, t)]
+        if bms or txt:
+            out.append((w, bms, txt))
+    return out
+
+
+def _h3_copy_scope(m, dst_hud, src_hud):
+    """Append the donor HUD's scope widgets to `dst_hud`. Returns elements copied.
+
+    Only the ARRAYS are newly allocated: a copied element's own child blocks (State,
+    Placement, Animation, Render) keep pointing at the donor's data. H3 tag data is one
+    contiguous buffer addressed through the partition table, so a pointer into another
+    tag resolves the same way -- unlike H1, where _selfcontain has to relocate children
+    because that engine will not render a reflexive across tags.
+
+    Each copied top-level widget keeps the donor's own state/placement so the overlay
+    lands where the donor put it, but its children are filtered to the scope-only ones,
+    so none of the donor's ordinary HUD (its crosshair, its ammo) comes along.
+    """
+    parts = _h3_scope_parts(m, src_hud)
+    if not parts:
+        return 0
+    woff, wesz = _H3_CHUD_WIDGETS
+    dst_n = max(0, m.i32(dst_hud + woff))
+    dst_base = _block_base(m, dst_hud + woff)
+    if dst_base is None:
+        return 0
+    sizes = [(dst_n + len(parts)) * wesz]
+    for _, bms, txt in parts:
+        sizes += [len(bms) * _H3_CHUD_BITMAPS[1], len(txt) * _H3_CHUD_TEXTS[1]]
+    offs = _h3_reserve(m, [s for s in sizes if s])
+    if offs is None:
+        return None                       # no slack: caller reports it, nothing written
+    it = iter(offs)
+    warr = next(it)
+    m.data[warr:warr + dst_n * wesz] = m.data[dst_base:dst_base + dst_n * wesz]
+    copied = 0
+    for i, (w, bms, txt) in enumerate(parts):
+        e = warr + (dst_n + i) * wesz
+        m.data[e:e + wesz] = m.data[w:w + wesz]
+        for (boff, besz), kids in ((_H3_CHUD_BITMAPS, bms), (_H3_CHUD_TEXTS, txt)):
+            if not kids:
+                struct.pack_into('<iI', m.data, e + boff, 0, 0)
+                continue
+            arr = next(it)
+            for j, k in enumerate(kids):
+                m.data[arr + j * besz:arr + (j + 1) * besz] = m.data[k:k + besz]
+            struct.pack_into('<iI', m.data, e + boff, len(kids), m.off2data(arr))
+            copied += len(kids)
+    # repoint last, so a failure above leaves the HUD untouched
+    struct.pack_into('<iI', m.data, dst_hud + woff, dst_n + len(parts), m.off2data(warr))
+    return copied
 
 
 def _selfcontain(m, elem, child):
@@ -1954,9 +2150,28 @@ def _block_elems(m, hud_base, bs):
 def _hud_is_scoped(m, game, hud_base):
     """True if this HUD already renders a scope (so we leave it alone)."""
     z = _ZOOM_UI[game]
+    if z.get('nested'):                                    # H3/ODST: a zoom-only widget
+        return bool(_h3_scope_parts(m, hud_base))
     if z['scoped_block'] is not None:                      # H1: Screen Effect present
         return m.i32(hud_base + z['scoped_block']) > 0
     return bool(_block_elems(m, hud_base, z['blocks'][0]))  # H2: a zoom-gated widget
+
+
+def _weapons_sharing_hud(m, game, hud_base):
+    """Short names of every weapon in the map whose HUD is this tag."""
+    if isinstance(getattr(m, 'tags', None), dict):          # H1
+        weaps = [(n, off) for (c, n), off in m.tags.items() if c == 'weap']
+    else:
+        weaps = [(t['name'], t['base']) for t in m.tags
+                 if t.get('class') == 'weap' and t.get('base') and t.get('name')]
+    out = set()
+    for name, wb in weaps:
+        try:
+            if _hud_base(m, game, wb) == hud_base:
+                out.add(str(name).rsplit(chr(92), 1)[-1])
+        except Exception:
+            continue
+    return out
 
 
 def _zoom_donor(m, game, exclude_hud, prefer=None):
@@ -2024,18 +2239,30 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
             out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
                         'reason': 'no scoped donor weapon in this map'})
             continue
-        copied = 0
-        for bs in z['blocks']:
-            elems = _block_elems(m, donor_hud, bs)
-            if not elems:
+        if z.get('nested'):
+            copied = _h3_copy_scope(m, hud, donor_hud)
+            if copied is None:
+                out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
+                            'reason': 'no free space in the map to grow the HUD'})
                 continue
-            if bs['child']:                # relocate each element's child sub-block
-                elems = [_selfcontain(m, e, bs['child']) for e in elems]
-            m.grow_block(hud, bs['off'], bs['elem'], elems)
-            copied += len(elems)
+        else:
+            copied = 0
+            for bs in z['blocks']:
+                elems = _block_elems(m, donor_hud, bs)
+                if not elems:
+                    continue
+                if bs['child']:            # relocate each element's child sub-block
+                    elems = [_selfcontain(m, e, bs['child']) for e in elems]
+                m.grow_block(hud, bs['off'], bs['elem'], elems)
+                copied += len(elems)
         grown.add(hud)
+        # A HUD tag is shared by every weapon that points at it, so the scope lands on
+        # all of them. Say so rather than letting it surprise: in ODST the restored
+        # magnum rides on the Mauler's HUD until a dedicated ui\chud\magnum exists.
+        also = sorted(_weapons_sharing_hud(m, game, hud) - {short})
+        shared = (' — also scopes %s (shared HUD)' % ', '.join(also)) if also else ''
         out.append({'effect': 'zoom UI', 'field': short, 'ok': True, 'old': short,
-                    'new': f'scope copied from {donor} ({copied} element(s))'})
+                    'new': f'scope copied from {donor} ({copied} element(s)){shared}'})
     return out
 
 

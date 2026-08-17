@@ -152,7 +152,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'score_scaling', 'score_step', 'score_cap_mult',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
-               'odst_patch_hub',
+               'odst_patch_hub', 'odst_pools_from_map',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -248,6 +248,12 @@ def make_boss_mod(pool_mod, boss_name):
 ZOOM_DONOR_WEAPONS = {
     'Halo 1': ['Sniper Rifle', 'Pistol'],
     'Halo 2': ['Sniper Rifle', 'Beam Rifle', 'Battle Rifle'],
+    # H3/ODST copy the scope out of the donor's chud the same way, once _ZOOM_UI knew
+    # how their nested widgets are laid out. ODST's Auto Magnum and Silenced SMG are
+    # scoped too and make much subtler donors than a sniper scope on a sidearm.
+    'Halo 3': ['Sniper Rifle', 'Beam Rifle', 'Battle Rifle', 'Covenant Carbine'],
+    'Halo 3: ODST': ['Sniper Rifle', 'Beam Rifle', 'Covenant Carbine',
+                     'Auto Magnum', 'Silenced SMG'],
 }
 
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
@@ -406,9 +412,14 @@ CONFIG = {
     #       their own cards, and odst_downgrade_unupgraded then decides whether the
     #       map still hands them out for free.
     "odst_variants_as_base": True,
-    # Only meaningful while the above is OFF. Rewrites every automag / smg_silenced
-    # PLACEMENT to the base weapon unless a player drafted that upgrade, so the
-    # upgrade card is what actually grants it rather than the map doing it anyway.
+    # Only meaningful while the above is OFF. Rewrites the map's automag /
+    # smg_silenced (and, with odst_red_plasma_as_brute on, plasma_rifle_red) to the
+    # base weapon unless a player drafted that upgrade, so the upgrade card is what
+    # actually grants it rather than the map doing it anyway. Covers all three places
+    # a scenario names a weapon -- placements, AI loadouts and starting profiles --
+    # since ODST hands these out mostly by AI loadout and barely places them at all.
+    # Needs a PREPARED map: on a shipped one the base tags are in the palette but not
+    # resident, and pointing anything at a non-resident tag silently yields nothing.
     "odst_downgrade_unupgraded": False,
     "odst_variant_bases": {"Auto Magnum": "Magnum", "Silenced SMG": "SMG"},
     # ODST's player has no shield -- it has stamina, which is not in the tags. The
@@ -425,6 +436,32 @@ CONFIG = {
     # always carries the current run rather than accumulating old ones.
     "odst_patch_hub": True,
     "odst_hub_mission": "h100",
+    # A PREPARED ODST map can hand the player every weapon in it, not just the ones
+    # the level naturally stocks. Off, each level offers its own list from halo.json
+    # (levels keep their character -- Kikowani stays a thin level). On, the pool is
+    # rebuilt from what the map file actually supports, which is what the preparation
+    # work bought; the cost is that ODST levels stop differing from each other.
+    # Derived from the map rather than hardcoded, so a level that was never prepared
+    # correctly offers less instead of offering weapons that will not appear.
+    "odst_pools_from_map": False,
+    # Tag basename -> the name that weapon is offered under. Anything not named here
+    # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
+    # weapon and is simply not offered, so an unknown basename fails closed.
+    # NOTE: the Mauler's tag is "excavator" -- that is its internal name, not a
+    # separate cut weapon, and halo.json's Mauler mods already point at it.
+    "odst_map_pool_names": {
+        "assault_rifle": "Assault Rifle", "automag": "Auto Magnum",
+        "battle_rifle": "Battle Rifle", "beam_rifle": "Beam Rifle",
+        "brute_shot": "Brute Shot", "covenant_carbine": "Covenant Carbine",
+        "energy_blade": "Energy Blade", "excavator": "Mauler",
+        "flak_cannon": "Flak Cannon",
+        "gravity_hammer": "Gravity Hammer", "magnum": "Magnum", "needler": "Needler",
+        "plasma_pistol": "Plasma Pistol", "plasma_rifle": "Plasma Rifle",
+        "plasma_rifle_red": "Plasma Rifle", "rocket_launcher": "Rocket Launcher",
+        "shotgun": "Shotgun", "smg": "SMG", "smg_silenced": "Silenced SMG",
+        "sniper_rifle": "Sniper Rifle", "spartan_laser": "Spartan Laser",
+        "spike_rifle": "Spike Rifle"
+    },
     # Which tag a weapon IS, when that differs from whose effects it borrows. Only
     # starting weapons care: they write one tagRef, where an effect may legitimately
     # name several tags at once. ODST files its sidearm and SMG under their own tags
@@ -704,7 +741,15 @@ def upgrade_allowed_here(game, weapon):
     that simply don't exist in a later game (the Brute Plasma Rifle) or stopped
     being dual-wieldable (the Halo 3 Needler)."""
     allowed = CONFIG.get('weapon_only_in_games', {}).get(weapon)
-    return True if not allowed else game in allowed
+    if not allowed:
+        return True
+    # ODST's red plasma rifle IS Halo 2's Brute Plasma Rifle, so while the run models
+    # it as that weapon it has to be offerable here too -- otherwise the option turns
+    # the upgrade on and no card for it can ever appear.
+    if (weapon == 'Brute Plasma Rifle' and game == 'Halo 3: ODST'
+            and CONFIG.get('odst_red_plasma_as_brute')):
+        return True
+    return game in allowed
 
 
 def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
@@ -723,13 +768,60 @@ def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
                         and upgrade_allowed_here(game, dual)):
                     out.append(dual)
     if upgrades and game_at_least(db, game, CONFIG.get('upgrades_from_game', 'Halo 2')):
+        # Compare bases through resolve_weapon: a player owns the CANONICAL name, and
+        # an upgrade's base may be an alias of it. ODST's Auto Magnum bases on "Magnum",
+        # which is an alias of "Pistol" -- the name actually held -- so a literal
+        # comparison never matched and that upgrade could never be offered.
+        owned_canon = {db.resolve_weapon(w) for w in owned}
         for upgrade, base in weapon_upgrades().items():
             if not upgrade_allowed_here(game, upgrade):
                 continue
-            if (base in owned and upgrade not in owned
+            if (db.resolve_weapon(base) in owned_canon and upgrade not in owned
                     and db.weapon_label(upgrade) not in blacklist):
                 out.append(upgrade)
     return out
+
+
+def _tags_not_already_in(twin, base):
+    """`twin` reduced to the tag paths `base` does not already name, or None.
+
+    A tag is "<class> <path>[ & <path>...]" — one class, several targets. Comparing the
+    whole string treats a partial overlap as brand new, which double-applies whatever
+    the two share.
+    """
+    if not twin or not isinstance(twin, str):
+        return None
+    if not base or not isinstance(base, str):
+        return twin
+    cls, _, rest = twin.partition(' ')
+    bcls, _, brest = base.partition(' ')
+    paths = [p.strip() for p in rest.split(' & ') if p.strip()]
+    if bcls == cls:
+        have = {p.strip() for p in brest.split(' & ')}
+        paths = [p for p in paths if p not in have]
+    return ('%s %s' % (cls, ' & '.join(paths))) if paths else None
+
+
+def drop_weapons_taken(db, weapons, run_state):
+    """Weapons are UNIQUE across the run: one already held by either player is not
+    offered again, to anyone.
+
+    Excluding only the asking player's own weapons meant player 2 kept being offered
+    what player 1 had drafted rounds earlier. Every path that can put a weapon card on
+    screen has to apply this, or the duplicate just reappears on whichever path was
+    missed -- the New Weapon button, the automatic rolls and the rerolls all pass here.
+
+    Equipment and abilities are left alone: they carry their own sharing rules (a piece
+    of equipment is not a weapon slot, and sprint/camo already have a one-per-run
+    pair), so weapon uniqueness must not quietly become the rule for them too.
+    """
+    if run_state is None:
+        return list(weapons)
+    held = set(run_state.weapons_for('player1')) | set(run_state.weapons_for('player2'))
+    if not held:
+        return list(weapons)
+    return [w for w in weapons
+            if w not in held or is_ability_item(w) or db.is_equipment(w)]
 
 
 def ability_offer_pool(db, game, run_state, player=None):
@@ -1034,18 +1126,46 @@ def target_fields_display(mod_data, game, games):
     return ", ".join(names) if names else "—"
 
 
-def single_game_badge(mod_data):
-    """'◆ H1 only' / '◆ H2 only' for an effect that can apply in just one game
-    (matches ModifierDatabase._is_single_game_mod), or None for cross-game ones."""
+GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'ODST'}
+
+
+def mod_game_scope(mod_data):
+    """Every game an effect can actually apply in, or None when it is unrestricted.
+
+    An effect authored for one game also reaches any game that INHERITS that one --
+    ODST is a later Halo 3 build, so a "Halo 3" effect works there too (see
+    ModifierDatabase._game_ok, which is what decides whether it is offered). Scope has
+    to be computed the same way, or the card contradicts the filter that let it
+    through: a great many Halo 3 effects are live in ODST while reading "H3 only".
+    """
     games = mod_data.get('games') or []
-    g = None
     if len(games) == 1:
-        g = games[0]
-    elif isinstance(mod_data.get('tag'), dict) and len(mod_data['tag']) == 1:
-        g = next(iter(mod_data['tag']))
-    if not g:
-        return None
-    return "◆ %s only" % {'Halo 1': 'H1', 'Halo 2': 'H2'}.get(g, g)
+        authored = list(games)
+    elif not games and isinstance(mod_data.get('tag'), dict):
+        authored = list(mod_data['tag'])
+    elif games:
+        authored = list(games)
+    else:
+        return None                       # plain-string tag: valid everywhere
+    inherits = CONFIG.get('game_inherits', {})
+    scope = list(authored)
+    grew = True
+    while grew:                           # follow chains, not just direct children
+        grew = False
+        for child, parent in inherits.items():
+            if parent in scope and child not in scope:
+                scope.append(child)
+                grew = True
+    return scope
+
+
+def single_game_badge(mod_data):
+    """'◆ H1 only' / '◆ H3/ODST only' for an effect that cannot apply everywhere
+    (matches ModifierDatabase._is_single_game_mod), or None for cross-game ones."""
+    scope = mod_game_scope(mod_data)
+    if not scope or len(scope) >= len(GAME_SHORT):
+        return None                       # reaches every game: nothing to warn about
+    return "◆ %s only" % '/'.join(GAME_SHORT.get(g, g) for g in scope)
 
 
 def heretic_combine_active(mod_data, game, games):
@@ -1100,6 +1220,7 @@ class ModifierDatabase:
         self.mission_equipment = {} # mission_id -> H3 equipment pool
         self.equipment_mods = {}    # equipment name -> [mods], offered once it's owned
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
+        self._odst_pool_cache = {}  # mission_id -> offer names derived from the map
         try:
             self.load_data()
         except Exception as e:
@@ -1351,6 +1472,20 @@ class ModifierDatabase:
         even ship in every level."""
         override = (CONFIG.get('weapon_tag_overrides', {}).get(game, {})
                     .get(weapon_name))
+        # The ODST overrides exist because the base weapons used to be unreachable
+        # there. On a PREPARED map they are real, so once a variant is modelled as an
+        # UPGRADE the base NAME has to mean the base TAG again -- otherwise a "Magnum"
+        # card would still hand out the auto magnum it is supposed to be an upgrade
+        # from. The two variant families are governed by different options, and a
+        # variant's OWN name always keeps its override: that name IS that tag.
+        if override and game == 'Halo 3: ODST' and weapon_name not in (
+                set(CONFIG.get('odst_variant_bases', {})) | {'Brute Plasma Rifle'}):
+            sidearm = not CONFIG.get('odst_variants_as_base', True)
+            if weapon_name == 'Plasma Rifle':
+                # only an upgrade while it is being modelled as Halo 2's Brute one
+                override = None if CONFIG.get('odst_red_plasma_as_brute') else override
+            elif sidearm:
+                override = None
         if override:
             return override
         for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
@@ -1376,6 +1511,21 @@ class ModifierDatabase:
         mods = self.weapon_mods.get(self.resolve_weapon(weapon_name), [])
         is_dual = bool(weapon_name) and str(weapon_name).startswith('Dual ')
         return mods if is_dual else [m for m in mods if not m.get('dual_only')]
+
+    def get_offer_modifiers(self, item):
+        """Mods to show on an offer card, whatever KIND of item it is.
+
+        An offer pool mixes weapons, H3/ODST equipment and abilities, and equipment
+        mods live in their own table -- asking get_weapon_modifiers for a Bubble Shield
+        degrades to [], which is why a freshly offered piece of equipment showed "0
+        available modifiers" instead of its own effects.
+        """
+        if is_ability_item(item):
+            return []
+        key = self.resolve_equipment(item)
+        if key:
+            return list(self.equipment_mods.get(key, []))
+        return self.get_weapon_modifiers(item)
 
     def denied_equipment_enemy_mods(self, mission_id):
         """Equipment the player is denied, re-offered as ENEMY modifiers (#4).
@@ -1414,11 +1564,41 @@ class ModifierDatabase:
     def get_available_weapons(self):
         return list(self.weapon_mods.keys())
 
+    def odst_map_pool(self, mission_id):
+        """Offer names for every weapon the level's MAP can actually give a player.
+
+        Read from the patch baseline (`.map.bak`) when there is one, since that is what
+        a patch is built from and therefore what the run will really be played on.
+        Empty when the map cannot be read at all -- the caller then keeps the level's
+        halo.json list, so a missing or unreadable map narrows nothing silently.
+        """
+        if mission_id in self._odst_pool_cache:
+            return self._odst_pool_cache[mission_id]
+        names, folder = [], CONFIG.get('map_game_folder', {}).get('Halo 3: ODST')
+        try:
+            import halo_patch          # imported lazily, as everywhere else here
+            base = Path(mcc_root()) / folder / (mission_id + '.map')
+            path = Path(str(base) + '.bak') if Path(str(base) + '.bak').exists() else base
+            m = halo_patch.open_map(str(path), 'Halo 3: ODST')
+            table = CONFIG.get('odst_map_pool_names', {})
+            for short in halo_patch.odst_player_weapons(m):
+                nm = table.get(short)
+                if nm and nm not in names:
+                    names.append(nm)
+        except Exception as e:
+            print(f"ODST pool from map failed for {mission_id}: {e}")
+            names = []
+        self._odst_pool_cache[mission_id] = names
+        return names
+
     def get_level_weapons(self, mission_id):
         """Weapon pool for a level: its `weapons` list (plus grenades unless
         disabled in CONFIG), restricted to entries that resolve to real mods.
         Aliases collapse to their canonical weapon. Falls back to all weapons."""
         wl = list(self.mission_weapons.get(mission_id) or [])
+        if (CONFIG.get('odst_pools_from_map')
+                and self.mission_games.get(mission_id) == 'Halo 3: ODST'):
+            wl = self.odst_map_pool(mission_id) or wl
         # ODST's Auto Magnum / Silenced SMG. Treated as the base weapon, the level
         # offers the ordinary card (the variant is what the player actually gets, in
         # the map); treated as upgrades, the base card is what the level offers and
@@ -1537,11 +1717,13 @@ class ModifierDatabase:
         an explicit single-game filter, or its tag is a per-game dict with a
         single game key. A PLAIN-STRING tag is NOT single-game — it's a shared
         tag valid in every game (e.g. matg 'globals\\globals'), the most
-        cross-game kind there is."""
-        if len(mod.get('games') or []) == 1:
-            return True
-        tag = mod.get('tag')
-        return isinstance(tag, dict) and len(tag) < 2
+        cross-game kind there is.
+
+        Inheritance counts: a Halo 3 effect also applies in ODST, so it reaches two
+        games and this option must not strip it. Shared with single_game_badge so the
+        card's badge and this filter can never disagree."""
+        scope = mod_game_scope(mod)
+        return bool(scope) and len(scope) == 1
 
     def _cross_game_ok(self, mod):
         """Honor the 'remove single-game mods' option. Off by default, so it has
@@ -3214,7 +3396,14 @@ class MagnitudeEditorDialog(QDialog):
         if rs is not None:
             for p in ('player1', 'player2'):
                 held |= {w for w in rs.weapons_for(p)}
-        return {v for v in CONFIG.get('odst_variant_bases', {}) if v in held}
+        keep = {v for v in CONFIG.get('odst_variant_bases', {}) if v in held}
+        # The red plasma rifle is only an upgrade when the run models it as Halo 2's
+        # Brute Plasma Rifle. Without that option there is no card to earn it back
+        # with -- it simply IS this game's Plasma Rifle -- so it must never be
+        # downgraded, drafted or not.
+        if not CONFIG.get('odst_red_plasma_as_brute') or 'Brute Plasma Rifle' in held:
+            keep.add('Brute Plasma Rifle')
+        return keep
 
     def _apply_score_scaling(self):
         """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
@@ -3858,6 +4047,27 @@ class MagnitudeEditorDialog(QDialog):
             def _startable(w):
                 return (bool(w) and not is_sprint_item(w)
                         and not db.is_grenade(w) and not db.is_equipment(w))
+
+            def _upgraded(weapon, player):
+                """Start with the UPGRADE of this weapon once the player has drafted it.
+
+                Taking Silenced SMG after starting with the SMG has to move the loadout
+                onto the silenced one -- otherwise the upgrade is a card that changes
+                nothing about what the player spawns holding. Bases are compared through
+                resolve_weapon because an upgrade's base may be an alias of the name
+                actually held (Auto Magnum bases on "Magnum", an alias of "Pistol").
+                """
+                if not weapon:
+                    return weapon
+                owned = set(rs.weapons_for(player))
+                want = db.resolve_weapon(weapon)
+                for up, base in weapon_upgrades().items():
+                    if up in owned and db.resolve_weapon(base) == want:
+                        return up
+                return weapon
+
+            p1 = _upgraded(p1, 'player1')
+            p2 = _upgraded(p2, 'player2')
             prim = db.weap_tag_for(p1, self.game) if _startable(p1) else None
             sec = db.weap_tag_for(p2, self.game) if _startable(p2) else None
         # #8: Halo 3 has two playable characters. With 2-player coop on, each pick
@@ -4058,7 +4268,14 @@ class MagnitudeEditorDialog(QDialog):
         rs = getattr(self.parent_gui, 'run_state', None)
         if db is None or rs is None:
             return []
-        onmap = set(db.mission_weapons.get(getattr(rs, 'mission_id', None), []) or [])
+        mid = getattr(rs, 'mission_id', None)
+        onmap = set(db.mission_weapons.get(mid, []) or [])
+        # Honour an expanded ODST pool: with odst_pools_from_map on, the level really
+        # does carry every weapon the prepared map supports, so a donor the halo.json
+        # list happens not to mention is still a legitimate scope source. Read from the
+        # map rather than the list, or the option widens the offers but not the donors.
+        if CONFIG.get('odst_pools_from_map') and db.mission_games.get(mid) == 'Halo 3: ODST':
+            onmap |= set(db.odst_map_pool(mid) or ())
         return [w for w in ZOOM_DONOR_WEAPONS.get(self.game, []) if w in onmap]
 
     def _build_zoom_source_row(self):
@@ -4245,8 +4462,14 @@ class MagnitudeEditorDialog(QDialog):
                 if item.get('missing_in_db') or not item.get('weapon'):
                     continue
                 twin_tag = db.upgrade_twin_tag(item['weapon'], item['name'], self.game)
-                if twin_tag and twin_tag != item['tag']:
-                    plan.append({**item, 'tag': twin_tag, 'mirrored_to_upgrade': True})
+                # Only mirror the tags the base card does NOT already patch. A tag may
+                # name several paths with ' & ', and a plain inequality test missed the
+                # overlap: Plasma Rifle's melee is "strike_melee & smash_melee" while the
+                # Brute Plasma Rifle's is "strike_melee", so the mirror row applied
+                # strike_melee a SECOND time and the card hit at double magnitude.
+                extra = _tags_not_already_in(twin_tag, item.get('tag'))
+                if extra:
+                    plan.append({**item, 'tag': extra, 'mirrored_to_upgrade': True})
         starting = self._starting_weapons_spec()
         # Cards and sliders are the same mechanism and never both shown, so whichever
         # is active supplies the swaps.
@@ -4279,7 +4502,7 @@ class MagnitudeEditorDialog(QDialog):
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
                   + (["rescale metagame scores (needs an MCC restart)"]
                      if CONFIG.get('score_scaling') else [])
-                  + (["retune the plasma rifle to the Brute Plasma Rifle"]
+                  + (["retune the Red Plasma Rifle to the Brute Plasma Rifle"]
                      if (CONFIG.get('odst_red_plasma_as_brute')
                          and self.game == 'Halo 3: ODST') else [])
                   + (["also patch Mombasa Streets (the hub)"]
@@ -5318,7 +5541,7 @@ class OptionsDialog(QDialog):
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
-        self.red_plasma_cb = QCheckBox("ODST: treat the plasma rifle as the Brute Plasma Rifle")
+        self.red_plasma_cb = QCheckBox("ODST: treat the Red Plasma Rifle as the Brute Plasma Rifle")
         self.red_plasma_cb.setChecked(bool(CONFIG.get('odst_red_plasma_as_brute')))
         self.red_plasma_cb.setToolTip(
             "ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as a "
@@ -5346,9 +5569,15 @@ class OptionsDialog(QDialog):
             "Only while the variants are treated as upgrades. ODST hands the upgraded "
             "sidearm and SMG out everywhere, which makes an upgrade card for them "
             "meaningless — the map grants it anyway.\n\nWith this on, every Auto Magnum "
-            "and Silenced SMG placement is rewritten to the base weapon until a player "
-            "actually drafts that upgrade. Both bases are already in every level's "
-            "palette, so nothing is added to the map.")
+            "and Silenced SMG is rewritten to the base weapon until a player actually "
+            "drafts that upgrade — on the ground, in the AI's hands, and in the "
+            "starting profiles. ODST barely places these at all, so the AI loadouts "
+            "are what matters: it is the weapon you pick up off a corpse.\n\nThe red "
+            "plasma rifle joins them only while it is being treated as the Brute "
+            "Plasma Rifle above; otherwise it simply IS this game's Plasma Rifle and "
+            "there would be no card to earn it back with.\n\nNeeds a PREPARED ODST "
+            "map — the plain magnum, SMG and plasma rifle are only real, resident "
+            "weapons there.")
 
         def _sync_odst_variants(_=False):
             # only meaningful while they are modelled as upgrades
@@ -5359,6 +5588,19 @@ class OptionsDialog(QDialog):
         self.odst_variants_cb.toggled.connect(_sync_odst_variants)
         _sync_odst_variants()
         form.addRow("", self.odst_downgrade_cb)
+
+        self.odst_pools_cb = QCheckBox("ODST: offer every weapon the prepared map supports")
+        self.odst_pools_cb.setChecked(bool(CONFIG.get('odst_pools_from_map')))
+        self.odst_pools_cb.setToolTip(
+            "Off: each ODST level offers its own weapon list, close to what that level "
+            "actually stocks — so the levels differ from each other and Kikowani stays "
+            "a thin level with a short pool.\n\nOn: the pool is rebuilt from what the "
+            "map file can really hand a player, which on a PREPARED map is all ~27 "
+            "weapons. That is what the map preparation bought, and it also widens the "
+            "zoom-donor pool.\n\nRead from the map rather than a fixed list, so a level "
+            "that was never prepared offers less instead of offering weapons that would "
+            "never appear.")
+        form.addRow("ODST weapon pools:", self.odst_pools_cb)
 
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
@@ -5651,6 +5893,7 @@ class OptionsDialog(QDialog):
             'odst_downgrade_unupgraded': self.odst_downgrade_cb.isChecked(),
             'odst_shield_into_health': self.odst_shield_health_cb.isChecked(),
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
+            'odst_pools_from_map': self.odst_pools_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
@@ -5979,6 +6222,9 @@ class HaloGUI(QMainWindow):
                 rs.weapons_for('player1') + rs.weapons_for('player2')
                 if is_ability_item(w)}
         gone = held & ABILITY_ONE_PER_RUN
+        # Weapon uniqueness rides the same backstop: this is the one place every
+        # on-screen offer passes through, initial build and rerolls alike.
+        weapons = drop_weapons_taken(self.db, weapons, rs)
         if not gone:
             return weapons
         return [w for w in weapons if ability_of_item(w) not in gone]
@@ -5997,7 +6243,7 @@ class HaloGUI(QMainWindow):
             choices.append({
                 'id': i + 1,
                 'weapon': weapon,
-                'modifiers': [] if is_ability_item(weapon) else self.db.get_weapon_modifiers(weapon),
+                'modifiers': self.db.get_offer_modifiers(weapon),
                 'enemy_mod': self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             })
         return choices
@@ -6037,8 +6283,7 @@ class HaloGUI(QMainWindow):
                                    "reroll again." % player_label)
                 return
             card.pair_data['weapon'] = random.choice(avail)
-            card.pair_data['modifiers'] = ([] if is_ability_item(card.pair_data['weapon'])
-                                           else self.db.get_weapon_modifiers(card.pair_data['weapon']))
+            card.pair_data['modifiers'] = self.db.get_offer_modifiers(card.pair_data['weapon'])
             card.pair_data['enemy_mod'] = self._pick_enemy(enemy_mods, used_enemies) if with_enemy else None
             card.setup_ui()
             self.update_status(f"Rerolled choice {choice_id}{player_label}")
@@ -6083,6 +6328,7 @@ class HaloGUI(QMainWindow):
         self.pending_player2_selection = False
         self.display_weapon_selection(choices, is_player2=False)
         self.run_state.phase = 'weapon_selection'
+        self._sync_save_button()      # this phase allows saving; nothing re-synced it
         self.update_status("Select a weapon for Player 1")
 
     def _clear_pairs_layout(self):
@@ -6228,6 +6474,7 @@ class HaloGUI(QMainWindow):
                 if e not in owned and not self._blacklisted_weapon(e):
                     pool.append(e)
         pool = strip_denied_equipment(self.db, pool)
+        pool = drop_weapons_taken(self.db, pool, self.run_state)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
     def _grant_weapon(self, player, weapon):
@@ -6777,10 +7024,16 @@ class HaloGUI(QMainWindow):
 
     def _sync_save_button(self):
         """Save is available at all times EXCEPT while a card-picking round is in
-        progress and not yet concluded — i.e. player1_turn / player2_turn, where
-        the run state is mid-round. Weapon selection and completed rounds allow it."""
+        progress and not yet concluded. Weapon selection and completed rounds allow it.
+
+        The phase alone is not that test: changing a weapon, changing mission and every
+        other reset parks the run in 'player1_turn' with NO cards on screen, which left
+        save disabled while nothing was being picked. A round is only really in progress
+        once pairs have been generated, so require both.
+        """
         rs = getattr(self, 'run_state', None)
-        in_round = bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
+        in_round = (bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
+                    and bool(getattr(rs, 'pairs', None)))
         self.save_btn.setEnabled(not in_round)
         qb = getattr(self, 'quicksave_btn', None)
         if qb is not None:
@@ -7467,6 +7720,9 @@ class RunEnhancer:
                                      upgrades=bool(CONFIG.get('auto_new_weapon_upgrades')))
         pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
         pool = strip_denied_equipment(self.db, pool)
+        # The automatic rolls do not go through _build_weapon_choices, so they need the
+        # uniqueness rule applied here or player 2 keeps drawing player 1's weapons.
+        pool = drop_weapons_taken(self.db, pool, self.run_state)
         pool = gate_offer_pool(self.db, pool, self.run_state, player)
         # Abilities last: they are their own gate (ability_offer_pool already checks
         # the sprint feature, per-player ownership and the one-per-run pair), and they

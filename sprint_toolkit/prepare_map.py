@@ -57,6 +57,86 @@ HUD_DONORS = ('assault_rifle', 'smg_silenced', 'automag', 'battle_rifle',
               'plasma_rifle', 'plasma_pistol', 'shotgun', 'spike_rifle',
               'needler', 'brute_shot', 'sniper_rifle', 'carbine')
 
+# ...with an explicit pick where first-match picks badly. Order alone gave the magnum
+# ui\chud\assault_rifle -- an assault rifle icon and ammo readout on a pistol, on screen
+# all game.
+#
+# These are only the FALLBACK. A chud named for the weapon itself always wins, so once
+# ui\chud\magnum and ui\chud\smg are built in (copied from H3, where both exist and are
+# already unscoped) the weapons move onto their real HUDs automatically. Until then the
+# ODST counterparts are the closest match: right silhouette, right ammo readout. They
+# are SCOPED, which a zoomless weapon should not advertise, but they cannot be stripped
+# -- a stock chud is shared with the weapon it was authored for, and taking the scope
+# out of ui\chud\automag would take it off the real auto magnum too.
+# Override per weapon with --hud NAME=CHUD.
+HUD_PREFERRED = {'magnum': 'automag', 'smg': 'smg_silenced'}
+
+
+# chud_definition (ODSTMCC plugin): HUD Widgets 0x0/0x50, each with Bitmap Widgets
+# 0x38/0x54, and both carry State Data 0x8/0x3C. A state's "Unit Zoom State" flags16 at
+# +0x26 is bit0 Unzoomed, bit1 Zoom Lvl 1, bit2 Zoom Lvl 2 -- so a widget that renders
+# ONLY while zoomed is the scope overlay. Verified across every ODST chud: all six
+# scoped HUDs have such widgets and all six unscoped ones have exactly zero.
+CHUD_WIDGETS = (0x0, 0x50)
+CHUD_BITMAPS = (0x38, 0x54)
+CHUD_STATES = (0x8, 0x3C)
+CHUD_ZOOM_AT = 0x26
+_ZOOM_LEVELS, _UNZOOMED = 0b110, 0b001
+
+
+def _chud_block(m, base, blk):
+    off, esz = blk
+    n, b = m.i32(base + off), HP._block_base(m, base + off)
+    return [b + i * esz for i in range(max(0, n))] if b else []
+
+
+def _scope_only(m, widget):
+    """True if every state this widget renders under requires zoom -- i.e. it IS the
+    scope. A widget with any unzoomed state (or none at all) is ordinary HUD."""
+    states = _chud_block(m, widget, CHUD_STATES)
+    if not states:
+        return False
+    for sd in states:
+        z = m.u32(sd + CHUD_ZOOM_AT) & 0xFFFF
+        if not (z & _ZOOM_LEVELS) or (z & _UNZOOMED):
+            return False
+    return True
+
+
+def strip_scope(m, chud_tag):
+    """Drop the scope-only widgets from ONE chud, so a scopeless weapon pointed at it
+    stops advertising a zoom it does not have.
+
+    Only ever call this on a chud dedicated to that weapon. Every stock chud is shared
+    with the weapon it was authored for -- stripping ui\\chud\\automag would take the
+    real auto magnum's scope away too, which is why the magnum needs its own copy.
+
+    Compacts the arrays in place and lowers the counts; nothing grows, so no relocation
+    into partition slack is needed.
+    """
+    removed = 0
+    for w in _chud_block(m, chud_tag['base'], CHUD_WIDGETS):
+        # nested first: a kept widget may still own scope-only bitmaps (the mask)
+        bms = _chud_block(m, w, CHUD_BITMAPS)
+        keep = [b for b in bms if not _scope_only(m, b)]
+        if len(keep) != len(bms):
+            for i, src in enumerate(keep):
+                dst = bms[i]
+                if dst != src:
+                    m.data[dst:dst + CHUD_BITMAPS[1]] = m.data[src:src + CHUD_BITMAPS[1]]
+            struct.pack_into('<i', m.data, w + CHUD_BITMAPS[0], len(keep))
+            removed += len(bms) - len(keep)
+    ws = _chud_block(m, chud_tag['base'], CHUD_WIDGETS)
+    keep = [x for x in ws if not _scope_only(m, x)]
+    if len(keep) != len(ws):
+        for i, src in enumerate(keep):
+            dst = ws[i]
+            if dst != src:
+                m.data[dst:dst + CHUD_WIDGETS[1]] = m.data[src:src + CHUD_WIDGETS[1]]
+        struct.pack_into('<i', m.data, chud_tag['base'] + CHUD_WIDGETS[0], len(keep))
+        removed += len(ws) - len(keep)
+    return removed
+
 
 def _holdable(m, t):
     """True if this weap tag has a first-person model, i.e. a player can hold it."""
@@ -128,25 +208,11 @@ def geometry(m, zone_base, base):
 def player_weapons(m):
     """Every weapon in the map a player can hold, by tag basename.
 
-    The test is structural: a player weapon has a first-person model in its `First
-    Person` block, which is exactly what separates the real weapons from turrets and
-    vehicle guns. Deriving this per map matters because levels differ in what they
-    carry -- a fixed list built from one level would silently miss whatever another
-    level is short of.
+    Delegates to halo_patch so this tool and the enhancer's offer pool cannot drift
+    apart on what "this level supports" means -- the enhancer can be told to build an
+    ODST level's weapon pool from the prepared map, and it has to be the same answer.
     """
-    out = []
-    for t in m.tags:
-        if t.get('class') != 'weap' or not t.get('name'):
-            continue
-        base = t['base']
-        n = m.i32(base + WEAP_FIRST_PERSON)
-        blk = HP._block_base(m, base + WEAP_FIRST_PERSON)
-        if not blk or n <= 0:
-            continue
-        if m.u32(blk + 0xC) == 0xFFFFFFFF:              # no fp model = not holdable
-            continue
-        out.append(str(t['name']).rsplit('\\', 1)[-1])
-    return sorted(set(out))
+    return HP.odst_player_weapons(m)
 
 
 def ek_weapon_universe():
@@ -241,14 +307,41 @@ def magnification(m, base_weap):
     return struct.unpack_from('<h', m.data, base_weap + WEAP_MAGNIFICATION)[0]
 
 
-def fix_huds(m, weapons, overrides=None):
-    """Give a weapon with a NULL HUD Interface one from a weapon that scopes the same.
+def _strip_dedicated(m, chuds, weapon, pick, want_mag):
+    """Drop the scope from a chud DEDICATED to this weapon, when it has no zoom.
 
-    ODST ships no `ui\\chud\\magnum` and no `ui\\chud\\smg`, so those come back from
-    Halo 3 with no ammo counter or reticle. The first fix borrowed from their ODST
-    counterparts -- but automag and smg_silenced have 1 magnification level where the
-    magnum and SMG have 0, so the borrowed HUD advertised a scope the weapon does not
-    have. Donors are therefore filtered to the same magnification count.
+    Runs whether or not the HUD reference had to be repointed, because a map built with
+    the weapon already pointing at its own chud never takes the repoint path. Only ever
+    fires when the chud is named for the weapon, so no shared HUD is ever touched.
+    Returns a note for the log line.
+    """
+    if not pick or pick.lower() != weapon.lower() or want_mag > 0:
+        return ''
+    ct = chuds.get(pick.lower())
+    if not ct:
+        return ''
+    gone = strip_scope(m, ct)
+    return '  [stripped %d scope widget(s)]' % gone if gone else '  [no scope]'
+
+
+def fix_huds(m, weapons, overrides=None):
+    """Give a weapon with a NULL HUD Interface one borrowed from another weapon.
+
+    ODST ships no `ui\\chud\\magnum` and no `ui\\chud\\smg` and the Editing Kit has no
+    tag to build one from, so a restored magnum or SMG has no ammo counter or reticle
+    and EVERY donor is some other weapon's HUD. The only choice is which way it is
+    wrong:
+
+      * their ODST counterpart (automag / smg_silenced) gets the weapon's own icon and
+        ammo readout right -- the two things on screen at all times -- and only
+        advertises a scope. That scope can never actually engage: zoom comes from the
+        weapon's own magnification levels, of which these have none.
+      * a magnification-matched donor tells the truth about scoping but shows another
+        weapon's icon and ammo style, which is what put an ASSAULT RIFLE readout on
+        the magnum.
+
+    The counterpart wins, since the icon and ammo are what the player reads all game.
+    `--hud NAME=CHUD` still overrides per weapon for anyone who prefers the other way.
     """
     overrides = overrides or {}
     chuds = {str(t['name']).rsplit('\\', 1)[-1].lower(): t for t in m.tags
@@ -259,21 +352,26 @@ def fix_huds(m, weapons, overrides=None):
         if not wt:
             continue
         want_mag = magnification(m, wt['base'])
+        # A chud named after the weapon itself wins over every fallback: that is the
+        # dedicated HUD (see the ui\chud\magnum recipe in the module docstring), and it
+        # gets its scope stripped below so it is honest as well as correctly labelled.
+        pick = (overrides.get(w) or (w if w.lower() in chuds else None)
+                or HUD_PREFERRED.get(w))
         cur = m.u32(wt['base'] + WEAP_HUD + 0xC)
         if cur != 0xFFFFFFFF:
-            # Repair a HUD that scopes differently, not just a missing one: an earlier
-            # pass gave the magnum ui\chud\automag, which advertises a 1x scope the
-            # magnum does not have.
-            cur_name = HP._tag_name_by_id(m, cur)
-            donor = _weap(m, str(cur_name).rsplit('\\', 1)[-1]) if cur_name else None
-            if donor is None and cur_name and str(cur_name).endswith('carbine'):
-                donor = _weap(m, 'covenant_carbine')
-            if donor is None or magnification(m, donor['base']) == want_mag:
-                continue                               # correct, or cannot judge
-            print('    HUD  %-16s had %s (%dx), replacing'
-                  % (w, str(cur_name).rsplit('\\', 1)[-1],
-                     magnification(m, donor['base'])))
-        pick = overrides.get(w)
+            # Already has a HUD. Only ever REPLACE it when this weapon has a named
+            # preference and is not already on it -- an earlier pass gave the magnum
+            # ui\chud\assault_rifle. Without this guard a weapon carrying its own
+            # correct vanilla HUD would be reassigned to a matched donor.
+            cur_short = str(HP._tag_name_by_id(m, cur) or '').rsplit('\\', 1)[-1]
+            if not pick or cur_short.lower() == pick.lower():
+                # Nothing to repoint -- but a DEDICATED chud still has to be checked
+                # for a scope. A map built with magnum.weapon already pointing at
+                # ui\chud\magnum arrives here on the first pass, and returning early
+                # would leave a copied-from-automag scope in place for good.
+                _strip_dedicated(m, chuds, w, pick, want_mag)
+                continue
+            print('    HUD  %-16s had %s, replacing' % (w, cur_short))
         if not pick:
             for cand in HUD_DONORS:
                 ct = chuds.get(cand)
@@ -294,8 +392,9 @@ def fix_huds(m, weapons, overrides=None):
             continue
         datum = HP._h3_tag_datum(m, 'chdt', str(ct['name']))
         struct.pack_into('<I', m.data, wt['base'] + WEAP_HUD + 0xC, datum)
-        print('    HUD  %-16s NULL -> ui\\chud\\%s   (%d magnification level(s))'
-              % (w, pick, want_mag))
+        note = _strip_dedicated(m, chuds, w, pick, want_mag)
+        print('    HUD  %-16s -> ui\\chud\\%s   (weapon has %d magnification level(s))%s'
+              % (w, pick, want_mag, note))
         done.append(w)
     return done
 
@@ -438,11 +537,16 @@ def report(m, zone_base, weapons):
         hud_id = m.u32(wt['base'] + WEAP_HUD + 0xC)
         hud = HP._tag_name_by_id(m, hud_id) if hud_id != 0xFFFFFFFF else None
         mag = magnification(m, wt['base'])
-        # A HUD borrowed from a weapon that scopes differently is the misleading case.
+        # A HUD borrowed from a weapon that scopes differently is the misleading case
+        # -- EXCEPT where it is the deliberate pick (see HUD_PREFERRED). Both current
+        # picks match magnification anyway, so this only matters for a --hud override.
         donor = _weap(m, str(hud).rsplit('\\', 1)[-1]) if hud else None
         if donor is None and hud and str(hud).endswith('carbine'):
             donor = _weap(m, 'covenant_carbine')
-        mismatch = bool(donor and magnification(m, donor['base']) != mag)
+        chosen = HUD_PREFERRED.get(w)
+        deliberate = bool(chosen and hud
+                          and str(hud).rsplit('\\', 1)[-1].lower() == chosen.lower())
+        mismatch = bool(donor and magnification(m, donor['base']) != mag) and not deliberate
         good = bool(mode and jmad and res and hud) and not mismatch
         allgood &= good
         print('    %-16s %-9s %-9s %-16s %-8s %dx  %s'
