@@ -1506,6 +1506,21 @@ def _h3_tag_datum(m, cls, path):
 # Hand-picked drop points (world pos) for maps where the Player Starting Location is
 # unusable — a cinematic/vehicle spot, or spawn-protected. Confirmed reachable in-game.
 # Maps not listed drop on the player spawn. See the project memory on BSP/streaming.
+#
+# KEEP THESE. Measured 2026-08-16 against the ODST machinery (_spawn_is_dead +
+# _live_equipment_spot), which does NOT supersede them: the live-equipment fallback
+# lands 66u from the 020_base anchor and 98u from 120_halo's, where those maps' own
+# spawns are 14u and 12u away. The two mechanisms detect different faults — the
+# heuristic finds an ISOLATED spawn (Kikowani's sits 240u from anything), while these
+# maps' spawns are perfectly populated and merely unreachable while a cinematic or
+# vehicle ride owns the player. 100_citadel is the proof: its spawn is 266u from the
+# on-foot start yet reads "live", because the Pelican it rides in on has objects
+# around it. No positional test can see that; only playing the level can.
+#
+# 040_voi is NOT a counter-example. _spawn_is_dead flags it, but all four of its
+# spawns agree, carry a valid BSP mask, and sit 30u from the nearest crate — open
+# ground, not the 240u void the 15u threshold was tuned for. H3 does not run that
+# check anyway.
 _H3_LOADOUT_ANCHOR = {
     '020_base':    (-25.8, 44.4, -7.2),      # hallway by the armory racks
     '100_citadel': (-254.0, 215.2, -10.5),   # the on-foot start after the Pelican
