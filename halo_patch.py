@@ -820,6 +820,40 @@ _RED_PLASMA_TAG = ('objects' + chr(92) + 'weapons' + chr(92) + 'rifle' + chr(92)
                    + 'plasma_rifle_red' + chr(92) + 'plasma_rifle_red')
 
 
+# eqip "Flags" is a flags16 at 0x1A6; bit 4 is "Never Dropped By AI". ODST sets it on
+# every *_equipment PICKUP tag (11 of 37 on h100) where Halo 3 sets it on none of 27 --
+# which is why Brutes drop equipment in Halo 3 and never in ODST, and why the
+# "Brute Drop Chance" card has nothing to act on there.
+_EQ_FLAGS_FIELD, _EQ_NEVER_DROPPED_BIT = 0x1A6, 4
+
+
+def apply_equipment_ai_drops(m, game):
+    """Clear "Never Dropped By AI" on every eqip tag, so AI can drop equipment again.
+
+    ODST only. The flag is per-TAG, not per-placement, so one pass covers every piece
+    the level carries and it composes with Brute Drop Chance, which tunes the relative
+    weights the flag was suppressing outright.
+    """
+    if str(game).strip() != 'Halo 3: ODST':
+        return []
+    cleared = []
+    for t in m.tags:
+        if t.get('class') != 'eqip' or not t.get('base'):
+            continue
+        off = t['base'] + _EQ_FLAGS_FIELD
+        fl = struct.unpack_from('<H', m.data, off)[0]
+        if not fl & (1 << _EQ_NEVER_DROPPED_BIT):
+            continue
+        struct.pack_into('<H', m.data, off, fl & ~(1 << _EQ_NEVER_DROPPED_BIT))
+        cleared.append(str(t.get('name') or '?').rsplit(chr(92), 1)[-1])
+    if not cleared:
+        return [{'effect': 'AI equipment drops', 'ok': True, 'skip': True,
+                 'reason': 'no equipment had the flag set'}]
+    return [{'effect': 'AI equipment drops', 'ok': True, 'tag': 'eqip',
+             'field': 'Never Dropped By AI', 'old': 'set on %d piece(s)' % len(cleared),
+             'new': 'cleared: ' + ', '.join(sorted(cleared))}]
+
+
 def apply_red_plasma_as_brute(m, registry, tuning):
     """Retune ODST's red plasma rifle to Halo 2's Brute Plasma Rifle.
 
@@ -2858,7 +2892,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, sprint=None,
-              red_plasma=None, odst_downgrade=None):
+              red_plasma=None, odst_downgrade=None, equipment_ai_drops=False):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -3055,6 +3089,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Placement rewrite, so it belongs with the structural passes rather than the
         # value ops. `keep` is the variants a player actually drafted.
         results.extend(apply_odst_downgrade(m, odst_downgrade))
+    if equipment_ai_drops:
+        # Whole-tag flag flip, independent of the value ops, so order does not matter.
+        results.extend(apply_equipment_ai_drops(m, game))
     if red_plasma:
         # ODST only. After the per-field ops so it composes on top of whatever the
         # run patched onto the plasma rifle, rather than being overwritten by it.

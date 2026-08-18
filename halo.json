@@ -770,7 +770,7 @@
 						{ "field": "Guided Angular Velocity Lower" },
 						{ "field": "Guided Angular Velocity Upper" },
 						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
-						{ "field": "Guided Projectile (Outer Range) Error Radius", "games": ["Halo 3"] }
+						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Dual Weapon Error": {
@@ -1223,7 +1223,7 @@
 						{ "field": "Guided Angular Velocity Lower" },
 						{ "field": "Guided Angular Velocity Upper" },
 						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
-						{ "field": "Guided Projectile (Outer Range) Error Radius", "games": ["Halo 3"] }
+						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Dual Weapon Error": {
@@ -2697,7 +2697,7 @@
 						{ "field": "Guided Angular Velocity Lower" },
 						{ "field": "Guided Angular Velocity Upper" },
 						{ "field": "Guided Angular Velocity At Rest" },
-						{ "field": "Guided Projectile (Outer Range) Error Radius" }
+						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" } }
 					]
 				},
 				"Projectile": {
@@ -3697,6 +3697,15 @@
 			}
 		},	
 		"Invincibility": {
+			"Cooldown": {
+				"desc": "How long before the piece can be used again. ODST only: Halo 3 has no cooldown on this equipment, its field reads 0.",
+				"game": "Halo 3: ODST",
+				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
+				"harder_when": "increased",
+				"targets": [
+					{ "field": "Cooldown Time" }
+				]
+			},
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
 				"game": "Halo 3",
@@ -4117,6 +4126,15 @@
 			}	
 		},	
 		"Invisibility": {
+			"Cooldown": {
+				"desc": "How long before the piece can be used again. ODST only: Halo 3 has no cooldown on this equipment, its field reads 0.",
+				"game": "Halo 3: ODST",
+				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
+				"harder_when": "increased",
+				"targets": [
+					{ "field": "Cooldown Time" }
+				]
+			},
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
 				"game": "Halo 3",
@@ -4147,8 +4165,8 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
 				"targets": [
-					{ "field": "Duration" },
-					{ "field": "Invisible Time", "block": "Invisibility Mode", "index": 0 }
+					{ "field": "Duration", "group": "Invisibility Duration" },
+					{ "field": "Invisible Time", "block": "Invisibility Mode", "index": 0, "games": ["Halo 3"], "group": "Invisibility Duration" }
 				]
 			}
 		}

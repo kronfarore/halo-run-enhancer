@@ -153,7 +153,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
-               'odst_all_starting_profiles',
+               'odst_all_starting_profiles', 'odst_ai_equipment_drops',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -453,6 +453,11 @@ CONFIG = {
     # Off by default: ODST also names NPC profiles (dutch, buck, odst02, 'a'), so this
     # hands squadmates the player's weapons too. Harmless to a run, but visible.
     "odst_all_starting_profiles": False,
+    # ODST sets "Never Dropped By AI" on every equipment PICKUP tag; Halo 3 sets it on
+    # none. That is why Brutes never drop equipment in ODST, and why a Brute Drop
+    # Chance card has nothing to act on there. With this on, the flag is cleared on
+    # every eqip tag in the map so AI can drop equipment again and the card works.
+    "odst_ai_equipment_drops": False,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -4544,7 +4549,9 @@ class MagnitudeEditorDialog(QDialog):
                 red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                             if (CONFIG.get('odst_red_plasma_as_brute')
                                 and self.game == 'Halo 3: ODST') else None),
-                odst_downgrade=self._odst_downgrade_keep()))
+                odst_downgrade=self._odst_downgrade_keep(),
+                equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
+                and self.game == 'Halo 3: ODST'))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
@@ -4561,7 +4568,9 @@ class MagnitudeEditorDialog(QDialog):
                     skulls=skulls,
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
-                    odst_downgrade=self._odst_downgrade_keep()))
+                    odst_downgrade=self._odst_downgrade_keep(),
+                equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
+                and self.game == 'Halo 3: ODST'))
                 ok = sum(1 for r in hub_results if r.get('ok') and not r.get('skip'))
                 results.append({'effect': 'Mombasa Streets (hub)',
                                 'tag': Path(hub).name, 'ok': True,
@@ -5632,6 +5641,17 @@ class OptionsDialog(QDialog):
             "same weapons. That does not affect the run, but you will see it.")
         form.addRow("ODST profiles:", self.odst_all_profiles_cb)
 
+        self.odst_ai_drops_cb = QCheckBox("ODST: let AI drop equipment again")
+        self.odst_ai_drops_cb.setChecked(bool(CONFIG.get('odst_ai_equipment_drops')))
+        self.odst_ai_drops_cb.setToolTip(
+            "ODST flags every equipment pickup “Never Dropped By AI” — all 11 of them, "
+            "where Halo 3 flags none of its 27. That is why Brutes drop equipment in "
+            "Halo 3 and never in ODST.\n\nWith this on, the flag is cleared on every "
+            "equipment tag in the map, so Brutes drop their gear again — which also "
+            "gives the Brute Drop Chance card something to act on, instead of tuning "
+            "weights the flag was overriding outright.")
+        form.addRow("ODST AI drops:", self.odst_ai_drops_cb)
+
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
         self.odst_shield_health_cb.setToolTip(
@@ -5925,6 +5945,7 @@ class OptionsDialog(QDialog):
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
+            'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
