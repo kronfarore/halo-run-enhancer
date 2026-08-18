@@ -79,6 +79,7 @@ HUD_PREFERRED = {'magnum': 'automag', 'smg': 'smg_silenced'}
 # scoped HUDs have such widgets and all six unscoped ones have exactly zero.
 CHUD_WIDGETS = (0x0, 0x50)
 CHUD_BITMAPS = (0x38, 0x54)
+CHUD_TEXTS = (0x44, 0x48)
 CHUD_STATES = (0x8, 0x3C)
 CHUD_ZOOM_AT = 0x26
 _ZOOM_LEVELS, _UNZOOMED = 0b110, 0b001
@@ -307,6 +308,255 @@ def magnification(m, base_weap):
     return struct.unpack_from('<h', m.data, base_weap + WEAP_MAGNIFICATION)[0]
 
 
+def _icon_sprites(m, chud_base):
+    """(weapon-icon sprite indices, count of dead bitmap refs) for one chud."""
+    spr, dead = [], 0
+    for w in _chud_block(m, chud_base, CHUD_WIDGETS):
+        for b in _chud_block(m, w, CHUD_BITMAPS):
+            rid = m.u32(b + 0x40 + 0xC)
+            t = m.tag(rid & 0xFFFF) if rid != 0xFFFFFFFF else None
+            if not t or not t.get('name'):
+                dead += 1
+            elif str(t['name']).rsplit('\\', 1)[-1] == 'weapon_scematics':
+                spr.append(m.data[b + 0x50])
+    return sorted(set(spr)), dead
+
+
+CHUD_PLACEMENT = (0x14, 0x1C)
+_ANCHOR_TOP_RIGHT = 1
+
+
+def _widget_signature(m, w):
+    """What a widget draws, as (bitmap, sprite) pairs — its identity across games.
+
+    The `_h3` suffix is dropped so an imported sheet still matches its ODST twin: the
+    sprite INDICES are the same for these weapons, it is the artwork that differs.
+    """
+    sig = []
+    for b in _chud_block(m, w, CHUD_BITMAPS):
+        rid = m.u32(b + 0x40 + 0xC)
+        t = m.tag(rid & 0xFFFF) if rid != 0xFFFFFFFF else None
+        nm = str(t['name']).rsplit('\\', 1)[-1] if t and t.get('name') else 'NULL'
+        sig.append((nm[:-3] if nm.endswith('_h3') else nm, m.data[b + 0x50]))
+    return tuple(sorted(sig))
+
+
+def align_placement(m, dst, src):
+    """Move an imported Halo 3 HUD into ODST's corner. Returns placements rewritten.
+
+    Halo 3 anchors the weapon readout TOP RIGHT and ODST anchors it BOTTOM RIGHT, so an
+    imported chud draws the right icon and the right ammo meter in the wrong corner.
+    Placement is a plain field, so this is fixable on the built map -- no rebuild.
+
+    Only TOP RIGHT widgets are moved, matched to the ODST widget drawing the same
+    thing. H3 also carries a mirrored TOP LEFT copy of the ammo group for splitscreen,
+    which shares its signature; anchoring on the corner ODST does not use for this HUD
+    keeps that duplicate out of it instead of stacking two readouts in one corner.
+    """
+    srcmap = {}
+    for w in _chud_block(m, src['base'], CHUD_WIDGETS):
+        srcmap.setdefault(_widget_signature(m, w), w)
+    moved = 0
+    for w in _chud_block(m, dst['base'], CHUD_WIDGETS):
+        dpl = _chud_block(m, w, CHUD_PLACEMENT)
+        if not dpl or struct.unpack_from('<h', m.data, dpl[0])[0] != _ANCHOR_TOP_RIGHT:
+            continue
+        s = srcmap.get(_widget_signature(m, w))
+        if s is None:
+            continue
+        spl = _chud_block(m, s, CHUD_PLACEMENT)
+        for i in range(min(len(dpl), len(spl))):
+            m.data[dpl[i]:dpl[i] + CHUD_PLACEMENT[1]] = \
+                m.data[spl[i]:spl[i] + CHUD_PLACEMENT[1]]
+            moved += 1
+    return moved
+
+
+def align_sprites(m, dst, src):
+    """Fix sprite indices on the bitmaps that were NOT imported. Returns fixes made.
+
+    Repointing a chud at imported `_h3` sheets fixes the icon and the ammo meter, but
+    every OTHER bitmap it draws still resolves to ODST's sheet while carrying HALO 3's
+    index -- and those sheets are ordered differently, so the sprite is wrong or blank.
+    It cost the SMG its crosshair: H3's chud asks ui\\chud\\hud_reticles for sprite 3,
+    where ODST's SMG reticle is sprite 22. The magnum only escaped because both games
+    happen to put its reticles at 14 and 24.
+
+    Indices are taken from the ODST counterpart, matched by ordinal position among the
+    widgets drawing that same bitmap, so a HUD using several sprites of one sheet keeps
+    them in order rather than collapsing to one value.
+    """
+    def occurrences(chud):
+        out = {}
+        for w in _chud_block(m, chud['base'], CHUD_WIDGETS):
+            for b in _chud_block(m, w, CHUD_BITMAPS):
+                rid = m.u32(b + 0x40 + 0xC)
+                t = m.tag(rid & 0xFFFF) if rid != 0xFFFFFFFF else None
+                if t and t.get('name'):
+                    out.setdefault(str(t['name']).rsplit('\\', 1)[-1], []).append(b)
+        return out
+
+    d, s = occurrences(dst), occurrences(src)
+    fixed = 0
+    for name, dsts in d.items():
+        if name.endswith('_h3'):
+            continue                      # imported art: H3's own indices are correct
+        srcs = s.get(name)
+        for i, b in enumerate(dsts):
+            if not srcs or i >= len(srcs):
+                break
+            want = m.data[srcs[i] + 0x50]
+            if m.data[b + 0x50] != want:
+                struct.pack_into('<B', m.data, b + 0x50, want)
+                fixed += 1
+    return fixed
+
+
+def _uses_imported_art(m, chud):
+    """True if this chud draws from a bitmap imported from Halo 3 (a `_h3` tag).
+
+    Those exist only because someone deliberately repointed the kit's chud at H3's
+    sprite sheets, so the tag is already authored correctly and must be left alone.
+    """
+    for w in _chud_block(m, chud['base'], CHUD_WIDGETS):
+        for b in _chud_block(m, w, CHUD_BITMAPS):
+            rid = m.u32(b + 0x40 + 0xC)
+            t = m.tag(rid & 0xFFFF) if rid != 0xFFFFFFFF else None
+            if t and t.get('name') and str(t['name']).rsplit('\\', 1)[-1].endswith('_h3'):
+                return True
+    return False
+
+
+def _chud_cloned_from(m, dst, src):
+    """True if `dst` already carries `src`'s widgets, so a rerun does not clone again.
+
+    Each clone allocates fresh partition slack; re-running the preparation would leak a
+    copy every time. The tell is the icon: the imported H3 tag points at a sprite index
+    from H3's ordering of weapon_scematics and carries dead bitmap refs, neither of
+    which survives a clone.
+    """
+    d_spr, d_dead = _icon_sprites(m, dst['base'])
+    s_spr, _ = _icon_sprites(m, src['base'])
+    if d_dead or d_spr != s_spr:
+        return False
+    # An earlier clone shared the source's State Data blocks. Those must be re-cloned,
+    # or unzoom_states would write straight into the source weapon's HUD -- so a clone
+    # only counts as done once its states are its own.
+    dws, sws = (_chud_block(m, dst['base'], CHUD_WIDGETS),
+                _chud_block(m, src['base'], CHUD_WIDGETS))
+    soff = CHUD_STATES[0]
+    for dw, sw in zip(dws, sws):
+        if m.i32(dw + soff) and m.u32(dw + soff + 4) == m.u32(sw + soff + 4):
+            return False
+    return True
+
+
+def clone_chud(m, dst, src):
+    """Replace `dst`'s widgets with a private copy of `src`'s. Returns widgets copied.
+
+    Importing Halo 3's ui\\chud\\magnum and \\smg gets the tag in, but not a correct
+    HUD: the weapon icon is a SPRITE INDEX into ui\\chud\\bitmaps\\weapon_scematics, and
+    the two games order that sheet differently (ODST 27 sprites, H3 26). H3's SMG points
+    at sprite 12, which is not the SMG in ODST's sheet, so the icon does not render; the
+    ammo readout is H3's layout rather than ODST's as well.
+
+    ODST has no plain magnum or SMG sprite to point at -- it cut both weapons -- so the
+    only ODST-correct source for the icon AND the ammo is the counterpart HUD. Cloning
+    it into our own tag gets both right, and because the clone is private the scope can
+    then be stripped from it, which is the one thing the counterpart gets wrong.
+
+    The arrays AND every State Data block are allocated fresh, because unzoom_states
+    rewrites states and a shared block would rewrite the SOURCE weapon's HUD -- an
+    early version did exactly that and took the zoomed reticle off the real auto magnum
+    and silenced SMG. Placement/Animation/Render stay shared: nothing ever writes them,
+    and H3 addresses another tag's data through the partition table just as happily.
+    """
+    woff, wesz = CHUD_WIDGETS
+    ws = _chud_block(m, src['base'], CHUD_WIDGETS)
+    if not ws:
+        return 0
+
+    def states_size(c):
+        return len(_chud_block(m, c, CHUD_STATES)) * CHUD_STATES[1]
+
+    sizes = [len(ws) * wesz]
+    for w in ws:
+        kids = _chud_block(m, w, CHUD_BITMAPS) + _chud_block(m, w, CHUD_TEXTS)
+        sizes += [len(_chud_block(m, w, CHUD_BITMAPS)) * CHUD_BITMAPS[1],
+                  len(_chud_block(m, w, CHUD_TEXTS)) * CHUD_TEXTS[1],
+                  states_size(w)] + [states_size(k) for k in kids]
+    offs = HP._h3_reserve(m, [s for s in sizes if s])
+    if offs is None:
+        return 0
+    it = iter(offs)
+
+    def own_states(dst_c, src_c):
+        """Give the copy at dst_c its own copy of src_c's State Data."""
+        sts = _chud_block(m, src_c, CHUD_STATES)
+        soff, sesz = CHUD_STATES
+        if not sts:
+            struct.pack_into('<iI', m.data, dst_c + soff, 0, 0)
+            return
+        arr = next(it)
+        for j, s in enumerate(sts):
+            m.data[arr + j * sesz:arr + (j + 1) * sesz] = m.data[s:s + sesz]
+        struct.pack_into('<iI', m.data, dst_c + soff, len(sts), m.off2data(arr))
+
+    warr = next(it)
+    for i, w in enumerate(ws):
+        e = warr + i * wesz
+        m.data[e:e + wesz] = m.data[w:w + wesz]
+        copied_kids = []
+        for blk, kids in ((CHUD_BITMAPS, _chud_block(m, w, CHUD_BITMAPS)),
+                          (CHUD_TEXTS, _chud_block(m, w, CHUD_TEXTS))):
+            boff, besz = blk
+            if not kids:
+                struct.pack_into('<iI', m.data, e + boff, 0, 0)
+                continue
+            arr = next(it)
+            for j, k in enumerate(kids):
+                m.data[arr + j * besz:arr + (j + 1) * besz] = m.data[k:k + besz]
+            struct.pack_into('<iI', m.data, e + boff, len(kids), m.off2data(arr))
+            copied_kids += [(arr + j * besz, k) for j, k in enumerate(kids)]
+        own_states(e, w)
+        for dst_k, src_k in copied_kids:
+            own_states(dst_k, src_k)
+    struct.pack_into('<iI', m.data, dst['base'] + woff, len(ws), m.off2data(warr))
+    return len(ws)
+
+
+def unzoom_states(m, chud_tag):
+    """Stop a scopeless weapon's HUD rendering anything in a ZOOM state.
+
+    Removing the scope widgets is not the whole story: the reticle widget carries
+    "Unit Zoom State" = Unzoomed|Zoom Lvl 1, so it is also drawn zoomed, and it is the
+    scoped reticle that comes up. The counterpart weapon can zoom, so this is right for
+    it; ours cannot, and the engine still enters the zoom state on the input -- you get
+    the scoped crosshair with no magnification behind it.
+
+    Only states that ALREADY render unzoomed are narrowed. A state of 0 means "no
+    constraint" and must stay 0: clearing bits on a zoom-only state would turn it into
+    render-always, which is the opposite of what is wanted (those widgets are removed by
+    strip_scope instead). Dedicated chuds only -- a stock one is shared.
+    """
+    changed = 0
+
+    def narrow(container):
+        nonlocal changed
+        for sd in _chud_block(m, container, CHUD_STATES):
+            z = m.u32(sd + CHUD_ZOOM_AT) & 0xFFFF
+            if (z & _UNZOOMED) and (z & _ZOOM_LEVELS):
+                struct.pack_into('<H', m.data, sd + CHUD_ZOOM_AT, z & ~_ZOOM_LEVELS)
+                changed += 1
+
+    for w in _chud_block(m, chud_tag['base'], CHUD_WIDGETS):
+        narrow(w)
+        for blk in (CHUD_BITMAPS, CHUD_TEXTS):
+            for k in _chud_block(m, w, blk):
+                narrow(k)
+    return changed
+
+
 def _strip_dedicated(m, chuds, weapon, pick, want_mag):
     """Drop the scope from a chud DEDICATED to this weapon, when it has no zoom.
 
@@ -315,13 +565,42 @@ def _strip_dedicated(m, chuds, weapon, pick, want_mag):
     fires when the chud is named for the weapon, so no shared HUD is ever touched.
     Returns a note for the log line.
     """
-    if not pick or pick.lower() != weapon.lower() or want_mag > 0:
+    # Only the weapons ODST has no HUD of its own for. Every other weapon's chud is
+    # named after it too, and those are its real vanilla HUD -- not ours to rewrite.
+    if weapon not in HUD_PREFERRED or not pick or pick.lower() != weapon.lower():
         return ''
     ct = chuds.get(pick.lower())
     if not ct:
         return ''
+    note = ''
+    # Rebase the dedicated tag on ODST's own HUD first: the imported H3 one carries an
+    # icon sprite index into a differently-ordered sheet and H3's ammo layout.
+    #
+    # ...unless the kit's chud has been repointed at imported H3 ART (see the
+    # ballistic_meters_h3 / weapon_scematics_h3 recipe). Then H3's own sprite indices
+    # are the CORRECT ones -- that is the whole point of the import -- and cloning ODST's
+    # widgets over them would throw the meters away again.
+    src = chuds.get((HUD_PREFERRED.get(weapon) or '').lower())
+    if _uses_imported_art(m, ct):
+        note += '  [H3 art: kept, not cloned]'
+        if src:
+            n = align_placement(m, ct, src)
+            note += '  [moved %d placement(s) to ODST\'s corner]' % n if n else ''
+            k = align_sprites(m, ct, src)
+            note += '  [remapped %d sprite(s) to ODST\'s sheets]' % k if k else ''
+        src = None
+    if src and src['base'] != ct['base'] and not _chud_cloned_from(m, ct, src):
+        n = clone_chud(m, ct, src)
+        note += '  [cloned %d widget(s) from %s]' % (
+            n, str(src['name']).rsplit('\\', 1)[-1]) if n else '  [clone FAILED: no slack]'
+    if want_mag > 0:
+        return note
     gone = strip_scope(m, ct)
-    return '  [stripped %d scope widget(s)]' % gone if gone else '  [no scope]'
+    note += '  [stripped %d scope widget(s)]' % gone if gone else '  [no scope]'
+    flat = unzoom_states(m, ct)
+    if flat:
+        note += '  [unzoomed %d state(s)]' % flat
+    return note
 
 
 def fix_huds(m, weapons, overrides=None):
@@ -365,11 +644,14 @@ def fix_huds(m, weapons, overrides=None):
             # correct vanilla HUD would be reassigned to a matched donor.
             cur_short = str(HP._tag_name_by_id(m, cur) or '').rsplit('\\', 1)[-1]
             if not pick or cur_short.lower() == pick.lower():
-                # Nothing to repoint -- but a DEDICATED chud still has to be checked
-                # for a scope. A map built with magnum.weapon already pointing at
-                # ui\chud\magnum arrives here on the first pass, and returning early
-                # would leave a copied-from-automag scope in place for good.
-                _strip_dedicated(m, chuds, w, pick, want_mag)
+                # Nothing to repoint -- but a DEDICATED chud still has to be rebased on
+                # ODST's own HUD and checked for a scope. A map built with magnum.weapon
+                # already pointing at ui\chud\magnum arrives here on the first pass, and
+                # returning early would leave H3's icon and ammo in place for good.
+                note = _strip_dedicated(m, chuds, w, pick, want_mag)
+                if note:
+                    print('    HUD  %-16s ui\\chud\\%s%s' % (w, pick, note))
+                    done.append(w)
                 continue
             print('    HUD  %-16s had %s, replacing' % (w, cur_short))
         if not pick:
@@ -664,6 +946,14 @@ def main(argv=None):
         try:
             results[n] = prepare(n, not a.skip_build, placeable, a.verify_only,
                                  huds)
+        except PermissionError as e:
+            # Almost always MCC holding the map open -- it locks whichever level is
+            # loaded, so this hits one map and lets the rest through, which reads as a
+            # puzzling one-map failure rather than "the game is running".
+            print('  !! %s' % e)
+            print('  !! CLOSE MCC and run this map again — it locks the level it has '
+                  'loaded, so nothing was written and the map is unchanged.')
+            results[n] = False
         except Exception as e:
             print('  !! %s' % e)
             results[n] = False

@@ -153,6 +153,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
+               'odst_all_starting_profiles',
                'set_starting_equipment', 'equipment_all_selected',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
@@ -444,6 +445,14 @@ CONFIG = {
     # Derived from the map rather than hardcoded, so a level that was never prepared
     # correctly offers less instead of offering weapons that will not appear.
     "odst_pools_from_map": False,
+    # ODST chooses the player's Starting Profile from the insertion point, and which
+    # one is live can change as a mission progresses -- so the picks can be written to
+    # profile 0 and the game can spawn the player on another one holding the map's
+    # vanilla weapons. With this on, EVERY profile in the scenario gets the run's
+    # starting weapons, so wherever the game spawns you the loadout is right.
+    # Off by default: ODST also names NPC profiles (dutch, buck, odst02, 'a'), so this
+    # hands squadmates the player's weapons too. Harmless to a run, but visible.
+    "odst_all_starting_profiles": False,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -4085,7 +4094,13 @@ class MagnitudeEditorDialog(QDialog):
         null_empty = bool(CONFIG.get('set_starting_weapons'))
         if not (prim or sec) and not (null_profiles or (h3_coop and null_coop) or null_empty):
             return None
+        # ODST picks the starting profile from the insertion point, and which one is
+        # live can change mid-mission — so a run can spawn on a profile the patch never
+        # touched and lose its weapons. With this on, every profile gets the picks.
+        all_profiles = (self.game == 'Halo 3: ODST'
+                        and bool(CONFIG.get('odst_all_starting_profiles')))
         return {'primary': prim, 'secondary': sec, 'null_empty_slots': null_empty,
+                'all_profiles': all_profiles,
                 'profiles': profiles, 'null_profiles': null_profiles,
                 'h3_coop': h3_coop,
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
@@ -5602,6 +5617,21 @@ class OptionsDialog(QDialog):
             "never appear.")
         form.addRow("ODST weapon pools:", self.odst_pools_cb)
 
+        self.odst_all_profiles_cb = QCheckBox(
+            "ODST: write the starting weapons to EVERY starting profile")
+        self.odst_all_profiles_cb.setChecked(
+            bool(CONFIG.get('odst_all_starting_profiles')))
+        self.odst_all_profiles_cb.setToolTip(
+            "ODST picks the player's Starting Profile from the insertion point, and "
+            "which one is live can change as a mission progresses — so the run's "
+            "weapons can be written to profile 0 and the game can still spawn you on "
+            "another profile holding the map's vanilla guns.\n\nWith this on, every "
+            "profile in the scenario gets the picked starting weapons, so the loadout "
+            "is right wherever the game puts you.\n\nOff by default because ODST also "
+            "names NPC profiles (dutch, buck, odst02), so this hands squadmates the "
+            "same weapons. That does not affect the run, but you will see it.")
+        form.addRow("ODST profiles:", self.odst_all_profiles_cb)
+
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
         self.odst_shield_health_cb.setToolTip(
@@ -5894,6 +5924,7 @@ class OptionsDialog(QDialog):
             'odst_shield_into_health': self.odst_shield_health_cb.isChecked(),
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
+            'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
@@ -7022,19 +7053,27 @@ class HaloGUI(QMainWindow):
         finally:
             self.pairs_container.setUpdatesEnabled(True)
 
-    def _sync_save_button(self):
-        """Save is available at all times EXCEPT while a card-picking round is in
-        progress and not yet concluded. Weapon selection and completed rounds allow it.
+    def _mid_picking_round(self):
+        """True while a card-picking round is on screen and not yet concluded.
 
         The phase alone is not that test: changing a weapon, changing mission and every
-        other reset parks the run in 'player1_turn' with NO cards on screen, which left
-        save disabled while nothing was being picked. A round is only really in progress
+        other reset parks the run in 'player1_turn' with NO cards on screen, which read
+        as mid-round while nothing was being picked. A round is only really in progress
         once pairs have been generated, so require both.
+
+        Shared by the button's enabled state and on_save's own guard — they used
+        different rules, so after the opening weapon selection the button was live but
+        saving still refused with "Both players must select before saving!".
         """
         rs = getattr(self, 'run_state', None)
-        in_round = (bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
-                    and bool(getattr(rs, 'pairs', None)))
-        self.save_btn.setEnabled(not in_round)
+        return (bool(rs) and rs.phase in ('player1_turn', 'player2_turn')
+                and bool(getattr(rs, 'pairs', None)))
+
+    def _sync_save_button(self):
+        """Save is available at all times EXCEPT while a card-picking round is in
+        progress and not yet concluded. Weapon selection and completed rounds allow it."""
+        rs = getattr(self, 'run_state', None)
+        self.save_btn.setEnabled(not self._mid_picking_round())
         qb = getattr(self, 'quicksave_btn', None)
         if qb is not None:
             # Quicksave writes a completed run for the partner to pick up, so it needs
@@ -7492,8 +7531,13 @@ class HaloGUI(QMainWindow):
         return target
 
     def on_save(self):
-        if self.run_state.phase != 'complete':
-            QMessageBox.warning(self, "Not Complete", "Both players must select before saving!")
+        # Same rule the button uses. Demanding 'complete' here refused every save the
+        # button offered outside a finished round — including right after the opening
+        # weapon selection, which is exactly when a run is worth saving.
+        if self._mid_picking_round():
+            QMessageBox.warning(self, "Round in progress",
+                                "Finish this picking round before saving — both players "
+                                "need to choose a card first.")
             return
 
         selections_dir = app_data_dir() / "selections"

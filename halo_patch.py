@@ -616,9 +616,17 @@ def _apply_starting_equipment(m, game, registry, starting):
         default = [0] if third_gen else [0, 1]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
-        profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
-        if third_gen:
-            profiles = [i for i in profiles if i == 0]
+        if starting.get('all_profiles'):
+            # Deliberate blanket write (ODST option). Which profile ODST spawns the
+            # player on follows the insertion point and can change mid-mission, so a
+            # run that must not lose its picks arms every one of them. Note this
+            # includes ODST's NPC-named profiles (dutch, buck, odst02, ...), which is
+            # why it is opt-in rather than the default -- see the comment above.
+            profiles = list(range(count))
+        else:
+            profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
+            if third_gen:
+                profiles = [i for i in profiles if i == 0]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
@@ -1356,6 +1364,89 @@ def h3_player_spawns(m, game='Halo 3'):
     return out
 
 
+# scnr script data, shared with sprint_toolkit/h3_script_dump.py: Script Expressions
+# 0x4DC (0x18 elements), and the script string blob behind the dataRef at 0x418.
+_SCRIPT_EXPRS = (0x4DC, 0x18)
+_SCRIPT_STRINGS = 0x418
+_CUTSCENE_FLAGS = (0x468, 0x1C)
+_TELEPORT_FLAG_RE = re.compile(r'^fl_(\w+?)_teleport_(\d+)$')
+
+
+def _odst_teleport_points(m):
+    """Where the HUB actually puts the player, read from its own scripts.
+
+    Mombasa Streets does not start the player at a Player Starting Location for most of
+    its entry points: `h100_reentry_cinematic` TELEPORTS them to cutscene flags named
+    `fl_<scene>_teleport_<player>` depending on which mission they came back from. The
+    scenario's starting locations only cover the very first entry and the two Firefight
+    insertion points, so equipment placed on those left six of the eight level-select
+    start points bare.
+
+    Returns one averaged position per scene -- the four per-player flags of a set sit
+    within ~3 units of each other, so a single drop reaches any of them.
+    """
+    scnr = _scnr_base(m)
+    if scnr is None:
+        return []
+    n_expr = max(0, m.i32(scnr + _SCRIPT_EXPRS[0]))
+    ebase = _block_base(m, scnr + _SCRIPT_EXPRS[0])
+    soff = m.u32(scnr + _SCRIPT_STRINGS + 0xC)
+    sbase = m.data2off(soff) if (soff and hasattr(m, 'data2off')) else None
+    ssize = max(0, m.i32(scnr + _SCRIPT_STRINGS))
+    nf = max(0, m.i32(scnr + _CUTSCENE_FLAGS[0]))
+    fbase = _block_base(m, scnr + _CUTSCENE_FLAGS[0])
+    if not (ebase and sbase and fbase):
+        return []
+
+    def _string_at(off):
+        if not (0 <= off < ssize):
+            return None
+        end = m.data.find(b'\0', sbase + off, sbase + ssize)
+        if end < 0:
+            return None
+        return bytes(m.data[sbase + off:end]).decode('latin1', 'replace')
+
+    by_scene = {}
+    for i in range(n_expr):
+        e = ebase + i * _SCRIPT_EXPRS[1]
+        s = _string_at(struct.unpack_from('<I', m.data, e + 0xC)[0])
+        if not s:
+            continue
+        hit = _TELEPORT_FLAG_RE.match(s)
+        if not hit:
+            continue
+        fi = struct.unpack_from('<I', m.data, e + 0x10)[0] & 0xFFFF
+        if 0 <= fi < nf:
+            by_scene.setdefault(hit.group(1), {})[fi] = struct.unpack_from(
+                '<fff', m.data, fbase + fi * _CUTSCENE_FLAGS[1] + 0x4)
+    out = []
+    for scene in sorted(by_scene):
+        pts = list(by_scene[scene].values())
+        out.append((tuple(sum(c) / len(pts) for c in zip(*pts)), -1))
+    return out
+
+
+def _spawn_clusters(spawns, radius=8.0):
+    """Distinct player-start positions, merging the ones stacked on the same spot.
+
+    ODST levels list one starting location per player per insertion point -- Mombasa
+    Streets has 21 for 4 real places, Tayari Plaza 22 for 3 -- so equipping "the spawn"
+    has to mean equipping each PLACE, not each entry. The radius only has to separate
+    insertion points from co-op slots at the same one; the closest distinct pair
+    measured is 6.6 units apart, and dropping one set between them serves both.
+    """
+    out = []
+    for pos, bsp in spawns:
+        for i, (p, b) in enumerate(out):
+            if math.dist(pos, p) < radius:
+                if b < 0 <= bsp:
+                    out[i] = (p, bsp)       # keep whichever entry knows its BSP
+                break
+        else:
+            out.append((pos, bsp))
+    return out
+
+
 def _h3_reserve(m, sizes):
     """Reserve one 16-byte-aligned region per entry in `sizes`, all inside a SINGLE
     partition zero-run, each mapping back to a tag pointer. Returns the list of file
@@ -1727,49 +1818,79 @@ def _apply_spawn_equipment(m, game, spec):
     new_pal = []                # datums to append to the palette, in assignment order
     new_pal_idx = {}            # path key -> the palette index it will get
     used_weapons = set()        # weapon placements already used as a fallback drop
+    # ODST levels start the player at an INSERTION POINT, and which one is live changes
+    # with mission progress: Mombasa Streets has 21 starting locations in 4 clusters and
+    # Tayari Plaza 22 in 3. Dropping only at spawns[si] armed the first cluster and left
+    # every other insertion point empty. Drop at each distinct cluster instead, so the
+    # player is equipped wherever the level actually puts them. Halo 3 keeps the old
+    # one-spawn-per-player behaviour: its four spawns ARE the two players' starts.
+    odst = str(game).strip() == 'Halo 3: ODST'
+    clusters = None
+    if odst and not anchor:
+        # Starting locations first, then the hub's scripted teleport destinations --
+        # on Mombasa Streets those are six of the eight level-select start points and
+        # no starting location covers them. _spawn_clusters de-duplicates any overlap.
+        clusters = _spawn_clusters(list(spawns) + _odst_teleport_points(m))
+
+    def _mask_for(pos, bsp):
+        # ODST spawns carry no BSP index (they use insertion points), so the BSP a
+        # placement must attach to is derived from the nearest vanilla weapon there
+        # instead — the same approximation the curated anchors already use.
+        return (1 << bsp) if bsp >= 0 else _h3_mask_at(m, pos, game)
+
     ring = {}                   # base-point key -> how many items dropped there so far
+    fallback_done = set()       # (label, group) already given a fallback drop
     for si, items in enumerate(groups):
         if not items:
             continue
-        if not anchor and si >= len(spawns):
+        if anchor:
+            targets = [('anchor', anchor, anchor_mask)]
+        elif clusters is not None:
+            targets = [('c%d' % i, p, _mask_for(p, b))
+                       for i, (p, b) in enumerate(clusters)]
+        elif si < len(spawns):
+            targets = [(si, spawns[si][0], _mask_for(*spawns[si]))]
+        else:
             # a non-error outcome (solo level, no player 2): report as a skip
             for tag in items:
                 out.append({'effect': 'starting equipment',
                             'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
                             'reason': f'no player starting location {si}'})
             continue
-        base_pos = anchor if anchor else spawns[si][0]
-        # ODST spawns carry no BSP index (they use insertion points), so the BSP a
-        # placement must attach to is derived from the nearest vanilla weapon there
-        # instead — the same approximation the curated anchors already use.
-        base_mask = (anchor_mask if anchor
-                     else (1 << spawns[si][1]) if spawns[si][1] >= 0
-                     else _h3_mask_at(m, base_pos, game))
-        bkey = 'anchor' if anchor else si
-        for tag in items:
-            key = str(tag).replace('/', '\\').lower()
-            label = str(tag).rsplit('\\', 1)[-1]
-            pi, added = _resolve_pi(tag, key, label)
-            if pi is None:
-                continue
-            if label in skip:
-                # can't stream at the start -> drop on the nearest weapon in a BSP where
-                # it does; multiple such pieces spread over distinct weapons
-                emask = _h3_stream_mask(m, ioff, ies, pi)
-                fb = _h3_fallback_weapon(m, base_pos, emask, used_weapons) if emask else None
-                if fb is None:
-                    out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
-                                'skip': True, 'reason': "can't spawn at start, no fallback spot"})
+        for bkey, base_pos, base_mask in targets:
+            for tag in items:
+                key = str(tag).replace('/', '\\').lower()
+                label = str(tag).rsplit('\\', 1)[-1]
+                pi, added = _resolve_pi(tag, key, label)
+                if pi is None:
                     continue
-                used_weapons.add(fb[0])
-                plan.append((pi, fb[1], fb[2], label, si, added, 'fallback'))
-            else:
-                # tight ring around the base point so multiple items don't interpenetrate
-                kk = ring.get(bkey, 0)
-                ring[bkey] = kk + 1
-                ang = kk * 1.9
-                p = (base_pos[0] + 0.8 * math.cos(ang), base_pos[1] + 0.8 * math.sin(ang), base_pos[2])
-                plan.append((pi, p, base_mask, label, si, added, 'start'))
+                if label in skip:
+                    # can't stream at the start -> drop on the nearest weapon in a BSP
+                    # where it does; multiple such pieces spread over distinct weapons.
+                    # Once per piece, not once per cluster: the fallback spot is chosen
+                    # by proximity and would otherwise consume a weapon per cluster.
+                    if (label, si) in fallback_done:
+                        continue
+                    emask = _h3_stream_mask(m, ioff, ies, pi)
+                    fb = _h3_fallback_weapon(m, base_pos, emask, used_weapons) if emask else None
+                    if fb is None:
+                        out.append({'effect': 'starting equipment', 'field': label,
+                                    'ok': True, 'skip': True,
+                                    'reason': "can't spawn at start, no fallback spot"})
+                        fallback_done.add((label, si))
+                        continue
+                    used_weapons.add(fb[0])
+                    fallback_done.add((label, si))
+                    plan.append((pi, fb[1], fb[2], label, bkey, added, 'fallback'))
+                else:
+                    # tight ring around the base point so multiple items don't
+                    # interpenetrate; keyed per cluster so each ring starts fresh
+                    kk = ring.get(bkey, 0)
+                    ring[bkey] = kk + 1
+                    ang = kk * 1.9
+                    p = (base_pos[0] + 0.8 * math.cos(ang),
+                         base_pos[1] + 0.8 * math.sin(ang), base_pos[2])
+                    plan.append((pi, p, base_mask, label, bkey, added, 'start'))
     if not plan:
         return out
 
@@ -1818,7 +1939,7 @@ def _apply_spawn_equipment(m, game, spec):
     nxt = max(u & 0xFFFF for u in uids) + 1
     salt = uids[tmpl] >> 16
 
-    for k, (pi, pos, mask, label, si, added, mode) in enumerate(plan):
+    for k, (pi, pos, mask, label, bkey, added, mode) in enumerate(plan):
         e = dest + (N + k) * ies
         m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
         struct.pack_into('<h', m.data, e + _EQ_PALETTE, pi)
@@ -1836,7 +1957,10 @@ def _apply_spawn_equipment(m, game, spec):
         elif anchor:
             where = 'at start anchor'
         else:
-            where = f'on spawn {si}'
+            # bkey names the drop point: a cluster id on ODST (one per insertion
+            # point), else the player index whose start it is.
+            where = ('at start cluster %s' % str(bkey)[1:] if str(bkey).startswith('c')
+                     else 'on spawn %s' % bkey)
         out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
                     'old': 'not present', 'new': where + (' (+palette)' if added else '')})
 
@@ -1991,10 +2115,14 @@ _ZOOM_UI = {
                'blocks': [
                    {'off': 0x8, 'elem': 0x64, 'sel': ('and', 0x8, 0b11 << 7), 'child': None},
                ]},
-    # H3 and ODST share the chud_definition layout. Their scope is NOT a flat block on
-    # the HUD like the earlier games': it is a set of Bitmap/Text widgets NESTED inside
-    # top-level HUD Widgets, so these use the nested copier below rather than 'blocks'.
-    'Halo 3': {'hud_ref': 0x418, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
+    # H3 and ODST share the chud_definition layout, but NOT the weap layout: ODST moved
+    # every late weap field on by 0x10 (HUD Interface 0x408 -> 0x418, Magazines 0x424 ->
+    # 0x434, First Person 0x3FC -> 0x40C, Magnification Levels 0x31E -> 0x32E). Checked
+    # against both plugins rather than assumed -- reading ODST's offset on a Halo 3 map
+    # finds no HUD at all. The scope is NOT a flat block on the HUD like the earlier
+    # games': it is Bitmap/Text widgets NESTED inside top-level HUD Widgets, so these use
+    # the nested copier below rather than 'blocks'.
+    'Halo 3': {'hud_ref': 0x408, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
                'donor_pref': ('sniper_rifle', 'beam_rifle', 'battle_rifle', 'carbine',
                               'spartan_laser', 'rocket_launcher')},
     'Halo 3: ODST': {'hud_ref': 0x418, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
