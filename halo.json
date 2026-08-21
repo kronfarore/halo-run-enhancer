@@ -384,6 +384,15 @@
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Frag Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			},
+			"m70_bonus": {
+				"name": "Lone Wolf",
+				"note": "BONUS mission -- Reach's epilogue, played after The Pillar of Autumn. Endless Covenant waves with no win condition, so it never 'completes'. Unlike the other nine Reach entries, these lists are read from the map itself rather than copied from Halo 3, and they are therefore INCOMPLETE rather than wrong: eight of the weapons the map actually carries (DMR, Needle Rifle, Plasma Repeater, Concussion Rifle, Grenade Launcher, Focus Rifle, Plasma Launcher, Target Laser) and all six armour abilities (Sprint, Jet Pack, Armor Lock, Drop Shield, Active Camouflage, Hologram) are left out because halo.json has no vocabulary for them yet.",
+				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Needler", "Pistol", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Spartan Laser", "Spike Rifle", "Sniper Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"turret": ["Machine Gun", "Plasma Cannon"]
 			}
 		}
 	},
@@ -1042,11 +1051,11 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Heat Recovery Threshold" },
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Heat Recovery Threshold" },
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" },
 							{ "field": "Overheated Heat Loss Per Second" }
 						]
@@ -1274,11 +1283,11 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Heat Recovery Threshold" },
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Heat Recovery Threshold" },
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" },
 							{ "field": "Overheated Heat Loss Per Second" }
 						]
@@ -2305,7 +2314,7 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					]
@@ -2793,7 +2802,7 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
-						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					],
@@ -3213,7 +3222,7 @@
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
 					"targets": [
-						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					],
@@ -3674,7 +3683,7 @@
 						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
 					},
 					"targets": [
-						{ "field": "Heat Recovery Threshold" },
+						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 						{ "field": "Heat Loss Per Second" },
 						{ "field": "Overheated Heat Loss Per Second" }
 					]
@@ -5041,8 +5050,8 @@
 						"Halo 1": "actr characters\\elite\\*"
 					},
 					"targets": [
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 },
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 },
 						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
@@ -5453,7 +5462,7 @@
 					},
 					"targets": [
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1  },
 						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
@@ -6059,7 +6068,7 @@
 					},
 					"targets": [
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
+						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1  },
 						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
@@ -6621,7 +6630,7 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all", "min": 0 },
 						{ "field": "Stealth Morph Damage Threshold", "block": "Morph Properties", "index": "all" }
 					]
 				},
@@ -6648,7 +6657,7 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all" },
+						{ "field": "Stealth Morph Distance Threshold", "block": "Morph Properties", "index": "all", "min": 0 },
 						{ "field": "Stealth Morph Damage Threshold", "block": "Morph Properties", "index": "all" },
 						{ "field": "Stalk Range", "block": "Morph Properties", "index": "all" },
 						{ "field": "Stalk Range Max", "block": "Morph Properties", "index": "all" },
@@ -7133,8 +7142,8 @@
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" , "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Vitality Fraction Bubbleshield", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"] },
+						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" , "games": ["Halo 3"], "min": 1, "max": 0 },
+						{ "field": "Vitality Fraction Bubbleshield", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "min": 1, "max": 0 },
 						{ "field": "Recent Damage Shield Equipment", "block": "Cover Properties", "index": "all" }
 					]
 				},
