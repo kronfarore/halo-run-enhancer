@@ -604,9 +604,11 @@ CONFIG = {
     "assembly_plugins_dir": r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
     "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"],
                                "Halo 3": ["Halo3MCC", "Halo3"],
-                               "Halo 3: ODST": ["ODSTMCC", "ODST"]},
+                               "Halo 3: ODST": ["ODSTMCC", "ODST"],
+                               "Halo Reach": ["ReachMCC", "Reach"]},
     "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
-                        "Halo 3": "halo3/maps", "Halo 3: ODST": "halo3odst/maps"},
+                        "Halo 3": "halo3/maps", "Halo 3: ODST": "halo3odst/maps",
+                        "Halo Reach": "haloreach/maps"},
     # A game that reuses another's effects. ODST is a later Halo 3 build sharing its
     # tag paths, so effects authored for Halo 3 apply there unless a field ODST
     # removed says otherwise. See HaloDB._game_ok.
@@ -1195,12 +1197,15 @@ def target_fields_display(mod_data, game, games):
     return ", ".join(names) if names else "—"
 
 
-GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'ODST'}
+GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'ODST',
+              'Halo Reach': 'Reach'}
 
-# Every game the difficulty baseline offers a row for. The last two are not installed
-# here (their folders hold only sound stubs), so their vanilla readouts show as absent --
-# but the settings persist, so they are ready if those games ever arrive.
-BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo: Reach', 'Halo 4']
+# Every game the difficulty baseline offers a row for. Halo 4 is not installed here
+# (its folder holds only sound stubs), so its vanilla readouts show as absent -- but
+# the settings persist, so it is ready if that game ever arrives. Reach WAS in that
+# position and no longer is: it is installed, parses, and its name here must match the
+# key halo.json's Missions section uses, which is 'Halo Reach' (no colon).
+BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4']
 BASELINE_COLS = [('vitality', 'Vitality'), ('shield', 'Shield'),
                  ('damage', 'Damage'), ('rof', 'Rate of Fire')]
 

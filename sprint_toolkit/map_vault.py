@@ -56,10 +56,14 @@ HALO_JSON = os.path.join(TOOL, 'halo.json')
 MAP_FOLDER = {'Halo 1': 'halo1/maps',
               'Halo 2': 'halo2/h2_maps_win64_dx11',
               'Halo 3': 'halo3/maps',
-              'Halo 3: ODST': 'halo3odst/maps'}
+              'Halo 3: ODST': 'halo3odst/maps',
+              'Halo Reach': 'haloreach/maps'}
 # Deflate only where it pays. Measured on this install; see the module docstring.
+# Reach's maps are third-gen-style already-compressed caches like Halo 3's, so it
+# gets ZIP_STORED for the same reason.
 COMPRESS = {'Halo 1': zipfile.ZIP_DEFLATED, 'Halo 2': zipfile.ZIP_DEFLATED,
-            'Halo 3': zipfile.ZIP_STORED, 'Halo 3: ODST': zipfile.ZIP_STORED}
+            'Halo 3': zipfile.ZIP_STORED, 'Halo 3: ODST': zipfile.ZIP_STORED,
+            'Halo Reach': zipfile.ZIP_STORED}
 MANIFEST = '_manifest.json'
 
 

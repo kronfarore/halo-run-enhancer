@@ -48,6 +48,14 @@ class ReachMap(Halo3Map):
     """Parsed Halo: Reach MCC cache. See the module docstring for the four ways it
     differs from Halo3Map; every other behaviour is inherited unchanged."""
 
+    # Reach's header is 0xA000, not Halo 3's 0x4000 — the 'foot' terminator sits at
+    # 0x9FFC where Halo 3 and ODST put it at 0x3FFC, and the region between is
+    # near-entirely zero padding. This matters because `update_checksum` XORs from
+    # HEADER_SIZE to EOF: with 0x4000 the recomputed value does NOT reproduce a
+    # shipped map's stored checksum, and with 0xA000 it reproduces it exactly on
+    # every campaign map. Getting this wrong writes a wrong checksum into every
+    # patched map, which is the sort of thing that only shows up in game.
+    HEADER_SIZE = 0xA000
     TAGS_MAGIC_OFF = 0x48       # Halo 3 uses 0x44
     DATA_BIAS = 0x50000000      # realVA = (ptr << 2) + DATA_BIAS
 

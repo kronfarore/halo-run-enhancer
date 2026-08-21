@@ -23,12 +23,18 @@ SECOND_GEN_GAMES = {'Halo 2'}
 # sent open_map to the Halo 1 parser, which failed with "Tag index 'tags' magic
 # missing" — every ODST patch died before it started.
 THIRD_GEN_GAMES = {'Halo 3', 'Halo 3: ODST'}
+# Games that use the fourth-generation (Halo: Reach MCC) cache format. Reach is close
+# enough to third-gen that `reach_map.ReachMap` is a subclass of `Halo3Map` — but it
+# is deliberately NOT in THIRD_GEN_GAMES, because that set also gates behaviour whose
+# block offsets are Halo 3's (starting slots, cutscene removal, ident minting) and
+# those have not been verified against Reach.
+FOURTH_GEN_GAMES = {'Halo Reach'}
 
 
 def open_map(map_path, game=None):
     """Open a map with the right parser for its game: Halo 2 -> `Halo2Map`
-    (second-gen), Halo 3 -> `Halo3Map` (third-gen), everything else -> the
-    Halo 1 `HaloMap`."""
+    (second-gen), Halo 3 -> `Halo3Map` (third-gen), Reach -> `ReachMap`
+    (fourth-gen), everything else -> the Halo 1 `HaloMap`."""
     g = str(game).strip()
     if g in SECOND_GEN_GAMES:
         import halo2_map
@@ -36,6 +42,9 @@ def open_map(map_path, game=None):
     if g in THIRD_GEN_GAMES:
         import halo3_map
         return halo3_map.Halo3Map(map_path)
+    if g in FOURTH_GEN_GAMES:
+        import reach_map
+        return reach_map.ReachMap(map_path)
     return hm.HaloMap(map_path)
 
 
