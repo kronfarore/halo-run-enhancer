@@ -5,6 +5,7 @@ import html
 import json
 import os
 import random
+import shutil
 import sys
 import threading
 from datetime import datetime
@@ -149,12 +150,16 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h3_equipment_in_rolls', 'equipment_need_weapon',
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
-               'score_scaling', 'score_step', 'score_cap_mult',
+               'score_scaling', 'score_step', 'score_cap_mult', 'score_live_push',
+               'difficulty_baseline',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
                'set_starting_equipment', 'equipment_all_selected',
+               'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
+               'h3_all_chief_profiles',
+               'remove_superseded_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'upgrade_inherits_base',
@@ -329,6 +334,37 @@ CONFIG = {
     # players' picked weapons (profiles 0 & 1: single-player + co-op start).
     "set_starting_weapons": True,
     "starting_weapon_profiles": [0, 1],
+    # Halo 2 only. Every H2 campaign map ships two Player Starting Profiles --
+    # 0 for the initial spawn, 1 for respawning, named outright as such on
+    # 03a/03b ("respawn profile") and 07b ("coop respawn") -- except
+    # 08b_deltacontrol, which ships exactly one. This adds the missing second
+    # profile as a copy of the first, so a co-op death on The Great Journey
+    # respawns with the run's weapons like every other level. Structural: it
+    # relocates the profile block, so it is worth being able to turn off.
+    "h2_add_respawn_profile": True,
+    # Halo 3 solo: also write the run's weapons into every other Chief-role
+    # starting profile, not just index 0. Crow's Nest hands the player a profile
+    # per rally point and applies NONE at level start, so index 0 alone leaves
+    # entries unarmed. Scripted weaponless profiles are still skipped.
+    "h3_all_chief_profiles": True,
+    # Write player 1's loadout where player 2's would go and vice versa — starting
+    # weapons, starting equipment and abilities together. Only affects what is
+    # PATCHED; the run itself, the cards and the history are untouched. For when
+    # the person sitting at player 2 drafted the arsenal player 1 is holding.
+    "swap_player_loadouts": False,
+    # Drop the cards the real Player Health / Player Shield ones supersede.
+    # Starting Health/Shield Modifier write the scenario profile MULTIPLIER and
+    # Enemy Damage Reduction is a third way to say the same thing; with the pool
+    # itself now editable they mostly muddy the draft. Off by default — they are
+    # not broken, just redundant.
+    "remove_superseded_vitality_cards": False,
+    # Halo 2 only. Extra actors to add to a named AI squad, per mission:
+    # {mission id: {squad name: how many MORE than the level ships}}. Halo 2
+    # spawns min(difficulty count, starting locations) actors for `ai_place`,
+    # so the patch raises both. Ships aimed at the one case it was built for:
+    # Tartarus on 08b, where the speedrun tech is to duplicate Johnson so his
+    # Sentinel Beam strips the shield faster. 0 = vanilla.
+    "h2_extra_squads": {"08b": {"boss_johnson": 0}},
     # Halo 3 only. H3's Player Starting Profile has no equipment field (Reach added
     # one), so the run's picked equipment is granted by APPENDING a placement onto the
     # player's starting location — the item is walked into as the level loads. Vanilla
@@ -398,6 +434,15 @@ CONFIG = {
     "score_scaling": False,
     "score_step": 0.05,        # multiplier per point of summed effect weight
     "score_cap_mult": 0.0,     # 0 = uncapped; otherwise the largest multiplier
+    # ...and then push the same numbers into the RUNNING game, so the patch takes
+    # effect without restarting MCC. Harmless when MCC is closed (it reports "not
+    # running" and the file edit stands on its own), so it defaults on.
+    "score_live_push": True,
+    # Whole-game enemy dials, per game, applied BEFORE any effect. Empty/absent means
+    # "leave the shipped value alone"; a stored 0 means the same (the spin boxes show
+    # 0 as "vanilla"). Reach and Halo 4 have entries so the settings survive until
+    # those games are actually installed.
+    "difficulty_baseline": {},
     # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
     # separate Brute Plasma Rifle. With this on it is offered under that name and
     # retuned on patch to match Halo 2's version. Normal Plasma Rifle effects reach
@@ -979,7 +1024,17 @@ def skull_watermark_path():
 # _refresh_mod_definition when a saved/loaded run's frozen mod name no longer
 # exists in halo.json, so old saves keep working after an effect is renamed.
 EFFECT_RENAMES = {
+    # Rate of fire was three card names for one thing ('Rounds Per Second' on the
+    # Assault Rifle, 'Rate of Fire' on the Flamethrower, 'More Shooting' on the
+    # rest); they are all 'More Shooting' now, and it carries Rounds Per Second +
+    # Shots Per Fire on every weapon. Fire Recovery Time stays its OWN card — it is
+    # the cooldown on your trigger input, not the rate — and now exists on every
+    # weapon rather than only the ones that ship a non-zero one.
     'Rounds Per Second': 'More Shooting',
+    'Rate of Fire': 'More Shooting',
+    'Rate of Fire (Charged)': 'More Shooting (Charged)',
+    'Burst Fire': 'More Shooting',
+    'Burst Fire (Charged)': 'More Shooting (Charged)',
     'Age Misfire': 'Misfire',
     'Berserk Melee Behaviour': 'Melee Behavior',
     'Berserk Triggerin': 'Melee Behavior',
@@ -1141,6 +1196,13 @@ def target_fields_display(mod_data, game, games):
 
 
 GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'ODST'}
+
+# Every game the difficulty baseline offers a row for. The last two are not installed
+# here (their folders hold only sound stubs), so their vanilla readouts show as absent --
+# but the settings persist, so they are ready if those games ever arrive.
+BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo: Reach', 'Halo 4']
+BASELINE_COLS = [('vitality', 'Vitality'), ('shield', 'Shield'),
+                 ('damage', 'Damage'), ('rof', 'Rate of Fire')]
 
 
 def mod_game_scope(mod_data):
@@ -1376,7 +1438,11 @@ class ModifierDatabase:
                 for mission_id, mission_data in missions.items():
                     self.mission_enemies[mission_id] = {
                         'name': mission_data.get('name', mission_id),
-                        'enemies': mission_data.get('enemies', [])
+                        'enemies': mission_data.get('enemies', []),
+                        # Optional free-text warning for levels whose behaviour is
+                        # driven by their script rather than their tags — see
+                        # mission_note().
+                        'note': mission_data.get('note')
                     }
                     self.mission_games[mission_id] = game
                     self.mission_weapons[mission_id] = mission_data.get('weapons', [])
@@ -1648,6 +1714,14 @@ class ModifierDatabase:
         return weapons or list(self.weapon_mods.keys())
 
     # ---- Boss (#4) ----
+    def mission_note(self, mission_id):
+        """A free-text warning halo.json attaches to a level, shown in the patcher.
+
+        For levels whose behaviour is driven by their SCRIPT rather than by tags, so
+        the cards that look like they tune it plainly say that they do not — 08b's
+        Tartarus fight being the case that cost a play session."""
+        return (self.mission_enemies.get(mission_id) or {}).get('note')
+
     def bosses_for(self, mission_id):
         """Boss names for a mission: those declared in halo.json, plus Brute
         Chieftains when that option is on. Resolved per call rather than baked into
@@ -1754,10 +1828,22 @@ class ModifierDatabase:
         else:
             return f"General{CONFIG['blacklist_label_separator']}{mod['name']}"
 
+    # Cards the Player Health / Player Shield pair supersedes. Starting Health and
+    # Starting Shield Modifier scale the scenario profile rather than the pool, and
+    # Enemy Damage Reduction is a third route to the same felt outcome.
+    SUPERSEDED_VITALITY_CARDS = ('Starting Health Modifier', 'Starting Shield Modifier',
+                                 'Enemy Damage Reduction')
+
     def filter_blacklisted(self, mods, blacklist, game=None):
+        drop = (set(self.SUPERSEDED_VITALITY_CARDS)
+                if CONFIG.get('remove_superseded_vitality_cards') else ())
         return [m for m in mods
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
-                and self._cross_game_ok(m)]
+                and self._cross_game_ok(m)
+                # Every offer path funnels through here, so one test covers the
+                # initial selection, the New Weapon draw and every reroll — the
+                # recurring bug class of fixing only one of them.
+                and (m.get('name') not in drop)]
 
     def map_swap_mod(self, weapon_name, game=None):
         """#7: the per-weapon "Map Presence" card — replace a share of the level's
@@ -1930,6 +2016,11 @@ class RunState:
         self.patched_effect_keys = set()
         # #5: a player who picked an Exhaust gets one no-negative choice next round.
         self.free_negative_pending = {'player1': False, 'player2': False}
+        # #8: the signature of the most recent patch, kept on the RUN rather than
+        # on the window so it survives a save/load and travels to the co-op
+        # partner — comparing codes is the whole point, and the partner loading
+        # the run is exactly who needs to compare. {code, map, difficulty, when}.
+        self.last_patch = None
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -1987,6 +2078,7 @@ class RunState:
             "special_counters": dict(self.special_counters),
             "free_negative_pending": dict(self.free_negative_pending),
             "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
+            "last_patch": self.last_patch,
             "rounds": self.rounds
         }
 
@@ -2010,6 +2102,8 @@ class RunState:
         state.player2_weapons = p2data.get('weapons') or ([state.player2_weapon] if state.player2_weapon else [])
         state.rounds = data.get('rounds', [])
         state.patched_effect_keys = {tuple(k) for k in data.get('patched_effect_keys', [])}
+        lp = data.get('last_patch')
+        state.last_patch = lp if isinstance(lp, dict) else None
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -2864,6 +2958,13 @@ class MagnitudeEditorDialog(QDialog):
         field, since only these targets declare negate/offset."""
         if not isinstance(v, (int, float)) or isinstance(v, bool):
             return v
+        # A placeholder 0 is shown as what it stands for (see apply_field's
+        # `zero_is`), so the vanilla column agrees with what an operator will do
+        # to it — showing 0 beside a field a multiply turns into 60 is the
+        # contradiction this whole mechanism exists to remove.
+        zi = target.get('zero_is')
+        if zi is not None and not v:
+            v = zi
         scale = -1.0 if target.get('negate') else 1.0
         offset = float(target.get('offset') or 0.0)
         if scale == 1.0 and offset == 0.0:
@@ -3184,6 +3285,16 @@ class MagnitudeEditorDialog(QDialog):
         legend.setWordWrap(True)
         head.addWidget(legend)
 
+        _note = None
+        if self.parent_gui is not None and getattr(self.parent_gui, 'db', None) is not None:
+            _note = self.parent_gui.db.mission_note(self.mission_id)
+        if _note:
+            note = QLabel("\u26a0 " + _note)
+            note.setWordWrap(True)
+            note.setStyleSheet("color: #e0c060; font-size: 12px; background-color: #2a2410; "
+                               "border: 1px solid #5a4a20; border-radius: 4px; padding: 6px;")
+            head.addWidget(note)
+
         swap_group = self._build_weapon_swap_group()
         if swap_group:
             head.addWidget(swap_group)
@@ -3230,13 +3341,30 @@ class MagnitudeEditorDialog(QDialog):
         layout.addWidget(self.results)
 
         btns = QHBoxLayout()
-        apply_btn = QPushButton("💾 Backup && Apply to Map")
+        apply_btn = QPushButton("💾 Patch Map")
+        apply_btn.setToolTip("Back up and apply to the map \u2014 writes every magnitude typed here "
+                             "into the level's .map. The level's pristine .bak is made on the "
+                             "first patch and every later patch rebuilds FROM it, so patching "
+                             "is repeatable and never compounds.")
         apply_btn.setStyleSheet("background-color: #5a3a2a; color: white; font-weight: bold; padding: 8px 16px; border-radius: 5px;")
         apply_btn.clicked.connect(self._apply)
         next_empty_btn = QPushButton("⤓ Next empty entry")
         next_empty_btn.setToolTip("Jump to the next blank operator field")
         next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
         next_empty_btn.clicked.connect(self._jump_to_next_empty)
+        top_btn = QPushButton("↑ Top")
+        top_btn.setToolTip("Back to the top of the list — the map, difficulty and "
+                           "search rows live up there and scroll with it")
+        top_btn.setMaximumWidth(70)
+        top_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 10px; border-radius: 5px;")
+        top_btn.clicked.connect(self._scroll_to_top)
+        next_round_btn = QPushButton("🔆 Next effect this round")
+        next_round_btn.setToolTip("Jump to the next effect drafted in the latest round. An effect "
+                                  "picked again this round already has a magnitude, so 'next empty "
+                                  "entry' walks straight past it. Falls back to the effects not "
+                                  "patched to a map yet (🆕) when this round drafted nothing.")
+        next_round_btn.setStyleSheet("background-color: #4a3a1a; color: white; padding: 8px 14px; border-radius: 5px;")
+        next_round_btn.clicked.connect(self._jump_to_next_marked)
         log_btn = QPushButton("📂 Patch log")
         log_btn.setToolTip("Open the patch log written for this map — the effects, fields "
                            "and old → new values of the last patch — to check them by "
@@ -3249,10 +3377,12 @@ class MagnitudeEditorDialog(QDialog):
                             "to keep values you've tuned but aren't ready to apply — "
                             "otherwise they're only remembered when you patch.")
         keep_btn.setStyleSheet("background-color: #2a4a3a; color: white; padding: 8px 14px; border-radius: 5px;")
-        keep_btn.clicked.connect(self._save_magnitudes_now)
+        keep_btn.clicked.connect(lambda _=False: self._save_magnitudes_now())
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(self.reject)
         btns.addWidget(apply_btn)
+        btns.addWidget(top_btn)
+        btns.addWidget(next_round_btn)
         btns.addWidget(next_empty_btn)
         btns.addWidget(keep_btn)
         btns.addWidget(log_btn)
@@ -3260,11 +3390,23 @@ class MagnitudeEditorDialog(QDialog):
         btns.addWidget(close_btn)
         layout.addLayout(btns)
 
-    def _save_magnitudes_now(self):
+    def _normalize_entries(self):
+        """Rewrite every editable operator box into its canonical form (see
+        halo_map.normalize_op_text). Read-only rows carry derived/fixed text that is
+        not an operator, so they are left alone."""
+        seen = set()
+        for _eff, _t, le in self.rows:
+            if le is None or le.isReadOnly() or id(le) in seen:
+                continue
+            seen.add(id(le))            # grouped rows share one box; touch it once
+            le.setText(self._hp.hm.normalize_op_text(le.text()))
+
+    def _save_magnitudes_now(self, report=True):
         """Write the magnitudes typed in this dialog into the global preset file, without
         patching. Magnitudes are otherwise only remembered as a side effect of applying,
         so a run loaded from a co-op partner (or values tuned but not yet applied) would
         be lost by closing the dialog."""
+        self._normalize_entries()
         written, cleared = 0, 0
         for eff, t, le in self.rows:
             if le is None or le.isReadOnly() or t.get('set') is not None:
@@ -3286,11 +3428,62 @@ class MagnitudeEditorDialog(QDialog):
             bits.append(f"{written} value(s) saved")
         if cleared:
             bits.append(f"{cleared} cleared")
+        if not report:
+            return
         msg = ", ".join(bits) if bits else "nothing changed — presets already match"
         self.results.setPlainText(
             f"Magnitudes → {Path(self.presets_path).name}: {msg}.\n"
             "These are now the remembered defaults for these effects, and travel with "
             "the run when you save or share it.")
+
+    def _scroll_to_top(self):
+        """Back to the top of the effect list — the setup rows (folders, map,
+        difficulty, search) scroll WITH the list, so reaching them from the bottom
+        of a long run meant dragging the whole way."""
+        self._scroll.verticalScrollBar().setValue(0)
+        # Restart both jump cursors, so the next press of either walks the list
+        # from the top rather than from wherever it had got to.
+        self._marked_idx = -1
+        self._jump_order_idx = -1
+
+    def _jump_to_next_marked(self):
+        """Scroll to and focus the next effect drafted in the latest round (🔆),
+        cycling through them.
+
+        Distinct from "next empty entry", which walks blank INPUTS wherever they are:
+        an effect picked again this round usually already has a magnitude, so it has no
+        blank field to stop at, and in a long list it is exactly the one that is hard
+        to find. Falls back to the not-yet-patched (🆕) effects when this round drafted
+        nothing new to look at -- a run loaded from a partner has no "latest round" of
+        its own to jump to, but does have unpatched effects worth reviewing."""
+        boxes = getattr(self, '_marked_boxes', None) or []
+        if not boxes:
+            boxes = getattr(self, '_new_boxes', None) or []
+        if not boxes:
+            self.results.setPlainText(
+                "Nothing to jump to — no effect in this list was drafted this round, "
+                "and none is still waiting for its first patch.")
+            return
+        idx = (getattr(self, '_marked_idx', -1) + 1) % len(boxes)
+        self._marked_idx = idx
+        self._scroll.ensureWidgetVisible(boxes[idx], 50, 60)
+        # Focus the box's first editable operator so the value can be typed straight
+        # away, the way the empty-entry jump leaves the caret ready.
+        for eff, t, le in self.rows:
+            if le is not None and not le.isReadOnly() and le.window() is self                     and self._box_of(le) is boxes[idx]:
+                le.setFocus()
+                le.selectAll()
+                break
+
+    @staticmethod
+    def _box_of(widget):
+        """The QGroupBox an input lives in, walking up the parent chain."""
+        w = widget
+        while w is not None:
+            if isinstance(w, QGroupBox):
+                return w
+            w = w.parentWidget()
+        return None
 
     def _jump_to_next_empty(self):
         """Scroll to and focus the next blank operator field (wrapping around). Uses a
@@ -3419,6 +3612,17 @@ class MagnitudeEditorDialog(QDialog):
             keep.add('Brute Plasma Rifle')
         return keep
 
+    def _baseline_spec(self):
+        """The whole-game enemy dials for THIS game, or None.
+
+        A 0 means "leave the shipped value alone" and is dropped rather than written --
+        the spin boxes display 0 as "vanilla" for exactly that reason, so the option can
+        be set for one dial without disturbing the other three.
+        """
+        cfg = (CONFIG.get('difficulty_baseline') or {}).get(self.game) or {}
+        spec = {k: float(v) for k, v in cfg.items() if v}
+        return spec or None
+
     def _apply_score_scaling(self):
         """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
 
@@ -3458,12 +3662,45 @@ class MagnitudeEditorDialog(QDialog):
         top = sorted(mults.items(), key=lambda kv: -kv[1])[:4]
         detail = ', '.join('%s x%.2f' % (b[1], m) for b, m in top)
         more = '' if len(mults) <= len(top) else ', +%d more' % (len(mults) - len(top))
+        pushed = self._push_scores_live(path) if CONFIG.get('score_live_push') else None
+        # Only claim the restart is needed when it actually is. Saying "RESTART MCC"
+        # after a successful live push would send the user off to do the one thing this
+        # feature exists to avoid.
+        tail = ' — RESTART MCC to apply'
+        if pushed and pushed.get('ok'):
+            tail = ' — pushed live to MCC (%d records, no restart)' % pushed['written']
         rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Metagame scores',
                      'ok': True,
                      'field': '%d entries' % changed,
                      'old': 'base scores',
-                     'new': 'raised %s%s — RESTART MCC to apply' % (detail, more)})
+                     'new': 'raised %s%s%s' % (detail, more, tail)})
+        if pushed and not pushed.get('ok'):
+            # A failed push is NOT a failed patch: the file is written either way and
+            # a restart still applies it. Reported as its own row, skipped rather than
+            # failed when the reason is simply that MCC is closed.
+            closed = pushed.get('reason') == 'MCC is not running'
+            rows.append({'tag': 'MCC process', 'effect': 'Metagame scores',
+                         'field': 'live push', 'ok': closed, 'skip': closed,
+                         'reason': pushed.get('reason')})
         return rows
+
+    def _push_scores_live(self, path):
+        """Mirror the freshly written scoredb.xml into the running MCC.
+
+        MCC parses that file once at startup, so without this every score change costs a
+        full restart — and on this install a Microsoft account login with it. The push
+        writes the same numbers into the parsed records in memory, keyed by the bucket
+        (class, type) pair, so afterwards memory says exactly what the file says however
+        far the file had drifted since MCC loaded it.
+
+        Never raises: this is a convenience on top of a file edit that already succeeded.
+        """
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import score_live
+            return score_live.push_from_xml(path)
+        except Exception as e:
+            return {'ok': False, 'reason': str(e)}
 
     def _remove_effect(self, eff):
         """Delete an effect from the run itself, not just from this patch session.
@@ -3563,7 +3800,12 @@ class MagnitudeEditorDialog(QDialog):
         self._clear_layout(self.form)
         self.rows = []
         self._effect_boxes = []     # (name, box) for the search jump
+        # Boxes the "next effect from this round" jump walks, in the order they are
+        # rendered so the jump follows what the eye sees rather than run order.
+        self._marked_boxes = []     # picked this round (the amber 🔆 boxes)
+        self._new_boxes = []        # not patched to a map yet (the blue 🆕 boxes)
         self._search_idx = -1
+        self._marked_idx = -1
         self._jump_order_idx = -1   # row order changed; restart the empty-entry cursor
 
         def render_group(grp, effs, color="#4CAF50"):
@@ -3573,6 +3815,10 @@ class MagnitudeEditorDialog(QDialog):
             for eff in effs:
                 box = self._effect_box(eff)
                 self._effect_boxes.append((eff.get('name', ''), box))
+                if self._is_this_round(eff):
+                    self._marked_boxes.append(box)
+                if self._is_new(eff):
+                    self._new_boxes.append(box)
                 self.form.addWidget(box)
 
         groups = self._hp.group_effects(self.effects)
@@ -3793,6 +4039,12 @@ class MagnitudeEditorDialog(QDialog):
                         le.setText(str(fallback))
                         le.setToolTip("Carried over from %s (no value set for this field yet)"
                                       % self._FIELD_CARRYOVER.get(t['field'], ''))
+            if not le.isReadOnly():
+                # #7: rewrite shorthand into its canonical form once the field is left,
+                # so '*.5' reads back as '*0.5' (and is remembered, and shared, that
+                # way). Purely cosmetic -- parse_operator accepted both all along.
+                le.editingFinished.connect(
+                    lambda ed=le: ed.setText(self._hp.hm.normalize_op_text(ed.text())))
             inrow.addWidget(le)
             eh = le.sizeHint().height()   # keep row-adornment buttons the input's height
             # #1: debug-only per-field patch — write just this one field to the map.
@@ -4038,6 +4290,18 @@ class MagnitudeEditorDialog(QDialog):
                 opts['weapon_swap_rates'] = rates
         return swaps or None
 
+    def _player_slots(self):
+        """(slot 1, slot 2) as run-state player keys, honouring the swap option.
+
+        "Slot 1" is whatever the game treats as the first player: the Primary starting
+        weapon before Halo 3, the Chief in Halo 3 co-op, spawn 0's equipment, and
+        ability0. Swapping here rather than at each call site is what keeps weapons,
+        equipment and abilities swapping TOGETHER — they are three separate specs and
+        a per-spec flag would inevitably drift apart.
+        """
+        return (('player2', 'player1') if CONFIG.get('swap_player_loadouts')
+                else ('player1', 'player2'))
+
     def _starting_weapons_spec(self):
         """Starting-weapons spec from the run's picks (Primary = P1's first weapon,
         Secondary = P2's). Coop is profile index 1: #1 can exclude it from the picked
@@ -4051,10 +4315,11 @@ class MagnitudeEditorDialog(QDialog):
         null_coop = bool(CONFIG.get('null_coop_starting_equipment'))    # #2
         # #1: also implied by #2 — don't hand the picked weapons to the coop profile.
         skip_coop = bool(CONFIG.get('coop_no_starting_weapons')) or null_coop
-        prim = sec = None
+        prim = sec = prim2 = sec2 = None
         if CONFIG.get('set_starting_weapons'):
-            p1 = getattr(rs, 'player1_weapon', None)
-            p2 = getattr(rs, 'player2_weapon', None)
+            slot1, slot2 = self._player_slots()
+            p1 = getattr(rs, slot1 + '_weapon', None)
+            p2 = getattr(rs, slot2 + '_weapon', None)
             # grenades and equipment aren't a valid Primary/Secondary starting weapon
             # (weap_tag_for would already return None for either — this just documents
             # why, and skips the lookup)
@@ -4080,10 +4345,27 @@ class MagnitudeEditorDialog(QDialog):
                         return up
                 return weapon
 
-            p1 = _upgraded(p1, 'player1')
-            p2 = _upgraded(p2, 'player2')
+            p1 = _upgraded(p1, slot1)
+            p2 = _upgraded(p2, slot2)
             prim = db.weap_tag_for(p1, self.game) if _startable(p1) else None
             sec = db.weap_tag_for(p2, self.game) if _startable(p2) else None
+
+            def _second(player, first):
+                """That player's next startable weapon after `first`.
+
+                Only Halo 3 co-op uses it: there each character is one player, so the
+                two slots of their profile are that player's own loadout rather than
+                one slot each for P1 and P2."""
+                for w in rs.weapons_for(player):
+                    w = _upgraded(w, player)
+                    if w != first and _startable(w):
+                        t = db.weap_tag_for(w, self.game)
+                        if t:
+                            return t
+                return None
+
+            prim2 = _second(slot1, p1)
+            sec2 = _second(slot2, p2)
         # #8: Halo 3 has two playable characters. With 2-player coop on, each pick
         # becomes its own character's weapon (P1 -> Chief, P2 -> Dervish) and the
         # coop options act on the respawn profiles; with it off, H3 behaves like the
@@ -4097,7 +4379,7 @@ class MagnitudeEditorDialog(QDialog):
         # this map lacks) silently leaves the vanilla gun in place, which reads as the
         # setting having done nothing.
         null_empty = bool(CONFIG.get('set_starting_weapons'))
-        if not (prim or sec) and not (null_profiles or (h3_coop and null_coop) or null_empty):
+        if not (prim or sec or prim2 or sec2) and not (null_profiles or (h3_coop and null_coop) or null_empty):
             return None
         # ODST picks the starting profile from the insertion point, and which one is
         # live can change mid-mission — so a run can spawn on a profile the patch never
@@ -4105,9 +4387,12 @@ class MagnitudeEditorDialog(QDialog):
         all_profiles = (self.game == 'Halo 3: ODST'
                         and bool(CONFIG.get('odst_all_starting_profiles')))
         return {'primary': prim, 'secondary': sec, 'null_empty_slots': null_empty,
+                'primary2': prim2, 'secondary2': sec2,
                 'all_profiles': all_profiles,
                 'profiles': profiles, 'null_profiles': null_profiles,
                 'h3_coop': h3_coop,
+                'h3_all_chief': (self.game == 'Halo 3'
+                                 and bool(CONFIG.get('h3_all_chief_profiles', True))),
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
                 'null_respawn': null_coop}
 
@@ -4170,7 +4455,7 @@ class MagnitudeEditorDialog(QDialog):
             else:
                 rs = getattr(self.parent_gui, 'run_state', None)
                 if rs is not None:
-                    for idx, p in ((0, 'player1'), (1, 'player2')):
+                    for idx, p in enumerate(self._player_slots()):
                         for w in rs.weapons_for(p):
                             ab = ability_of_item(w)
                             if ab:
@@ -4259,8 +4544,9 @@ class MagnitudeEditorDialog(QDialog):
                         break
             return out
 
-        p1 = paths(getattr(rs, 'player1_weapons', None))
-        p2 = paths(getattr(rs, 'player2_weapons', None))
+        slot1, slot2 = self._player_slots()
+        p1 = paths(getattr(rs, slot1 + '_weapons', None))
+        p2 = paths(getattr(rs, slot2 + '_weapons', None))
         if bool(CONFIG.get('two_player_coop', True)):
             groups = [p1, p2]                       # each player's own spawn
         else:
@@ -4388,6 +4674,12 @@ class MagnitudeEditorDialog(QDialog):
             QMessageBox.warning(self, "Map not found", f"Not a file:\n{map_path}")
             return
 
+        # #7: canonicalize every entry BEFORE it is read, so the magnitudes stored in
+        # the presets (and shared in the run file) are canonical too. editingFinished
+        # can't be relied on here -- clicking Apply from a field that still has focus
+        # doesn't always emit it, and a value typed and never left never emits at all.
+        self._normalize_entries()
+
         # #7: Map Presence rows aren't tag edits — their magnitude is a percentage fed
         # to the same weapon-swap mechanism the sliders drive, so they're collected
         # here and merged into the swap spec rather than becoming plan ops.
@@ -4432,6 +4724,7 @@ class MagnitudeEditorDialog(QDialog):
             key = (eff['tag'], eff['name'])
             plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
                                       'init_defaults': eff.get('init_defaults'),
+                                      'constraints': eff.get('constraints'),
                                       # whose effect this is, so a base weapon's edits
                                       # can be mirrored onto its upgrade's tag below
                                       'weapon': eff.get('weapon'),
@@ -4448,6 +4741,7 @@ class MagnitudeEditorDialog(QDialog):
                                          # optional bounds on the RESULT (e.g. a
                                          # probability is 0..1 whatever was typed)
                                          'min': t.get('min'), 'max': t.get('max'),
+                                         'zero_is': t.get('zero_is'),
                                          'nth': t.get('nth', 0) or 0})
         # Auto-computed fields: recompute whenever their effect has any edit.
         # Appended after the normal ops so the sources are already patched.
@@ -4546,10 +4840,13 @@ class MagnitudeEditorDialog(QDialog):
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
                 sprint=sprint,
+                difficulty_baseline=self._baseline_spec(),
                 red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                             if (CONFIG.get('odst_red_plasma_as_brute')
                                 and self.game == 'Halo 3: ODST') else None),
                 odst_downgrade=self._odst_downgrade_keep(),
+                add_respawn_profile=bool(CONFIG.get('h2_add_respawn_profile', True)),
+                extra_squads=(CONFIG.get('h2_extra_squads') or {}).get(self.mission_id),
                 equipment_ai_drops=bool(CONFIG.get('odst_ai_equipment_drops'))
                 and self.game == 'Halo 3: ODST'))
         except Exception as e:
@@ -4602,7 +4899,14 @@ class MagnitudeEditorDialog(QDialog):
         # map patch, so a failure here must not make a SUCCESSFUL map patch look failed.
         # Reported as a normal result row so the summary and the patch log both record it.
         if CONFIG.get('score_scaling'):
-            results.extend(self._apply_score_scaling())
+            # Its own busy dialog. This runs AFTER the patch dialog has closed, and with
+            # the live push on it scans MCC's whole address space for the score table --
+            # tens of seconds during which the window sat there with no bar and looked
+            # hung. The label says which half is running so the wait is legible.
+            label = ("Rescaling metagame scores and pushing them to MCC"
+                     if CONFIG.get('score_live_push') else "Rescaling metagame scores")
+            results.extend(self._run_busy(self._apply_score_scaling,
+                                          title="Metagame scores", label=label))
 
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
@@ -4626,6 +4930,17 @@ class MagnitudeEditorDialog(QDialog):
         self._show_results(results, backup)
 
     def done(self, r):
+        # #2: keep the magnitudes typed here, on EVERY close including Cancel.
+        # They used to survive only a patch or an explicit press of ‘Save
+        # magnitudes to presets’, so tuning a run and closing without patching
+        # threw the numbers away — and, because the run file embeds magnitudes by
+        # reading the preset FILE (see _run_bundle/run_magnitudes), the run saved
+        # or shared afterwards carried none of them. Silent: closing a dialog is
+        # not the moment for a report, and the keep button still gives one.
+        try:
+            self._save_magnitudes_now(report=False)
+        except Exception:
+            pass        # never let a preset write block the dialog from closing
         # Remember the size on close, including Cancel — a window preference, not a
         # patch setting. Read here rather than tracked on resize, so it's one write.
         CONFIG['patcher_dialog_size'] = [self.width(), self.height()]
@@ -4647,6 +4962,13 @@ class MagnitudeEditorDialog(QDialog):
         if code:
             lines.append(f"Patch code: {code}   (same code = same patch; compare with "
                          f"your co-op partner)")
+            # #8: also park it in the main window, where it stays readable after
+            # this dialog is gone. Every patch path lands here (_apply, the hub
+            # pass and the debug single-field patch all end in _show_results), so
+            # this is the one place it needs wiring.
+            setter = getattr(self.parent_gui, 'set_last_patch_code', None)
+            if setter is not None:
+                setter(code, self.map_edit.text().strip(), self.target_difficulty)
         if backup:
             lines.append(f"Backup: {backup}")
         shared = getattr(self, '_shared_path', None)
@@ -4799,25 +5121,56 @@ def _h2_dll_patch():
     return importlib.import_module('h2_dll_patch')
 
 
+class _OptPage:
+    """Adapter so a page reads like a layout: addWidget puts the group above the
+    trailing stretch (which otherwise has to be re-added after every insert), at the
+    position its `order` asks for rather than wherever it happened to be built."""
+
+    def __init__(self, layout, orders):
+        self._layout = layout
+        self._orders = orders
+
+    def addWidget(self, w, order=100):
+        i = 0
+        while i < len(self._orders) and self._orders[i] <= order:
+            i += 1
+        self._orders.insert(i, order)
+        self._layout.insertWidget(i, w)
+
+
 class OptionsDialog(QDialog):
     """Edits the run options in OPTION_KEYS. Reads current values from CONFIG;
-    values() returns the edited set. The caller persists them (global + per-run)."""
+    values() returns the edited set. The caller persists them (global + per-run).
+
+    Grouped onto pages reached from a list on the left. `_opt_page(name)` hands back
+    the layout for a page, creating it (and its nav entry) on first use, so adding a
+    group is one line at the point it is built. `order` places the group on that page
+    independently of the order the groups happen to be BUILT in — build order follows
+    widget dependencies, page order should follow what the reader expects.
+    """
+
+    def _opt_page(self, name):
+        page = self._opt_pages.get(name)
+        if page is None:
+            scroll = QScrollArea()
+            scroll.setWidgetResizable(True)
+            scroll.setFrameShape(QFrame.NoFrame)
+            cont = QWidget()
+            page = QVBoxLayout(cont)
+            page.addStretch(1)          # kept LAST; groups insert before it
+            scroll.setWidget(cont)
+            self._opt_pages[name] = page
+            self._opt_stack.addWidget(scroll)
+            self._opt_nav.addItem(name)
+            if self._opt_nav.currentRow() < 0:
+                self._opt_nav.setCurrentRow(0)
+        return _OptPage(page, self._opt_order.setdefault(name, []))
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("⚙ Options")
         self.setModal(True)
         self.setMinimumWidth(460)
-        # Remember how the user sized this dialog — it's a scrolling list now, so how
-        # much of it is visible at once is a real preference.
-        size = CONFIG.get('options_dialog_size')
-        if isinstance(size, (list, tuple)) and len(size) == 2:
-            try:
-                self.resize(max(460, int(size[0])), max(320, int(size[1])))
-            except (TypeError, ValueError):
-                self.resize(560, 720)
-        else:
-            self.resize(560, 720)
         # Readable against the dark theme: light text, dark inputs, clear checks.
         self.setStyleSheet("""
             QDialog { background-color: #141414; }
@@ -4826,10 +5179,21 @@ class OptionsDialog(QDialog):
             QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #4a4a4a;
                                    border-radius: 3px; background-color: #1a1a1a; }
             QCheckBox::indicator:checked { background-color: #4CAF50; border: 1px solid #4CAF50; }
-            QComboBox, QDoubleSpinBox, QSpinBox {
+            QComboBox, QDoubleSpinBox, QSpinBox, QLineEdit {
                 background-color: #1a1a1a; color: #e0e0e0;
                 border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px 6px;
             }
+            /* QLineEdit had no rule at all until the Folders group brought the first
+               one into this dialog, so its text fell back to the palette default and
+               came out near-black on the dark input. */
+            QLineEdit:disabled { background-color: #131313; color: #5c5c5c;
+                                 border: 1px solid #262626; }
+            QPushButton { background-color: #2a2a2a; color: #e0e0e0;
+                          border: 1px solid #3a3a3a; border-radius: 3px;
+                          padding: 4px 10px; }
+            QPushButton:hover { background-color: #343434; }
+            QPushButton:disabled { background-color: #1a1a1a; color: #5c5c5c;
+                                   border: 1px solid #262626; }
             QComboBox QAbstractItemView {
                 background-color: #1a1a1a; color: #e0e0e0;
                 selection-background-color: #2a5a2a;
@@ -4854,15 +5218,83 @@ class OptionsDialog(QDialog):
                                                     border: 1px solid #2f5b31; }
         """)
         outer = QVBoxLayout(self)
-        _scroll = QScrollArea()
-        _scroll.setWidgetResizable(True)
-        _cont = QWidget()
-        layout = QVBoxLayout(_cont)
-        _scroll.setWidget(_cont)
-        outer.addWidget(_scroll, 1)
+        # #6: a category list on the left driving a stack on the right. The dialog had
+        # grown to fourteen group boxes in one column, and finding anything meant
+        # scrolling past everything. Each page scrolls on its own, so a long page (the
+        # abilities) does not make the short ones scroll.
+        split = QHBoxLayout()
+        self._opt_nav = QListWidget()
+        self._opt_nav.setFixedWidth(150)
+        # An unselected row inherited the dialog-wide input colour, which is
+        # near-black against this panel, so the category names were unreadable
+        # until highlighted. Set the item colour explicitly.
+        self._opt_nav.setStyleSheet(
+            "QListWidget { background-color: #171717; border: 1px solid #2a2a2a; "
+            "border-radius: 5px; padding: 4px; font-size: 13px; color: #e0e0e0; } "
+            "QListWidget::item { padding: 7px 8px; border-radius: 4px; "
+            "color: #e0e0e0; background-color: transparent; } "
+            "QListWidget::item:selected { background-color: #3a4a6a; color: #ffffff; } "
+            "QListWidget::item:hover:!selected { background-color: #232323; "
+            "color: #ffffff; }")
+        self._opt_stack = QStackedWidget()
+        self._opt_pages = {}
+        self._opt_order = {}
+        self._opt_nav.currentRowChanged.connect(self._opt_stack.setCurrentIndex)
+        split.addWidget(self._opt_nav)
+        split.addWidget(self._opt_stack, 1)
+        outer.addLayout(split, 1)
+
+        # Pre-create the pages so the nav order is the designed one rather than
+        # whichever group happens to be built first.
+        for _name in ['Run rules', 'Loadout', 'Co-op', 'Abilities', 'Patching', 'Interface']:
+            self._opt_page(_name)
 
         # ---- Map archive: first, because it is about protecting what everything
         # below it edits, and it is the one action here that touches nothing else ----
+        # #3: the MCC and Assembly plugin folders live in the patcher dialog, where
+        # they are only reachable once a run has effects to patch. They are plain
+        # CONFIG keys, so the same two keys are edited here and the two views stay in
+        # step by construction — no copy, no sync step, whichever one you set last wins.
+        folders_g = QGroupBox("Folders")
+        fform = QFormLayout(folders_g)
+        fform.setLabelAlignment(Qt.AlignRight)
+
+        def _folder_row(label, key, caption, tip, default=''):
+            edit = QLineEdit(CONFIG.get(key) or default)
+            edit.setToolTip(tip)
+            btn = QPushButton("Browse…")
+            btn.setMaximumWidth(90)
+            row = QHBoxLayout()
+            row.setContentsMargins(0, 0, 0, 0)
+            row.addWidget(edit, 1)
+            row.addWidget(btn)
+            holder = QWidget()
+            holder.setLayout(row)
+
+            def pick(_=False):
+                start = edit.text().strip() or str(app_data_dir())
+                got = QFileDialog.getExistingDirectory(self, caption, start)
+                if got:
+                    edit.setText(got)
+            btn.clicked.connect(pick)
+            fform.addRow(label, holder)
+            return edit
+
+        self.mcc_root_edit = _folder_row(
+            "MCC folder:", 'mcc_root',
+            "Select the 'Halo The Master Chief Collection' folder",
+            "Your 'Halo The Master Chief Collection' folder. Every map the patcher "
+            "writes is resolved under here. The same setting as the patcher's MCC "
+            "folder box — changing it in either place changes both.",
+            default=mcc_root())
+        self.plugins_dir_edit = _folder_row(
+            "Assembly plugins:", 'assembly_plugins_dir',
+            "Select Assembly plugins folder",
+            "The Assembly/HCEEK Plugins folder holding the per-game tag definitions "
+            "(Halo1MCC, Halo2MCC, Halo3MCC, ODSTMCC). Without it no field can be "
+            "resolved and nothing patches. The same setting as the patcher's box.")
+        self._opt_page("Patching").addWidget(folders_g, 10)
+
         vault_g = QGroupBox("Map archive")
         vform = QFormLayout(vault_g)
         vform.setLabelAlignment(Qt.AlignRight)
@@ -4874,7 +5306,27 @@ class OptionsDialog(QDialog):
             "maps the patcher touches. Nothing is deleted and nothing is overwritten.")
         self.vault_btn.clicked.connect(self._archive_vanilla_maps)
         vform.addRow("Originals:", self.vault_btn)
-        layout.addWidget(vault_g)
+
+        # The two ways back, beside the way out. Both are stopgaps until map
+        # availability is handled properly, and both spell out what they overwrite
+        # before doing it \u2014 a restore is as destructive as the mod it undoes.
+        self.restore_bak_btn = QPushButton("Restore all .bak\u2026")
+        self.restore_bak_btn.setToolTip(
+            "Copy every map\u2019s preserved copy back over the live map, for every game "
+            "(Halo 2\u2019s live in a parallel _bak folder, and .vanilla.bak wins over .bak). "
+            "Note a preserved copy is only as pristine as whatever wrote it last \u2014 after "
+            "an Editing Kit rebuild it holds THAT build, not the shipped map.")
+        self.restore_bak_btn.clicked.connect(self._restore_all_bak)
+        vform.addRow("Restore .bak:", self.restore_bak_btn)
+
+        self.restore_vault_btn = QPushButton("Restore from archive\u2026")
+        self.restore_vault_btn.setToolTip(
+            "Unpack the archives written above back over the live maps, checking every "
+            "map against the archive\u2019s own hashes as it goes. This overwrites anything "
+            "built and deployed since \u2014 ability plumbing, imported weapons, HUD edits.")
+        self.restore_vault_btn.clicked.connect(self._restore_from_archive)
+        vform.addRow("Restore archive:", self.restore_vault_btn)
+        self._opt_page("Patching").addWidget(vault_g, 20)
 
         # ---- Run rules ----
         func = QGroupBox("Run rules")
@@ -4896,7 +5348,75 @@ class OptionsDialog(QDialog):
                                        "Boss mods off, since bosses are game-specific.")
         form.addRow("Cross-game only:", self.single_game_cb)
 
-        layout.addWidget(func)
+        self.no_vit_cards_cb = QCheckBox("Hide the cards Player Health/Shield replaced")
+        self.no_vit_cards_cb.setChecked(bool(CONFIG.get('remove_superseded_vitality_cards')))
+        self.no_vit_cards_cb.setToolTip(
+            "Stop offering Starting Health Modifier, Starting Shield Modifier and "
+            "Enemy Damage Reduction. The first two scale the scenario profile rather "
+            "than the health pool itself, and Enemy Damage Reduction is a third way "
+            "to say the same thing — with Player Health and Player Shield editing the "
+            "pool directly they mostly muddy the draft. They still work; this only "
+            "stops them being drawn.")
+        form.addRow("Superseded cards:", self.no_vit_cards_cb)
+
+        # ---- Difficulty baseline ----
+        # These four live in `matg globals\globals` -> Difficulty and scale EVERY enemy
+        # in the game, so they are the floor a run's own enemy cards then build on. They
+        # are set before any effect runs, and because a patch always rebuilds from the
+        # pristine .bak the baseline never compounds.
+        base_g = QGroupBox("Difficulty baseline \u2014 whole-game enemy dials")
+        bgrid = QGridLayout(base_g)
+        bgrid.setHorizontalSpacing(10)
+        note = QLabel("Set the value each dial STARTS at, before this run's enemy cards "
+                      "are applied. 0 = leave the game's own value alone. The number in "
+                      "brackets is what the game ships for the difficulty selected "
+                      "above.")
+        note.setWordWrap(True)
+        note.setStyleSheet("color:#9aa0a6; font-size:11px;")
+        bgrid.addWidget(note, 0, 0, 1, 5)
+        for c, (_key, title) in enumerate(BASELINE_COLS):
+            h = QLabel(title)
+            h.setStyleSheet("font-weight: bold;")
+            h.setAlignment(Qt.AlignHCenter)
+            bgrid.addWidget(h, 1, c + 1)
+
+        self.baseline_spins = {}          # (game, key) -> QDoubleSpinBox
+        self.baseline_vanilla = {}        # (game, key) -> QLabel
+        saved = CONFIG.get('difficulty_baseline') or {}
+        for r, game in enumerate(BASELINE_GAMES):
+            lbl = QLabel(game)
+            lbl.setToolTip(game)
+            bgrid.addWidget(lbl, r + 2, 0)
+            for c, (key, title) in enumerate(BASELINE_COLS):
+                cell = QWidget()
+                row = QHBoxLayout(cell)
+                row.setContentsMargins(0, 0, 0, 0)
+                row.setSpacing(4)
+                sp = QDoubleSpinBox()
+                sp.setRange(0.0, 20.0)
+                sp.setSingleStep(0.05)
+                sp.setDecimals(3)
+                # 0 reads as "vanilla" rather than as a real zero -- a genuine 0 here
+                # would mean enemies deal no damage / have no health, which is never
+                # what an empty box should mean.
+                sp.setSpecialValueText("vanilla")
+                sp.setValue(float((saved.get(game) or {}).get(key) or 0.0))
+                sp.setToolTip("%s \u2014 %s. 0 leaves the shipped value alone."
+                              % (game, title))
+                van = QLabel("")
+                van.setStyleSheet("color:#8ab4f8; font-size:11px;")
+                van.setMinimumWidth(46)
+                row.addWidget(sp)
+                row.addWidget(van)
+                bgrid.addWidget(cell, r + 2, c + 1)
+                self.baseline_spins[(game, key)] = sp
+                self.baseline_vanilla[(game, key)] = van
+        self._refresh_baseline_vanilla()
+        self.diff_combo.currentIndexChanged.connect(
+            lambda *_a: self._refresh_baseline_vanilla())
+        self._opt_page("Run rules").addWidget(base_g)
+
+        self._opt_page("Run rules").addWidget(func)
 
         # ---- Weapon (#4): sits right under the run rules ----
         weap_g = QGroupBox("Weapon")
@@ -4933,7 +5453,7 @@ class OptionsDialog(QDialog):
                                    "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
                                    "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
         wform.addRow("Scope UI:", self.zoom_ui_cb)
-        layout.addWidget(weap_g)
+        self._opt_page("Loadout").addWidget(weap_g)
 
         # ---- Starting loadout (#5): sits right under Weapon ----
         load_g = QGroupBox("Starting loadout")
@@ -4942,8 +5462,9 @@ class OptionsDialog(QDialog):
 
         self.starting_weapons_cb = QCheckBox("Set starting weapons from picks (scenario profiles 0 & 1)")
         self.starting_weapons_cb.setChecked(bool(CONFIG.get('set_starting_weapons')))
-        self.starting_weapons_cb.setToolTip("On patch: Primary = P1's first weapon, Secondary = P2's first weapon, "
-                                            "with vanilla (or Magazine-modified) rounds. Missing weapons are skipped.")
+        self.starting_weapons_cb.setToolTip("On patch: The first weapon picked by each player is set as the starting\n"
+                                            "weapon for every map IF the weapon is available on the map.\n"
+                                            "Check out co-op settings for 2 player and get the rebuild maps to have all weapons on all maps.")
         lform.addRow("Starting weapons:", self.starting_weapons_cb)
 
         self.starting_equipment_cb = QCheckBox("Place first equipment per player at their spawn (Halo 3)")
@@ -4978,7 +5499,7 @@ class OptionsDialog(QDialog):
         self.starting_equipment_cb.toggled.connect(_sync_all_equip)
         _sync_all_equip()
         lform.addRow("    ↳ All carried equipment:", self.equipment_all_selected_cb)
-        layout.addWidget(load_g)
+        self._opt_page("Loadout").addWidget(load_g)
 
         # ---- Boss options (#2): "Add Boss card" is the master; with boss cards off
         # the other two have nothing to shape, so they grey out ----
@@ -5037,7 +5558,7 @@ class OptionsDialog(QDialog):
         self.boss_cards_cb.toggled.connect(_on_boss_toggled)
         self.single_game_cb.toggled.connect(lambda _=False: _sync_boss_sub())
         _sync_boss_sub()
-        layout.addWidget(boss_g)
+        self._opt_page("Run rules").addWidget(boss_g)
 
         # ---- Equipment (#3): grenades, then equipment rolls, then denials ----
         equip_g = QGroupBox("Equipment")
@@ -5119,7 +5640,7 @@ class OptionsDialog(QDialog):
         self.no_invinc_invis_cb.toggled.connect(_sync_denied_sub)
         _sync_denied_sub()
         eform.addRow("    ↳ Denied → enemies:", self.denied_as_enemy_cb)
-        layout.addWidget(equip_g)
+        self._opt_page("Loadout").addWidget(equip_g)
 
         # ---- Coop (#6) ----
         # A form row is only obviously inert if its LABEL greys out too — Qt disables the
@@ -5167,6 +5688,42 @@ class OptionsDialog(QDialog):
         self.coop_null_cb.toggled.connect(
             lambda on: on and self.coop_no_start_cb.setChecked(False))
 
+        self.h2_respawn_cb = QCheckBox("Add a respawn profile where Halo 2 lacks one")
+        self.h2_respawn_cb.setChecked(bool(CONFIG.get('h2_add_respawn_profile', True)))
+        self.h2_respawn_cb.setToolTip(
+            "Halo 2 gives each level two Player Starting Profiles — one for the initial "
+            "spawn, one for respawning — except The Great Journey (08b), which ships only "
+            "one, so there is nothing there for the patcher to put your respawn weapons "
+            "in. This adds the missing profile as a copy of the first. It restructures "
+            "the map (the profile block is relocated), which is why it can be turned "
+            "off; levels that already have a respawn profile are left alone.")
+        self.swap_players_cb = QCheckBox("Swap player 1 and player 2 loadouts")
+        self.swap_players_cb.setChecked(bool(CONFIG.get('swap_player_loadouts')))
+        self.swap_players_cb.setToolTip(
+            "Write player 1’s weapons, equipment and ability where player 2’s would "
+            "go, and vice versa. Affects only what is patched into the map — the run, "
+            "the cards and the history still read the way they were drafted. Use it "
+            "when the seat and the draft ended up the wrong way round.")
+        cform.addRow("Swap players:", self.swap_players_cb)
+        cform.addRow("Halo 2 respawn profile:", self.h2_respawn_cb)
+
+        # Tartarus (08b) test knob. Johnson’s Sentinel Beam is REAL damage —
+        # Tartarus is unit_impervious 0 once the fight starts and only takes damage
+        # from the player’s team, which Johnson is on — and the speedrun tech is to
+        # duplicate him so the shield crosses the script’s threshold sooner.
+        self.h2_johnson_spin = QSpinBox()
+        self.h2_johnson_spin.setRange(0, 8)
+        self.h2_johnson_spin.setValue(int(((CONFIG.get('h2_extra_squads') or {})
+                                           .get('08b') or {}).get('boss_johnson', 0) or 0))
+        self.h2_johnson_spin.setToolTip(
+            "Extra Johnsons in the Tartarus fight on The Great Journey (08b). His "
+            "Sentinel Beam does real damage to Tartarus, and the boss script opens "
+            "the damage window once his shield is chipped past a fixed fraction — so "
+            "more Johnsons means the window opens sooner and more often. 0 leaves the "
+            "level alone. This restructures the map (the squad’s starting-location "
+            "block is grown), and only affects 08b.")
+        cform.addRow("Extra Johnsons (08b):", self.h2_johnson_spin)
+
         # #6: the respawn options only mean anything when starting weapons are being
         # set at all — grey them out otherwise.
         def _sync_coop_respawn(_=False):
@@ -5177,7 +5734,7 @@ class OptionsDialog(QDialog):
                     cb.setChecked(False)
         self.starting_weapons_cb.toggled.connect(_sync_coop_respawn)
         _sync_coop_respawn()
-        layout.addWidget(coop_g)
+        self._opt_page("Co-op").addWidget(coop_g)
 
         # ---- Coop session sharing ----
         # One machine drafts and patches; the other needs the same run AND the same
@@ -5223,7 +5780,7 @@ class OptionsDialog(QDialog):
             _row(shform, self.share_autosave_cb, on)
         self.share_dir_edit.textChanged.connect(_sync_share)
         _sync_share()
-        layout.addWidget(share_g)
+        self._opt_page("Co-op").addWidget(share_g)
 
         # ---- New Features (Experimental) ----
         # Sprint. Only functions on maps built with the sprint mod (weapon tag +
@@ -5463,7 +6020,7 @@ class OptionsDialog(QDialog):
         for _cb in self.ability_offer_cbs.values():
             _cb.toggled.connect(_sync_sprint)
         _sync_sprint()
-        layout.addWidget(exp_g)
+        self._opt_page("Abilities").addWidget(exp_g)
 
         # ---- Card rolls ----
         rolls = QGroupBox("Card rolls")
@@ -5550,10 +6107,16 @@ class OptionsDialog(QDialog):
         self.special_rate.setValue(float(CONFIG.get('special_rate_factor', 0.67)))
         self.special_rate.setToolTip("Scales how often special (escalating) effects appear; <1 = rarer.\nThese effects are your prime way to get tankier.")
         rform.addRow("Special-effect rate:", self.special_rate)
-        layout.addWidget(rolls)
+        self._opt_page("Run rules").addWidget(rolls)
 
         # ---- Map patching ----
-        patchg = QGroupBox("Map patching")
+        # #2: one "Map patching" box had grown to ten rows across three games. Split
+        # per game, so a row is found by the game it belongs to. Built as separate
+        # group boxes on the same page rather than more nav pages — they are short.
+        patchg = QGroupBox("Map patching — Halo 3")
+        patch_odst_g = QGroupBox("Map patching — Halo 3: ODST")
+        odform = QFormLayout(patch_odst_g)
+        odform.setLabelAlignment(Qt.AlignRight)
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
 
@@ -5575,7 +6138,7 @@ class OptionsDialog(QDialog):
             "minimum error and error angle on the dual-wield pair.\n\nNormal Plasma "
             "Rifle effects reach the red tag either way — that is in the tag data, not "
             "this option.")
-        form.addRow("Red plasma rifle:", self.red_plasma_cb)
+        odform.addRow("Red plasma rifle:", self.red_plasma_cb)
 
         self.odst_variants_cb = QCheckBox("ODST: Auto Magnum and Silenced SMG ARE the Magnum and SMG")
         self.odst_variants_cb.setChecked(bool(CONFIG.get('odst_variants_as_base', True)))
@@ -5585,7 +6148,7 @@ class OptionsDialog(QDialog):
             "weapon card each; picking it gives the ODST variant, and there are no "
             "upgrade cards.\n\nOff: they become UPGRADES of the Magnum and SMG with "
             "their own cards.")
-        form.addRow("ODST variants:", self.odst_variants_cb)
+        odform.addRow("ODST variants:", self.odst_variants_cb)
 
         self.odst_downgrade_cb = QCheckBox("…and the map only stocks the base until it is drafted")
         self.odst_downgrade_cb.setChecked(bool(CONFIG.get('odst_downgrade_unupgraded')))
@@ -5611,7 +6174,7 @@ class OptionsDialog(QDialog):
                 self.odst_downgrade_cb.setChecked(False)
         self.odst_variants_cb.toggled.connect(_sync_odst_variants)
         _sync_odst_variants()
-        form.addRow("", self.odst_downgrade_cb)
+        odform.addRow("", self.odst_downgrade_cb)
 
         self.odst_pools_cb = QCheckBox("ODST: offer every weapon the prepared map supports")
         self.odst_pools_cb.setChecked(bool(CONFIG.get('odst_pools_from_map')))
@@ -5624,7 +6187,7 @@ class OptionsDialog(QDialog):
             "zoom-donor pool.\n\nRead from the map rather than a fixed list, so a level "
             "that was never prepared offers less instead of offering weapons that would "
             "never appear.")
-        form.addRow("ODST weapon pools:", self.odst_pools_cb)
+        odform.addRow("ODST weapon pools:", self.odst_pools_cb)
 
         self.odst_all_profiles_cb = QCheckBox(
             "ODST: write the starting weapons to EVERY starting profile")
@@ -5639,7 +6202,7 @@ class OptionsDialog(QDialog):
             "is right wherever the game puts you.\n\nOff by default because ODST also "
             "names NPC profiles (dutch, buck, odst02), so this hands squadmates the "
             "same weapons. That does not affect the run, but you will see it.")
-        form.addRow("ODST profiles:", self.odst_all_profiles_cb)
+        odform.addRow("ODST profiles:", self.odst_all_profiles_cb)
 
         self.odst_ai_drops_cb = QCheckBox("ODST: let AI drop equipment again")
         self.odst_ai_drops_cb.setChecked(bool(CONFIG.get('odst_ai_equipment_drops')))
@@ -5650,7 +6213,7 @@ class OptionsDialog(QDialog):
             "equipment tag in the map, so Brutes drop their gear again — which also "
             "gives the Brute Drop Chance card something to act on, instead of tuning "
             "weights the flag was overriding outright.")
-        form.addRow("ODST AI drops:", self.odst_ai_drops_cb)
+        odform.addRow("ODST AI drops:", self.odst_ai_drops_cb)
 
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
@@ -5660,7 +6223,7 @@ class OptionsDialog(QDialog):
             "starting shield drains immediately.\n\nWith this on, a Starting Shield "
             "card spends itself on Starting Health in ODST, so drafting one is not a "
             "wasted pick. Other games are unaffected.")
-        form.addRow("ODST shields:", self.odst_shield_health_cb)
+        odform.addRow("ODST shields:", self.odst_shield_health_cb)
 
         self.odst_hub_cb = QCheckBox("ODST: patch Mombasa Streets alongside the mission")
         self.odst_hub_cb.setChecked(bool(CONFIG.get('odst_patch_hub', True)))
@@ -5672,15 +6235,25 @@ class OptionsDialog(QDialog):
             "the hub does not field are harmless no-ops, and because patching runs from "
             "the .bak baseline the hub always carries the CURRENT run rather than "
             "accumulating older ones.")
-        form.addRow("ODST hub:", self.odst_hub_cb)
+        odform.addRow("ODST hub:", self.odst_hub_cb)
 
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
         self.ignore_elite_h3_cb.setToolTip("On by default. In Halo 3 the Elites fight alongside you, "
                                            "so Elite enemy modifiers would tune your allies — this skips "
                                            "them when patching a Halo 3 map. Turn off to patch them anyway.")
+        self.h3_all_chief_cb = QCheckBox("Arm every Chief starting profile, not just the first")
+        self.h3_all_chief_cb.setChecked(bool(CONFIG.get('h3_all_chief_profiles', True)))
+        self.h3_all_chief_cb.setToolTip(
+            "Halo 3 hands the player a starting profile per ENTRY POINT — Crow’s Nest "
+            "gives one at each rally point and none at all at level start — so writing "
+            "only the first profile can leave you spawning empty-handed. This writes "
+            "every Chief-role profile. Profiles a script deliberately leaves weaponless "
+            "are still skipped.")
+        form.addRow("Halo 3 profiles:", self.h3_all_chief_cb)
         form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
 
-        layout.addWidget(patchg)
+        self._opt_page("Patching").addWidget(patchg, 60)
+        self._opt_page("Patching").addWidget(patch_odst_g, 70)
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -5723,8 +6296,22 @@ class OptionsDialog(QDialog):
         self.score_cap.setToolTip("Largest multiplier any enemy may reach. 0 = no cap.")
         sform.addRow("    ↳ Cap multiplier:", self.score_cap)
 
-        score_note = QLabel("MCC reads this file only at startup — restart the game "
-                            "for a score change to take effect.")
+        self.score_push_cb = QCheckBox("Also push the new scores into a running MCC")
+        self.score_push_cb.setChecked(bool(CONFIG.get('score_live_push', True)))
+        self.score_push_cb.setToolTip(
+            "MCC parses scoredb.xml once at startup, so without this every score change "
+            "costs a full restart \u2014 and a Microsoft account login with it.\n\n"
+            "With it on, the patcher writes the same numbers straight into the parsed "
+            "score records in the running game, matched by enemy bucket, so the change "
+            "takes effect immediately. The file is written either way, so a later "
+            "restart lands on the same values.\n\n"
+            "Harmless when MCC is closed: it simply reports that and the file edit "
+            "stands on its own. Turn it off to go back to file-only patching.")
+        sform.addRow("Live push:", self.score_push_cb)
+
+        score_note = QLabel("MCC reads this file only at startup. With the live push "
+                            "off (or MCC closed at patch time), restart the game for a "
+                            "score change to take effect.")
         score_note.setWordWrap(True)
         score_note.setStyleSheet("color:#c8a45a; font-size:11px;")
         sform.addRow("", score_note)
@@ -5733,16 +6320,17 @@ class OptionsDialog(QDialog):
             on = self.score_scaling_cb.isChecked()
             self.score_step.setEnabled(on)
             self.score_cap.setEnabled(on)
+            self.score_push_cb.setEnabled(on)
         self.score_scaling_cb.toggled.connect(_sync_score)
         _sync_score()
-        layout.addWidget(scoreg)
+        self._opt_page("Patching").addWidget(scoreg, 30)
 
         # ---- Halo 2 engine patches ----
         # These edit halo2.dll, not a map, so they do NOT ride on the dialog's OK the
         # way every other option does: they take effect outside any run and outlive it.
         # Hence their own Apply button, and a reminder that the dll is mapped at process
         # start -- reloading a level is not enough, MCC has to be restarted.
-        h2g = QGroupBox("Halo 2 engine patches (halo2.dll)")
+        h2g = QGroupBox("Map patching — Halo 2 (halo2.dll)")
         h2form = QFormLayout(h2g)
         h2form.setLabelAlignment(Qt.AlignRight)
 
@@ -5765,7 +6353,7 @@ class OptionsDialog(QDialog):
         h2_btn.clicked.connect(self._apply_h2_patches)
         h2form.addRow("", h2_btn)
         self._refresh_h2_patches()
-        layout.addWidget(h2g)
+        self._opt_page("Patching").addWidget(h2g, 50)
 
         # ---- Advanced ----
         adv = QGroupBox("Advanced")
@@ -5777,7 +6365,7 @@ class OptionsDialog(QDialog):
         self.debug_mode_cb.setToolTip("Shows the patcher's “＋ field” button and the main-window “ADD MOD” "
                                       "search. Leave off for normal play.")
         vform.addRow("Debug:", self.debug_mode_cb)
-        layout.addWidget(adv)
+        self._opt_page("Interface").addWidget(adv)
 
         # ---- Appearance section ----
         appear = QGroupBox("Appearance")
@@ -5850,8 +6438,7 @@ class OptionsDialog(QDialog):
         self.hide_fields_cb.setChecked(bool(CONFIG.get('hide_fields')))
         self.hide_fields_cb.setToolTip("Hide the list of tag fields a card edits — cosmetic only.")
         aform.addRow("Hide fields:", self.hide_fields_cb)
-        layout.addWidget(appear)
-        layout.addStretch(1)
+        self._opt_page("Interface").addWidget(appear)
 
         note = QLabel("Saved as global defaults and stored with this run's save.")
         note.setStyleSheet("color: #888; font-size: 11px;")
@@ -5869,6 +6456,18 @@ class OptionsDialog(QDialog):
         # them, so scrolling the options list can never grab a field.
         for w in (self.findChildren(QAbstractSpinBox) + self.findChildren(QComboBox)):
             w.setFocusPolicy(Qt.StrongFocus)
+
+        # #1: restore the remembered size LAST. Doing it in __init__ before the pages
+        # existed was pointless — laying the content out afterwards grew the dialog
+        # past whatever was restored, so it reopened at the content's natural size
+        # every time. The stack is told it may shrink for the same reason.
+        self._opt_stack.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
+        size = CONFIG.get('options_dialog_size')
+        try:
+            w0, h0 = int(size[0]), int(size[1])
+        except (TypeError, ValueError, IndexError):
+            w0, h0 = 620, 720
+        self.resize(max(460, w0), max(320, h0))
 
     def done(self, r):
         # Remember the size on close, including on Cancel — it's a window preference,
@@ -5957,6 +6556,12 @@ class OptionsDialog(QDialog):
             'score_scaling': self.score_scaling_cb.isChecked(),
             'score_step': round(self.score_step.value(), 3),
             'score_cap_mult': round(self.score_cap.value(), 1),
+            'score_live_push': self.score_push_cb.isChecked(),
+            'difficulty_baseline': {
+                g: {k: round(self.baseline_spins[(g, k)].value(), 3)
+                    for k, _t in BASELINE_COLS if self.baseline_spins[(g, k)].value()}
+                for g in BASELINE_GAMES
+                if any(self.baseline_spins[(g, k)].value() for k, _t in BASELINE_COLS)},
             'auto_new_weapon_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
@@ -5974,6 +6579,17 @@ class OptionsDialog(QDialog):
             'two_player_coop': self.two_player_cb.isChecked(),
             'coop_no_starting_weapons': self.coop_no_start_cb.isChecked(),
             'null_coop_starting_equipment': self.coop_null_cb.isChecked(),
+            'h2_add_respawn_profile': self.h2_respawn_cb.isChecked(),
+            'h3_all_chief_profiles': self.h3_all_chief_cb.isChecked(),
+            # Not in OPTION_KEYS: these are machine paths, not run settings, so
+            # they must NOT be snapshotted into a saved run and restored onto a
+            # co-op partner's machine. values() is also used to write CONFIG, so
+            # returning them here is what makes the Options copy take effect.
+            'mcc_root': self.mcc_root_edit.text().strip() or None,
+            'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
+            'swap_player_loadouts': self.swap_players_cb.isChecked(),
+            'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
+            'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
             'card_width': self.card_width.value(),
@@ -6008,6 +6624,253 @@ class OptionsDialog(QDialog):
             'camo_duration_s': round(self.camo_duration.value(), 1),
             'camo_cooldown_s': round(self.camo_cooldown.value(), 1),
         }
+
+    def _vault_module(self, title):
+        """Import the vault tool, reporting rather than raising if it is missing."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import map_vault
+            return map_vault
+        except Exception as e:
+            QMessageBox.warning(self, title, "Could not load the vault tool:\n%s" % e)
+            return None
+
+    def _restore_all_bak(self):
+        """Put each map's preserved copy back over the live map, for every game.
+
+        A stopgap, and NOT an undo for patching: the patcher already rebuilds from
+        `<map>.bak` on every patch. This is for what the patcher cannot reach -- a map
+        replaced wholesale by an Editing Kit build, or hand-copied -- where the only way
+        back is the preserved copy.
+
+        Which copy counts as preserved is `map_vault.originals()`'s decision, not a glob
+        for `*.bak`: Halo 2 keeps its originals in a parallel `_bak` folder rather than
+        beside the map, and `.vanilla.bak` outranks `.bak` where both exist. A glob would
+        silently miss all of Halo 2.
+
+        Unlike the archive, a candidate that is itself a rebuild is NOT rejected -- on
+        this install several .bak files hold EK rebuilds on purpose, and restoring those
+        is a legitimate reason to press this. The confirmation names the source kind
+        instead of quietly deciding for you.
+        """
+        map_vault = self._vault_module("Restore all .bak")
+        if map_vault is None:
+            return
+        jobs, lines = [], []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for game in map_vault.MAP_FOLDER:
+                got, missing = [], 0
+                try:
+                    names = map_vault.maps_for(game)
+                except Exception as e:
+                    lines.append("%s: %s" % (game, e))
+                    continue
+                for n in names:
+                    live = map_vault.resolve(game, n)
+                    origs = map_vault.originals(game, live) if live else []
+                    if origs:
+                        got.append((origs[0][0], live, origs[0][1]))
+                    else:
+                        missing += 1
+                if got:
+                    kinds = sorted({k for _s, _d, k in got})
+                    lines.append("%s: %d of %d map(s), from %s"
+                                 % (game, len(got), len(names), ", ".join(kinds)))
+                    jobs += got
+                    if missing:
+                        lines.append("      %d have no preserved copy \u2014 left alone"
+                                     % missing)
+                else:
+                    lines.append("%s: no preserved copies at all" % game)
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        if not jobs:
+            QMessageBox.information(self, "Restore all .bak",
+                                    "Nothing to restore.\n\n" + "\n".join(lines))
+            return
+        if QMessageBox.question(
+                self, "Restore all .bak",
+                "Copy the preserved copy back over the live map, for %d map(s)?\n\n%s"
+                "\n\nA preserved copy is only as pristine as whatever wrote it last: "
+                "after an Editing Kit rebuild it holds THAT build, not the shipped map."
+                % (len(jobs), "\n".join(lines)),
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+
+        done, failed = 0, []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for src, dst, _kind in jobs:
+                try:
+                    shutil.copyfile(src, dst)
+                    done += 1
+                except Exception as e:
+                    failed.append("%s: %s" % (os.path.basename(dst), e))
+        finally:
+            QApplication.restoreOverrideCursor()
+        msg = "Restored %d map(s) from their preserved copies." % done
+        if failed:
+            msg += "\n\nFailed:\n" + "\n".join(failed[:10])
+        QMessageBox.information(self, "Restore all .bak", msg)
+
+    def _restore_from_archive(self):
+        """Unpack the per-game archives back over the live maps.
+
+        The mirror image of the archive button: that writes one zip per game, this puts
+        them back. Every entry is hashed as it is written and checked against the
+        archive's own manifest, so a truncated or corrupted archive fails loudly instead
+        of leaving an unbootable map behind -- extraction goes to a temp file beside the
+        target and is only moved over the live map once the hash matches.
+        """
+        map_vault = self._vault_module("Restore from archive")
+        if map_vault is None:
+            return
+        import hashlib
+        import json as _json
+        import zipfile
+
+        src_dir = QFileDialog.getExistingDirectory(
+            self, "Where are the map archives?",
+            CONFIG.get('vault_dir') or str(Path.home()))
+        if not src_dir:
+            return
+
+        plan, lines = [], []
+        for game in map_vault.MAP_FOLDER:
+            zp = map_vault.archive_path(game, src_dir)
+            if not os.path.exists(zp):
+                continue
+            dest = map_vault.map_dir(game)
+            if not os.path.isdir(dest):
+                lines.append("%s: archive found, but %s is missing" % (game, dest))
+                continue
+            try:
+                with zipfile.ZipFile(zp) as z:
+                    man = _json.loads(z.read(map_vault.MANIFEST))
+            except Exception as e:
+                lines.append("%s: unreadable \u2014 %s" % (game, e))
+                continue
+            entries = man.get('entries', {})
+            plan.append((game, zp, dest, entries))
+            lines.append("%s: %d map(s), archived %s"
+                         % (game, len(entries), man.get('created', '?')))
+        if not plan:
+            QMessageBox.information(
+                self, "Restore from archive",
+                "No usable archives in:\n%s\n\n%s"
+                % (src_dir, "\n".join(lines) or "(none found)"))
+            return
+        if QMessageBox.question(
+                self, "Restore from archive",
+                "Unpack these over the live maps?\n\n%s\n\nThis overwrites the current "
+                "map files. Anything built and deployed since the archive was made "
+                "\u2014 ability plumbing, imported weapons, HUD edits \u2014 goes with them."
+                % "\n".join(lines),
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+
+        CONFIG['vault_dir'] = src_dir
+        save_settings()
+
+        done, failed = 0, []
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            for game, zp, dest, entries in plan:
+                try:
+                    with zipfile.ZipFile(zp) as z:
+                        for n, meta in sorted(entries.items()):
+                            arc = meta.get('filename', n + '.map')
+                            out = os.path.join(dest, os.path.basename(arc))
+                            tmp = out + '.restoring'
+                            h = hashlib.sha256()
+                            with z.open(arc) as fsrc, open(tmp, 'wb') as fdst:
+                                for chunk in iter(lambda: fsrc.read(1 << 20), b''):
+                                    h.update(chunk)
+                                    fdst.write(chunk)
+                            want = meta.get('sha256')
+                            if want and h.hexdigest() != want:
+                                os.remove(tmp)
+                                failed.append("%s %s: hash mismatch, left untouched"
+                                              % (game, n))
+                                continue
+                            os.replace(tmp, out)
+                            done += 1
+                except Exception as e:
+                    failed.append("%s: %s" % (game, e))
+        finally:
+            QApplication.restoreOverrideCursor()
+        msg = "Restored %d map(s) from the archive." % done
+        if failed:
+            msg += "\n\nFailed:\n" + "\n".join(failed[:10])
+        msg += ("\n\nThe .bak files beside the maps were NOT touched, so the next patch "
+                "still rebuilds from whatever they hold.")
+        QMessageBox.information(self, "Restore from archive", msg)
+
+    def _refresh_baseline_vanilla(self):
+        """Show what each game ships for the four dials, at the selected difficulty.
+
+        Read from the PATCHER'S baseline -- `<map>.map.bak` where one exists, else the
+        live map -- because that is what a patch actually starts from. Reading the live
+        map instead would show a previous patch's values back to the user as if they
+        were Bungie's.
+
+        Cached per (game, difficulty): each miss opens a campaign map, which is hundreds
+        of megabytes, and the difficulty selector would otherwise re-read six of them on
+        every change.
+        """
+        diff = (self.diff_combo.currentData() or self.diff_combo.currentText()
+                or 'Normal')
+        cache = getattr(self, '_baseline_vanilla_cache', None)
+        if cache is None:
+            cache = self._baseline_vanilla_cache = {}
+        for game in BASELINE_GAMES:
+            key = (game, diff)
+            if key not in cache:
+                cache[key] = self._read_baseline_for(game, diff)
+            vals = cache[key]
+            for k, _title in BASELINE_COLS:
+                lab = self.baseline_vanilla.get((game, k))
+                if lab is None:
+                    continue
+                v = (vals or {}).get(k)
+                lab.setText('(%g)' % v if isinstance(v, (int, float))
+                            else '(\u2013)')
+                lab.setToolTip('' if vals else
+                               '%s is not installed, so its shipped values cannot be '
+                               'read. The settings are still saved.' % game)
+
+    def _read_baseline_for(self, game, difficulty):
+        """{key: shipped value} for one game, or None when it cannot be read.
+
+        The mission list comes from `map_vault.maps_for`, which reads halo.json itself.
+        An earlier version used `self.db` — but `db` lives on the MAIN WINDOW, not on
+        this dialog, so every call raised AttributeError, the blanket except swallowed
+        it, and all six games displayed "(–)" as though nothing were installed. The
+        reason is now reported in debug mode rather than vanishing.
+        """
+        try:
+            import halo_patch
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import map_vault
+            if game not in map_vault.MAP_FOLDER:
+                return None                      # Reach / Halo 4: no map folder at all
+            subdirs = CONFIG.get('plugin_subdirs_by_game', {}).get(game, [])
+            registry = halo_patch.PluginRegistry(CONFIG.get('assembly_plugins_dir'),
+                                                 subdirs)
+            for mid in map_vault.maps_for(game):
+                path = map_vault.resolve(game, mid)
+                if not path:
+                    continue
+                src = path + '.bak' if os.path.exists(path + '.bak') else path
+                m = halo_patch.open_map(src, game)
+                return halo_patch.read_difficulty_baseline(m, registry, difficulty)
+        except Exception as e:
+            if CONFIG.get('debug_mode'):
+                print('baseline read failed for %s @ %s: %s' % (game, difficulty, e))
+            return None
+        return None
 
     def _archive_vanilla_maps(self):
         """Archive each game's pristine campaign maps into one zip per game.
@@ -6639,6 +7502,7 @@ class HaloGUI(QMainWindow):
             except Exception:
                 pass
         self.enhancer = RunEnhancer(self.db, self.run_state)
+        self.update_patch_code_display()   # #8: show the loaded run's own code
         # Sync the Game + Level dropdowns to the loaded mission (no signals).
         game = self.db.get_game_for_mission(self.run_state.mission_id)
         if game:
@@ -6902,6 +7766,18 @@ class HaloGUI(QMainWindow):
         self.setStatusBar(self.status_bar)
         self.status_label = QLabel("Ready")
         self.status_bar.addWidget(self.status_label)
+        # #8: the last patch code, PERMANENTLY on screen until the next patch
+        # replaces it. It used to live only in the patcher’s results box, which
+        # is gone the moment that dialog closes — so the one number two players
+        # are meant to read out to each other was the one you had to re-patch to
+        # see. Added as a permanent widget so it sits at the right-hand end and
+        # transient update_status() messages never overwrite it.
+        self.patch_code_label = QLabel("")
+        self.patch_code_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.patch_code_label.setStyleSheet(
+            "color: #8fb8ff; font-family: monospace; font-weight: bold; padding-right: 6px;")
+        self.status_bar.addPermanentWidget(self.patch_code_label)
+        self.update_patch_code_display()
 
     # ---- Game, Mission and Weapon Changes ----
     def _fill_mission_combo(self, game, select_mid=None):
@@ -6960,63 +7836,164 @@ class HaloGUI(QMainWindow):
         self.generate_btn.setEnabled(True)
         self.update_status(f"{status_prefix} - Generate pairs manually")
 
-    def change_weapon(self, player):
-        weapons = self._game_weapon_pool(player)
-        if player == 'player1' and self.run_state.player2_weapon:
-            available = [w for w in weapons if w != self.run_state.player2_weapon]
-        elif player == 'player2' and self.run_state.player1_weapon:
-            available = [w for w in weapons if w != self.run_state.player1_weapon]
+    def _replace_pick(self, player, old_item, new_item):
+        """Swap ONE item in a player's arsenal, in place, keeping every other pick.
+
+        Order matters: the first entry is the primary (what the starting-weapon patch
+        writes), so replacing in place is what keeps a mid-list change from promoting
+        something else to primary. `set_weapon` cannot be used here -- its contract is
+        to replace the whole arsenal with one weapon, which is the bug this fixes.
+        """
+        rs = self.run_state
+        lst = rs.weapons_for(player)
+        if old_item not in lst:
+            return False
+        if new_item is None:
+            lst.remove(old_item)
         else:
-            available = weapons
-        if not available:
-            QMessageBox.warning(self, "Error", "No weapons available!")
-            return
+            lst[lst.index(old_item)] = new_item
+        primary = lst[0] if lst else None
+        if player == 'player1':
+            rs.player1_weapon = primary
+        else:
+            rs.player2_weapon = primary
+        return True
+
+    def change_weapon(self, player):
+        """Change or remove ONE of a player's picks.
+
+        Previously this offered a single weapon combo and replaced the player's whole
+        arsenal with the choice. Now it asks which pick to act on, so a run that has
+        accumulated weapons, upgrades, abilities and equipment keeps all of them.
+        """
+        rs = self.run_state
+        current = list(rs.weapons_for(player))
+        if not current:
+            # Nothing drafted yet: this is the opening pick, where "replace the lot"
+            # and "replace the only one" are the same thing.
+            return self._change_first_weapon(player)
+
+        other = rs.player2_weapon if player == 'player1' else rs.player1_weapon
+
         dialog = QDialog(self)
-        dialog.setWindowTitle(f"Select {player.upper()} Weapon")
+        dialog.setWindowTitle("Change a pick — %s" % player.upper())
         dialog.setModal(True)
         layout = QVBoxLayout(dialog)
-        layout.addWidget(QLabel(f"Select weapon for {player.upper()}:"))
-        combo = QComboBox()
-        for w in available:
-            combo.addItem(w)
-        current = self.run_state.player1_weapon if player == 'player1' else self.run_state.player2_weapon
-        if current in available:
-            combo.setCurrentIndex(available.index(current))
-        layout.addWidget(combo)
-        btn_layout = QHBoxLayout()
-        ok_btn = QPushButton("Select")
-        ok_btn.clicked.connect(dialog.accept)
-        cancel_btn = QPushButton("Cancel")
-        cancel_btn.clicked.connect(dialog.reject)
-        btn_layout.addStretch()
-        btn_layout.addWidget(ok_btn)
-        btn_layout.addWidget(cancel_btn)
-        layout.addLayout(btn_layout)
+        layout.addWidget(QLabel("Which pick do you want to change?"))
+        which = QComboBox()
+        for w in current:
+            kind = ("ability" if is_ability_item(w)
+                    else "equipment" if self.db.is_equipment(w) else "weapon")
+            which.addItem("%s   (%s)" % (w, kind), w)
+        layout.addWidget(which)
 
-        if dialog.exec() == QDialog.Accepted:
-            new_weapon = combo.currentText()
-            if player == 'player1':
-                self.run_state.set_weapon('player1', new_weapon)
-                if self.run_state.player2_weapon == new_weapon:
-                    self.run_state.set_weapon('player2', None)
+        layout.addWidget(QLabel("Replace it with:"))
+        repl = QComboBox()
+        layout.addWidget(repl)
+        note = QLabel("")
+        note.setStyleSheet("color: #888; font-size: 11px;")
+        note.setWordWrap(True)
+        layout.addWidget(note)
+
+        def refill():
+            """Offer everything this player could be given, minus what they already
+            hold — except the pick being changed, which must stay offerable so the
+            list is never empty when the arsenal already covers the pool."""
+            repl.clear()
+            picked = which.currentData()
+            pool = [w for w in self._weapon_offer_pool(player)
+                    if w != other and w not in current]
+            # The blacklist and per-run gating already applied inside the pool call.
+            for w in sorted(pool):
+                repl.addItem(w)
+            if not pool:
+                note.setText("Nothing else is available for this player on this level — "
+                             "you can still remove the pick.")
             else:
-                self.run_state.set_weapon('player2', new_weapon)
-                if self.run_state.player1_weapon == new_weapon:
-                    self.run_state.set_weapon('player1', None)
-            self.update_weapon_display()
-            self.run_state.selected_pairs = {'player1': None, 'player2': None}
-            self.run_state.phase = 'player1_turn'
-            self.run_state.current_turn = 'player1'
-            self.run_state.pairs = []
-            self.clear_pairs()
-            self.update_history()
-            self._sync_save_button()
-            self.generate_btn.setEnabled(True)
-            self.update_status(f"Weapon changed for {player.upper()} - Generate new pairs")
-            if self.run_state.player1_weapon and self.run_state.player2_weapon:
-                self.on_generate()
-            else:
-                self.show_weapon_selection()
+                note.setText("%d option(s). Only this pick changes; the rest of the "
+                             "arsenal is kept." % len(pool))
+            repl.setEnabled(bool(pool))
+        which.currentIndexChanged.connect(lambda _=0: refill())
+        refill()
+
+        row = QHBoxLayout()
+        ok_btn = QPushButton("Replace")
+        rm_btn = QPushButton("Remove pick")
+        rm_btn.setStyleSheet("background-color:#3a2222; color:#e0a0a0;")
+        cancel_btn = QPushButton("Cancel")
+        row.addStretch()
+        row.addWidget(ok_btn)
+        row.addWidget(rm_btn)
+        row.addWidget(cancel_btn)
+        layout.addLayout(row)
+
+        outcome = {}
+        ok_btn.clicked.connect(lambda: (outcome.update(action='replace'), dialog.accept()))
+        rm_btn.clicked.connect(lambda: (outcome.update(action='remove'), dialog.accept()))
+        cancel_btn.clicked.connect(dialog.reject)
+
+        if dialog.exec() != QDialog.Accepted or not outcome:
+            return
+        old_item = which.currentData()
+        if outcome['action'] == 'remove':
+            if len(current) == 1 and QMessageBox.question(
+                    self, "Remove the only pick",
+                    "%s is this player's only pick. Remove it and choose again?"
+                    % old_item,
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+                return
+            self._replace_pick(player, old_item, None)
+            self.update_status("Removed %s from %s" % (old_item, player.upper()))
+        else:
+            if not repl.isEnabled() or not repl.currentText():
+                return
+            new_item = repl.currentText()
+            self._replace_pick(player, old_item, new_item)
+            self.update_status("%s: %s -> %s" % (player.upper(), old_item, new_item))
+        self._after_pick_change(player)
+
+    def _change_first_weapon(self, player):
+        """The opening pick, where the player holds nothing yet."""
+        pool = [w for w in self._game_weapon_pool(player)]
+        other = (self.run_state.player2_weapon if player == 'player1'
+                 else self.run_state.player1_weapon)
+        pool = [w for w in pool if w != other]
+        if not pool:
+            QMessageBox.warning(self, "Error", "No weapons available!")
+            return
+        item, ok = QInputDialog.getItem(self, "Select %s weapon" % player.upper(),
+                                        "Weapon:", sorted(pool), 0, False)
+        if not ok or not item:
+            return
+        self.run_state.set_weapon(player, item)
+        self._after_pick_change(player, deal=True)
+
+    def _after_pick_change(self, player, deal=False):
+        """Shared tail after a manual pick change.
+
+        `deal` is False for an edit to an existing arsenal: swapping one weapon should
+        not deal a fresh round of cards on the spot -- that reads as the app making a
+        decision you did not ask for, and it costs a reroll. The round in progress IS
+        cleared (it no longer matches the arsenal) and Generate is enabled, so the next
+        round is drawn when YOU ask for it. The opening pick still flows straight on,
+        because there the whole point is to get to the first cards."""
+        rs = self.run_state
+        self.update_weapon_display()
+        rs.selected_pairs = {'player1': None, 'player2': None}
+        rs.phase = 'player1_turn'
+        rs.current_turn = 'player1'
+        rs.pairs = []
+        self.clear_pairs()
+        self.update_history()
+        self._sync_save_button()
+        self.generate_btn.setEnabled(True)
+        if not deal:
+            self.update_status(self.status_label.text() + "  —  press Generate when ready")
+            return
+        if rs.player1_weapon and rs.player2_weapon:
+            self.on_generate()
+        else:
+            self.show_weapon_selection()
 
     # ---- Pair Generation ----
     def on_generate(self):
@@ -7322,6 +8299,41 @@ class HaloGUI(QMainWindow):
     def update_status(self, msg):
         self.status_label.setText(msg)
 
+    def set_last_patch_code(self, code, map_path=None, difficulty=None):
+        """Record the signature of a patch just applied, and show it.
+
+        A patch that wrote nothing produces no code (see patch_signature); that
+        must not wipe the last real one, or a failed re-patch would erase the
+        code the partner is still comparing against.
+        """
+        if not code:
+            return
+        self.run_state.last_patch = {
+            'code': code,
+            'map': Path(map_path).name if map_path else None,
+            'difficulty': difficulty,
+            'when': datetime.now().strftime('%Y-%m-%d %H:%M'),
+        }
+        self.update_patch_code_display()
+
+    def update_patch_code_display(self):
+        """Render run_state.last_patch into the status bar (blank if never patched)."""
+        lp = getattr(self.run_state, 'last_patch', None) or {}
+        code = lp.get('code')
+        if not code:
+            self.patch_code_label.setText('')
+            self.patch_code_label.setToolTip('')
+            return
+        where = lp.get('map') or '?'
+        self.patch_code_label.setText(f"Patch {code}  ·  {where}")
+        self.patch_code_label.setToolTip(
+            f"Last patch: {code}\n"
+            f"Map: {where}\n"
+            f"Difficulty: {lp.get('difficulty') or '?'}\n"
+            f"Applied: {lp.get('when') or '?'}\n\n"
+            'Same code = same patch. Read it out to your co-op partner; codes only '
+            'compare between the same tool version. Stays here until the next patch.')
+
     @staticmethod
     def _debug_mod_round(label, mod):
         """One mod turned into its own single-effect round, categorized the same
@@ -7583,8 +8595,19 @@ class HaloGUI(QMainWindow):
             # Subsequent saves follow the file the user actually chose.
             self.loaded_run_path = file_path
             self.update_status(f"✅ Selection saved to {file_path}")
-            QMessageBox.information(self, "Saved!", f"Selection saved to:\n{file_path}")
-            
+            # Name the magnitude count outright: the run file carrying its own
+            # magnitudes is the whole reason a shared save reproduces the same
+            # patch, and "did they make it in?" was otherwise unanswerable
+            # without opening the JSON.
+            n_mag = len(save_data.get("magnitudes") or {})
+            mag_line = (f"\n\n{n_mag} magnitude(s) travel with it."
+                        if n_mag else
+                        "\n\nNo magnitudes are stored for this run\u2019s effects "
+                        "yet — open Patch Map and type some, or the other "
+                        "machine starts from blank fields.")
+            QMessageBox.information(self, "Saved!",
+                                    f"Selection saved to:\n{file_path}{mag_line}")
+
     # ---- Map patching (feature a) ----
     def _refresh_mod_definition(self, mod):
         """A saved/loaded run embeds a full snapshot of each mod's definition
@@ -7695,6 +8718,10 @@ class HaloGUI(QMainWindow):
                 # different enemies stacking under whichever came first.
                 if self.db.is_generic_enemy_mod(mod, game):
                     mod['_generic_target'] = True
+                for c in mod.get('constraints') or []:
+                    for key in ('field', 'of', 'block', 'index'):
+                        if isinstance(c.get(key), dict):
+                            c[key] = resolve_gamed(c[key], game, games)
                 for key in ('tag', 'field', 'harder_when', 'easier_when', 'init_defaults'):
                     if isinstance(mod.get(key), dict):
                         mod[key] = resolve_gamed(mod[key], game, games)
@@ -7707,7 +8734,7 @@ class HaloGUI(QMainWindow):
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
                 for t in mod.get('targets') or []:
-                    for key in ('field', 'block', 'negate', 'nth', 'index', 'offset'):
+                    for key in ('field', 'block', 'negate', 'nth', 'index', 'offset', 'zero_is'):
                         if isinstance(t.get(key), dict):
                             t[key] = resolve_gamed(t[key], game, games)
                 # A target may be limited to specific games (e.g. the derived

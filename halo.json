@@ -148,6 +148,7 @@
 			},
 			"08b": {
 				"name": "The Great Journey",
+				"note": "Tartarus is a SCRIPTED fight. From H2EK's own 08b_deltacontrol_boss.hsc:  \u2022 He is ai_cannot_die, and each phase ends when his body vitality is PINNED, not when he dies (2 phases on Normal, 3 Heroic, 4 Legendary).  \u2022 The script calls unit_set_maximum_vitality on him at the start of every phase (300 Normal / 350 Heroic / 400 Legendary), so his Body Vitality and Shield Vitality cards are overwritten and do nothing here.  \u2022 The damage window opens only once his shield is chipped below 0.975 (Normal), 0.95 (Heroic) or 0.9 (Legendary), and then lasts just 2-3s (1-3s Heroic, 1-2s Legendary) before the script closes it again.  \u2022 JOHNSON'S BEAM IS REAL DAMAGE. unit_impervious is cleared on Tartarus once the fight starts and he only takes damage from the player's TEAM, which Johnson is on (ai_allegiance player human). The script tops his shield back to full immediately before each of Johnson's volleys so the break reads cleanly, then Johnson's 3-round burst chews it down. Johnson fires every 4-10s on Normal. This is why the speedrun tech is to duplicate Johnson \u2014 more beam damage per volley crosses the threshold sooner. Options has an 'Extra Johnsons (08b)' setting to try it.  \u2022 Elite reinforcements respawn on a 30-60s timer whenever 3 or fewer are alive.  So what makes this fight winnable again: extra Johnsons, your own weapon damage, and Tartarus's Gravity Hammer and AI cards \u2014 those are real tags and are not script-overridden. His vitality cards are not.",
 				"enemies": ["Brute", "Bugger", "Elite", "Hunter", "Jackal"],
 				"boss": "Tartarus",
 				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Beam Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Brute Shot"],
@@ -177,7 +178,7 @@
 				"name": "Tsavo Highway",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Brute Shot"],
+				"weapons": ["Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
 				"turret": ["Machine Gun", "Plasma Cannon"]
@@ -186,10 +187,10 @@
 				"name": "The Storm",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turret": ["Machine Gun", "Plasma Cannon", "Missile Pod"]
 			},
 			"050": {
 				"name": "Floodgate",
@@ -247,7 +248,6 @@
 			"sc100": {
 				"name": "Tayari Plaza",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -264,7 +264,6 @@
 			"sc120": {
 				"name": "Kizingo Boulevard",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
@@ -311,6 +310,81 @@
 				"grenades": ["Frag Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			}
+		},
+		"Halo Reach": {
+			"m10": {
+				"name": "Winter Contingency",
+				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			},
+			"m20": {
+				"name": "ONI Sword Base",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
+				"turret": ["Plasma Cannon"]
+			},
+			"m30": {
+				"name": "Nightfall",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			},
+			"m35": {
+				"name": "Tip of the Spear",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			},
+			"m45": {
+				"name": "Long Night of Solace",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Frag Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			},
+			"m50": {
+				"name": "Exodus",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
+				"turret": ["Machine Gun", "Missile Pod", "Plasma Cannon"]
+			},
+			"m52": {
+				"name": "New Alexandria",
+				"enemies": ["Brute", "Engineer", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Battle Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Jammer", "Power Drain", "Regenerator", "Superflare"]
+			},
+			"m60": {
+				"name": "The Package",
+				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
+				"turret": ["Flamethrower", "Plasma Cannon"]
+			},
+			"m70": {
+				"name": "The Pillar of Autumn",
+				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"boss": "Brute Chieftain",
+				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"grenades": ["Frag Grenade"],
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+			}
 		}
 	},
 	"Player Modifiers": {
@@ -331,6 +405,63 @@
 				"targets": [
 					{ "field": { "Halo 1": "Starting Shield Modifier", "Halo 2": "Starting Shield Damage" }, "label": "Starting Shield Modifier", "block": "Player Starting Profile", "index": "all", "negate": { "Halo 1": false, "Halo 2": true }, "offset": { "Halo 1": 0, "Halo 2": 1 } }
 				],
+				"special": true
+			},
+			"Player Health": {
+				"desc": "The player's actual health pool — 75 in Halo 1, 30 in Halo 2, 45 in Halo 3, 80 in ODST. This is the pool itself, on the player's model; Starting Health Modifier only scales what you spawn with.",
+				"tag": {
+					"Halo 1": "coll characters\\cyborg\\cyborg",
+					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+				},
+				"easier_when": "increased",
+				"targets": {
+					"Halo 1": [
+						{ "field": "Maximum Body Vitality", "min": "1" }
+					],
+					"Halo 2": [
+						{ "field": "Maximum Vitality", "block": "New Damage Info", "min": "1" }
+					]
+				},
+				"special": true
+			},
+			"Player Shield": {
+				"desc": "The player's actual shield pool — 75 in Halo 1, 70 in Halo 2 and Halo 3, 80 in ODST (where it is stamina). This is the pool itself, on the player's model; Starting Shield Modifier only scales what you spawn with.",
+				"tag": {
+					"Halo 1": "coll characters\\cyborg\\cyborg",
+					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+				},
+				"easier_when": "increased",
+				"targets": {
+					"Halo 1": [
+						{ "field": "Maximum Shield Vitality", "min": "1" }
+					],
+					"Halo 2": [
+						{ "field": "Maximum Shield Vitality", "block": "New Damage Info", "min": "1" }
+					]
+				},
+				"special": true
+			},
+			"Player Shield Recharge": {
+				"desc": "How fast the player's shield comes back. Halo 1 stores a rate per tick (the Chief's is 0.0083); Halo 2 on store a recharge velocity (0.5). Higher is faster in both.",
+				"tag": {
+					"Halo 1": "coll characters\\cyborg\\cyborg",
+					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+				},
+				"easier_when": "increased",
+				"targets": {
+					"Halo 1": [
+						{ "field": "Shield Recharge Rate" }
+					],
+					"Halo 2": [
+						{ "field": "Shield Recharge Velocity", "block": "New Damage Info" }
+					]
+				},
 				"special": true
 			},
 			"Enemy Damage Reduction": {
@@ -551,16 +682,36 @@
 					},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
-				"Rounds Per Second": {
-					"desc": "The number of firing effects created per second",
+				"More Shooting": {
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
+					"easier_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						]
+					}
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
+					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Projectiles Per Shot": {
@@ -593,7 +744,8 @@
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -606,10 +758,11 @@
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -618,7 +771,8 @@
 					"tag": {
 						"Halo 1": "proj weapons\\pistol\\bullet",
 						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet",
-						"Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
+						"Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet",
+						"Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -633,7 +787,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\pistol\\bullet",
 						"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet",
-						"Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"
+						"Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet",
+						"Halo 3: ODST": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet & objects\\weapons\\pistol\\automag\\damage_effects\\automag_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -663,7 +818,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -676,7 +832,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -692,53 +849,60 @@
 					"tag": {
 						"Halo 1": "antr weapons\\pistol\\fp\\fp",
 						"Halo 2": "jmad *fp_magnum*",
-						"Halo 3": "jmad *fp_magnum*"
+						"Halo 3": "jmad *fp_magnum*",
+						"Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*"
 					},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
+					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
-							{ "field": "Rounds Per Second", "block": "Triggers" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers" }
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Rounds Per Second", "block": "Barrels" },
-							{ "field": "Rounds Per Second Max", "block": "Barrels" },
-							{ "field": "Shots Per Fire", "block": "Barrels" },
-							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						],
 						"Halo 3": [
-							{ "field": "Rounds Per Second", "block": "Barrels" },
-							{ "field": "Rounds Per Second Max", "block": "Barrels" },
-							{ "field": "Shots Per Fire", "block": "Barrels" },
-							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						]
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -749,7 +913,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "nth": { "Halo 1": 0, "Halo 2": 1 } },
@@ -793,7 +958,7 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -908,8 +1073,8 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
-						{ "field": "Age Misfire Start" },
-						{ "field": "Age Misfire Chance" }
+						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
+						{ "field": "Age Misfire Chance", "min": 0, "max": 1.0 }
 					]
 				},
 				"Charging Time": {
@@ -954,8 +1119,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }	
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }	
 					]
 				},
 				"Per Round (Charged)": {
@@ -967,60 +1132,64 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] },
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1, "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" },
 						{ "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3"] }
 					]
 				},
 				"More Shooting": {
-					"desc": "How many shots the weapon caps per fire",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
-				},
-				"More Shooting (Charged)": {
-					"desc": "How many shots the weapon caps per fire (charged shot)",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
-					},
-					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels", "index": 1 },
-						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": 1 },
-						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1 }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
-				"Fire Recovery Time (Charged)": {
-					"desc": "How long after firing before the weapon can fire again (charged shot)",
+				"More Shooting (Charged)": {
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
+					"easier_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 }
+					]
+				},
+				"Fire Recovery Time (Charged)": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels", "index": 1 }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				}
 			},
 			"Plasma Rifle": {
@@ -1046,7 +1215,7 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -1138,27 +1307,62 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Age Misfire Start" },
-						{ "field": "Age Misfire Chance" }
+						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
+						{ "field": "Age Misfire Chance", "min": 0, "max": 1.0  }
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
+					"easier_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+						],
+						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3: ODST": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						]
+					}
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+					},
+					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Shots Per Fire", "block": "Barrels", "games": ["Halo 2"] },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "games": ["Halo 2"] }
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
+					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"constraints": [
+						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+					],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
@@ -1206,8 +1410,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
+						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }
 					]
 				}
 			},
@@ -1246,7 +1450,7 @@
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -1372,21 +1576,49 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
 						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
+					"easier_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+						],
+						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						]
+					}
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
+					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Shots Per Fire", "block": "Barrels", "games": ["Halo 2"] },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "games": ["Halo 2"] }
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
+					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"constraints": [
+						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+					],
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
@@ -1496,47 +1728,56 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-																"Reload Time": {
-									"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
-									"game": ["Halo 1", "Halo 2", "Halo 3"],
-									"tag": {
-										"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
-										"Halo 2": "jmad *fp_sniper_rifle*",
-										"Halo 3": "jmad *fp_sniper_rifle*"
-									},
-									"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
-								},
+				"Reload Time": {
+					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
+						"Halo 2": "jmad *fp_sniper_rifle*",
+						"Halo 3": "jmad *fp_sniper_rifle*"
+					},
+					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
+					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
-							{ "field": "Rounds Per Second", "block": "Triggers" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers" }
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Rounds Per Second", "block": "Barrels" },
-							{ "field": "Rounds Per Second Max", "block": "Barrels" },
-							{ "field": "Shots Per Fire", "block": "Barrels" },
-							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						]
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -1659,36 +1900,45 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
 						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
+					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
-							{ "field": "Rounds Per Second", "block": "Triggers" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers" }
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Rounds Per Second", "block": "Barrels" },
-							{ "field": "Rounds Per Second Max", "block": "Barrels" },
-							{ "field": "Shots Per Fire", "block": "Barrels" },
-							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						]
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
 						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -1797,36 +2047,45 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second (Halo 2: this weapon caps shots per fire instead).",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
 						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
+					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
-							{ "field": "Rounds Per Second", "block": "Triggers" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers" }
+							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
-							{ "field": "Rounds Per Second", "block": "Barrels" },
-							{ "field": "Rounds Per Second Max", "block": "Barrels" },
-							{ "field": "Shots Per Fire", "block": "Barrels" },
-							{ "field": "Shots Per Fire Max", "block": "Barrels" }
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						]
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
 						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -1884,7 +2143,8 @@
 					"desc": "Magnification Levels and Range",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1896,7 +2156,8 @@
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1913,23 +2174,39 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
+					},
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Recoil": {
 					"desc": "Angle change added per shot while firing",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Angle Change Per Shot", "block": "Barrels" },
@@ -1941,7 +2218,8 @@
 					"desc": "Projectiles per shot",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
@@ -1951,7 +2229,8 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
@@ -1963,7 +2242,8 @@
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1976,10 +2256,11 @@
 					"desc": "Damage dealt while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
-						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg"
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -2050,26 +2331,42 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Age Misfire Start" },
-						{ "field": "Age Misfire Chance" }
+						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
+						{ "field": "Age Misfire Chance", "min": 0, "max": 1.0  }
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 2"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+					},
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire",
+					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"constraints": [
+						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
+					],
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
@@ -2138,7 +2435,7 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					],
 					"dual_only": true
 				},
@@ -2219,30 +2516,33 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
+					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -2375,30 +2675,33 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "How many shots leave the barrel per trigger pull, and the rate they leave at.",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
 						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
 						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -2504,36 +2807,39 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
+						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Shots fired per trigger pull, and the rate they fire at",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -2622,30 +2928,33 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second and how many shots the weapon caps per fire",
+					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
 						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
 						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -2788,30 +3097,33 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. Halo 2 scales both Rounds Per Second and Shots Per Fire (shots per trigger pull) - raise them together, or the extra shots all fire at the same instant.",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon can fire again - this, not Rounds Per Second, paces the Flak Cannon",
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
+					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+					]
 				},
+
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
@@ -2915,22 +3227,37 @@
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3"] }
+						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "The number of firing effects created per second",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" }
-					],
-					"game": ["Halo 2", "Halo 3"]
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+					},
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					]
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
@@ -2992,6 +3319,16 @@
 						{ "field": "Autoaim Range" }
 					],
 					"affected_by_skull": "Eyepatch"
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade" },
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					]
 				}
 			},
 			"Frag Grenade": {
@@ -3076,14 +3413,24 @@
 					"game": ["Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire",
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Projectiles Per Shot": {
@@ -3139,20 +3486,13 @@
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
-				"Fire Recovery Time": {
-					"desc": "Delay between shots",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
-					"targets": [
-						{ "field": "Fire Recovery Time", "block": "Barrels" }
-					]
-				},
+
 				"Dual Weapon Damage": {
 					"desc": "Damage scale while dual wielding",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
 					]
 				},
 				"Reload Time": {
@@ -3160,6 +3500,16 @@
 					"game": "Halo 3",
 					"tag": "jmad *fp_excavator*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					]
 				}
 			},
 			"Spike Rifle": {
@@ -3216,14 +3566,24 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Error Angle": {
@@ -3251,7 +3611,17 @@
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
-						{ "field": "Dual Wield Damage Scale", "block": "Barrels" }
+						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},
@@ -3340,14 +3710,24 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Beam ticks per shot.",
-					"game": "Halo 3",
+					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels", "index": 1 },
-						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": 1  },
-						{ "field": "Shots Per Fire", "block": "Barrels", "index": 1  },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": 1  }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels", "index": 1 }
 					]
 				},
 				"Projectiles Per Shot": {
@@ -3365,8 +3745,8 @@
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": 1 },
-						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1 },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1 }
+						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" }
 					]
 				},
 				"Impact Radius": {
@@ -3412,13 +3792,25 @@
 						{ "field": "Air Damage Range Max" }
 					]
 				},
-				"Rate of Fire": {
-					"desc": "Flame blobs per second",
+				"More Shooting": {
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Per Round": {
@@ -3427,8 +3819,18 @@
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels" }						
+						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" }						
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},
@@ -3456,14 +3858,24 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire (spins up)",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Magazine": {
@@ -3476,6 +3888,16 @@
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},
@@ -3503,14 +3925,24 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire (spins up)",
+					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" },
-						{ "field": "Shots Per Fire", "block": "Barrels" },
-						{ "field": "Shots Per Fire Max", "block": "Barrels" }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"Magazine": {
@@ -3523,6 +3955,91 @@
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					]
+				}
+			},
+			"Missile Pod": {
+				"Explosion Damage": {
+					"desc": "Damage of the missile's explosion.",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Radius": {
+					"desc": "Blast radius of the missile.",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				},
+				"Projectile": {
+					"desc": "Range and speed of the missiles",
+					"game": "Halo 3",
+					"tag": "proj objects\\weapons\\turret\\missile_pod\\projectiles\\missile_pod_missile",
+					"targets": [
+						{ "field": "Maximum Range" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" }
+					]
+				},
+				"More Shooting": {
+					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"easier_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"easier_when": "decreased",
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					]
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"targets": [
+						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "field": "Rounds Total Maximum", "block": "Magazines" }
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},
@@ -4161,163 +4678,166 @@
 				"desc": "How much damage the enemy deals",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Enemy Damage", "block": "Difficulty", "difficulty": true }
+					{ "field": "Enemy Damage", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Enemy Vitality": {
 				"desc": "How much health the enemy has",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Enemy Vitality", "block": "Difficulty", "difficulty": true }
+					{ "field": "Enemy Vitality", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Enemy Shield": {
 				"desc": "How strong enemy shields are",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Enemy Shield", "block": "Difficulty", "difficulty": true }
+					{ "field": "Enemy Shield", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Enemy Recharge": {
 				"desc": "How fast enemy shields recharge",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Enemy Recharge", "block": "Difficulty", "difficulty": true }
+					{ "field": "Enemy Recharge", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Infection Forms": {
 				"desc": "Toughness of Infection forms",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Infection Forms", "block": "Difficulty", "difficulty": true }
+					{ "field": "Infection Forms", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Rate of Fire": {
 				"desc": "Global enemy rate of fire scale",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true }
+					{ "field": "Rate Of Fire", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Projectile Error": {
 				"desc": "Error of enemy fire",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Projectile Error", "block": "Difficulty", "difficulty": true }
+					{ "field": "Projectile Error", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Burst Error": {
 				"desc": "Reduces intra-burst shot distance, whatever that is",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Burst Error", "block": "Difficulty", "difficulty": true }
+					{ "field": "Burst Error", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"New Target Delay": {
 				"desc": "Maybe how quickly they pick a new target?",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "New Target Delay", "block": "Difficulty", "difficulty": true }
+					{ "field": "New Target Delay", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Burst Seperation": {
 				"desc": "Reduces the delay time between bursts, whatever that is",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Burst Separation", "block": "Difficulty", "difficulty": true }
+					{ "field": "Burst Separation", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Target Tracking & Leading": {
 				"desc": "Increase enemy target tracking and leading (global difficulty scalars)",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Target Tracking", "block": "Difficulty", "difficulty": true },
-					{ "field": "Target Leading", "block": "Difficulty", "difficulty": true }
+					{ "field": "Target Tracking", "block": "Difficulty", "difficulty": true, "min": "0" },
+					{ "field": "Target Leading", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Overcharge Chance": {
-				"desc": "Overcharge chance for plasma pistol?",
+				"desc": "Overcharge chance for plasma pistol. Test values higher than 1.0 in H3 and ODST in gameplay.",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Overcharge Chance", "block": "Difficulty", "difficulty": true }
+					{ "field": "Overcharge Chance", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Special Fire Delay": {
 				"desc": "Delay between Special Fire Shots (Overcharge, Banshee Bombs)",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Special Fire Delay", "block": "Difficulty", "difficulty": true }
+					{ "field": "Special Fire Delay", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Guidance Vs Player": {
 				"desc": "Guidance Velocity scale, probably how much they track the player",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true }
+					{ "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Melee Delay Scale": {
 				"desc": "Non-berserk melee delay time",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true }
+					{ "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Grenade Scales": {
 				"desc": "Grenade Chance, Grenade Timer",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Grenade Chance Scale", "block": "Difficulty", "difficulty": true },
-					{ "field": "Grenade Timer Scale", "block": "Difficulty", "difficulty": true }
+					{ "field": "Grenade Chance Scale", "block": "Difficulty", "difficulty": true, "min": 0 },
+					{ "field": "Grenade Timer Scale", "block": "Difficulty", "difficulty": true, "min": 0 }
 				]
 			},
 			"Major Upgrades (Normal)": {
 				"desc": "Fraction of enemy upgrades, from normal pool?",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Major Upgrade (Normal)", "block": "Difficulty", "difficulty": true }
+					{ "field": "Major Upgrade (Normal)", "block": "Difficulty", "difficulty": true, "min": "0", "max": "1" }
 				]
 			},
 			"Major Upgrades (Few)": {
 				"desc": "Fraction of enemy upgrades, from few pool?",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Major Upgrade (Few)", "block": "Difficulty", "difficulty": true }
+					{ "field": "Major Upgrade (Few)", "block": "Difficulty", "difficulty": true, "min": "0", "max": "1" }
 				]
 			},
 			"Major Upgrades (Many)": {
 				"desc": "Fraction of enemy upgrades, from many pool?",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true }
+					{ "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true, "min": "0", "max": "1" }
 				]
 			},
 			"Player Stun Time": {
 				"desc": "Stun Time after Fall Damage?",
 				"tag": "matg globals\\globals",
+				"constraints": [
+					{ "field": "Maximum Stun Time", "of": "Minimum Stun Time", "not_below": true, "block": "Player Information" }
+				],
 				"targets": [
-					{ "field": "Minimum Stun Time", "block": "Player Information" },
-					{ "field": "Minimum Stun Time", "block": "Player Information" }
+					{ "field": "Minimum Stun Time", "block": "Player Information", "min": "0" },
+					{ "field": "Maximum Stun Time", "block": "Player Information", "min": "0" }
 				]
 			},
 			"Player Vehicle Ram Chance": {
 				"desc": "Chance of deciding to ram the player",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true }
+					{ "field": "Player Vehicle Ram Chance", "block": "Difficulty", "difficulty": true, "min": "0" }
 				],
-				"game": "Halo 2"
+				"game": ["Halo 2", "Halo 3", "Halo 3: ODST"]
 			},
 			"Vision": {
 				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared generic AI base. Exception: the Flood Combat forms.",
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all" },
+					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": "0" },
 					{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all" },
 					{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all" },
 					{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all" },
-					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all" }
+					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "min": "0" }
 				]
 			},
 			"Hearing Distance": {
@@ -4325,19 +4845,20 @@
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all" }
+					{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all", "min": "0" }
 				]
 			},
 			"Perception": {
-				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base (Halo 3 merges the three times into one Perception Time). Exception: the Flood Combat forms.",
+				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Exception: the Flood Combat forms.",
+				"desc_overrides": { "Halo 3": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Halo 3 merged three fields into one. Exception: the Flood Combat forms." },
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all" },
-					{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all" },
-					{ "field": { "Halo 2": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": "Perception Properties", "index": "all" },
-					{ "field": "Guard Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"] },
-					{ "field": "Non-Combat Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"] }
+					{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all", "min": 0  },
+					{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all", "min": 0  },
+					{ "field": { "Halo 2": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": "Perception Properties", "index": "all", "min": 0  },
+					{ "field": "Guard Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"], "min": 0  },
+					{ "field": "Non-Combat Perception Time", "block": "Perception Properties", "index": "all", "games": ["Halo 2"], "min": 0  }
 				]
 			},
 			"Retreat": {
@@ -4347,9 +4868,9 @@
 				"targets": [
 					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
 					{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-					{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-					{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-					{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+					{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
 				]
 			},
 			"Placement Properties": {
@@ -4357,9 +4878,9 @@
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-					{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-					{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+					{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+					{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+					{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 }
 				]
 			},
 			"Grenade Properties": {
@@ -4406,8 +4927,8 @@
 				"harder_when": "increased",
 				"tag": "proj *",
 				"targets": [
-					{ "field": "AI Normal Velocity Scale" },
-					{ "field": "AI Legendary Velocity Scale" }
+					{ "field": "AI Normal Velocity Scale", "min": "0" },
+					{ "field": "AI Legendary Velocity Scale", "min": "0" }
 				]
 			}
 		},
@@ -4438,8 +4959,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\elite\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -4475,7 +4996,7 @@
 						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
+						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
 					]
 				},
 				"Cover Properties": {
@@ -4489,15 +5010,15 @@
 						"Halo 1": [
 							{ "field": "Hide Behind Cover Time" },
 							{ "field": "Hide Behind Cover Time Max" },
-							{ "field": "Hide Shield Fraction" },
-							{ "field": "Attack Shield Fraction" },
-							{ "field": "Pursue Shield Fraction" }
+							{ "field": "Hide Shield Fraction", "min": "0", "max": "1" },
+							{ "field": "Attack Shield Fraction", "min": "0", "max": "1" },
+							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1" }
 						],
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all" },
-							{ "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" },
+							{ "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -4511,7 +5032,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Elite Berserk": {
@@ -4522,7 +5043,7 @@
 					"targets": [
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
 						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
 				},
@@ -4614,10 +5135,10 @@
 				},
 				"Grenades Chance": {
 					"desc": "Behavior that influences the chance and timing for grenades",
+					"note": "Halo 1 ONLY. From Halo 2 on every Elite variant ships ZERO entries in char > Grenades Properties and inherits them from `ai\\generic` instead \u2014 measured on 05a and 010 \u2014 so a card aimed at the Elite\u2019s own tag writes nothing that can take effect. The Halo 2 tag and targets were removed rather than left as dead references.",
 					"game": "Halo 1",
 					"tag": {
-						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 1": "actv characters\\elite\\*"
 					},
 					"init_defaults": {
 						"Halo 1": {
@@ -4631,11 +5152,9 @@
 						}
 					},
 					"targets": [
-						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
-						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
-						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
+						{ "field": "Grenade Chance", "min": 0, "max": 1 },
+						{ "field": "Grenade Check Time" },
+						{ "field": "Encounter Grenade Timeout" }
 					]
 				},
 				"Target Tracking & Leading": {
@@ -4656,7 +5175,7 @@
 						"Halo 1": "actv characters\\elite\\*"
 					},
 					"targets": [
-						{ "field": "Weapon Damage Modifier" }
+						{ "field": "Weapon Damage Modifier", "min": "0" }
 					],
 					"game": "Halo 1"
 				},
@@ -4711,9 +5230,9 @@
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
 					},
 					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 }
 					],
 					"game": "Halo 2"
 				},
@@ -4804,8 +5323,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\hunter\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -4894,7 +5413,7 @@
 						"Halo 1": "actv characters\\hunter\\*"
 					},
 					"targets": [
-						{ "field": "Weapon Damage Modifier" }
+						{ "field": "Weapon Damage Modifier", "min": "0" }
 					],
 					"game": "Halo 1"
 				},
@@ -4924,7 +5443,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Hunter Berserk": {
@@ -4935,7 +5454,7 @@
 					"targets": [
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
 						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
 				},
@@ -4952,19 +5471,6 @@
 						{ "field": "Damage Upper Bound Max" }
 					]
 				},
-				"Stun Behavior": {
-					"desc": "Change the Stun threshold and the stun duration",
-					"tag": {
-						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
-					},
-					"targets": [
-						{ "field": "Stun Threshold", "block": "Vitality Properties", "index": "all", "harder_when": "increased" },
-						{ "field": "Stun Time Bounds", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" },
-						{ "field": "Stun Time Bounds Max", "block": "Vitality Properties", "index": "all", "harder_when": "decreased" }
-					],
-					"game": ["Halo 2", "Halo 3"]
-				},
 				"Berserk": {
 					"desc": "UNVERIFIED: Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may have no visible effect until confirmed in-game. Charge rampage cooldown, perimeter and limits.",
 					"game": "Halo 3",
@@ -4975,7 +5481,7 @@
 						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" },
 						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
-						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 },
 						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
 					]
 				}
@@ -5006,8 +5512,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\grunt\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -5043,7 +5549,7 @@
 						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
+						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
 					]
 				},
 				"Cover Properties": {
@@ -5061,7 +5567,7 @@
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -5136,7 +5642,7 @@
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
-						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "min": 0, "max": 1 },
 						{ "field": "Special-Fire Delay", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
 						{ "field": "Special-Fire Mode", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "index": { "Halo 1": 0, "Halo 2": "all" }, "set": "Overcharge" }
 					]
@@ -5164,8 +5670,8 @@
 						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
-						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" }, "min": 0, "max": 1 },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"], "min": 0, "max": 1 },
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
 						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
@@ -5177,7 +5683,7 @@
 						"Halo 1": "actv characters\\grunt\\*"
 					},
 					"targets": [
-						{ "field": "Weapon Damage Modifier" }
+						{ "field": "Weapon Damage Modifier", "min": "0" }
 					],
 					"game": "Halo 1"
 				},
@@ -5204,9 +5710,9 @@
 						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"targets": [
-						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true },
-						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true }
+						{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+						{ "field": "Normal Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
+						{ "field": "Many Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -5225,9 +5731,9 @@
 						"Halo 2": [
 							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
 							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
 						]
 					}
 				},
@@ -5249,8 +5755,8 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
 					"targets": [
-						{ "field": "Broken Kamikaze Chance", "block": "Charge Properties", "index": "all" },
-						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+						{ "field": "Broken Kamikaze Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 }
 					]
 				},
 				"Leader Leash": {
@@ -5289,8 +5795,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\jackal\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -5326,15 +5832,15 @@
 						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" } }
+						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
 					]
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
 					"tag": "actr characters\\jackal\\*",
 					"targets": [
-						{ "field": "Friend Killed Panic Chance" },
-						{ "field": "Leader Killed Panic Chance" }
+						{ "field": "Friend Killed Panic Chance", "min": 0, "max": 1 },
+						{ "field": "Leader Killed Panic Chance", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
 				},
@@ -5349,14 +5855,14 @@
 						"Halo 1": [
 							{ "field": "Hide Behind Cover Time" },
 							{ "field": "Hide Behind Cover Time Max" },
-							{ "field": "Hide Shield Fraction" },
-							{ "field": "Attack Shield Fraction" },
-							{ "field": "Pursue Shield Fraction" }
+							{ "field": "Hide Shield Fraction", "min": "0", "max": "1" },
+							{ "field": "Attack Shield Fraction", "min": "0", "max": "1" },
+							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1" }
 						],
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -5423,7 +5929,7 @@
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
-						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "field": "Special-Fire Chance", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "min": 0, "max": 1 },
 						{ "field": "Special-Fire Delay", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } }
 					]
 				},
@@ -5433,7 +5939,7 @@
 						"Halo 1": "actv characters\\jackal\\*"
 					},
 					"targets": [
-						{ "field": "Weapon Damage Modifier" }
+						{ "field": "Weapon Damage Modifier", "min": "0" }
 					],
 					"game": "Halo 1"
 				},
@@ -5526,8 +6032,8 @@
 						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
+						{ "field": "Notice Projectile Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "min": 0, "max": 1 },
 						{ "field": { "Halo 1": "Combat Perception Time", "Halo 2": "Combat Perception Time", "Halo 3": "Perception Time" }, "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
 						{ "field": "Guard Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] },
 						{ "field": "Non-Combat Perception Time", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "games": ["Halo 1", "Halo 2"] }
@@ -5543,7 +6049,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Hunter Berserk": {
@@ -5554,7 +6060,7 @@
 					"targets": [
 						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased"},
 						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased" },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased" }
+						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
 				},
@@ -5570,7 +6076,7 @@
 						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
 						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					]
 				},
@@ -5652,7 +6158,7 @@
 						"Halo 1": "actv characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": "Weapon Damage Modifier" }
+						{ "field": "Weapon Damage Modifier", "min": "0" }
 					],
 					"game": "Halo 1"
 				},
@@ -5706,7 +6212,7 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\floodcombat*",
 					"targets": [
-						{ "field": "Berserk Chance", "block": "Combatform Properties", "index": "all" },
+						{ "field": "Berserk Chance", "block": "Combatform Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Berserk Distance", "block": "Combatform Properties", "index": "all" },
 						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
 						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
@@ -5739,8 +6245,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\flood_infection\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -5761,7 +6267,7 @@
 						"Halo 2": [
 							{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 							{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-							{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+							{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 }
 						]
 					}
 				},
@@ -5776,14 +6282,14 @@
 						"Halo 1": [
 							{ "field": "Melee Leap Range" },
 							{ "field": "Melee Leap Velocity" },
-							{ "field": "Melee Leap Chance" },
+							{ "field": "Melee Leap Chance", "min": 0 },
 							{ "field": "Melee Leap Ballistic" }
 						],
 						"Halo 2": [
 							{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
 							{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
 							{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
-							{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+							{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
 							{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 						]
 					}
@@ -5902,8 +6408,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\floodcarrier\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -5919,7 +6425,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"] }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "min": 0, "max": 1 }
 					]
 				},
 				"Melee Leap": {
@@ -5933,7 +6439,7 @@
 						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
 						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
+						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0, "max": 1 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
 					"game": ["Halo 2", "Halo 3"]
@@ -6037,8 +6543,8 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all" },
-						{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all" },
+						{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Perception Time", "block": "Perception Properties", "index": "all" }
 					]
 				},
@@ -6060,7 +6566,7 @@
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Body Vitality": {
@@ -6088,7 +6594,7 @@
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Maximum Firing Distance": {
@@ -6132,7 +6638,7 @@
 						{ "field": "Throttle Distance Max", "block": "Morph Properties", "index": "all" },
 						{ "field": "Protect Damage Amount", "block": "Morph Properties", "index": "all" },
 						{ "field": "Protect Time", "block": "Morph Properties", "index": "all" },
-						{ "field": "Spew Chance", "block": "Morph Properties", "index": "all" },
+						{ "field": "Spew Chance", "block": "Morph Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Spew Frequency", "block": "Morph Properties", "index": "all" },
 						{ "field": "Spew Frequency Max", "block": "Morph Properties", "index": "all" }
 					]
@@ -6147,7 +6653,7 @@
 						{ "field": "Stalk Range", "block": "Morph Properties", "index": "all" },
 						{ "field": "Stalk Range Max", "block": "Morph Properties", "index": "all" },
 						{ "field": "Stalk Range Hard Maximum", "block": "Morph Properties", "index": "all" },
-						{ "field": "Stalk Charge Chance", "block": "Morph Properties", "index": "all" }
+						{ "field": "Stalk Charge Chance", "block": "Morph Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Ranged Form": {
@@ -6198,8 +6704,8 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\sentinel\\*",
 					"targets": [
-						{ "field": "Notice Projectile Chance" },
-						{ "field": "Notice Vehicle Chance" },
+						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
 						{ "field": "Combat Perception Time" },
 						{ "field": "Guard Perception Time" },
 						{ "field": "Non-Combat Perception Time" }
@@ -6220,7 +6726,7 @@
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": 0 },
 							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": 0 },
-							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0 }
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -6386,7 +6892,7 @@
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Dive From Grenade Chance": {
@@ -6397,7 +6903,7 @@
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
 					},
 					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1 }
 					]
 				},
 				"Melee Damage": {
@@ -6420,7 +6926,7 @@
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Melee Leap": {
@@ -6434,7 +6940,7 @@
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
 						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 					]
 				},
@@ -6463,7 +6969,7 @@
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Cover Chance": {
@@ -6493,7 +6999,7 @@
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Body Vitality": {
@@ -6543,7 +7049,7 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all" },
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Anti-Vehicle Grenade Chance", "block": "Grenades Properties", "index": "all" }
 					]
 				},
@@ -6555,7 +7061,7 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all" }
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Accuracy": {
@@ -6586,9 +7092,9 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Shield-Down Berserk Ranges Max", "block": "Charge Properties", "index": "all" },
-						{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "index": "all" },
+						{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Shield-Down Berserk Ranges", "block": "Charge Properties", "index": "all" }
 					]
 				},
@@ -6607,7 +7113,7 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" , "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" , "games": ["Halo 2", "Halo 3"], "min": 0, "max": 1 },
 						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" }
 					]
@@ -6638,8 +7144,8 @@
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Easy/Normal", "block": "Equipment Definitions/Equipment Use", "index": "all" },
-						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all" }
+						{ "field": "Easy/Normal", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 }
 					]
 				}
 			},
@@ -6660,7 +7166,7 @@
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Cover Chance": {
@@ -6679,9 +7185,9 @@
 					"targets": [
 						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
 						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all" }
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Death": {
@@ -6825,7 +7331,7 @@
 						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
 					},
 					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties" }
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1 }
 					],
 					"game": "Halo 2"
 				},
@@ -7061,7 +7567,7 @@
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" }
 					]
 				},
@@ -7089,7 +7595,7 @@
 			},
 			"Tartarus": {
 				"Body Vitality": {
-					"desc": "Tartarus's health.",
+					"desc": "Tartarus's health. NOTE: on The Great Journey (08b) the boss script calls unit_set_maximum_vitality on him at the start of every phase, so this card is overwritten there and changes nothing. It is the only level he appears on.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"harder_when": "increased",
@@ -7098,7 +7604,7 @@
 					]
 				},
 				"Shield Vitality": {
-					"desc": "Tartarus's shield (his fuel-rod shield).",
+					"desc": "Tartarus's shield. NOTE: on The Great Journey (08b) his shield is driven by the boss script — topped back to full before each of Johnson's volleys, then dropped once it is chipped past a fixed fraction — and the script sets his maximum vitality every phase, so this card is overwritten there and changes nothing. Add Johnsons in Options instead.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"harder_when": "increased",
@@ -7113,7 +7619,7 @@
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all" }
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0}
 					]
 				},
 				"Melee Leap": {
@@ -7124,7 +7630,7 @@
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
 						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 					]
 				},
@@ -7144,7 +7650,7 @@
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
 						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all" }
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Maximum Firing Distance": {

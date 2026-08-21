@@ -1,0 +1,104 @@
+catalogue: 20 weapon(s), 3 turret(s), 11 equipment, 4 grenade(s)
+
+#### 010_jungle  (010)
+   weapons    20/20 ready
+      map delivers but halo.json does not offer: Mauler, Sentinel Beam, Spartan Laser
+   turrets     3/3 ready
+      map delivers but halo.json does not offer: Flamethrower
+   equipment  11/11 ready
+      map delivers but halo.json does not offer: Auto Turret, Grav Lift, Invisibility, Jammer, Power Drain, Trip Mine
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Firebomb Grenade
+
+#### 020_base  (020)
+   weapons    16/20 ready
+      IMPORT               : Mauler, Rocket Launcher, Sentinel Beam, Sniper Rifle
+      map delivers but halo.json does not offer: Spartan Laser
+   turrets     2/3 ready
+      IMPORT               : Flamethrower
+   equipment  10/11 ready
+      IMPORT               : Auto Turret
+      map delivers but halo.json does not offer: Jammer
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Claymore Grenade, Firebomb Grenade
+
+#### 030_outskirts  (030)
+   weapons    13/20 ready
+      IMPORT               : Energy Blade, Gravity Hammer, Mauler, Rocket Launcher, SMG, Sentinel Beam, Spartan Laser
+   turrets     2/3 ready
+      IMPORT               : Flamethrower
+   equipment   9/11 ready
+      IMPORT               : Auto Turret, Invisibility
+      map delivers but halo.json does not offer: Invincibility, Jammer
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Claymore Grenade, Firebomb Grenade
+
+#### 040_voi  (040)
+   weapons    16/20 ready
+      IMPORT               : Beam Rifle, SMG, Sentinel Beam, Spartan Laser
+      map delivers but halo.json does not offer: Mauler
+   turrets     2/3 ready
+      IMPORT               : Flamethrower
+   equipment   8/11 ready
+      IMPORT               : Auto Turret, Invisibility, Trip Mine
+      map delivers but halo.json does not offer: Jammer
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Firebomb Grenade
+
+#### 050_floodvoi  (050)
+   weapons    17/20 ready
+      IMPORT               : Flak Cannon, Sentinel Beam, Spartan Laser
+      map delivers but halo.json does not offer: Mauler
+   turrets     3/3 ready
+   equipment  11/11 ready
+      map delivers but halo.json does not offer: Auto Turret, Grav Lift, Invincibility, Invisibility, Jammer, Power Drain, Superflare
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Firebomb Grenade, Plasma Grenade
+
+#### 070_waste  (070)
+   weapons    16/20 ready
+      IMPORT               : Needler, SMG, Shotgun, Spartan Laser
+   turrets     2/3 ready
+      IMPORT               : Flamethrower
+   equipment  11/11 ready
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Firebomb Grenade
+
+#### 100_citadel  (100)
+   weapons    18/20 ready
+      IMPORT               : SMG, Sniper Rifle
+   turrets     2/3 ready
+      IMPORT               : Flamethrower
+   equipment  10/11 ready
+      IMPORT               : Grav Lift
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Firebomb Grenade
+
+#### 110_hc  (110)
+   weapons    19/20 ready
+      IMPORT               : Sentinel Beam
+      map delivers but halo.json does not offer: Spartan Laser
+   turrets     2/3 ready
+      IMPORT               : Plasma Cannon
+   equipment   8/11 ready
+      IMPORT               : Auto Turret, Grav Lift, Trip Mine
+      map delivers but halo.json does not offer: Invincibility, Jammer, Power Drain, Regenerator, Superflare
+   grenades    4/4 ready
+
+#### 120_halo  (120)
+   weapons    18/20 ready
+      IMPORT               : Beam Rifle, Plasma Pistol
+      map delivers but halo.json does not offer: Mauler
+   turrets     2/3 ready
+      IMPORT               : Plasma Cannon
+   equipment   8/11 ready
+      IMPORT               : Grav Lift, Invisibility, Trip Mine
+      map delivers but halo.json does not offer: Bubble Shield, Instant Cover, Jammer, Power Drain, Regenerator, Superflare
+   grenades    4/4 ready
+      map delivers but halo.json does not offer: Claymore Grenade, Firebomb Grenade, Frag Grenade, Plasma Grenade
+
+=== union across the surveyed levels ===
+weapons    needing work somewhere (13): Beam Rifle, Energy Blade, Flak Cannon, Gravity Hammer, Mauler, Needler, Plasma Pistol, Rocket Launcher, SMG, Sentinel Beam, Shotgun, Sniper Rifle, Spartan Laser
+turrets    needing work somewhere (2): Flamethrower, Plasma Cannon
+equipment  needing work somewhere (4): Auto Turret, Grav Lift, Invisibility, Trip Mine
+grenades   needing work somewhere (0): none

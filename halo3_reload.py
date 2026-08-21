@@ -14,10 +14,11 @@ Two dedup traps handled: several actions point at the same animation index, and
 several animations share one physical event block — each animation and each event
 element is scaled exactly once.
 
-Layouts (see Assembly Halo3/Halo2 jmad.xml):
+Layouts (see Assembly Halo3/Halo2/ODST jmad.xml):
   Halo 3: Animations @0x50 el0x88 (Frame Count i16@0x10); event blocks 0x2C/0x38/0x44/0x50
           (frame i16@+0x2); Modes @0x5C el0x28 -> WClass @0x4 el0x1C -> WType @0x4 el0x34
           -> Actions @0x4 el0x08 (Label sid@0, Anim Index i16@6).
+  ODST:   Halo 3's, except Effect Events is el0xC (not 0x8) -- the ONLY divergence.
   Halo 2: Animations @0x2C el0x60 (Frame Count i16@0x14); event blocks 0x40/0x48/0x50
           (frame i16@+0x2); Modes @0x34 el0x14 -> WClass @0x4 el0x14 -> WType @0x4 el0x34
           -> Actions @0x4 el0x08 (Label sid@0, Anim Index i16@6).
@@ -38,6 +39,17 @@ LAYOUTS = {
                    frame_off=0x2, modes_blk=0x34, modes_el=0x14,
                    wclass_blk=0x04, wclass_el=0x14, wtype_blk=0x04, wtype_el=0x34,
                    actions_blk=0x04, actions_el=0x08, act_anim_off=0x6),
+    # ODST was missing entirely, so `scale_reload` bailed with "no reload layout for
+    # Halo 3: ODST" on every ODST map and the reload cards -- inherited from Halo 3 like
+    # the rest -- never did anything. Its jmad is Halo 3's with ONE difference: Effect
+    # Events is 0xC per element, not 0x8. Striding it at 8 would walk the wrong frame
+    # fields and corrupt the sound/effect timing of every reload it touched, so the
+    # layout is copied out rather than aliased to Halo 3's.
+    'Halo 3: ODST': dict(anim_blk=0x50, anim_el=0x88, fc_off=0x10,
+                         events=((0x2C, 0x04), (0x38, 0x08), (0x44, 0x0C), (0x50, 0x04)),
+                         frame_off=0x2, modes_blk=0x5C, modes_el=0x28,
+                         wclass_blk=0x04, wclass_el=0x1C, wtype_blk=0x04, wtype_el=0x34,
+                         actions_blk=0x04, actions_el=0x08, act_anim_off=0x6),
 }
 
 

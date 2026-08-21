@@ -102,6 +102,7 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          'harder_when': mod.get('harder_when'),
                          'easier_when': mod.get('easier_when'),
                          'init_defaults': mod.get('init_defaults'),
+                         'constraints': mod.get('constraints'),
                          '_missing_in_db': mod.get('_missing_in_db'),
                          # source identity, so the patcher can remove it from the run
                          'weapon': mod.get('weapon'), 'enemy': mod.get('enemy'),
@@ -282,6 +283,66 @@ def apply_difficulty(field, op, target_difficulty):
     return field
 
 
+# The four whole-game dials in `matg globals\globals` -> Difficulty. Each is stored
+# per difficulty ("Normal Enemy Damage", "Impossible Rate Of Fire", ...), which is what
+# `apply_difficulty` builds, so the baseline only ever touches the tier being played.
+DIFFICULTY_BASELINE_FIELDS = {
+    'vitality': 'Enemy Vitality',
+    'shield': 'Enemy Shield',
+    'damage': 'Enemy Damage',
+    'rof': 'Rate Of Fire',
+}
+
+
+def read_difficulty_baseline(m, registry, target_difficulty):
+    """{key: current value} for the four dials at this difficulty, or None per key."""
+    plugin = registry.get('matg')
+    out = {}
+    for key, field in DIFFICULTY_BASELINE_FIELDS.items():
+        out[key] = None
+        if plugin is None:
+            continue
+        try:
+            out[key] = m.read_first('matg', 'globals' + chr(92) + 'globals',
+                                    '%s %s' % (target_difficulty, field), plugin,
+                                    block='Difficulty')
+        except Exception:
+            pass
+    return out
+
+
+def apply_difficulty_baseline(m, registry, target_difficulty, spec):
+    """Set the whole-game enemy dials BEFORE any effect runs.
+
+    `spec` = {'vitality'|'shield'|'damage'|'rof': absolute value or None}. A None (or a
+    value equal to what is already there) leaves the field alone.
+
+    These are SET, not scaled, and they run first on purpose: every enemy effect in a
+    run then multiplies up from the chosen baseline rather than from Bungie's. Because
+    `apply_run` always rebuilds from the pristine `.bak`, "before" means the shipped
+    value every time -- the baseline never compounds across patches.
+    """
+    plugin = registry.get('matg')
+    rows = []
+    if not spec:
+        return rows
+    base = {'effect': 'Difficulty baseline', 'tag': 'matg globals' + chr(92) + 'globals'}
+    if plugin is None:
+        return [{**base, 'field': 'baseline', 'ok': False, 'reason': 'no matg plugin'}]
+    for key, field in DIFFICULTY_BASELINE_FIELDS.items():
+        want = spec.get(key)
+        if want is None:
+            continue
+        name = '%s %s' % (target_difficulty, field)
+        # apply_field already returns summary-shaped rows (ok/old/new, or ok=False with
+        # a reason), so they are labelled and passed straight through rather than the
+        # result being re-derived here.
+        for r in m.apply_field('matg', 'globals' + chr(92) + 'globals', name, 'set',
+                               float(want), plugin, block='Difficulty'):
+            rows.append({**r, **base})
+    return rows
+
+
 def _apply_derived(m, cls, path, effect_name, op, plugin):
     """Write a derived field (sum of its source fields' current values) into
     every tag matching (cls, path). Needs the per-tag read/write interface of
@@ -312,6 +373,46 @@ def _apply_derived(m, cls, path, effect_name, op, plugin):
         else:
             results.append({**r, 'ok': True, 'old': old, 'new': total})
     return results
+
+
+def _apply_constraints(m, cls, path, effect_name, constraints, plugin):
+    """Hold an effect's declared relations between two of its own fields.
+
+    Each entry: {field, block, index, not_above | not_below, of}. After the effect's
+    ops have run, `field` is re-read per tag and clamped to the current value of `of`
+    if it has crossed it. Per tag rather than via read_first, because one card may name
+    several tags (ODST's plasma_rifle & plasma_rifle_red) whose values differ.
+
+    Reports only when it actually moves something — a clamp that fires silently would
+    look like the typed magnitude was ignored.
+    """
+    out = []
+    tags = m.find_tags(cls, path)
+    if not tags:
+        return out
+    for c in constraints or []:
+        field, other = c.get('field'), c.get('of')
+        if not field or not other:
+            continue
+        block, index = c.get('block'), c.get('index', 0) or 0
+        for tpath, tbase in tags:
+            try:
+                v = m.read_tag_field(tbase, field, plugin, block, index)
+                ov = m.read_tag_field(tbase, other, plugin, block, index)
+            except Exception:
+                continue
+            if v is None or ov is None:
+                continue
+            over = c.get('not_above') and v > ov
+            under = c.get('not_below') and v < ov
+            if not (over or under):
+                continue
+            m.write_tag_field(tbase, field, ov, plugin, block, index)
+            out.append({'effect': effect_name, 'tag': f"{cls} {tpath}", 'field': field,
+                        'ok': True, 'old': v, 'new': ov, 'clamped': True,
+                        'reason': '%s must not be %s %s'
+                                  % (field, 'above' if over else 'below', other)})
+    return out
 
 
 def _apply_init_defaults(m, spec, registry):
@@ -450,6 +551,14 @@ def _h3_profile_role(index, name):
         role = 'dervish'
     elif 'chief' in n:
         role = 'chief'
+    elif 'insertion' in n and ('elite' in n or 'arbiter' in n):
+        # `elite_insertion` is the opposite number of `chief_insertion` (both ship on
+        # 020_base and 040_voi). Only the chief one matched, so starting from one of
+        # those insertion points armed player 1 and left player 2 with the map's
+        # weapons. Deliberately narrow: the other arbiter_* profiles on 070_waste and
+        # 120_halo are scripted mid-level loadout swaps, not spawn points, and the
+        # ODST lesson is that a loose "anything not X" rule arms NPCs.
+        role = 'dervish'
     elif generic and index in (0, 1):
         role = 'chief'
     elif generic and index in (2, 3):
@@ -457,6 +566,210 @@ def _h3_profile_role(index, name):
     else:
         return None, False
     return role, ('respawn' in n) or (generic and index in (1, 3))
+
+
+# Profiles the ability toolkit appends to a Halo 2 scenario (sprint_toolkit's
+# h2_loosetag.add_sprint_profile). They exist only so the `unarmed` token tag is
+# referenced by the scenario -- they are never spawned into -- and they are always
+# appended AFTER the level's own profiles.
+_H2_TOOL_PROFILE_PREFIX = 'ab_'
+_H2_RESPAWN_NAME = 'respawn profile'      # what Bungie calls it on 03a/03b
+
+
+def _profile_name(m, poff):
+    return bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+
+
+def _h2_profile_names(m, scnr_base, boff, esize, count):
+    out = []
+    for i in range(count):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        out.append('' if poff is None else _profile_name(m, poff))
+    return out
+
+
+def _h2_own_profiles(names):
+    """Indices of the LEVEL's own starting profiles, i.e. everything before the
+    toolkit's appended `ab_*` ones. Writing the run's weapons into `ab_sprint`
+    replaces the `unarmed` token the sprint ability is built on, and on
+    08b_deltacontrol -- the one map with a single profile -- `ab_sprint` lands at
+    index 1, exactly where the default [0, 1] write goes."""
+    return [i for i, n in enumerate(names)
+            if not n.strip().lower().startswith(_H2_TOOL_PROFILE_PREFIX)]
+
+
+def _h2_has_respawn_profile(names):
+    """True if this map already has a second profile of its own to respawn into."""
+    return len(_h2_own_profiles(names)) >= 2
+
+
+def _h2_add_respawn_profile(m, registry):
+    """Give a Halo 2 map a second Player Starting Profile, copied from the first.
+
+    Every Halo 2 campaign map ships two -- index 0 for the initial spawn and index 1
+    for respawning, named outright as such on 03a/03b ('respawn profile') and 07b
+    ('coop respawn') -- EXCEPT 08b_deltacontrol, which ships exactly one. So a co-op
+    death on The Great Journey respawns you with whatever the engine falls back to
+    rather than with the run's weapons, and there is no profile for the patcher to
+    write them into either.
+
+    The new element is a verbatim copy of profile 0, so every field this code does
+    not model (health/shield scales, grenade counts, the two weapon tagRefs and their
+    round counts) keeps a known-good value; only the name is rewritten. It is then
+    moved into position ahead of any `ab_*` toolkit profile, because the engine picks
+    the respawn profile by INDEX and the toolkit's profile would otherwise sit in the
+    slot the respawn profile has to occupy.
+
+    Returns a result row. Structural (it relocates the block to end-of-image via
+    grow_block, the same mechanism the H2 camo placement and the HUD passes use), so
+    it is a no-op on any map that already has its own second profile.
+    """
+    scnr_plug = registry.get('scnr')
+    scnr_base = _scnr_base(m)
+    if scnr_plug is None or scnr_base is None:
+        return {'effect': 'respawn profile', 'ok': False,
+                'field': 'Player Starting Profile', 'reason': 'scnr plugin/tag unavailable'}
+    bf = None
+    for fn in ('Starting Health Damage', 'Starting Health Modifier'):
+        bf = scnr_plug.find(fn, 'Player Starting Profile')
+        if bf:
+            break
+    if not bf:
+        return {'effect': 'respawn profile', 'ok': False,
+                'field': 'Player Starting Profile', 'reason': 'block not in the scnr plugin'}
+    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
+    count = m.i32(scnr_base + boff)
+    if count < 1:
+        return {'effect': 'respawn profile', 'ok': True, 'skip': True,
+                'field': 'Player Starting Profile',
+                'reason': 'this level has no starting profiles at all'}
+    names = _h2_profile_names(m, scnr_base, boff, esize, count)
+    if _h2_has_respawn_profile(names):
+        return {'effect': 'respawn profile', 'ok': True, 'skip': True,
+                'field': 'Player Starting Profile',
+                'reason': 'already has one (profile %d, %r)'
+                          % (_h2_own_profiles(names)[1], names[_h2_own_profiles(names)[1]])}
+    src = m.follow(scnr_base, [boff], [esize], 0)
+    if src is None:
+        return {'effect': 'respawn profile', 'ok': False,
+                'field': 'Player Starting Profile', 'reason': 'profile 0 unreadable'}
+    elem = bytearray(m.data[src:src + esize])
+    elem[0:0x20] = _H2_RESPAWN_NAME.encode('latin1')[:0x1F].ljust(0x20, b'\0')
+    try:
+        base = m.grow_block(scnr_base, boff, esize, [bytes(elem)])
+    except Exception as e:
+        return {'effect': 'respawn profile', 'ok': False,
+                'field': 'Player Starting Profile', 'reason': str(e)}
+    # grow_block appends, so the copy lands last. Rotate it into the slot right after
+    # the level's own profiles, ahead of any ab_* the toolkit appended.
+    want = len(_h2_own_profiles(names))
+    last = count                       # index of the element just appended
+    if want < last:
+        blob = bytes(m.data[base:base + (count + 1) * esize])
+        elems = [blob[i * esize:(i + 1) * esize] for i in range(count + 1)]
+        elems.insert(want, elems.pop(last))
+        m.data[base:base + (count + 1) * esize] = b''.join(elems)
+    return {'effect': 'respawn profile', 'ok': True,
+            'field': 'Player Starting Profile',
+            'old': '%d profile(s), no respawn slot' % count,
+            'new': 'added %r at index %d (copied from profile 0)'
+                   % (_H2_RESPAWN_NAME, want)}
+
+
+# Halo 2 scnr Squads. Offsets are from the Halo2MCC scnr plugin, checked against
+# 08b_deltacontrol's 112 squads: element 0x74, name at +0x00, the two difficulty
+# counts at +0x2C/+0x2E, and the Starting Locations child reflexive at +0x48 with a
+# flat 0x64 element (no blocks of its own, so an element copies verbatim).
+_H2_SQUAD_NORMAL_COUNT = 0x2C
+_H2_SQUAD_INSANE_COUNT = 0x2E
+_H2_SQUAD_STARTLOCS = 0x48
+_H2_SQUAD_STARTLOC_SIZE = 0x64
+
+
+def _h2_squads_block(m, registry):
+    """(scnr_base, block_offset, elem_size, count) for the Squads block, or None."""
+    scnr_plug = registry.get('scnr')
+    scnr_base = _scnr_base(m)
+    if scnr_plug is None or scnr_base is None:
+        return None
+    f = scnr_plug.find('Normal Difficulty Count', 'Squads')
+    if not f:
+        return None
+    boff, esize = f['block_offsets'][-1], f['block_sizes'][-1]
+    return scnr_base, boff, esize, m.i32(scnr_base + boff)
+
+
+def _h2_find_squad(m, registry, name):
+    """File offset of the squad element with this name, or None."""
+    blk = _h2_squads_block(m, registry)
+    if blk is None:
+        return None
+    scnr_base, boff, esize, count = blk
+    want = name.strip().lower()
+    for i in range(count):
+        soff = m.follow(scnr_base, [boff], [esize], i)
+        if soff is None:
+            continue
+        if _profile_name(m, soff).strip().lower() == want:
+            return soff
+    return None
+
+
+def _h2_duplicate_squad(m, registry, squad_name, extra, spread=0.6):
+    """Make a Halo 2 AI squad spawn `extra` more actors than it ships with.
+
+    Halo 2 spawns min(difficulty count, len(Starting Locations)) actors for
+    `ai_place <squad>` -- every squad on 08b has at least as many starting locations
+    as its count, and the reinforcement squads carry 6-8 locations for a count of 2-4.
+    So growing a squad means BOTH raising the two difficulty counts and giving it
+    somewhere for the extra actors to stand.
+
+    The new locations are verbatim copies of location 0 (a flat 0x64 struct with no
+    child blocks, so a copy needs no fix-ups), nudged apart in X/Y by `spread` metres
+    so two actors are not asked to occupy the same point. Anything the squad's command
+    script does -- 08b sends Johnson to boss/ledge_perch -- then moves them properly.
+
+    Returns a result row.
+    """
+    label = 'squad %s' % squad_name
+    if extra <= 0:
+        return {'effect': label, 'ok': True, 'skip': True, 'field': 'Squads',
+                'reason': 'no extra actors requested'}
+    soff = _h2_find_squad(m, registry, squad_name)
+    if soff is None:
+        return {'effect': label, 'ok': True, 'skip': True, 'field': 'Squads',
+                'reason': 'no squad by that name on this level'}
+    normal = struct.unpack_from('<h', m.data, soff + _H2_SQUAD_NORMAL_COUNT)[0]
+    insane = struct.unpack_from('<h', m.data, soff + _H2_SQUAD_INSANE_COUNT)[0]
+    nloc = m.i32(soff + _H2_SQUAD_STARTLOCS)
+    if nloc < 1:
+        return {'effect': label, 'ok': False, 'field': 'Squads',
+                'reason': 'squad has no starting locations to copy'}
+    lbase = _block_base(m, soff + _H2_SQUAD_STARTLOCS)
+    if not lbase:
+        return {'effect': label, 'ok': False, 'field': 'Squads',
+                'reason': 'starting locations unreadable'}
+    es = _H2_SQUAD_STARTLOC_SIZE
+    proto = bytes(m.data[lbase:lbase + es])
+    px, py, pz = struct.unpack_from('<fff', proto, 0)
+    copies = []
+    for k in range(extra):
+        e = bytearray(proto)
+        ang = 2.0 * math.pi * (k + 1) / (extra + 1)
+        struct.pack_into('<fff', e, 0,
+                         px + spread * math.cos(ang), py + spread * math.sin(ang), pz)
+        copies.append(bytes(e))
+    try:
+        m.grow_block(soff, _H2_SQUAD_STARTLOCS, es, copies)
+    except Exception as e:
+        return {'effect': label, 'ok': False, 'field': 'Squads', 'reason': str(e)}
+    struct.pack_into('<h', m.data, soff + _H2_SQUAD_NORMAL_COUNT,
+                     max(1, min(32767, normal + extra)))
+    struct.pack_into('<h', m.data, soff + _H2_SQUAD_INSANE_COUNT,
+                     max(1, min(32767, insane + extra)))
+    return {'effect': label, 'ok': True, 'field': 'Squads',
+            'old': '%d actor(s), %d start location(s)' % (normal, nloc),
+            'new': '%d actor(s), %d start location(s)' % (normal + extra, nloc + extra)}
 
 
 def _weap_ref_id(m, name, game=None, salt=None):
@@ -600,8 +913,38 @@ def _apply_starting_equipment(m, game, registry, starting):
                     if r == role and not (hold_respawn and resp)]
         # guard_empty: this path matches profiles by role rather than by an index the
         # user named, so it can sweep in scripted weaponless ones (chief_pre_training).
-        plan = [('primary', _of('chief'), prim, 'Chief Weapon', True),
-                ('primary', _of('dervish'), sec, 'Dervish Weapon', True)]
+        #
+        # BOTH slots, not just the primary. Each character here belongs to one player,
+        # so their profile carries that player's loadout: their first pick primary,
+        # their second (if the run has given them one) secondary. Naming only the
+        # primary left the map's own secondary in place, so every co-op spawn came with
+        # a free vanilla gun on top of the pick -- profile 0 of 030_outskirts is
+        # needler / battle_rifle, and the battle rifle survived every patch.
+        #
+        # The guard has to make ONE exception. Crow's Nest ships `player starting
+        # profile_0` as NULL/NULL and spawns the player on it, so guarding it leaves
+        # both players empty-handed -- the very bug the solo path was just fixed for.
+        # A role's LOWEST-indexed profile is the one the level spawns that character
+        # on, so that one is written unguarded and the rest stay guarded.
+        def _split(role):
+            got = _of(role)
+            return (got[:1], got[1:]) if got else ([], [])
+
+        chief_first, chief_rest = _split('chief')
+        derv_first, derv_rest = _split('dervish')
+        plan = []
+        for slot, tag, label in (('primary', prim, 'Chief Weapon'),
+                                 ('secondary', starting.get('primary2'),
+                                  'Chief Second Weapon')):
+            plan.append((slot, chief_first, tag, label, False))
+            if chief_rest:
+                plan.append((slot, chief_rest, tag, label + ' (other profiles)', True))
+        for slot, tag, label in (('primary', sec, 'Dervish Weapon'),
+                                 ('secondary', starting.get('secondary2'),
+                                  'Dervish Second Weapon')):
+            plan.append((slot, derv_first, tag, label, False))
+            if derv_rest:
+                plan.append((slot, derv_rest, tag, label + ' (other profiles)', True))
     else:
         # Pre-H3, and H3 with coop off: both picks go on the same profile(s), P1 as
         # Primary and P2 as Secondary. H3 uses profile 0 only — its other profiles
@@ -614,6 +957,12 @@ def _apply_starting_equipment(m, game, registry, starting):
         # profiles 'dutch', 'buck', 'odst02', 'Player' and plain 'a', so "not allies"
         # armed squadmates.
         default = [0] if third_gen else [0, 1]
+        if str(game).strip() in SECOND_GEN_GAMES:
+            # Halo 2's own profiles only: index 1 is the ability toolkit's `ab_sprint`
+            # on 08b_deltacontrol (the one map that ships a single profile), and
+            # arming it would replace the `unarmed` token the sprint ability needs.
+            own = _h2_own_profiles(_h2_profile_names(m, scnr_base, boff, esize, count))
+            default = own[:2] or [0]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
         if starting.get('all_profiles'):
@@ -631,6 +980,25 @@ def _apply_starting_equipment(m, game, registry, starting):
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
                 ('secondary', profiles, sec, 'Secondary Weapon', False)]
+        # Halo 3 solo: which profile is live depends on the ENTRY POINT. Crow's Nest
+        # gives the player a profile per rally point (`ins_motorpool` and friends each
+        # call unit_add_equipment with chief_insertion) while the level-start path
+        # applies none, so arming index 0 alone leaves several entries untouched.
+        # Sweep the other chief-role profiles too, GUARDED so a scripted weaponless
+        # state (chief_pre_training) stays weaponless.
+        if game == 'Halo 3' and starting.get('h3_all_chief'):
+            roles = {}
+            for i in range(count):
+                poff = m.follow(scnr_base, [boff], [esize], i)
+                if poff is None:
+                    continue
+                nm = bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+                roles[i] = _h3_profile_role(i, nm)
+            extra = [i for i, (r, _resp) in sorted(roles.items())
+                     if r == 'chief' and i not in profiles]
+            if extra:
+                plan += [('primary', extra, prim, 'Chief Weapon (other profiles)', True),
+                         ('secondary', extra, sec, 'Chief Second Weapon (other profiles)', True)]
 
     null_empty = bool(starting.get('null_empty_slots'))
     for slot, profiles, tag, label, guard_empty in plan:
@@ -1766,6 +2134,79 @@ def _h3_fallback_weapon(m, from_pos, equip_mask, used):
     return i, wp, mask
 
 
+_AUTOTURRET_EQUIP = r'objects\equipment\autoturret_equipment\autoturret_equipment'
+_AUTOTURRET_UNIT = r'objects\equipment\autoturret\autoturret'
+
+
+def _run_grants_autoturret(spawn_equipment, equipment_swaps):
+    """Does this run put an Auto Turret into the level, by either route?"""
+    for g in ((spawn_equipment or {}).get('groups') or []):
+        for t in (g or []):
+            if _AUTOTURRET_EQUIP in str(t).lower():
+                return True
+    for tag, rate in (equipment_swaps or {}).items():
+        if rate and rate > 0 and _AUTOTURRET_EQUIP in str(tag).lower():
+            return True
+    return False
+
+
+def _fix_autoturret_team(m, game, registry):
+    r"""Make the deployed Auto Turret read as YOURS instead of as a Guardian.
+
+    The piece you throw is only a spawner: the `eqip` spawns
+    `vehi objects\equipment\autoturret\autoturret`, and that vehicle in turn spawns the
+    CHARACTER that drives it. The character is what decides allegiance, so the field
+    that matters is `char objects\equipment\autoturret\autoturret` ->
+    General Properties -> **Type**, which ships as `Guardian` (0x18) and wants to be
+    `Marine` (0x7). Confirmed 0x18 on all eleven maps that carry the turret.
+
+    The vehicle's own `Default Team` is set to Human alongside it, but ONLY as the
+    secondary: it ships as `Sentinel` (5) and looks like the answer, and it is not --
+    changing it by itself was tested in game and did nothing, because the turret's
+    behaviour comes from its driver. Left in because it costs one write and makes the
+    two tags agree; if this ever needs trimming, the char Type is the one to keep.
+
+    One write per map covers every turret on it, thrown or map-placed, since they all
+    come from the one tag. Idempotent, and undone by re-patching from the pristine .bak
+    like everything else.
+    """
+    out = []
+
+    def _one(cls, path, field, plugin, option, block=None):
+        base = {'effect': 'Auto Turret', 'tag': cls + ' ' + path, 'field': field}
+        if plugin is None:
+            return {**base, 'ok': False, 'reason': 'no %s plugin' % cls}
+        fld = plugin.find(field, block)
+        want = (fld or {}).get('options', {}).get(option)
+        if want is None:
+            return {**base, 'ok': False,
+                    'reason': '%s plugin has no %s/%s' % (cls, field, option)}
+        # write_tag_field, not write(): the third-generation map classes expose the
+        # base-offset form on every game, while `write` is Halo 1 only.
+        olds = [m.write_tag_field(t[1] if isinstance(t, tuple) else t,
+                                  field, want, plugin, block=block)
+                for t in m.find_tags(cls, path)]
+        olds = [o for o in olds if o is not None]
+        if not olds:
+            return {**base, 'ok': False, 'reason': '%s did not resolve' % field}
+        return {**base, 'ok': True, 'skip': all(o == want for o in olds),
+                'old': olds[0], 'new': want}
+
+    # Whenever the run puts a turret in, this runs -- the ONLY thing that stops it is
+    # the level not carrying the tags. That is a reported skip, not silence, so the
+    # summary accounts for the option either way.
+    if not m.find_tags('char', _AUTOTURRET_UNIT):
+        return [{'effect': 'Auto Turret', 'tag': 'char ' + _AUTOTURRET_UNIT,
+                 'field': 'Type', 'ok': True, 'skip': True,
+                 'reason': 'the Auto Turret is not in this level'}]
+    out.append(_one('char', _AUTOTURRET_UNIT, 'Type', registry.get('char'),
+                    'marine', block='General Properties'))
+    if m.find_tags('vehi', _AUTOTURRET_UNIT):
+        out.append(_one('vehi', _AUTOTURRET_UNIT, 'Default Team', registry.get('vehi'),
+                        'human'))
+    return out
+
+
 def _apply_spawn_equipment(m, game, spec):
     """Grant Halo 3 starting equipment by APPENDING placements at the player start.
 
@@ -2186,8 +2627,15 @@ _ZOOM_UI = {
 _H3_CHUD_WIDGETS = (0x0, 0x50)
 _H3_CHUD_BITMAPS = (0x38, 0x54)
 _H3_CHUD_TEXTS = (0x44, 0x48)
-_H3_CHUD_STATES = (0x8, 0x3C)
-_H3_CHUD_ZOOM_AT = 0x26
+# ...but State Data is NOT shared. ODST inserted Skull / Survival Round / Wave / Lives
+# / Difficulty / Pda ahead of the unit fields, growing the element and pushing Unit
+# Zoom State down by 0x10. Using ODST's numbers on a Halo 3 map strides the wrong
+# distance and reads the wrong halfword, so no widget ever looks zoom-only and the
+# donor search reports "no scoped donor weapon in this map" on every level.
+_H3_CHUD_STATE_LAYOUT = {
+    'Halo 3': {'states': (0x8, 0x2C), 'zoom_at': 0x16},
+    'Halo 3: ODST': {'states': (0x8, 0x3C), 'zoom_at': 0x26},
+}
 _H3_ZOOM_LEVELS, _H3_UNZOOMED = 0b110, 0b001
 
 
@@ -2199,30 +2647,33 @@ def _h3_chud_elems(m, base, blk):
     return [b + i * esz for i in range(max(0, n))] if (b and n > 0) else []
 
 
-def _h3_zoom_only(m, widget):
+def _h3_zoom_only(m, widget, game='Halo 3: ODST'):
     """True if this widget only ever renders while zoomed -- i.e. it is scope."""
-    states = _h3_chud_elems(m, widget, _H3_CHUD_STATES)
+    lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
+    states = _h3_chud_elems(m, widget, lay['states'])
     if not states:
         return False
     for sd in states:
-        z = m.u32(sd + _H3_CHUD_ZOOM_AT) & 0xFFFF
+        z = m.u32(sd + lay['zoom_at']) & 0xFFFF
         if not (z & _H3_ZOOM_LEVELS) or (z & _H3_UNZOOMED):
             return False
     return True
 
 
-def _h3_scope_parts(m, hud_base):
+def _h3_scope_parts(m, hud_base, game='Halo 3: ODST'):
     """[(widget, [scope bitmaps], [scope texts])] for every widget owning scope."""
     out = []
     for w in _h3_chud_elems(m, hud_base, _H3_CHUD_WIDGETS):
-        bms = [b for b in _h3_chud_elems(m, w, _H3_CHUD_BITMAPS) if _h3_zoom_only(m, b)]
-        txt = [t for t in _h3_chud_elems(m, w, _H3_CHUD_TEXTS) if _h3_zoom_only(m, t)]
+        bms = [b for b in _h3_chud_elems(m, w, _H3_CHUD_BITMAPS)
+               if _h3_zoom_only(m, b, game)]
+        txt = [t for t in _h3_chud_elems(m, w, _H3_CHUD_TEXTS)
+               if _h3_zoom_only(m, t, game)]
         if bms or txt:
             out.append((w, bms, txt))
     return out
 
 
-def _h3_copy_scope(m, dst_hud, src_hud):
+def _h3_copy_scope(m, dst_hud, src_hud, game='Halo 3: ODST'):
     """Append the donor HUD's scope widgets to `dst_hud`. Returns elements copied.
 
     Only the ARRAYS are newly allocated: a copied element's own child blocks (State,
@@ -2235,7 +2686,7 @@ def _h3_copy_scope(m, dst_hud, src_hud):
     lands where the donor put it, but its children are filtered to the scope-only ones,
     so none of the donor's ordinary HUD (its crosshair, its ammo) comes along.
     """
-    parts = _h3_scope_parts(m, src_hud)
+    parts = _h3_scope_parts(m, src_hud, game)
     if not parts:
         return 0
     woff, wesz = _H3_CHUD_WIDGETS
@@ -2328,7 +2779,7 @@ def _hud_is_scoped(m, game, hud_base):
     """True if this HUD already renders a scope (so we leave it alone)."""
     z = _ZOOM_UI[game]
     if z.get('nested'):                                    # H3/ODST: a zoom-only widget
-        return bool(_h3_scope_parts(m, hud_base))
+        return bool(_h3_scope_parts(m, hud_base, game))
     if z['scoped_block'] is not None:                      # H1: Screen Effect present
         return m.i32(hud_base + z['scoped_block']) > 0
     return bool(_block_elems(m, hud_base, z['blocks'][0]))  # H2: a zoom-gated widget
@@ -2417,7 +2868,7 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
                         'reason': 'no scoped donor weapon in this map'})
             continue
         if z.get('nested'):
-            copied = _h3_copy_scope(m, hud, donor_hud)
+            copied = _h3_copy_scope(m, hud, donor_hud, game)
             if copied is None:
                 out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
                             'reason': 'no free space in the map to grow the HUD'})
@@ -2892,7 +3343,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, sprint=None,
-              red_plasma=None, odst_downgrade=None, equipment_ai_drops=False):
+              difficulty_baseline=None,
+              red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
+              add_respawn_profile=False, extra_squads=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -2909,6 +3362,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     baseline = str(bak) if (from_baseline and backup and bak.exists()) else map_path
     m = open_map(baseline, game)
     results = []
+    if difficulty_baseline:
+        # FIRST of everything: the whole-game dials are the floor the run's own enemy
+        # effects then scale up from, so they have to be in place before any op reads a
+        # field. Nothing else in the pass depends on them, so ordering costs nothing.
+        results.extend(apply_difficulty_baseline(m, registry, target_difficulty,
+                                                 difficulty_baseline))
     if weapon_swaps:
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
         # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
@@ -3033,7 +3492,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                    nth=op.get('nth', 0) or 0,
                                    scale=scale, offset=offset,
                                    clamp_min=None if cmin is None else float(cmin),
-                                   clamp_max=None if cmax is None else float(cmax)):
+                                   clamp_max=None if cmax is None else float(cmax),
+                                   zero_is=op.get('zero_is')):
                 r['effect'] = item['name']
                 if op.get('redirected_from'):
                     # say where the write actually landed; a Starting Shield card
@@ -3047,6 +3507,25 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r['clamped'] = (cmin, cmax)
                 results.append(r)
 
+        # Relations between two of this effect's own fields, held after every op of
+        # the effect has landed (see _apply_constraints).
+        if item.get('constraints'):
+            results.extend(_apply_constraints(m, cls, path, item['name'],
+                                              item['constraints'], plugin))
+
+    if extra_squads and str(game).strip() in SECOND_GEN_GAMES:
+        # Structural, and deliberately before the respawn profile so both grow-block
+        # passes happen together. {squad name: extra actors}.
+        for _sq, _n in sorted(extra_squads.items()):
+            results.append(_h2_duplicate_squad(m, registry, _sq, int(_n or 0)))
+
+    if add_respawn_profile and str(game).strip() in SECOND_GEN_GAMES:
+        # Before the starting-weapon write below, so a profile added here is armed by
+        # this same patch instead of only by the next one. Structural (it relocates
+        # the profile block to end-of-image), and a no-op on the 13 maps that already
+        # ship a respawn profile of their own.
+        results.append(_h2_add_respawn_profile(m, registry))
+
     if starting:
         # After the ops (so any Magazine effect is already in the weap tags),
         # set the player Starting Profile weapons + rounds from the run's picks.
@@ -3057,6 +3536,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # relocating it), so it runs after every value op — but before the zoom UI,
         # which relocates HUD blocks and would otherwise compete for the same slack.
         results.extend(_apply_spawn_equipment(m, game, spawn_equipment))
+
+    # The Auto Turret reaches a level by TWO routes -- granted in the loadout
+    # (spawn_equipment) and scattered through the map's placements by its Map Presence
+    # card (equipment_swaps) -- and its driver fights for the Guardians either way. An
+    # earlier version keyed only off the loadout, which is the recurring bug in this
+    # codebase: fix one path, leave the other. Both are checked here, once, after both
+    # have run. Every H3 and ODST map carries the turret's tags (the rebuilds brought
+    # them in everywhere), so wherever it can turn up, this can correct it.
+    if _run_grants_autoturret(spawn_equipment, equipment_swaps):
+        results.extend(_fix_autoturret_team(m, game, registry))
 
     if zoom_ui:
         # Structural growth LAST: copy a donor scope overlay into each scopeless

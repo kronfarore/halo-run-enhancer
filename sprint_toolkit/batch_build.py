@@ -69,6 +69,13 @@ def build_one(mp, cfg, outdir, speed):
         return False, 'no scenario'
     data = bytearray(open(pristine_source(scn), 'rb').read())
     L.add_sprint(data, SCNR_XML)
+    # The NAMED camo pickups (camo_ability0/1). This was missing while the camo ability
+    # was added to sprint.hsc, and since install_script regenerates global_scripts.hsc
+    # from that, every build here died at compile time with
+    #   -FATAL- design:hs: [global_scripts line 204] this is not a valid object name.:
+    #   camo_ability0
+    # on all ten maps. sprint_build.py has always inserted them; this is the same call.
+    L.add_camo_ability(data, SCNR_XML)
     L.add_palette_entries(data, SCNR_XML, L.PALETTE_OFF, b'weap', cfg['weapons'])
     L.add_palette_entries(data, SCNR_XML, L.EQUIP_PALETTE_OFF, b'eqip', cfg['equipment'])
     open(scn, 'wb').write(data)

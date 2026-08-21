@@ -17,9 +17,14 @@
 # Expressions on a rebuild-stable key and taking the pure 'delete' blocks (which sum
 # to the exact expr-count delta). See scratchpad/recipe_gen.py.
 #
-# apply is verified + idempotent: each span must be in range and hold a vision token
+# apply is verified + idempotent: each span is ALIGNED to the statement it names (see
+# _align) and must land on a statement start holding a vision token
 # ('cortana'/'gravemind') or the map is left untouched; re-running finds nothing to
 # redirect. Only maps in CORTANA_RUNS are patchable (the 7 stock cutscene maps).
+#
+# The indices below are from the STOCK build and no longer match a map that has been
+# through the Editing Kit -- every rebuilt map here sits 2 expressions earlier. They are
+# kept as written because they are the oracle's own output; _align does the fitting.
 
 import struct
 
@@ -101,14 +106,77 @@ class _Exprs:
         struct.pack_into('<I', self.m.data, self.off(i) + F_NEXT, datum)
 
 
+ALIGN_WINDOW = 16          # how far a span may have drifted, in expressions
+
+
+def _span_fits(ex, a, b):
+    """Could the removed run really start at `a`?
+
+    Two conditions, and both are needed. The vision token alone is far too weak: these
+    spans are up to 25 expressions wide, so a token stays inside them for several
+    candidate offsets at once. The discriminator is the START: the mod deleted whole
+    STATEMENTS, so `a` must be the first expression of one, which here means a named
+    opcode rather than one of the empty continuation slots that pad each statement.
+    """
+    if not (0 <= a < b <= ex.count):
+        return False
+    if not ex.str_at(a):
+        return False
+    return any(any(t in ex.str_at(i).lower() for t in VISION_TOKENS)
+               for i in range(a, b))
+
+
+def _align(ex, runs):
+    """Shift each span onto the statement it names. Returns (spans, report string).
+
+    The recipe's indices came from one particular build, and they do not survive
+    another: every deployed Halo 3 map here is an Editing Kit rebuild and every span in
+    it sits 2 expressions earlier than the recipe says, which is what made the patch
+    refuse with "no vision token (build mismatch?)". Rather than re-derive the numbers
+    against each rebuild -- which would break again on the next one -- each span is
+    matched to its own statement within a small window.
+
+    The drift is USUALLY uniform, so the map's dominant shift is found first and each
+    span prefers the candidate nearest to it; but it is not always (050_floodvoi has one
+    span at -1 while the other eight are at -2), so a span that disagrees is allowed to,
+    as long as it still lands on a statement start with a vision token inside.
+    """
+    votes = {}
+    for a, b in runs:
+        for d in range(-ALIGN_WINDOW, ALIGN_WINDOW + 1):
+            if _span_fits(ex, a + d, b + d):
+                votes[d] = votes.get(d, 0) + 1
+    if not votes:
+        return None, 'no span could be aligned'
+    # the shift that fits the most spans; ties go to the smallest movement
+    best = max(votes, key=lambda d: (votes[d], -abs(d)))
+    out, moved = [], []
+    for a, b in runs:
+        cands = [d for d in range(-ALIGN_WINDOW, ALIGN_WINDOW + 1)
+                 if _span_fits(ex, a + d, b + d)]
+        if not cands:
+            return None, f'span [{a}:{b}] does not match anywhere within {ALIGN_WINDOW}'
+        d = min(cands, key=lambda x: (abs(x - best), abs(x)))
+        out.append((a + d, b + d))
+        if d:
+            moved.append(d)
+    note = ''
+    if moved:
+        uniq = sorted(set(moved))
+        note = 'realigned %d/%d span(s) by %s' % (
+            len(moved), len(runs),
+            '%+d' % uniq[0] if len(uniq) == 1 else ', '.join('%+d' % u for u in uniq))
+    return out, note
+
+
 def remove_cortana_flicker(m):
     """Neutralise the flood-vision cutscenes (Cortana + Gravemind) in an open
     Halo3Map (in memory; call m.save() to persist). Returns a report dict.
 
     Every live expression whose Next points into a removed span is repointed to the
     first surviving statement past it (following the original chain through removed
-    nodes). Idempotent and self-verifying: if the map's internal name has no recipe,
-    a span is out of range, or a span lacks a vision token, nothing is written."""
+    nodes). Idempotent and self-verifying: if the map's internal name has no recipe, or
+    a span cannot be matched to a vision statement, nothing is written."""
     name = m.internal_name
     runs = CORTANA_RUNS.get(name)
     report = {'map': name, 'ok': False, 'edits': 0, 'removed_exprs': 0}
@@ -116,14 +184,11 @@ def remove_cortana_flicker(m):
         report['reason'] = 'no cutscene recipe for this map'
         return report
     ex = _Exprs(m)
-    for a, b in runs:
-        if b > ex.count:
-            report['reason'] = 'span out of range (build mismatch?)'
-            return report
-        if not any(any(t in ex.str_at(i).lower() for t in VISION_TOKENS)
-                   for i in range(a, b)):
-            report['reason'] = f'span [{a}:{b}] has no vision token (build mismatch?)'
-            return report
+    runs, note = _align(ex, runs)
+    if runs is None:
+        report['reason'] = note + ' (build mismatch?)'
+        return report
+    report['align'] = note
     removed = set(i for a, b in runs for i in range(a, b))
 
     def first_kept_after(n):
@@ -156,6 +221,12 @@ def orphaned_ok(m):
     if not runs:
         return True
     ex = _Exprs(m)
+    # Align exactly as the patch did. Checking the RAW recipe indices here answered a
+    # different question than the one the patch acted on, and reported False on a map
+    # that had been patched correctly.
+    runs, _note = _align(ex, runs)
+    if runs is None:
+        return False
     removed = set(i for a, b in runs for i in range(a, b))
     for p in range(ex.count):
         if p not in removed and ex.next_index(p) in removed:

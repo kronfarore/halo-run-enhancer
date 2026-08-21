@@ -125,6 +125,37 @@ def parse_operator(text):
         return None
 
 
+def normalize_op_text(text):
+    """Canonical form of an operator entry: '*.5' -> '*0.5', 'x,5' -> '*0.5', '2.' -> '2'.
+
+    parse_operator already ACCEPTS all of these -- this is purely so the entry the user
+    looks at (and the magnitude remembered for it, and the one shared with a co-op
+    partner) reads the same way whichever shorthand was typed.
+
+    Unparseable text is returned unchanged rather than blanked: a half-typed entry is
+    the user's to finish, and silently eating it would lose the edit.
+    """
+    raw = (text or '').strip()
+    if not raw:
+        return ''
+    parsed = parse_operator(raw)
+    if parsed is None:
+        return raw
+    op, val = parsed
+    # A bare number already means 'set'; leave it bare so normalizing never adds an
+    # operator the user didn't type.
+    sign = '' if (op == 'set' and raw[0] != '=') else {'set': '=', 'add': '+',
+                                                       'sub': '-', 'mul': '*'}[op]
+    if abs(val) >= 1e15:
+        return raw                      # beyond fixed-point formatting; leave it alone
+    num = ('%.10f' % val).rstrip('0').rstrip('.')
+    if not num or num in ('-', '0', '-0'):
+        # Rounded away to nothing (a value smaller than 1e-10). Keep what was typed
+        # rather than rewriting it to a zero that means something else entirely.
+        return raw if val else num or '0'
+    return sign + num
+
+
 def split_tag(tag):
     """'matg globals\\globals' -> ('matg', 'globals\\globals')."""
     cls, _, path = tag.partition(' ')
@@ -284,7 +315,8 @@ class HaloMap:
         return [(path, off)] if off is not None else []
 
     def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
-                    scale=1.0, offset=0.0, clamp_min=None, clamp_max=None):
+                    scale=1.0, offset=0.0, clamp_min=None, clamp_max=None,
+                    zero_is=None):
         """Apply an operator to a field across every tag matching (cls, path).
         Never raises for missing tags/fields — returns a list of result dicts
         (ok/old/new or ok=False/reason) so a summary can be shown at the end.
@@ -297,7 +329,16 @@ class HaloMap:
         Doing it as a mapping rather than by flipping the magnitude is what makes '*'
         and '=' come out right: on the base-0 field '*2' was multiplying 0 and
         therefore doing nothing at all. Defaults are the identity, so every other
-        field behaves exactly as before."""
+        field behaves exactly as before.
+
+        `zero_is` covers a different case: a stored 0 that is a PLACEHOLDER rather
+        than a real zero, so the operator belongs on what it stands for. Halo 2
+        ships Rounds Per Second at 0 on every weapon that fires one round per
+        trigger pull where Halo 3 ships 30, and the two behave the same in game;
+        Shots Per Fire is 0 on automatic weapons and 1 on the rest. Without this a
+        multiply on either is a guaranteed no-op, and the number shown beside the
+        field contradicts its Halo 3 counterpart for no reason. Only a value of
+        exactly 0 is substituted — a real reading is never touched."""
         ref = f"{cls} {path}"
         tags = self.find_tags(cls, path)
         if not tags:
@@ -323,6 +364,11 @@ class HaloMap:
                 for base in leaves:                 # patch every selected element
                     off = base + fld['offset']
                     old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
+                    # A placeholder 0 stands for zero_is (see the docstring). Done
+                    # before the mapping below so the reported `old` is the value the
+                    # operator actually worked on, not the stored 0.
+                    if zero_is is not None and not old:
+                        old = zero_is
                     # operate in display units (deg for angles), in the MEANING the
                     # magnitude is expressed in, then map back (see the docstring)
                     meaning = OP_FUNCS[op](scale * old + offset, value)
