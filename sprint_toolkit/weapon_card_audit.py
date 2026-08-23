@@ -38,7 +38,8 @@ import map_vault as V                                            # noqa: E402
 PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
            r"\Assembly-1-2023-11-29-1702446457\Plugins")
 SUBDIRS = {'Halo 1': ['Halo1MCC', 'Halo1'], 'Halo 2': ['Halo2MCC', 'Halo2'],
-           'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST']}
+           'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST'],
+           'Halo Reach': ['ReachMCC', 'Reach']}
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HALO_JSON = os.path.join(TOOL, 'halo.json')
 

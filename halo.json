@@ -314,85 +314,87 @@
 		"Halo Reach": {
 			"m10": {
 				"name": "Winter Contingency",
-				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+				"enemies": ["Elite", "Grunt", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Magnum", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Shotgun", "Sniper Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Armor Lock", "Drop Shield"],
+				"turret": ["Machine Gun"]
 			},
 			"m20": {
 				"name": "ONI Sword Base",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Plasma Cannon"]
+				"enemies": ["Elite", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Target Locator"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Armor Lock", "Sprint"],
+				"turret": ["Machine Gun"]
 			},
 			"m30": {
 				"name": "Nightfall",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
-				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+				"enemies": ["Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Health Pack", "Hologram", "Jet Pack", "Sprint"],
+				"turret": ["Plasma Cannon", "Shade"]
 			},
 			"m35": {
 				"name": "Tip of the Spear",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"enemies": ["Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
+				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
 			},
 			"m45": {
 				"name": "Long Night of Solace",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
-				"grenades": ["Frag Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+				"enemies": ["Elite", "Engineer", "Grunt", "Jackal"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
+				"turret": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m50": {
 				"name": "Exodus",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"enemies": ["Brute", "Engineer", "Grunt", "Jackal", "Skirmisher"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
-				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Missile Pod", "Plasma Cannon"]
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack", "Sprint"],
+				"turret": ["Machine Gun", "Shade"]
 			},
 			"m52": {
 				"name": "New Alexandria",
-				"enemies": ["Brute", "Engineer", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
-				"weapons": ["Battle Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
+				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Jammer", "Power Drain", "Regenerator", "Superflare"]
+				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
+				"turret": ["Shade"]
 			},
 			"m60": {
 				"name": "The Package",
-				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
+				"enemies": ["Brute", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Flamethrower", "Plasma Cannon"]
+				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Sprint"],
+				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
 			},
 			"m70": {
 				"name": "The Pillar of Autumn",
-				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
+				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"grenades": ["Frag Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Sprint"],
+				"turret": ["Plasma Cannon", "Shade"]
 			},
 			"m70_bonus": {
 				"name": "Lone Wolf",
-				"note": "BONUS mission -- Reach's epilogue, played after The Pillar of Autumn. Endless Covenant waves with no win condition, so it never 'completes'. Unlike the other nine Reach entries, these lists are read from the map itself rather than copied from Halo 3, and they are therefore INCOMPLETE rather than wrong: eight of the weapons the map actually carries (DMR, Needle Rifle, Plasma Repeater, Concussion Rifle, Grenade Launcher, Focus Rifle, Plasma Launcher, Target Laser) and all six armour abilities (Sprint, Jet Pack, Armor Lock, Drop Shield, Active Camouflage, Hologram) are left out because halo.json has no vocabulary for them yet.",
-				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal"],
+				"note": "BONUS mission -- Reach's epilogue, played after The Pillar of Autumn. Endless Covenant waves with no win condition, so it never 'completes'.",
+				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
 				"boss": "Brute Chieftain",
-				"weapons": ["Assault Rifle", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Needler", "Pistol", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Spartan Laser", "Spike Rifle", "Sniper Rifle"],
+				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle", "Target Locator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack"],
+				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
 			}
 		}
 	},
