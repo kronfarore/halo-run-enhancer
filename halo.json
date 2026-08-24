@@ -117,14 +117,12 @@
 			"06a": {
 				"name": "Sacred Icon",
 				"enemies": ["Brute", "Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Grunt", "Jackal", "Sentinel"],
-				"boss": "Sentinel Enforcer",
 				"weapons": ["Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Battle Rifle", "Brute Plasma Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"]
 			},
 			"06b": {
 				"name": "Quarantine Zone",
 				"enemies": ["Elite", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Sentinel"],
-				"boss": "Sentinel Enforcer",
 				"weapons": ["Energy Blade", "Needler", "Plasma Pistol", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Rocket Launcher"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"]
 			},
@@ -159,7 +157,6 @@
 			"010": {
 				"name": "Sierra 117",
 				"enemies": ["Brute", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Regenerator", "Superflare"],
@@ -168,7 +165,6 @@
 			"020": {
 				"name": "Crow's Nest",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Invisibility", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -177,7 +173,6 @@
 			"030": {
 				"name": "Tsavo Highway",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -186,7 +181,6 @@
 			"040": {
 				"name": "The Storm",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"],
@@ -203,7 +197,6 @@
 			"070": {
 				"name": "The Ark",
 				"enemies": ["Brute", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -212,7 +205,6 @@
 			"100": {
 				"name": "The Covenant",
 				"enemies": ["Brute", "Bugger", "Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -240,7 +232,6 @@
 			"h100": {
 				"name": "Mombasa Streets",
 				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
@@ -256,7 +247,6 @@
 			"sc110": {
 				"name": "Uplift Reserve",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
@@ -271,7 +261,6 @@
 			"sc130": {
 				"name": "Oni Alpha Site",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
@@ -279,7 +268,6 @@
 			"sc140": {
 				"name": "NMPD HQ",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -288,7 +276,6 @@
 			"sc150": {
 				"name": "Kikowani Station",
 				"enemies": ["Brute", "Engineer", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Battle Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Jammer", "Power Drain", "Regenerator", "Superflare"]
@@ -296,7 +283,6 @@
 			"l200": {
 				"name": "Data Hive",
 				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
@@ -305,7 +291,6 @@
 			"l300": {
 				"name": "Coastal Highway",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
 				"grenades": ["Frag Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
@@ -355,7 +340,6 @@
 			"m50": {
 				"name": "Exodus",
 				"enemies": ["Brute", "Engineer", "Grunt", "Jackal", "Skirmisher"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack", "Sprint"],
@@ -380,7 +364,6 @@
 			"m70": {
 				"name": "The Pillar of Autumn",
 				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Sprint"],
@@ -390,7 +373,6 @@
 				"name": "Lone Wolf",
 				"note": "BONUS mission -- Reach's epilogue, played after The Pillar of Autumn. Endless Covenant waves with no win condition, so it never 'completes'.",
 				"enemies": ["Brute", "Bugger", "Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
-				"boss": "Brute Chieftain",
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle", "Target Locator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack"],
@@ -7393,6 +7375,144 @@
 					]
 				}
 			},
+			"Tartarus": {
+				"Body Vitality": {
+					"desc": "Tartarus's health. NOTE: on The Great Journey (08b) the boss script calls unit_set_maximum_vitality on him at the start of every phase, so this card is overwritten there and changes nothing. It is the only level he appears on.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Tartarus's shield. NOTE: on The Great Journey (08b) his shield is driven by the boss script — topped back to full before each of Johnson's volleys, then dropped once it is chipped past a fixed fraction — and the script sets his maximum vitality every phase, so this card is overwritten there and changes nothing. Add Johnsons in Options instead.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between hammer swings and the chance of one.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0}
+					]
+				},
+				"Melee Leap": {
+					"desc": "His hammer lunge range, velocity, chance and arc.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+					]
+				},
+				"Cover Chance": {
+					"desc": "Chance he seeks cover.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
+						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and vitality threshold.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"targets": [
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+					]
+				},
+				"Maximum Firing Distance": {
+					"desc": "Range within which he engages.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Gravity Hammer Damage": {
+					"desc": "Damage of the gravity hammer \u2014 its swing, ground-slam explosion and obstacle smash.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee & objects\\characters\\brute\\damage_effects\\tartarus_obstacle_smash",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Gravity Hammer Radius": {
+					"desc": "Blast radius of the hammer's swing and ground-slam.",
+					"game": "Halo 2",
+					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Radius" },
+						{ "field": "Radius Max" }
+					]
+				}
+			},
+			"343 Guilty Spark": {
+				"Body Vitality": {
+					"desc": "Guilty Spark's health during the boss fight (stock: 2000).",
+					"game": "Halo 3",
+					"tag": "char objects\\characters\\monitor\\ai\\monitor_combat",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "zero_is": 2000 }
+					]
+				},
+				"Beam Damage": {
+					"desc": "Damage of his eye beam (stock: 100 per hit).",
+					"game": "Halo 3",
+					"tag": "jpt! objects\\characters\\monitor\\damage_effects\\first_hit",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound" },
+						{ "field": "Damage Upper Bound" },
+						{ "field": "Damage Upper Bound Max" }
+					]
+				},
+				"Beam Rate of Fire": {
+					"desc": "How fast his eye beam ticks (stock: 30 rounds per second).",
+					"game": "Halo 3",
+					"tag": "weap objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels" },
+						{ "field": "Rounds Per Second Max", "block": "Barrels" }
+					]
+				},
+				"Beam Range": {
+					"desc": "Reach and speed of his eye beam (stock: 120 range).",
+					"game": "Halo 3",
+					"tag": "proj objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Air Damage Range" },
+						{ "field": "Air Damage Range Max" },
+						{ "field": "Initial Velocity" },
+						{ "field": "Final Velocity" },
+						{ "field": "Maximum Range" }
+					]
+				}
+			}
+		},
+		"Hero enemy modifier": {
 			"Sentinel Enforcer": {
 				"Body Vitality": {
 					"desc": "Health of the Enforcer's hull.",
@@ -7604,142 +7724,6 @@
 					]
 				}
 			},
-			"Tartarus": {
-				"Body Vitality": {
-					"desc": "Tartarus's health. NOTE: on The Great Journey (08b) the boss script calls unit_set_maximum_vitality on him at the start of every phase, so this card is overwritten there and changes nothing. It is the only level he appears on.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
-					]
-				},
-				"Shield Vitality": {
-					"desc": "Tartarus's shield. NOTE: on The Great Journey (08b) his shield is driven by the boss script — topped back to full before each of Johnson's volleys, then dropped once it is chipped past a fixed fraction — and the script sets his maximum vitality every phase, so this card is overwritten there and changes nothing. Add Johnsons in Options instead.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
-					]
-				},
-				"Melee Behavior": {
-					"desc": "Delay/timeout between hammer swings and the chance of one.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"targets": [
-						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0}
-					]
-				},
-				"Melee Leap": {
-					"desc": "His hammer lunge range, velocity, chance and arc.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"targets": [
-						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
-						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
-					]
-				},
-				"Cover Chance": {
-					"desc": "Chance he seeks cover.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"targets": [
-						{ "field": "Cover Chance", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 },
-						{ "field": "Cover Chance Max", "block": "Cover Properties", "index": "all", "group": "Cover Chance", "min": 0, "max": 1.0 }
-					]
-				},
-				"Cover Properties": {
-					"desc": "Cover-seeking time and vitality threshold.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
-					]
-				},
-				"Maximum Firing Distance": {
-					"desc": "Range within which he engages.",
-					"game": "Halo 2",
-					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
-					]
-				},
-				"Gravity Hammer Damage": {
-					"desc": "Damage of the gravity hammer \u2014 its swing, ground-slam explosion and obstacle smash.",
-					"game": "Halo 2",
-					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee & objects\\characters\\brute\\damage_effects\\tartarus_obstacle_smash",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
-					]
-				},
-				"Gravity Hammer Radius": {
-					"desc": "Blast radius of the hammer's swing and ground-slam.",
-					"game": "Halo 2",
-					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
-					]
-				}
-			},
-			"343 Guilty Spark": {
-				"Body Vitality": {
-					"desc": "Guilty Spark's health during the boss fight (stock: 2000).",
-					"game": "Halo 3",
-					"tag": "char objects\\characters\\monitor\\ai\\monitor_combat",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "zero_is": 2000 }
-					]
-				},
-				"Beam Damage": {
-					"desc": "Damage of his eye beam (stock: 100 per hit).",
-					"game": "Halo 3",
-					"tag": "jpt! objects\\characters\\monitor\\damage_effects\\first_hit",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
-					]
-				},
-				"Beam Rate of Fire": {
-					"desc": "How fast his eye beam ticks (stock: 30 rounds per second).",
-					"game": "Halo 3",
-					"tag": "weap objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels" },
-						{ "field": "Rounds Per Second Max", "block": "Barrels" }
-					]
-				},
-				"Beam Range": {
-					"desc": "Reach and speed of his eye beam (stock: 120 range).",
-					"game": "Halo 3",
-					"tag": "proj objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Maximum Range" }
-					]
-				}
-			},
 			"Elite General": {
 				"Body Vitality": {
 					"desc": "The General's health (stock: 90 Normal, 130 Legendary).",
@@ -7800,35 +7784,6 @@
 					]
 				}
 			},
-			"Jackal Sniper": {
-				"Body Vitality": {
-					"desc": "The sniper Jackal's health (stock: 60 Normal, 90 Legendary — triple an ordinary Jackal, and it carries no shield gauntlet).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
-					]
-				},
-				"Shield Vitality": {
-					"desc": "The sniper Jackal's shield.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
-					]
-				},
-				"Body Recharge": {
-					"desc": "How fast the sniper Jackal heals between shots.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1 }
-					]
-				}
-			},
 			"Grunt Ultra": {
 				"Body Vitality": {
 					"desc": "The Ultra's health (stock: 60 Normal, 90 Legendary — double an ordinary Grunt).",
@@ -7855,6 +7810,35 @@
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				}
+			},
+			"Jackal Sniper": {
+				"Body Vitality": {
+					"desc": "The sniper Jackal's health (stock: 60 Normal, 90 Legendary — triple an ordinary Jackal, and it carries no shield gauntlet).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The sniper Jackal's shield.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Body Recharge": {
+					"desc": "How fast the sniper Jackal heals between shots.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				}
 			}
