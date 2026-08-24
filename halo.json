@@ -7702,7 +7702,7 @@
 					"tag": "char objects\\characters\\monitor\\ai\\monitor_combat",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "zero_is": 2000 }
 					]
 				},
 				"Beam Damage": {
@@ -7797,6 +7797,35 @@
 						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" }
+					]
+				}
+			},
+			"Jackal Sniper": {
+				"Body Vitality": {
+					"desc": "The sniper Jackal's health (stock: 60 Normal, 90 Legendary — triple an ordinary Jackal, and it carries no shield gauntlet).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The sniper Jackal's shield.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Body Recharge": {
+					"desc": "How fast the sniper Jackal heals between shots.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				}
 			},

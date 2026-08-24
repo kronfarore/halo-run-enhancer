@@ -148,6 +148,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
                'reach_elite_bosses', 'reach_grunt_ultra_bosses',
+               'reach_jackal_sniper_bosses', 'h2_honor_guard_bosses',
+               'odst_specops_bosses', 'h3_specops_bosses', 'heroes_are_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
@@ -425,6 +427,16 @@ CONFIG = {
     # Chieftain option.
     "reach_elite_bosses": False,       # Elite Generals + the Zealots count as bosses
     "reach_grunt_ultra_bosses": False,  # Grunt Ultras count as bosses
+    "reach_jackal_sniper_bosses": False,   # Reach sniper Jackals count as bosses
+    "h2_honor_guard_bosses": False,        # Halo 2 Honor Guard Elites count as bosses
+    "odst_specops_bosses": False,          # ODST spec-ops commanders count as bosses
+    "h3_specops_bosses": False,            # Halo 3's ALLIED spec-ops commander
+    # Master switch for the recurring Hero archetypes (HERO_NAMES). Default True, which
+    # preserves the behaviour that shipped before heroes were a category: Brute
+    # Chieftain and Sentinel Enforcer are declared bosses in halo.json's own mission
+    # data, and turning this off is what now separates them from the named story
+    # fights (Tartarus, Prophet Regret, Heretic Leader, 343 Guilty Spark).
+    "heroes_are_bosses": True,
     "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
     "equipment_need_weapon": False,     # ...and only once the player holds a real gun
     # What the AUTOMATIC new-weapon rolls (new_weapon_chance) may offer beyond the
@@ -973,6 +985,47 @@ REACH_GENERAL_MISSIONS = ('m10', 'm20', 'm30', 'm35', 'm45', 'm60', 'm70', 'm70_
 # this list. Adding them would offer a boss card that patches nothing.
 REACH_ZEALOT_MISSIONS = ('m70',)
 REACH_GRUNT_ULTRA_MISSIONS = ('m10', 'm35', 'm45')
+# Hero-class on nine of the ten missions and, unusually for an inheriting variant, it
+# carries its OWN vitality (60 body Normal / 90 Legendary, triple a plain Jackal).
+REACH_JACKAL_SNIPER_MISSIONS = ('m20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60',
+                                'm70', 'm70_bonus')
+H2_HONOR_GUARD_MISSIONS = ('05a', '05b', '06a', '07a')
+ODST_SPECOPS_MISSIONS = ('h100', 'l200', 'l300', 'sc100', 'sc110', 'sc120',
+                         'sc130', 'sc140')
+H3_SPECOPS_MISSIONS = ('050',)
+
+# --- Heroes -------------------------------------------------------------------
+#
+# The engine itself grades every campaign character: the campaign-metagame bucket
+# carries a Class enum (0 Infantry, 1 Leader, 2 Hero, 3 Specialist) and its options
+# are identical in all five games. `sprint_toolkit/hero_census.py` reads it.
+#
+# Hero covers two very different things, though, so class alone is not the split:
+# Tartarus is Hero and is plainly a one-off story boss, while a Brute Chieftain is
+# Hero and turns up on six missions. HERO_NAMES is therefore the RECURRING archetypes
+# only. The named story fights -- Tartarus, Prophet Regret, Heretic Leader and 343
+# Guilty Spark -- stay ordinary bosses and are unaffected by the Heroes switch.
+#
+# Sentinel Enforcer sits here rather than with them: it is a recurring heavy that
+# Halo 2 fields on two missions, not a named character.
+HERO_NAMES = frozenset({
+    'Brute Chieftain', 'Sentinel Enforcer', 'Elite General', 'Elite Zealot',
+    'Grunt Ultra', 'Jackal Sniper', 'Elite Honor Guard', 'Elite Specops Commander',
+})
+
+# (config key, boss name, missions). Every entry is additionally gated by
+# `heroes_are_bosses`; these switches choose WHICH heroes, that one chooses whether
+# heroes count at all.
+HERO_OPTIONS = (
+    ('brute_chieftain_bosses', 'Brute Chieftain', CHIEFTAIN_MISSIONS),
+    ('reach_elite_bosses', 'Elite General', REACH_GENERAL_MISSIONS),
+    ('reach_elite_bosses', 'Elite Zealot', REACH_ZEALOT_MISSIONS),
+    ('reach_grunt_ultra_bosses', 'Grunt Ultra', REACH_GRUNT_ULTRA_MISSIONS),
+    ('reach_jackal_sniper_bosses', 'Jackal Sniper', REACH_JACKAL_SNIPER_MISSIONS),
+    ('h2_honor_guard_bosses', 'Elite Honor Guard', H2_HONOR_GUARD_MISSIONS),
+    ('odst_specops_bosses', 'Elite Specops Commander', ODST_SPECOPS_MISSIONS),
+    ('h3_specops_bosses', 'Elite Specops Commander', H3_SPECOPS_MISSIONS),
+)
 
 # Equipment the player can be denied, grouped as the two options present them.
 DENIABLE_EQUIPMENT = {
@@ -1755,18 +1808,24 @@ class ModifierDatabase:
         Chieftains when that option is on. Resolved per call rather than baked into
         mission_boss at load, so toggling the option takes effect without a reload."""
         names = list(self.mission_boss.get(mission_id) or [])
-        if CONFIG.get('brute_chieftain_bosses') and mission_id in CHIEFTAIN_MISSIONS:
-            if 'Brute Chieftain' not in names:
-                names.append('Brute Chieftain')
-        if CONFIG.get('reach_elite_bosses'):
-            if mission_id in REACH_GENERAL_MISSIONS and 'Elite General' not in names:
-                names.append('Elite General')
-            if mission_id in REACH_ZEALOT_MISSIONS and 'Elite Zealot' not in names:
-                names.append('Elite Zealot')
-        if (CONFIG.get('reach_grunt_ultra_bosses')
-                and mission_id in REACH_GRUNT_ULTRA_MISSIONS
-                and 'Grunt Ultra' not in names):
-            names.append('Grunt Ultra')
+        if not CONFIG.get('heroes_are_bosses', True):
+            # Heroes off: strip the recurring archetypes wherever they came from,
+            # including halo.json's own mission data (Brute Chieftain and Sentinel
+            # Enforcer are declared there), and add none. What survives is the named
+            # story fights.
+            return [n for n in names if n not in HERO_NAMES]
+        for key, boss, missions in HERO_OPTIONS:
+            if not CONFIG.get(key) or mission_id not in missions:
+                continue
+            # Halo 3's spec-ops commander is an ALLY -- the allied Elites from
+            # Floodgate onward. The existing "Elites are allies in Halo 3" switch
+            # suppresses Elite enemy effects there, and it must suppress this too or
+            # the two options would contradict each other on the same map.
+            if (key == 'h3_specops_bosses'
+                    and CONFIG.get('ignore_elite_in_h3', True)):
+                continue
+            if boss not in names:
+                names.append(boss)
         return names
 
     def mission_has_boss(self, mission_id):
@@ -5562,6 +5621,20 @@ class OptionsDialog(QDialog):
                                         "holograms together, so one card tunes both.")
         bform.addRow("    ↳ Heretic bosses:", self.combine_holo_cb)
 
+        self.heroes_boss_cb = QCheckBox("Heroes are bosses")
+        self.heroes_boss_cb.setChecked(bool(CONFIG.get('heroes_are_bosses', True)))
+        self.heroes_boss_cb.setToolTip(
+            "The engine grades every campaign character, and 'Hero' covers two "
+            "different things: one-off story fights and recurring heavy archetypes.\n"
+            "This switch controls the RECURRING ones -- Brute Chieftain, Sentinel "
+            "Enforcer, Elite General, Elite Zealot, Grunt Ultra, Jackal Sniper, Elite "
+            "Honor Guard and Elite Spec-Ops Commander.\n"
+            "Turn it off and only the named story bosses remain: Tartarus, Prophet "
+            "Regret, Heretic Leader and 343 Guilty Spark. That also strips Brute "
+            "Chieftain and Sentinel Enforcer, which halo.json declares as mission "
+            "bosses in its own data.")
+        bform.addRow("    ↳ Heroes:", self.heroes_boss_cb)
+
         self.chieftain_boss_cb = QCheckBox("Brute Chieftains count as bosses (Halo 3)")
         self.chieftain_boss_cb.setChecked(bool(CONFIG.get('brute_chieftain_bosses')))
         self.chieftain_boss_cb.setToolTip("Halo 3 only. Treats the six missions that actually place a "
@@ -5597,6 +5670,44 @@ class OptionsDialog(QDialog):
             "character palette but no squad ever spawns it, so it is excluded.")
         bform.addRow("    ↳ Reach Grunt Ultras:", self.reach_grunt_boss_cb)
 
+        self.reach_jackal_boss_cb = QCheckBox("Sniper Jackals count as bosses (Reach)")
+        self.reach_jackal_boss_cb.setChecked(bool(CONFIG.get('reach_jackal_sniper_bosses')))
+        self.reach_jackal_boss_cb.setToolTip(
+            "Halo Reach only. The sniper Jackal is Hero-class and, unusually for a "
+            "variant, carries its own vitality (60 body on Normal, 90 on Legendary -- "
+            "triple a plain Jackal, and it has no shield gauntlet), so its cards "
+            "really bite.\nNine missions: everything except Winter Contingency.")
+        bform.addRow("    ↳ Reach sniper Jackals:", self.reach_jackal_boss_cb)
+
+        self.h2_honor_boss_cb = QCheckBox("Honor Guard Elites count as bosses (Halo 2)")
+        self.h2_honor_boss_cb.setChecked(bool(CONFIG.get('h2_honor_guard_bosses')))
+        self.h2_honor_boss_cb.setToolTip(
+            "Halo 2 only. Hero-class on Sacred Icon, Quarantine Zone, Gravemind and "
+            "High Charity.\nNOTE: this variant defines no stats of its own -- vitality, "
+            "weapons, grenades and charge are all inherited from the base Elite -- so "
+            "there are no Honor-Guard-specific cards yet. The mission becomes a boss "
+            "level and draws from the general pool. Giving it its own numbers needs "
+            "them inserted in the editing kit first.")
+        bform.addRow("    ↳ H2 Honor Guards:", self.h2_honor_boss_cb)
+
+        self.odst_specops_boss_cb = QCheckBox("Spec-Ops Commanders count as bosses (ODST)")
+        self.odst_specops_boss_cb.setChecked(bool(CONFIG.get('odst_specops_bosses')))
+        self.odst_specops_boss_cb.setToolTip(
+            "ODST only. Hero-class on eight of the nine missions.\nSame caveat as the "
+            "Halo 2 Honor Guard: it inherits every stat from elite_specops, so the "
+            "mission becomes a boss level but there are no commander-specific cards "
+            "until its values are inserted.")
+        bform.addRow("    ↳ ODST Spec-Ops:", self.odst_specops_boss_cb)
+
+        self.h3_specops_boss_cb = QCheckBox("Spec-Ops Commander counts as a boss (Halo 3)")
+        self.h3_specops_boss_cb.setChecked(bool(CONFIG.get('h3_specops_bosses')))
+        self.h3_specops_boss_cb.setToolTip(
+            "Halo 3, Floodgate only. Hero-class -- but in Halo 3 this Elite is an ALLY, "
+            "so promoting him buffs your own side rather than the enemy.\n"
+            "Ignored entirely while 'Elites are allies in Halo 3' is on, so the two "
+            "options cannot contradict each other. Turn that off to use this.")
+        bform.addRow("    ↳ H3 Spec-Ops:", self.h3_specops_boss_cb)
+
         # Boss cards ON is the prerequisite for the other boss options; with them off
         # there is nothing to shape, so grey the children out. single_game forces boss
         # cards off (and locks the switch), which must also disable the children — so
@@ -5604,11 +5715,25 @@ class OptionsDialog(QDialog):
         # forced change is signal-blocked.
         def _sync_boss_children(_=False):
             on = self.boss_cards_cb.isChecked()
-            for cb in (self.combine_holo_cb, self.chieftain_boss_cb,
-                       self.reach_elite_boss_cb, self.reach_grunt_boss_cb):
+            for cb in (self.combine_holo_cb, self.heroes_boss_cb):
                 cb.setEnabled(on)
                 if not on:
                     cb.setChecked(False)
+            _sync_hero_children()
+
+        # The per-hero switches are children of "Heroes are bosses", not of boss cards
+        # directly: with heroes off, picking WHICH heroes is meaningless. Unchecking
+        # them on the way down is deliberate, so a hidden switch can't come back on.
+        def _sync_hero_children(_=False):
+            on = self.boss_cards_cb.isChecked() and self.heroes_boss_cb.isChecked()
+            for cb in (self.chieftain_boss_cb, self.reach_elite_boss_cb,
+                       self.reach_grunt_boss_cb, self.reach_jackal_boss_cb,
+                       self.h2_honor_boss_cb, self.odst_specops_boss_cb,
+                       self.h3_specops_boss_cb):
+                cb.setEnabled(on)
+                if not on:
+                    cb.setChecked(False)
+        self.heroes_boss_cb.toggled.connect(_sync_hero_children)
         def _sync_boss_sub():
             forced_off = self.single_game_cb.isChecked()
             self.boss_cards_cb.blockSignals(True)
@@ -6619,6 +6744,11 @@ class OptionsDialog(QDialog):
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
             'reach_elite_bosses': self.reach_elite_boss_cb.isChecked(),
             'reach_grunt_ultra_bosses': self.reach_grunt_boss_cb.isChecked(),
+            'reach_jackal_sniper_bosses': self.reach_jackal_boss_cb.isChecked(),
+            'h2_honor_guard_bosses': self.h2_honor_boss_cb.isChecked(),
+            'odst_specops_bosses': self.odst_specops_boss_cb.isChecked(),
+            'h3_specops_bosses': self.h3_specops_boss_cb.isChecked(),
+            'heroes_are_bosses': self.heroes_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
             'score_scaling': self.score_scaling_cb.isChecked(),
             'score_step': round(self.score_step.value(), 3),
