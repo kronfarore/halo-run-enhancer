@@ -4667,6 +4667,24 @@
 	},	
 	"Enemy modifiers": {
 		"General modifiers": {
+			"Player Preference": {
+				"desc": "How strongly AI prefer the player over other targets. Set on the shared `ai\\generic` parent every character inherits, so it moves the whole campaign at once (stock: 0.25).",
+				"game": "Halo Reach",
+				"tag": "char ai\\generic",
+				"harder_when": "increased",
+				"targets": [
+					{ "field": "Player Preference", "block": "Target Properties", "index": "all", "min": 0 }
+				]
+			},
+			"Fight Flank Chance": {
+				"desc": "How often AI break off to flank rather than trade fire head-on. Set on the shared `ai\\generic` parent. NOTE generic ships this at 0 and only elite_specops overrides it (to 1.0), so `zero_is` treats that 0 as 0.25 -- otherwise the card would multiply zero and do nothing.",
+				"game": "Halo Reach",
+				"tag": "char ai\\generic",
+				"harder_when": "increased",
+				"targets": [
+					{ "field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "min": 0, "max": 1, "zero_is": 0.25 }
+				]
+			},
 			"Enemy damage": {
 				"desc": "How much damage the enemy deals",
 				"tag": "matg globals\\globals",
@@ -4927,6 +4945,21 @@
 		},
 		"Specific Enemy modifier": {
 			"Elite": {
+			"Armor Lock": {
+				"desc": "How readily Elites armour-lock, how long it holds and how fast it returns (stock: 15% chance and 5s cooldown on the base Elite, 30%/3.5s/0.5s/3s on the Ultra). NOTE the base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising the chance and duration makes them harder; raising the cooldown makes them easier.",
+				"game": "Halo Reach",
+				"tag": "char objects\\characters\\elite\\ai\\elite*",
+				"targets": [
+					{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+					{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+					{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
+				],
+				"constraints": [
+					{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
+				]
+			},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
 					"game": "Halo 1",
@@ -6952,6 +6985,21 @@
 				}
 			},
 			"Brute": {
+			"Armor Lock": {
+				"desc": "How readily Brutes armour-lock, how long it holds and how fast it returns (stock: 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%). Raising the chance and duration makes them harder; raising the cooldown makes them easier.",
+				"game": "Halo Reach",
+				"tag": "char objects\\characters\\brute\\ai\\brute*",
+				"targets": [
+					{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+					{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+					{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+					{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
+				],
+				"constraints": [
+					{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
+				]
+			},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts and the chance of one.",
 					"game": ["Halo 2", "Halo 3"],
@@ -7139,6 +7187,21 @@
 					"targets": [
 						{ "field": "Easy/Normal", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 }
+					]
+				}
+			},
+			"Skirmisher": {
+				"Hologram": {
+					"desc": "Skirmishers are the only Reach characters that deploy holograms. This tunes how long they wait in cover behind one and how long before they can throw another (stock: 0.2s wait, 30s cooldown).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
+					"targets": [
+						{ "field": "Hologram Cover Wait Time", "block": "Cover Properties", "index": "all", "min": 0 },
+						{ "field": "Hologram Cover Wait Time Max", "block": "Cover Properties", "index": "all", "min": 0 },
+						{ "field": "Hologram Cooldown Delay", "block": "Cover Properties", "index": "all", "min": 0 }
+					],
+					"constraints": [
+						{ "field": "Hologram Cover Wait Time Max", "of": "Hologram Cover Wait Time", "not_below": true, "block": "Cover Properties" }
 					]
 				}
 			},
@@ -7672,7 +7735,56 @@
 					]
 				}
 			},
+			"Elite Honor Guard": {
+				"Body Vitality": {
+					"desc": "The Honor Guard's health. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The Honor Guard's shield. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "How often the Honor Guard commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all", "min": 0 }
+					]
+				},
+				"Grenade Chance": {
+					"desc": "How readily the Honor Guard throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo 2",
+					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				}
+			},
 			"Brute Chieftain": {
+				"Grenade Chance": {
+					"desc": "How readily the armoured Chieftain throws grenades (stock 0.1 in Reach). Only the armoured variant carries a Grenades block, and only in Reach; Halo 3 and ODST depend on the pending value insertion.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				},
 				"Body Vitality": {
 					"desc": "The Chieftain's health.",
 					"game": "Halo 3",
@@ -7692,8 +7804,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "Delay/timeout between hammer swings, the chance of one, and its lunge range. Only the hammer Chieftain defines these; the armoured one inherits.",
-					"game": "Halo 3",
+					"desc": "Delay/timeout between hammer swings, the chance of one, and its lunge range. In Reach BOTH chieftain variants carry a Charge block; in Halo 3 and ODST only the armoured one does, so the hammer variant there depends on the pending value insertion.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain*",
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all" },
@@ -7724,7 +7836,67 @@
 					]
 				}
 			},
+			"Elite Specops Commander": {
+				"Body Vitality": {
+					"desc": "The Spec-Ops Commander's health. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The Spec-Ops Commander's shield. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "How often the Spec-Ops Commander commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all", "min": 0 }
+					]
+				},
+				"Grenade Chance": {
+					"desc": "How readily the Spec-Ops Commander throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				}
+			},
 			"Elite General": {
+				"Melee Behavior": {
+					"desc": "How often the General commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"targets": [
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all", "min": 0 }
+					]
+				},
+				"Grenade Chance": {
+					"desc": "How readily the General throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				},
 				"Body Vitality": {
 					"desc": "The General's health (stock: 90 Normal, 130 Legendary).",
 					"game": "Halo Reach",
@@ -7755,10 +7927,19 @@
 				}
 			},
 			"Elite Zealot": {
+				"Grenade Chance": {
+					"desc": "How readily the Zealot throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				},
 				"Body Vitality": {
 					"desc": "The named Zealot's health (stock: 110 Normal, 150 Legendary). The Pillar of Autumn only — see the card note.",
 					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -7767,7 +7948,7 @@
 				"Shield Vitality": {
 					"desc": "The named Zealot's shield (stock: 185 Normal, 285 Legendary). The Pillar of Autumn only — see the card note.",
 					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -7776,7 +7957,7 @@
 				"Melee Behavior": {
 					"desc": "How often the Zealot commits to a melee lunge, and how far it reaches. Only the named Zealot defines these; the plain story Elites inherit them.",
 					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"targets": [
 						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
