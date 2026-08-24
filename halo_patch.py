@@ -424,6 +424,123 @@ def _apply_constraints(m, cls, path, effect_name, constraints, plugin):
     return out
 
 
+# --- giving an INHERITING character its own tag block -------------------------
+#
+# Character tags inherit through `Parent Character` (a tagRef at +0x4 in Halo 2,
+# Halo 3, ODST and Reach alike). Several Hero-class enemies define nothing of their
+# own -- Halo 2's elite_honor_guard and Halo 3/ODST's elite_specops_commander
+# populate NO blocks at all -- so their Vitality Properties reflexive is count 0 and
+# a card aimed at them patches nothing, while a card aimed at the parent buffs every
+# sibling. Seeding the child its own copy is what makes such a card possible.
+#
+# The DATUM inside a tagRef is not at a fixed offset: Halo 2's tagRefs are 8 bytes
+# with it at +0x4, everything later 16 bytes with it at +0xC -- the same split
+# _STARTING_SLOTS records for weapon refs. Reading Halo 2 with the later offset picks
+# a WRONG parent and seeds from garbage, which is exactly what it did before this was
+# pinned down, so it is derived from the parser rather than guessed.
+_PARENT_REF = 0x4
+# Only carve from a zero run far larger than the request, and stay clear of the very
+# end of the partition, so a short run that is really data is never touched.
+_SLACK_MARGIN = 0x40
+_SLACK_MIN_RUN = 0x400
+
+
+def _tagref_datum(m):
+    return 0x4 if type(m).__name__ == 'Halo2Map' else 0xC
+
+
+def _parent_tag(m, base, datum):
+    ident = m.u32(base + _PARENT_REF + datum)
+    if ident == 0xFFFFFFFF:
+        return None
+    t = m.tag(ident & 0xFFFF) if hasattr(m, 'tag') else None
+    return t if t and t.get('base') is not None else None
+
+
+def seed_ancestor(m, base, blk_off, datum=None):
+    """Nearest ancestor that actually POPULATES the block.
+
+    One hop is not enough: Halo 3's elite_specops_commander inherits from
+    elite_specops, which is itself empty, and the values only appear further up at
+    elite_major. The nearest populated ancestor is also the semantically right seed --
+    it is what the engine resolves for that character today, so a freshly seeded child
+    starts out behaving exactly as it did."""
+    datum = _tagref_datum(m) if datum is None else datum
+    seen, cur = set(), _parent_tag(m, base, datum)
+    while cur is not None and cur['name'] not in seen:
+        seen.add(cur['name'])
+        if m.i32(cur['base'] + blk_off) > 0:
+            return cur
+        cur = _parent_tag(m, cur['base'], datum)
+    return None
+
+
+def _partition_of(m, off):
+    for i, (la, sz, fb) in enumerate(m.partitions):
+        if fb is not None and sz and fb <= off < fb + sz:
+            return i
+    return None
+
+
+def find_slack(m, size, prefer=None):
+    """Carve `size` bytes from the tail of a zero run in a tag partition. `prefer`
+    (the partition holding the tag) wins outright -- on Halo 3 and Reach alike every
+    char tag lives in the last partition, so the new element belongs beside them."""
+    best = None
+    for i, (la, sz, fb) in enumerate(m.partitions):
+        if not sz or fb is None:
+            continue
+        end = fb + sz
+        run = 0
+        while run < sz and m.data[end - 1 - run] == 0:
+            run += 1
+            if run > 0x40000:
+                break
+        if run < _SLACK_MIN_RUN or run < size + _SLACK_MARGIN:
+            continue
+        off = (end - _SLACK_MARGIN - size) & ~0xF
+        if m.off2data(off) is None or m.data2off(m.off2data(off)) != off:
+            continue
+        cand = (off, run, i)
+        if i == prefer:
+            return cand
+        if best is None or run > best[1]:
+            best = cand
+    return best
+
+
+def insert_block_element(m, base, blk_off, esize, seed):
+    """Give an empty reflexive one element seeded with `seed` bytes.
+
+    Two strategies, picked by what the PARSER can do rather than by game:
+
+      * APPEND, where the parser implements growth (Halo2Map). It relocates the block
+        to end-of-image, pads to the 0x1000 segment alignment MCC demands and grows
+        file_size/meta_size/tag_data_size. Strictly better than slack, so preferred.
+      * SLACK, for the partition parsers (Halo3Map and its Reach subclass), which do
+        not implement growth. The tag-data partition carries a long run of trailing
+        zeroes -- far more than one element -- so the element is written there and the
+        reflexive pointed at it. Nothing moves, so there is nothing to fix up.
+
+    Both are confirmed in game: Reach m10 (slack) and Halo 2 Delta Halo (append) each
+    made every Elite unkillable once seeded and repointed.
+
+    Returns (file offset, strategy) or raises ValueError when there is no room."""
+    if hasattr(m, 'append_block_element'):
+        return m.append_block_element(base, blk_off, esize, seed), 'append'
+    if not hasattr(m, 'partitions'):
+        raise ValueError('parser %s can neither grow nor address slack'
+                         % type(m).__name__)
+    spot = find_slack(m, esize, prefer=_partition_of(m, base))
+    if spot is None:
+        raise ValueError('no usable slack for %d bytes' % esize)
+    off, _run, _part = spot
+    m.data[off:off + esize] = seed
+    struct.pack_into('<i', m.data, base + blk_off, 1)
+    struct.pack_into('<I', m.data, base + blk_off + 4, m.off2data(off))
+    return off, 'slack'
+
+
 def _apply_init_defaults(m, spec, registry):
     """One-time seeding of an enemy that lacks a field/block by default (e.g. Elite
     grenades): copy defaults from a `source` tag onto every target variant that
@@ -432,7 +549,10 @@ def _apply_init_defaults(m, spec, registry):
       tag           target variant wildcard (e.g. 'actv characters\\elite\\*')
       source        tag to read defaults from (e.g. Grunt Minor / base Grunt)
       block         (H2) tagblock holding the fields; grown if empty
-      grow          (H2) True -> copy source's whole block element into an empty block
+      grow          True -> seed an EMPTY block with one element. Works in every
+                    game: Halo 2 grows the image, the partition parsers use slack.
+                    With no `source`, each target is seeded from its own nearest
+                    populated ancestor.
       copy          (H1) list of root field names to copy from source
       set           {field: value} forced values (enum names allowed, e.g.
                     'Grenade Stimulus': 'Visible Target')
@@ -443,28 +563,54 @@ def _apply_init_defaults(m, spec, registry):
     plugin = registry.get(cls)
     if plugin is None:
         return [{'effect': 'init defaults', 'ok': False, 'reason': f'no plugin for {cls}'}]
-    scls, spath = hm.split_tag(spec['source'])
-    src = m.find_tags(scls, spath)
-    if not src:
-        return [{'effect': 'init defaults', 'ok': False, 'reason': f'init source {spath} not in map'}]
-    src_base = src[0][1]
     block = spec.get('block')
+    # `source` is optional for a grow: without one the seed comes from the target's
+    # own nearest populated ancestor, which is both more robust than naming a tag
+    # (Halo 3's spec-ops commander needs a seed two hops up) and what the engine
+    # already resolves for that character.
+    src_base = None
+    if spec.get('source'):
+        scls, spath = hm.split_tag(spec['source'])
+        src = m.find_tags(scls, spath)
+        if not src:
+            return [{'effect': 'init defaults', 'ok': False,
+                     'reason': f'init source {spath} not in map'}]
+        src_base = src[0][1]
+    elif not spec.get('grow'):
+        return [{'effect': 'init defaults', 'ok': False,
+                 'reason': 'init_defaults needs a source unless it is a grow'}]
 
-    if spec.get('grow') and block and hasattr(m, 'append_block_element'):
+    if spec.get('grow') and block:
         bf = next((f for f in plugin.fields
                    if f['block_chain'] and f['block_chain'][-1].lower() == block.lower()), None)
         if not bf:
             return [{'effect': 'init defaults', 'ok': False, 'reason': f'block {block} not in plugin'}]
         boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
-        if m.i32(src_base + boff) == 0:
-            return [{'effect': 'init defaults', 'ok': False, 'reason': 'init source block empty'}]
-        src_leaf = m.follow(src_base, [boff], [esize], 0)
-        elem = bytes(m.data[src_leaf:src_leaf + esize])
+        shared = None
+        if src_base is not None and m.i32(src_base + boff) > 0:
+            leaf = m.follow(src_base, [boff], [esize], 0)
+            shared = bytes(m.data[leaf:leaf + esize])
         for tpath, base in m.find_tags(cls, path):
-            if m.i32(base + boff) == 0:
-                m.append_block_element(base, boff, esize, elem)
-                out.append({'effect': 'init defaults', 'tag': f'{cls} {tpath}', 'ok': True,
-                            'old': '(empty)', 'new': f'{block} seeded'})
+            if m.i32(base + boff) != 0:
+                continue                      # already has its own; nothing to seed
+            elem = shared
+            if elem is None:
+                anc = seed_ancestor(m, base, boff)
+                if anc is None:
+                    out.append({'effect': 'init defaults', 'tag': f'{cls} {tpath}',
+                                'ok': False,
+                                'reason': f'no ancestor populates {block}'})
+                    continue
+                leaf = m.follow(anc['base'], [boff], [esize], 0)
+                elem = bytes(m.data[leaf:leaf + esize])
+            try:
+                _off, how = insert_block_element(m, base, boff, esize, elem)
+            except ValueError as e:
+                out.append({'effect': 'init defaults', 'tag': f'{cls} {tpath}',
+                            'ok': False, 'reason': str(e)})
+                continue
+            out.append({'effect': 'init defaults', 'tag': f'{cls} {tpath}', 'ok': True,
+                        'old': '(empty)', 'new': f'{block} seeded ({how})'})
         return out
 
     copy_fields = spec.get('copy', []) or []

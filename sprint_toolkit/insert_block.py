@@ -68,10 +68,11 @@ PARENT_REF = 0x4            # the tagRef itself; same offset in every game's cha
 TAGREF_DATUM = {'Halo 2': 0x4}
 DEFAULT_TAGREF_DATUM = 0xC
 
-# Only carve from a zero run far larger than the request, and stay clear of the very
-# end of the partition, so a short run that happens to be real data is never touched.
-SLACK_MARGIN = 0x40
-MIN_RUN = 0x400
+# The insertion itself lives in halo_patch, so the patcher and this tool cannot drift
+# apart: seed_ancestor, find_slack and insert_block_element are all imported from
+# there rather than kept in a second copy here.
+seed_ancestor = halo_patch.seed_ancestor
+insert = halo_patch.insert_block_element
 
 SUBDIRS = {'Halo 2': ['Halo2MCC', 'Halo2'], 'Halo 3': ['Halo3MCC', 'Halo3'],
            'Halo 3: ODST': ['ODSTMCC', 'ODST'], 'Halo Reach': ['ReachMCC', 'Reach']}
@@ -110,84 +111,11 @@ def tag_row(m, group, path):
     return None
 
 
-def parent_tag(m, base, datum=DEFAULT_TAGREF_DATUM):
-    ident = m.u32(base + PARENT_REF + datum)
-    if ident == 0xFFFFFFFF:
-        return None
-    t = m.tag(ident & 0xFFFF)
-    return t if t and t.get('base') is not None else None
-
-
-def seed_ancestor(m, base, blk_off, datum=DEFAULT_TAGREF_DATUM):
-    """Nearest ancestor that actually POPULATES the block.
-
-    One hop is not enough: Halo 3's elite_specops_commander inherits from
-    elite_specops, which is itself empty, and the values only appear further up at
-    `elite`. Walking to the nearest populated ancestor is also the semantically right
-    seed -- it is exactly what the engine resolves for this character today."""
-    seen, cur = set(), parent_tag(m, base, datum)
-    while cur is not None and cur['name'] not in seen:
-        seen.add(cur['name'])
-        if m.i32(cur['base'] + blk_off) > 0:
-            return cur
-        cur = parent_tag(m, cur['base'], datum)
-    return None
-
-
 def block_data_off(m, base, blk_off):
-    """File offset of a block's first element, across both pointer models."""
+    """File offset of a block's first element, across both pointer models: the
+    partition parsers expose data2off, Halo 2 exposes p2o."""
     ptr = m.u32(base + blk_off + 4)
     return m.data2off(ptr) if hasattr(m, 'data2off') else m.p2o(ptr)
-
-
-def partition_of(m, off):
-    for i, (la, sz, fb) in enumerate(m.partitions):
-        if fb is not None and sz and fb <= off < fb + sz:
-            return i
-    return None
-
-
-def find_slack(m, size, prefer=None):
-    """Carve `size` bytes from the tail of a zero run. `prefer` (the partition holding
-    the tag) wins outright -- on Reach and Halo 3 alike every char tag lives in the
-    last partition, so the element belongs beside them."""
-    best = None
-    for i, (la, sz, fb) in enumerate(m.partitions):
-        if not sz or fb is None:
-            continue
-        end = fb + sz
-        run = 0
-        while run < sz and m.data[end - 1 - run] == 0:
-            run += 1
-            if run > 0x40000:
-                break
-        if run < MIN_RUN or run < size + SLACK_MARGIN:
-            continue
-        off = (end - SLACK_MARGIN - size) & ~0xF
-        if m.off2data(off) is None or m.data2off(m.off2data(off)) != off:
-            continue
-        cand = (off, run, i)
-        if i == prefer:
-            return cand
-        if best is None or run > best[1]:
-            best = cand
-    return best
-
-
-def insert(m, base, blk_off, esz, seed):
-    """Give an empty reflexive one element seeded with `seed`. Returns
-    (element file offset, strategy name)."""
-    if hasattr(m, 'append_block_element'):             # Halo 2: proper growth
-        off = m.append_block_element(base, blk_off, esz, seed)
-        return off, 'append (end-of-image, segments grown)'
-    spot = find_slack(m, esz, prefer=partition_of(m, base))
-    if spot is None:
-        raise SystemExit('no usable slack for %d bytes' % esz)
-    off, run, part = spot
-    m.data[off:off + esz] = seed
-    struct.pack_into('<i', m.data, base + blk_off, 1)
-    struct.pack_into('<I', m.data, base + blk_off + 4, m.off2data(off))
-    return off, 'slack (P%d, zero run 0x%X)' % (part, run)
 
 
 def set_field(m, elem, fields, name, value):

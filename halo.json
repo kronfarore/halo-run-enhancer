@@ -7834,6 +7834,7 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -7843,6 +7844,7 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -7851,6 +7853,7 @@
 					"desc": "How often the Honor Guard commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Charge Properties", "grow": true },
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
@@ -7863,6 +7866,7 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -7874,6 +7878,7 @@
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -7935,6 +7940,7 @@
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -7944,6 +7950,7 @@
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -7952,6 +7959,7 @@
 					"desc": "How often the Spec-Ops Commander commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Charge Properties", "grow": true },
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
@@ -7964,6 +7972,7 @@
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -7974,6 +7983,7 @@
 					"desc": "How often the General commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Charge Properties", "grow": true },
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
@@ -7986,6 +7996,7 @@
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -8025,6 +8036,7 @@
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -8034,6 +8046,7 @@
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -8043,6 +8056,7 @@
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Vitality Properties", "grow": true },
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
 					]
@@ -8051,6 +8065,7 @@
 					"desc": "How often the Zealot commits to a melee lunge, and how far it reaches. Only the named Zealot defines these; the plain story Elites inherit them.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
+					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Charge Properties", "grow": true },
 					"targets": [
 						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
