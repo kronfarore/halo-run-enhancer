@@ -7739,6 +7739,95 @@
 						{ "field": "Maximum Range" }
 					]
 				}
+			},
+			"Elite General": {
+				"Body Vitality": {
+					"desc": "The General's health (stock: 90 Normal, 130 Legendary).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The General's shield (stock: 175 Normal, 245 Legendary — the toughest shield any ordinary Reach Covenant carries).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Recharge": {
+					"desc": "How long the General's shield waits before recharging, and how long it takes.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"harder_when": "decreased",
+					"targets": [
+						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties", "index": "all", "min": 0 },
+						{ "field": "Shield Recharge Time", "block": "Vitality Properties", "index": "all", "min": 0 }
+					]
+				}
+			},
+			"Elite Zealot": {
+				"Body Vitality": {
+					"desc": "The named Zealot's health (stock: 110 Normal, 150 Legendary). The Pillar of Autumn only — see the card note.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The named Zealot's shield (stock: 185 Normal, 285 Legendary). The Pillar of Autumn only — see the card note.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Melee Behavior": {
+					"desc": "How often the Zealot commits to a melee lunge, and how far it reaches. Only the named Zealot defines these; the plain story Elites inherit them.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite_story_unique",
+					"targets": [
+						{ "field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" }
+					]
+				}
+			},
+			"Grunt Ultra": {
+				"Body Vitality": {
+					"desc": "The Ultra's health (stock: 60 Normal, 90 Legendary — double an ordinary Grunt).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Shield Vitality": {
+					"desc": "The Ultra's shield (stock: 50 at every difficulty — Reach's only shielded Grunt).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					]
+				},
+				"Grenade Chance": {
+					"desc": "How readily the Ultra throws grenades (stock: 0.1).",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
+					]
+				}
 			}
 		}
 	},

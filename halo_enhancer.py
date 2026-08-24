@@ -147,6 +147,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
+               'reach_elite_bosses', 'reach_grunt_ultra_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
@@ -418,6 +419,12 @@ CONFIG = {
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     "grenades_need_weapon": False,     # #4: only offer grenades once a real gun is held
     "brute_chieftain_bosses": False,   # #6: H3 chieftain missions count as boss levels
+    # Reach has no scripted boss fight, but it does ship tougher named variants that
+    # define their OWN vitality rather than inheriting it, which is what makes a boss
+    # card able to touch them without buffing every sibling. Off by default, like the
+    # Chieftain option.
+    "reach_elite_bosses": False,       # Elite Generals + the Zealots count as bosses
+    "reach_grunt_ultra_bosses": False,  # Grunt Ultras count as bosses
     "h3_equipment_in_rolls": False,     # H3 only: equipment can turn up in New Weapon draws
     "equipment_need_weapon": False,     # ...and only once the player holds a real gun
     # What the AUTOMATIC new-weapon rolls (new_weapon_chance) may offer beyond the
@@ -950,6 +957,22 @@ def card_metrics():
 # scnr character palette, not just the tags it carries). 010 uses the
 # brute_chieftain_armor_no_grenade variant, which the tag wildcard still covers.
 CHIEFTAIN_MISSIONS = ('010', '020', '030', '040', '070', '100')
+
+# Reach missions that actually FIELD each optional boss -- read off the maps with
+# sprint_toolkit/reach_census.py, by crossing the character palette with the squads
+# that reference it (Spawn Points + Designer/Templated Cells). Palette presence alone
+# was not enough: m50 carries grunt_ultra in its palette but no squad fields it, and
+# m70_bonus carries both Brute Chieftain variants the same way.
+REACH_GENERAL_MISSIONS = ('m10', 'm20', 'm30', 'm35', 'm45', 'm60', 'm70', 'm70_bonus')
+# The story Elites -- Bungie's own squads call them zealots ('sq_facility_zealot',
+# 'sq_zealot_elite_*'). Only m70's `elite_story_unique` defines its own vitality and
+# charge blocks; the plain `elite_story` on m10 and m35 populates just Variants,
+# General Properties and Campaign Metagame Bucket and inherits everything mechanical
+# from elite_ultra. The Zealot cards therefore target elite_story_unique alone, so
+# they cannot buff every Ultra as a side effect -- which is why m10 and m35 are NOT in
+# this list. Adding them would offer a boss card that patches nothing.
+REACH_ZEALOT_MISSIONS = ('m70',)
+REACH_GRUNT_ULTRA_MISSIONS = ('m10', 'm35', 'm45')
 
 # Equipment the player can be denied, grouped as the two options present them.
 DENIABLE_EQUIPMENT = {
@@ -1735,6 +1758,15 @@ class ModifierDatabase:
         if CONFIG.get('brute_chieftain_bosses') and mission_id in CHIEFTAIN_MISSIONS:
             if 'Brute Chieftain' not in names:
                 names.append('Brute Chieftain')
+        if CONFIG.get('reach_elite_bosses'):
+            if mission_id in REACH_GENERAL_MISSIONS and 'Elite General' not in names:
+                names.append('Elite General')
+            if mission_id in REACH_ZEALOT_MISSIONS and 'Elite Zealot' not in names:
+                names.append('Elite Zealot')
+        if (CONFIG.get('reach_grunt_ultra_bosses')
+                and mission_id in REACH_GRUNT_ULTRA_MISSIONS
+                and 'Grunt Ultra' not in names):
+            names.append('Grunt Ultra')
         return names
 
     def mission_has_boss(self, mission_id):
@@ -5538,6 +5570,33 @@ class OptionsDialog(QDialog):
                                           "card. Halo 2's Chieftain is Tartarus, who is already a boss.")
         bform.addRow("    ↳ Brute Chieftains:", self.chieftain_boss_cb)
 
+        self.reach_elite_boss_cb = QCheckBox("Elite Generals and Zealots count as bosses (Reach)")
+        self.reach_elite_boss_cb.setChecked(bool(CONFIG.get('reach_elite_bosses')))
+        self.reach_elite_boss_cb.setToolTip(
+            "Halo Reach only. Reach has no scripted boss fight, so this promotes its "
+            "toughest named Elites.\n"
+            "Elite General (90/175 body/shield on Normal, 130/245 on Legendary) on the "
+            "eight missions that field one: Winter Contingency, ONI Sword Base, "
+            "Nightfall, Tip of the Spear, Long Night of Solace, The Package, The Pillar "
+            "of Autumn and Lone Wolf.\n"
+            "Elite Zealot on The Pillar of Autumn, which is the one map whose Zealot "
+            "(elite_story_unique) carries its own vitality. The plain story Elites on "
+            "Winter Contingency and Tip of the Spear inherit their stats from "
+            "elite_ultra, so tuning them would buff every Ultra in the level -- they "
+            "are deliberately left out rather than given a card that does nothing.")
+        bform.addRow("    ↳ Reach Elites:", self.reach_elite_boss_cb)
+
+        self.reach_grunt_boss_cb = QCheckBox("Grunt Ultras count as bosses (Reach)")
+        self.reach_grunt_boss_cb.setChecked(bool(CONFIG.get('reach_grunt_ultra_bosses')))
+        self.reach_grunt_boss_cb.setToolTip(
+            "Halo Reach only. The Grunt Ultra is Reach's only shielded Grunt (60/50 "
+            "body/shield on Normal, 90/50 on Legendary -- double an ordinary Grunt's "
+            "health) and defines its own vitality, so it can carry boss cards.\n"
+            "Applies to the three missions that field one: Winter Contingency, Tip of "
+            "the Spear and Long Night of Solace. Exodus carries the Ultra in its "
+            "character palette but no squad ever spawns it, so it is excluded.")
+        bform.addRow("    ↳ Reach Grunt Ultras:", self.reach_grunt_boss_cb)
+
         # Boss cards ON is the prerequisite for the other boss options; with them off
         # there is nothing to shape, so grey the children out. single_game forces boss
         # cards off (and locks the switch), which must also disable the children — so
@@ -5545,7 +5604,8 @@ class OptionsDialog(QDialog):
         # forced change is signal-blocked.
         def _sync_boss_children(_=False):
             on = self.boss_cards_cb.isChecked()
-            for cb in (self.combine_holo_cb, self.chieftain_boss_cb):
+            for cb in (self.combine_holo_cb, self.chieftain_boss_cb,
+                       self.reach_elite_boss_cb, self.reach_grunt_boss_cb):
                 cb.setEnabled(on)
                 if not on:
                     cb.setChecked(False)
@@ -6557,6 +6617,8 @@ class OptionsDialog(QDialog):
             'include_grenades': self.grenades_cb.isChecked(),
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
+            'reach_elite_bosses': self.reach_elite_boss_cb.isChecked(),
+            'reach_grunt_ultra_bosses': self.reach_grunt_boss_cb.isChecked(),
             'h3_equipment_in_rolls': self.equipment_rolls_cb.isChecked(),
             'score_scaling': self.score_scaling_cb.isChecked(),
             'score_step': round(self.score_step.value(), 3),
