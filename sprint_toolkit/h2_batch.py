@@ -29,7 +29,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import h2_loosetag as L    # noqa: E402
 
-H2EK = r'C:\Program Files (x86)\Steam\steamapps\common\H2EK'
+H2EK = r'F:\SteamLibrary\steamapps\common\H2EK'
 TOOL = os.path.join(H2EK, 'tool.exe')
 # Self-contained, single-language, and NOT asking for remastered.
 #

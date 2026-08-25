@@ -34,7 +34,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 MCC = (r"C:\Program Files (x86)\Steam\steamapps\common"
        r"\Halo The Master Chief Collection")
 MAPS = os.path.join(MCC, 'halo3odst', 'maps')
-PLUGIN = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+PLUGIN = (r"F:\SteamLibrary\steamapps\common\HCEEK"
           r"\Assembly-1-2023-11-29-1702446457\Plugins\ODSTMCC\scnr.xml")
 
 # Story order. ODST mission ids do NOT sort into it — c200 (Coastal Highway, late)

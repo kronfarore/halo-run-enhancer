@@ -64,7 +64,7 @@ import glob
 import os
 import re
 
-HCEEK = r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+HCEEK = r"F:\SteamLibrary\steamapps\common\HCEEK"
 LEVELS_DIR = os.path.join(HCEEK, "data", "levels")
 DEPLOYED = (r"C:\Program Files (x86)\Steam\steamapps\common"
             r"\Halo The Master Chief Collection\halo1\maps")

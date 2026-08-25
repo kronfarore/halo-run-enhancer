@@ -27,7 +27,7 @@ import os
 import shutil
 import subprocess
 
-EK = r"C:\Program Files (x86)\Steam\steamapps\common\H3ODSTEK"
+EK = r"F:\SteamLibrary\steamapps\common\H3ODSTEK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
 SCENARIO = r"levels\atlas\%s\%s"

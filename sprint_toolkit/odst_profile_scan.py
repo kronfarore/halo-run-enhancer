@@ -74,7 +74,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     reg = HP.PluginRegistry(
-        r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+        r"F:\SteamLibrary\steamapps\common\HCEEK"
         r"\Assembly-1-2023-11-29-1702446457\Plugins",
         ['ODSTMCC', 'ODST'] if a.game == 'Halo 3: ODST' else ['Halo3MCC', 'Halo3'])
 

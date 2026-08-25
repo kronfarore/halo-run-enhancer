@@ -19,7 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+PLUGINS = (r"F:\SteamLibrary\steamapps\common\HCEEK"
            r"\Assembly-1-2023-11-29-1702446457\Plugins")
 SUBDIRS_BY_GAME = {
     'Halo 3: ODST': ['ODSTMCC', 'ODST'],

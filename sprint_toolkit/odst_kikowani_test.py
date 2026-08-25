@@ -54,7 +54,7 @@ REAL = (-326.0, 184.0, 4.6)           # from odst_poswatch, live
 # visually obvious the instant the level starts.
 PRIMARY = 'objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher'
 SECONDARY = 'objects\\weapons\\rifle\\shotgun\\shotgun'
-PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+PLUGINS = (r"F:\SteamLibrary\steamapps\common\HCEEK"
            r"\Assembly-1-2023-11-29-1702446457\Plugins")
 
 

@@ -6,7 +6,7 @@ in-game-picked fx_kind ids keep their meanings.
 import os
 import re
 
-HSC = r'C:\Program Files (x86)\Steam\steamapps\common\H2EK\data\globals\global_scripts.hsc'
+HSC = r'F:\SteamLibrary\steamapps\common\H2EK\data\globals\global_scripts.hsc'
 HEAD_MARK = ('; ---------------------------------------------------------------------------\n'
              '; RUN ENHANCER ABILITIES')
 

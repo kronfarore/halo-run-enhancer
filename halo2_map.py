@@ -578,7 +578,7 @@ if __name__ == '__main__':
     print(f"image={len(m.data):#x} (hdr says {m.file_size:#x})  tags={m.num_tags}")
     print(f"tag data @ {m.tag_data_offset:#x}..{m.tag_data_offset + m.tag_data_size:#x} (EOF={len(m.data):#x})")
 
-    PLUG = r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins\Halo2MCC"
+    PLUG = r"F:\SteamLibrary\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins\Halo2MCC"
     g = m.globals_tag()
     matg_pl = hm.Plugin(PLUG + r"\matg.xml")
     print("\nmatg:", g['class'], f"base={g['base']:#x}")

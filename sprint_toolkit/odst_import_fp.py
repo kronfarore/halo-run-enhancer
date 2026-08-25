@@ -44,8 +44,8 @@ import json
 import os
 import shutil
 
-H3EK = r"C:\Program Files (x86)\Steam\steamapps\common\H3EK"
-ODSTEK = r"C:\Program Files (x86)\Steam\steamapps\common\H3ODSTEK"
+H3EK = r"F:\SteamLibrary\steamapps\common\H3EK"
+ODSTEK = r"F:\SteamLibrary\steamapps\common\H3ODSTEK"
 CHIEF_FP = os.path.join('objects', 'characters', 'masterchief', 'fp')
 LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'out',
                    'odst_import_fp.json')

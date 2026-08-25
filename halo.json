@@ -400,6 +400,40 @@
 				],
 				"special": true
 			},
+			"Recharge Delay": {
+				"desc": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag (stock: 6s in Halo 1, 5s in Halo 2/3/ODST, 7s in Reach). Halo 1 keeps a single value; from Halo 2 on there are two, body and shield, and both are set together. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+				"tag": {
+					"Halo 1": "coll characters\\cyborg\\cyborg",
+					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans"
+				},
+				"harder_when": "increased",
+				"easier_when": "decreased",
+				"targets": {
+					"Halo 1": [
+						{ "field": "Stun Time", "min": 1 }
+					],
+					"Halo 2": [
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 0, "min": 1 },
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 1, "min": 1 }
+					],
+					"Halo 3": [
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 0, "min": 1 },
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 1, "min": 1 }
+					],
+					"Halo 3: ODST": [
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 0, "min": 1 },
+						{ "field": "Stun Time", "block": "New Damage Info", "index": "all", "nth": 1, "min": 1 }
+					],
+					"Halo Reach": [
+						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 0, "min": 1 },
+						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 1, "min": 1 }
+					]
+				},
+				"special": true
+			},
 			"Player Health": {
 				"desc": "The player's actual health pool — 75 in Halo 1, 30 in Halo 2, 45 in Halo 3, 80 in ODST. This is the pool itself, on the player's model; Starting Health Modifier only scales what you spawn with.",
 				"tag": {
@@ -4945,6 +4979,15 @@
 		},
 		"Specific Enemy modifier": {
 			"Elite": {
+				"Recharge Delay": {
+					"desc": "How long after a hit before its shields start coming back (stock: 12s, and 8s for the Spec-Ops Elite). `Stun Time` on the collision tag. Halo 1 only: from Halo 2 on the character tag's Shield Recharge Delay governs the AI instead, so this field stops being the handle. The wildcard covers both Elite variants.",
+					"game": "Halo 1",
+					"tag": "coll characters\\elite\\*",
+					"harder_when": "decreased",
+					"targets": [
+						{ "field": "Stun Time", "min": 1 }
+					]
+				},
 				"Leap": {
 					"desc": "How high Elites vault obstacles and how close they have to be to try (stock: 0.8 height, 0.4 proximity; the jetpack Elite is 2.0/0.5). Both fields are new in Reach -- no earlier game has them.",
 					"game": "Halo Reach",
@@ -5806,6 +5849,15 @@
 				}
 			},
 			"Jackal": {
+				"Recharge Delay": {
+					"desc": "How long after a hit before its shields start coming back (stock: 15s). `Stun Time` on the collision tag. Halo 1 only: from Halo 2 on the character tag's Shield Recharge Delay governs the AI instead, so this field stops being the handle. The shield gauntlet is a real shield here, with the longest delay of any Halo 1 character.",
+					"game": "Halo 1",
+					"tag": "coll characters\\jackal\\*",
+					"harder_when": "decreased",
+					"targets": [
+						{ "field": "Stun Time", "min": 1 }
+					]
+				},
 				"Leap": {
 					"desc": "How high Jackals vault obstacles and how close they have to be to try. Only the sniper Jackal defines these (0.25 height, 0.2 proximity); the shield-gauntlet Jackals inherit and are unaffected.",
 					"game": "Halo Reach",

@@ -63,7 +63,7 @@ import argparse
 import os
 import re
 
-H3EK = r"C:\Program Files (x86)\Steam\steamapps\common\H3EK"
+H3EK = r"F:\SteamLibrary\steamapps\common\H3EK"
 GLOBALS = os.path.join(H3EK, "data", "globals", "global_scripts.hsc")
 # WHAT HALO 3 ACTUALLY COMPILES. Editing the .hsc above does NOTHING: tool.exe reads
 # the scenario_hs_source_file TAG, and dumps whatever it used into the

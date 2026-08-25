@@ -14,7 +14,7 @@ loaded-tags report.
 """
 import os, subprocess, sys, time
 
-H3EK = r"C:\Program Files (x86)\Steam\steamapps\common\H3EK"
+H3EK = r"F:\SteamLibrary\steamapps\common\H3EK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3\maps")
 LEVELS = ["010_jungle", "020_base", "030_outskirts", "040_voi", "050_floodvoi",

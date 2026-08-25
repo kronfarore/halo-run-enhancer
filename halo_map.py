@@ -626,7 +626,7 @@ if __name__ == '__main__':
     map_path = sys.argv[1] if len(sys.argv) > 1 else \
         r"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection\halo1\maps\a10.map"
     plugin_path = sys.argv[2] if len(sys.argv) > 2 else \
-        r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins\Halo1\matg.xml"
+        r"F:\SteamLibrary\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins\Halo1\matg.xml"
     m = HaloMap(map_path)
     print(f"map={Path(map_path).name} version={m.version} tags={m.tag_count} magic={m.magic:#x}")
     pl = Plugin(plugin_path)

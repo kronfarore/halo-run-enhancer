@@ -625,7 +625,7 @@ CONFIG = {
 
     # --- Map patching (Halo 1 for now) ---
     "target_difficulty": "Impossible",   # which difficulty slot difficulty-effects write to
-    "assembly_plugins_dir": r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
+    "assembly_plugins_dir": r"F:\SteamLibrary\steamapps\common\HCEEK\Assembly-1-2023-11-29-1702446457\Plugins",
     "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"],
                                "Halo 3": ["Halo3MCC", "Halo3"],
                                "Halo 3: ODST": ["ODSTMCC", "ODST"],
@@ -1245,6 +1245,19 @@ def effect_desc(mod, game=None, games=None):
     ov = mod.get('desc_overrides')
     resolved = resolve_gamed(ov, game, games) if ov else None
     return resolved if resolved else mod.get('desc', '')
+
+
+def _is_gamed(value, games):
+    """Is this dict keyed BY GAME, or is it a plain structured value?
+
+    `resolve_gamed` assumes the former and returns None for anything whose keys are
+    not game names -- which silently deletes the value. That is fine for `tag` and
+    `field`, which are only ever a string or a per-game dict, but `init_defaults` is
+    a SPEC dict ({tag, block, grow}) that may or may not be wrapped per game. Passing
+    an unwrapped spec through resolve_gamed dropped it, so seeding never ran and the
+    patcher reported "inherits from base" on a hero it was supposed to have seeded.
+    """
+    return any(k in value for k in list(games) + ['default'])
 
 
 def resolve_gamed(value, game, games=None):
@@ -3330,12 +3343,43 @@ class MagnitudeEditorDialog(QDialog):
             covers = True
         if not covers:
             return None
-        scls, spath = self._hp.hm.split_tag(init['source'])
-        s = m.find_tags(scls, spath)
-        if not s:
+        src_base = None
+        if init.get('source'):
+            scls, spath = self._hp.hm.split_tag(init['source'])
+            s = m.find_tags(scls, spath)
+            if not s:
+                return None
+            src_base = s[0][1]
+        else:
+            # A source-less grow seeds each variant from its own nearest populated
+            # ANCESTOR, so that is the value to show: an inheriting hero reads back
+            # nothing of its own, and a card with no vanilla value looks broken even
+            # though the number it will start from is perfectly well defined.
+            src_base = self._inherited_base(init, eff, m, plugin)
+        if src_base is None:
             return None
-        v = m.read_tag_field(s[0][1], field, plugin, block=init.get('block'), index=0)
-        return None if v is None else "→ %s (seeded default)" % fmtval(v)
+        v = m.read_tag_field(src_base, field, plugin, block=init.get('block'), index=0)
+        return None if v is None else "→ %s (inherited)" % fmtval(v)
+
+    def _inherited_base(self, init, eff, m, plugin):
+        """Tag base of the nearest ancestor that populates the block this effect
+        seeds -- the same one halo_patch.seed_ancestor picks when it does the seeding,
+        so the value shown is the value that will be written."""
+        block = init.get('block')
+        bf = next((f for f in plugin.fields
+                   if f['block_chain']
+                   and f['block_chain'][-1].lower() == str(block).lower()), None)
+        if not bf:
+            return None
+        boff = bf['block_offsets'][-1]
+        cls, path = self._hp.hm.split_tag(init.get('tag') or eff.get('tag'))
+        for _tpath, base in m.find_tags(cls, path):
+            if m.i32(base + boff) > 0:          # this variant has its own; not seeded
+                continue
+            anc = self._hp.seed_ancestor(m, base, boff)
+            if anc is not None:
+                return anc['base']
+        return None
 
     # ---- targets (halo.json + preset fallbacks, #7) ----
     def _effect_targets(self, eff):
@@ -9029,7 +9073,7 @@ class HaloGUI(QMainWindow):
                         if isinstance(c.get(key), dict):
                             c[key] = resolve_gamed(c[key], game, games)
                 for key in ('tag', 'field', 'harder_when', 'easier_when', 'init_defaults'):
-                    if isinstance(mod.get(key), dict):
+                    if isinstance(mod.get(key), dict) and _is_gamed(mod[key], games):
                         mod[key] = resolve_gamed(mod[key], game, games)
                 # Boss option: fold the Heretic Leader and his holograms into one
                 # target so a single boss card tunes both (fields resolve on

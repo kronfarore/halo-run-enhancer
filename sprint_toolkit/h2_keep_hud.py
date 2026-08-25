@@ -69,7 +69,7 @@ import glob
 import os
 import re
 
-H2EK = r"C:\Program Files (x86)\Steam\steamapps\common\H2EK"
+H2EK = r"F:\SteamLibrary\steamapps\common\H2EK"
 SOLO = os.path.join(H2EK, "data", "scenarios", "solo")
 BAK_SUFFIX = ".keephud.bak"
 

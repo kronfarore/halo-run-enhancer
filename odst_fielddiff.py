@@ -19,7 +19,7 @@ import os
 import sys
 import xml.etree.ElementTree as ET
 
-PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
+PLUGINS = (r"F:\SteamLibrary\steamapps\common\HCEEK"
            r"\Assembly-1-2023-11-29-1702446457\Plugins")
 # The SAME fallback chain PluginRegistry uses: the MCC folder first, then the base
 # one. Looking only at the MCC folders reported jpt! as missing from both games,
