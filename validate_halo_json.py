@@ -23,8 +23,11 @@ import halo_patch as hp                                  # noqa: E402
 
 BS = chr(92)
 MCC = os.path.abspath(os.path.join(TOOL, '..'))
-PLUGINS = (r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
-           r"\Assembly-1-2023-11-29-1702446457\Plugins")
+# Resolved rather than hardcoded: Assembly moved off the Steam drive and every
+# CLI tool that had the old path baked in stopped finding it.
+import assembly_plugins
+
+PLUGINS = assembly_plugins.plugins_dir()
 
 MAPS = {
     'Halo 1': ('halo1/maps', ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40']),

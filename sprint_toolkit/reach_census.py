@@ -43,15 +43,15 @@ import xml.etree.ElementTree as ET
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import assembly_plugins
 import halo_patch                                    # noqa: E402
 
 ROOT = os.environ.get(
     'MCC_ROOT',
     r"C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection")
-PLUGINS = os.environ.get(
-    'ASSEMBLY_PLUGINS',
-    r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
-    r"\Assembly-1-2023-11-29-1702446457\Plugins")
+# Resolved rather than hardcoded: Assembly moved off the Steam drive and every
+# CLI tool that had the old path baked in stopped finding it.
+PLUGINS = assembly_plugins.plugins_dir()
 MAPS = os.path.join(ROOT, 'haloreach', 'maps')
 GAME = 'Halo Reach'
 
