@@ -142,7 +142,11 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
             if isinstance(b, dict) and valid_bosses is not None:
                 if b.get('boss') and b['boss'] not in valid_bosses:
                     continue        # that boss doesn't appear in this mission
-            add(b, 'Boss', 5)
+            # One section per boss/hero rather than a single "Boss" heap: a level
+            # can field several (Reach's Pillar of Autumn fields four) and lumping
+            # them together hid which character each card actually hits.
+            add(b, 'Boss: %s' % b['boss'] if isinstance(b, dict) and b.get('boss')
+                else 'Boss', 5)
         for k in ('exhaust1', 'exhaust2'):
             ex = rd.get(k)
             if isinstance(ex, dict) and (mission_id is None
@@ -800,10 +804,11 @@ def _h2_add_respawn_profile(m, registry):
                 'reason': 'this level has no starting profiles at all'}
     names = _h2_profile_names(m, scnr_base, boff, esize, count)
     if _h2_has_respawn_profile(names):
-        return {'effect': 'respawn profile', 'ok': True, 'skip': True,
-                'field': 'Player Starting Profile',
-                'reason': 'already has one (profile %d, %r)'
-                          % (_h2_own_profiles(names)[1], names[_h2_own_profiles(names)[1]])}
+        # 12 of the 13 Halo 2 maps ship their own respawn profile; only
+        # 08b_deltacontrol does not. Reporting a skip for the normal case put a row on
+        # every other map that read like something had gone wrong, so say nothing and
+        # let the one map that needs the work be the only one that shows up.
+        return None
     src = m.follow(scnr_base, [boff], [esize], 0)
     if src is None:
         return {'effect': 'respawn profile', 'ok': False,
@@ -3679,7 +3684,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # this same patch instead of only by the next one. Structural (it relocates
         # the profile block to end-of-image), and a no-op on the 13 maps that already
         # ship a respawn profile of their own.
-        results.append(_h2_add_respawn_profile(m, registry))
+        _rp = _h2_add_respawn_profile(m, registry)
+        if _rp is not None:                 # None = the map already has one
+            results.append(_rp)
 
     if starting:
         # After the ops (so any Magazine effect is already in the weap tags),

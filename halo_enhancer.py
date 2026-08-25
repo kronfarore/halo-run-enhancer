@@ -1236,6 +1236,23 @@ def skull_conflict(mod, run_state):
     return ', '.join(hit) if hit else None
 
 
+def target_applies(target, game):
+    """Does this target apply in `game`?
+
+    Two opposite filters, because both readings come up:
+      games       an ALLOW list -- only these games. Use when the field exists
+                  nowhere else.
+      skip_games  a DENY list -- every game except these. Use when the field EXISTS
+                  everywhere but is not worth offering somewhere, e.g. Plasma Rifle's
+                  Fire Recovery Time, which ships 0 in most games; the target stays in
+                  halo.json for later rather than being deleted and re-derived.
+    A target may carry either; `skip_games` wins if somehow both name the game.
+    """
+    if game in (target.get('skip_games') or []):
+        return False
+    return not target.get('games') or game in target['games']
+
+
 def effect_desc(mod, game=None, games=None):
     """#7: the description to show for `mod` in `game` — its 'desc_overrides' entry
     for this game if one resolves, else the plain 'desc'. Kept as a SEPARATE key
@@ -1302,7 +1319,7 @@ def target_fields_display(mod_data, game, games):
     for t in targets or []:
         if not isinstance(t, dict):
             continue
-        if t.get('games') and game not in t['games']:
+        if not target_applies(t, game):
             continue
         fld = resolve_gamed(t.get('field'), game, games)
         if fld:
@@ -1913,7 +1930,7 @@ class ModifierDatabase:
                 out[boss] = mods
         return out
 
-    def draw_boss(self, mission_id, blacklist, game=None, prefer=None):
+    def draw_boss(self, mission_id, blacklist, game=None):
         """(boss name, its cards) for ONE boss on this mission, or (None, []).
 
         A boss card names a single character -- `make_boss_mod` stamps that name and
@@ -1922,12 +1939,11 @@ class ModifierDatabase:
         name that matched nothing and the card was dropped at patch time without a
         word. So exactly one is drawn.
 
-        `prefer` re-selects a boss already drawn for this level, so rerolling a card
-        changes the card and not who it hits."""
+        Every call draws independently: player 2's roll and each reroll pick their own
+        hero rather than inheriting player 1's, so a level with several heroes really
+        does spread across them."""
         pools = self.boss_pools_for(mission_id, blacklist, game)
         if pools:
-            if prefer in pools:
-                return prefer, pools[prefer]
             boss = random.choice(sorted(pools))
             return boss, pools[boss]
         # No hero has a catered pool yet: fall back to the general negative pool so
@@ -1937,7 +1953,7 @@ class ModifierDatabase:
         fallback = self.filter_blacklisted(list(self.negative_pool), blacklist, game)
         if not names or not fallback:
             return None, []
-        return (prefer if prefer in names else random.choice(names)), fallback
+        return random.choice(names), fallback
 
     def get_games(self):
         return list(self.games)
@@ -2193,12 +2209,6 @@ class RunState:
         self.blacklist = set()
         self.rounds = []
         self.new_weapon_count = 0   # #4: how many new-weapon pairs P1 was offered
-        # Which boss/hero THIS level's boss cards target, {mission_id: name}. A
-        # mission can field several heroes (Reach's m70 fields four), but a boss card
-        # names one character, so one is drawn per level and every boss card that
-        # level targets it. Remembered rather than re-rolled so a reroll swaps the
-        # card, not the victim.
-        self.boss_choice = {}
         self.special_counters = {}  # special effect name -> rounds since last picked
         # patcher: (tag, name) of every effect already applied to a map — anything not
         # in here is "new" (highlighted / optionally shown first) until the next patch.
@@ -8543,10 +8553,8 @@ class HaloGUI(QMainWindow):
             mid = self.run_state.mission_id
             name, boss_mods = (None, [])
             if not boss_mods_removed():
-                name, boss_mods = self.db.draw_boss(
-                    mid, bl, game, prefer=self.run_state.boss_choice.get(mid))
+                name, boss_mods = self.db.draw_boss(mid, bl, game)
             if boss_mods:
-                self.run_state.boss_choice[mid] = name
                 pair['boss_mod'] = make_boss_mod(random.choice(boss_mods), name)
         show_p1 = self.run_state.current_turn == 'player1'
         show_p2 = self.run_state.current_turn == 'player2'
@@ -9093,7 +9101,7 @@ class HaloGUI(QMainWindow):
                 # resolves to None (see resolve_gamed) — drop such targets too
                 # rather than ever calling plugin.find() with a None field.
                 mod['targets'] = [t for t in (mod.get('targets') or [])
-                                  if (not t.get('games') or game in t['games'])
+                                  if target_applies(t, game)
                                   and t.get('field') is not None]
         # Bosses that this mission can't field are dropped: their edits couldn't do
         # anything here, and they made the list harder to read.
@@ -9201,14 +9209,8 @@ class RunEnhancer:
         # are disabled for the level — unless boss mods are being removed, in which
         # case the level behaves like a normal one (wildcards re-enabled).
         has_boss = self.db.mission_has_boss(mid) and not boss_mods_removed()
-        # One hero for the whole level, kept on the run so player 2's roll and any
-        # reroll hit the same character.
-        boss_name, boss_pool = (None, [])
-        if has_boss:
-            boss_name, boss_pool = self.db.draw_boss(
-                mid, bl, game, prefer=self.run_state.boss_choice.get(mid))
-            if boss_name:
-                self.run_state.boss_choice[mid] = boss_name
+        # Drawn per pair below rather than once for the level: on a map with several
+        # heroes each card picks its own, and player 2 is not tied to player 1's.
 
         # #4: roll each of the 3 pairs independently for "new weapon" status.
         # Player 1 sets the count; Player 2 is guaranteed the SAME count.
@@ -9249,7 +9251,11 @@ class RunEnhancer:
             p1_choice = p2_choice = None
             wildcard = None
             exhaust = None
-            boss_mod = make_boss_mod(random.choice(boss_pool), boss_name) if boss_pool else None
+            boss_mod = None
+            if has_boss:
+                _bn, _bp = self.db.draw_boss(mid, bl, game)
+                if _bp:
+                    boss_mod = make_boss_mod(random.choice(_bp), _bn)
             if flags[i] and wi < len(offered):
                 new_weapon = offered[wi]
                 wi += 1

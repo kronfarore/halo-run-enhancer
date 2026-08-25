@@ -401,7 +401,14 @@
 				"special": true
 			},
 			"Recharge Delay": {
-				"desc": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag (stock: 6s in Halo 1, 5s in Halo 2/3/ODST, 7s in Reach). Halo 1 keeps a single value; from Halo 2 on there are two, body and shield, and both are set together. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+				"desc": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+				"desc_overrides": {
+					"Halo 1": "How long after taking a hit before your shields start coming back — `Stun Time` on the cyborg's collision tag (stock 6s). Halo 1 keeps a single value. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+					"Halo 2": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag (stock 5s), set on the body and shield fields together. Covers Chief and the Arbiter alike. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+					"Halo 3": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag (stock 5s), set on the body and shield fields together. Covers Chief and the Arbiter alike. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+					"Halo 3: ODST": "How long after taking a hit before your stamina starts coming back — `Stun Time` on the ODST's model tag (stock 5s). The body field ships 0 and is held at the 1s floor. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+					"Halo Reach": "How long after taking a hit before your shields start coming back — `Stun Time` on the Spartan's model tag (stock 7s, the longest of any game). The body field ships 999, which already means never. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling."
+				},
 				"tag": {
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
@@ -1374,15 +1381,16 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Fire Recovery Time", "block": "Barrels" }
+						{ "field": "Fire Recovery Time", "block": "Barrels", "skip_games": ["Halo 2", "Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Ramp Up": {
@@ -7926,7 +7934,12 @@
 			},
 			"Brute Chieftain": {
 				"Grenade Chance": {
-					"desc": "How readily the armoured Chieftain throws grenades (stock 0.1 in Reach). Only the armoured variant carries a Grenades block, and only in Reach; Halo 3 and ODST depend on the pending value insertion.",
+					"desc": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block.",
+					"desc_overrides": {
+						"Halo 3": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block, and here it is seeded from its nearest ancestor before the card applies.",
+						"Halo 3: ODST": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block, and here it is seeded from its nearest ancestor before the card applies.",
+						"Halo Reach": "How readily the armoured Chieftain throws grenades (stock 0.1). Only the armoured variant carries a Grenades block, and in Reach it carries its own."
+					},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor",
 					"harder_when": "increased",
@@ -7954,7 +7967,12 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "Delay/timeout between hammer swings, the chance of one, and its lunge range. In Reach BOTH chieftain variants carry a Charge block; in Halo 3 and ODST only the armoured one does, so the hammer variant there depends on the pending value insertion.",
+					"desc": "Delay/timeout between hammer swings, the chance of one, and its lunge range.",
+					"desc_overrides": {
+						"Halo 3": "Delay/timeout between hammer swings, the chance of one, and its lunge range. Only the armoured Chieftain carries a Charge block here; the hammer variant is seeded from its nearest ancestor first.",
+						"Halo 3: ODST": "Delay/timeout between hammer swings, the chance of one, and its lunge range. Only the armoured Chieftain carries a Charge block here; the hammer variant is seeded from its nearest ancestor first.",
+						"Halo Reach": "Delay/timeout between hammer swings, the chance of one, and its lunge range. Both Chieftain variants carry their own Charge block in Reach."
+					},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain*",
 					"targets": [
