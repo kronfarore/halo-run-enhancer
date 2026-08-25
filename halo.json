@@ -639,10 +639,11 @@
 			"Assault Rifle": {
 				"Projectile": {
 					"desc": "Projectile range and velocity",
-					"game": ["Halo 1", "Halo 3"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "proj weapons\\assault rifle\\bullet",
-						"Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"
+						"Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+						"Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -681,10 +682,11 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": ["Halo 1", "Halo 3"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -694,10 +696,11 @@
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
-					"game": ["Halo 1", "Halo 3"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -718,16 +721,23 @@
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": ["Halo 1", "Halo 3"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"easier_when": "increased",
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+						],
+						"Halo Reach": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
@@ -739,9 +749,10 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -750,10 +761,11 @@
 				},
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
-					"game": ["Halo 1", "Halo 3"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -779,7 +791,8 @@
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -806,7 +819,8 @@
 						"Halo 1": "proj weapons\\pistol\\bullet",
 						"Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet",
 						"Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet",
-						"Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet"
+						"Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet",
+						"Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -853,7 +867,8 @@
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -867,7 +882,8 @@
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -894,7 +910,8 @@
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -903,6 +920,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -918,11 +941,12 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -936,7 +960,8 @@
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -960,10 +985,11 @@
 			"Plasma Pistol": {
 				"Homing (Charged)": {
 					"desc": "How hard the overcharge bolt homes in on targets",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
-						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
+						"Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
 					},
 					"targets": [
 						{ "field": "Guided Angular Velocity Lower" },
@@ -976,7 +1002,8 @@
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1001,7 +1028,8 @@
 					"tag": {
 						"Halo 1": "proj weapons\\plasma pistol\\bolt",
 						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt",
-						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt",
+						"Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1029,7 +1057,8 @@
 					"tag": {
 						"Halo 1": "proj weapons\\plasma rifle\\charged bolt",
 						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
-						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
+						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
+						"Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1072,12 +1101,18 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" }
+						],
+						"Halo Reach": [
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
+							{ "field": "Heat Loss Per Second" },
+							{ "field": "Overheated Heat Loss Per Second" }
 						],
 						"Halo 2": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
@@ -1091,7 +1126,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1104,7 +1140,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
@@ -1116,7 +1153,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -1127,7 +1165,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1138,7 +1177,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 }
@@ -1149,7 +1189,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1162,7 +1203,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
@@ -1173,10 +1215,11 @@
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"easier_when": "increased",
 					"targets": [
@@ -1188,10 +1231,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -1200,10 +1244,11 @@
 				},
 				"More Shooting (Charged)": {
 					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"easier_when": "increased",
 					"targets": [
@@ -1215,10 +1260,11 @@
 				},
 				"Fire Recovery Time (Charged)": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -1232,7 +1278,8 @@
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1258,7 +1305,8 @@
 					"tag": {
 						"Halo 1": "proj weapons\\plasma rifle\\bolt",
 						"Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
-						"Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
+						"Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt",
+						"Halo Reach": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -1304,12 +1352,18 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
 							{ "field": "Heat Loss Per Second" }
+						],
+						"Halo Reach": [
+							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
+							{ "field": "Heat Loss Per Second" },
+							{ "field": "Overheated Heat Loss Per Second" }
 						],
 						"Halo 2": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
@@ -1324,7 +1378,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1338,7 +1393,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
@@ -1351,7 +1407,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -1366,6 +1423,12 @@
 							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 						],
 						"Halo 3": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -1402,7 +1465,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1415,7 +1479,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1441,7 +1506,8 @@
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1467,9 +1533,10 @@
 				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
-					"game": ["Halo 2"],
+					"game": ["Halo 2", "Halo Reach"],
 					"tag": {
-						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
@@ -1577,7 +1644,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1590,7 +1658,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1615,7 +1684,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -1624,6 +1694,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -1639,10 +1715,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -1657,7 +1734,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -1669,7 +1747,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1740,7 +1819,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1753,7 +1833,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1778,7 +1859,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -1787,6 +1869,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -1802,10 +1890,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -1818,7 +1907,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1901,7 +1991,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -1914,7 +2005,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -1939,7 +2031,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -1948,6 +2041,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -1963,10 +2062,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -1979,7 +2079,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -1989,13 +2090,14 @@
 			"Shotgun": {
 				"Pellet Spread": {
 					"desc": "Pellet count (yaw x pitch), spread cone and distribution",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
 					"targets": [
 						{ "field": "Yaw Count", "block": "Conical Spread" },
 						{ "field": "Pitch Count", "block": "Conical Spread" },
 						{ "field": "Spread", "block": "Conical Spread" },
-						{ "field": "Distribution Exponent", "block": "Conical Spread" }
+						{ "field": "Distribution Exponent", "block": "Conical Spread" },
+						"Halo Reach"
 					]
 				},
 				"Projectile": {
@@ -2003,7 +2105,8 @@
 					"tag": {
 						"Halo 1": "proj weapons\\shotgun\\pellet",
 						"Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
-						"Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
+						"Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet",
+						"Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
@@ -2048,7 +2151,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -2061,7 +2165,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -2086,7 +2191,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"easier_when": "increased",
 					"targets": {
@@ -2095,6 +2201,12 @@
 							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
 						],
 						"Halo 2": [
+							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						],
+						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
@@ -2110,10 +2222,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -2126,7 +2239,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -3101,20 +3215,22 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Magazine": {
 					"desc": "Changes to Munition for your weapon",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -3123,7 +3239,7 @@
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Reload Time": {
 					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
@@ -3133,10 +3249,11 @@
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"easier_when": "increased",
 					"targets": [
@@ -3148,10 +3265,11 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -3163,12 +3281,13 @@
 					"desc": "For every projectily, fire this many",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Error Angle": {
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
@@ -3372,7 +3491,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
 						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
-						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
+						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
+						"Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -3392,7 +3512,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\frag grenade\\explosion",
 						"Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
-						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
+						"Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion",
+						"Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -3406,7 +3527,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached",
 						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
-						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
+						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
+						"Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
@@ -3426,7 +3548,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\plasma grenade\\explosion",
 						"Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
-						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
+						"Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion",
+						"Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion"
 					},
 					"targets": [
 						{ "field": "Radius" },
@@ -3584,14 +3707,15 @@
 				},
 				"Magazine": {
 					"desc": "Magazine and carried ammo",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
 						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] },
+						"Halo Reach"
 					]
 				},
 				"Reload Time": {
@@ -3602,19 +3726,20 @@
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"easier_when": "increased",
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						"Halo Reach"
 					]
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"easier_when": "decreased",
 					"targets": [
@@ -3633,12 +3758,13 @@
 				},
 				"Dual Weapon Error": {
 					"desc": "Weapon error while dual wielding",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
 						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Error Angle Max", "block": "Barrels" },
+						"Halo Reach"
 					]
 				},
 				"Dual Weapon Damage": {
@@ -3651,24 +3777,26 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						"Halo Reach"
 					]
 				}
 			},
 			"Gravity Hammer": {
 				"Hammer Damage": {
 					"desc": "Damage of the gravity blast",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Upper Bound Max" },
+						"Halo Reach"
 					]
 				},
 				"Melee Damage": {
@@ -3685,19 +3813,21 @@
 				},
 				"Hammer Radius": {
 					"desc": "Blast radius of the gravity blast",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
 					"targets": [
 						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius Max" },
+						"Halo Reach"
 					]
 				},
 				"Range": {
 					"desc": "Lunge range. It just works.",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
 					"targets": [
-						{ "field": "Autoaim Range" }
+						{ "field": "Autoaim Range" },
+						"Halo Reach"
 					],
 					"affected_by_skull": "Eyepatch"
 				}
@@ -3706,7 +3836,8 @@
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+						"Halo Reach": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
@@ -3738,15 +3869,16 @@
 				},
 				"Charging Time": {
 					"desc": "Charge-up time before the beam fires",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
-						{ "field": "Charging Time", "block": "New Triggers" }
+						{ "field": "Charging Time", "block": "New Triggers" },
+						"Halo Reach"
 					]
 				},
 				"More Shooting": {
 					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"easier_when": "increased",
 					"targets": [
@@ -3758,7 +3890,7 @@
 				},
 				"Fire Recovery Time": {
 					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"easier_when": "decreased",
 					"targets": [
@@ -3768,7 +3900,8 @@
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+						"Halo Reach": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 3": "Barrels", "index": 1 } }
@@ -3776,12 +3909,13 @@
 				},
 				"Per Round": {
 					"desc": "Heat per shot, battery used per shot",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": 1 },
 						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" }
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" },
+						"Halo Reach"
 					]
 				},
 				"Impact Radius": {
@@ -3795,12 +3929,13 @@
 				},
 				"Zoom": {
 					"desc": "Zoom",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						"Halo Reach"
 					]
 				}
 			},
