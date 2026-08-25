@@ -837,6 +837,19 @@ def upgrade_allowed_here(game, weapon):
     return game in allowed
 
 
+# Games that REMOVED dual wielding again. `dual_wield_from_game` is a lower bound --
+# "Halo 2 or later" -- which is right for Halo 2, 3 and ODST but wrong for Reach, where
+# the sandbox dropped dual wielding entirely. The weap plugin agrees: Reach has no
+# `Dual Wield Damage Scale` field at all, so the Dual Weapon cards there would have
+# offered a weapon the player cannot hold and then patched a field that does not exist.
+DUAL_WIELD_REMOVED = frozenset({'Halo Reach', 'Halo 4'})
+
+
+def dual_wield_allowed(db, game):
+    return (game not in DUAL_WIELD_REMOVED
+            and game_at_least(db, game, CONFIG.get('dual_wield_from_game', 'Halo 2')))
+
+
 def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
     """The items a player unlocks by what they ALREADY own: 'Dual <W>' for each
     owned one-handed weapon (#7), and upgrade weapons whose base is owned (#3).
@@ -844,7 +857,7 @@ def unlocked_offer_items(db, game, owned, blacklist, duals=True, upgrades=True):
     `blacklist` is the run blacklist (labels)."""
     owned = set(owned)
     out = []
-    if duals and game_at_least(db, game, CONFIG.get('dual_wield_from_game', 'Halo 2')):
+    if duals and dual_wield_allowed(db, game):
         one_handed = CONFIG.get('one_handed_weapons', [])
         for w in owned:
             if w in one_handed and not w.startswith('Dual '):
