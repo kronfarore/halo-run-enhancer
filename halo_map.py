@@ -45,10 +45,20 @@ def display_to_raw(field_type, v):
 
 # Assembly range types -> (sub-field struct type, byte width of each half).
 # rangef/range/ranged are two float32s; range16 is two int16s.
+# Two-component fields, flattened into a pair of leaves so either half can be
+# targeted. (sub_type, width, (suffix_a, suffix_b)).
+#
+# Ranges are a (min, max) pair and take '' / ' Max'. `degree2` is NOT a range: it is a
+# yaw/pitch angle pair, so it takes ' y' / ' p' -- calling its halves min and max would
+# read as a bound when it is a direction. It went unsupported until Reach's
+# `Damage Pyramid Angles` needed it, and an unsupported type is invisible rather than
+# an error: the field simply never appears in Plugin.fields, so a card naming it finds
+# nothing.
 RANGE_TYPES = {
-    'rangef': ('float32', 4), 'range': ('float32', 4),
-    'ranged': ('degree', 4),          # range of DEGREES; halves get angle conversion
-    'range16': ('int16', 2),
+    'rangef': ('float32', 4, ('', ' Max')), 'range': ('float32', 4, ('', ' Max')),
+    'ranged': ('degree', 4, ('', ' Max')),   # range of DEGREES; halves get angle conversion
+    'range16': ('int16', 2, ('', ' Max')),
+    'degree2': ('degree', 4, (' y', ' p')),
 }
 
 # XML node tags that introduce a nested reflexive (block) in Halo 1 plugins.
@@ -206,13 +216,12 @@ class Plugin:
                         fld['options'] = opts
                 self.fields.append(fld)
             elif off is not None and name is not None and t in RANGE_TYPES:
-                # A range is a (min, max) pair. Expose both: '<name>' (min) and
-                # '<name> Max' (max) so either bound can be targeted. Width/type
-                # depends on the range kind — rangef/ranged/degree ranges are
-                # two float32s, but range16 is two int16s (half the width).
-                sub_type, width = RANGE_TYPES[t]
+                # Two leaves, named by the type's own suffixes: '' / ' Max' for a
+                # range, ' y' / ' p' for a degree2 angle pair. Width/type depends on
+                # the kind — rangef/ranged are two float32s, range16 two int16s.
+                sub_type, width, suffixes = RANGE_TYPES[t]
                 o = int(off, 16)
-                for suffix, delta in (('', 0), (' Max', width)):
+                for suffix, delta in zip(suffixes, (0, width)):
                     self.fields.append({
                         'name': name + suffix,
                         'block_chain': list(chain),
