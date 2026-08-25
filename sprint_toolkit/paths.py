@@ -9,7 +9,7 @@ import os
 
 # --- edit these ---------------------------------------------------------------
 # Your Halo CE MCC Editing Kit (HCEEK): contains tool.exe, tags\, data\, maps\.
-HCEEK = r'C:\Program Files (x86)\Steam\steamapps\common\HCEEK'
+HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
 
 # Your Halo: The Master Chief Collection install: deploy writes to halo1\maps here.
 MCC = r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection'

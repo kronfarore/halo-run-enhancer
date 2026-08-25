@@ -21,12 +21,14 @@ import os
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
-# Known locations, newest first. Assembly ships inside HCEEK but is portable, and on
-# this install it was moved to E: when the editing kits came off the Steam drive.
+# Known locations, most authoritative first. Assembly ships inside HCEEK, and the
+# whole mod-tool set now lives on F: -- the loose E: copy is a leftover from the move
+# and the C: path is where they used to be, so both stay only as fallbacks.
+_ASSEMBLY = r"\Assembly-1-2023-11-29-1702446457\Plugins"
 CANDIDATES = (
+    r"F:\SteamLibrary\steamapps\common\HCEEK" + _ASSEMBLY,
     r"E:\Assembly-1-2023-11-29-1702446457\Plugins",
-    r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK"
-    r"\Assembly-1-2023-11-29-1702446457\Plugins",
+    r"C:\Program Files (x86)\Steam\steamapps\common\HCEEK" + _ASSEMBLY,
 )
 
 
