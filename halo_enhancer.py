@@ -3076,11 +3076,21 @@ CHOICE_DISPLAY_ORDER = {
 }
 
 
-def choice_option_names(opts):
+def choice_option_names(opts, allowed=None):
     """Display order for a `choice` row's options: the canonical order if this enum
-    has one, else by stored value so the list reads the way the tag is ordered."""
+    has one, else by stored value so the list reads the way the tag is ordered.
+
+    `allowed` narrows the list to the options a card actually wants to offer. The
+    plugin knows every value the FIELD can hold; whether all of them are worth
+    offering is a design question the card answers -- Movement Penalty Type offers
+    Always and When Zoomed Or Reloading but deliberately not When Zoomed, because
+    turrets cannot be reloaded yet and the two would behave identically today.
+    Matched case-insensitively so halo.json can write them readably."""
     canon = CHOICE_DISPLAY_ORDER.get(frozenset(opts))
     names = list(canon) if canon else [n for _v, n in sorted((v, n) for n, v in opts.items())]
+    if allowed:
+        keep = {str(a).strip().lower() for a in allowed}
+        names = [n for n in names if n.lower() in keep]
     return [n.title() for n in names]
 
 
@@ -4353,7 +4363,7 @@ class MagnitudeEditorDialog(QDialog):
                 _opts = (_fld or {}).get('options') or {}
                 # options is {lowercased name: value}; one stable display order
                 # across games -- the pick is applied by name, so order is cosmetic.
-                _names = choice_option_names(_opts)
+                _names = choice_option_names(_opts, t.get('options'))
                 le = QComboBox()
                 le.addItems(_names or ['(no options)'])
                 le.setMaximumWidth(140)

@@ -4293,11 +4293,11 @@
 			"Flamethrower": {
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true }
+						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
 				},
 				"Movement Penalties": {
@@ -4392,11 +4392,11 @@
 			"Machine Gun": {
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true }
+						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
 				},
 				"Movement Penalties": {
@@ -4493,11 +4493,11 @@
 			"Plasma Cannon": {
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true }
+						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
 				},
 				"Movement Penalties": {
@@ -4594,11 +4594,11 @@
 			"Missile Pod": {
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
-					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"targets": [
-						{ "field": "Movement Penalized", "choice": true }
+						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
 				},
 				"Movement Penalties": {
