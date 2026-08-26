@@ -1026,6 +1026,17 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Target Tracking": {
+					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
+					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+					"targets": [
+						{"field": "Acquire Time", "block": "Target Tracking", "harder_when": "increased", "min": 0},
+						{"field": "Grace Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0},
+						{"field": "Decay Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -1046,18 +1057,15 @@
 					]
 				},
 				"Homing (Charged)": {
-					"desc": "How hard the overcharge bolt homes in on targets",
+					"desc": "How hard this weapon's shots bend toward what you aimed at.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
-					"tag": {
-						"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
-						"Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt",
-						"Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"
-					},
+					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"},
 					"targets": [
-						{ "field": "Guided Angular Velocity Lower" },
-						{ "field": "Guided Angular Velocity Upper" },
-						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
-						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST"] }
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
 				"Dual Weapon Error": {
@@ -1603,6 +1611,17 @@
 				}
 			},
 			"Needler": {
+				"Target Tracking": {
+					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
+					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\needler\\needler",
+					"targets": [
+						{"field": "Acquire Time", "block": "Target Tracking", "harder_when": "increased", "min": 0},
+						{"field": "Grace Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0},
+						{"field": "Decay Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -1621,17 +1640,15 @@
 					]
 				},
 				"Homing": {
-					"desc": "How hard the needles home in on targets",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard",
-						"Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"
-					},
+					"desc": "How hard this weapon's shots bend toward what you aimed at.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard"},
 					"targets": [
-						{ "field": "Guided Angular Velocity Lower" },
-						{ "field": "Guided Angular Velocity Upper" },
-						{ "field": "Guided Angular Velocity At Rest", "games": ["Halo 3"] },
-						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" }, "games": ["Halo 3", "Halo 3: ODST"] }
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
 				"Dual Weapon Error": {
@@ -2056,6 +2073,29 @@
 				}
 			},
 			"Rocket Launcher": {
+				"Target Tracking": {
+					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
+					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+					"targets": [
+						{"field": "Acquire Time", "block": "Target Tracking", "harder_when": "increased", "min": 0},
+						{"field": "Grace Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0},
+						{"field": "Decay Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Homing": {
+					"desc": "How hard this weapon's shots bend toward what you aimed at.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket",
+					"targets": [
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased"},
+						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach"]}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3429,14 +3469,15 @@
 					]
 				},
 				"Homing": {
-					"desc": "How hard the bolts home in on targets",
-					"game": "Halo 3",
-					"tag": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt",
+					"desc": "How hard this weapon's shots bend toward what you aimed at.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo Reach": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt"},
 					"targets": [
-						{ "field": "Guided Angular Velocity Lower" },
-						{ "field": "Guided Angular Velocity Upper" },
-						{ "field": "Guided Angular Velocity At Rest" },
-						{ "field": { "Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo 3: ODST": "Guided Projectile Outer Range Error Radius" } }
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
 				"Projectile": {
@@ -5231,6 +5272,29 @@
 				}
 			},
 			"Plasma Launcher": {
+				"Target Tracking": {
+					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
+					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Acquire Time", "block": "Target Tracking", "harder_when": "increased", "min": 0},
+						{"field": "Grace Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0},
+						{"field": "Decay Time", "block": "Target Tracking", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Homing": {
+					"desc": "How hard this weapon's shots bend toward what you aimed at.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
+					"targets": [
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased"},
+						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach"]}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
