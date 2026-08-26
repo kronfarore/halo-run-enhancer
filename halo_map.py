@@ -361,6 +361,12 @@ class HaloMap:
         ftype = fld['type']
         is_float = ftype in FLOAT_TYPES or ftype in ANGLE_TYPES
         results = []
+        # Two tag paths can resolve to the SAME block, and writing both would apply
+        # the operator twice to one struct (*2 landing as *4). Track the byte offsets
+        # actually written and skip a tag whose data another has already covered.
+        # Deduping by tag base does not catch it -- the bases differ, only the leaf
+        # does not.
+        written = set()
         for tpath, meta in tags:
             try:
                 leaves = self.follow_all(meta, fld['block_offsets'],
@@ -369,6 +375,15 @@ class HaloMap:
                     results.append({'tag': f"{cls} {tpath}", 'field': field,
                                     'ok': False, 'reason': 'no populated block element'})
                     continue
+                fresh = [b for b in leaves if (b + fld['offset']) not in written]
+                if not fresh:
+                    results.append({'tag': f"{cls} {tpath}", 'field': field,
+                                    'ok': True, 'skip': True,
+                                    'reason': 'shares this data with a variant '
+                                              'already patched'})
+                    continue
+                written.update(b + fld['offset'] for b in fresh)
+                leaves = fresh
                 first_old = first_new = None
                 for base in leaves:                 # patch every selected element
                     off = base + fld['offset']

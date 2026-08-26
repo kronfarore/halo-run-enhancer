@@ -284,7 +284,14 @@ class Halo2Map:
 
     def apply_tag_field(self, tag_base, field, op, value, plugin, block=None, index=0, nth=0,
                         scale=1.0, offset=0.0, clamp_min=None, clamp_max=None,
-                        zero_is=None):
+                        zero_is=None, seen=None):
+        """`seen` collects the byte offsets this logical edit has already written.
+
+        Two tag paths can resolve to the SAME block, and writing both applies the
+        operator twice to one struct. The holder dedup below is a different thing --
+        it collapses char variants that INHERIT one holder; this catches distinct
+        bases that happen to share a leaf.
+        """
         """Apply an operator to a tag field. Returns a result dict mirroring
         halo_map.HaloMap.apply_field entries (ok/old/new or ok=False/reason)."""
         base_r = {'field': field}
@@ -296,6 +303,13 @@ class Halo2Map:
                                      fld.get('block_sizes'), index)
             if not leaves:
                 return {**base_r, 'ok': False, 'reason': 'empty block in this tag'}
+            if seen is not None:
+                fresh = [b for b in leaves if (b + fld['offset']) not in seen]
+                if not fresh:
+                    return {**base_r, 'ok': True, 'skip': True,
+                            'reason': 'shares this data with a variant already patched'}
+                seen.update(b + fld['offset'] for b in fresh)
+                leaves = fresh
             fmt, _ = hm.TYPE_FMT[fld['type']]
             ftype = fld['type']
             is_float = ftype in hm.FLOAT_TYPES or ftype in hm.ANGLE_TYPES
@@ -541,13 +555,15 @@ class Halo2Map:
         allowed = {b for _, b in tags} if follow_parents else None
         name_by_base = {b: t for t, b in tags}
         applied = {}   # holder base -> result dict (dedup physical writes)
+        seen = set()   # byte offsets written; distinct bases can share a leaf
         results = []
         for tpath, base in tags:
             holder = self._data_holder(base, plugin, field, block, index, nth, allowed) \
                 if follow_parents else base
             if holder is None:
                 r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth,
-                                          scale, offset, clamp_min, clamp_max, zero_is)
+                                          scale, offset, clamp_min, clamp_max, zero_is,
+                                          seen=seen)
                 if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
                     # variant inherits this block from outside its own tag set (e.g. the
                     # shared ai\generic base) — not a failure, just nothing to write here.
@@ -559,7 +575,8 @@ class Halo2Map:
                 applied[holder] = self.apply_tag_field(holder, field, op, value, plugin,
                                                        block, index, nth,
                                                        scale, offset,
-                                                       clamp_min, clamp_max, zero_is)
+                                                       clamp_min, clamp_max, zero_is,
+                                                       seen=seen)
             hr = applied[holder]
             r = dict(hr)
             r['tag'] = f"{cls} {tpath}"

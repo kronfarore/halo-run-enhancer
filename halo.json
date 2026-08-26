@@ -4622,6 +4622,17 @@
 				}
 			},
 			"Missile Pod": {
+				"Target Tracking": {
+					"desc": "How long the Missile Pod takes to lock on, and how long the lock survives.",
+					"debug_desc": "The lock-on timers, which live in the weapon's `New Triggers` block before Reach moved them into a `Target Tracking` block of their own. The three plugins disagree about the NAMES while pointing at the same three floats:\n\n  offset 0x88  Halo 3 'Lock-On Acquire Time'  ODST 'Target Tracking Lock Time'\n  offset 0x8c  Halo 3 'Lock-On Grace Time'    ODST (unnamed)\n  offset 0x84  Halo 3 'Lock-On Hold Time'     ODST 'Target Tracking Decay Time'\n\nBoth games read the same values off missile_pod (Grace 1.0, Hold/Decay 3.0), which is what confirms it is one field renamed rather than two different ones. Grace is offered on Halo 3 only because the ODST plugin gives 0x8c no name to target.\n\nThe Missile Pod is the ONLY weapon in Halo 3 or ODST that sets any of these -- the needler, plasma pistol and the launchers carry nothing here and only gain soft tracking in Reach, where they get their own Target Tracking cards.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"targets": [
+						{"field": {"Halo 3": "Lock-On Acquire Time", "Halo 3: ODST": "Target Tracking Lock Time"}, "block": "New Triggers", "harder_when": "increased", "min": 0},
+						{"field": "Lock-On Grace Time", "block": "New Triggers", "games": ["Halo 3"], "harder_when": "decreased", "min": 0},
+						{"field": {"Halo 3": "Lock-On Hold Time", "Halo 3: ODST": "Target Tracking Decay Time"}, "block": "New Triggers", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",

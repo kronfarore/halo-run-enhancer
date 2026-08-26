@@ -498,7 +498,16 @@ class Halo3Map:
 
     def apply_tag_field(self, tag_base, field, op, value, plugin, block=None, index=0, nth=0,
                         scale=1.0, offset=0.0, clamp_min=None, clamp_max=None,
-                        zero_is=None):
+                        zero_is=None, seen=None):
+        """`seen` is a set of byte offsets already written by this logical edit.
+
+        Two tag paths can resolve to the SAME block -- Halo 3's missile_pod and
+        missile_pod_integrated share one -- and writing both applied the operator
+        twice, so *2 came out as *4. Leaves whose offset is already in `seen` are
+        skipped, and that tag reports as sharing rather than as a second edit.
+        Deduping by tag base does NOT catch it: the bases differ, only the leaf does
+        not. Left as None by callers that write a single tag.
+        """
         base_r = {'field': field}
         fld = plugin.find(field, block, nth)
         if not fld:
@@ -507,6 +516,13 @@ class Halo3Map:
             leaves = self.follow_all(tag_base, fld['block_offsets'], fld.get('block_sizes'), index)
             if not leaves:
                 return {**base_r, 'ok': False, 'reason': 'empty block in this tag'}
+            if seen is not None:
+                fresh = [b for b in leaves if (b + fld['offset']) not in seen]
+                if not fresh:
+                    return {**base_r, 'ok': True, 'skip': True,
+                            'reason': 'shares this data with a variant already patched'}
+                seen.update(b + fld['offset'] for b in fresh)
+                leaves = fresh
             fmt, _ = hm.TYPE_FMT[fld['type']]
             ftype = fld['type']
             is_float = ftype in hm.FLOAT_TYPES or ftype in hm.ANGLE_TYPES
@@ -549,9 +565,11 @@ class Halo3Map:
         if not tags:
             return [{'tag': ref, 'field': field, 'ok': False, 'reason': 'not present in this map'}]
         results = []
+        seen = set()          # byte offsets written; tag paths can share a block
         for tpath, base in tags:
             r = self.apply_tag_field(base, field, op, value, plugin, block, index, nth,
-                                          scale, offset, clamp_min, clamp_max, zero_is)
+                                          scale, offset, clamp_min, clamp_max, zero_is,
+                                          seen=seen)
             if cls == 'char' and not r.get('ok') and r.get('reason') == 'empty block in this tag':
                 # char variant with an empty block inherits it from its base — not a
                 # failure; the base variant in this same set carries (and gets) the edit.
