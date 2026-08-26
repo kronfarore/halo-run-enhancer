@@ -642,6 +642,16 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "weap weapons\\assault rifle\\assault rifle", "Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -809,6 +819,15 @@
 				}
 			},
 			"Pistol": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -1026,6 +1045,15 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
@@ -1347,6 +1375,15 @@
 				}
 			},
 			"Plasma Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\plasma rifle\\plasma rifle", "Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red", "Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -1611,6 +1648,15 @@
 				}
 			},
 			"Needler": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
@@ -1893,6 +1939,15 @@
 				}
 			},
 			"Sniper Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire — and hear the round land. On a sniper that second one is what gives your position away.",
 					"debug_desc": "The sniper rifle is the special case this card exists for. Every other weapon is fired at roughly the same place the round lands, so its firing noise and its projectile's impact noise reach the same enemies. A sniper is not: you fire from cover far away, and the impact noise goes off in the middle of the enemies you are shooting at. Halo 2, Halo 3 and ODST ship the rifle at Shout (the loudest tier) with the projectile at Loud, so silencing the weapon alone would still announce every shot at the target's end. This card sets both.\n\nHalo 1's sniper rifle is the other oddity: at Medium it is the only weapon in the whole game quieter than Loud, and its projectile already matches at Medium — so it starts out roughly as stealthy as an ODST silenced weapon. Reach went the other way and dropped its sniper from Shout to Loud.\n\nThe `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -2073,6 +2128,15 @@
 				}
 			},
 			"Rocket Launcher": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
@@ -2275,6 +2339,15 @@
 				}
 			},
 			"Shotgun": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -2467,6 +2540,15 @@
 				}
 			},
 			"SMG": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -2656,6 +2738,16 @@
 				}
 			},
 			"Brute Plasma Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": "Halo 2",
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -2842,6 +2934,16 @@
 				}
 			},
 			"Battle Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -2992,6 +3094,16 @@
 				}
 			},
 			"Brute Shot": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3151,6 +3263,16 @@
 				}
 			},
 			"Beam Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3304,6 +3426,16 @@
 				}
 			},
 			"Covenant Carbine": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3454,6 +3586,16 @@
 				}
 			},
 			"Flak Cannon": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3628,6 +3770,16 @@
 				}
 			},
 			"Sentinel Beam": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -3901,6 +4053,16 @@
 				}
 			},
 			"Mauler": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": "Halo 3",
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4213,6 +4375,15 @@
 				}
 			},
 			"Spartan Laser": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"tag": {"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser", "Halo Reach": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4779,6 +4950,16 @@
 				}
 			},
 			"Concussion Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Zoom": {
 					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
@@ -4885,6 +5066,16 @@
 				}
 			},
 			"DMR": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -5020,6 +5211,16 @@
 				}
 			},
 			"Focus Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -5114,6 +5315,16 @@
 				}
 			},
 			"Grenade Launcher": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Zoom": {
 					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
@@ -5220,6 +5431,16 @@
 				}
 			},
 			"Needle Rifle": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -5316,6 +5537,16 @@
 				}
 			},
 			"Plasma Launcher": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Target Tracking": {
 					"desc": "How long this weapon takes to lock on, and how long the lock survives.",
 					"debug_desc": "Reach's `Target Tracking` block on the weapon: Acquire Time is how long you must hold the target before the lock takes, Grace Time how long a lock survives losing it, Decay Time how long it takes to bleed away after that.\n\nNew in Reach -- no earlier game has the block. Only 11 weapon tags populate it and four belong to weapons the player gets cards for: needler and plasma pistol carry Grace/Decay only (their soft tracking has no acquire delay), while rocket launcher (1.5s) and plasma launcher (0.5s) carry a real Acquire Time -- that is the wait before the reticle locks.\n\nSeparate from Homing, which is how hard the round steers once it is already in the air.",
@@ -5452,6 +5683,16 @@
 				}
 			},
 			"Plasma Repeater": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Zoom": {
 					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
 					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
@@ -5566,6 +5807,16 @@
 				}
 			},
 			"Target Locator": {
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+					]
+				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"game": ["Halo Reach"],
