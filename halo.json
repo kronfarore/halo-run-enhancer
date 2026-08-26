@@ -2260,8 +2260,7 @@
 						{ "field": "Yaw Count", "block": "Conical Spread" },
 						{ "field": "Pitch Count", "block": "Conical Spread" },
 						{ "field": "Spread", "block": "Conical Spread" },
-						{ "field": "Distribution Exponent", "block": "Conical Spread" },
-						"Halo Reach"
+						{ "field": "Distribution Exponent", "block": "Conical Spread" }
 					]
 				},
 				"Projectile": {
@@ -4047,8 +4046,7 @@
 						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] },
-						"Halo Reach"
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -4068,8 +4066,7 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						"Halo Reach"
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -4099,8 +4096,7 @@
 					"targets": [
 						{ "field": "Minimum Error", "block": "Barrels" },
 						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" },
-						"Halo Reach"
+						{ "field": "Error Angle Max", "block": "Barrels" }
 					]
 				},
 				"Dual Weapon Damage": {
@@ -4118,8 +4114,7 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" },
-						"Halo Reach"
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},
@@ -4131,8 +4126,7 @@
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" },
-						"Halo Reach"
+						{ "field": "Damage Upper Bound Max" }
 					]
 				},
 				"Melee Damage": {
@@ -4153,8 +4147,7 @@
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion",
 					"targets": [
 						{ "field": "Radius" },
-						{ "field": "Radius Max" },
-						"Halo Reach"
+						{ "field": "Radius Max" }
 					]
 				},
 				"Range": {
@@ -4162,8 +4155,7 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
 					"targets": [
-						{ "field": "Autoaim Range" },
-						"Halo Reach"
+						{ "field": "Autoaim Range" }
 					],
 					"affected_by_skull": "Eyepatch"
 				}
@@ -4221,8 +4213,7 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
-						{ "field": "Charging Time", "block": "New Triggers" },
-						"Halo Reach"
+						{ "field": "Charging Time", "block": "New Triggers" }
 					]
 				},
 				"More Shooting": {
@@ -4265,8 +4256,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": 1 },
 						{ "field": "Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" },
-						"Halo Reach"
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "group": "Age Generated Per Round" }
 					]
 				},
 				"Impact Radius": {
@@ -4285,8 +4275,7 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" },
-						"Halo Reach"
+						{ "field": "Magnification Range Max" }
 					]
 				}
 			},

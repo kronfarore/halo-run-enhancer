@@ -9296,6 +9296,12 @@ class HaloGUI(QMainWindow):
                     mod['tag'] = self._combine_heretic_tag(mod['tag'])
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
+                # A target must be a dict. halo.json once carried bare strings here (a
+                # game name appended to `targets` instead of `game`), and every consumer
+                # below calls t.get(), so one typo took the whole patch dialog down with
+                # an AttributeError. Drop them rather than trusting the file.
+                mod['targets'] = [t for t in (mod.get('targets') or [])
+                                  if isinstance(t, dict)]
                 for t in mod.get('targets') or []:
                     for key in ('field', 'block', 'negate', 'nth', 'index', 'offset',
                                 'zero_is', 'tag'):
