@@ -3084,6 +3084,17 @@ def choice_option_names(opts):
     return [n.title() for n in names]
 
 
+def target_tag(eff, target):
+    """The tag THIS target writes to.
+
+    Normally a card has one tag and every target lands on it, but a target may name
+    its own -- Firing Noise sets the weapon's enum and the same value on its
+    projectile's Impact/Detonation Noise, which live on a different tag entirely.
+    Every read that displays a vanilla value has to follow the same redirect the
+    write does, or the row shows a number from the wrong tag."""
+    return target.get('tag') or eff.get('tag')
+
+
 def choice_preset_key(eff, field):
     """Remembered pick for a choice row -- deliberately WITHOUT the game.
 
@@ -4263,6 +4274,11 @@ class MagnitudeEditorDialog(QDialog):
 
         local_rows = []   # (target, line-edit) of THIS effect, for derived wiring
         for t, _members in self._group_targets(targets):
+            if t.get('follows_choice'):
+                # Slaved to this card's choice row: it takes whatever that row is set
+                # to, so giving it an input of its own would only invite the two to
+                # disagree. Handled entirely in the plan builder.
+                continue
             row = QHBoxLayout()
             derived = t.get('derived')
             # per-field direction symbols (target overrides the mod's). harder_when
@@ -4330,7 +4346,7 @@ class MagnitudeEditorDialog(QDialog):
                 # Enum choice: a dropdown of the options THIS GAME's plugin defines, so
                 # a game that reorders or renames them needs no halo.json change. The
                 # value is applied by name, never by index.
-                _cls = self._hp.hm.split_tag(eff['tag'])[0]
+                _cls = self._hp.hm.split_tag(target_tag(eff, t))[0]
                 _plug = self.registry.get(_cls)
                 _fld = _plug.find(t['field'], t.get('block'),
                                   t.get('nth', 0) or 0) if _plug else None
@@ -4350,8 +4366,8 @@ class MagnitudeEditorDialog(QDialog):
                     _prev = self.presets.get(self._hp.preset_key(
                         eff['tag'], eff['name'], t['field'], self.game))
                 if not _prev:
-                    _cur = self._vanilla_num(eff['tag'], t['field'], t.get('block'),
-                                             t.get('nth', 0) or 0)
+                    _cur = self._vanilla_num(target_tag(eff, t), t['field'],
+                                             t.get('block'), t.get('nth', 0) or 0)
                     if _cur is not None:
                         _byval = {v: n for n, v in _opts.items()}
                         _prev = (_byval.get(int(_cur)) or '').title() or None
@@ -4437,7 +4453,7 @@ class MagnitudeEditorDialog(QDialog):
             row.addWidget(leftw)
             # #1/#2: variant values on the right, one line per distinct value, plus
             # every difficulty's value where the field has one per difficulty.
-            _vals = self._variant_values_str(eff['tag'], t, eff)
+            _vals = self._variant_values_str(target_tag(eff, t), t, eff)
             _diffs = self._difficulty_values_str(eff['tag'], t)
             variants = QLabel(_vals + ('\n' + _diffs if _diffs else ''))
             variants.setStyleSheet("color: #7aa0c0; font-size: 12px; font-family: monospace;")
@@ -5110,6 +5126,7 @@ class MagnitudeEditorDialog(QDialog):
                                          # probability is 0..1 whatever was typed)
                                          'min': t.get('min'), 'max': t.get('max'),
                                          'zero_is': t.get('zero_is'),
+                                         'tag': t.get('tag'),
                                          'nth': t.get('nth', 0) or 0})
         # Auto-computed fields: recompute whenever their effect has any edit.
         # Appended after the normal ops so the sources are already patched.
@@ -5140,7 +5157,19 @@ class MagnitudeEditorDialog(QDialog):
             plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                          'index': t.get('index', 0),
                                          'nth': t.get('nth', 0) or 0,
+                                         'tag': t.get('tag'),
                                          **_diff_flavor(t), 'set': chosen})
+            # Followers ride along on the same pick. They are looked up on the effect
+            # rather than tracked as rows, because they deliberately have no row.
+            for f in eff.get('targets') or []:
+                if not f.get('follows_choice'):
+                    continue
+                plan_map[key]['ops'].append({'field': f['field'],
+                                             'block': f.get('block'),
+                                             'index': f.get('index', 0),
+                                             'nth': f.get('nth', 0) or 0,
+                                             'tag': f.get('tag'),
+                                             **_diff_flavor(f), 'set': chosen})
 
         # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever
         # their effect is being patched at all, so the enabler is applied with it.
@@ -9252,7 +9281,8 @@ class HaloGUI(QMainWindow):
                 if isinstance(mod.get('targets'), dict):
                     mod['targets'] = resolve_gamed(mod['targets'], game, games) or []
                 for t in mod.get('targets') or []:
-                    for key in ('field', 'block', 'negate', 'nth', 'index', 'offset', 'zero_is'):
+                    for key in ('field', 'block', 'negate', 'nth', 'index', 'offset',
+                                'zero_is', 'tag'):
                         if isinstance(t.get(key), dict):
                             t[key] = resolve_gamed(t[key], game, games)
                 # A target may be limited to specific games (e.g. the derived

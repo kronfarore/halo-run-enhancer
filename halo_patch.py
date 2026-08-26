@@ -3598,6 +3598,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r.update(ok=False, reason=rep.get('reason', 'reload scale failed'))
                 results.append(r)
                 continue
+            if op.get('tag'):
+                # This target lives on a DIFFERENT tag from the rest of the card, so
+                # the write is redirected -- one card can then set a value on a weapon
+                # and the same value on its projectile without being split into two
+                # cards the player would have to pick separately. Everything after
+                # this point is unchanged; only where it lands moves.
+                cls, path = hm.split_tag(op['tag'])
+                plugin = registry.get(cls)
+                base = {**base, 'tag': op['tag']}
             if plugin is None:
                 results.append({**base, 'ok': False, 'reason': f'no plugin for {cls}'})
                 continue
