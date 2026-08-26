@@ -1677,7 +1677,7 @@
 				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
-					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -2009,7 +2009,7 @@
 				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
-					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -2720,6 +2720,16 @@
 				}
 			},
 			"SMG": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\rifle\\smg\\smg",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -3048,7 +3058,7 @@
 				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
-					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -4502,6 +4512,16 @@
 				}
 			},
 			"Spike Rifle": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -4993,6 +5013,16 @@
 				}
 			},
 			"Machine Gun": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -5106,6 +5136,16 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -6077,6 +6117,16 @@
 				}
 			},
 			"Plasma Launcher": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -6393,6 +6443,16 @@
 				}
 			},
 			"Target Locator": {
+				"Ramp Up": {
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nThe three original cards (plasma rifle, brute plasma rifle, needler) carry a constraint clamping Deceleration to at or below Acceleration, on the reasoning that guns spin up slowly and spin down fast. That holds for them -- but it is NOT universal, and measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
+						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
