@@ -5397,6 +5397,12 @@ class MagnitudeEditorDialog(QDialog):
         lines.append("")
         def _fmt(x):
             return round(x, 4) if isinstance(x, (int, float)) else x
+
+        def _val(r, key):
+            # An enum reads back as its option name; halo_patch attaches those for any
+            # field that has them, so a Firing Noise row says "Loud -> Medium" instead
+            # of "2 -> 1" -- which on Reach would not even mean the same thing.
+            return r.get(key + '_name') or _fmt(r.get(key))
         for r in applied:
             hint = ("   (needs negative values for some reason)" if r.get('negated')
                     else "   (auto-computed)" if r.get('derived') else "")
@@ -5404,7 +5410,7 @@ class MagnitudeEditorDialog(QDialog):
                 hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
             lines.append(f"  OK    {r['effect']}: {r.get('field', '')}  "
-                         f"{_fmt(r.get('old'))} -> {_fmt(r.get('new'))}{tag}{hint}")
+                         f"{_val(r, 'old')} -> {_val(r, 'new')}{tag}{hint}")
         for r in skipped:
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
             why = r.get('reason') or r.get('new') or 'no change needed'

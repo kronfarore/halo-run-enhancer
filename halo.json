@@ -4291,6 +4291,15 @@
 				}
 			},
 			"Flamethrower": {
+				"Movement Penalty Type": {
+					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{ "field": "Movement Penalized", "choice": true }
+					]
+				},
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
@@ -4381,6 +4390,15 @@
 				}
 			},
 			"Machine Gun": {
+				"Movement Penalty Type": {
+					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"targets": [
+						{ "field": "Movement Penalized", "choice": true }
+					]
+				},
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
@@ -4473,6 +4491,15 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Movement Penalty Type": {
+					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"targets": [
+						{ "field": "Movement Penalized", "choice": true }
+					]
+				},
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
@@ -4565,6 +4592,15 @@
 				}
 			},
 			"Missile Pod": {
+				"Movement Penalty Type": {
+					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
+					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"targets": [
+						{ "field": "Movement Penalized", "choice": true }
+					]
+				},
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",

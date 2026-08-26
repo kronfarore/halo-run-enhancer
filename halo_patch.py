@@ -324,6 +324,28 @@ def read_difficulty_baseline(m, registry, target_difficulty):
     return out
 
 
+def name_enum_results(results, fld):
+    """Annotate an enum field's results with the OPTION NAMES behind old/new.
+
+    The raw codes are meaningless to read back ("2 -> 1") and, on any enum a game
+    reordered, actively misleading -- Reach's Firing Noise 4 is Halo 3's 2. The
+    numbers stay on the row for anything that computes with them; the summary and the
+    patch file prefer the names.
+    """
+    opts = (fld or {}).get('options') or {}
+    if not opts:
+        return results
+    byval = {v: n for n, v in opts.items()}
+    for r in results:
+        for key in ('old', 'new'):
+            v = r.get(key)
+            if isinstance(v, (int, float)) and not isinstance(v, bool):
+                n = byval.get(int(v))
+                if n:
+                    r[key + '_name'] = n.title()
+    return results
+
+
 def apply_difficulty_baseline(m, registry, target_difficulty, spec):
     """Set the whole-game enemy dials BEFORE any effect runs.
 
@@ -3629,9 +3651,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     results.append({**base, 'ok': False,
                                     'reason': f"unknown set value {op['set']!r}"})
                     continue
-                for r in m.apply_field(cls, path, field, 'set', float(sval), plugin,
-                                       block=op.get('block'), index=op.get('index', 0) or 0,
-                                       nth=op.get('nth', 0) or 0):
+                for r in name_enum_results(
+                        m.apply_field(cls, path, field, 'set', float(sval), plugin,
+                                      block=op.get('block'), index=op.get('index', 0) or 0,
+                                      nth=op.get('nth', 0) or 0), fld):
                     r['effect'] = item['name']
                     results.append(r)
                 continue
@@ -3656,13 +3679,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             # fields at once, which makes overshoot easier to reach by accident.
             cmin = op.get('min')
             cmax = op.get('max')
-            for r in m.apply_field(cls, path, field, oper, val, plugin,
-                                   block=op.get('block'), index=op.get('index', 0) or 0,
-                                   nth=op.get('nth', 0) or 0,
-                                   scale=scale, offset=offset,
-                                   clamp_min=None if cmin is None else float(cmin),
-                                   clamp_max=None if cmax is None else float(cmax),
-                                   zero_is=op.get('zero_is')):
+            for r in name_enum_results(
+                    m.apply_field(cls, path, field, oper, val, plugin,
+                                  block=op.get('block'), index=op.get('index', 0) or 0,
+                                  nth=op.get('nth', 0) or 0,
+                                  scale=scale, offset=offset,
+                                  clamp_min=None if cmin is None else float(cmin),
+                                  clamp_max=None if cmax is None else float(cmax),
+                                  zero_is=op.get('zero_is')),
+                    plugin.find(field, op.get('block'), op.get('nth', 0) or 0)):
                 r['effect'] = item['name']
                 if op.get('redirected_from'):
                     # say where the write actually landed; a Starting Shield card
