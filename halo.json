@@ -4291,6 +4291,16 @@
 				}
 			},
 			"Flamethrower": {
+				"Movement Penalties": {
+					"desc": "How much this turret slows you down while you are lugging it around.",
+					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4371,6 +4381,16 @@
 				}
 			},
 			"Machine Gun": {
+				"Movement Penalties": {
+					"desc": "How much this turret slows you down while you are lugging it around.",
+					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"targets": [
+						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4453,6 +4473,16 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Movement Penalties": {
+					"desc": "How much this turret slows you down while you are lugging it around.",
+					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"targets": [
+						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4535,6 +4565,16 @@
 				}
 			},
 			"Missile Pod": {
+				"Movement Penalties": {
+					"desc": "How much this turret slows you down while you are lugging it around.",
+					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
+					"game": ["Halo 3"],
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
+					"targets": [
+						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
+					]
+				},
 				"Explosion Damage": {
 					"desc": "Damage of the missile's explosion.",
 					"game": "Halo 3",
