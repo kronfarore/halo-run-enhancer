@@ -4160,6 +4160,17 @@
 				}
 			},
 			"Gravity Hammer": {
+				"Zoom": {
+					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
+					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+					"targets": [
+						{"field": "Magnification Levels", "min": 0},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
 				"Hammer Damage": {
 					"desc": "Damage of the gravity blast",
 					"game": ["Halo 3", "Halo Reach"],
@@ -4768,6 +4779,17 @@
 				}
 			},
 			"Concussion Rifle": {
+				"Zoom": {
+					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
+					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Magnification Levels", "min": 0},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -4845,7 +4867,7 @@
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion",
+					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion & objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_impact",
 					"targets": [
 						{"field": "Damage Lower Bound"},
 						{"field": "Damage Upper Bound"},
@@ -5092,6 +5114,17 @@
 				}
 			},
 			"Grenade Launcher": {
+				"Zoom": {
+					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
+					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Magnification Levels", "min": 0},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -5419,6 +5452,17 @@
 				}
 			},
 			"Plasma Repeater": {
+				"Zoom": {
+					"desc": "How far this weapon zooms — set Magnification Levels above 0 to give it a scope.",
+					"debug_desc": "`Magnification Levels` is how many zoom steps the weapon has and `Magnification Range` how far each goes. A weapon that ships with 0 levels has no zoom at all, which is exactly why it needs the card: an operator cannot multiply 0 into anything, so SET it (=1 or =2) to give the weapon a scope it never had.\n\nHalo 1 through ODST also add a scope OVERLAY automatically when a scopeless weapon gains magnification, copying the widgets from a scoped donor on the same map (the 'Add a scope overlay to scopeless weapons' option, with a donor picker). **Reach is not wired for that yet** -- _ZOOM_UI and ZOOM_DONOR_WEAPONS cover Halo 1, 2, 3 and ODST only -- so in Reach the weapon really does zoom, but with no scope graphic over it.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Magnification Levels", "min": 0},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
 				"Heat Venting Time": {
 					"desc": "How long the Plasma Repeater is out of action while it vents its heat.",
 					"debug_desc": "`Heat Venting Time` on the weapon, stock 2.5 seconds. Unique in every sense: the field is new in Reach, and the Plasma Repeater is the ONLY weapon in any game that sets it -- venting is its signature mechanic, standing in for the reload it does not have.\n\nIts sibling `Heat Venting Exit Heat` ships at 0, meaning a vent clears the heat completely; that is a real zero rather than a placeholder, so it is left alone here.\n\nRaising this makes the weapon worse: longer helpless stretches after a sustained burst. Lowering it toward 0 makes venting almost free.",
