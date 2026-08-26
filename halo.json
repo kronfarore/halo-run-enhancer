@@ -5344,6 +5344,15 @@
 				}
 			},
 			"Plasma Repeater": {
+				"Heat Venting Time": {
+					"desc": "How long the Plasma Repeater is out of action while it vents its heat.",
+					"debug_desc": "`Heat Venting Time` on the weapon, stock 2.5 seconds. Unique in every sense: the field is new in Reach, and the Plasma Repeater is the ONLY weapon in any game that sets it -- venting is its signature mechanic, standing in for the reload it does not have.\n\nIts sibling `Heat Venting Exit Heat` ships at 0, meaning a vent clears the heat completely; that is a real zero rather than a placeholder, so it is left alone here.\n\nRaising this makes the weapon worse: longer helpless stretches after a sustained burst. Lowering it toward 0 makes venting almost free.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{ "field": "Heat Venting Time", "harder_when": "increased", "min": 0 }
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
