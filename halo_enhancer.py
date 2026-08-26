@@ -3043,6 +3043,39 @@ def row_value(widget):
     return widget.currentText() if hasattr(widget, 'currentText') else widget.text()
 
 
+# An enum's options are stored in a different ORDER per game (Reach moved Quiet and
+# Loud on the AI noise enum), but the names mean the same thing everywhere. Since a
+# choice is applied by name the display order is free, so pin it: keyed by the exact
+# set of option names, so it covers every tag carrying that enum (weap Firing Noise,
+# biped/vehicle Constant Sound Volume, projectile Impact/Detonation Noise) without
+# naming any of them. The order chosen is the one four of the five games store.
+CHOICE_DISPLAY_ORDER = {
+    frozenset(('silent', 'quiet', 'medium', 'loud', 'shout')):
+        ('silent', 'medium', 'loud', 'shout', 'quiet'),
+}
+
+
+def choice_option_names(opts):
+    """Display order for a `choice` row's options: the canonical order if this enum
+    has one, else by stored value so the list reads the way the tag is ordered."""
+    canon = CHOICE_DISPLAY_ORDER.get(frozenset(opts))
+    names = list(canon) if canon else [n for _v, n in sorted((v, n) for n, v in opts.items())]
+    return [n.title() for n in names]
+
+
+def choice_preset_key(eff, field):
+    """Remembered pick for a choice row -- deliberately WITHOUT the game.
+
+    A magnitude is a number whose right value can differ per engine, so preset_key
+    scopes those by game (and by the per-game tag path). A choice is a NAME, and the
+    name means the same thing in every game, so scoping it that way meant a pick made
+    on Halo 3 was invisible on Reach and the card fell back to the vanilla value.
+    Keyed on the weapon (or the effect name, for cards that have no weapon) so it
+    survives the tag path changing between games as well."""
+    return 'choice||%s||%s||%s' % (eff.get('weapon') or eff.get('name'),
+                                   eff.get('name'), field)
+
+
 def is_operator_box(widget):
     """True only for the QLineEdit rows that hold an OPERATOR.
 
@@ -3676,7 +3709,7 @@ class MagnitudeEditorDialog(QDialog):
             if t.get('choice'):
                 # A choice row has a real user value even though it is not an operator
                 # box, so saving magnitudes has to keep it or the pick is lost on close.
-                key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+                key = choice_preset_key(eff, t['field'])
                 chosen = row_value(le).strip()
                 if chosen and self.presets.get(key) != chosen:
                     self.presets[key] = chosen
@@ -4278,17 +4311,20 @@ class MagnitudeEditorDialog(QDialog):
                 _fld = _plug.find(t['field'], t.get('block'),
                                   t.get('nth', 0) or 0) if _plug else None
                 _opts = (_fld or {}).get('options') or {}
-                # options is {lowercased name: value}; order by value so the list
-                # reads the way the tag itself is ordered.
-                _names = [n.title() for _v, n in sorted((v, n) for n, v in _opts.items())]
+                # options is {lowercased name: value}; one stable display order
+                # across games -- the pick is applied by name, so order is cosmetic.
+                _names = choice_option_names(_opts)
                 le = QComboBox()
                 le.addItems(_names or ['(no options)'])
                 le.setMaximumWidth(140)
                 # Preselect the weapon's CURRENT value, not the first option. A
                 # choice row always emits its set, so defaulting to index 0 would have
                 # made every untouched Firing Noise card silence the weapon.
-                _prev = self.presets.get(self._hp.preset_key(
-                    eff['tag'], eff['name'], t['field'], self.game))
+                _prev = self.presets.get(choice_preset_key(eff, t['field']))
+                if not _prev:
+                    # picks made before the key stopped carrying the game
+                    _prev = self.presets.get(self._hp.preset_key(
+                        eff['tag'], eff['name'], t['field'], self.game))
                 if not _prev:
                     _cur = self._vanilla_num(eff['tag'], t['field'], t.get('block'),
                                              t.get('nth', 0) or 0)
@@ -4300,8 +4336,9 @@ class MagnitudeEditorDialog(QDialog):
                     if _i >= 0:
                         le.setCurrentIndex(_i)
                 le.setToolTip("Sets %s outright. Options come from this game's own "
-                              "plugin and are applied by NAME \u2014 Reach orders this "
-                              "enum differently from the earlier games." % t['field'])
+                              "plugin and are applied by NAME, so the pick carries "
+                              "across games even though Reach stores this enum in a "
+                              "different order." % t['field'])
             elif t.get('set') is not None:
                 # Fixed set (enum enabler): display-only, always applied with the effect.
                 le.setReadOnly(True)
@@ -5067,8 +5104,7 @@ class MagnitudeEditorDialog(QDialog):
             if not t.get('choice'):
                 continue
             chosen = row_value(le).strip()
-            self.presets[self._hp.preset_key(
-                eff['tag'], eff['name'], t['field'], self.game)] = chosen
+            self.presets[choice_preset_key(eff, t['field'])] = chosen
             if not chosen or chosen.startswith('('):
                 continue
             key = (eff['tag'], eff['name'])
