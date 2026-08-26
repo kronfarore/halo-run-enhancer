@@ -1250,6 +1250,25 @@ def skull_conflict(mod, run_state):
     return ', '.join(hit) if hit else None
 
 
+def mod_ignored(mod):
+    """Is this effect held back from the offer pools?
+
+    halo.json's own header has documented `ignore` ("Whether to ignore this effect in
+    the tools pool. yes/no. defaults to no") since the file was written, but nothing
+    ever read it. It is how a card stays in the DB -- wired, verified, ready -- without
+    being drawn: the Reach Accuracy Penalties on weapons that ship 0, where an operator
+    would have nothing to bite on. Flipping one back on is a one-word edit.
+
+    Accepts the yes/no the header specifies, plus the true/false a JSON author is
+    likely to reach for. Anything unrecognised means NOT ignored, so a typo cannot
+    silently delete a card from the game.
+    """
+    v = mod.get('ignore')
+    if isinstance(v, bool):
+        return v
+    return isinstance(v, str) and v.strip().lower() in ('yes', 'true', '1')
+
+
 def target_applies(target, game):
     """Does this target apply in `game`?
 
@@ -1524,6 +1543,7 @@ class ModifierDatabase:
             'name': mod_name,
             'desc': mod_data.get('desc', ''),
             'desc_overrides': mod_data.get('desc_overrides'),  # #7: per-game desc overrides
+            'ignore': mod_data.get('ignore'),                  # held out of the pools
             'debug_desc': mod_data.get('debug_desc'),          # mechanism, shown as a tooltip
             'tag': mod_data.get('tag', ''),
             'games': self._parse_games(mod_data.get('game')),
@@ -2066,7 +2086,7 @@ class ModifierDatabase:
                 if CONFIG.get('remove_superseded_vitality_cards') else ())
         return [m for m in mods
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
-                and self._cross_game_ok(m)
+                and self._cross_game_ok(m) and not mod_ignored(m)
                 # Every offer path funnels through here, so one test covers the
                 # initial selection, the New Weapon draw and every reroll — the
                 # recurring bug class of fixing only one of them.
@@ -2090,7 +2110,7 @@ class ModifierDatabase:
             'tag': tag, 'games': [game] if game else [],
             'weapon': weapon_name, 'wildcard': False, 'special': False,
             'dual_only': False, 'skull': None, 'affected_by_skull': None,
-            'desc_overrides': None, 'debug_desc': None,
+            'desc_overrides': None, 'debug_desc': None, 'ignore': None,
             'harder_when': None, 'easier_when': None,
             'init_defaults': None,
             'targets': [{'field': 'Map replacement %', 'map_swap': True}],
@@ -2191,7 +2211,7 @@ class ModifierDatabase:
         # the wildcard entirely when other choices remain.
         available = [m for m in self.wildcard_pool
                      if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
-                     and self._cross_game_ok(m)]
+                     and self._cross_game_ok(m) and not mod_ignored(m)]
         return random.choice(available) if available else None
 
     def get_skull_modifier_filtered(self, active_names, blacklist, game=None):
@@ -2202,7 +2222,8 @@ class ModifierDatabase:
         available = [m for m in self.skull_pool
                      if m.get('name') not in active_names
                      and self.get_mod_label(m) not in blacklist
-                     and self._game_ok(m, game) and self._cross_game_ok(m)]
+                     and self._game_ok(m, game) and self._cross_game_ok(m)
+                     and not mod_ignored(m)]
         return random.choice(available) if available else None
 
     def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
@@ -2212,7 +2233,8 @@ class ModifierDatabase:
         available = [m for m in self.negative_pool
                      if m.get('name') not in active_names
                      and self.get_mod_label(m) not in blacklist
-                     and self._game_ok(m, game) and self._cross_game_ok(m)]
+                     and self._game_ok(m, game) and self._cross_game_ok(m)
+                     and not mod_ignored(m)]
         return random.choice(available) if available else None
 
     def special_names(self):
