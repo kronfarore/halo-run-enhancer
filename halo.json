@@ -642,6 +642,16 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -819,6 +829,16 @@
 				}
 			},
 			"Pistol": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\magnum\\magnum",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -1375,6 +1395,16 @@
 				}
 			},
 			"Plasma Rifle": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -1939,6 +1969,16 @@
 				}
 			},
 			"Sniper Rifle": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -4192,6 +4232,16 @@
 				}
 			},
 			"Spike Rifle": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
@@ -5066,6 +5116,16 @@
 				}
 			},
 			"DMR": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -5431,6 +5491,16 @@
 				}
 			},
 			"Needle Rifle": {
+				"Accuracy Penalties": {
+					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
+					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Reload Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0},
+						{"field": "Switch Penalty", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
