@@ -3043,6 +3043,17 @@ def row_value(widget):
     return widget.currentText() if hasattr(widget, 'currentText') else widget.text()
 
 
+def is_operator_box(widget):
+    """True only for the QLineEdit rows that hold an OPERATOR.
+
+    self.rows also carries read-only boxes (derived / fixed-set / sprint enabler) and,
+    since Firing Noise, QComboBoxes for `choice` targets. A combo has no isReadOnly at
+    all, so normalisation, focus navigation and the operator collectors have to test
+    for the real thing rather than assume a line edit -- clicking Patch Map raised
+    AttributeError on the first combo it met."""
+    return widget is not None and hasattr(widget, 'isReadOnly') and not widget.isReadOnly()
+
+
 class MagnitudeEditorDialog(QDialog):
     """Per-run editor: lists the selected effects grouped by tag, shows each
     field's vanilla value, takes a typed operator (-n/+n/*n or xn/=n) per target
@@ -3649,7 +3660,7 @@ class MagnitudeEditorDialog(QDialog):
         not an operator, so they are left alone."""
         seen = set()
         for _eff, _t, le in self.rows:
-            if le is None or le.isReadOnly() or id(le) in seen:
+            if not is_operator_box(le) or id(le) in seen:
                 continue
             seen.add(id(le))            # grouped rows share one box; touch it once
             le.setText(self._hp.hm.normalize_op_text(le.text()))
@@ -3662,10 +3673,19 @@ class MagnitudeEditorDialog(QDialog):
         self._normalize_entries()
         written, cleared = 0, 0
         for eff, t, le in self.rows:
-            if le is None or le.isReadOnly() or t.get('set') is not None:
+            if t.get('choice'):
+                # A choice row has a real user value even though it is not an operator
+                # box, so saving magnitudes has to keep it or the pick is lost on close.
+                key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+                chosen = row_value(le).strip()
+                if chosen and self.presets.get(key) != chosen:
+                    self.presets[key] = chosen
+                    written += 1
+                continue
+            if not is_operator_box(le) or t.get('set') is not None:
                 continue                      # derived/fixed rows carry no user value
             key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
-            txt = le.text().strip()
+            txt = row_value(le).strip()
             if txt:
                 if self.presets.get(key) != txt:
                     written += 1
@@ -3723,7 +3743,7 @@ class MagnitudeEditorDialog(QDialog):
         # Focus the box's first editable operator so the value can be typed straight
         # away, the way the empty-entry jump leaves the caret ready.
         for eff, t, le in self.rows:
-            if le is not None and not le.isReadOnly() and le.window() is self                     and self._box_of(le) is boxes[idx]:
+            if is_operator_box(le) and le.window() is self                     and self._box_of(le) is boxes[idx]:
                 le.setFocus()
                 le.selectAll()
                 break
@@ -3743,7 +3763,7 @@ class MagnitudeEditorDialog(QDialog):
         persistent pointer rather than focusWidget() — clicking the button itself
         steals focus, so focusWidget() would otherwise always report the button and
         never advance past the current entry."""
-        order = [le for _, t, le in self.rows if le is not None and not le.isReadOnly()]
+        order = [le for _, t, le in self.rows if is_operator_box(le)]
         empties = [(i, le) for i, le in enumerate(order) if not le.text().strip()]
         if not empties:
             return

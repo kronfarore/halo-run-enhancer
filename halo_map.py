@@ -411,6 +411,16 @@ class HaloMap:
         reflexive is [count:i32][ptr:u32]. `index` selects the element of the
         INNERMOST block (outer blocks always use element 0); it needs the block's
         element size, so pass block_sizes (parallel to block_offsets)."""
+        if not isinstance(index, int):
+            # 'all' (or a per-level list) is a follow_all spec. This walker only
+            # understands an int, and multiplying a string by the element size used
+            # to throw -- swallowed by the callers' except, so every blocked Halo 1
+            # field declared `index: "all"` read back as no value at all. A single
+            # reader wants one value, so hand back the first populated leaf.
+            leaves = self.follow_all(meta_off, block_offsets, block_sizes, index)
+            if not leaves:
+                raise IndexError('no populated element for index %r' % (index,))
+            return leaves[0]
         cur = meta_off
         n = len(block_offsets)
         for i, refl in enumerate(block_offsets):
@@ -493,7 +503,8 @@ class HaloMap:
         out = []
         for tpath, meta in self.find_tags(cls, path):
             try:
-                base = self.follow(meta, fld['block_offsets'], fld.get('block_sizes'), index)
+                base = self.follow(meta, fld['block_offsets'],
+                                   fld.get('block_sizes'), index)
                 raw = struct.unpack_from(fmt, self.data, base + fld['offset'])[0]
                 out.append((tpath, raw_to_display(fld['type'], raw)))
             except Exception:
