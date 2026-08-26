@@ -642,6 +642,26 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -829,6 +849,26 @@
 				}
 			},
 			"Pistol": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\magnum\\magnum",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\magnum\\magnum",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -1065,6 +1105,26 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -1406,6 +1466,26 @@
 				}
 			},
 			"Plasma Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -1689,6 +1769,26 @@
 				}
 			},
 			"Needler": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\needler\\needler",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\needler\\needler",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -1991,6 +2091,26 @@
 				}
 			},
 			"Sniper Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -2190,6 +2310,26 @@
 				}
 			},
 			"Rocket Launcher": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -2412,6 +2552,26 @@
 				}
 			},
 			"Shotgun": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -2624,6 +2784,17 @@
 				}
 			},
 			"SMG": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\rifle\\smg\\smg",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -2822,6 +2993,17 @@
 				}
 			},
 			"Brute Plasma Rifle": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3: ODST"],
+					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"},
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -3018,6 +3200,17 @@
 				}
 			},
 			"Battle Rifle": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -3178,6 +3371,17 @@
 				}
 			},
 			"Brute Shot": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -3347,6 +3551,17 @@
 				}
 			},
 			"Beam Rifle": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -3510,6 +3725,17 @@
 				}
 			},
 			"Covenant Carbine": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -3670,6 +3896,26 @@
 				}
 			},
 			"Flak Cannon": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -3865,6 +4111,17 @@
 				}
 			},
 			"Sentinel Beam": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun", "Halo 3: ODST": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -4016,6 +4273,17 @@
 				}
 			},
 			"Energy Blade": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Slice Damage": {
 					"desc": "Normal Swing damage. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {
@@ -4148,6 +4416,17 @@
 				}
 			},
 			"Mauler": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
@@ -4287,6 +4566,26 @@
 				}
 			},
 			"Spike Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -4427,6 +4726,26 @@
 				}
 			},
 			"Gravity Hammer": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -4491,6 +4810,26 @@
 				}
 			},
 			"Spartan Laser": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": {"Halo Reach": "Melee Damage Parameters"}, "index": "all"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -4630,6 +4969,17 @@
 				}
 			},
 			"Flamethrower": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
@@ -4729,6 +5079,17 @@
 				}
 			},
 			"Machine Gun": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
@@ -4830,6 +5191,17 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
@@ -4931,6 +5303,17 @@
 				}
 			},
 			"Missile Pod": {
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo 3", "Halo 3: ODST"],
+					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Target Tracking": {
 					"desc": "How long the Missile Pod takes to lock on, and how long the lock survives.",
 					"debug_desc": "The lock-on timers, which live in the weapon's `New Triggers` block before Reach moved them into a `Target Tracking` block of their own. The three plugins disagree about the NAMES while pointing at the same three floats:\n\n  offset 0x88  Halo 3 'Lock-On Acquire Time'  ODST 'Target Tracking Lock Time'\n  offset 0x8c  Halo 3 'Lock-On Grace Time'    ODST (unnamed)\n  offset 0x84  Halo 3 'Lock-On Hold Time'     ODST 'Target Tracking Decay Time'\n\nBoth games read the same values off missile_pod (Grace 1.0, Hold/Decay 3.0), which is what confirms it is one field renamed rather than two different ones. Grace is offered on Halo 3 only because the ODST plugin gives 0x8c no name to target.\n\nThe Missile Pod is the ONLY weapon in Halo 3 or ODST that sets any of these -- the needler, plasma pistol and the launchers carry nothing here and only gain soft tracking in Reach, where they get their own Target Tracking cards.",
@@ -5077,6 +5460,26 @@
 				}
 			},
 			"Concussion Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -5204,6 +5607,26 @@
 				}
 			},
 			"DMR": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -5359,6 +5782,26 @@
 				}
 			},
 			"Focus Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -5474,6 +5917,26 @@
 				}
 			},
 			"Grenade Launcher": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -5601,6 +6064,26 @@
 				}
 			},
 			"Needle Rifle": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.",
@@ -5717,6 +6200,26 @@
 				}
 			},
 			"Plasma Launcher": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -5874,6 +6377,26 @@
 				}
 			},
 			"Plasma Repeater": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
@@ -6009,6 +6532,26 @@
 				}
 			},
 			"Target Locator": {
+				"Maximum Lunge Range": {
+					"desc": "How far you lunge when you melee something just out of reach.",
+					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"},
+						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0, "block": "Melee Damage Parameters"}
+					]
+				},
 				"Accuracy Penalties": {
 					"desc": "How badly your aim is thrown off after reloading or switching to this weapon.",
 					"debug_desc": "`Reload Penalty` and `Switch Penalty`, per barrel -- the accuracy hit applied after a reload and after bringing the weapon up. New in Reach; no earlier game has either field.\n\nMeasured on every weapon in all five games. Only seven Reach weapons carry values: assault rifle 2.5/1.0, DMR 2.4/1.0, needle rifle 2.35/0.8, magnum 2.35/1.0, plasma rifle 4.0/2.0, sniper rifle 2.5/0.89, spike rifle 2.5/1.0. The plasma rifle is the outlier at nearly double everything else on both.\n\nReach's other two accuracy penalties, `Zoom Penalty` and `Jump Penalty`, are 0 on every weapon and are not offered. The Forward/Sideways Movement penalties are a different mechanic entirely and live on the Movement Penalties card.\n\nThe card is offered only on the seven weapons that ship a value, because an operator on a stored 0 does nothing -- the rest of Reach's weapons have no penalty to scale.\n\nThis weapon ships BOTH penalties at 0, so it is marked `ignore` and stays out of the offer pool: an operator on a stored 0 does nothing, and a card that reads as broken is worse than no card. The wiring is here and verified, so enabling it later -- for a run that wants to IMPOSE a penalty with `=` -- is a one-word edit.",
