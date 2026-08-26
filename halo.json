@@ -642,18 +642,10 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
 					"targets": [
@@ -849,18 +841,10 @@
 				}
 			},
 			"Pistol": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\pistol\\magnum\\magnum",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\magnum\\magnum",
 					"targets": [
@@ -1105,18 +1089,10 @@
 				}
 			},
 			"Plasma Pistol": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 					"targets": [
@@ -1466,18 +1442,10 @@
 				}
 			},
 			"Plasma Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 					"targets": [
@@ -1769,18 +1737,10 @@
 				}
 			},
 			"Needler": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\pistol\\needler\\needler",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\needler\\needler",
 					"targets": [
@@ -2091,18 +2051,10 @@
 				}
 			},
 			"Sniper Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 					"targets": [
@@ -2310,18 +2262,10 @@
 				}
 			},
 			"Rocket Launcher": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
 					"targets": [
@@ -2552,18 +2496,10 @@
 				}
 			},
 			"Shotgun": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
 					"targets": [
@@ -2786,7 +2722,8 @@
 			"SMG": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\rifle\\smg\\smg",
 					"targets": [
@@ -2995,7 +2932,8 @@
 			"Brute Plasma Rifle": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3: ODST"],
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"},
 					"targets": [
@@ -3202,7 +3140,8 @@
 			"Battle Rifle": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
 					"targets": [
@@ -3373,7 +3312,8 @@
 			"Brute Shot": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
 					"targets": [
@@ -3553,7 +3493,8 @@
 			"Beam Rifle": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 					"targets": [
@@ -3727,7 +3668,8 @@
 			"Covenant Carbine": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
 					"targets": [
@@ -3896,18 +3838,10 @@
 				}
 			},
 			"Flak Cannon": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
 					"targets": [
@@ -4113,7 +4047,8 @@
 			"Sentinel Beam": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun", "Halo 3: ODST": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
 					"targets": [
@@ -4418,7 +4353,8 @@
 			"Mauler": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
@@ -4566,18 +4502,10 @@
 				}
 			},
 			"Spike Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
@@ -4726,15 +4654,6 @@
 				}
 			},
 			"Gravity Hammer": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
@@ -4801,27 +4720,21 @@
 				},
 				"Range": {
 					"desc": "Lunge range. It just works.",
+					"debug_desc": "`Autoaim Range` is how far the game will help your swing find a target. In Reach the Gravity Hammer also carries `Maximum Lunge Range` in its `Melee Damage Parameters` block -- how far you actually travel to land the hit -- so both live here rather than in a card of their own. Maximum Lunge Range is new in Reach and ships at 1.0 on every weapon; its neighbours are left alone (Damage Lunge Explosive Fraction is 1.0 everywhere, Explosive Depth 0 everywhere).",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
 					"targets": [
-						{ "field": "Autoaim Range" }
+						{ "field": "Autoaim Range" },
+						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "games": ["Halo Reach"], "harder_when": "decreased", "min": 0}
 					],
 					"affected_by_skull": "Eyepatch"
 				}
 			},
 			"Spartan Laser": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"targets": [
@@ -4971,7 +4884,8 @@
 			"Flamethrower": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
@@ -5081,7 +4995,8 @@
 			"Machine Gun": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
 					"targets": [
@@ -5193,7 +5108,8 @@
 			"Plasma Cannon": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
 					"targets": [
@@ -5305,7 +5221,8 @@
 			"Missile Pod": {
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod",
 					"targets": [
@@ -5460,18 +5377,10 @@
 				}
 			},
 			"Concussion Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
 					"targets": [
@@ -5607,18 +5516,10 @@
 				}
 			},
 			"DMR": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
 					"targets": [
@@ -5782,18 +5683,10 @@
 				}
 			},
 			"Focus Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
@@ -5917,18 +5810,10 @@
 				}
 			},
 			"Grenade Launcher": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"targets": [
@@ -6064,18 +5949,10 @@
 				}
 			},
 			"Needle Rifle": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"targets": [
@@ -6200,18 +6077,10 @@
 				}
 			},
 			"Plasma Launcher": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
@@ -6377,18 +6246,10 @@
 				}
 			},
 			"Plasma Repeater": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
@@ -6532,18 +6393,10 @@
 				}
 			},
 			"Target Locator": {
-				"Maximum Lunge Range": {
-					"desc": "How far you lunge when you melee something just out of reach.",
-					"debug_desc": "`Maximum Lunge Range` in Reach's `Melee Damage Parameters` block -- new in Reach, no earlier game has the field. Every Reach weapon ships exactly 1.0, so this is a single uniform dial rather than a per-weapon characteristic.\n\nIts neighbours are left alone deliberately: `Damage Lunge Explosive Fraction` is 1.0 everywhere and `Damage Lunge Explosive Depth` is 0 everywhere, so neither gives an operator anything to work with.\n\nA longer lunge closes gaps you could not otherwise reach, so the harder direction is DOWN.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
-					"targets": [
-						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
-				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
-					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
