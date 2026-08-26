@@ -142,7 +142,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'wildcard_chance', 'skull_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
-               'zoom_ui_on_scopeless', 'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'zoom_ui_on_scopeless', 'turrets_are_weapons',
+               'combine_heretic_hologram', 'remove_h3_cutscenes',
                'ignore_elite_in_h3',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -391,6 +392,13 @@ CONFIG = {
     # map into its HUD so the zoom actually shows a scope. Structurally grows the
     # HUD tag — verify a patched map still loads in-game.
     "zoom_ui_on_scopeless": True,
+    # Detached turrets -- the machinegun turret, plasma cannon, missile pod and
+    # flamethrower -- are placed as VEHICLES, not weapon pickups, so they never
+    # appeared in a level's `weapons` list and could never be drawn. With this on,
+    # each level also offers the turrets it actually carries (its measured `turrets`
+    # list). Off by default: a turret is a heavy, movement-penalised weapon and
+    # handing one out changes a level's feel more than a normal draw does.
+    "turrets_are_weapons": False,
     # Preferred scope source per game for the zoom-UI copy ({game: weapon name}).
     # Used when that weapon is present on the map being patched, else auto-picked.
     "zoom_donor": {},
@@ -1473,6 +1481,7 @@ class ModifierDatabase:
         self.games = []             # game names in JSON order
         self.mission_games = {}     # mission_id -> game name
         self.mission_weapons = {}   # mission_id -> level weapon pool
+        self.mission_turrets = {}   # mission_id -> detached turrets the level carries
         self.mission_grenades = {}  # mission_id -> grenade pool (#2)
         self.mission_equipment = {} # mission_id -> H3 equipment pool
         self.equipment_mods = {}    # equipment name -> [mods], offered once it's owned
@@ -1634,6 +1643,7 @@ class ModifierDatabase:
                     }
                     self.mission_games[mission_id] = game
                     self.mission_weapons[mission_id] = mission_data.get('weapons', [])
+                    self.mission_turrets[mission_id] = mission_data.get('turrets', [])
                     self.mission_grenades[mission_id] = mission_data.get('grenades', [])
                     self.mission_equipment[mission_id] = mission_data.get('equipment', [])
                     boss = mission_data.get('boss')
@@ -1882,6 +1892,10 @@ class ModifierDatabase:
                 and self.mission_games.get(mission_id) == 'Halo 3: ODST'
                 and 'Plasma Rifle' in wl and 'Brute Plasma Rifle' not in wl):
             wl.append('Brute Plasma Rifle')
+        # Turrets are placed as vehicles, so they are listed separately and only
+        # join the pool when the option is on. Same shape as the grenade fold below.
+        if CONFIG.get('turrets_are_weapons'):
+            wl += [t for t in (self.mission_turrets.get(mission_id) or []) if t not in wl]
         if CONFIG.get('include_grenades', True):
             wl += [g for g in (self.mission_grenades.get(mission_id) or []) if g not in wl]
         result = []
@@ -5909,6 +5923,17 @@ class OptionsDialog(QDialog):
                                    "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
                                    "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
         wform.addRow("Scope UI:", self.zoom_ui_cb)
+
+        self.turret_weapons_cb = QCheckBox("Turrets are weapons")
+        self.turret_weapons_cb.setChecked(bool(CONFIG.get('turrets_are_weapons')))
+        self.turret_weapons_cb.setToolTip(
+            "Detached turrets -- machinegun turret, plasma cannon, missile pod, "
+            "flamethrower -- are placed as VEHICLES, not weapon pickups, so they are "
+            "never in a level's weapon list and can never be drawn. With this on, each "
+            "level also offers the turrets it actually carries (18 levels do). Off by "
+            "default: a turret is heavy and movement-penalised, so handing one out "
+            "changes a level more than a normal draw does.")
+        wform.addRow("Turrets:", self.turret_weapons_cb)
         self._opt_page("Loadout").addWidget(weap_g)
 
         # ---- Starting loadout (#5): sits right under Weapon ----
@@ -7174,6 +7199,7 @@ class OptionsDialog(QDialog):
             'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
+            'turrets_are_weapons': self.turret_weapons_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
