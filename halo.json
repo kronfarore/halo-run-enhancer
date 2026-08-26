@@ -181,7 +181,7 @@
 			"040": {
 				"name": "The Storm",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
+				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Missile Pod"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"],
 				"turret": ["Machine Gun", "Plasma Cannon", "Missile Pod"]
@@ -4212,8 +4212,8 @@
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword"},
 					"targets": [
 						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
 						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
@@ -4234,23 +4234,18 @@
 				},
 				"Strike Damage": {
 					"desc": "Damage of the depleted sword. Uses a melee damage type, that is shared with different weapons.",
-					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee"
-					},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
 						{ "field": "Damage Upper Bound Max" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Dash Damage": {
 					"desc": "Damage of the lunge attack",
-					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee"
-					},
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo Reach": "jpt! globals\\damage_effects\\dash_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound" },
 						{ "field": "Damage Upper Bound" },
@@ -4259,11 +4254,9 @@
 				},
 				"Range": {
 					"desc": "Increasing Autoaim Range increases your range and then you go wooooo!",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"debug_desc": "`Autoaim Range` is how far the game helps your swing find a target.\n\n`Maximum Lunge Range` -- how far you actually travel to land the hit -- is also on this card, but it is DORMANT: the field is Reach-only and the Energy Blade is not yet available in Reach, so the target resolves to nothing and changes nothing. It is here so the card is complete the day the blade is wired for Reach.\n\nReach does carry the weapon: `objects\\weapons\\melee\\energy_sword\\energy_sword` is resident on all ten Reach maps. What is missing is the halo.json side -- the Energy Blade's cards claim Halo 2, 3 and ODST only, and Reach renamed the tag path from energy_blade to energy_sword, so it needs its own Reach tag rather than inheriting one.",
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
-						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade"
-					},
+					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword"},
 					"targets": [
 						{ "field": "Autoaim Range" },
 						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "games": ["Halo Reach"], "harder_when": "decreased", "min": 0}
@@ -4272,8 +4265,8 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade" },
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword"},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
