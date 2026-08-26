@@ -4715,6 +4715,197 @@
 					]
 				}
 			},
+			"Concussion Rifle": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "follows_choice": true}
+					]
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Rounds Total Initial", "block": "Magazines"},
+						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
+						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
+						{"field": "Rounds Reloaded", "block": "Magazines"},
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+					]
+				},
+				"More Shooting": {
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				},
+				"Radius": {
+					"desc": "Min to Max Radius",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion",
+					"targets": [
+						{"field": "Radius"},
+						{"field": "Radius Max"}
+					]
+				}
+			},
+			"DMR": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "follows_choice": true}
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Magnification Levels"},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Rounds Total Initial", "block": "Magazines"},
+						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
+						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
+						{"field": "Rounds Reloaded", "block": "Magazines"},
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"More Shooting": {
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				}
+			},
 			"Firebomb Grenade": {
 				"Grenade Damage": {
 					"desc": "Impact damage",
@@ -4751,6 +4942,570 @@
 					"tag": "matg globals\\globals",
 					"targets": [
 						{ "field": "Maximum Count", "block": "Grenades", "index": 3 }
+					]
+				}
+			},
+			"Focus Rifle": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true}
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Magnification Levels"},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
+				"More Shooting": {
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Heat Recovery": {
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
+						{"field": "Heat Loss Per Second"},
+						{"field": "Overheated Heat Loss Per Second"}
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per shot, battery used per shot",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+					"targets": [
+						{"field": "Heat Generated Per Round", "block": "Barrels", "index": 0},
+						{"field": "Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"},
+						{"field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Beam Damage": {
+					"desc": "Damage per beam tick (the beam is 5 ticks)",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				}
+			},
+			"Grenade Launcher": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true}
+					]
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Rounds Total Initial", "block": "Magazines"},
+						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
+						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
+						{"field": "Rounds Reloaded", "block": "Magazines"},
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+					]
+				},
+				"More Shooting": {
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_explosion",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				},
+				"Radius": {
+					"desc": "Min to Max Radius",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_explosion",
+					"targets": [
+						{"field": "Radius"},
+						{"field": "Radius Max"}
+					]
+				}
+			},
+			"Needle Rifle": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard", "follows_choice": true}
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Magnification Levels"},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
+				"Magazine": {
+					"desc": "Changes to Munition for your weapon",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Rounds Total Initial", "block": "Magazines"},
+						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
+						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
+						{"field": "Rounds Reloaded", "block": "Magazines"},
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"More Shooting": {
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\needle_rifle\\projectiles\\damage_effects\\needle_rifle_shard_impact",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				}
+			},
+			"Plasma Launcher": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "follows_choice": true}
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Magnification Levels"},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
+				"More Shooting": {
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Heat Recovery": {
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
+						{"field": "Heat Loss Per Second"},
+						{"field": "Overheated Heat Loss Per Second"}
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per shot, battery used per shot",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{"field": "Heat Generated Per Round", "block": "Barrels", "index": 0},
+						{"field": "Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"},
+						{"field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_detonation",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				},
+				"Radius": {
+					"desc": "Min to Max Radius",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_detonation",
+					"targets": [
+						{"field": "Radius"},
+						{"field": "Radius Max"}
+					]
+				}
+			},
+			"Plasma Repeater": {
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true}
+					]
+				},
+				"More Shooting": {
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Error Angle": {
+					"desc": "Weapon Spread",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+					]
+				},
+				"Heat Recovery": {
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
+						{"field": "Heat Loss Per Second"},
+						{"field": "Overheated Heat Loss Per Second"}
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per shot, battery used per shot",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{"field": "Heat Generated Per Round", "block": "Barrels", "index": 0},
+						{"field": "Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"},
+						{"field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 0, "group": "Age Generated Per Round"}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Bullet Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				}
+			},
+			"Target Locator": {
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Magnification Levels"},
+						{"field": "Magnification Range"},
+						{"field": "Magnification Range Max"}
+					]
+				},
+				"More Shooting": {
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Fire Recovery Time", "block": "Barrels"}
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"game": ["Halo Reach"],
+					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round",
+					"targets": [
+						{"field": "Maximum Range"},
+						{"field": "Initial Velocity"},
+						{"field": "Final Velocity"},
+						{"field": "Air Damage Range"},
+						{"field": "Air Damage Range Max"}
+					]
+				},
+				"Explosion Damage": {
+					"desc": "Damage Lower Bound, Damage Upper Bound",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round",
+					"targets": [
+						{"field": "Damage Lower Bound"},
+						{"field": "Damage Upper Bound"},
+						{"field": "Damage Upper Bound Max"}
+					]
+				},
+				"Radius": {
+					"desc": "Min to Max Radius",
+					"game": ["Halo Reach"],
+					"tag": "jpt! objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round",
+					"targets": [
+						{"field": "Radius"},
+						{"field": "Radius Max"}
 					]
 				}
 			}
