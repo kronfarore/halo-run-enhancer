@@ -1278,6 +1278,19 @@ def effect_desc(mod, game=None, games=None):
     return resolved if resolved else mod.get('desc', '')
 
 
+def effect_debug_desc(mod, game=None, games=None):
+    """The MECHANISM behind `mod`, if halo.json records one -- what tag and field it
+    touches, why the value behaves the way it does, what was measured.
+
+    Kept apart from `desc` on purpose. A card's visible text should answer "what does
+    this do to my game", in a line; everything else is reference material that made
+    the cards unreadable when it sat in the same string. This is shown as the
+    description's tooltip, so it costs no space until someone wants it. Resolves
+    per-game exactly like desc_overrides."""
+    d = mod.get('debug_desc')
+    return (resolve_gamed(d, game, games) if isinstance(d, dict) else d) or ''
+
+
 def _is_gamed(value, games):
     """Is this dict keyed BY GAME, or is it a plain structured value?
 
@@ -1511,6 +1524,7 @@ class ModifierDatabase:
             'name': mod_name,
             'desc': mod_data.get('desc', ''),
             'desc_overrides': mod_data.get('desc_overrides'),  # #7: per-game desc overrides
+            'debug_desc': mod_data.get('debug_desc'),          # mechanism, shown as a tooltip
             'tag': mod_data.get('tag', ''),
             'games': self._parse_games(mod_data.get('game')),
             'wildcard': bool(mod_data.get('wildcard', False)),
@@ -2076,7 +2090,8 @@ class ModifierDatabase:
             'tag': tag, 'games': [game] if game else [],
             'weapon': weapon_name, 'wildcard': False, 'special': False,
             'dual_only': False, 'skull': None, 'affected_by_skull': None,
-            'desc_overrides': None, 'harder_when': None, 'easier_when': None,
+            'desc_overrides': None, 'debug_desc': None,
+            'harder_when': None, 'easier_when': None,
             'init_defaults': None,
             'targets': [{'field': 'Map replacement %', 'map_swap': True}],
         }
@@ -2520,6 +2535,9 @@ class WeaponSelectionCard(QGroupBox):
         desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
+        _dbg = effect_debug_desc(mod_data, game, games)
+        if _dbg:
+            desc.setToolTip(_dbg)
         layout.addWidget(desc)
         meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
         if meta:
@@ -2828,6 +2846,9 @@ class PairCard(QGroupBox):
         desc = QLabel(effect_desc(mod_data, game, games))
         desc.setWordWrap(True)
         desc.setStyleSheet(f"color: #aaa; font-size: {CONFIG['font_size_desc']}px;")
+        _dbg = effect_debug_desc(mod_data, game, games)
+        if _dbg:
+            desc.setToolTip(_dbg)
         layout.addWidget(desc)
         meta = card_meta_text(mod_data, game, games)   # #3: hideable Tag/Fields lines
         if meta:
@@ -4209,6 +4230,9 @@ class MagnitudeEditorDialog(QDialog):
             d = QLabel(_desc)
             d.setWordWrap(True)
             d.setStyleSheet("color: #aaa; font-size: 12px;")
+            _dbg = effect_debug_desc(eff, self.game, _games)
+            if _dbg:
+                d.setToolTip(_dbg)
             v.addWidget(d)
         tagl = QLabel(eff['tag'])
         tagl.setStyleSheet("color: #666; font-size: 11px; font-family: monospace;")
@@ -9150,7 +9174,8 @@ class HaloGUI(QMainWindow):
         if fresh:
             mod.pop('_missing_in_db', None)
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
-                        'desc_overrides', 'skull', 'harder_when', 'easier_when',
+                        'desc_overrides', 'debug_desc', 'skull',
+                        'harder_when', 'easier_when',
                         'init_defaults', 'games'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])

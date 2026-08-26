@@ -401,7 +401,8 @@
 				"special": true
 			},
 			"Recharge Delay": {
-				"desc": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
+				"desc": "How long you have to stay out of fire before your shields start refilling.",
+				"debug_desc": "`Stun Time` on the player's model tag (hlmt; coll in Halo 1), set on Body and Shield together. It does not shrink the bar, it delays the refill — which makes it the most punishing single player change available.",
 				"desc_overrides": {
 					"Halo 1": "How long after taking a hit before your shields start coming back — `Stun Time` on the cyborg's collision tag (stock 6s). Halo 1 keeps a single value. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
 					"Halo 2": "How long after taking a hit before your shields start coming back — `Stun Time` on the player's model tag (stock 5s), set on the body and shield fields together. Covers Chief and the Arbiter alike. Raising it is the single most punishing player change there is: it does not shrink the bar, it stops it refilling.",
@@ -442,7 +443,8 @@
 				"special": true
 			},
 			"Player Health": {
-				"desc": "The player's actual health pool — 75 in Halo 1, 30 in Halo 2, 45 in Halo 3, 80 in ODST. This is the pool itself, on the player's model; Starting Health Modifier only scales what you spawn with.",
+				"desc": "How much damage you can take once your shields are gone.",
+				"debug_desc": "The pool itself, on the player's model tag: 75 in Halo 1, 30 in Halo 2, 45 in Halo 3, 80 in ODST. Starting Health Modifier only scales what you spawn with; this is the maximum.",
 				"tag": {
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
@@ -461,7 +463,8 @@
 				"special": true
 			},
 			"Player Shield": {
-				"desc": "The player's actual shield pool — 75 in Halo 1, 70 in Halo 2 and Halo 3, 80 in ODST (where it is stamina). This is the pool itself, on the player's model; Starting Shield Modifier only scales what you spawn with.",
+				"desc": "How much your shields absorb before they break.",
+				"debug_desc": "The pool itself, on the player's model tag: 75 in Halo 1, 70 in Halo 2 and Halo 3, 80 in ODST (stamina there). Starting Shield Modifier only scales what you spawn with; this is the maximum.",
 				"tag": {
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
@@ -480,7 +483,8 @@
 				"special": true
 			},
 			"Player Shield Recharge": {
-				"desc": "How fast the player's shield comes back. Halo 1 stores a rate per tick (the Chief's is 0.0083); Halo 2 on store a recharge velocity (0.5). Higher is faster in both.",
+				"desc": "How fast your shields refill once they start coming back.",
+				"debug_desc": "Halo 1 stores a rate per tick (the Chief's is 0.0083); Halo 2 onward store a recharge velocity (0.5). Higher is faster in both.",
 				"tag": {
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
@@ -611,7 +615,8 @@
 				]
 			},
 			"Regeneration Speed": {
-				"desc": "Regenerate faster - a shorter heal window. Tunes the base duration with an operator (-x or *0.x to cut it) in the patcher. Halo 1 ability maps only.",
+				"desc": "How quickly the Regeneration ability heals you.",
+				"debug_desc": "Tunes the base duration with an operator (-x or *0.x to shorten it). Halo 1 ability maps only.",
 				"game": "Halo 1",
 				"tag": "matg globals\\globals",
 				"targets": [
@@ -638,7 +643,8 @@
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
@@ -723,7 +729,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\assault rifle\\fp\\fp",
@@ -732,7 +739,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
@@ -760,7 +768,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
@@ -799,7 +808,8 @@
 			},
 			"Pistol": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
@@ -920,7 +930,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\pistol\\fp\\fp",
@@ -931,7 +942,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
@@ -966,7 +978,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
@@ -1010,7 +1023,8 @@
 			},
 			"Plasma Pistol": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
@@ -1254,7 +1268,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
@@ -1270,7 +1285,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
@@ -1283,7 +1299,8 @@
 					]
 				},
 				"More Shooting (Charged)": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
@@ -1299,7 +1316,8 @@
 					]
 				},
 				"Fire Recovery Time (Charged)": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
@@ -1314,7 +1332,8 @@
 			},
 			"Plasma Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
@@ -1456,7 +1475,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
@@ -1497,7 +1517,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
@@ -1511,7 +1532,8 @@
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -1572,7 +1594,8 @@
 			},
 			"Needler": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
@@ -1738,7 +1761,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\needler\\fp\\fp",
@@ -1748,7 +1772,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
@@ -1782,7 +1807,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
@@ -1795,7 +1821,8 @@
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -1838,7 +1865,8 @@
 			},
 			"Sniper Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
@@ -1927,7 +1955,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
@@ -1937,7 +1966,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
@@ -1971,7 +2001,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
@@ -2012,7 +2043,8 @@
 			},
 			"Rocket Launcher": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
@@ -2113,7 +2145,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\rocket launcher\\fp\\fp",
@@ -2123,7 +2156,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
@@ -2157,7 +2191,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
@@ -2185,7 +2220,8 @@
 			},
 			"Shotgun": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
@@ -2287,7 +2323,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "antr weapons\\shotgun\\fp\\fp",
@@ -2297,7 +2334,8 @@
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
@@ -2331,7 +2369,8 @@
 					}
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
@@ -2372,7 +2411,8 @@
 			},
 			"SMG": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
@@ -2439,13 +2479,15 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_smg*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
 						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
@@ -2460,7 +2502,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
@@ -2555,7 +2598,8 @@
 			},
 			"Brute Plasma Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
@@ -2617,7 +2661,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
@@ -2632,7 +2677,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
@@ -2644,7 +2690,8 @@
 					]
 				},
 				"Ramp Up": {
-					"desc": "How quickly the weapon reaches (and returns from) its final rate of fire. Deceleration Time must stay at or below Acceleration Time \u2014 every weapon with this card ships it that way (guns spin up slowly and spin down fast), and going the other way breaks the game, so a Deceleration Time that ends up above the Acceleration Time is clamped back down.",
+					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
+					"debug_desc": "Deceleration Time must stay at or below Acceleration Time — every weapon with this card ships it that way (spin up slowly, spin down fast) and reversing it breaks the game, so a Deceleration Time that would end up above the Acceleration Time is clamped back down.",
 					"constraints": [
 						{ "field": "Deceleration Time", "of": "Acceleration Time", "not_above": true, "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
 					],
@@ -2735,7 +2782,8 @@
 			},
 			"Battle Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
@@ -2802,13 +2850,15 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_battle_rifle*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"desc": "How many rounds each burst fires, and how fast they leave the barrel.",
+					"debug_desc": "Shots Per Fire is the burst length, Rounds Per Second the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
@@ -2823,7 +2873,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"desc": "The pause between bursts. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot, which on a burst weapon is the gap between bursts. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
@@ -2879,7 +2930,8 @@
 			},
 			"Brute Shot": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
@@ -2972,13 +3024,15 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_brute_shot*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
@@ -2993,7 +3047,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
@@ -3032,7 +3087,8 @@
 			},
 			"Beam Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
@@ -3127,7 +3183,8 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
@@ -3142,7 +3199,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
@@ -3180,7 +3238,8 @@
 			},
 			"Covenant Carbine": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
@@ -3247,13 +3306,15 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_covenant_carbine*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"desc": "How many rounds each burst fires, and how fast they leave the barrel.",
+					"debug_desc": "Shots Per Fire is the burst length, Rounds Per Second the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
@@ -3268,7 +3329,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"desc": "The pause between bursts. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot, which on a burst weapon is the gap between bursts. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
@@ -3324,7 +3386,8 @@
 			},
 			"Flak Cannon": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
@@ -3429,13 +3492,15 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_flak_cannon*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
@@ -3451,7 +3516,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
@@ -3491,7 +3557,8 @@
 			},
 			"Sentinel Beam": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
@@ -3517,7 +3584,8 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Beam Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. In Halo 2 the player's Sentinel Beam is the EXACT SAME weapon the Sentinel enemy fires - this is the same damage tag, so buffing it buffs every Sentinel shooting at you. That is why the Sentinel enemy's own 'Beam Damage' mod is Halo 1 only.",
+					"desc": "How hard the beam hits. In Halo 2 it also arms every Sentinel shooting at you.",
+					"debug_desc": "Damage Lower/Upper Bound. In Halo 2 the player's Sentinel Beam is the exact same weapon the Sentinel enemy fires — one damage tag — so buffing it buffs the enemies too. That is why the Sentinel enemy's own Beam Damage card is Halo 1 only.",
 					"tag": {
 						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam",
 						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"
@@ -3530,7 +3598,8 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"Melee Damage": {
-					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons. The damage type switches from H2 to H3.",
+					"desc": "How hard your melee hits.",
+					"debug_desc": "Damage Lower/Upper Bound on a melee damage type shared with several weapons. The damage type switches between Halo 2 and Halo 3.",
 					"desc_overrides": { 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons. The damage type switches from H2 to H3."
 					},
@@ -3585,7 +3654,8 @@
 					"game": ["Halo 2", "Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
@@ -3600,7 +3670,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
@@ -3757,7 +3828,8 @@
 			},
 			"Mauler": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\pistol\\excavator\\excavator"
@@ -3779,7 +3851,8 @@
 					"game": ["Halo 3"]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"easier_when": "increased",
@@ -3791,7 +3864,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"easier_when": "decreased",
@@ -3862,7 +3936,8 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": "Halo 3",
 					"tag": "jmad *fp_excavator*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
@@ -3880,7 +3955,8 @@
 			},
 			"Spike Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
@@ -3938,13 +4014,15 @@
 					]
 				},
 				"Reload Time": {
-					"desc": "Reload time. In the MCC all magazine-fed weapons reload by first-person animation (the tag-side reload timer is inert), so this scales that animation's length; *0.5 = twice as fast. Scales Master Chief and Arbiter.",
+					"desc": "How long you spend reloading. *0.5 is twice as fast.",
+					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": "Halo 3",
 					"tag": "jmad *fp_spike_rifle*",
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"easier_when": "increased",
@@ -3957,7 +4035,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"easier_when": "decreased",
@@ -4053,7 +4132,8 @@
 			},
 			"Spartan Laser": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
@@ -4108,7 +4188,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends a burst per trigger pull: Shots Per Fire is the burst length and Rounds Per Second is the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, its own card.",
+					"desc": "How many rounds each burst fires, and how fast they leave the barrel.",
+					"debug_desc": "Shots Per Fire is the burst length, Rounds Per Second the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, on its own card.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"easier_when": "increased",
@@ -4120,7 +4201,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, which on a burst weapon is the gap BETWEEN bursts. Lower is faster. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
+					"desc": "The pause between bursts. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot, which on a burst weapon is the gap between bursts. The cadence inside a burst is Rounds Per Second, on the More Shooting card.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
 					"easier_when": "decreased",
@@ -4172,7 +4254,8 @@
 			},
 			"Flamethrower": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower"
@@ -4204,7 +4287,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"easier_when": "increased",
@@ -4216,7 +4300,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"easier_when": "decreased",
@@ -4247,7 +4332,8 @@
 			},
 			"Machine Gun": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret"
@@ -4279,7 +4365,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
 					"easier_when": "increased",
@@ -4291,7 +4378,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
 					"easier_when": "decreased",
@@ -4324,7 +4412,8 @@
 			},
 			"Plasma Cannon": {
 				"Firing Noise": {
-					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon"
@@ -4356,7 +4445,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon is automatic, so Rounds Per Second is its real rate, ramping up to Rounds Per Second Max while you hold the trigger. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
 					"easier_when": "increased",
@@ -4368,7 +4458,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input, not the rate itself. Automatic weapons ship at 0 (no cooldown), so SET a value rather than multiplying: giving one a recovery time is what turns it semi-automatic.",
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
 					"easier_when": "decreased",
@@ -4434,7 +4525,8 @@
 					]
 				},
 				"More Shooting": {
-					"desc": "Rate of fire. This weapon sends one round per trigger pull, so Rounds Per Second only bites once Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, which has its own card.",
+					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
+					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"easier_when": "increased",
@@ -4446,7 +4538,8 @@
 					]
 				},
 				"Fire Recovery Time": {
-					"desc": "How long after firing before the weapon will fire again — the cooldown on your trigger input. On this weapon it is also what paces its fire, since it sends one round per pull: lower is faster.",
+					"desc": "How fast you can pull the trigger again. Lower is faster.",
+					"debug_desc": "The cooldown on trigger input after a shot. On a one-round-per-pull weapon this IS its rate of fire, so lowering it is the way to speed the weapon up.",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"easier_when": "decreased",
@@ -4565,7 +4658,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4610,7 +4704,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4654,7 +4749,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4690,7 +4786,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4746,7 +4843,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4815,7 +4913,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4860,7 +4959,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4941,7 +5041,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -4998,7 +5099,8 @@
 				]
 			},
 			"Vitality": {
-				"desc": "Auto Turret health. The turret has no vitality of its own and takes it from the shared generic AI base, so this also moves Flood Infection Forms, mounted turrets, Cortana and Truth -- the only other characters that inherit it.",
+				"desc": "How much punishment the Auto Turret takes before it dies.",
+				"debug_desc": "The turret has no vitality of its own and inherits it from the shared generic AI base, so this also moves the only other characters that inherit it: Flood Infection Forms, mounted turrets, Cortana and Truth.",
 				"game": "Halo 3",
 				"tag": "char ai\\generic",
 				"harder_when": "increased",
@@ -5075,7 +5177,8 @@
 				]
 			},
 			"Brute Drop Chance": {
-				"desc": "How often Brutes drop this instead of their other gear. It is a relative weight, not a probability \u2014 raising it shifts the odds toward this piece and away from that Brute's others, and carriers set to 0 stay disabled.",
+				"desc": "How often Brutes drop this instead of their other gear.",
+				"debug_desc": "A relative weight, not a probability: raising it shifts the odds toward this piece and away from that Brute's other drops. A carrier set to 0 stays disabled no matter what.",
 				"game": "Halo 3",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"harder_when": "decreased",
@@ -5106,7 +5209,8 @@
 	"Enemy modifiers": {
 		"General modifiers": {
 			"Player Preference": {
-				"desc": "How strongly AI prefer the player over other targets. Set on the shared `ai\\generic` parent every character inherits, so it moves the whole campaign at once (stock: 0.25).",
+				"desc": "How much enemies focus you instead of your allies.",
+				"debug_desc": "Set on the shared `ai\\generic` parent that every character inherits, so it moves the whole campaign at once. Stock 0.25.",
 				"game": "Halo Reach",
 				"tag": "char ai\\generic",
 				"harder_when": "increased",
@@ -5353,7 +5457,8 @@
 				]
 			},
 			"Accuracy": {
-				"desc": "General enemy weapon accuracy via the shared generic AI base. Exceptions: Grunts, Jackals, Hunters and the Flood forms, which define their own.",
+				"desc": "How often enemy shots hit you, across the whole campaign.",
+				"debug_desc": "Goes through the shared generic AI base. Grunts, Jackals, Hunters and the Flood forms define their own accuracy and are unaffected.",
 				"game": "Halo 3",
 				"tag": "char ai\\generic",
 				"targets": [
@@ -5384,7 +5489,8 @@
 		"Specific Enemy modifier": {
 			"Elite": {
 				"Recharge Delay": {
-					"desc": "How long after a hit before its shields start coming back (stock: 12s, and 8s for the Spec-Ops Elite). `Stun Time` on the collision tag. Halo 1 only: from Halo 2 on the character tag's Shield Recharge Delay governs the AI instead, so this field stops being the handle. The wildcard covers both Elite variants.",
+					"desc": "How long you have to keep hitting an Elite before its shields stop coming back.",
+					"debug_desc": "`Stun Time` on the collision tag. Stock 12s, 8s for the Spec-Ops Elite. Halo 1 only — from Halo 2 on, the character tag's Shield Recharge Delay governs the AI instead and this field stops being the handle. The wildcard covers both Elite variants.",
 					"game": "Halo 1",
 					"tag": "coll characters\\elite\\*",
 					"harder_when": "decreased",
@@ -5393,7 +5499,8 @@
 					]
 				},
 				"Leap": {
-					"desc": "How high Elites vault obstacles and how close they have to be to try (stock: 0.8 height, 0.4 proximity; the jetpack Elite is 2.0/0.5). Both fields are new in Reach -- no earlier game has them.",
+					"desc": "How readily Elites vault obstacles to get at you.",
+					"debug_desc": "Height and proximity. Stock 0.8 height / 0.4 proximity; the jetpack Elite is 2.0/0.5. Both fields are new in Reach — no earlier game has them.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite*",
 					"harder_when": "increased",
@@ -5403,7 +5510,8 @@
 					]
 				},
 			"Armor Lock": {
-				"desc": "How readily Elites armour-lock, how long it holds and how fast it returns (stock: 15% chance and 5s cooldown on the base Elite, 30%/3.5s/0.5s/3s on the Ultra). NOTE the base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising the chance and duration makes them harder; raising the cooldown makes them easier.",
+				"desc": "How often Elites armour-lock to shrug off your shots, and how long it holds.",
+				"debug_desc": "Stock 15% chance and 5s cooldown on the base Elite; 30%/3.5s/0.5s/3s on the Ultra. The base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
 				"game": "Halo Reach",
 				"tag": "char objects\\characters\\elite\\ai\\elite*",
 				"targets": [
@@ -5519,7 +5627,8 @@
 					]
 				},
 				"Elite Berserk": {
-					"desc": "Elite Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"desc": "How easily Elites go berserk and charge you. Less berserking is worse for you, not better.",
+					"debug_desc": "Three triggers: damage taken in a short window, how low health has to be, and a grenade landing nearby.",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*"
 					},
@@ -5930,7 +6039,8 @@
 					]
 				},
 				"Hunter Berserk": {
-					"desc": "Hunter Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"desc": "How easily Hunters go berserk and charge you. Less berserking is worse for you, not better.",
+					"debug_desc": "Three triggers: damage taken in a short window, how low health has to be, and a grenade landing nearby.",
 					"tag": {
 						"Halo 1": "actr characters\\hunter\\*"
 					},
@@ -5955,7 +6065,8 @@
 					]
 				},
 				"Berserk": {
-					"desc": "UNVERIFIED: Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may have no visible effect until confirmed in-game. Charge rampage cooldown, perimeter and limits.",
+					"desc": "How long Hunters rampage once they charge, and how far they push it.",
+					"debug_desc": "UNVERIFIED. Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may do nothing at all until that is confirmed in-game. Covers charge rampage cooldown, perimeter and limits.",
 					"game": "Halo 3",
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -6254,7 +6365,8 @@
 			},
 			"Jackal": {
 				"Recharge Delay": {
-					"desc": "How long after a hit before its shields start coming back (stock: 15s). `Stun Time` on the collision tag. Halo 1 only: from Halo 2 on the character tag's Shield Recharge Delay governs the AI instead, so this field stops being the handle. The shield gauntlet is a real shield here, with the longest delay of any Halo 1 character.",
+					"desc": "How long you have to keep hitting a Jackal before its shield stops coming back.",
+					"debug_desc": "`Stun Time` on the collision tag, stock 15s — the longest of any Halo 1 character, because the shield gauntlet is a real shield here. Halo 1 only: from Halo 2 on, the character tag's Shield Recharge Delay governs the AI instead.",
 					"game": "Halo 1",
 					"tag": "coll characters\\jackal\\*",
 					"harder_when": "decreased",
@@ -6263,7 +6375,8 @@
 					]
 				},
 				"Leap": {
-					"desc": "How high Jackals vault obstacles and how close they have to be to try. Only the sniper Jackal defines these (0.25 height, 0.2 proximity); the shield-gauntlet Jackals inherit and are unaffected.",
+					"desc": "How readily Jackals vault obstacles to get at you.",
+					"debug_desc": "Only the sniper Jackal defines these (0.25 height, 0.2 proximity). The shield-gauntlet Jackals inherit them and are unaffected by this card.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
 					"harder_when": "increased",
@@ -6305,7 +6418,8 @@
 					]
 				},
 				"Cover Chance": {
-					"desc": "Dive into / emerge from cover chance (H1); cover-seeking chance (H2). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
+					"desc": "How readily they duck into cover instead of standing in the open.",
+					"debug_desc": "Halo 1 uses dive-into / emerge-from cover chance; Halo 2 uses a cover-seeking chance. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
 						"Halo 2": "char ai\\generic",
@@ -6347,7 +6461,8 @@
 					"game": "Halo 1"
 				},
 				"Cover Properties": {
-					"desc": "Cover-seeking time and shield/vitality thresholds. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Jackals and Sentinel Enforcers.",
+					"desc": "How long they stay in cover, and how hurt they have to be to want it.",
+					"debug_desc": "Cover-seeking time plus shield and vitality thresholds. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
 						"Halo 2": "char ai\\generic",
@@ -6555,7 +6670,8 @@
 					]
 				},
 				"Hunter Berserk": {
-					"desc": "Hunter Berserk behavior for amount of damage in a short time, how low HP needs to be and when there is a grenade nearby. Less berserking makes your life worse",
+					"desc": "How easily Hunters go berserk and charge you. Less berserking is worse for you, not better.",
+					"debug_desc": "Three triggers: damage taken in a short window, how low health has to be, and a grenade landing nearby.",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*"
 					},
@@ -6593,7 +6709,8 @@
 					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
-					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How far away they will start shooting at you.",
+					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Maximum Firing Distance modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
@@ -6755,7 +6872,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"desc": "How often they swing at you in melee, and how long they wait between attempts.",
+					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actr characters\\flood_infection\\*",
 						"Halo 2": "char ai\\generic",
@@ -6774,7 +6892,8 @@
 					}
 				},
 				"Melee Leap": {
-					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"desc": "How far and how fast they leap at you when they close for a melee.",
+					"debug_desc": "Lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also moves every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actr characters\\flood_infection\\*",
 						"Halo 2": "char ai\\generic",
@@ -6797,7 +6916,8 @@
 					}
 				},
 				"Body Vitality": {
-					"desc": "Health (infections burst regardless, so this may be moot). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Flood Infection Forms.",
+					"desc": "How much damage they take before dying — though infection forms burst regardless.",
+					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves Flood Infection Forms.",
 					"tag": {
 						"Halo 1": "actv characters\\flood_infection\\*",
 						"Halo 2": "char ai\\generic",
@@ -6851,7 +6971,8 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How often their shots actually hit you.",
+					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\flood_infection\\*",
@@ -6996,7 +7117,8 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy \u2014 H1 projectile error; H2 accuracy bounds/time and projectile error. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How often their shots actually hit you.",
+					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"game": ["Halo 1", "Halo 2"],
 					"tag": {
 						"Halo 1": "actv characters\\floodcarrier\\*",
@@ -7419,7 +7541,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "Delay/timeout between melee attempts and the chance of one. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"desc": "How often they swing at you in melee, and how long they wait between attempts.",
+					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "char ai\\generic",
@@ -7432,7 +7555,8 @@
 					]
 				},
 				"Melee Leap": {
-					"desc": "Melee lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers and Flood Infection Forms.",
+					"desc": "How far and how fast they leap at you when they close for a melee.",
+					"debug_desc": "Lunge range, velocity, chance and ballistic arc. In Halo 2 this edits the shared AI base, so it also moves every enemy that inherits it: Buggers and Flood Infection Forms.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "char ai\\generic",
@@ -7447,7 +7571,8 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How often their shots actually hit you.",
+					"debug_desc": "Accuracy bounds/time (higher, or lower time, is more accurate) and projectile error (lower is more accurate). In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "char ai\\generic"
@@ -7462,7 +7587,8 @@
 			},
 			"Brute": {
 			"Armor Lock": {
-				"desc": "How readily Brutes armour-lock, how long it holds and how fast it returns (stock: 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%). Raising the chance and duration makes them harder; raising the cooldown makes them easier.",
+				"desc": "How often Brutes armour-lock to shrug off your shots, and how long it holds.",
+				"debug_desc": "Stock 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
 				"game": "Halo Reach",
 				"tag": "char objects\\characters\\brute\\ai\\brute*",
 				"targets": [
@@ -7582,7 +7708,8 @@
 					]
 				},
 				"Accuracy": {
-					"desc": "Enemy weapon accuracy \u2014 accuracy bounds/time (higher/lower = more accurate) and projectile error (lower = more accurate). In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How often their shots actually hit you.",
+					"debug_desc": "Accuracy bounds/time (higher, or lower time, is more accurate) and projectile error (lower is more accurate). In Halo 2 this edits the shared AI base, so it also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "char ai\\generic"
@@ -7595,7 +7722,8 @@
 					]
 				},
 				"Maximum Firing Distance": {
-					"desc": "Range within which they use their weapon. In Halo 2 this edits the shared AI base, so it also changes every enemy that inherits it: Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"desc": "How far away they will start shooting at you.",
+					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "char ai\\generic"
@@ -7668,7 +7796,8 @@
 			},
 			"Skirmisher": {
 				"Leap": {
-					"desc": "How high Skirmishers vault obstacles and how close they have to be to try. At 3.0 they leap higher than anything else in the campaign -- four times an Elite.",
+					"desc": "How readily Skirmishers leap obstacles to get at you — they already jump higher than anything else.",
+					"debug_desc": "Height and proximity. At 3.0 height they leap higher than anything else in the campaign — four times an Elite.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
 					"harder_when": "increased",
@@ -7741,7 +7870,8 @@
 					]
 				},
 				"Hologram": {
-					"desc": "Skirmishers are the only Reach characters that deploy holograms. This tunes how long they wait in cover behind one and how long before they can throw another (stock: 0.2s wait, 30s cooldown).",
+					"desc": "How often Skirmishers send a hologram out to bait your shots.",
+					"debug_desc": "Skirmishers are the only Reach characters that deploy holograms. Tunes how long they wait in cover behind one and the cooldown before another. Stock 0.2s wait, 30s cooldown.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
 					"targets": [
@@ -7989,7 +8119,8 @@
 			},
 			"Tartarus": {
 				"Body Vitality": {
-					"desc": "Tartarus's health. NOTE: on The Great Journey (08b) the boss script calls unit_set_maximum_vitality on him at the start of every phase, so this card is overwritten there and changes nothing. It is the only level he appears on.",
+					"desc": "Tartarus's health — but the boss script overwrites it, so this card does nothing.",
+					"debug_desc": "On The Great Journey (08b) the boss script calls unit_set_maximum_vitality on him at the start of every phase, overwriting whatever is patched here. 08b is the only level he appears on, so the card never bites.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"harder_when": "increased",
@@ -7998,7 +8129,8 @@
 					]
 				},
 				"Shield Vitality": {
-					"desc": "Tartarus's shield. NOTE: on The Great Journey (08b) his shield is driven by the boss script — topped back to full before each of Johnson's volleys, then dropped once it is chipped past a fixed fraction — and the script sets his maximum vitality every phase, so this card is overwritten there and changes nothing. Add Johnsons in Options instead.",
+					"desc": "Tartarus's shield — but the boss script overwrites it. Add Johnsons in Options instead.",
+					"debug_desc": "On The Great Journey (08b) his shield is driven by the boss script: topped back to full before each of Johnson's volleys, then dropped once chipped past a fixed fraction, with maximum vitality set every phase. Whatever is patched here is overwritten.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"harder_when": "increased",
@@ -8286,7 +8418,8 @@
 			},
 			"Elite Honor Guard": {
 				"Body Vitality": {
-					"desc": "The Honor Guard's health. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How much punishment the Honor Guard takes before it dies.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
@@ -8296,7 +8429,8 @@
 					]
 				},
 				"Shield Vitality": {
-					"desc": "The Honor Guard's shield. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How much the Honor Guard's shields absorb before they break.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
@@ -8306,7 +8440,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "How often the Honor Guard commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the Honor Guard swings at you, and from how far.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Charge Properties", "grow": true },
@@ -8318,7 +8453,8 @@
 					]
 				},
 				"Grenade Chance": {
-					"desc": "How readily the Honor Guard throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the Honor Guard throws grenades at you.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
@@ -8330,7 +8466,8 @@
 			},
 			"Brute Chieftain": {
 				"Grenade Chance": {
-					"desc": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block.",
+					"desc": "How often the armoured Chieftain throws grenades at you.",
+					"debug_desc": "Only the armoured variant carries its own Grenades block; the other Chieftains inherit and are unaffected.",
 					"desc_overrides": {
 						"Halo 3": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block, and here it is seeded from its nearest ancestor before the card applies.",
 						"Halo 3: ODST": "How readily the armoured Chieftain throws grenades. Only the armoured variant carries a Grenades block, and here it is seeded from its nearest ancestor before the card applies.",
@@ -8402,7 +8539,8 @@
 			},
 			"Elite Specops Commander": {
 				"Body Vitality": {
-					"desc": "The Spec-Ops Commander's health. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How much punishment the Spec-Ops Commander takes before it dies.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
@@ -8412,7 +8550,8 @@
 					]
 				},
 				"Shield Vitality": {
-					"desc": "The Spec-Ops Commander's shield. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How much the Spec-Ops Commander's shields absorb before they break.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
@@ -8422,7 +8561,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "How often the Spec-Ops Commander commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the Spec-Ops Commander swings at you, and from how far.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Charge Properties", "grow": true },
@@ -8434,7 +8574,8 @@
 					]
 				},
 				"Grenade Chance": {
-					"desc": "How readily the Spec-Ops Commander throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the Spec-Ops Commander throws grenades at you.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
@@ -8446,7 +8587,8 @@
 			},
 			"Elite General": {
 				"Melee Behavior": {
-					"desc": "How often the General commits to a melee lunge, and how far it reaches. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the General swings at you, and from how far.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Charge Properties", "grow": true },
@@ -8458,7 +8600,8 @@
 					]
 				},
 				"Grenade Chance": {
-					"desc": "How readily the General throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the General throws grenades at you.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
 					"harder_when": "increased",
@@ -8498,7 +8641,8 @@
 			},
 			"Elite Zealot": {
 				"Grenade Chance": {
-					"desc": "How readily the Zealot throws grenades. Depends on the pending value insertion: this variant inherits the block from its parent, so the card does nothing until its own copy exists.",
+					"desc": "How often the Zealot throws grenades at you.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"harder_when": "increased",
@@ -8528,7 +8672,8 @@
 					]
 				},
 				"Melee Behavior": {
-					"desc": "How often the Zealot commits to a melee lunge, and how far it reaches. Only the named Zealot defines these; the plain story Elites inherit them.",
+					"desc": "How often the Zealot swings at you, and from how far.",
+					"debug_desc": "Only the named Zealot defines these fields; the plain story Elites inherit them and are unaffected by this card.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Charge Properties", "grow": true },
