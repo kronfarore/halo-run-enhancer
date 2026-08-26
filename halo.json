@@ -637,6 +637,17 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"game": ["Halo 1", "Halo 3", "Halo Reach"],
@@ -786,6 +797,19 @@
 				}
 			},
 			"Pistol": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
@@ -983,6 +1007,19 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Homing (Charged)": {
 					"desc": "How hard the overcharge bolt homes in on targets",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
@@ -1273,6 +1310,19 @@
 				}
 			},
 			"Plasma Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Dual Weapon Error": {
 					"desc": "Weapon Spread while dual wielding",
 					"tag": {
@@ -1517,6 +1567,19 @@
 				}
 			},
 			"Needler": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 3: ODST": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Homing": {
 					"desc": "How hard the needles home in on targets",
 					"game": ["Halo 2", "Halo 3"],
@@ -1769,6 +1832,19 @@
 				}
 			},
 			"Sniper Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -1929,6 +2005,19 @@
 				}
 			},
 			"Rocket Launcher": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 3: ODST": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -2088,6 +2177,19 @@
 				}
 			},
 			"Shotgun": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Pellet Spread": {
 					"desc": "Pellet count (yaw x pitch), spread cone and distribution",
 					"game": ["Halo 3", "Halo Reach"],
@@ -2261,6 +2363,18 @@
 				}
 			},
 			"SMG": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3": "weap objects\\weapons\\rifle\\smg\\smg",
+						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Bullet Damage": {
 					"desc": "Damage per bullet",
 					"game": ["Halo 2", "Halo 3"],
@@ -2432,6 +2546,16 @@
 				}
 			},
 			"Brute Plasma Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Velocity",
 					"game": "Halo 2",
@@ -2602,6 +2726,17 @@
 				}
 			},
 			"Battle Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -2735,6 +2870,17 @@
 				}
 			},
 			"Brute Shot": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
+						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -2877,6 +3023,17 @@
 				}
 			},
 			"Beam Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -3014,6 +3171,17 @@
 				}
 			},
 			"Covenant Carbine": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -3147,6 +3315,17 @@
 				}
 			},
 			"Flak Cannon": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Homing": {
 					"desc": "How hard the bolts home in on targets",
 					"game": "Halo 3",
@@ -3303,6 +3482,17 @@
 				}
 			},
 			"Sentinel Beam": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"tag": {
@@ -3558,6 +3748,16 @@
 				}
 			},
 			"Mauler": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\pistol\\excavator\\excavator"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
 					"tag": {
@@ -3671,6 +3871,17 @@
 				}
 			},
 			"Spike Rifle": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
+						"Halo Reach": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
 					"tag": {
@@ -3833,6 +4044,18 @@
 				}
 			},
 			"Spartan Laser": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+						"Halo 3: ODST": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
+						"Halo Reach": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
@@ -3940,6 +4163,16 @@
 				}
 			},
 			"Flamethrower": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Flame Damage": {
 					"desc": "Damage per flame blob",
 					"game": "Halo 3",
@@ -4005,6 +4238,16 @@
 				}
 			},
 			"Machine Gun": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Bullet Damage": {
 					"desc": "Damage per bullet (mounted and detached)",
 					"game": "Halo 3",
@@ -4072,6 +4315,16 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Firing Noise": {
+					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+					]
+				},
 				"Bullet Damage": {
 					"desc": "Damage per bolt (mounted and detached)",
 					"game": "Halo 3",

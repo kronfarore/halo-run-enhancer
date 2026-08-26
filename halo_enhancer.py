@@ -3034,6 +3034,15 @@ class StartDialog(QDialog):
         self.accept()
 
 
+def row_value(widget):
+    """The text of a magnitude row, whichever widget it uses.
+
+    Most rows are a QLineEdit holding an operator; a `choice` row is a QComboBox
+    holding an enum option name. Every read goes through here so adding the combo
+    could not break the places that used to call .text() directly."""
+    return widget.currentText() if hasattr(widget, 'currentText') else widget.text()
+
+
 class MagnitudeEditorDialog(QDialog):
     """Per-run editor: lists the selected effects grouped by tag, shows each
     field's vanilla value, takes a typed operator (-n/+n/*n or xn/=n) per target
@@ -4240,6 +4249,39 @@ class MagnitudeEditorDialog(QDialog):
                 le.setToolTip("Auto-computed from the fields above; not editable.")
                 le.setStyleSheet("background-color: #101010; color: #7ac07a; "
                                  "border: 1px dashed #3a3a3a; padding: 4px; border-radius: 3px;")
+            elif t.get('choice'):
+                # Enum choice: a dropdown of the options THIS GAME's plugin defines, so
+                # a game that reorders or renames them needs no halo.json change. The
+                # value is applied by name, never by index.
+                _cls = self._hp.hm.split_tag(eff['tag'])[0]
+                _plug = self.registry.get(_cls)
+                _fld = _plug.find(t['field'], t.get('block'),
+                                  t.get('nth', 0) or 0) if _plug else None
+                _opts = (_fld or {}).get('options') or {}
+                # options is {lowercased name: value}; order by value so the list
+                # reads the way the tag itself is ordered.
+                _names = [n.title() for _v, n in sorted((v, n) for n, v in _opts.items())]
+                le = QComboBox()
+                le.addItems(_names or ['(no options)'])
+                le.setMaximumWidth(140)
+                # Preselect the weapon's CURRENT value, not the first option. A
+                # choice row always emits its set, so defaulting to index 0 would have
+                # made every untouched Firing Noise card silence the weapon.
+                _prev = self.presets.get(self._hp.preset_key(
+                    eff['tag'], eff['name'], t['field'], self.game))
+                if not _prev:
+                    _cur = self._vanilla_num(eff['tag'], t['field'], t.get('block'),
+                                             t.get('nth', 0) or 0)
+                    if _cur is not None:
+                        _byval = {v: n for n, v in _opts.items()}
+                        _prev = (_byval.get(int(_cur)) or '').title() or None
+                if _prev:
+                    _i = le.findText(str(_prev), Qt.MatchFixedString)
+                    if _i >= 0:
+                        le.setCurrentIndex(_i)
+                le.setToolTip("Sets %s outright. Options come from this game's own "
+                              "plugin and are applied by NAME \u2014 Reach orders this "
+                              "enum differently from the earlier games." % t['field'])
             elif t.get('set') is not None:
                 # Fixed set (enum enabler): display-only, always applied with the effect.
                 le.setReadOnly(True)
@@ -4283,7 +4325,7 @@ class MagnitudeEditorDialog(QDialog):
                         le.setText(str(fallback))
                         le.setToolTip("Carried over from %s (no value set for this field yet)"
                                       % self._FIELD_CARRYOVER.get(t['field'], ''))
-            if not le.isReadOnly():
+            if hasattr(le, 'isReadOnly') and not le.isReadOnly():
                 # #7: rewrite shorthand into its canonical form once the field is left,
                 # so '*.5' reads back as '*0.5' (and is remembered, and shared, that
                 # way). Purely cosmetic -- parse_operator accepted both all along.
@@ -4292,7 +4334,8 @@ class MagnitudeEditorDialog(QDialog):
             inrow.addWidget(le)
             eh = le.sizeHint().height()   # keep row-adornment buttons the input's height
             # #1: debug-only per-field patch — write just this one field to the map.
-            if CONFIG.get('debug_mode') and not derived and t.get('set') is None:
+            if (CONFIG.get('debug_mode') and not derived
+                    and t.get('set') is None and not t.get('choice')):
                 one = QPushButton("⤓ field")
                 one.setMaximumWidth(72)
                 one.setFixedHeight(eh)   # don't inflate the row (misaligns the value column)
@@ -4343,7 +4386,7 @@ class MagnitudeEditorDialog(QDialog):
                                                    t2.get('nth', 0) or 0)
                         if base_v is None:
                             continue
-                        txt = l2.text().strip()
+                        txt = row_value(l2).strip()
                         parsed = self._hp.hm.parse_operator(txt) if txt else None
                         val = (self._hp.hm.OP_FUNCS[parsed[0]](base_v, parsed[1])
                                if parsed else base_v)
@@ -4931,7 +4974,7 @@ class MagnitudeEditorDialog(QDialog):
         for eff, t, le in self.rows:
             if not (t.get('map_swap') or t.get('map_equip')):
                 continue
-            txt = le.text().strip()
+            txt = row_value(le).strip()
             self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
             parsed = self._hp.hm.parse_operator(txt)
             if not parsed:
@@ -4955,10 +4998,10 @@ class MagnitudeEditorDialog(QDialog):
 
         plan_map = {}
         for eff, t, le in self.rows:
-            if (t.get('derived') or t.get('set') is not None
+            if (t.get('derived') or t.get('set') is not None or t.get('choice')
                     or t.get('map_swap') or t.get('map_equip') or t.get('sprint')):
-                continue          # display-only / fixed-set / swap / sprint; handled separately
-            txt = le.text().strip()
+                continue          # display-only / fixed-set / choice / swap / sprint
+            txt = row_value(le).strip()
             # #11: remember the input as-is, including an empty one — an empty entry is
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
             # come back from a fallback next time). Only a non-empty input adds an op.
@@ -4997,6 +5040,28 @@ class MagnitudeEditorDialog(QDialog):
                 plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                              'index': t.get('index', 0),
                                              'derived': list(t['derived'])})
+        # Choice rows CREATE their plan entry rather than tagging along the way a
+        # fixed set does: a card whose only target is the choice would otherwise never
+        # be patched, because nothing else would have put its effect in the plan.
+        for eff, t, le in self.rows:
+            if not t.get('choice'):
+                continue
+            chosen = row_value(le).strip()
+            self.presets[self._hp.preset_key(
+                eff['tag'], eff['name'], t['field'], self.game)] = chosen
+            if not chosen or chosen.startswith('('):
+                continue
+            key = (eff['tag'], eff['name'])
+            plan_map.setdefault(key, {'tag': eff['tag'], 'name': eff['name'], 'ops': [],
+                                      'init_defaults': eff.get('init_defaults'),
+                                      'constraints': eff.get('constraints'),
+                                      'weapon': eff.get('weapon'),
+                                      'missing_in_db': bool(eff.get('_missing_in_db'))})
+            plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
+                                         'index': t.get('index', 0),
+                                         'nth': t.get('nth', 0) or 0,
+                                         **_diff_flavor(t), 'set': chosen})
+
         # Fixed-set fields (e.g. Special-Fire Mode -> Overcharge) tag along whenever
         # their effect is being patched at all, so the enabler is applied with it.
         for eff, t, le in self.rows:
