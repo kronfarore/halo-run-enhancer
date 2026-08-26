@@ -638,7 +638,7 @@
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
@@ -799,7 +799,7 @@
 			},
 			"Pistol": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
@@ -1010,7 +1010,7 @@
 			},
 			"Plasma Pistol": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
@@ -1314,7 +1314,7 @@
 			},
 			"Plasma Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma rifle\\plasma rifle",
@@ -1572,7 +1572,7 @@
 			},
 			"Needler": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
@@ -1838,7 +1838,7 @@
 			},
 			"Sniper Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
@@ -2012,7 +2012,7 @@
 			},
 			"Rocket Launcher": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
@@ -2185,7 +2185,7 @@
 			},
 			"Shotgun": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
@@ -2372,7 +2372,7 @@
 			},
 			"SMG": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg",
@@ -2555,7 +2555,7 @@
 			},
 			"Brute Plasma Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
@@ -2735,7 +2735,7 @@
 			},
 			"Battle Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
@@ -2879,7 +2879,7 @@
 			},
 			"Brute Shot": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot",
@@ -3032,7 +3032,7 @@
 			},
 			"Beam Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
@@ -3180,7 +3180,7 @@
 			},
 			"Covenant Carbine": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
@@ -3324,7 +3324,7 @@
 			},
 			"Flak Cannon": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
@@ -3491,7 +3491,7 @@
 			},
 			"Sentinel Beam": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
@@ -3757,7 +3757,7 @@
 			},
 			"Mauler": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\pistol\\excavator\\excavator"
@@ -3880,7 +3880,7 @@
 			},
 			"Spike Rifle": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
@@ -4053,7 +4053,7 @@
 			},
 			"Spartan Laser": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser",
@@ -4172,7 +4172,7 @@
 			},
 			"Flamethrower": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower"
@@ -4247,7 +4247,7 @@
 			},
 			"Machine Gun": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret"
@@ -4324,7 +4324,7 @@
 			},
 			"Plasma Cannon": {
 				"Firing Noise": {
-					"desc": "How loud this weapon is to AI hearing — the `Firing Noise` enum, not a volume. Quieter means enemies further away stay unaware when you shoot; louder pulls in everything nearby. Set by NAME, because the games do not agree on the order: Halo 1 through ODST run Silent, Medium, Loud, Shout, Quiet while Reach runs Silent, Quiet, Medium, Shout, Loud, so the same number means different things.",
+					"desc": "How loud this shot is to AI HEARING — an enum, not a volume. The engine raises a noise event of this level; whether an enemy notices it is bounded by their own `Hearing Distance` (on char, actr in Halo 1). The same enum drives biped and vehicle Constant Sound Volume and projectile Impact/Detonation Noise, so this is the AI's general sense of hearing. The names are NOT a straight ladder: measured over 232 weapons in all five games, Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser), Loud is the ordinary tier nearly every weapon ships with, Medium is the suppressed tier (ODST's automag and silenced SMG are the only two weapons that use it), and Silent is for horns and cameras — AI never hear it. Quiet is used by no shipped weapon anywhere. Set by NAME, because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet while Reach stores Silent, Quiet, Medium, Shout, Loud, so the same number means different things. Reach also hears much further — its characters run 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon"
