@@ -26,7 +26,7 @@ except ImportError as e:
 # Tool version. Convention (user): stay on 0.2.x for the whole Halo-2 era —
 # bump only the last component for changes; the middle 2 becomes 3 only when
 # support reaches the next Halo game. Stamped into saved runs and patch logs.
-VERSION = "0.3.121"
+VERSION = "0.4.0"
 
 
 def resource_path(filename):
@@ -9622,6 +9622,15 @@ def main():
         sys.stdout = _NullWriter()
     if sys.stderr is None:
         sys.stderr = _NullWriter()
+    # Diagnostics print check marks and arrows. A real console renders them, but a
+    # REDIRECTED stream falls back to the locale encoding (cp1252 here) and raises
+    # UnicodeEncodeError mid-print -- which load_data catches as "Error loading
+    # data", leaving every pool empty. Never let the log's charset break the app.
+    for s in (sys.stdout, sys.stderr):
+        try:
+            s.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
     load_settings()
     app = QApplication(sys.argv)
     # Stop the wheel from changing spin-box values unless the field is focused.

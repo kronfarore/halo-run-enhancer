@@ -247,28 +247,52 @@ def check_resolution():
             # drop weight (whose element is picked by tagRef, not by index).
             for t in targets:
                 if not isinstance(t, dict) or any(
-                        t.get(k) for k in ('reload_anim', 'map_swap', 'map_equip',
-                                           'equip_drop', 'sprint')):
+                        t.get(k) for k in ('reload_anim', 'swap_anim', 'map_swap',
+                                           'map_equip', 'equip_drop', 'sprint')):
                     continue
                 if t.get('games') and game not in t['games']:
                     continue
                 field = resolve_gamed(t.get('field'), game)
                 if field is None:
                     continue
+                # A target may redirect to a tag of its own class -- Firing Noise
+                # carries the projectile's Impact and Detonation Noise along with the
+                # weapon's. Resolve the field against THAT class, or every redirect
+                # reads as a missing field in the card's own plugin.
+                tp, tmap, thits = p, found_map, hits
+                if isinstance(resolve_gamed(t.get('tag'), game), str):
+                    ttag = resolve_gamed(t['tag'], game)
+                    tcls, tpath2 = hm.split_tag(ttag)
+                    tp = plugin(game, tcls)
+                    if tp is None:
+                        report(f'{label} [{game}]: no {tcls} plugin')
+                        continue
+                    tmap, thits = None, []
+                    for _mn, m in maps_for(game):
+                        h = []
+                        for part in tpath2.split(' & '):
+                            h += m.find_tags(tcls, part.strip())
+                        if h:
+                            tmap, thits = m, h
+                            break
+                    if tmap is None:
+                        report(f'{label} [{game}]: target tag resolves on 0 maps '
+                               f'({ttag})')
+                        continue
                 block = resolve_gamed(t.get('block'), game)
                 nth = resolve_gamed(t.get('nth'), game) or 0
                 fld = None
                 for nm in flavors(field, t):
-                    fld = p.find(nm, block, nth)
+                    fld = tp.find(nm, block, nth)
                     if fld:
                         break
                 if not fld:
                     report(f'{label} [{game}]: FIELD not in plugin: {field!r} '
                            f'(block {block!r})')
                     continue
-                got = any(found_map.follow_all(b, fld['block_offsets'],
-                                               fld.get('block_sizes'), 'all')
-                          for _, b in hits)
+                got = any(tmap.follow_all(b, fld['block_offsets'],
+                                          fld.get('block_sizes'), 'all')
+                          for _, b in thits)
                 if not got:
                     report(f'{label} [{game}]: field EMPTY on all matched tags: {field!r}')
 

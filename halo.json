@@ -6806,6 +6806,7 @@
 				},
 				"Charging Time": {
 					"desc": "Time it takes to overcharge",
+					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } },
@@ -6814,6 +6815,7 @@
 				},
 				"Plasma Timer": {
 					"desc": "How long needles stick to the target before exploding",
+					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
 					"constraints": [
 						{ "field": "Timer Max", "of": "Timer", "not_below": true }
@@ -6984,6 +6986,7 @@
 				},
 				"Misfire": {
 					"desc": "When Misifirng starts and how likely it is",
+					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
 						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
@@ -7119,6 +7122,7 @@
 				},
 				"Charging Time": {
 					"desc": "Time it takes to overcharge",
+					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -7126,6 +7130,7 @@
 				},
 				"Per Round": {
 					"desc": "Heat per Round",
+					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": "all" }
@@ -7133,6 +7138,7 @@
 				},
 				"Arming Timer": {
 					"desc": "How long needles stick to the target before exploding",
+					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer",
 					"constraints": [
 						{ "field": "Timer Max", "of": "Timer", "not_below": true }
