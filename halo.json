@@ -656,6 +656,17 @@
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -861,6 +872,17 @@
 				}
 			},
 			"Pistol": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet & objects\\weapons\\pistol\\automag\\damage_effects\\automag_bullet"},
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -1113,6 +1135,17 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -1466,6 +1499,17 @@
 				}
 			},
 			"Plasma Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -1758,6 +1802,17 @@
 				}
 			},
 			"Needler": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -2074,6 +2129,17 @@
 				}
 			},
 			"Sniper Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -2290,6 +2356,17 @@
 				}
 			},
 			"Rocket Launcher": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo 3: ODST": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"},
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -2529,6 +2606,17 @@
 				}
 			},
 			"Shotgun": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -2758,6 +2846,17 @@
 				}
 			},
 			"SMG": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -3192,6 +3291,17 @@
 				}
 			},
 			"Battle Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -3373,6 +3483,17 @@
 				}
 			},
 			"Brute Shot": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact", "Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"},
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -3563,6 +3684,17 @@
 				}
 			},
 			"Beam Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -3738,6 +3870,17 @@
 				}
 			},
 			"Covenant Carbine": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -3919,6 +4062,17 @@
 				}
 			},
 			"Flak Cannon": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -4135,6 +4289,17 @@
 				}
 			},
 			"Sentinel Beam": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam", "Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"},
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -4436,6 +4601,17 @@
 				}
 			},
 			"Mauler": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -4596,6 +4772,17 @@
 				}
 			},
 			"Spike Rifle": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
@@ -4844,6 +5031,17 @@
 				}
 			},
 			"Spartan Laser": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -5106,6 +5304,17 @@
 				}
 			},
 			"Machine Gun": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
@@ -5229,6 +5438,17 @@
 				}
 			},
 			"Plasma Cannon": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
@@ -5352,6 +5572,17 @@
 				}
 			},
 			"Missile Pod": {
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"game": ["Halo 3"],
+					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
+					"targets": [
+						{"field": "Rider Direct Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
+						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"Melee Seeking": {
 					"desc": "How generously your melee swing snaps onto a target.",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
@@ -7490,8 +7721,8 @@
 					{"field": "AI Normal Velocity Scale", "group": "AI Velocity Scale", "min": "0"},
 					{"field": "AI Heroic Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach"], "min": "0"},
 					{"field": "AI Legendary Velocity Scale", "group": "AI Velocity Scale", "min": "0"},
-					{"field": "AI Normal Guided Angular Velocity Scale", "group": "AI Guided Angular Velocity Scale", "games": ["Halo Reach"], "min": "0"},
-					{"field": "AI Legendary Guided Angular Velocity Scale", "group": "AI Guided Angular Velocity Scale", "games": ["Halo Reach"], "min": "0"}
+					{"field": "AI Normal Guided Angular Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach"], "min": "0"},
+					{"field": "AI Legendary Guided Angular Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach"], "min": "0"}
 				]
 			}
 		},
