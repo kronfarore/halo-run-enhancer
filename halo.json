@@ -658,9 +658,9 @@
 			"Assault Rifle": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet"},
+					"tag": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -876,9 +876,9 @@
 			"Pistol": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet & objects\\weapons\\pistol\\automag\\damage_effects\\automag_bullet"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\automag\\damage_effects\\automag_bullet & objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet"},
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -1155,9 +1155,9 @@
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt"},
+					"tag": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt & objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -1523,9 +1523,9 @@
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt"},
+					"tag": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -1823,9 +1823,9 @@
 			"Needler": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation"},
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -1955,6 +1955,9 @@
 				"Needle Timer": {
 					"desc": "How long needles stick to the target before exploding",
 					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard"},
+					"constraints": [
+						{ "field": "Timer Max", "of": "Timer", "not_below": true }
+					],
 					"targets": [
 						{ "field": "Timer" },
 						{ "field": "Timer Max" },
@@ -2129,9 +2132,9 @@
 			"Sniper Rifle": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet"},
+					"tag": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -2347,7 +2350,7 @@
 			"Rocket Launcher": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo 3: ODST": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion"},
 					"targets": [
@@ -2584,9 +2587,9 @@
 			"Shotgun": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet"},
+					"tag": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -2821,7 +2824,7 @@
 			"SMG": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jpt! objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
 					"targets": [
@@ -3250,7 +3253,7 @@
 			"Battle Rifle": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet",
 					"targets": [
@@ -3445,9 +3448,9 @@
 			"Brute Shot": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion & objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact", "Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\grenade_impact & objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion", "Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"},
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -3660,7 +3663,7 @@
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact",
 					"targets": [
@@ -3849,7 +3852,7 @@
 			"Covenant Carbine": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug",
 					"targets": [
@@ -4044,9 +4047,9 @@
 			"Flak Cannon": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion & objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion"},
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -4270,9 +4273,9 @@
 			"Sentinel Beam": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam", "Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"},
+					"tag": {"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_beam_firing", "Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"},
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -4574,7 +4577,7 @@
 			"Mauler": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
 					"tag": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
 					"targets": [
@@ -4748,9 +4751,9 @@
 			"Spike Rifle": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike"},
+					"tag": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -5030,9 +5033,9 @@
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam"},
+					"tag": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam",
 					"targets": [
 						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
 						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
@@ -5311,7 +5314,7 @@
 			"Machine Gun": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
 					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
 					"targets": [
@@ -5449,7 +5452,7 @@
 			"Plasma Cannon": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
 					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
 					"targets": [
@@ -5587,7 +5590,7 @@
 			"Missile Pod": {
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
-					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
 					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
 					"targets": [
@@ -6461,6 +6464,9 @@
 					"debug_desc": "`Timer` / `Timer Max` on the needle projectile.\n\n`Super Detonation Projectile Count` is how many needles must stick before they combine: 3 on the needle rifle, 6 on Reach's needler.",
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
+					"constraints": [
+						{ "field": "Timer Max", "of": "Timer", "not_below": true }
+					],
 					"targets": [
 						{"field": "Timer"},
 						{"field": "Timer Max"},
@@ -6797,6 +6803,25 @@
 						{"field": "Radius"},
 						{"field": "Radius Max"}
 					]
+				},
+				"Charging Time": {
+					"desc": "Time it takes to overcharge",
+					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
+					"targets": [
+						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } },
+						{ "field": "Charged Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
+					]
+				},
+				"Plasma Timer": {
+					"desc": "How long needles stick to the target before exploding",
+					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
+					"constraints": [
+						{ "field": "Timer Max", "of": "Timer", "not_below": true }
+					],
+					"targets": [
+						{ "field": "Timer", "min": 0 },
+						{ "field": "Timer Max", "min": 0 }
+					]
 				}
 			},
 			"Plasma Repeater": {
@@ -6956,6 +6981,14 @@
 						{"field": "Damage Upper Bound"},
 						{"field": "Damage Upper Bound Max"}
 					]
+				},
+				"Misfire": {
+					"desc": "When Misifirng starts and how likely it is",
+					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
+					"targets": [
+						{ "field": "Age Misfire Start", "min": 0, "max": 1.0  },
+						{ "field": "Age Misfire Chance", "min": 0, "max": 1.0 }
+					]
 				}
 			},
 			"Target Locator": {
@@ -7027,10 +7060,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": "all"},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": "all"},
+						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": "all"},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": "all"}
 					]
 				},
 				"Fire Recovery Time": {
@@ -7039,7 +7072,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
-						{"field": "Fire Recovery Time", "block": "Barrels"}
+						{"field": "Fire Recovery Time", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Projectiles Per Shot": {
@@ -7047,14 +7080,14 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
-						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}}
+						{"field": "Projectiles Per Shot", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "index": "all"}
 					]
 				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo Reach"],
-					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round",
+					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer",
 					"targets": [
 						{"field": "Maximum Range"},
 						{"field": "Initial Velocity"},
@@ -7082,6 +7115,43 @@
 					"targets": [
 						{"field": "Radius"},
 						{"field": "Radius Max"}
+					]
+				},
+				"Charging Time": {
+					"desc": "Time it takes to overcharge",
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per Round",
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": "all" }
+					]
+				},
+				"Arming Timer": {
+					"desc": "How long needles stick to the target before exploding",
+					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer",
+					"constraints": [
+						{ "field": "Timer Max", "of": "Timer", "not_below": true }
+					],
+					"targets": [
+						{ "field": "Timer", "min": 0 },
+						{ "field": "Timer Max", "min": 0},
+						{"field": "Arming Time", "min": 0}
+					]
+				},
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
+					"game": ["Halo Reach"],
+					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
+					"targets": [
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer", "follows_choice": true}
 					]
 				}
 			}
