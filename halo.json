@@ -7481,13 +7481,17 @@
 				]
 			},
 			"AI Projectile Speed": {
-				"desc": "How fast AI-fired projectiles fly on Normal and Legendary tiers (weapons with unset tiers use engine default and are unaffected)",
-				"game": "Halo 3",
+				"desc": "How fast AI-fired shots travel, and how hard the homing ones steer. Weapons with no tier set use the engine default and are unaffected.",
+				"debug_desc": "Two ladders on `proj *`, every projectile in the map, grouped into one row each because a difficulty tier is not a separate decision from its siblings.\n\nVELOCITY. Halo 3 and ODST ship `AI Normal Velocity Scale` and `AI Legendary Velocity Scale`; Reach adds `AI Heroic Velocity Scale` and completes the ladder. The shipped values read as one: ghost bolt 0.75 / 0.90 / 1.10, plasma turret 0.66 / 0.80 / 1.00, revenant turret 0.40 / 0.50 / 0.60. 38 projectiles set at least one in Reach, 20 in ODST.\n\nGUIDED. `AI Normal / Legendary Guided Angular Velocity Scale` are new in Reach -- no earlier game scales homing by difficulty. Only four projectiles use them: needler shard 0.15, rocket 0.1, plasma launcher 0.0001, falcon grenade 0.75. They scale the same Guided Angular Velocity the player's Homing card tunes, but only when an AI fires it.\n\nHalo 2 has none of these fields and Halo 1 has no equivalent, so the card is Halo 3 onward. Raising either makes enemies harder: faster shots are harder to dodge and harder homing is harder to break.",
+				"game": ["Halo 3", "Halo Reach"],
 				"harder_when": "increased",
 				"tag": "proj *",
 				"targets": [
-					{ "field": "AI Normal Velocity Scale", "min": "0" },
-					{ "field": "AI Legendary Velocity Scale", "min": "0" }
+					{"field": "AI Normal Velocity Scale", "group": "AI Velocity Scale", "min": "0"},
+					{"field": "AI Heroic Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach"], "min": "0"},
+					{"field": "AI Legendary Velocity Scale", "group": "AI Velocity Scale", "min": "0"},
+					{"field": "AI Normal Guided Angular Velocity Scale", "group": "AI Guided Angular Velocity Scale", "games": ["Halo Reach"], "min": "0"},
+					{"field": "AI Legendary Guided Angular Velocity Scale", "group": "AI Guided Angular Velocity Scale", "games": ["Halo Reach"], "min": "0"}
 				]
 			}
 		},
