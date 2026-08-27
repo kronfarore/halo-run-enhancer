@@ -53,9 +53,15 @@ LAYOUTS = {
 }
 
 
-def _reload_anim_indices(m, base, L):
-    """Animation indices driven by any action whose resolved label contains 'reload'.
-    Deduped, order-preserving."""
+def _reload_anim_indices(m, base, L, match=('reload',)):
+    """Animation indices driven by any action whose resolved label contains one of
+    `match`. Deduped, order-preserving.
+
+    `match` is a parameter because the swap is the same problem as the reload: weapon
+    SWAP speed is the `ready` and `put_away` animations in this very graph, and no
+    weap field drives it (Ready Time is non-zero on three weapons, ODST's Weapon Ready
+    1st Person Animation Playback Scale on none at all).
+    """
     out, seen = [], set()
     for mo in m.follow_all(base, [L['modes_blk']], [L['modes_el']], 'all'):
         for wc in m.follow_all(mo, [L['wclass_blk']], [L['wclass_el']], 'all'):
@@ -63,7 +69,7 @@ def _reload_anim_indices(m, base, L):
                 for a in m.follow_all(wt, [L['actions_blk']], [L['actions_el']], 'all'):
                     label = struct.unpack_from('<I', m.data, a)[0]
                     name = m.resolve_stringid(label)
-                    if not name or 'reload' not in name:
+                    if not name or not any(k in name for k in match):
                         continue
                     ai = struct.unpack_from('<h', m.data, a + L['act_anim_off'])[0]
                     if ai >= 0 and ai not in seen:
@@ -127,7 +133,7 @@ H1_I16_FRAMES = (0x2E, 0x34, 0x36, 0x3E)
 H1_I8_FRAMES = (0x40, 0x41)
 
 
-def _scale_reload_h1(m, tag_pattern, mult):
+def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
     tags = m.find_tags('antr', tag_pattern)
     if not tags:
         return {'ok': False, 'reason': f'no antr tags match {tag_pattern!r}'}
@@ -137,7 +143,7 @@ def _scale_reload_h1(m, tag_pattern, mult):
         hit = False
         for el in anims:
             nm = m.data[el:m.data.index(b'\x00', el)].decode('latin1', 'replace')
-            if 'reload' not in nm.lower():
+            if not any(k in nm.lower() for k in match):
                 continue
             hit = True
             _, new_fc = _scale_frame(m, el + H1_FC, mult, 0x7FFF)
@@ -162,15 +168,18 @@ def _scale_reload_h1(m, tag_pattern, mult):
     return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits}
 
 
-def scale_reload(m, tag_pattern, mult, game='Halo 3'):
-    """Scale reload animation length by `mult` (0.5 = half duration = faster) on every
-    jmad tag matching `tag_pattern`. Idempotency is the caller's job: like every op it
+def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
+    """Scale animation length by `mult` (0.5 = half duration = faster) on every jmad
+    tag matching `tag_pattern`. `match` picks WHICH actions: ('reload',) for reload
+    speed, ('ready', 'put_away') for weapon swap speed.
+
+    Scale reload animation length by `mult` on every jmad tag matching `tag_pattern`. Idempotency is the caller's job: like every op it
     runs from the pristine .bak baseline, so re-patching re-scales the original frame
     counts rather than compounding. Returns a report dict."""
     if mult is None or mult <= 0:
         return {'ok': False, 'reason': 'invalid reload multiplier'}
     if str(game).strip() == 'Halo 1':
-        return _scale_reload_h1(m, tag_pattern, mult)       # antr, ascii-named, no stringID
+        return _scale_reload_h1(m, tag_pattern, mult, match)  # antr, ascii-named, no stringID
     L = LAYOUTS.get(str(game).strip())
     if L is None:
         return {'ok': False, 'reason': f'no reload layout for {game}'}
@@ -183,7 +192,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3'):
     seen_events = set()          # (frame_field_addr) — event blocks are shared between anims
     fo = L['frame_off']
     for _, base in tags:
-        idxs = _reload_anim_indices(m, base, L)
+        idxs = _reload_anim_indices(m, base, L, match)
         if not idxs:
             continue
         anims = m.follow_all(base, [L['anim_blk']], [L['anim_el']], 'all')

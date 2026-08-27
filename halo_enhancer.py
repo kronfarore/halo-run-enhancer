@@ -3388,7 +3388,7 @@ class MagnitudeEditorDialog(QDialog):
                 return f'{n} weapon placements on this level  (enter e.g. =25 for 25%)'
             except Exception:
                 return 'percentage of the level\'s weapon placements'
-        if target.get('reload_anim'):
+        if target.get('reload_anim') or target.get('swap_anim'):
             # Reload animation: show the current reload length in seconds (frames / 30fps)
             # per graph (Master Chief / Arbiter), instead of a plugin field value.
             try:
@@ -5167,6 +5167,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'negate': t.get('negate'),
                                          'offset': t.get('offset'),
                                          'reload_anim': t.get('reload_anim'),
+                                         'swap_anim': t.get('swap_anim'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a
                                          # probability is 0..1 whatever was typed)

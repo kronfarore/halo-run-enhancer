@@ -3599,7 +3599,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r['effect'] = item['name']
                     results.append(r)
                 continue
-            if op.get('reload_anim'):
+            if op.get('reload_anim') or op.get('swap_anim'):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
                 # (these weapons carry no tag-side Reload Time). item['tag'] is the
                 # jmad fp-graph pattern; the operator supplies the multiplier.
@@ -3610,11 +3610,14 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 oper, val = parsed
                 mult = hm.OP_FUNCS[oper](1.0, val)   # *0.5 or =0.5 -> 0.5
                 import halo3_reload
-                rep = halo3_reload.scale_reload(m, path, mult, game=game)
+                # Same machinery, different actions: the swap is `ready` + `put_away`.
+                match = (('ready', 'put_away') if op.get('swap_anim') else ('reload',))
+                rep = halo3_reload.scale_reload(m, path, mult, game=game, match=match)
                 r = {**base}
                 if rep.get('ok'):
                     r.update(ok=True, skip=bool(rep.get('skip')),
-                             old='reload anim', new=(rep.get('reason') if rep.get('skip')
+                             old=('swap anim' if op.get('swap_anim') else 'reload anim'),
+                             new=(rep.get('reason') if rep.get('skip')
                                   else f"x{mult:g} ({rep['animations']} anim, {rep['graphs']} graph)"))
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'reload scale failed'))
