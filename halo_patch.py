@@ -2800,6 +2800,13 @@ _ZOOM_UI = {
     'Halo 3: ODST': {'hud_ref': 0x418, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
                      'donor_pref': ('sniper_rifle', 'beam_rifle', 'battle_rifle',
                                     'carbine', 'automag', 'smg_silenced')},
+    # Reach: the weap plugin names no HUD field, so 0x3C4 was found by scanning every
+    # weapon struct for a datum resolving to a chdt (8/8 hit, correctly named). Its
+    # chud keeps Halo 3's nested shape but at different offsets, and detects zoom
+    # through a trigger rather than a bitfield -- see _CHUD_BLOCKS / _REACH_ZOOM.
+    'Halo Reach': {'hud_ref': 0x3C4, 'id_at': 0xC, 'scoped_block': None, 'nested': True,
+                   'donor_pref': ('sniper_rifle', 'dmr', 'needle_rifle', 'focus_rifle',
+                                  'magnum')},
 }
 
 # chud_definition, per the ODSTMCC plugin. A widget's State Data carries "Unit Zoom
@@ -2809,6 +2816,22 @@ _ZOOM_UI = {
 _H3_CHUD_WIDGETS = (0x0, 0x50)
 _H3_CHUD_BITMAPS = (0x38, 0x54)
 _H3_CHUD_TEXTS = (0x44, 0x48)
+# Reach kept the nesting but moved and grew every block, so the three are per-game
+# rather than module constants. Halo 3 and ODST genuinely share these.
+_CHUD_BLOCKS = {
+    'Halo 3': {'widgets': (0x0, 0x50), 'bitmaps': (0x38, 0x54), 'texts': (0x44, 0x48)},
+    'Halo 3: ODST': {'widgets': (0x0, 0x50), 'bitmaps': (0x38, 0x54), 'texts': (0x44, 0x48)},
+    'Halo Reach': {'widgets': (0x0, 0xDC), 'bitmaps': (0x98, 0x9C), 'texts': (0xA4, 0x84)},
+}
+# Reach's zoom test: a widget whose 'Yes' State Data carries trigger code 0x55 only
+# renders while zoomed. States (0x1C, 0x38) -> 'Yes' States (0x0, 0xC) ->
+# Triggers (0x0, 0x8), code in the u32 at +0x4.
+_REACH_ZOOM = {'states': (0x1C, 0x38), 'yes': (0x0, 0xC), 'trig': (0x0, 0x8),
+               'code_at': 0x4, 'code': 0x55}
+
+
+def _chud_blocks(game):
+    return _CHUD_BLOCKS.get(str(game).strip(), _CHUD_BLOCKS['Halo 3: ODST'])
 # ...but State Data is NOT shared. ODST inserted Skull / Survival Round / Wave / Lives
 # / Difficulty / Pda ahead of the unit fields, growing the element and pushing Unit
 # Zoom State down by 0x10. Using ODST's numbers on a Halo 3 map strides the wrong
@@ -2829,8 +2852,27 @@ def _h3_chud_elems(m, base, blk):
     return [b + i * esz for i in range(max(0, n))] if (b and n > 0) else []
 
 
+def _reach_zoom_only(m, widget):
+    """Reach: does this widget's 'Yes' state demand zoom (trigger code 0x55)?
+
+    Reach dropped Halo 3's Unit Zoom State bitfield for a trigger list, so the test is
+    a membership check rather than a mask. Validated against every weapon on m10
+    against the ground truth of its own Magnification Levels: 5 scoped all detected,
+    22 unscoped all clean.
+    """
+    z = _REACH_ZOOM
+    for sd in _h3_chud_elems(m, widget, z['states']):
+        for y in _h3_chud_elems(m, sd, z['yes']):
+            for tr in _h3_chud_elems(m, y, z['trig']):
+                if m.u32(tr + z['code_at']) == z['code']:
+                    return True
+    return False
+
+
 def _h3_zoom_only(m, widget, game='Halo 3: ODST'):
     """True if this widget only ever renders while zoomed -- i.e. it is scope."""
+    if str(game).strip() == 'Halo Reach':
+        return _reach_zoom_only(m, widget)
     lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
     states = _h3_chud_elems(m, widget, lay['states'])
     if not states:
@@ -2845,11 +2887,17 @@ def _h3_zoom_only(m, widget, game='Halo 3: ODST'):
 def _h3_scope_parts(m, hud_base, game='Halo 3: ODST'):
     """[(widget, [scope bitmaps], [scope texts])] for every widget owning scope."""
     out = []
-    for w in _h3_chud_elems(m, hud_base, _H3_CHUD_WIDGETS):
-        bms = [b for b in _h3_chud_elems(m, w, _H3_CHUD_BITMAPS)
+    B = _chud_blocks(game)
+    for w in _h3_chud_elems(m, hud_base, B['widgets']):
+        bms = [b for b in _h3_chud_elems(m, w, B['bitmaps'])
                if _h3_zoom_only(m, b, game)]
-        txt = [t for t in _h3_chud_elems(m, w, _H3_CHUD_TEXTS)
+        txt = [t for t in _h3_chud_elems(m, w, B['texts'])
                if _h3_zoom_only(m, t, game)]
+        # Reach also marks the OWNING widget, not just its children; Halo 3 never
+        # does, so this only ever adds parts where the game really uses them.
+        if not bms and not txt and _h3_zoom_only(m, w, game):
+            out.append((w, [], []))
+            continue
         if bms or txt:
             out.append((w, bms, txt))
     return out
@@ -2871,14 +2919,15 @@ def _h3_copy_scope(m, dst_hud, src_hud, game='Halo 3: ODST'):
     parts = _h3_scope_parts(m, src_hud, game)
     if not parts:
         return 0
-    woff, wesz = _H3_CHUD_WIDGETS
+    B = _chud_blocks(game)                 # Reach moved and grew every chud block
+    woff, wesz = B['widgets']
     dst_n = max(0, m.i32(dst_hud + woff))
     dst_base = _block_base(m, dst_hud + woff)
     if dst_base is None:
         return 0
     sizes = [(dst_n + len(parts)) * wesz]
     for _, bms, txt in parts:
-        sizes += [len(bms) * _H3_CHUD_BITMAPS[1], len(txt) * _H3_CHUD_TEXTS[1]]
+        sizes += [len(bms) * B['bitmaps'][1], len(txt) * B['texts'][1]]
     offs = _h3_reserve(m, [s for s in sizes if s])
     if offs is None:
         return None                       # no slack: caller reports it, nothing written
@@ -2889,7 +2938,7 @@ def _h3_copy_scope(m, dst_hud, src_hud, game='Halo 3: ODST'):
     for i, (w, bms, txt) in enumerate(parts):
         e = warr + (dst_n + i) * wesz
         m.data[e:e + wesz] = m.data[w:w + wesz]
-        for (boff, besz), kids in ((_H3_CHUD_BITMAPS, bms), (_H3_CHUD_TEXTS, txt)):
+        for (boff, besz), kids in ((B['bitmaps'], bms), (B['texts'], txt)):
             if not kids:
                 struct.pack_into('<iI', m.data, e + boff, 0, 0)
                 continue

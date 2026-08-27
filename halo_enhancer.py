@@ -265,6 +265,10 @@ ZOOM_DONOR_WEAPONS = {
     'Halo 3': ['Sniper Rifle', 'Beam Rifle', 'Battle Rifle', 'Covenant Carbine'],
     'Halo 3: ODST': ['Sniper Rifle', 'Beam Rifle', 'Covenant Carbine',
                      'Auto Magnum', 'Silenced SMG'],
+    # Reach's scoped weapons, by measurement: the only five with Magnification Levels
+    # above 0 are the sniper rifle, DMR, needle rifle, magnum and rocket launcher.
+    # The magnum's 1x is the subtlest donor, as ODST's automag is there.
+    'Halo Reach': ['Sniper Rifle', 'DMR', 'Needle Rifle', 'Pistol', 'Rocket Launcher'],
 }
 
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
