@@ -333,7 +333,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Health Pack", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Plasma Cannon", "Shade"]
+				"turret": ["Plasma Cannon"]
 			},
 			"m35": {
 				"name": "Tip of the Spear",
@@ -341,7 +341,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
+				"turret": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m45": {
 				"name": "Long Night of Solace",
@@ -357,7 +357,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack", "Sprint"],
-				"turret": ["Machine Gun", "Shade"]
+				"turret": ["Machine Gun"]
 			},
 			"m52": {
 				"name": "New Alexandria",
@@ -365,7 +365,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Shade"]
+				"turret": []
 			},
 			"m60": {
 				"name": "The Package",
@@ -373,7 +373,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Sprint"],
-				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
+				"turret": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m70": {
 				"name": "The Pillar of Autumn",
@@ -381,7 +381,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Sprint"],
-				"turret": ["Plasma Cannon", "Shade"]
+				"turret": ["Plasma Cannon"]
 			},
 			"m70_bonus": {
 				"name": "Lone Wolf",
@@ -390,7 +390,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle", "Target Locator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack"],
-				"turret": ["Machine Gun", "Plasma Cannon", "Shade"]
+				"turret": ["Machine Gun", "Plasma Cannon"]
 			}
 		}
 	},
@@ -659,8 +659,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\assault rifle\\fp\\fp", "Halo 3": "jmad *fp_assault_rifle*"},
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\assault rifle\\fp\\fp", "Halo 3": "jmad *fp_assault_rifle*", "Halo Reach": "jmad *fp_assault_rifle*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -788,11 +788,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\assault rifle\\fp\\fp",
-						"Halo 3": "jmad *fp_assault_rifle*"
-					},
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\assault rifle\\fp\\fp", "Halo 3": "jmad *fp_assault_rifle*", "Halo Reach": "jmad *fp_assault_rifle*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -867,8 +864,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\pistol\\fp\\fp", "Halo 2": "jmad *fp_magnum*", "Halo 3": "jmad *fp_magnum*", "Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\pistol\\fp\\fp", "Halo 2": "jmad *fp_magnum*", "Halo 3": "jmad *fp_magnum*", "Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*", "Halo Reach": "jmad *fp_magnum*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -1031,13 +1028,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\pistol\\fp\\fp",
-						"Halo 2": "jmad *fp_magnum*",
-						"Halo 3": "jmad *fp_magnum*",
-						"Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\pistol\\fp\\fp", "Halo 2": "jmad *fp_magnum*", "Halo 3": "jmad *fp_magnum*", "Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*", "Halo Reach": "jmad *fp_magnum*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -1769,8 +1761,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -1988,12 +1980,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\needler\\fp\\fp",
-						"Halo 2": "jmad *fp_needler*",
-						"Halo 3": "jmad *fp_needler*"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -2089,8 +2077,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\sniper rifle\\fp\\fp", "Halo 2": "jmad *fp_sniper_rifle*", "Halo 3": "jmad *fp_sniper_rifle*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\sniper rifle\\fp\\fp", "Halo 2": "jmad *fp_sniper_rifle*", "Halo 3": "jmad *fp_sniper_rifle*", "Halo Reach": "jmad *fp_sniper_rifle*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -2221,12 +2209,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\sniper rifle\\fp\\fp",
-						"Halo 2": "jmad *fp_sniper_rifle*",
-						"Halo 3": "jmad *fp_sniper_rifle*"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\sniper rifle\\fp\\fp", "Halo 2": "jmad *fp_sniper_rifle*", "Halo 3": "jmad *fp_sniper_rifle*", "Halo Reach": "jmad *fp_sniper_rifle*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -2309,8 +2293,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\rocket launcher\\fp\\fp", "Halo 2": "jmad *fp_rocket_launcher*", "Halo 3": "jmad *fp_rocket_launcher*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\rocket launcher\\fp\\fp", "Halo 2": "jmad *fp_rocket_launcher*", "Halo 3": "jmad *fp_rocket_launcher*", "Halo Reach": "jmad *fp_rocket_launcher*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -2477,12 +2461,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\rocket launcher\\fp\\fp",
-						"Halo 2": "jmad *fp_rocket_launcher*",
-						"Halo 3": "jmad *fp_rocket_launcher*"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\rocket launcher\\fp\\fp", "Halo 2": "jmad *fp_rocket_launcher*", "Halo 3": "jmad *fp_rocket_launcher*", "Halo Reach": "jmad *fp_rocket_launcher*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -2552,8 +2532,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr weapons\\shotgun\\fp\\fp", "Halo 2": "jmad *fp_shotgun*", "Halo 3": "jmad *fp_shotgun*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\shotgun\\fp\\fp", "Halo 2": "jmad *fp_shotgun*", "Halo 3": "jmad *fp_shotgun*", "Halo Reach": "jmad *fp_shotgun*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -2697,12 +2677,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "antr weapons\\shotgun\\fp\\fp",
-						"Halo 2": "jmad *fp_shotgun*",
-						"Halo 3": "jmad *fp_shotgun*"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr weapons\\shotgun\\fp\\fp", "Halo 2": "jmad *fp_shotgun*", "Halo 3": "jmad *fp_shotgun*", "Halo Reach": "jmad *fp_shotgun*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -3946,8 +3922,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": "jmad *fp_flak_cannon*",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -4097,8 +4073,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": "jmad *fp_flak_cannon*",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {
@@ -4623,8 +4599,8 @@
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 3"],
-					"tag": "jmad *fp_spike_rifle*",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {"Halo 3": "jmad *fp_spike_rifle*", "Halo Reach": "jmad *fp_spike_rifle*"},
 					"targets": [
 						{ "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
@@ -4724,8 +4700,8 @@
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
-					"game": "Halo 3",
-					"tag": "jmad *fp_spike_rifle*",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {"Halo 3": "jmad *fp_spike_rifle*", "Halo Reach": "jmad *fp_spike_rifle*"},
 					"targets": [ { "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"More Shooting": {

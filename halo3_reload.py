@@ -50,6 +50,22 @@ LAYOUTS = {
                          frame_off=0x2, modes_blk=0x5C, modes_el=0x28,
                          wclass_blk=0x04, wclass_el=0x1C, wtype_blk=0x04, wtype_el=0x34,
                          actions_blk=0x04, actions_el=0x08, act_anim_off=0x6),
+    # Reach restructured the graph in two ways, both found empirically -- the ReachMCC
+    # plugin names neither the action Label nor its Animation Index, so there was
+    # nothing to read them off.
+    #   * The Modes tree gains a SETS level between Weapon Type and Actions, and the
+    #     action's Animation Index sits at +0xA rather than +0x6.
+    #   * An animation element is only a header now: Frame Count and all four event
+    #     blocks moved into a nested Shared Animation Data block at +0x30 (0xD4 each).
+    # Verified on fp_assault_rifle -- ready 20f, put_away 5f, reload_empty 68f,
+    # reload_full 59f, plus the sprint_* actions no earlier game has.
+    'Halo Reach': dict(anim_blk=0x94, anim_el=0x3C,
+                       shared_blk=0x30, shared_el=0xD4, fc_off=0x2,
+                       events=((0x38, 0x04), (0x44, 0x08), (0x50, 0x0C), (0x5C, 0x04)),
+                       frame_off=0x2, modes_blk=0x104, modes_el=0x30,
+                       wclass_blk=0x0C, wclass_el=0x38, wtype_blk=0x08, wtype_el=0x14,
+                       sets_blk=0x08, sets_el=0x48,
+                       actions_blk=0x0C, actions_el=0x0C, act_anim_off=0xA),
 }
 
 
@@ -66,16 +82,33 @@ def _reload_anim_indices(m, base, L, match=('reload',)):
     for mo in m.follow_all(base, [L['modes_blk']], [L['modes_el']], 'all'):
         for wc in m.follow_all(mo, [L['wclass_blk']], [L['wclass_el']], 'all'):
             for wt in m.follow_all(wc, [L['wtype_blk']], [L['wtype_el']], 'all'):
-                for a in m.follow_all(wt, [L['actions_blk']], [L['actions_el']], 'all'):
+                # Reach inserts a Sets level between Weapon Type and Actions; the
+                # earlier games go straight there, so an absent key means "no level".
+                holders = ([wt] if not L.get('sets_blk') else
+                           m.follow_all(wt, [L['sets_blk']], [L['sets_el']], 'all'))
+                for holder in holders:
+                 for a in m.follow_all(holder, [L['actions_blk']], [L['actions_el']], 'all'):
                     label = struct.unpack_from('<I', m.data, a)[0]
                     name = m.resolve_stringid(label)
-                    if not name or not any(k in name for k in match):
+                    if not _matches(name, match):
                         continue
                     ai = struct.unpack_from('<h', m.data, a + L['act_anim_off'])[0]
                     if ai >= 0 and ai not in seen:
                         seen.add(ai)
                         out.append(ai)
     return out
+
+
+def _matches(name, match):
+    """Does this animation name name one of the actions we are after?
+
+    Separators are normalised because the games do not agree: Halo 3 onward name the
+    jmad action `put_away`, Halo 1's antr calls the same animation
+    "first-person put-away". Matching on the raw string silently missed every Halo 1
+    swap animation.
+    """
+    n = (name or '').lower().replace('-', '_')
+    return any(k.replace('-', '_') in n for k in match)
 
 
 FPS = 30.0     # jmad/antr animations play at 30 fps (NTSC); reload seconds = frames / FPS
@@ -101,7 +134,7 @@ def reload_frames(m, tag_pattern, game='Halo 3'):
             fcs = []
             for el in m.follow_all(base, [H1_ANIM_BLK], [H1_ANIM_EL], 'all'):
                 nm = m.data[el:m.data.index(b'\x00', el)].decode('latin1', 'replace')
-                if 'reload' in nm.lower():
+                if _matches(nm, ('reload',)):
                     fcs.append(struct.unpack_from('<h', m.data, el + H1_FC)[0])
             if fcs:
                 out.append((who_of(name), sorted(set(fcs))))
@@ -143,7 +176,7 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
         hit = False
         for el in anims:
             nm = m.data[el:m.data.index(b'\x00', el)].decode('latin1', 'replace')
-            if not any(k in nm.lower() for k in match):
+            if not _matches(nm, match):
                 continue
             hit = True
             _, new_fc = _scale_frame(m, el + H1_FC, mult, 0x7FFF)
@@ -201,6 +234,13 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
             if not (0 <= ai < len(anims)):
                 continue
             el = anims[ai]
+            if L.get('shared_blk') is not None:
+                # Reach: the element is a header; Frame Count and every event block
+                # live in the Shared Animation Data it points at.
+                shared = m.follow_all(el, [L['shared_blk']], [L['shared_el']], 'all')
+                if not shared:
+                    continue
+                el = shared[0]
             _, new_fc = _scale_frame(m, el + L['fc_off'], mult, 0x7FFF)
             if new_fc < 1:
                 new_fc = 1
