@@ -807,13 +807,31 @@ def game_at_least(db, game, min_game):
 
 
 def has_equipment(game):
-    """Games with the Halo 3 equipment sandbox.
+    """Games with an equipment sandbox — Halo 3's, or Reach's armour abilities.
 
     ODST was long assumed to be Halo 3 only. It is not: every level carries the
     equipment tags (8 or 9 of the 9 levels have all eleven), and placing a Bubble
     Shield in Tayari Plaza was confirmed in game to spawn, be picked up and work.
     What ODST does NOT do is hand it out — no level places any, and although its
     Brutes list the equipment at drop chance 1.0 the drop never happens.
+
+    Reach's armour abilities are eqip tags too, and all six ship on every campaign
+    map. They are a different sandbox — held, not consumed, and run off a recharging
+    energy meter rather than charges — but they enter the offer pools the same way,
+    which is what this gate decides. The PLACEMENT paths are separately gated by
+    `_MAP_EQUIPMENT` in halo_patch, which has no Reach layout, so starting equipment
+    and Map Presence stay inert here rather than writing with Halo 3's offsets.
+    """
+    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
+
+
+def equipment_placement_supported(game):
+    """Games whose equipment can be PLACED into a map (starting gear, Map Presence).
+
+    Narrower than has_equipment on purpose. Placement needs a per-game scenario
+    layout, and `_MAP_EQUIPMENT` in halo_patch has none for Reach — so Reach can be
+    offered its armour abilities and have their tags tuned, while the placement paths
+    stay switched off instead of quietly producing a spec that writes nothing.
     """
     return str(game).strip() in ('Halo 3', 'Halo 3: ODST')
 
@@ -4954,7 +4972,8 @@ class MagnitudeEditorDialog(QDialog):
         on spawn 0 and player 2's on spawn 1; with 2-player coop off both merge onto
         spawn 0. By default only each player's first equipment is placed; the
         'all selected' option places everything they carry."""
-        if not has_equipment(self.game) or not CONFIG.get('set_starting_equipment'):
+        if (not equipment_placement_supported(self.game)
+                or not CONFIG.get('set_starting_equipment')):
             return None
         rs = getattr(self.parent_gui, 'run_state', None)
         db = getattr(self.parent_gui, 'db', None)
@@ -6191,12 +6210,13 @@ class OptionsDialog(QDialog):
         _sync_grenade_sub()
         eform.addRow("    ↳ Grenades need a gun:", self.grenades_need_weapon_cb)
 
-        self.equipment_rolls_cb = QCheckBox("Equipment can turn up in New Weapon draws (Halo 3)")
+        self.equipment_rolls_cb = QCheckBox("Equipment can turn up in New Weapon draws (Halo 3, ODST, Reach)")
         self.equipment_rolls_cb.setChecked(bool(CONFIG.get('h3_equipment_in_rolls')))
-        self.equipment_rolls_cb.setToolTip("Halo 3 only. Bubble Shield, Regenerator and the rest of "
+        self.equipment_rolls_cb.setToolTip("Bubble Shield, Regenerator and the rest of "
                                            "the level's equipment can be drawn by the New Weapon button, "
-                                           "same as an actual weapon. Equipment has no weapon-specific "
-                                           "mods of its own, so a pick just grants the item.")
+                                           "same as an actual weapon. In Reach this is the six armour "
+                                           "abilities instead, which DO carry mods of their own -- energy "
+                                           "drain, recharge, and each ability's own dials.")
         eform.addRow("Equipment in rolls:", self.equipment_rolls_cb)
 
         self.equipment_need_weapon_cb = QCheckBox("…only once the player holds a real weapon")

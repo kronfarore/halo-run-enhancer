@@ -7164,6 +7164,268 @@
 		}
 	},
 	"Equipment": {
+		"Sprint": {
+			"Energy Drain": {
+				"desc": "How fast sprinting burns the ability meter.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\sprint\\sprint",
+				"targets": [
+					{"field": "Active Energy Rate", "harder_when": "decreased"}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the ability meter comes back after sprinting.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\sprint\\sprint",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can sprint.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\sprint\\sprint",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			}
+		},
+		"Jet Pack": {
+			"Energy Drain": {
+				"desc": "How fast the jet pack burns its meter while you fly.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the jet pack refuels once you land.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much fuel you need banked before you can take off.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Thrust": {
+				"desc": "How hard the jet pack pushes, and how long the push lasts.",
+				"debug_desc": "Reach's `Jetpack` block. `Thrust Attack Time` (2.5) is how long thrust builds, `Thrust Decay Time` (0.5) how fast it bleeds off, `Negative Velocity Acceleration Scale` (1.9) how hard it fights a fall, `Grounded Acceleration Magnitude` (1.3) the kick off the ground, and `Landing Anticipation Time` (0.5) the cutoff as you come down.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
+				"targets": [
+					{"field": "Thrust Attack Time", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
+					{"field": "Thrust Decay Time", "block": "Jetpack", "index": 0, "min": 0},
+					{"field": "Negative Velocity Acceleration Scale", "block": "Jetpack", "index": 0, "min": 0},
+					{"field": "Grounded Acceleration Magnitude", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
+					{"field": "Landing Anticipation Time", "block": "Jetpack", "index": 0, "min": 0}
+				]
+			}
+		},
+		"Armor Lock": {
+			"Energy Drain": {
+				"desc": "How fast staying locked down burns the meter.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\armor_lockup\\armor_lockup & objects\\characters\\spartan_jorge\\armor_lockup_jorge",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly you can lock down again.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\armor_lockup\\armor_lockup & objects\\characters\\spartan_jorge\\armor_lockup_jorge",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked to lock down.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\armor_lockup\\armor_lockup & objects\\characters\\spartan_jorge\\armor_lockup_jorge",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Warmup Time": {
+				"desc": "The delay between pressing the button and being invulnerable.",
+				"debug_desc": "`Warmup Time` is dead time: the ability is committed but not yet doing anything. Armor Lock ships 0.15s and the Drop Shield 0.5s; no other Reach ability sets it.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\armor_lockup\\armor_lockup & objects\\characters\\spartan_jorge\\armor_lockup_jorge",
+				"targets": [
+					{"field": "Warmup Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Damage Burn": {
+				"desc": "How much meter each hit you soak up costs you.",
+				"debug_desc": "Armor Lock's `Invincibility Mode/Threshold Effects`: every `Threshold Energy Burned` worth of damage absorbed costs you `Energy Adjustment` of meter (0.01 and -0.25 shipped). This is why heavy fire drops you out of lock early -- the damage you are shrugging off is spending the meter.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\armor_lockup\\armor_lockup & objects\\characters\\spartan_jorge\\armor_lockup_jorge",
+				"targets": [
+					{"field": "Threshold Energy Burned", "block": "Invincibility Mode/Threshold Effects", "index": 0, "min": 0},
+					{"field": "Energy Adjustment", "block": "Invincibility Mode/Threshold Effects", "index": 0, "harder_when": "decreased"}
+				]
+			}
+		},
+		"Drop Shield": {
+			"Recharge": {
+				"desc": "How quickly you can put down another shield.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\drop_shield\\drop_shield",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter a shield costs to deploy.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\drop_shield\\drop_shield",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Warmup Time": {
+				"desc": "The delay between pressing the button and the shield forming.",
+				"debug_desc": "`Warmup Time` is dead time: the ability is committed but not yet doing anything. Armor Lock ships 0.15s and the Drop Shield 0.5s; no other Reach ability sets it.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\drop_shield\\drop_shield",
+				"targets": [
+					{"field": "Warmup Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Duration": {
+				"desc": "How long the dome stands before it collapses.",
+				"debug_desc": "The dome and its healing field live in a SECOND tag, `drop_shield_shield`, not in the ability you carry -- so both rows redirect there with a per-target `tag`. `Proximity Mine / Self Destruct Time` (15s) is the dome's life and `Tree Of Life / Radius` (1.1) the healing field.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\drop_shield\\drop_shield",
+				"targets": [
+					{"field": "Self Destruct Time", "block": "Proximity Mine", "index": 0, "harder_when": "decreased", "min": 0, "tag": "eqip objects\\equipment\\drop_shield\\drop_shield_shield\\drop_shield_shield"}
+				]
+			},
+			"Healing Radius": {
+				"desc": "How far from the dome's centre it keeps healing you.",
+				"debug_desc": "The dome and its healing field live in a SECOND tag, `drop_shield_shield`, not in the ability you carry -- so both rows redirect there with a per-target `tag`. `Proximity Mine / Self Destruct Time` (15s) is the dome's life and `Tree Of Life / Radius` (1.1) the healing field.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\drop_shield\\drop_shield",
+				"targets": [
+					{"field": "Radius", "block": "Tree Of Life", "index": 0, "harder_when": "decreased", "min": 0, "tag": "eqip objects\\equipment\\drop_shield\\drop_shield_shield\\drop_shield_shield"}
+				]
+			}
+		},
+		"Active Camouflage": {
+			"Energy Drain": {
+				"desc": "How fast staying invisible burns the meter.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"targets": [
+					{"field": "Activation Energy Cost", "harder_when": "decreased"}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly your camo comes back.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked to go invisible.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Camo Break": {
+				"desc": "How much moving and shooting gives you away.",
+				"debug_desc": "`Movement Speed Domain` (2.0) is the speed at which moving fully breaks your camo -- raise it and you can move faster while still faded -- and `Awareness Time` (0.5) how long enemies keep looking once something tips them off. The matg `Active Camo` block holds the global reference speeds this is measured against.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"targets": [
+					{"field": "Movement Speed Domain", "harder_when": "decreased", "min": 0},
+					{"field": "Awareness Time", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Motion Tracker Noise": {
+				"desc": "The false blips your camo scatters on enemy radar.",
+				"debug_desc": "The same block Halo 3's Jammer uses: Reach's camo scatters `Noise Count` (10) false blips within `Noise Radius` (10) after `Arm Time` (1s), plus a `Flash Radius` (5).",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"targets": [
+					{"field": "Arm Time", "block": "Motion Tracker Noise", "index": 0, "min": 0},
+					{"field": "Noise Radius", "block": "Motion Tracker Noise", "index": 0, "harder_when": "decreased", "min": 0},
+					{"field": "Noise Count", "block": "Motion Tracker Noise", "index": 0, "harder_when": "decreased", "min": 0},
+					{"field": "Flash Radius", "block": "Motion Tracker Noise", "index": 0, "harder_when": "decreased", "min": 0}
+				]
+			}
+		},
+		"Hologram": {
+			"Energy Drain": {
+				"desc": "How much meter each decoy costs you.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"targets": [
+					{"field": "Activation Energy Cost", "harder_when": "decreased"}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly you can send out another decoy.",
+				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"targets": [
+					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Duration": {
+				"desc": "How long the decoy walks before it fades.",
+				"debug_desc": "The dome and its healing field live in a SECOND tag, `drop_shield_shield`, not in the ability you carry -- so both rows redirect there with a per-target `tag`. `Proximity Mine / Self Destruct Time` (15s) is the dome's life and `Tree Of Life / Radius` (1.1) the healing field.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"targets": [
+					{"field": "Hologram Duration", "block": "Hologram", "index": 0, "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Shimmer": {
+				"desc": "How readable the decoy is as a fake.",
+				"debug_desc": "`Shimmer Decrease Rate` (0.5) is how fast the decoy settles into looking solid; `Shimmer Bullet Ping` (1.0) how much it flares when shot -- the tell that gives a hologram away.",
+				"game": "Halo Reach",
+				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"targets": [
+					{"field": "Shimmer Decrease Rate", "block": "Hologram", "index": 0, "min": 0},
+					{"field": "Shimmer Bullet Ping", "block": "Hologram", "index": 0, "min": 0}
+				]
+			}
+		},
 		"Bubble Shield": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
