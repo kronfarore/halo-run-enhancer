@@ -144,7 +144,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
-               'ignore_elite_in_h3',
+               'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
                'card_row_margin', 'grenades_need_weapon', 'brute_chieftain_bosses',
@@ -430,6 +430,10 @@ CONFIG = {
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
+    # Debug-only switch, but it stays in force whether or not debug mode is on: the
+    # Flood are gone from ODST onward while their tags are not, so their cards would
+    # otherwise keep being offered and patched into levels that field none.
+    "remove_flood_from_odst": True,
 
     "include_grenades": True,          # #2: treat grenades as weapons; False hides them
     "grenades_need_weapon": False,     # #4: only offer grenades once a real gun is held
@@ -1080,6 +1084,25 @@ HERO_NAMES = frozenset({
 # Games where the Elites are on your side (Halo 3) or absent entirely (ODST, which
 # still ships every Elite tag and therefore still resolves every Elite card).
 ELITE_ALLY_GAMES = ('Halo 3', 'Halo 3: ODST')
+
+# The Flood stop appearing after Halo 3, but ODST still ships their whole tag set —
+# every floodcombat/floodcarrier/pureform/infection tag resolves there, so a Flood card
+# drafted on a Halo 2 or Halo 3 level goes on being offered and patched onto levels
+# where nothing it edits will ever spawn.
+FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach')
+FLOOD_ENEMIES = frozenset({
+    'Flood Combat Form', 'Flood Carrier Form', 'Flood Infection Form', 'Flood Pure Form',
+})
+
+
+def _is_absent_flood_mod(mod, game):
+    """True when `mod` edits the Flood in a game that no longer fields them."""
+    if not CONFIG.get('remove_flood_from_odst', True):
+        return False
+    if str(game).strip() not in FLOOD_FREE_GAMES:
+        return False
+    who = mod.get('enemy') or mod.get('boss') or ''
+    return isinstance(who, str) and who in FLOOD_ENEMIES
 
 
 def _is_allied_elite_mod(mod, game):
@@ -2147,7 +2170,13 @@ class ModifierDatabase:
                 # Every offer path funnels through here, so one test covers the
                 # initial selection, the New Weapon draw and every reroll — the
                 # recurring bug class of fixing only one of them.
-                and (m.get('name') not in drop)]
+                and (m.get('name') not in drop)
+                # Enemies the game no longer fields, whose tags nonetheless resolve:
+                # the Flood from ODST on, and the Elites from Halo 3 on. Both are
+                # excluded at patch time too — this is the offer half of the pair.
+                and not _is_absent_flood_mod(m, game)
+                and not (CONFIG.get('ignore_elite_in_h3')
+                         and _is_allied_elite_mod(m, game))]
 
     def map_swap_mod(self, weapon_name, game=None):
         """#7: the per-weapon "Map Presence" card — replace a share of the level's
@@ -5672,6 +5701,18 @@ class OptionsDialog(QDialog):
     widget dependencies, page order should follow what the reader expects.
     """
 
+    def _sync_debug_only_options(self):
+        """Show/hide the debug-only option rows to match the Debug checkbox.
+
+        Only their VISIBILITY follows debug mode. Their values keep applying either
+        way, so turning debug off cannot silently undo a rule the run depends on."""
+        on = self.debug_mode_cb.isChecked()
+        for w in getattr(self, '_debug_only_rows', ()):
+            w.setVisible(on)
+            lbl = w.parentWidget().layout().labelForField(w) if w.parentWidget() else None
+            if lbl is not None:
+                lbl.setVisible(on)
+
     def _opt_page(self, name):
         page = self._opt_pages.get(name)
         if page is None:
@@ -7019,6 +7060,21 @@ class OptionsDialog(QDialog):
         self.debug_mode_cb.setToolTip("Shows the patcher's “＋ field” button and the main-window “ADD MOD” "
                                       "search. Leave off for normal play.")
         vform.addRow("Debug:", self.debug_mode_cb)
+
+        # Debug-only VISIBILITY, but the setting itself keeps applying with debug off —
+        # it is a correctness rule, not a developer toy, and hiding it must not quietly
+        # turn it back off. _sync_debug_only_options() shows/hides it live.
+        self.remove_flood_cb = QCheckBox("Remove Flood cards from ODST onward")
+        self.remove_flood_cb.setChecked(bool(CONFIG.get('remove_flood_from_odst', True)))
+        self.remove_flood_cb.setToolTip(
+            "The Flood stop appearing after Halo 3, but ODST still ships their whole "
+            "tag set, so their cards go on being offered and patched onto levels where "
+            "nothing they edit can spawn. On by default. Only shown in debug mode — it "
+            "stays in force either way.")
+        self._debug_only_rows = [self.remove_flood_cb]
+        vform.addRow("", self.remove_flood_cb)
+        self.debug_mode_cb.toggled.connect(lambda _=None: self._sync_debug_only_options())
+        self._sync_debug_only_options()
         self._opt_page("Interface").addWidget(adv)
 
         # ---- Appearance section ----
@@ -7255,6 +7311,7 @@ class OptionsDialog(QDialog):
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'turrets_are_weapons': self.turret_weapons_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
+            'remove_flood_from_odst': self.remove_flood_cb.isChecked(),
             'card_width': self.card_width.value(),
             'card_height': self.card_height.value(),
             'card_width_override': self.card_width_override.isChecked(),
@@ -9381,6 +9438,12 @@ class HaloGUI(QMainWindow):
                 if not self.db._game_ok(mod, game):
                     # A mod-level game filter (e.g. "game": "Halo 1") now excludes the
                     # WHOLE effect from patching the other game, not just its targets.
+                    mod['_game_excluded'] = True
+                    continue
+                if _is_absent_flood_mod(mod, game):
+                    # ODST and Reach field no Flood, but ship (ODST) or resolve
+                    # (Reach, via the shared cards) enough of their tags that the
+                    # cards patch cleanly and do nothing. Debug option, default on.
                     mod['_game_excluded'] = True
                     continue
                 if CONFIG.get('ignore_elite_in_h3') and _is_allied_elite_mod(mod, game):
