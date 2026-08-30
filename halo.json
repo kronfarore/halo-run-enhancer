@@ -7842,11 +7842,13 @@
 					{ "field": "Guidance Vs Player", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
-			"Melee Delay Scale": {
-				"desc": "Non-berserk melee delay time",
+			"Melee Delay": {
+				"desc": "How long enemies wait before swinging at you again.",
+				"debug_desc": "`Melee Delay Base` and `Melee Delay Scale`, both per difficulty in matg's Difficulty block (0x140 and 0x150), present in all five games at the same offsets. Grouped because they are one number split in two: Base is the flat delay and Scale the per-difficulty multiplier on it.\n\nThe shipped values show which half carries the difficulty curve. From Halo 2 on, Base is 1.0 on every difficulty and Scale does all the work: Halo 2 runs 3.0/1.0/0.4/0.1 and Halo 3, ODST and Reach all run 4.0/2.0/1.0/0.25 (Easy/Normal/Heroic/Legendary). Halo 1 is the odd one: Scale 2.0/1.0/0.8/0.5, and Base is set only on Easy (1.5), leaving 0 on the other three.\n\nThat Halo 1 zero means the Base half of this card does nothing there on Normal, Heroic or Legendary — a multiply against 0 stays 0. It is left as a genuine zero rather than given a `zero_is`, because Halo 1 is the only game that leaves it unset and there is no sibling value to borrow. The Scale half still works in Halo 1, so the card is not dead there.\n\nThis is the non-berserk delay: a berserking Brute is governed by its own character tag, not by this.",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{ "field": "Melee Delay Scale", "block": "Difficulty", "difficulty": true, "min": "0" }
+					{ "field": "Melee Delay Base", "group": "Melee Delay", "block": "Difficulty", "difficulty": true, "min": "0" },
+					{ "field": "Melee Delay Scale", "group": "Melee Delay", "block": "Difficulty", "difficulty": true, "min": "0" }
 				]
 			},
 			"Grenade Scales": {
