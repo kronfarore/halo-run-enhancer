@@ -9092,7 +9092,11 @@
 				]
 			},
 			"Grenade Properties": {
-				"desc": "General grenade behaviour \u2014 velocity, range, collateral. Exceptions: Brutes, Grunts, Marines, SpecOps Elites and the Flood Combat forms.",
+				"desc": "General grenade behaviour \u2014 velocity, range, collateral. Exceptions: Grunts, Marines, SpecOps Elites and the Flood Combat forms.",
+				"debug_desc": "The exception list is per game, and Brutes are only on it in Halo 2. From Halo 3 on their own Grenades block is empty on every brute char tag, so they inherit this one and this card is the ONLY way to tune their grenades. Measured on ODST: 9 of 72 char tags populate Grenades Properties \u2014 `ai\\generic`, `elite_specops`, `grunt`, `grunt_ultra` and the four flood forms.",
+				"desc_overrides": {
+					"Halo 2": "General grenade behaviour \u2014 velocity, range, collateral. Exceptions: Brutes, Grunts, Marines, SpecOps Elites and the Flood Combat forms."
+				},
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
@@ -11330,10 +11334,10 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing \u2014 velocity, range, collateral.",
-					"game": ["Halo 2", "Halo 3"],
+					"debug_desc": "Halo 2 only, because only there do the Brutes carry a Grenades block of their own. From Halo 3 on the block is empty on all 16 brute char tags and they inherit `ai\\generic` \u2014 which is what the general **Grenade Properties** card edits. Measured: Halo 2's `brute` has Grenade Velocity 10.0; Halo 3 and ODST have none.",
+					"game": ["Halo 2"],
 					"tag": {
-						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
-						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
@@ -11345,10 +11349,10 @@
 				},
 				"Grenades Chance": {
 					"desc": "How often they throw grenades.",
-					"game": ["Halo 2", "Halo 3"],
+					"debug_desc": "Halo 2 only, for the same reason as the Brutes' **Grenades** card: from Halo 3 on their Grenades block is empty and they inherit `ai\\generic`. The general **Grenade Scales** dial covers grenade chance in the later games.",
+					"game": ["Halo 2"],
 					"tag": {
-						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
-						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 },

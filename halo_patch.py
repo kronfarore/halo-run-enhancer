@@ -2011,23 +2011,31 @@ def _odst_teleport_points(m):
 
 
 def _spawn_clusters(spawns, radius=8.0):
-    """Distinct player-start positions, merging the ones stacked on the same spot.
+    """Distinct player-start PLACES, each keeping the entries that merged into it.
+
+    Returns [(rep_pos, rep_bsp, [(pos, bsp), ...])].
 
     ODST levels list one starting location per player per insertion point -- Mombasa
     Streets has 21 for 4 real places, Tayari Plaza 22 for 3 -- so equipping "the spawn"
     has to mean equipping each PLACE, not each entry. The radius only has to separate
     insertion points from co-op slots at the same one; the closest distinct pair
-    measured is 6.6 units apart, and dropping one set between them serves both.
+    measured is 6.6 units apart.
+
+    The MEMBERS are what makes per-player equipment possible: a place's members are its
+    co-op slots (0.5 to 4 units apart on the levels measured), listed in the scenario's
+    player order, so player i can be equipped at member i instead of both players
+    sharing one drop between them.
     """
     out = []
     for pos, bsp in spawns:
-        for i, (p, b) in enumerate(out):
+        for i, (p, b, members) in enumerate(out):
             if math.dist(pos, p) < radius:
                 if b < 0 <= bsp:
-                    out[i] = (p, bsp)       # keep whichever entry knows its BSP
+                    out[i] = (p, bsp, members)   # keep whichever entry knows its BSP
+                members.append((pos, bsp))
                 break
         else:
-            out.append((pos, bsp))
+            out.append((pos, bsp, [(pos, bsp)]))
     return out
 
 
@@ -2518,8 +2526,18 @@ def _apply_spawn_equipment(m, game, spec):
         if anchor:
             targets = [('anchor', anchor, anchor_mask)]
         elif clusters is not None:
-            targets = [('c%d' % i, p, _mask_for(p, b))
-                       for i, (p, b) in enumerate(clusters)]
+            # Every cluster is armed for every player, because which insertion point is
+            # live changes with mission progress. WITHIN a cluster, though, each player
+            # gets their own slot: a place lists one starting location per player, so
+            # group si drops at member si. That is what makes Swap Player 1-2 visible
+            # here — with one shared drop per place, swapping the groups moved nothing.
+            # A place with fewer members than players (the hub's scripted teleport
+            # destinations have exactly one) falls back to the representative, which is
+            # the old shared behaviour and still equips everyone.
+            targets = []
+            for i, (p, b, members) in enumerate(clusters):
+                pos, bsp = members[si] if si < len(members) else (p, b)
+                targets.append(('c%d.%d' % (i, si), pos, _mask_for(pos, bsp)))
         elif si < len(spawns):
             targets = [(si, spawns[si][0], _mask_for(*spawns[si]))]
         else:
@@ -3626,17 +3644,18 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_betrayal(m, str(game).strip(), registry))
         elif s == 'eyepatch':
             results.extend(_apply_eyepatch(m, str(game).strip(), registry))
-    # (effect name, tag) of every enemy/boss card, so "not present in this map" can be
-    # reported as a skip below rather than as a failure.
-    enemy_side = set()
+    # (effect name, tag) of every card for which "not present in this map" is an
+    # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
+    # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).
+    absent_ok = set()
     for item in plan:
-        if not item.get('enemy_side'):
+        if not item.get('absent_is_skip'):
             continue
-        enemy_side.add((item.get('name'), item.get('tag')))
+        absent_ok.add((item.get('name'), item.get('tag')))
         # a target may redirect onto another tag; that row is reported under it
         for op in item.get('ops') or []:
             if op.get('tag'):
-                enemy_side.add((item.get('name'), op['tag']))
+                absent_ok.add((item.get('name'), op['tag']))
     plan_start = len(results)
     for item in plan:
         if item.get('missing_in_db'):
@@ -3781,18 +3800,19 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_constraints(m, cls, path, item['name'],
                                               item['constraints'], plugin))
 
-    # An enemy/boss card whose tag simply isn't in this map is not a broken card: that
-    # enemy doesn't fight on this level. Kikowani has no Hunters, so the Hunter's fuel
-    # cannon (a weap tag under objects\characters, which otherwise reads like a failed
-    # player-weapon patch) and every Flood/Elite card reported as failures. Downgrade
-    # them to skips so a real failure stays visible in the report.
-    if enemy_side:
+    # A card whose tag simply isn't in this map is not a broken card when the tag was
+    # never guaranteed: that enemy doesn't fight on this level, or that escort isn't on
+    # it. Kikowani has no Hunters, so the Hunter's fuel cannon (a weap tag under
+    # objects\characters, which otherwise reads like a failed player-weapon patch) and
+    # every Flood/Elite card reported as failures. Downgrade them to skips so a real
+    # failure stays visible in the report.
+    if absent_ok:
         for i in range(plan_start, len(results)):
             r = results[i]
             if (not r.get('ok') and r.get('reason') == 'not present in this map'
-                    and (r.get('effect'), r.get('tag')) in enemy_side):
+                    and (r.get('effect'), r.get('tag')) in absent_ok):
                 results[i] = {**r, 'ok': True, 'skip': True,
-                              'reason': 'this enemy is not on this level'}
+                              'reason': 'not on this level'}
 
     if extra_squads and str(game).strip() in SECOND_GEN_GAMES:
         # Structural, and deliberately before the respawn profile so both grow-block

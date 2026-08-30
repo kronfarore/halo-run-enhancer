@@ -161,6 +161,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
+               'odst_escort_buff',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -543,6 +544,10 @@ CONFIG = {
     # Chance card has nothing to act on there. With this on, the flag is cleared on
     # every eqip tag in the map so AI can drop equipment again and the card works.
     "odst_ai_equipment_drops": False,
+    # Data Hive and Coastal Highway fail if the Engineer (or, on Coastal Highway, the
+    # olifaunt) dies, and neither scales with the run. On, the player's own vitality
+    # cards are mirrored onto them. See ESCORT_BUFF_TAGS for the measured numbers.
+    "odst_escort_buff": False,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -1090,6 +1095,36 @@ ELITE_ALLY_GAMES = ('Halo 3', 'Halo 3: ODST')
 # drafted on a Halo 2 or Halo 3 level goes on being offered and patched onto levels
 # where nothing it edits will ever spawn.
 FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach')
+
+# --- ODST escort buff ---------------------------------------------------------
+#
+# Data Hive and Coastal Highway are escort levels: the mission fails if the Engineer
+# (Vergil) dies, and on Coastal Highway the olifaunt has to survive as well. Neither
+# scales with the run, so a few enemy-damage cards make them impossible to keep alive.
+#
+# Vergil is a SQUAD name, not a tag — there is no per-character variant to buff. What
+# there is: three engineer char variants over two models, and the freeform one (the
+# untethered Engineer you escort) is by far the frailest. Measured on both maps:
+#
+#     hlmt                              health  shield  recharge
+#     engineer                            50      300     0.5
+#     engineer_freeform  <- Vergil        50       50     0.25
+#     olifaunt (l300 only)               500     5000     0.333
+#     odst_oni_op_player                  80       80     0.333
+#
+# Enemy vitality lives on the hlmt model tag in Halo 2 onward, not on char, which is
+# why these are hlmt paths. The buff rides the player's OWN vitality cards: whatever
+# operator the run put on Player Health / Shield / Shield Recharge is mirrored onto
+# the escorts, so they scale with the player instead of being tuned separately.
+ESCORT_BUFF_MISSIONS = ('l200', 'l300')
+ESCORT_BUFF_CARDS = ('Player Health', 'Player Shield', 'Player Shield Recharge')
+ESCORT_BUFF_TAGS = (
+    'hlmt objects' + chr(92) + 'characters' + chr(92) + 'engineer' + chr(92) + 'engineer',
+    'hlmt objects' + chr(92) + 'characters' + chr(92) + 'engineer' + chr(92) + 'engineer_freeform',
+    # Coastal Highway only; on Data Hive this reports as a skip, which is correct —
+    # that level has no olifaunt tag at all.
+    'hlmt objects' + chr(92) + 'vehicles' + chr(92) + 'olifaunt' + chr(92) + 'olifaunt',
+)
 FLOOD_ENEMIES = frozenset({
     'Flood Combat Form', 'Flood Carrier Form', 'Flood Infection Form', 'Flood Pure Form',
 })
@@ -5238,7 +5273,7 @@ class MagnitudeEditorDialog(QDialog):
                                       # objects\characters), which read as a broken
                                       # player-weapon card otherwise. cats: 2 specific
                                       # enemy, 3 enemy-general, 5 boss/hero.
-                                      'enemy_side': eff.get('cat') in (2, 3, 5),
+                                      'absent_is_skip': eff.get('cat') in (2, 3, 5),
                                       # carried so the patcher can report it as skipped
                                       # rather than patching from a stale snapshot
                                       'missing_in_db': bool(eff.get('_missing_in_db'))})
@@ -5330,6 +5365,20 @@ class MagnitudeEditorDialog(QDialog):
                 extra = _tags_not_already_in(twin_tag, item.get('tag'))
                 if extra:
                     plan.append({**item, 'tag': extra, 'mirrored_to_upgrade': True})
+        # ODST escort levels: mirror the player's own vitality cards onto the Engineer
+        # and the olifaunt, so the characters the mission fails without scale with the
+        # player instead of staying at Bungie's numbers while the enemies climb.
+        if (CONFIG.get('odst_escort_buff')
+                and self.game == 'Halo 3: ODST'
+                and self.mission_id in ESCORT_BUFF_MISSIONS):
+            for item in list(plan):
+                if item.get('missing_in_db') or item['name'] not in ESCORT_BUFF_CARDS:
+                    continue
+                for tag in ESCORT_BUFF_TAGS:
+                    plan.append({**item, 'tag': tag, 'escort_buff': True,
+                                 # a tag this level doesn't have (the olifaunt on Data
+                                 # Hive) is a skip, not a failed patch
+                                 'absent_is_skip': True})
         starting = self._starting_weapons_spec()
         # Cards and sliders are the same mechanism and never both shown, so whichever
         # is active supplies the swaps.
@@ -6910,6 +6959,22 @@ class OptionsDialog(QDialog):
             "weights the flag was overriding outright.")
         odform.addRow("ODST AI drops:", self.odst_ai_drops_cb)
 
+        self.odst_escort_cb = QCheckBox(
+            "ODST: buff the Engineer and the olifaunt on Data Hive / Coastal Highway")
+        self.odst_escort_cb.setChecked(bool(CONFIG.get('odst_escort_buff')))
+        self.odst_escort_cb.setToolTip(
+            "Both levels fail if the Engineer dies, and Coastal Highway also needs the "
+            "olifaunt to survive — but neither scales with the run, so a few enemy "
+            "damage cards make them impossible to protect.\n\nWith this on, whatever "
+            "operator the run put on Player Health, Player Shield and Player Shield "
+            "Recharge is mirrored onto both engineer models and (on Coastal Highway) "
+            "the olifaunt, so the escorts climb with the player.\n\nThe Engineer you "
+            "escort is the FREEFORM one, and it ships far frailer than a normal "
+            "Engineer: 50 shield against 300, and half the recharge rate. Both models "
+            "are buffed, so the enemy-side Engineers that shield Brutes toughen up "
+            "too. Data Hive has no olifaunt tag, and reports that as a skip.")
+        odform.addRow("ODST escorts:", self.odst_escort_cb)
+
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
         self.odst_shield_health_cb.setToolTip(
@@ -7255,6 +7320,7 @@ class OptionsDialog(QDialog):
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
+            'odst_escort_buff': self.odst_escort_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),
