@@ -1077,6 +1077,24 @@ HERO_NAMES = frozenset({
     'Grunt Ultra', 'Jackal Sniper', 'Elite Honor Guard', 'Elite Specops Commander',
 })
 
+# Games where the Elites are on your side (Halo 3) or absent entirely (ODST, which
+# still ships every Elite tag and therefore still resolves every Elite card).
+ELITE_ALLY_GAMES = ('Halo 3', 'Halo 3: ODST')
+
+
+def _is_allied_elite_mod(mod, game):
+    """True when `mod` edits Elites in a game where they aren't enemies.
+
+    Matches the species card (`enemy` == 'Elite') AND the hero/boss cards, which are
+    stamped with `boss` instead — the spec-ops commander is the one that reached a
+    played ODST session."""
+    if str(game).strip() not in ELITE_ALLY_GAMES:
+        return False
+    if mod.get('enemy') == 'Elite':
+        return True
+    who = mod.get('boss') or ''
+    return isinstance(who, str) and who.startswith('Elite')
+
 # (config key, boss name, missions). Every entry is additionally gated by
 # `heroes_are_bosses`; these switches choose WHICH heroes, that one chooses whether
 # heroes count at all.
@@ -1963,8 +1981,11 @@ class ModifierDatabase:
             # Halo 3's spec-ops commander is an ALLY -- the allied Elites from
             # Floodgate onward. The existing "Elites are allies in Halo 3" switch
             # suppresses Elite enemy effects there, and it must suppress this too or
-            # the two options would contradict each other on the same map.
-            if (key == 'h3_specops_bosses'
+            # the two options would contradict each other on the same map. ODST
+            # inherits Halo 3's cards and fields no Elites at all, so its own spec-ops
+            # switch has to answer to the same rule -- listing only the Halo 3 key here
+            # is what let the commander's cards into a played ODST run.
+            if (key in ('h3_specops_bosses', 'odst_specops_bosses')
                     and CONFIG.get('ignore_elite_in_h3', True)):
                 continue
             if boss not in names:
@@ -5181,6 +5202,14 @@ class MagnitudeEditorDialog(QDialog):
                                       # whose effect this is, so a base weapon's edits
                                       # can be mirrored onto its upgrade's tag below
                                       'weapon': eff.get('weapon'),
+                                      # An enemy/boss card's tag missing from the map
+                                      # means that enemy isn't on this level — a SKIP,
+                                      # not a failure. Covers enemy-owned WEAPONS too
+                                      # (the Hunter's fuel rod is a weap tag under
+                                      # objects\characters), which read as a broken
+                                      # player-weapon card otherwise. cats: 2 specific
+                                      # enemy, 3 enemy-general, 5 boss/hero.
+                                      'enemy_side': eff.get('cat') in (2, 3, 5),
                                       # carried so the patcher can report it as skipped
                                       # rather than patching from a stale snapshot
                                       'missing_in_db': bool(eff.get('_missing_in_db'))})
@@ -8709,8 +8738,18 @@ class HaloGUI(QMainWindow):
         qb = getattr(self, 'quicksave_btn', None)
         if qb is not None:
             # Quicksave writes a completed run for the partner to pick up, so it needs
-            # the same completeness the shared export does.
-            qb.setEnabled(bool(rs) and rs.phase == 'complete')
+            # the same completeness the shared export does. It stays CLICKABLE while
+            # the round is unfinished, though: a greyed button with no explanation is
+            # a mystery to debug mid-session, and quicksave_shared already refuses
+            # politely with the reason. What changes is the tooltip, which says why.
+            ready = bool(rs) and rs.phase == 'complete'
+            qb.setEnabled(bool(rs))
+            qb.setToolTip("Write this run straight into the shared session folder."
+                          if ready else
+                          "Not yet: both players have to finish this round first "
+                          "(the run is in the '%s' phase). Quicksave writes a "
+                          "completed run for your partner to pick up."
+                          % (getattr(rs, 'phase', '?') if rs else '?'))
 
     def on_pair_selected(self, pair_id):
         player = self.run_state.current_turn
@@ -8776,6 +8815,9 @@ class HaloGUI(QMainWindow):
             self.update_status("Both players have selected! Save or generate new pairs.")
             self.clear_pairs()
         else:
+            # Player 1 has picked and the phase moved on, so the save buttons' reasons
+            # changed too — nothing else re-synced them on this branch.
+            self._sync_save_button()
             self.update_status("Player 2's turn...")
             QTimer.singleShot(150, self.on_generate)
 
@@ -9341,10 +9383,13 @@ class HaloGUI(QMainWindow):
                     # WHOLE effect from patching the other game, not just its targets.
                     mod['_game_excluded'] = True
                     continue
-                if (game == 'Halo 3' and CONFIG.get('ignore_elite_in_h3')
-                        and mod.get('enemy') == 'Elite'):
-                    # In Halo 3 the Elites are allies, not enemies — skip Elite enemy
-                    # effects there by default (option in the run settings).
+                if CONFIG.get('ignore_elite_in_h3') and _is_allied_elite_mod(mod, game):
+                    # From Halo 3 on the Elites are allies (and ODST fields none at
+                    # all) — skip Elite enemy effects there by default (option in the
+                    # run settings). ODST inherits Halo 3's cards, so it has to be
+                    # covered by the same switch, and a HERO Elite (the spec-ops
+                    # commander) is stamped with `boss`, not `enemy`, so matching only
+                    # on `enemy` let every Elite hero card straight through.
                     mod['_game_excluded'] = True
                     continue
                 # Flagged BEFORE the tag is resolved, since genericness is decided per

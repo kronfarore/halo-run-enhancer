@@ -3076,8 +3076,18 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     if not z:
         return out
     grown = set()
+    # A Zoom effect's tag may name SEVERAL weapons ("weap a & b") -- ODST's plasma
+    # rifle is `plasma_rifle & plasma_rifle_red`, and every other consumer splits on
+    # ' & '. Looking the joined string up as one tag name matched nothing, so the
+    # variant tags never got a scope even though their Zoom fields were patched.
+    names = []
     for tag in targets:
-        _, name = hm.split_tag(tag)
+        _, joined = hm.split_tag(tag)
+        for part in str(joined).split(' & '):
+            part = part.strip()
+            if part and part not in names:
+                names.append(part)
+    for name in names:
         short = name.rsplit(chr(92), 1)[-1]
         wb = _weap_base(m, name)
         if wb is None:
@@ -3616,6 +3626,18 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_betrayal(m, str(game).strip(), registry))
         elif s == 'eyepatch':
             results.extend(_apply_eyepatch(m, str(game).strip(), registry))
+    # (effect name, tag) of every enemy/boss card, so "not present in this map" can be
+    # reported as a skip below rather than as a failure.
+    enemy_side = set()
+    for item in plan:
+        if not item.get('enemy_side'):
+            continue
+        enemy_side.add((item.get('name'), item.get('tag')))
+        # a target may redirect onto another tag; that row is reported under it
+        for op in item.get('ops') or []:
+            if op.get('tag'):
+                enemy_side.add((item.get('name'), op['tag']))
+    plan_start = len(results)
     for item in plan:
         if item.get('missing_in_db'):
             # The effect was removed or renamed out of halo.json since this run was
@@ -3758,6 +3780,19 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         if item.get('constraints'):
             results.extend(_apply_constraints(m, cls, path, item['name'],
                                               item['constraints'], plugin))
+
+    # An enemy/boss card whose tag simply isn't in this map is not a broken card: that
+    # enemy doesn't fight on this level. Kikowani has no Hunters, so the Hunter's fuel
+    # cannon (a weap tag under objects\characters, which otherwise reads like a failed
+    # player-weapon patch) and every Flood/Elite card reported as failures. Downgrade
+    # them to skips so a real failure stays visible in the report.
+    if enemy_side:
+        for i in range(plan_start, len(results)):
+            r = results[i]
+            if (not r.get('ok') and r.get('reason') == 'not present in this map'
+                    and (r.get('effect'), r.get('tag')) in enemy_side):
+                results[i] = {**r, 'ok': True, 'skip': True,
+                              'reason': 'this enemy is not on this level'}
 
     if extra_squads and str(game).strip() in SECOND_GEN_GAMES:
         # Structural, and deliberately before the respawn profile so both grow-block

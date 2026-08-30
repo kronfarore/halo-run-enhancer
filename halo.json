@@ -505,7 +505,7 @@
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
 				},
-				"easier_when": "increased",
+				"easier_when": "decreased",
 				"targets": {
 					"Halo 1": [
 						{ "field": "Shield Recharge Rate" }
@@ -537,9 +537,9 @@
 				"desc": "Run Forward, Run Backwards, Run Sideways, Run Acceleration",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{"field": "Run Forward", "block": "Player Information", "index": "all"},
-					{"field": "Run Backward", "block": "Player Information", "index": "all"},
-					{"field": "Run Sideways", "block": "Player Information", "index": "all"},
+					{"field": "Run Forward", "block": "Player Information", "index": "all", "group": "Run Speed" },
+					{"field": "Run Backward", "block": "Player Information", "index": "all", "group": "Run Speed" },
+					{"field": "Run Sideways", "block": "Player Information", "index": "all", "group": "Run Speed" },
 					{"field": "Run Acceleration", "block": "Player Information", "index": "all"}
 				]
 			},
@@ -558,9 +558,9 @@
 				"skip_games": ["Halo Reach"],
 				"tag": "matg globals\\globals",
 				"targets": [
-					{"field": "Stun Movement Penalty", "block": "Player Information", "index": "all"},
-					{"field": "Stun Turning Penalty", "block": "Player Information", "index": "all"},
-					{"field": "Stun Jumping Penalty", "block": "Player Information", "index": "all"}
+					{"field": "Stun Movement Penalty", "block": "Player Information", "index": "all", "group": "Stun Penalty" },
+					{"field": "Stun Turning Penalty", "block": "Player Information", "index": "all", "group": "Stun Penalty" },
+					{"field": "Stun Jumping Penalty", "block": "Player Information", "index": "all", "group": "Stun Penalty" }
 				]
 			},
 			"Stun Time": {
@@ -568,8 +568,8 @@
 				"skip_games": ["Halo Reach"],
 				"tag": "matg globals\\globals",
 				"targets": [
-					{"field": "Minimum Stun Time", "block": "Player Information", "index": "all"},
-					{"field": "Maximum Stun Time", "block": "Player Information", "index": "all"}
+					{"field": "Minimum Stun Time", "block": "Player Information", "index": "all", "group": "Stun Time" },
+					{"field": "Maximum Stun Time", "block": "Player Information", "index": "all", "group": "Stun Time" }
 				]
 			},
 			"Fall Damage": {
@@ -577,9 +577,9 @@
 				"tag": "jpt! globals\\falling",
 				"easier_when": "decreased",
 				"targets": [
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
+					{ "field": "Damage Lower Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			},
 			"Sprint Speed": {
@@ -760,13 +760,13 @@
 						"Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]}
 					]
@@ -776,9 +776,9 @@
 					"game": ["Halo 1", "Halo 3", "Halo Reach"],
 					"tag": {"Halo 1": "jpt! weapons\\assault rifle\\bullet", "Halo 3": "jpt! objects\\weapons\\rifle\\assault_rifle\\damage_effects\\assault_rifle_bullet", "Halo Reach": "jpt! objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -790,9 +790,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -894,9 +894,9 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" }
 					]
 				}
 			},
@@ -1004,9 +1004,9 @@
 						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -1034,13 +1034,13 @@
 						"Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]}
 					]
@@ -1049,9 +1049,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\pistol\\bullet", "Halo 2": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet", "Halo 3: ODST": "jpt! objects\\weapons\\pistol\\magnum\\damage_effects\\magnum_bullet & objects\\weapons\\pistol\\automag\\damage_effects\\automag_bullet", "Halo Reach": "jpt! objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -1062,9 +1062,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -1180,10 +1180,10 @@
 						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -1194,9 +1194,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 					"targets": [
-						{"field": "Error Angle", "block": "Barrels", "nth": 0, "min": 0},
-						{"field": "Error Angle Max", "block": "Barrels", "nth": 0, "min": 0},
-						{"field": "Deviation Angle", "min": 0}
+						{"field": "Error Angle", "block": "Barrels", "nth": 0, "min": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": "Barrels", "nth": 0, "min": 0, "group": "Error Angle" },
+						{"field": "Deviation Angle", "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Magnetism": {
@@ -1323,7 +1323,7 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
 						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
@@ -1336,9 +1336,9 @@
 						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -1364,13 +1364,13 @@
 						"Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]}
 					]
@@ -1379,9 +1379,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_bolt"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Charged Projectile": {
@@ -1394,17 +1394,17 @@
 					},
 					"targets": [
 						{ "field": "Maximum Range" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" }
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" }
 					]
 				},
 				"Charged Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\charged bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt & objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt_aoe"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -1415,9 +1415,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Heat Recovery": {
@@ -1435,13 +1435,13 @@
 						],
 						"Halo Reach": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-							{ "field": "Heat Loss Per Second" },
-							{ "field": "Overheated Heat Loss Per Second" }
+							{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+							{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 						],
 						"Halo 2": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-							{ "field": "Heat Loss Per Second" },
-							{ "field": "Overheated Heat Loss Per Second" }
+							{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+							{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 						]
 					}
 				},
@@ -1704,9 +1704,9 @@
 						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -1733,22 +1733,22 @@
 						"Halo Reach": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\bolt", "Halo 2": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt", "Halo 3": "jpt! objects\\weapons\\rifle\\plasma_rifle\\damage_effects\\plasma_rifle_bolt", "Halo Reach": "jpt! objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -1759,9 +1759,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Heat Recovery": {
@@ -1780,13 +1780,13 @@
 						],
 						"Halo Reach": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-							{ "field": "Heat Loss Per Second" },
-							{ "field": "Overheated Heat Loss Per Second" }
+							{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+							{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 						],
 						"Halo 2": [
 							{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-							{ "field": "Heat Loss Per Second" },
-							{ "field": "Overheated Heat Loss Per Second" }
+							{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+							{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 						]
 					}
 				},
@@ -1913,9 +1913,9 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" }
 					]
 				},
 				"Per Round": {
@@ -2048,7 +2048,7 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
 						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
@@ -2060,9 +2060,9 @@
 						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -2082,13 +2082,13 @@
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard"},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Needle Timer": {
@@ -2107,26 +2107,26 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\needler\\detonation damage", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_impact", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_impact"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound (both the attached and free-floating super detonation)",
 					"tag": {"Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_attached_super_detonation & objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_attached_super_detonation"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Explosion Radius": {
 					"desc": "Size of the needle super detionation",
 					"tag": {"Halo 1": "jpt! weapons\\needler\\explosion", "Halo 2": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo 3": "jpt! objects\\weapons\\pistol\\needler\\damage_effects\\needler_shard_super_detonation", "Halo Reach": "jpt! objects\\weapons\\pistol\\needler\\projectiles\\damage_effects\\needler_shard_super_detonation"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Melee Damage": {
@@ -2137,9 +2137,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -2262,10 +2262,10 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -2276,8 +2276,8 @@
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 					"targets": [
-						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0},
-						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0}
+						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0, "group": "Recoil" },
+						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0, "group": "Recoil" }
 					]
 				},
 				"Magnetism": {
@@ -2378,22 +2378,22 @@
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet"},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\sniper bullet", "Halo 2": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet", "Halo 3": "jpt! objects\\weapons\\rifle\\sniper_rifle\\damage_effects\\sniper_rifle_bullet", "Halo Reach": "jpt! objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -2404,9 +2404,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -2516,10 +2516,10 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -2620,7 +2620,7 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
 						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach"]}
 					]
 				},
@@ -2646,30 +2646,30 @@
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket"},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Radius": {
 					"desc": "Min to Max Radius",
 					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -2680,9 +2680,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -2901,13 +2901,13 @@
 						"Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]}
 					]
@@ -2916,9 +2916,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\shotgun\\pellet", "Halo 2": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet", "Halo 3": "jpt! objects\\weapons\\rifle\\shotgun\\damage_effects\\shotgun_bullet", "Halo Reach": "jpt! objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -2929,9 +2929,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\shotgun\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -3040,9 +3040,9 @@
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" }
 					],
 					"game": ["Halo 1", "Halo 2"]
 				}
@@ -3147,9 +3147,9 @@
 						"Halo 3": "jpt! objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Projectile": {
@@ -3158,13 +3158,13 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Zoom": {
@@ -3231,8 +3231,8 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"
 					},
 					"targets": [
-						{ "field": "Angle Change Per Shot", "block": "Barrels" },
-						{ "field": "Angle Change Per Shot Max", "block": "Barrels" }
+						{ "field": "Angle Change Per Shot", "block": "Barrels", "group": "Recoil" },
+						{ "field": "Angle Change Per Shot Max", "block": "Barrels", "group": "Recoil" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3249,9 +3249,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					]
 				},
 				"Dual Weapon Error": {
@@ -3259,9 +3259,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -3285,9 +3285,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -3358,13 +3358,13 @@
 						"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Heat Recovery": {
@@ -3376,8 +3376,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-						{ "field": "Heat Loss Per Second" },
-						{ "field": "Overheated Heat Loss Per Second" }
+						{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					]
 				},
 				"Zoom": {
@@ -3466,9 +3466,9 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					]
 				},
 				"Per Round": {
@@ -3491,9 +3491,9 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					],
 					"dual_only": true
 				},
@@ -3515,9 +3515,9 @@
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": "Halo 2"
 				}
@@ -3611,13 +3611,13 @@
 						"Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3628,9 +3628,9 @@
 						"Halo 3": "jpt! objects\\weapons\\rifle\\battle_rifle\\damage_effects\\battle_rifle_bullet"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3717,9 +3717,9 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3734,9 +3734,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -3830,13 +3830,13 @@
 						"Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 2", "Halo 3"]}
 					],
@@ -3849,8 +3849,8 @@
 						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
 					},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3861,9 +3861,9 @@
 						"Halo 3": "jpt! objects\\weapons\\support_low\\brute_shot\\damage_effects\\shot_grenade_explosion"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3875,9 +3875,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -3964,9 +3964,9 @@
 						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -3978,8 +3978,8 @@
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
 					"targets": [
-						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0},
-						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0}
+						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0, "group": "Recoil" },
+						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0, "group": "Recoil" }
 					]
 				},
 				"Magnetism": {
@@ -4070,13 +4070,13 @@
 						"Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4087,9 +4087,9 @@
 						"Halo 3": "jpt! objects\\weapons\\rifle\\beam_rifle\\damage_effects\\beam_rifle_impact"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4104,9 +4104,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4131,8 +4131,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-						{ "field": "Heat Loss Per Second" },
-						{ "field": "Overheated Heat Loss Per Second" }
+						{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4197,8 +4197,8 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
 					},
 					"targets": [
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -4210,8 +4210,8 @@
 					"game": ["Halo 3: ODST"],
 					"tag": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
 					"targets": [
-						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0},
-						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0}
+						{"field": "Angle Change Per Shot", "block": "Barrels", "min": 0, "group": "Recoil" },
+						{"field": "Angle Change Per Shot Max", "block": "Barrels", "min": 0, "group": "Recoil" }
 					]
 				},
 				"Magnetism": {
@@ -4302,13 +4302,13 @@
 						"Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4319,9 +4319,9 @@
 						"Halo 3": "jpt! objects\\weapons\\rifle\\covenant_carbine\\damage_effects\\carbine_slug"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4408,9 +4408,9 @@
 						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4425,9 +4425,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -4533,7 +4533,7 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
 						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
 					]
 				},
@@ -4545,13 +4545,13 @@
 						"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]}
 					],
@@ -4561,8 +4561,8 @@
 					"desc": "Min to Max Radius of the flak explosion",
 					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
@@ -4570,9 +4570,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
 					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
@@ -4583,9 +4583,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4677,8 +4677,8 @@
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
 					},
 					"targets": [
-						{"field": "Error Angle", "block": "Barrels", "nth": {"Halo 2": 1, "Halo 3": 1, "Halo Reach": 0}},
-						{"field": "Error Angle Max", "block": "Barrels", "nth": {"Halo 2": 1, "Halo 3": 1, "Halo Reach": 0}}
+						{"field": "Error Angle", "block": "Barrels", "nth": {"Halo 2": 1, "Halo 3": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": "Barrels", "nth": {"Halo 2": 1, "Halo 3": 1, "Halo Reach": 0}, "group": "Error Angle" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				}
@@ -4763,13 +4763,13 @@
 						"Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam"
 					},
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4781,9 +4781,9 @@
 						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4798,9 +4798,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4825,8 +4825,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-						{ "field": "Heat Loss Per Second" },
-						{ "field": "Overheated Heat Loss Per Second" }
+						{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4936,9 +4936,9 @@
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2"]
 				},
@@ -4946,9 +4946,9 @@
 					"desc": "Damage of the depleted sword. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
@@ -4957,9 +4957,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo Reach": "jpt! globals\\damage_effects\\dash_melee"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Lunge Range": {
@@ -4987,9 +4987,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Maximum Count": {
@@ -5003,8 +5003,8 @@
 					"desc": "How big of kaboom?",
 					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -5013,9 +5013,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Maximum Count": {
@@ -5029,8 +5029,8 @@
 					"desc": "How big of kaboom?",
 					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -5120,9 +5120,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3"]
 				},
@@ -5163,13 +5163,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Bullet Damage": {
@@ -5177,9 +5177,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\pistol\\excavator\\damage_effects\\excavator_shard",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Pellet Spread": {
@@ -5240,8 +5240,8 @@
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
 						{"field": "Heat Recovery Threshold", "min": 0, "max": 1},
-						{"field": "Heat Loss Per Second", "min": 0},
-						{"field": "Overheated Heat Loss Per Second", "min": 0}
+						{"field": "Heat Loss Per Second", "min": 0, "group": "Heat Loss" },
+						{"field": "Overheated Heat Loss Per Second", "min": 0, "group": "Heat Loss" }
 					]
 				},
 				"Per Round": {
@@ -5350,9 +5350,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3"]
 				},
@@ -5362,13 +5362,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]}
 					]
@@ -5378,9 +5378,9 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {"Halo 2": "jpt! objects\\weapons\\rifle\\spike_rifle\\damage_effects\\spike_rifle_spike", "Halo Reach": "jpt! objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_rifle_shard"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Magazine": {
@@ -5430,9 +5430,9 @@
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1 },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1 }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
 					]
 				},
 				"Dual Weapon Error": {
@@ -5440,9 +5440,9 @@
 					"game": ["Halo 3"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels" },
-						{ "field": "Error Angle", "block": "Barrels" },
-						{ "field": "Error Angle Max", "block": "Barrels" }
+						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
 					]
 				},
 				"Dual Weapon Damage": {
@@ -5537,9 +5537,9 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -5548,9 +5548,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3"]
 				},
@@ -5559,8 +5559,8 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Lunge Range": {
@@ -5674,8 +5674,8 @@
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
-						{ "field": "Heat Loss Per Second" },
-						{ "field": "Overheated Heat Loss Per Second" }
+						{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					]
 				},
 				"Melee Damage": {
@@ -5684,9 +5684,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3"]
 				},
@@ -5695,9 +5695,9 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam", "Halo Reach": "jpt! objects\\weapons\\support_high\\spartan_laser\\projectiles\\damage_effects\\spartan_laser_beam"},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Charging Time": {
@@ -5757,8 +5757,8 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\spartan_laser\\damage_effects\\spartan_laser_beam", "Halo Reach": "jpt! objects\\weapons\\support_high\\spartan_laser\\projectiles\\damage_effects\\spartan_laser_beam_impact"},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Zoom": {
@@ -5846,9 +5846,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\turret\\flamethrower\\damage_effects\\flamethrower_impact",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Projectile": {
@@ -5857,13 +5857,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]}
 					]
@@ -6007,9 +6007,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Projectile": {
@@ -6018,13 +6018,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"More Shooting": {
@@ -6169,9 +6169,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Projectile": {
@@ -6180,13 +6180,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"More Shooting": {
@@ -6320,9 +6320,9 @@
 					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -6331,8 +6331,8 @@
 					"tag": "jpt! objects\\weapons\\turret\\missile_pod\\damage_effects\\missile_pod_missile_explosion",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Projectile": {
@@ -6341,13 +6341,13 @@
 					"game": "Halo 3",
 					"tag": "proj objects\\weapons\\turret\\missile_pod\\projectiles\\missile_pod_missile",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"More Shooting": {
@@ -6399,9 +6399,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_attached_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_boarding_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_directional_explosion",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Spikes Damage": {
@@ -6409,9 +6409,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_fragment",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -6419,8 +6419,8 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_boarding_explosion & objects\\weapons\\grenade\\claymore_grenade\\damage_effects\\claymore_grenade_directional_explosion",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Maximum Count": {
@@ -6577,9 +6577,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" }
 					]
 				},
 				"Projectile": {
@@ -6588,13 +6588,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]}
 					]
@@ -6604,9 +6604,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion & objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_impact",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -6614,8 +6614,8 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion",
 					"targets": [
-						{"field": "Radius"},
-						{"field": "Radius Max"}
+						{"field": "Radius", "group": "Radius" },
+						{"field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -6741,10 +6741,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Projectile": {
@@ -6753,13 +6753,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"More Shooting": {
@@ -6788,9 +6788,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				}
 			},
@@ -6800,9 +6800,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_impact & objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_equipment_explosion",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Burn Damage": {
@@ -6810,9 +6810,9 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Burn Radius": {
@@ -6820,8 +6820,8 @@
 					"game": "Halo 3",
 					"tag": "jpt! objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_burn & objects\\weapons\\grenade\\firebomb_grenade\\damage_effects\\firebomb_grenade_equipment_explosion",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Maximum Count": {
@@ -6957,8 +6957,8 @@
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
 						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
-						{"field": "Heat Loss Per Second"},
-						{"field": "Overheated Heat Loss Per Second"}
+						{"field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{"field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					]
 				},
 				"Per Round": {
@@ -6977,13 +6977,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Beam Damage": {
@@ -6991,9 +6991,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				}
 			},
@@ -7151,10 +7151,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Projectile": {
@@ -7163,13 +7163,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]}
 					]
@@ -7179,9 +7179,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_explosion & objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_impact &  objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_tethered_grenade_emp & objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_tethered_grenade_explosion",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -7189,8 +7189,8 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_explosion & objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_grenade_impact &  objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_tethered_grenade_emp & objects\\weapons\\rifle\\grenade_launcher\\projectiles\\damage_effects\\grenade_launcher_tethered_grenade_explosion",
 					"targets": [
-						{"field": "Radius"},
-						{"field": "Radius Max"}
+						{"field": "Radius", "group": "Radius" },
+						{"field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -7244,9 +7244,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\needle_rifle\\projectiles\\damage_effects\\needle_rifle_shard_attached_super_detonation & objects\\weapons\\rifle\\needle_rifle\\projectiles\\damage_effects\\needle_rifle_shard_super_detonation",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Explosion Radius": {
@@ -7255,8 +7255,8 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\needle_rifle\\projectiles\\damage_effects\\needle_rifle_shard_super_detonation",
 					"targets": [
-						{"field": "Radius"},
-						{"field": "Radius Max"}
+						{"field": "Radius", "group": "Radius" },
+						{"field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Needle Timer": {
@@ -7351,10 +7351,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Projectile": {
@@ -7363,13 +7363,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"More Shooting": {
@@ -7398,9 +7398,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\needle_rifle\\projectiles\\damage_effects\\needle_rifle_shard_impact",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				}
 			},
@@ -7510,7 +7510,7 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
 						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach"]}
 					]
 				},
@@ -7569,10 +7569,10 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Heat Recovery": {
@@ -7581,8 +7581,8 @@
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
 						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
-						{"field": "Heat Loss Per Second"},
-						{"field": "Overheated Heat Loss Per Second"}
+						{"field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{"field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					]
 				},
 				"Per Round": {
@@ -7601,13 +7601,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"},
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]}
 					]
@@ -7617,9 +7617,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_detonation & objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_attached_detonation & objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_impact",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -7627,8 +7627,8 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_detonation & objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_attached_detonation & objects\\weapons\\support_high\\plasma_launcher\\projectiles\\damage_effects\\plasma_launcher_grenade_impact",
 					"targets": [
-						{"field": "Radius"},
-						{"field": "Radius Max"}
+						{"field": "Radius", "group": "Radius" },
+						{"field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Charging Time": {
@@ -7786,9 +7786,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0},
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0}
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" }
 					]
 				},
 				"Heat Recovery": {
@@ -7797,8 +7797,8 @@
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
 						{"field": "Heat Recovery Threshold", "min": "0", "max": "1"},
-						{"field": "Heat Loss Per Second"},
-						{"field": "Overheated Heat Loss Per Second"}
+						{"field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{"field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
 					]
 				},
 				"Per Round": {
@@ -7817,13 +7817,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Bullet Damage": {
@@ -7831,9 +7831,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Misfire": {
@@ -7969,13 +7969,13 @@
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer",
 					"targets": [
-						{"field": "Maximum Range"},
-						{"field": "Initial Velocity"},
-						{"field": "Final Velocity"},
-						{"field": "Air Damage Range", "group": "Damage Range"},
-						{"field": "Air Damage Range Max", "group": "Damage Range"},
-						{"field": "Water Damage Range", "group": "Damage Range"},
-						{"field": "Water Damage Range Max", "group": "Damage Range"}
+						{"field": "Maximum Range", "group": "Range" },
+						{"field": "Initial Velocity", "group": "Velocity" },
+						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Water Damage Range", "group": "Range"},
+						{"field": "Water Damage Range Max", "group": "Range"}
 					]
 				},
 				"Explosion Damage": {
@@ -7983,9 +7983,9 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round_impact",
 					"targets": [
-						{"field": "Damage Lower Bound"},
-						{"field": "Damage Upper Bound"},
-						{"field": "Damage Upper Bound Max"}
+						{"field": "Damage Lower Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound", "group": "Damage" },
+						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Radius": {
@@ -7993,8 +7993,8 @@
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round_impact",
 					"targets": [
-						{"field": "Radius"},
-						{"field": "Radius Max"}
+						{"field": "Radius", "group": "Radius" },
+						{"field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Charging Time": {
@@ -8547,11 +8547,11 @@
 				"game": "Halo 3",
 				"tag": "jpt! objects\\equipment\\powerdrain\\damage_effects\\powerdrain_explosion",
 				"targets": [
-					{ "field": "Radius" },
-					{ "field": "Radius Max" },
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
+					{ "field": "Radius", "group": "Radius" },
+					{ "field": "Radius Max", "group": "Radius" },
+					{ "field": "Damage Lower Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			},
 			"Powerdrain": {
@@ -8559,11 +8559,11 @@
 				"game": "Halo 3",
 				"tag": "jpt! objects\\equipment\\powerdrain\\damage_effects\\powerdrain_field",
 				"targets": [
-					{ "field": "Radius" },
-					{ "field": "Radius Max" },
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
+					{ "field": "Radius", "group": "Radius" },
+					{ "field": "Radius Max", "group": "Radius" },
+					{ "field": "Damage Lower Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			}
 		},	
@@ -8745,11 +8745,11 @@
 				"game": "Halo 3",
 				"tag": "jpt! objects\\equipment\\tripmine\\damage_effects\\tripmine_explosion & objects\\equipment\\tripmine\\damage_effects\\tripmine_explosion_base",
 				"targets": [
-					{ "field": "Radius" },
-					{ "field": "Radius Max" },
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
+					{ "field": "Radius", "group": "Radius" },
+					{ "field": "Radius Max", "group": "Radius" },
+					{ "field": "Damage Lower Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			}
 		},	
@@ -8804,8 +8804,8 @@
 				"game": "Halo 3",
 				"tag": "char objects\\equipment\\autoturret\\autoturret",
 				"targets": [
-					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
-					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "group": "Accuracy Bounds" },
+					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "group": "Accuracy Bounds" },
 					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" }
 				]
 			},
@@ -8825,9 +8825,9 @@
 					"Halo 3": "jpt! objects\\equipment\\autoturret\\damage_effects\\autoturret_beam_impact"
 				},
 				"targets": [
-					{ "field": "Damage Lower Bound" },
-					{ "field": "Damage Upper Bound" },
-					{ "field": "Damage Upper Bound Max" }
+					{ "field": "Damage Lower Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound", "group": "Damage" },
+					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			}	
 		},	
@@ -9028,18 +9028,6 @@
 					{ "field": "Major Upgrade (Many)", "block": "Difficulty", "difficulty": true, "min": "0", "max": "1" }
 				]
 			},
-			"Player Stun Time": {
-				"desc": "Stun Time after Fall Damage?",
-				"skip_games": ["Halo Reach"],
-				"tag": "matg globals\\globals",
-				"constraints": [
-					{ "field": "Maximum Stun Time", "of": "Minimum Stun Time", "not_below": true, "block": "Player Information" }
-				],
-				"targets": [
-					{"field": "Minimum Stun Time", "block": "Player Information", "index": "all", "min": "0"},
-					{"field": "Maximum Stun Time", "block": "Player Information", "index": "all", "min": "0"}
-				]
-			},
 			"Player Vehicle Ram Chance": {
 				"desc": "Chance of deciding to ram the player",
 				"tag": "matg globals\\globals",
@@ -9053,11 +9041,11 @@
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": "0" },
-					{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all" },
-					{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all" },
-					{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all" },
-					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "min": "0" }
+					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Vision" },
+					{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+					{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+					{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" },
+					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Peripheral Vision" }
 				]
 			},
 			"Hearing Distance": {
@@ -9086,11 +9074,11 @@
 				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
-					{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-					{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
+					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+					{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+					{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+					{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+					{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
 				]
 			},
 			"Placement Properties": {
@@ -9129,8 +9117,8 @@
 				"game": "Halo 3",
 				"tag": "char ai\\generic",
 				"targets": [
-					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
-					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true },
+					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "group": "Accuracy Bounds" },
+					{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "group": "Accuracy Bounds" },
 					{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" }
 				]
 			},
@@ -9201,11 +9189,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\elite\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -9270,17 +9258,17 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max" },
-							{ "field": "Hide Shield Fraction", "min": "0", "max": "1" },
-							{ "field": "Attack Shield Fraction", "min": "0", "max": "1" },
-							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1" }
+							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Attack Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 2": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
-							{ "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" },
-							{ "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" }
 						]
 					}
 				},
@@ -9364,8 +9352,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
 						]
 					}
@@ -9482,9 +9470,9 @@
 						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Upgrade Chance": {
@@ -9556,9 +9544,9 @@
 						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Vision": {
@@ -9566,11 +9554,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\hunter\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -9622,11 +9610,11 @@
 						"Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary"
 					},
 					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Maximum Range" }
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Maximum Range", "group": "Range" }
 					]
 				},
 				"Accuracy": {
@@ -9646,8 +9634,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
 						]
 					}
@@ -9730,9 +9718,9 @@
 						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Berserk": {
@@ -9757,11 +9745,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\grunt\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -9826,12 +9814,12 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max" }
+							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" }
 						],
 						"Halo 2": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
@@ -9892,8 +9880,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
 						]
 					}
@@ -9994,11 +9982,11 @@
 							{ "field": "Leader Killed Panic Chance" }
 						],
 						"Halo 2": [
-							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
-							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
+							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
 						]
 					}
 				},
@@ -10061,11 +10049,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\jackal\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -10141,15 +10129,15 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max" },
-							{ "field": "Hide Shield Fraction", "min": "0", "max": "1" },
-							{ "field": "Attack Shield Fraction", "min": "0", "max": "1" },
-							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1" }
+							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Attack Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 2": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
@@ -10202,8 +10190,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
 						]
 					}
@@ -10294,11 +10282,11 @@
 						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" },
-						{ "field": "Peripheral Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all" }
+						{ "field": "Maximum Vision Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "group": "Vision" },
+						{ "field": "Central Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "block": { "Halo 1": null, "Halo 2": "Perception Properties" }, "index": "all", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -10362,9 +10350,9 @@
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
+						{ "field": "Melee Leap Velocity", "games": ["Halo 1"], "group": "Leap Velocity" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					]
@@ -10492,9 +10480,9 @@
 						"Halo 3": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_charge_first_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_boarding_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_obstacle_smash"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Combatform Berserk": {
@@ -10515,11 +10503,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\flood_infection\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -10579,8 +10567,8 @@
 						],
 						"Halo 2": [
 							{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
-							{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
-							{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+							{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+							{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
 							{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
 							{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 						]
@@ -10611,8 +10599,8 @@
 						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
 					},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Pop Damage": {
@@ -10623,9 +10611,9 @@
 						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_pop"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Damage": {
@@ -10636,9 +10624,9 @@
 						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Accuracy": {
@@ -10658,8 +10646,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
 							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 						]
@@ -10682,11 +10670,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\floodcarrier\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -10730,9 +10718,9 @@
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Leap Velocity", "games": ["Halo 1"] },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"] },
+						{ "field": "Melee Leap Velocity", "games": ["Halo 1"], "group": "Leap Velocity" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0, "max": 1 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
@@ -10770,8 +10758,8 @@
 						"Halo 3": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Pop Damage": {
@@ -10782,9 +10770,9 @@
 						"Halo 3": "jpt! objects\\characters\\floodcarrier\\damage_effects\\suicide_explosion"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Accuracy": {
@@ -10804,8 +10792,8 @@
 							{ "field": "Projectile Error" }
 						],
 						"Halo 2": [
-							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+							{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
+							{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 							{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
 							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 						]
@@ -10818,11 +10806,11 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all" },
-						{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all" },
-						{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all" },
-						{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all" },
-						{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all" }
+						{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "group": "Vision" },
+						{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -10859,8 +10847,8 @@
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
@@ -10906,8 +10894,8 @@
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"targets": [
-						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true },
-						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true },
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "diff_prefix": true, "group": "Accuracy Bounds" },
 						{ "field": "Accuracy Time", "block": "Weapons Properties", "diff_prefix": true, "harder_when": "decreased" }
 					]
 				},
@@ -10979,11 +10967,11 @@
 					"game": "Halo 1",
 					"tag": "actr characters\\sentinel\\*",
 					"targets": [
-						{ "field": "Maximum Vision Distance" },
-						{ "field": "Central Vision Angle" },
-						{ "field": "Maximum Vision Angle" },
-						{ "field": "Peripheral Vision Angle" },
-						{ "field": "Peripheral Distance" }
+						{ "field": "Maximum Vision Distance", "group": "Vision" },
+						{ "field": "Central Vision Angle", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
 					]
 				},
 				"Hearing Distance": {
@@ -11015,12 +11003,12 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max" }
+							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" }
 						],
 						"Halo 2": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": 0 },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": 0 },
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": 0, "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": 0, "group": "Hide Behind Cover Time" },
 							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
 						]
 					}
@@ -11110,9 +11098,9 @@
 					"desc": "Beam Damage",
 					"tag": "jpt! characters\\sentinel\\beam",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": "Halo 1"
 				},
@@ -11124,8 +11112,8 @@
 						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Explosion Damage": {
@@ -11136,9 +11124,9 @@
 						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Leader Leash": {
@@ -11185,8 +11173,8 @@
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
 					},
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
@@ -11206,9 +11194,9 @@
 					"game": "Halo 2",
 					"tag": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Melee Behavior": {
@@ -11235,8 +11223,8 @@
 					},
 					"targets": [
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 					]
@@ -11249,8 +11237,8 @@
 						"Halo 2": "char ai\\generic"
 					},
 					"targets": [
-						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
 						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 					]
@@ -11311,8 +11299,8 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
@@ -11386,8 +11374,8 @@
 						"Halo 2": "char ai\\generic"
 					},
 					"targets": [
-						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
-						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased" },
+						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
+						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
 						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 					]
@@ -11425,7 +11413,7 @@
 					]
 				},
 				"Leader Charge": {
-					"desc": "Chance for a leader to charge, when all his lackies died and how far they charge",
+					"desc": "Behavior for a leader to charge in",
 					"game": "Halo 3",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
@@ -11511,8 +11499,8 @@
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "min": 0 },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "min": 0 },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "min": 0, "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "min": 0, "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
 					],
 					"constraints": [
@@ -11570,8 +11558,8 @@
 					"game": "Halo 3: ODST",
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
@@ -11589,11 +11577,11 @@
 					"game": "Halo 3: ODST",
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
-						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all" },
-						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 },
-						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1 }
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
 					]
 				},
 				"Death": {
@@ -11677,11 +11665,11 @@
 					"tag": "proj objects\\characters\\prophet\\weapons\\gravity_cannon\\projectiles\\gravity_cannon",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Maximum Range" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" }
 					]
 				},
 				"Gravity Throne": {
@@ -11825,8 +11813,8 @@
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"targets": [
 						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 					]
@@ -11845,8 +11833,8 @@
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"targets": [
-						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all" },
-						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all" },
+						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+						{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
 						{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
@@ -11865,9 +11853,9 @@
 					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee & objects\\characters\\brute\\damage_effects\\tartarus_obstacle_smash",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Gravity Hammer Radius": {
@@ -11876,8 +11864,8 @@
 					"tag": "jpt! objects\\characters\\brute\\damage_effects\\tartarus_hammer_explosion & objects\\characters\\brute\\damage_effects\\tartarus_hammer_melee",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -11897,9 +11885,9 @@
 					"tag": "jpt! objects\\characters\\monitor\\damage_effects\\first_hit",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Beam Rate of Fire": {
@@ -11918,11 +11906,11 @@
 					"tag": "proj objects\\characters\\monitor\\weapons\\monitor_beam\\monitor_beam",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Maximum Range" }
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Maximum Range", "group": "Range" }
 					]
 				}
 			}
@@ -11953,9 +11941,9 @@
 					"tag": "jpt! objects\\characters\\sentinel_enforcer\\damage_effects\\grapple_melee",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Beam": {
@@ -11977,11 +11965,11 @@
 					"tag": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Maximum Range" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" }
 					]
 				},
 				"Beam Damage": {
@@ -11990,9 +11978,9 @@
 					"tag": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Needler": {
@@ -12014,11 +12002,11 @@
 					"tag": "proj objects\\characters\\sentinel_aggressor\\weapons\\needler\\sentinel_aggressor_needler_needle",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Maximum Range" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" }
 					]
 				},
 				"Needler Damage": {
@@ -12027,9 +12015,9 @@
 					"tag": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\needler\\damage_effects\\sentinel_aggressor_needler_needle_impact",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Rocket": {
@@ -12051,11 +12039,11 @@
 					"tag": "proj objects\\characters\\sentinel_enforcer\\weapons\\rocket\\sentinel_enforcer_rocket",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Maximum Range" },
-						{ "field": "Initial Velocity" },
-						{ "field": "Final Velocity" },
-						{ "field": "Air Damage Range" },
-						{ "field": "Air Damage Range Max" }
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" }
 					]
 				},
 				"Rocket Damage": {
@@ -12064,11 +12052,11 @@
 					"tag": "jpt! objects\\characters\\sentinel_enforcer\\weapons\\rocket\\damage_effects\\sentinel_enforcer_rocket_explosion",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" },
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" },
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Enforcer Chassis": {
@@ -12128,7 +12116,6 @@
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
-					"harder_when": "increased",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
@@ -12146,7 +12133,6 @@
 					},
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor",
-					"harder_when": "increased",
 					"init_defaults": { "tag": "char objects\\characters\\brute\\ai\\brute_chieftain_armor", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
@@ -12192,9 +12178,9 @@
 					"harder_when": "increased",
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
 					"targets": [
-						{ "field": "Damage Lower Bound" },
-						{ "field": "Damage Upper Bound" },
-						{ "field": "Damage Upper Bound Max" }
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Chieftain Hammer Radius": {
@@ -12203,8 +12189,8 @@
 					"harder_when": "increased",
 					"tag": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion_brute",
 					"targets": [
-						{ "field": "Radius" },
-						{ "field": "Radius Max" }
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				}
 			},
@@ -12249,7 +12235,6 @@
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
-					"harder_when": "increased",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
@@ -12275,7 +12260,6 @@
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
-					"harder_when": "increased",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
@@ -12316,7 +12300,6 @@
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
-					"harder_when": "increased",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Grenades Properties", "grow": true },
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
@@ -12378,7 +12361,6 @@
 					"desc": "How readily the Ultra throws grenades (stock: 0.1).",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
-					"harder_when": "increased",
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
