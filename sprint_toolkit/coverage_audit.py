@@ -127,6 +127,38 @@ def carded_fields(db, game, enemy, generic_only=False):
     return got
 
 
+def general_generic_fields(db, game):
+    """{field} covered ONLY by a General modifiers card aimed at the shared AI base.
+
+    These are the campaign-wide mechanics -- Vision, Accuracy, Grenade Properties,
+    Retreat, Firing Patterns -- that reach an enemy purely BY INHERITANCE. The moment a
+    later game gives that enemy its own copy of the block, the general card stops
+    reaching it and there is no enemy-specific card to take over. Nothing fails; the
+    enemy is simply no longer covered by the card that claims to cover everyone.
+    """
+    games = db.get_games()
+    raw = json.load(open('halo.json', encoding='utf-8'))
+    gm = ((raw.get('Enemy modifiers') or {}).get('General modifiers') or {})
+    out = set()
+    for card in gm.values():
+        if not isinstance(card, dict):
+            continue
+        tag = card.get('tag')
+        tag = he.resolve_gamed(tag, game, games) if isinstance(tag, dict) else tag
+        if not (isinstance(tag, str) and tag.strip().endswith(GENERIC)):
+            continue
+        ts = card.get('targets')
+        ts = he.resolve_gamed(ts, game, games) if isinstance(ts, dict) else ts
+        for t in ts or []:
+            if not isinstance(t, dict) or not he.target_applies(t, game):
+                continue
+            f = t.get('field')
+            f = he.resolve_gamed(f, game, games) if isinstance(f, dict) else f
+            if isinstance(f, str):
+                out.add(f)
+    return out
+
+
 def enemy_tag_patterns(db, enemy):
     r"""Every char tag pattern this enemy's cards name, in ANY game, minus ai\generic.
 
@@ -171,7 +203,7 @@ def main():
         enemies = [e for e in enemies if e.lower() == args.enemy.lower()] or enemies
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
-    live, carded, viageneric = {}, {}, {}
+    live, carded, viageneric, general = {}, {}, {}, {}
     for game, subs, mp in CASES:
         if not os.path.exists(mp):
             print('%s: map missing (%s)' % (game, mp)); continue
@@ -182,6 +214,7 @@ def main():
         m = hp.open_map(mp, game)
         fields = [(f, b) for f, b in _plugin_fields(plug) if _interesting(f)]
         live[game], carded[game], viageneric[game] = {}, {}, {}
+        general[game] = set()
         for enemy in enemies:
             pats = enemy_tag_patterns(db, enemy)
             tags = []
@@ -201,6 +234,7 @@ def main():
             live[game][enemy] = got
             carded[game][enemy] = carded_fields(db, game, enemy)
             viageneric[game][enemy] = carded_fields(db, game, enemy, generic_only=True)
+        general[game] = general_generic_fields(db, game)
 
     # a field is "carded somewhere" if any game's card set names it
     anywhere = collections.defaultdict(set)          # enemy -> {field}
@@ -210,7 +244,7 @@ def main():
 
     total = 0
     for game in [g for g, _, _ in CASES if g in live]:
-        rows, misaimed = [], []
+        rows, misaimed, outgrown = [], [], []
         for enemy in sorted(live[game]):
             gap = live[game][enemy] - carded[game][enemy]
             for f in sorted(gap):
@@ -222,9 +256,19 @@ def main():
             # shared base -- while this enemy defines the field on its own tags again.
             for f in sorted(viageneric[game][enemy] & live[game][enemy]):
                 misaimed.append((enemy, f))
+            # A campaign-wide mechanic that used to reach this enemy through the shared
+            # base, and no longer does because the enemy defines the block itself here.
+            for f in sorted((general[game] & live[game][enemy])
+                            - carded[game][enemy]):
+                outgrown.append((enemy, f))
         print('=' * 84)
         print('%s   %d uncarded field(s) this level actually defines' % (game, len(rows)))
         total += len(rows)
+        if outgrown:
+            print('  --- a General card reaches these through ai/generic, but the enemy')
+            print('      defines the block itself here, so it no longer lands on them')
+            for enemy, f in outgrown:
+                print('      %-18s %s' % (enemy, f))
         if misaimed:
             print('  --- aimed at ai/generic while the enemy defines it here')
             for enemy, f in misaimed:

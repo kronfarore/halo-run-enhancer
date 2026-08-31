@@ -9494,14 +9494,16 @@
 				},
 				"Shield Recharge": {
 					"desc": "Delay before Shield begins to recharge and the time it takes",
+					"debug_desc": "Halo 3 is deliberately absent: 030_outskirts fields no elite char tags at all, so there is nothing measured to justify adding it. ODST was added 2026-08-31 -- its elite tags define both fields (15.0 delay, 6.0 time) on 2 tags. In ODST the Elites never actually spawn, so the *Elites are allies* option keeps this out of a run unless you turn it off.",
 					"tag": {
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": "Halo 2"
+					"game": ["Halo 2", "Halo 3: ODST"]
 				}
 			},
 			"Hunter": {
@@ -9696,10 +9698,11 @@
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
 						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
 					},
+					"debug_desc": "Melee Chance was allow-listed to Halo 2 until 2026-08-31, though the hunter tags define it in ODST too (0.75).",
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Hunter Berserk": {
@@ -9854,10 +9857,12 @@
 				},
 				"Rate of Fire": {
 					"desc": "Increases enemy Rate of Fire (shots per second).",
-					"game": ["Halo 1", "Halo 2"],
+					"debug_desc": "Grunts define their own firing pattern in every game, so this never touches anything else. It named no tag past Halo 2 until 2026-08-31 -- the field was live on the grunt tags in Halo 3 and ODST all along (10.0), and the general **Firing Patterns** card could not reach them because they define the block themselves.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt"
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
 					},
 					"harder_when": "increased",
 					"targets": {
@@ -9865,6 +9870,9 @@
 							{ "field": "Rate Of Fire" }
 						],
 						"Halo 2": [
+							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						],
+						"Halo 3": [
 							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 						]
 					}
@@ -9908,6 +9916,7 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
+					"debug_desc": "Grunts carry their own Grenades block in every game, so this touches nothing else. Grenade Ideal Velocity was allow-listed to Halo 2 until 2026-08-31 even though the grunt tags define it in Halo 3 and ODST too (3.0).",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -9915,7 +9924,7 @@
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] },
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -9923,6 +9932,7 @@
 				},
 				"Grenades Chance": {
 					"desc": "Behavior that influences the chance and timing for grenades",
+					"debug_desc": "Anti-Vehicle Grenade Chance and Grenade Throw Delay were allow-listed to Halo 2 until 2026-08-31, though the grunt tags define both in Halo 3 and ODST (0.5 and 12.0). `games` is a literal allow list with no ODST-inherits-Halo-3 fallback, which is why ODST has to be named outright.",
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -9930,10 +9940,10 @@
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" }, "min": 0, "max": 1 },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"], "min": 0, "max": 1 },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "min": 0, "max": 1 },
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] }
+						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] }
 					]
 				},
 				"Weapon Damage Modifier": {
@@ -11391,13 +11401,33 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "How far away they will start shooting at you.",
-					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": "Halo 2",
+					"debug_desc": {
+						"Halo 2": "In Halo 2 the Brutes define no firing range of their own, so this edits the shared AI base and also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+						"Halo 3: ODST": "In ODST the brute tags carry Maximum Firing Range themselves (30.0), so this edits them directly and touches nothing else. That is also why the general **Maximum Firing Distance** card stopped reaching Brutes here -- a card aimed at `ai\\generic` cannot reach an enemy that has outgrown it."
+					},
+					"game": ["Halo 2", "Halo 3: ODST"],
 					"tag": {
-						"Halo 2": "char ai\\generic"
+						"Halo 2": "char ai\\generic",
+						"Halo 3: ODST": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
 						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+					]
+				},
+				"Melee Leap": {
+					"desc": "How far and how fast they lunge when they close on you.",
+					"debug_desc": "Lunge range, velocity, chance and ballistic arc, on the Brutes' OWN Charge Properties -- nothing shared. Defined on 1 brute tag in Halo 2, 2 in Halo 3 and 5 in ODST; the rest inherit from those. Added 2026-08-31: the Brutes have carried these fields since Halo 2 and never had a card for them.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
 					]
 				},
 				"Shield down Berserk": {
