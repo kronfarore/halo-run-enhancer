@@ -135,9 +135,12 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                 specific = mod.get('enemy') and not mod.get('_generic_target')
                 add(mod, mod['enemy'] if specific else 'Enemy (general)',
                     2 if specific else 3)
-        add(rd.get('wildcard'), 'Friend / Wildcard', 4)
-        add(rd.get('wildcard2'), 'Friend / Wildcard', 4)   # player 2's wildcard slot
-        for k in ('boss1', 'boss2'):
+        # Displayed as Ally; the round key stays `wildcard` so saved runs still load.
+        add(rd.get('wildcard'), 'Friend / Ally', 4)
+        add(rd.get('wildcard2'), 'Friend / Ally', 4)    # player 2's ally slot
+        # Heroes are drawn from the Other slot but are boss cards in every way that
+        # matters here -- same section, same category, same valid_bosses check.
+        for k in ('boss1', 'boss2', 'hero1', 'hero2'):
             b = rd.get(k)
             if isinstance(b, dict) and valid_bosses is not None:
                 if b.get('boss') and b['boss'] not in valid_bosses:
@@ -147,6 +150,10 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
             # them together hid which character each card actually hits.
             add(b, 'Boss: %s' % b['boss'] if isinstance(b, dict) and b.get('boss')
                 else 'Boss', 5)
+        # Skulls carry no per-field targets; they reach the patcher through their
+        # `skull` key, and they only get there by being collected here first.
+        for k in ('skull1', 'skull2'):
+            add(rd.get(k), 'Skull', 4)
         for k in ('exhaust1', 'exhaust2'):
             ex = rd.get(k)
             if isinstance(ex, dict) and (mission_id is None

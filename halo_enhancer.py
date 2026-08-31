@@ -139,7 +139,7 @@ def is_valid_run(data):
 
 
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods',
-               'wildcard_chance', 'skull_chance', 'exhaust_chance', 'new_weapon_chance', 'include_grenades',
+               'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'turrets_are_weapons',
@@ -163,6 +163,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
                'odst_escort_buff', 'odst_equipment_all_insertions',
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
+               'other_chance', 'other_weights', 'other_hero_enabled',
+               'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -335,8 +337,10 @@ CONFIG = {
     # main-window "ADD MOD" search). Off for normal play.
     "debug_mode": True,
 
+    # RETIRED 2026-08-31, replaced by other_chance + other_weights. Kept only so an
+    # older settings.json still loads without a KeyError; nothing reads them.
     "wildcard_chance": 0.1,
-    "exhaust_chance": 0.1,   # #5: per-pair chance of a one-map Exhaust (non-boss 3rd slot)
+    "exhaust_chance": 0.1,
     "new_weapon_chance": 0.0,
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
@@ -389,7 +393,7 @@ CONFIG = {
     "set_starting_equipment": False,
     # Place EVERY equipment each player carries, not just their first.
     "equipment_all_selected": False,
-    "skull_chance": 0.0,                    # #7: chance a pair's negative is a Skull instead
+    "skull_chance": 0.0,                    # RETIRED, see other_weights
     "two_player_coop": True,                # #8: H3 only — P1 plays Chief, P2 plays the Dervish
     "coop_no_starting_weapons": False,      # #1: don't give the coop profile (index 1) the picks
     "null_coop_starting_equipment": False,  # #2: empty the coop profile's starting weapons
@@ -567,6 +571,26 @@ CONFIG = {
     # this game is prefilled from its OWN value in the nearest earlier game. Operators
     # carry cleanly by construction -- "*1.5" means the same thing on any base value.
     "carry_magnitudes_across_games": True,
+
+    # --- The OTHER slot ---------------------------------------------------------
+    # A pair has four slots: Player, Enemy, Boss and Other. Boss is the guaranteed
+    # card on a level with a named STORY fight. Other is one card drawn from four
+    # kinds -- Hero, Exhaust, Skull, Ally -- and it is rolled in two steps: does this
+    # pair get one at all (other_chance), then WHICH kind (other_weights, relative).
+    #
+    # Rolling the kind first is what makes the group tunable: raising the Skull weight
+    # trades skulls against the other three rather than against nothing, which is what
+    # the old independent per-kind chances did.
+    #
+    # A kind that is switched off, or that has nothing left to give on this level (no
+    # hero here, every skull already active), simply drops out of the roll and the
+    # remaining weights share it out.
+    "other_chance": 0.35,
+    "other_weights": {"hero": 1.0, "exhaust": 1.0, "skull": 1.0, "ally": 1.0},
+    "other_hero_enabled": True,
+    "other_exhaust_enabled": True,
+    "other_skull_enabled": True,
+    "other_ally_enabled": True,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -2107,8 +2131,24 @@ class ModifierDatabase:
                 names.append(boss)
         return names
 
+    def story_bosses_for(self, mission_id):
+        """The named STORY fights this mission has — Tartarus, Regret, the Heretic
+        Leader. Recurring archetypes (Chieftains, Enforcers, Zealots) are heroes and
+        belong to the Other slot, not to the guaranteed Boss slot.
+
+        `bosses_for` deliberately still returns both: it is what stamps a card's
+        validity at patch time, and a hero card is every bit as valid as a boss one."""
+        return [n for n in self.bosses_for(mission_id) if n not in HERO_NAMES]
+
+    def heroes_for(self, mission_id):
+        """The recurring archetypes this mission fields, after the per-hero options."""
+        return [n for n in self.bosses_for(mission_id) if n in HERO_NAMES]
+
     def mission_has_boss(self, mission_id):
         return bool(self.bosses_for(mission_id))
+
+    def mission_has_story_boss(self, mission_id):
+        return bool(self.story_bosses_for(mission_id))
 
     def get_boss_name(self, mission_id):
         """Every boss this mission fields, joined for DISPLAY.
@@ -2138,11 +2178,15 @@ class ModifierDatabase:
             return specific
         return self.filter_blacklisted(list(self.negative_pool), blacklist, game)
 
-    def boss_pools_for(self, mission_id, blacklist, game=None):
+    def boss_pools_for(self, mission_id, blacklist, game=None, names=None):
         """{boss name: its OWN filtered cards} for the bosses this mission fields,
-        skipping any whose pool comes out empty."""
+        skipping any whose pool comes out empty.
+
+        `names` narrows it to a subset — the story bosses for the guaranteed Boss
+        slot, the heroes for the Other slot — so the two draws cannot poach from
+        each other."""
         out = {}
-        for boss in self.bosses_for(mission_id):
+        for boss in (names if names is not None else self.bosses_for(mission_id)):
             mods = self.filter_blacklisted(
                 self.boss_mods.get(boss) or self.enemy_mods.get(boss, []),
                 blacklist, game)
@@ -2150,8 +2194,10 @@ class ModifierDatabase:
                 out[boss] = mods
         return out
 
-    def draw_boss(self, mission_id, blacklist, game=None):
+    def draw_boss(self, mission_id, blacklist, game=None, names=None):
         """(boss name, its cards) for ONE boss on this mission, or (None, []).
+
+        `names` restricts the draw to a subset (story bosses, or heroes).
 
         A boss card names a single character -- `make_boss_mod` stamps that name and
         `halo_patch.collect_effects` matches it against the mission's boss list. With
@@ -2162,18 +2208,18 @@ class ModifierDatabase:
         Every call draws independently: player 2's roll and each reroll pick their own
         hero rather than inheriting player 1's, so a level with several heroes really
         does spread across them."""
-        pools = self.boss_pools_for(mission_id, blacklist, game)
+        pools = self.boss_pools_for(mission_id, blacklist, game, names=names)
         if pools:
             boss = random.choice(sorted(pools))
             return boss, pools[boss]
         # No hero has a catered pool yet: fall back to the general negative pool so
         # boss levels still draw something, but still name one boss so the card
         # survives the patcher's filter.
-        names = self.bosses_for(mission_id)
+        pool_names = names if names is not None else self.bosses_for(mission_id)
         fallback = self.filter_blacklisted(list(self.negative_pool), blacklist, game)
-        if not names or not fallback:
+        if not pool_names or not fallback:
             return None, []
-        return random.choice(names), fallback
+        return random.choice(pool_names), fallback
 
     def get_games(self):
         return list(self.games)
@@ -2382,7 +2428,7 @@ class ModifierDatabase:
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_wildcard_modifier_filtered(self, blacklist, game=None):
-        # No separate on/off switch: a wildcard_chance of 0 is what disables wildcards.
+        # The Other slot's own switches decide whether allies are offered at all.
         if not self.wildcard_pool:
             return None
         # Filter first, then pick, so a blacklisted roll doesn't suppress
@@ -2395,8 +2441,7 @@ class ModifierDatabase:
     def get_skull_modifier_filtered(self, active_names, blacklist, game=None):
         """#7: draw a Skull to stand in for a normal negative. A skull is a whole-map
         rule, so the same one twice does nothing extra — already-active skulls are
-        excluded. A skull_chance of 0 is what disables them; there's no separate
-        toggle, for the same reason wildcards no longer have one."""
+        excluded. Whether skulls are offered at all is the Other slot's own switch."""
         available = [m for m in self.skull_pool
                      if m.get('name') not in active_names
                      and self.get_mod_label(m) not in blacklist
@@ -2872,18 +2917,33 @@ class PairCard(QGroupBox):
             free.setWordWrap(True)
             negative.append(free)
 
-        if self.pair['wildcard_mod']:
-            third.append(self.create_mod_widget(self.pair['wildcard_mod'], "🎲 WILDCARD", "gold", 'wildcard'))
+        # The guaranteed Boss card, on a level with a named story fight.
+        if self.pair.get('boss_mod'):
+            boss_name = self.pair['boss_mod'].get('boss') or self.pair['boss_mod'].get('enemy', 'Boss')
+            third.append(self.create_mod_widget(self.pair['boss_mod'], f"☠ BOSS: {boss_name}", "boss", 'boss'))
 
-        # #5: one-map Exhaust (3rd slot; mutually exclusive with Wildcard/Boss).
+        # The OTHER slot — exactly one of these four, drawn together (see
+        # RunEnhancer._draw_other). Each keeps its own colour and its own reroll and
+        # blacklist handle, because they are different KINDS of card, not one card
+        # with four faces.
+        if self.pair.get('hero_mod'):
+            hero_name = (self.pair['hero_mod'].get('boss')
+                         or self.pair['hero_mod'].get('enemy', 'Hero'))
+            third.append(self.create_mod_widget(
+                self.pair['hero_mod'], f"⚔ HERO: {hero_name}", "boss", 'hero'))
+
+        # "Ally" is what the player sees; the stored key stays `wildcard_mod` so every
+        # saved run still loads.
+        if self.pair['wildcard_mod']:
+            third.append(self.create_mod_widget(self.pair['wildcard_mod'], "🎲 ALLY", "gold", 'wildcard'))
+
         if self.pair.get('exhaust_mod'):
             third.append(self.create_mod_widget(
                 self.pair['exhaust_mod'], "🜂 EXHAUST (one map)", "exhaust", 'exhaust'))
 
-        # #4: guaranteed boss card on boss levels (replaces the wildcard roll).
-        if self.pair.get('boss_mod'):
-            boss_name = self.pair['boss_mod'].get('boss') or self.pair['boss_mod'].get('enemy', 'Boss')
-            third.append(self.create_mod_widget(self.pair['boss_mod'], f"☠ BOSS: {boss_name}", "boss", 'boss'))
+        if self.pair.get('skull_mod'):
+            third.append(self.create_mod_widget(
+                self.pair['skull_mod'], "💀 SKULL (whole map)", "skull", 'skull'))
 
         for band in (positive, negative, third):
             holder = QWidget()
@@ -2971,12 +3031,15 @@ class PairCard(QGroupBox):
                 source = mod_data.get('weapon') or mod_data.get('equipment') or 'General'
         elif mod_type == 'enemy':
             source = 'Skull' if mod_data.get('skull') else mod_data.get('enemy', 'General')
-        elif mod_type == 'boss':
-            source = mod_data.get('boss') or mod_data.get('enemy', 'Boss')
+        elif mod_type in ('boss', 'hero'):
+            source = mod_data.get('boss') or mod_data.get('enemy',
+                                                          'Hero' if mod_type == 'hero' else 'Boss')
         elif mod_type == 'exhaust':
             source = 'Exhaust'
+        elif mod_type == 'skull':
+            source = 'Skull'
         else:
-            source = 'Wildcard'
+            source = 'Ally'
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
@@ -3082,7 +3145,7 @@ class PairCard(QGroupBox):
         elif mod_type == 'exhaust':
             bl_source = 'Exhaust'
         else:
-            bl_source = 'Wildcard'
+            bl_source = 'Ally'
         blacklist_btn.clicked.connect(lambda: self.on_blacklist(mod_data, bl_source, self.pair['id'], mod_type))
         button_layout.addWidget(blacklist_btn)
 
@@ -6983,34 +7046,56 @@ class OptionsDialog(QDialog):
         rform = QFormLayout(rolls)
         rform.setLabelAlignment(Qt.AlignRight)
 
-        self.wildcard_chance = QDoubleSpinBox()
-        self.wildcard_chance.setRange(0.0, 1.0)
-        self.wildcard_chance.setSingleStep(0.05)
-        self.wildcard_chance.setDecimals(2)
-        self.wildcard_chance.setValue(float(CONFIG.get('wildcard_chance', 0.1)))
-        self.wildcard_chance.setToolTip("Per-pair chance of a Wildcard (Friend modifier or any effect flagged "
-                                        "as a wildcard) in the 3rd slot on non-boss levels. Mutually exclusive "
-                                        "with Exhaust. Set to 0 to disable wildcards entirely.")
-        rform.addRow("Wildcard chance:", self.wildcard_chance)
+        # --- The OTHER slot -----------------------------------------------------
+        # One card, four kinds. The old per-kind chances are gone: they were rolled
+        # independently, so changing one silently changed how often a pair had a third
+        # card at all, and a boss level suppressed the slot entirely.
+        self.other_chance = QDoubleSpinBox()
+        self.other_chance.setRange(0.0, 1.0)
+        self.other_chance.setSingleStep(0.05)
+        self.other_chance.setDecimals(2)
+        self.other_chance.setValue(float(CONFIG.get('other_chance', 0.35)))
+        self.other_chance.setToolTip(
+            "Per-pair chance of an OTHER card — the fourth slot, alongside Player, "
+            "Enemy and Boss. Which of the four kinds it is comes from the weights "
+            "below.\n\n0 turns the whole slot off. This is now independent of the Boss "
+            "slot: a level with a story boss still rolls Others.")
+        rform.addRow("Other-card chance:", self.other_chance)
 
-        self.skull_chance = QDoubleSpinBox()
-        self.skull_chance.setRange(0.0, 1.0)
-        self.skull_chance.setSingleStep(0.05)
-        self.skull_chance.setDecimals(2)
-        self.skull_chance.setValue(float(CONFIG.get('skull_chance', 0.0)))
-        self.skull_chance.setToolTip("Per-pair chance that the negative half of a card is a Skull — a "
-                                     "whole-map rule (e.g. Betrayal: every human squad turns on you) "
-                                     "instead of a tag tweak. 0 disables skulls.")
-        rform.addRow("Skull chance:", self.skull_chance)
-
-        self.exhaust_chance = QDoubleSpinBox()
-        self.exhaust_chance.setRange(0.0, 1.0)
-        self.exhaust_chance.setSingleStep(0.05)
-        self.exhaust_chance.setDecimals(2)
-        self.exhaust_chance.setValue(float(CONFIG.get('exhaust_chance', 0.1)))
-        self.exhaust_chance.setToolTip("Per-pair chance of a one-map Exhaust in the 3rd slot "
-                                       "(non-boss levels; mutually exclusive with Wildcard). 0 disables.")
-        rform.addRow("Exhaust chance:", self.exhaust_chance)
+        # Relative weights, not probabilities: a kind that is off or has nothing left
+        # to give drops out and the rest share its share.
+        self.other_weight_boxes = {}
+        for key, label, tip in (
+                ('hero', 'Hero', "Recurring archetypes — Brute Chieftains, Sentinel "
+                                 "Enforcers, Elite Zealots. Split off the Boss slot, "
+                                 "which is now only named story fights."),
+                ('exhaust', 'Exhaust', "A one-map negative. Picking one earns a "
+                                       "no-negative choice next round."),
+                ('skull', 'Skull', "A whole-map rule (Betrayal, Eyepatch) rather than "
+                                   "a tag tweak. No longer replaces the Enemy card."),
+                ('ally', 'Ally', "Friend modifiers and anything flagged as a wildcard. "
+                                 "Called Wildcard before.")):
+            row = QHBoxLayout()
+            cb = QCheckBox()
+            cb.setChecked(bool(CONFIG.get('other_%s_enabled' % key, True)))
+            cb.setToolTip("Offer %s cards at all." % label)
+            sp = QDoubleSpinBox()
+            sp.setRange(0.0, 20.0)
+            sp.setSingleStep(0.5)
+            sp.setDecimals(1)
+            sp.setValue(float((CONFIG.get('other_weights') or {}).get(key, 1.0)))
+            sp.setToolTip(tip + "\n\nRelative weight against the other kinds, not a "
+                                "probability. All four at 1.0 is an even split.")
+            sp.setMaximumWidth(80)
+            cb.toggled.connect(sp.setEnabled)
+            sp.setEnabled(cb.isChecked())
+            row.addWidget(cb)
+            row.addWidget(sp)
+            row.addStretch()
+            holder = QWidget()
+            holder.setLayout(row)
+            rform.addRow("   %s:" % label, holder)
+            self.other_weight_boxes[key] = (cb, sp)
 
         self.new_weapon_chance = QDoubleSpinBox()
         self.new_weapon_chance.setRange(0.0, 1.0)
@@ -7572,9 +7657,13 @@ class OptionsDialog(QDialog):
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
             'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
             'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
-            'wildcard_chance': round(self.wildcard_chance.value(), 2),
-            'skull_chance': round(self.skull_chance.value(), 2),
-            'exhaust_chance': round(self.exhaust_chance.value(), 2),
+            'other_chance': round(self.other_chance.value(), 2),
+            'other_weights': {k: round(sp.value(), 1)
+                              for k, (_cb, sp) in self.other_weight_boxes.items()},
+            'other_hero_enabled': self.other_weight_boxes['hero'][0].isChecked(),
+            'other_exhaust_enabled': self.other_weight_boxes['exhaust'][0].isChecked(),
+            'other_skull_enabled': self.other_weight_boxes['skull'][0].isChecked(),
+            'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'include_grenades': self.grenades_cb.isChecked(),
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
@@ -9244,7 +9333,13 @@ class HaloGUI(QMainWindow):
                 'wildcard': p1_pair.get('wildcard_mod'),
                 'wildcard2': p2_pair.get('wildcard_mod'),
                 'boss1': p1_pair.get('boss_mod'),
-                'boss2': p2_pair.get('boss_mod')
+                'boss2': p2_pair.get('boss_mod'),
+                # The Other slot's four kinds each get their own key. Heroes and
+                # skulls are new; wildcard/exhaust keep theirs so old runs still load.
+                'hero1': p1_pair.get('hero_mod'),
+                'hero2': p2_pair.get('hero_mod'),
+                'skull1': p1_pair.get('skull_mod'),
+                'skull2': p2_pair.get('skull_mod')
             }
             # #5: stamp each picked Exhaust with the mission it belongs to (so it
             # only patches that one map), and grant its picker a no-negative
@@ -9317,13 +9412,20 @@ class HaloGUI(QMainWindow):
         elif mod_type == 'exhaust':
             active = self.enhancer._active_negative_names()
             pair['exhaust_mod'] = self.db.get_exhaust_modifier_filtered(active, bl, game)
-        elif mod_type == 'boss':
+        elif mod_type in ('boss', 'hero'):
             mid = self.run_state.mission_id
+            # A boss reroll stays a boss and a hero reroll stays a hero: they are
+            # separate slots now and a reroll must not move a card between them.
+            names = (self.db.story_bosses_for(mid) if mod_type == 'boss'
+                     else self.db.heroes_for(mid))
             name, boss_mods = (None, [])
             if not boss_mods_removed():
-                name, boss_mods = self.db.draw_boss(mid, bl, game)
+                name, boss_mods = self.db.draw_boss(mid, bl, game, names=names)
             if boss_mods:
-                pair['boss_mod'] = make_boss_mod(random.choice(boss_mods), name)
+                pair[f'{mod_type}_mod'] = make_boss_mod(random.choice(boss_mods), name)
+        elif mod_type == 'skull':
+            active = self.enhancer._active_negative_names()
+            pair['skull_mod'] = self.db.get_skull_modifier_filtered(active, bl, game)
         show_p1 = self.run_state.current_turn == 'player1'
         show_p2 = self.run_state.current_turn == 'player2'
         self.display_pairs(self.run_state.pairs, show_p1, show_p2)
@@ -9401,7 +9503,7 @@ class HaloGUI(QMainWindow):
                 text += f"Enemies: {self._enemy_effect_label(enemy1)}, {self._enemy_effect_label(enemy2)}"
                 if wilds:
                     names = list(dict.fromkeys(w['name'] for w in wilds))
-                    text += f", Wildcard: {', '.join(names)}"
+                    text += f", Ally: {', '.join(names)}"
                 if boss1 or boss2:
                     text += f", Boss: {boss1['name'] if boss1 else 'None'}, {boss2['name'] if boss2 else 'None'}"
                 # Exhausts are one-map negatives and were missing from the summary
@@ -9822,6 +9924,8 @@ class HaloGUI(QMainWindow):
                      rd.get('enemy1'), rd.get('enemy2'),
                      rd.get('wildcard'), rd.get('wildcard2'),
                      rd.get('boss1'), rd.get('boss2'),
+                     rd.get('hero1'), rd.get('hero2'),
+                     rd.get('skull1'), rd.get('skull2'),
                      rd.get('exhaust1'), rd.get('exhaust2')]
             for mod in slots:
                 if not isinstance(mod, dict):
@@ -9967,6 +10071,61 @@ class RunEnhancer:
                      if w not in owned and self.db.weapon_label(w) not in bl]
         return pool
 
+    def _draw_other(self, mid, game, bl, active_neg):
+        """The Other slot: one card from Hero / Exhaust / Skull / Ally, or None.
+
+        Two steps, and the order is the point. First whether this pair gets an Other
+        card at all (`other_chance`), then WHICH kind, by relative weight. Rolling the
+        kind second means the four compete with each other: raising the Skull weight
+        trades skulls against the other three, where the old independent per-kind
+        chances traded them against nothing and quietly changed how often a pair had a
+        third card at all.
+
+        A kind drops out of the roll when it is switched off OR has nothing to give on
+        this level — no hero here, every skull already active, no unused negative left
+        for an Exhaust. The remaining weights then share it out, so turning three kinds
+        off makes the fourth reliable rather than making the slot mostly empty.
+
+        Returns (kind, mod) or (None, None).
+        """
+        if random.random() >= (CONFIG.get('other_chance', 0.35) or 0):
+            return None, None
+        weights = CONFIG.get('other_weights') or {}
+        # Each entry: kind -> a zero-arg draw. Called only if the kind wins the roll,
+        # so an expensive draw is not paid for on every pair — except where knowing
+        # whether it CAN give anything is the availability test itself.
+        heroes = self.db.heroes_for(mid) if CONFIG.get('other_hero_enabled', True) else []
+        candidates = []
+        if heroes and not boss_mods_removed():
+            candidates.append(('hero', float(weights.get('hero', 1.0) or 0)))
+        if CONFIG.get('other_exhaust_enabled', True):
+            candidates.append(('exhaust', float(weights.get('exhaust', 1.0) or 0)))
+        if CONFIG.get('other_skull_enabled', True):
+            candidates.append(('skull', float(weights.get('skull', 1.0) or 0)))
+        if CONFIG.get('other_ally_enabled', True):
+            candidates.append(('ally', float(weights.get('ally', 1.0) or 0)))
+        candidates = [(k, w) for k, w in candidates if w > 0]
+        # Draw, and if the winning kind turns out to have nothing left, drop it and
+        # roll again among the rest rather than returning an empty slot.
+        while candidates:
+            kinds = [k for k, _ in candidates]
+            picked = random.choices(kinds, weights=[w for _, w in candidates], k=1)[0]
+            mod = None
+            if picked == 'hero':
+                name, pool = self.db.draw_boss(mid, bl, game, names=heroes)
+                if pool:
+                    mod = make_boss_mod(random.choice(pool), name)
+            elif picked == 'exhaust':
+                mod = self.db.get_exhaust_modifier_filtered(active_neg, bl, game)
+            elif picked == 'skull':
+                mod = self.db.get_skull_modifier_filtered(active_neg, bl, game)
+            elif picked == 'ally':
+                mod = self.db.get_wildcard_modifier_filtered(bl, game)
+            if mod is not None:
+                return picked, mod
+            candidates = [(k, w) for k, w in candidates if k != picked]
+        return None, None
+
     def _weighted_pick(self, mods):
         """Pick a player mod. A special effect's weight equals its counter =
         rounds since it was last picked (linear; starts at 1, 0 right after a
@@ -9990,10 +10149,10 @@ class RunEnhancer:
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
         wpool = self._new_weapon_pool(for_player)
 
-        # #4: boss levels get a guaranteed Boss card on every pair, and wildcards
-        # are disabled for the level — unless boss mods are being removed, in which
-        # case the level behaves like a normal one (wildcards re-enabled).
-        has_boss = self.db.mission_has_boss(mid) and not boss_mods_removed()
+        # A level with a named STORY fight gets a guaranteed Boss card on every pair.
+        # Heroes no longer count here — they are drawn from the Other slot — so a
+        # Chieftain level is a normal level as far as this is concerned.
+        has_boss = self.db.mission_has_story_boss(mid) and not boss_mods_removed()
         # Drawn per pair below rather than once for the level: on a map with several
         # heroes each card picks its own, and player 2 is not tied to player 1's.
 
@@ -10025,20 +10184,17 @@ class RunEnhancer:
         wi = 0
         for i in range(3):
             enemy_choice = random.choice(enemy_mods) if enemy_mods else None
-            # #7: a Skull can stand in for the pair's negative. Placeholder weighting
-            # for now — one roll per pair, at skull_chance, replacing the enemy card.
-            if random.random() < (CONFIG.get('skull_chance', 0.0) or 0):
-                skull = self.db.get_skull_modifier_filtered(active_neg, bl, game)
-                if skull is not None:
-                    enemy_choice = skull
-                    active_neg = set(active_neg) | {skull.get('name')}
             new_weapon = None
             p1_choice = p2_choice = None
-            wildcard = None
-            exhaust = None
-            boss_mod = None
+            wildcard = exhaust = skull = hero = boss_mod = None
+            # The Boss slot is the guaranteed card on a level with a named STORY
+            # fight, and nothing else competes for it. Heroes used to sit here and
+            # suppressed the third slot entirely on any level that fielded one; they
+            # are drawn from the Other slot now, so a Chieftain level still rolls
+            # Exhausts, Skulls and Allies.
             if has_boss:
-                _bn, _bp = self.db.draw_boss(mid, bl, game)
+                _bn, _bp = self.db.draw_boss(mid, bl, game,
+                                             names=self.db.story_bosses_for(mid))
                 if _bp:
                     boss_mod = make_boss_mod(random.choice(_bp), _bn)
             if flags[i] and wi < len(offered):
@@ -10050,20 +10206,31 @@ class RunEnhancer:
                     p1_choice = choice
                 else:
                     p2_choice = choice
-                # #5: 3rd slot on non-boss levels — roll Exhaust first (10%), else
-                # Wildcard. The three are mutually exclusive (one slot).
-                if not has_boss:
-                    if random.random() < (CONFIG.get('exhaust_chance', 0.1) or 0):
-                        exhaust = self.db.get_exhaust_modifier_filtered(active_neg, bl, game)
-                    if exhaust is None and random.random() < (CONFIG.get('wildcard_chance', 0.1) or 0):
-                        wildcard = self.db.get_wildcard_modifier_filtered(bl, game)
+            # The Other slot is rolled for EVERY pair, including a new-weapon one: it
+            # is its own slot now, not the leftover of the player card.
+            kind, other = self._draw_other(mid, game, bl, active_neg)
+            if kind == 'hero':
+                hero = other
+            elif kind == 'exhaust':
+                exhaust = other
+            elif kind == 'skull':
+                skull = other
+                # A skull is a whole-map rule, so the same one twice does nothing;
+                # keep it out of the remaining pairs' draws.
+                active_neg = set(active_neg) | {skull.get('name')}
+            elif kind == 'ally':
+                wildcard = other
             pairs.append({
                 'id': i + 1,
                 'player1_mod': p1_choice,
                 'player2_mod': p2_choice,
                 'enemy_mod': enemy_choice,
+                # `wildcard_mod` keeps its key: Ally is a RENAME of what the player
+                # sees, and changing the stored key would break every saved run.
                 'wildcard_mod': wildcard,
                 'boss_mod': boss_mod,
+                'hero_mod': hero,
+                'skull_mod': skull,
                 'exhaust_mod': exhaust,
                 'new_weapon': new_weapon,
                 'no_negative': False,
