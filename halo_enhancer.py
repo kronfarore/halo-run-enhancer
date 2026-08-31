@@ -161,7 +161,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
                'odst_patch_hub', 'odst_pools_from_map',
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
-               'odst_escort_buff',
+               'odst_escort_buff', 'odst_equipment_all_insertions',
+               'odst_profiles_by_insertion',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -548,6 +549,18 @@ CONFIG = {
     # olifaunt) dies, and neither scales with the run. On, the player's own vitality
     # cards are mirrored onto them. See ESCORT_BUFF_TAGS for the measured numbers.
     "odst_escort_buff": False,
+    # ODST equipment normally drops at the mission START only (insertion point 0, one
+    # location per player). On, it ALSO drops at every mid-mission insertion point the
+    # level declares — the checkpoint places you revert to. That is what the old
+    # cluster-everything behaviour did implicitly, and it is why a single Invincibility
+    # pick turned into five pickups across ONI Alpha Site.
+    "odst_equipment_all_insertions": False,
+    # Give each ODST player the starting profile their own insertion point uses,
+    # instead of writing profile 0 (player 1 only) or every profile (which also arms
+    # the co-op slots of insertion points you are not at). UNVERIFIED in game — the
+    # stride of four is inferred from profile naming and count; see
+    # halo_patch.odst_profile_for.
+    "odst_profiles_by_insertion": False,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -1102,13 +1115,26 @@ FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach')
 # (Vergil) dies, and on Coastal Highway the olifaunt has to survive as well. Neither
 # scales with the run, so a few enemy-damage cards make them impossible to keep alive.
 #
-# Vergil is a SQUAD name, not a tag — there is no per-character variant to buff. What
-# there is: three engineer char variants over two models, and the freeform one (the
-# untethered Engineer you escort) is by far the frailest. Measured on both maps:
+# The escort is the FREEFORM engineer, read out of the scenario rather than guessed —
+# `sprint_toolkit/odst_squads.py` resolves each squad's characters through the
+# Character Palette:
+#
+#     l200  sq_dc_engineer_01, sq_fa_engineer_01   -> engineer_freeform
+#           sq_sur_eng_01..08                      -> engineer_slaveform
+#     l300  sq_engineer  (the only engineer squad) -> engineer_freeform
+#
+# The two Data Hive squads are the ones the dc_engineer_follow_* / fa_engineer_follow_*
+# scripts drive behind obj_escort_engineer_set. So every OTHER engineer on Data Hive is
+# the enemy-side slaveform, which shares the plain `engineer` model — buffing that model
+# would toughen the enemies the level throws at you while you escort Vergil. Only the
+# freeform model is touched.
+#
+# Vergil ships far frailer than a normal engineer, which is why the level got unwinnable
+# once the run's enemy cards stacked up. Measured on both maps:
 #
 #     hlmt                              health  shield  recharge
-#     engineer                            50      300     0.5
-#     engineer_freeform  <- Vergil        50       50     0.25
+#     engineer            (slaveform)     50      300     0.5      <- NOT buffed
+#     engineer_freeform   (Vergil)        50       50     0.25
 #     olifaunt (l300 only)               500     5000     0.333
 #     odst_oni_op_player                  80       80     0.333
 #
@@ -1119,7 +1145,6 @@ FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach')
 ESCORT_BUFF_MISSIONS = ('l200', 'l300')
 ESCORT_BUFF_CARDS = ('Player Health', 'Player Shield', 'Player Shield Recharge')
 ESCORT_BUFF_TAGS = (
-    'hlmt objects' + chr(92) + 'characters' + chr(92) + 'engineer' + chr(92) + 'engineer',
     'hlmt objects' + chr(92) + 'characters' + chr(92) + 'engineer' + chr(92) + 'engineer_freeform',
     # Coastal Highway only; on Data Hive this reports as a skip, which is correct —
     # that level has no olifaunt tag at all.
@@ -4998,9 +5023,17 @@ class MagnitudeEditorDialog(QDialog):
         # touched and lose its weapons. With this on, every profile gets the picks.
         all_profiles = (self.game == 'Halo 3: ODST'
                         and bool(CONFIG.get('odst_all_starting_profiles')))
+        # The targeted alternative to the blanket write: give each player the profile
+        # their own insertion point uses, rather than one profile or all of them.
+        # Opt-in and UNVERIFIED — see halo_patch.odst_profile_for and phase 4 of the
+        # placement plan. It wins over all_profiles when both are set, since it is the
+        # more specific instruction.
+        by_insertion = (self.game == 'Halo 3: ODST'
+                        and bool(CONFIG.get('odst_profiles_by_insertion')))
         return {'primary': prim, 'secondary': sec, 'null_empty_slots': null_empty,
                 'primary2': prim2, 'secondary2': sec2,
-                'all_profiles': all_profiles,
+                'all_profiles': all_profiles and not by_insertion,
+                'by_insertion': by_insertion,
                 'profiles': profiles, 'null_profiles': null_profiles,
                 'h3_coop': h3_coop,
                 'h3_all_chief': (self.game == 'Halo 3'
@@ -5168,7 +5201,11 @@ class MagnitudeEditorDialog(QDialog):
             groups = [merged]
         if not any(groups):
             return None
-        return {'groups': groups}
+        # ODST only: also drop at the level's mid-mission insertion points, not just at
+        # the mission start. Off by default — arming every one of them is what put five
+        # Invincibility pickups across ONI Alpha Site.
+        return {'groups': groups,
+                'all_insertions': bool(CONFIG.get('odst_equipment_all_insertions'))}
 
     def _zoom_ui_spec(self, plan):
         """weap tag paths of the Zoom effects in this plan, so scopeless weapons
@@ -7035,6 +7072,23 @@ class OptionsDialog(QDialog):
             "same weapons. That does not affect the run, but you will see it.")
         odform.addRow("ODST profiles:", self.odst_all_profiles_cb)
 
+        self.odst_prof_ins_cb = QCheckBox(
+            "ODST: give each player the profile their own insertion point uses")
+        self.odst_prof_ins_cb.setChecked(bool(CONFIG.get('odst_profiles_by_insertion')))
+        self.odst_prof_ins_cb.setToolTip(
+            "The targeted alternative to the two blunt options above: instead of "
+            "profile 0 (player 1 only) or every profile (which also arms co-op slots "
+            "you are not standing in), each player gets the profile their own "
+            "insertion point uses.\n\nODST declares four starting locations per "
+            "insertion point — one per co-op player — and its profiles run "
+            "in matching groups of four. ONI Alpha Site names them outright: Player / "
+            "odst02 / odst03 / odst04 for the first entry, then dutch and the same "
+            "three for the second.\n\nNOT YET CONFIRMED IN GAME. The grouping is "
+            "inferred from naming and count across all nine maps; it needs one co-op "
+            "run entering a mission from two different insertion points to prove. "
+            "Overrides the blanket write when both are ticked.")
+        odform.addRow("", self.odst_prof_ins_cb)
+
         self.odst_ai_drops_cb = QCheckBox("ODST: let AI drop equipment again")
         self.odst_ai_drops_cb.setChecked(bool(CONFIG.get('odst_ai_equipment_drops')))
         self.odst_ai_drops_cb.setToolTip(
@@ -7054,13 +7108,29 @@ class OptionsDialog(QDialog):
             "olifaunt to survive — but neither scales with the run, so a few enemy "
             "damage cards make them impossible to protect.\n\nWith this on, whatever "
             "operator the run put on Player Health, Player Shield and Player Shield "
-            "Recharge is mirrored onto both engineer models and (on Coastal Highway) "
-            "the olifaunt, so the escorts climb with the player.\n\nThe Engineer you "
-            "escort is the FREEFORM one, and it ships far frailer than a normal "
-            "Engineer: 50 shield against 300, and half the recharge rate. Both models "
-            "are buffed, so the enemy-side Engineers that shield Brutes toughen up "
-            "too. Data Hive has no olifaunt tag, and reports that as a skip.")
+            "Recharge is mirrored onto Vergil and (on Coastal Highway) the olifaunt, "
+            "so the escorts climb with the player.\n\nVergil is the FREEFORM engineer — "
+            "read out of the scenario's own squad list, not guessed — and he ships far "
+            "frailer than a normal Engineer: 50 shield against 300, and half the "
+            "recharge rate. The enemy-side Engineers that shield Brutes use a different "
+            "model and are left alone. Data Hive has no olifaunt tag, and reports that "
+            "as a skip.")
         odform.addRow("ODST escorts:", self.odst_escort_cb)
+
+        self.odst_all_ins_cb = QCheckBox(
+            "ODST: also drop starting equipment at mid-mission insertion points")
+        self.odst_all_ins_cb.setChecked(bool(CONFIG.get('odst_equipment_all_insertions')))
+        self.odst_all_ins_cb.setToolTip(
+            "Off (default): each player's equipment drops once, at their own start — "
+            "insertion point 0, which every ODST level declares with exactly one "
+            "location per co-op player.\n\nOn: it also drops at the level's other "
+            "insertion points, the places a mission reverts you to as it progresses. "
+            "Useful if you keep dying past a checkpoint and want the gear waiting "
+            "there too, but it multiplies every pickup: ONI Alpha Site declares three "
+            "insertion points, so one Invincibility becomes three.\n\nMombasa Streets' "
+            "scripted level-select destinations are handled either way — the hub really "
+            "does drop you at them.")
+        odform.addRow("ODST equipment:", self.odst_all_ins_cb)
 
         self.odst_shield_health_cb = QCheckBox("ODST: Starting Shield cards raise Starting Health instead")
         self.odst_shield_health_cb.setChecked(bool(CONFIG.get('odst_shield_into_health', True)))
@@ -7412,6 +7482,8 @@ class OptionsDialog(QDialog):
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
+            'odst_equipment_all_insertions': self.odst_all_ins_cb.isChecked(),
+            'odst_profiles_by_insertion': self.odst_prof_ins_cb.isChecked(),
             'wildcard_chance': round(self.wildcard_chance.value(), 2),
             'skull_chance': round(self.skull_chance.value(), 2),
             'exhaust_chance': round(self.exhaust_chance.value(), 2),

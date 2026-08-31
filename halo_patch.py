@@ -769,6 +769,46 @@ def _h2_profile_names(m, scnr_base, boff, esize, count):
     return out
 
 
+#: ODST profile names that are NOT player spawn profiles. `weapon insert` and
+#: `insertion_profile` are templates the level's scripts hand a weapon from; every ODST
+#: map trails its real profiles with them (Mombasa Streets has fourteen).
+_SCRIPTED_PROFILE_NAMES = ('weapon insert', 'insertion_profile')
+
+
+def _is_scripted_profile(name):
+    return str(name or '').strip().lower() in _SCRIPTED_PROFILE_NAMES
+
+
+def odst_profile_for(m, game, scnr_base, boff, esize, count, insertion_ordinal, player):
+    """Index of the Player Starting Profile ODST uses for `player` at the
+    `insertion_ordinal`-th live insertion point, or None.
+
+    UNVERIFIED IN GAME -- this is the phase-4 test. The stride of four is inferred from
+    naming and count across all nine maps: ODST supports four co-op players, every map
+    declares exactly four starting locations per insertion point, and ONI Alpha Site
+    names its first eight profiles
+
+        0..3   Player, odst02, odst03, odst04
+        4..7   dutch,  odst02, odst03, odst04
+
+    which is one group of four per insertion point, player-major, with player 1 named
+    for the character whose flashback it is (sc130 is Dutch's). Maps that do not name
+    their profiles ship sixteen generic `player starting profile_N` -- four points'
+    worth -- followed by the scripted ones.
+
+    `insertion_ordinal` is the position of the insertion point among those the level
+    actually uses, ascending, NOT the raw insertion index: Mombasa Streets uses 0, 7
+    and 8, and its profile groups are 0-3, 4-7, 8-11.
+    """
+    idx = insertion_ordinal * 4 + player
+    if not (0 <= idx < count):
+        return None
+    poff = m.follow(scnr_base, [boff], [esize], idx)
+    if poff is None or _is_scripted_profile(_profile_name(m, poff)):
+        return None
+    return idx
+
+
 def _h2_own_profiles(names):
     """Indices of the LEVEL's own starting profiles, i.e. everything before the
     toolkit's appended `ab_*` ones. Writing the run's weapons into `ab_sprint`
@@ -1147,13 +1187,34 @@ def _apply_starting_equipment(m, game, registry, starting):
             default = own[:2] or [0]
         _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
                        lambda i: f'Profile {i}')
-        if starting.get('all_profiles'):
+        if starting.get('by_insertion'):
+            # Each player gets the profile their OWN insertion point uses, so the picks
+            # follow the player instead of being sprayed across every profile. Both
+            # players' profiles are collected here and written together, because this
+            # branch feeds the same single `profiles` list the rest of the pre-H3 path
+            # uses (P1 primary / P2 secondary on each profile) -- which is right for
+            # ODST, where the two co-op players share a slot pair per profile group.
+            wanted = []
+            for ordinal in range(len(odst_player_starts(m, game)) or 1):
+                for player in range(2):
+                    p = odst_profile_for(m, game, scnr_base, boff, esize, count,
+                                         ordinal, player)
+                    if p is not None and p not in wanted:
+                        wanted.append(p)
+            profiles = wanted or [0]
+        elif starting.get('all_profiles'):
             # Deliberate blanket write (ODST option). Which profile ODST spawns the
             # player on follows the insertion point and can change mid-mission, so a
-            # run that must not lose its picks arms every one of them. Note this
-            # includes ODST's NPC-named profiles (dutch, buck, odst02, ...), which is
-            # why it is opt-in rather than the default -- see the comment above.
-            profiles = list(range(count))
+            # run that must not lose its picks arms every one of them.
+            #
+            # Except the SCRIPTED ones. Every ODST level ends its profile list with
+            # entries named `weapon insert` or `insertion_profile` -- Mombasa Streets
+            # ships fourteen of them -- and those are not player spawn profiles at all;
+            # they are the templates scripts hand a weapon from. Arming them is pure
+            # noise, so the blanket write stops short of them.
+            names = _h2_profile_names(m, scnr_base, boff, esize, count)
+            profiles = [i for i in range(count)
+                        if not _is_scripted_profile(names[i])]
         else:
             profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
             if third_gen:
@@ -1918,8 +1979,11 @@ _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 # index there would silently produce a nonsense mask, so ODST reports BSP -1 and the
 # callers treat that as "no BSP gating known".
 _SPAWNS_BY_GAME = {
+    # The field at 0x14 is a BSP Index in Halo 3 and an INSERTION POINT INDEX in ODST
+    # — same offset, unrelated meaning, which is why ODST's 'bsp' is None. ODST's is
+    # read separately by odst_player_starts() below.
     'Halo 3': {'block': (0x24C, 0x18), 'bsp': 0x14},
-    'Halo 3: ODST': {'block': (0x280, 0x1C), 'bsp': None},
+    'Halo 3: ODST': {'block': (0x280, 0x1C), 'bsp': None, 'insertion': 0x14},
 }
 
 
@@ -1945,6 +2009,49 @@ def h3_player_spawns(m, game='Halo 3'):
         bsp = (struct.unpack_from('<h', m.data, e + bsp_at)[0]
                if bsp_at is not None else -1)
         out.append((struct.unpack_from('<fff', m.data, e), bsp))
+    return out
+
+
+#: ODST's mission start. Every ODST map — all nine, measured on the shipped .bak
+#: baselines — declares exactly FOUR Player Starting Locations at insertion point 0,
+#: and they are the four co-op players' starts, in player order, sitting 0.5 to 4
+#: units apart. Every other insertion index is a mid-mission revert point: the places
+#: the game moves you to as the mission progresses, which is why they outnumber the
+#: starts so heavily (Data Hive has 26 of them, ONI Alpha Site 38).
+ODST_START_INSERTION = 0
+
+
+def odst_player_starts(m, game='Halo 3: ODST'):
+    """Player Starting Locations grouped by insertion point.
+
+    {insertion index: [(position, bsp_index), ... one per player, in player order]}.
+
+    This is the level's own answer to "where does each player begin", which the
+    equipment placer used to have to guess at by clustering every location on the map
+    together — a guess that could not tell a start from a checkpoint, and merged the
+    four co-op slots of one place into a single point.
+
+    `bsp_index` is always -1: ODST locations carry an insertion index where Halo 3
+    carries a BSP index, so callers derive the BSP from the position the same way the
+    curated anchors do. Returned as (pos, bsp) pairs anyway, so the result drops
+    straight into everything already written against h3_player_spawns.
+    """
+    lay = _SPAWNS_BY_GAME.get(str(game).strip())
+    if not lay or lay.get('insertion') is None:
+        return {}
+    boff, esize = lay['block']
+    iat = lay['insertion']
+    scnr_base = _scnr_base(m)
+    if scnr_base is None:
+        return {}
+    base = _block_base(m, scnr_base + boff)
+    if not base:
+        return {}
+    out = {}
+    for i in range(max(0, m.i32(scnr_base + boff))):
+        e = base + i * esize
+        ip = struct.unpack_from('<h', m.data, e + iat)[0]
+        out.setdefault(ip, []).append((struct.unpack_from('<fff', m.data, e), -1))
     return out
 
 
@@ -2397,7 +2504,7 @@ def _fix_autoturret_team(m, game, registry):
     return out
 
 
-def _apply_spawn_equipment(m, game, spec):
+def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     """Grant Halo 3 starting equipment by APPENDING placements at the player start.
 
     `spec` = {'groups': [[eqip tag path, ...], ...]}. Group i is player i's items:
@@ -2498,19 +2605,42 @@ def _apply_spawn_equipment(m, game, spec):
     new_pal = []                # datums to append to the palette, in assignment order
     new_pal_idx = {}            # path key -> the palette index it will get
     used_weapons = set()        # weapon placements already used as a fallback drop
-    # ODST levels start the player at an INSERTION POINT, and which one is live changes
-    # with mission progress: Mombasa Streets has 21 starting locations in 4 clusters and
-    # Tayari Plaza 22 in 3. Dropping only at spawns[si] armed the first cluster and left
-    # every other insertion point empty. Drop at each distinct cluster instead, so the
-    # player is equipped wherever the level actually puts them. Halo 3 keeps the old
-    # one-spawn-per-player behaviour: its four spawns ARE the two players' starts.
+    # ODST levels start the player at an INSERTION POINT, and the scenario says which
+    # locations belong to which one. Insertion 0 is the mission's real start and holds
+    # exactly four locations on every ODST map -- the four co-op players, in player
+    # order -- so player i is equipped at insertion-0 location i and nowhere else.
+    #
+    # This replaces clustering every starting location on the map together. That could
+    # not tell a start from a mid-mission revert point, so it armed all of them: ONI
+    # Alpha Site resolved to 5 places and dropped a player's single Invincibility pick
+    # at all five. It also merged one place's four co-op slots (0.5-4 units apart) into
+    # a single point, which is why the two players shared a drop and swapping their
+    # loadouts moved nothing visible.
+    #
+    # `extra` keeps the old behaviour available where it is actually earned: the hub's
+    # scripted teleport destinations (six of Mombasa Streets' eight level-select start
+    # points, which no starting location covers), and -- opt in -- the level's other
+    # insertion points. Halo 3 is untouched: its four spawns ARE the two players'
+    # starts, with no insertion points involved.
     odst = str(game).strip() == 'Halo 3: ODST'
-    clusters = None
+    starts = None                   # [(pos, bsp) per player] at insertion 0
+    extra = []                      # additional (pos, bsp) drops, shared by all players
     if odst and not anchor:
-        # Starting locations first, then the hub's scripted teleport destinations --
-        # on Mombasa Streets those are six of the eight level-select start points and
-        # no starting location covers them. _spawn_clusters de-duplicates any overlap.
-        clusters = _spawn_clusters(list(spawns) + _odst_teleport_points(m))
+        by_ip = odst_player_starts(m, game)
+        starts = by_ip.get(ODST_START_INSERTION) or None
+        if starts:
+            tp = _odst_teleport_points(m)
+            if odst_all_insertions:
+                for ip, locs in sorted(by_ip.items()):
+                    if ip != ODST_START_INSERTION:
+                        tp = tp + list(locs)
+            # de-duplicate against the starts and each other, so a teleport point that
+            # lands on a start does not double the drop there
+            seen_pts = list(starts)
+            for pos, bsp in tp:
+                if not any(math.dist(pos, p) < 8.0 for p, _ in seen_pts):
+                    seen_pts.append((pos, bsp))
+                    extra.append((pos, bsp))
 
     def _mask_for(pos, bsp):
         # ODST spawns carry no BSP index (they use insertion points), so the BSP a
@@ -2525,19 +2655,15 @@ def _apply_spawn_equipment(m, game, spec):
             continue
         if anchor:
             targets = [('anchor', anchor, anchor_mask)]
-        elif clusters is not None:
-            # Every cluster is armed for every player, because which insertion point is
-            # live changes with mission progress. WITHIN a cluster, though, each player
-            # gets their own slot: a place lists one starting location per player, so
-            # group si drops at member si. That is what makes Swap Player 1-2 visible
-            # here — with one shared drop per place, swapping the groups moved nothing.
-            # A place with fewer members than players (the hub's scripted teleport
-            # destinations have exactly one) falls back to the representative, which is
-            # the old shared behaviour and still equips everyone.
-            targets = []
-            for i, (p, b, members) in enumerate(clusters):
-                pos, bsp = members[si] if si < len(members) else (p, b)
-                targets.append(('c%d.%d' % (i, si), pos, _mask_for(pos, bsp)))
+        elif starts is not None:
+            # Player si's own start, plus whatever `extra` earned a shared drop. A
+            # level with fewer starting locations than players (none ship that way, but
+            # a modified scenario could) falls back to the last one rather than
+            # equipping nobody.
+            pos, bsp = starts[si] if si < len(starts) else starts[-1]
+            targets = [('start%d' % si, pos, _mask_for(pos, bsp))]
+            targets += [('extra%d.%d' % (i, si), p, _mask_for(p, b))
+                        for i, (p, b) in enumerate(extra)]
         elif si < len(spawns):
             targets = [(si, spawns[si][0], _mask_for(*spawns[si]))]
         else:
@@ -3838,7 +3964,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Halo 3 starting equipment. Structural (it grows the Equipment block by
         # relocating it), so it runs after every value op — but before the zoom UI,
         # which relocates HUD blocks and would otherwise compete for the same slack.
-        results.extend(_apply_spawn_equipment(m, game, spawn_equipment))
+        results.extend(_apply_spawn_equipment(
+            m, game, spawn_equipment,
+            odst_all_insertions=bool((spawn_equipment or {}).get('all_insertions'))))
 
     # The Auto Turret reaches a level by TWO routes -- granted in the loadout
     # (spawn_equipment) and scattered through the map's placements by its Map Presence
