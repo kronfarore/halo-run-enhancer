@@ -582,6 +582,17 @@
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			},
+				"Death Penalty": {
+					"desc": "How many metagame points dying costs you — yours, and a marine's.",
+					"debug_desc": "`matg globals\\\\globals` -> **Campaign Metagame Globals**: Player Death Point Count and Friendly Death Point Count. These are the DEATH side of the metagame and live in the map, unlike the per-kill values, which are read once from `Data\\\\UI\\\\scoredb.xml` at startup and need a restart to change.\n\nStock values differ by game: Halo 3 and ODST charge 25 for your own death and 50 for a marine; Reach charges 0 and 100. Halo 2 has no metagame block at all, and Halo 3 additionally carries `Minimum Death Time` (4.0) in Deprecated AI Globals, which ODST dropped entirely.\n\nA NEGATIVE Friendly Death Point Count is the untested half: if the engine subtracts the value, negating it turns a marine's death into a gain. Not confirmed in game.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": "matg globals\\globals",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Player Death Point Count", "block": "Campaign Metagame Globals" },
+						{ "field": "Friendly Death Point Count", "block": "Campaign Metagame Globals" }
+					]
+				},
 			"Sprint Speed": {
 				"desc": "Sprint faster. Tunes the base sprint speed from Options with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
 				"game": "Halo 1",
@@ -12574,7 +12585,8 @@
 			"targets": []
 		},
 		"Betrayal": {
-			"desc": "Every human squad turns on you. Marinel join the Flood in Halo 1 and the Heretics in Halo 2 and 3, so the Covenant keeps fighting them too.",
+			"desc": "Every human squad turns on you. Marines join the Flood in Halo 1 and the Heretics from Halo 2 on, so the Covenant keeps fighting them too.",
+			"debug_desc": "Sets each human squad's Team to a hostile third faction, so they fight you AND the Covenant rather than simply swapping sides. A squad counts as human when every character it names matches a human tag and none is a loyal one.\n\nODST was wired 2026-08-31. Its squads hold characters in three sub-blocks instead of at a fixed offset, which is why it needs its own walk. Measured: ONI Alpha Site flips 18 squads, Data Hive 11, Coastal Highway 5, and Mombasa Streets 0 — the hub fields no human squads at all.\n\n**On Data Hive and Coastal Highway this flips Buck and Dare**, who are also the escorts those levels can fail without. That is the skull working as intended, but expect it to make those two missions much harder or unfinishable.\n\nReach is NOT supported: its plugin describes the same shape one step along, but the block at `scnr+0x398` reads a count of zero on the shipped maps, so the real layout has to be located first.",
 			"skull": "betrayal",
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": "scnr",

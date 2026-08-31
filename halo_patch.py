@@ -1311,13 +1311,52 @@ def _apply_starting_equipment(m, game, registry, starting):
 # (slot 6 is Unused6), so Flood is the only real third option there. H3 does define
 # Heretic even though the campaign has none, so its allegiances are untested —
 # see the note in halo.json's Betrayal entry.
-_BETRAYAL_TEAM = {'Halo 1': 4, 'Halo 2': 6, 'Halo 3': 6}   # Flood / Heretic / Heretic
+# Flood / Heretic / Heretic / Heretic. Every one of these games declares the same Team
+# enum on a squad (0 Default, 1 Player, 2 Human, 3 Covenant, 4 Flood, 5 Sentinel,
+# 6 Heretic, 7 Prophet, 8 Guilty), so the value carries; what differs is where the
+# squad's CHARACTER reference lives, which is what _BETRAYAL below describes.
+_BETRAYAL_TEAM = {'Halo 1': 4, 'Halo 2': 6, 'Halo 3': 6, 'Halo 3: ODST': 6}
 _BETRAYAL = {
     'Halo 2': {'squads': (0x160, 0x74), 'team': 0x24, 'char_idx': 0x36,
                'palette': (0x178, 0x08), 'pal_id_at': 0x4, 'fireteams': None},
     'Halo 3': {'squads': (0x384, 0x40), 'team': 0x24, 'char_idx': 0x8,
                'palette': (0x3A8, 0x10), 'pal_id_at': 0xC, 'fireteams': (0x30, 0x60)},
+    # ODST's squads are bigger (0x6C) and hold their characters in THREE sub-blocks
+    # rather than at a fixed offset, so it cannot use the char_idx/fireteams shape at
+    # all -- `cells` names those sub-blocks instead and _odst_squad_chars walks them.
+    # Layout verified against sprint_toolkit/odst_squads.py, which reads the same
+    # blocks to answer "which tag is this named character".
+    'Halo 3: ODST': {'squads': (0x3B8, 0x6C), 'team': 0x24, 'char_idx': None,
+                     'palette': (0x3E8, 0x10), 'pal_id_at': 0xC, 'fireteams': None,
+                     'single_locations': (0x3C, 0x90, 0x32),
+                     'cells': ((0x54, 0x84), (0x60, 0x84)), 'cell_char': (0x14, 0x10, 0xC)},
+    # REACH IS NOT WIRED. Its plugin describes the same shape one step further along
+    # -- squads 0x398/0x6C with Team at 0x24, palette 0x3EC, Spawn Points 0x3C/0x7C
+    # with Character Type Index at 0x32 -- but the shipped maps do not match it: the
+    # block at scnr+0x398 reads a count of ZERO on 30_settlement, through both the raw
+    # offset and the plugin path that the rest of Reach support uses. So the real
+    # scenario layout differs from the plugin and has to be located the way ODST's was
+    # before this can be turned on. Wiring it from the plugin alone would produce a
+    # Betrayal that silently flips nothing.
 }
+
+
+def _odst_squad_chars(m, sq, lay):
+    """Character-palette indices a single ODST squad references.
+
+    Three places carry them and all three are walked, because a squad may use any of
+    them: Single Locations (one index per placed character), and the Designer and
+    Templated Cells (each with a Character Type sub-block)."""
+    out = []
+    loff, lel, lci = lay['single_locations']
+    for el in m.follow_all(sq, [loff], [lel], 'all'):
+        out.append(struct.unpack_from('<h', m.data, el + lci)[0])
+    coff2, cel2, cci = lay['cell_char']
+    for coff, cel in lay['cells']:
+        for cell in m.follow_all(sq, [coff], [cel], 'all'):
+            for ct in m.follow_all(cell, [coff2], [cel2], 'all'):
+                out.append(struct.unpack_from('<h', m.data, ct + cci)[0])
+    return out
 # Characters whose squads count as "human" for Betrayal. Matched against the last
 # path component of the character/actor tag name. Keep these specific: a loose word
 # like "commander" also matches `elite commander energy sword`, which flipped a
@@ -1399,7 +1438,9 @@ def _apply_betrayal(m, game, registry):
         soff, sel = lay['squads']
         for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
             idxs = []
-            if lay['fireteams']:
+            if lay.get('cells'):
+                idxs = _odst_squad_chars(m, sq, lay)
+            elif lay['fireteams']:
                 foff, fel = lay['fireteams']
                 for ft in m.follow_all(sq, [foff], [fel], 'all'):
                     idxs.append(struct.unpack_from('<h', m.data, ft + lay['char_idx'])[0])
