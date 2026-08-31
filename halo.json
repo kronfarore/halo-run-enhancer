@@ -9244,6 +9244,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"harder_when": "increased",
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
@@ -9800,6 +9801,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"harder_when": "increased",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -10105,6 +10107,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"harder_when": "increased",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
@@ -11184,6 +11187,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving to avoid a grenade",
+					"harder_when": "increased",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
@@ -11361,6 +11365,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving away from a grenade.",
+					"harder_when": "increased",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
@@ -11725,6 +11730,7 @@
 				},
 				"Dive From Grenade Chance": {
 					"desc": "Chance he dives away from a grenade",
+					"harder_when": "increased",
 					"tag": {
 						"Halo 2": "char objects\\characters\\heretic\\ai\\heretic_leader"
 					},

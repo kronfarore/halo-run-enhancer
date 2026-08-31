@@ -67,6 +67,14 @@ for game, subs, mp in CASES:
             continue                                    # not on this map: legitimate
         live = 0
         for t in ts:
+            # Targets that do NOT read a plugin field: the jmad animation scalers
+            # (Reload Time / Weapon Swap Speed go through halo3_reload), the placement
+            # swappers, and the equipment-drop op. Reading them always yields nothing
+            # and reports a working card as dead.
+            if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'map_swap',
+                                      'map_equip', 'equip_drop', 'choice', 'derived')):
+                live += 1
+                continue
             f = t.get('field')
             f = he.resolve_gamed(f, game, games) if isinstance(f, dict) else f
             if not isinstance(f, str):

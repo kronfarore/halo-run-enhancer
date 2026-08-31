@@ -1299,6 +1299,22 @@ def _diff_flavor(target):
     return {k: target.get(k) for k in DIFF_FLAVOR_KEYS}
 
 
+def _is_writable_now(path):
+    """Can this file be opened for writing right now?
+
+    Windows refuses a second write handle while another process holds one, which is
+    exactly what MCC does to a map it has resident. Opening 'r+b' and closing it
+    immediately is the cheapest reliable test and changes nothing. A missing file
+    counts as writable so the caller reports its own, more specific error."""
+    try:
+        if not os.path.exists(path):
+            return True
+        with open(path, 'r+b'):
+            return True
+    except OSError:
+        return False
+
+
 def _patch_error_text(e):
     """A player-actionable message for a patch failure. A PermissionError (Errno 13)
     almost always means the map file is locked or read-only — surface the likely
@@ -1813,6 +1829,16 @@ class ModifierDatabase:
             twin = next((m for m in self.weapon_mods.get(up, [])
                          if m.get('name') == effect_name), None)
             if not twin:
+                continue
+            if not self._game_ok(twin, game):
+                # The upgrade has no card of this name IN THIS GAME, so there is
+                # nothing to mirror. Without this test, resolve_gamed's earlier-game
+                # fallback happily hands back the Halo 2 tag: every one of the Brute
+                # Plasma Rifle's 17 Halo-2-only cards was mirrored onto
+                # `brute_plasma_rifle`, a tag no Halo 3 or ODST map has, so each one
+                # became a guaranteed "not present in this map" failure in the report.
+                # The fallback is right for a card that exists in both games and only
+                # names its tag once; it is wrong for a card that does not exist here.
                 continue
             tag = resolve_gamed(twin.get('tag'), game, self.get_games())
             if isinstance(tag, str) and tag:
@@ -3694,9 +3720,10 @@ class MagnitudeEditorDialog(QDialog):
     def _build(self, map_path):
         layout = QVBoxLayout(self)
 
-        # The setup rows (folders, map, difficulty, legend, search) SCROLL WITH the
-        # effect list rather than being pinned above it — pinned, they permanently ate
-        # the vertical space the effect list needs. They go in their own widget inside
+        # The setup rows (folders, map, difficulty, legend) SCROLL WITH the effect
+        # list rather than being pinned above it — pinned, they permanently ate the
+        # vertical space the effect list needs. The Find row is the exception and IS
+        # pinned, below. They go in their own widget inside
         # the scroll area, kept separate from `self.form` because _populate() clears
         # that layout on every repopulate (difficulty change, reload, reorder).
         head_w = QWidget()
@@ -3786,20 +3813,38 @@ class MagnitudeEditorDialog(QDialog):
             head.addWidget(zoom_row)
 
         # #5/#7: search-to-effect + "show new effects first" toggle.
+        #
+        # PINNED, unlike the setup rows above: the whole point of Find is to jump around
+        # a list too long to see at once, and a search box that scrolls off the top with
+        # the rest of the header is unreachable exactly when it is wanted. It is one
+        # row, so it costs the effect list almost nothing.
         srow = QHBoxLayout()
+        srow.setContentsMargins(0, 0, 0, 0)
         srow.addWidget(QLabel("🔍 Find:"))
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("effect name… (Enter cycles matches)")
+        self.search_edit.setPlaceholderText("effect name… (Enter / F3 cycles matches, Shift+Enter goes back)")
         self.search_edit.textChanged.connect(lambda s: self._search_effect(s, advance=False))
         self.search_edit.returnPressed.connect(
             lambda: self._search_effect(self.search_edit.text(), advance=True))
         srow.addWidget(self.search_edit, 1)
+        self.search_count = QLabel("")
+        self.search_count.setStyleSheet("color: #7aa0c0; font-size: 12px; min-width: 70px;")
+        srow.addWidget(self.search_count)
         self.new_top_cb = QCheckBox("Show new effects at the top")
         self.new_top_cb.setToolTip("List effects not yet applied to a map first, until you patch")
         self.new_top_cb.setChecked(bool(CONFIG.get('show_new_at_top')))
         self.new_top_cb.toggled.connect(self._toggle_new_top)
         srow.addWidget(self.new_top_cb)
-        head.addLayout(srow)
+        srow_w = QWidget()
+        srow_w.setLayout(srow)
+        layout.addWidget(srow_w)
+        # F3 / Shift+F3 cycle without needing focus in the box.
+        QShortcut(QKeySequence(Qt.Key_F3), self,
+                  lambda: self._search_effect(self.search_edit.text(), advance=True))
+        QShortcut(QKeySequence("Shift+F3"), self,
+                  lambda: self._search_effect(self.search_edit.text(), advance=True, back=True))
+        QShortcut(QKeySequence("Shift+Return"), self.search_edit,
+                  lambda: self._search_effect(self.search_edit.text(), advance=True, back=True))
 
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
@@ -3835,8 +3880,8 @@ class MagnitudeEditorDialog(QDialog):
         next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
         next_empty_btn.clicked.connect(self._jump_to_next_empty)
         top_btn = QPushButton("↑ Top")
-        top_btn.setToolTip("Back to the top of the list — the map, difficulty and "
-                           "search rows live up there and scroll with it")
+        top_btn.setToolTip("Back to the top of the list — the map and difficulty rows "
+                           "live up there and scroll with it (Find stays pinned)")
         top_btn.setMaximumWidth(70)
         top_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 10px; border-radius: 5px;")
         top_btn.clicked.connect(self._scroll_to_top)
@@ -3871,6 +3916,16 @@ class MagnitudeEditorDialog(QDialog):
         btns.addStretch()
         btns.addWidget(close_btn)
         layout.addLayout(btns)
+
+        # Nothing in this dialog may be the DEFAULT button. Qt hands Return to the
+        # default button as well as to the focused QLineEdit, so pressing Enter in the
+        # Find box also fired the first Browse… in the dialog and threw up a folder
+        # picker — which is what made cycling through matches look impossible. There is
+        # no Enter action worth having here (Patch Map should never be one keystroke
+        # away), so every button opts out and Return belongs to whatever has focus.
+        for b in self.findChildren(QPushButton):
+            b.setAutoDefault(False)
+            b.setDefault(False)
 
     def _normalize_entries(self):
         """Rewrite every editable operator box into its canonical form (see
@@ -4335,15 +4390,35 @@ class MagnitudeEditorDialog(QDialog):
         save_settings()
         self._populate()
 
-    def _search_effect(self, text, advance=False):
+    def _search_effect(self, text, advance=False, back=False):
+        """Jump to a matching effect box; Enter/F3 walks the matches, Shift+ walks back.
+
+        The counter matters as much as the jump: without "3/11" there is no way to tell
+        a search that found one thing from one that is parked on the first of eleven,
+        which is what made cycling look broken."""
         q = (text or '').strip().lower()
+        lbl = getattr(self, 'search_count', None)
         if not q:
+            self._search_idx = -1
+            if lbl is not None:
+                lbl.setText("")
             return
         matches = [box for nm, box in getattr(self, '_effect_boxes', []) if q in nm.lower()]
         if not matches:
+            self._search_idx = -1
+            if lbl is not None:
+                lbl.setText("no match")
             return
-        idx = (getattr(self, '_search_idx', -1) + 1) % len(matches) if advance else 0
+        cur = getattr(self, '_search_idx', -1)
+        if not advance:
+            idx = 0                       # typing restarts at the first match
+        elif back:
+            idx = (cur - 1) % len(matches)
+        else:
+            idx = (cur + 1) % len(matches)
         self._search_idx = idx
+        if lbl is not None:
+            lbl.setText("%d/%d" % (idx + 1, len(matches)))
         self._scroll.ensureWidgetVisible(matches[idx], 50, 60)
 
     def _effect_box(self, eff):
@@ -5452,6 +5527,18 @@ class MagnitudeEditorDialog(QDialog):
         # between every mission is not left vanilla. Never fatal: the story mission
         # has already been written, and a hub failure must not report it as failed.
         hub = self._odst_hub_path(map_path)
+        if hub and not _is_writable_now(hub):
+            # MCC keeps Mombasa Streets RESIDENT for the whole ODST campaign — it is
+            # the level the game returns to between missions, so once a run is under
+            # way the file is held open and a patch either cannot be written or is
+            # written and then ignored by the copy already in memory. Say so instead
+            # of reporting a hub failure the player cannot act on.
+            results.append({'effect': 'Mombasa Streets (hub)', 'field': 'patch',
+                            'ok': True, 'skip': True,
+                            'reason': 'the hub map is locked — MCC holds it open for '
+                                      'the whole ODST campaign. Patch it with the game '
+                                      'closed (or before starting the run).'})
+            hub = None
         if hub:
             try:
                 hub_results, _ = self._run_busy(lambda: self._hp.apply_run(
@@ -6994,7 +7081,11 @@ class OptionsDialog(QDialog):
             "mission writes the same plan into Mombasa Streets too. Effects for enemies "
             "the hub does not field are harmless no-ops, and because patching runs from "
             "the .bak baseline the hub always carries the CURRENT run rather than "
-            "accumulating older ones.")
+            "accumulating older ones.\n\nIMPORTANT: MCC keeps Mombasa Streets RESIDENT "
+            "for the whole ODST campaign — it is the level the game returns to "
+            "between missions. Once a run is under way the file is held open, so patch "
+            "the hub with the game closed. The patcher checks and tells you when it is "
+            "locked rather than reporting a failure you cannot act on.")
         odform.addRow("ODST hub:", self.odst_hub_cb)
 
         self.ignore_elite_h3_cb.setChecked(bool(CONFIG.get('ignore_elite_in_h3', True)))
@@ -8300,12 +8391,20 @@ class HaloGUI(QMainWindow):
         self._fill_mission_combo(game, select_mid=self.run_state.mission_id)
         self.update_weapon_display()
         self.update_history()
-        if self.run_state.phase == 'player1_turn':
+        if self.run_state.phase in ('player1_turn', 'player2_turn'):
             self.run_state.weapon_selection_made = True
-            self.on_generate()
-        elif self.run_state.phase == 'player2_turn':
-            self.run_state.weapon_selection_made = True
-            self.on_generate()
+            # A run's pairs are not saved, so a mid-round file has nothing to show and
+            # the cards have to be re-rolled. For a LOCAL save that is the convenience
+            # it was written to be. For a run picked up out of the SHARED folder it is
+            # actively wrong: the draw is random, so rolling on load hands the partner
+            # a different set from the one the other machine is looking at, and it does
+            # it silently, before anyone can react. Let them press Generate instead.
+            if self.shared_run_path:
+                self.update_status("Run loaded from the shared folder — press Generate "
+                                   "when you're ready to draw this round's cards.")
+                self.generate_btn.setEnabled(True)
+            else:
+                self.on_generate()
         elif self.run_state.phase == 'complete':
             self.run_state.weapon_selection_made = True
             self.update_history()
