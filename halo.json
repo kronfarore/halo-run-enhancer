@@ -665,7 +665,16 @@
 				"targets": [
 					{ "field": "Camo cooldown", "sprint": "camo_cooldown" }
 				]
-			}
+			},
+				"Action Hold Time": {
+					"desc": "How long you must hold Use before it counts as a hold rather than a tap.",
+					"debug_desc": "`matg globals\\\\globals` -> **Player Control** -> Minimum Action Hold Time. Stock 0.2333s in every game from Halo 2 on.\n\n**This is the one tag-side handle on ODST's shared button.** VISR and equipment are the same input there, split only by tap versus hold, and the split is this number: raise it and a tap has longer to register before the hold fires, lower it and holds trigger sooner. It cannot put them on separate buttons — nothing in the tags binds inputs; MCC keeps its bindings in the launcher's own settings, outside the map — but it is what decides which of the two you get.\n\nIt also governs every other hold action, so a large change is felt everywhere you pick something up.",
+					"game": ["Halo 2"],
+					"tag": "matg globals\\\\globals",
+					"targets": [
+						{ "field": "Minimum Action Hold Time", "block": "Player Control", "min": 0.05 }
+					]
+				}
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {

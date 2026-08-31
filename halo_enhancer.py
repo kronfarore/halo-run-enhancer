@@ -8429,6 +8429,45 @@ class HaloGUI(QMainWindow):
         pool = drop_weapons_taken(self.db, pool, self.run_state)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
+    def _equipment_offer_pool(self, player):
+        """The equipment and ability items this player could still be given.
+
+        Deliberately a FILTER over _weapon_offer_pool rather than a second pool built
+        from scratch: every gate that decides what may be offered — blacklist, already
+        owned, taken by the other player, the denied-equipment options, the
+        one-ability-per-player rule — lives there, and a parallel pool would drift out
+        of step with it. This is the recurring bug in this codebase, so the offer rules
+        stay in one place and this only narrows what comes out.
+
+        Abilities are included where the game has them: an ability IS the equipment
+        slot in Halo 1, so a button that refuses to offer one would be empty there."""
+        game = self._current_game()
+        pool = [w for w in self._weapon_offer_pool(player)
+                if self.db.is_equipment(w) or ability_of_item(w)]
+        # _weapon_offer_pool only adds equipment when h3_equipment_in_rolls is on --
+        # that option governs whether equipment turns up in a WEAPON draw, which is a
+        # different question from whether this button may hand one out.
+        if has_equipment(game) and not CONFIG.get('h3_equipment_in_rolls'):
+            owned = set(self.run_state.weapons_for(player))
+            extra = [e for e in (self.db.mission_equipment.get(self.run_state.mission_id) or [])
+                     if e not in owned and not self._blacklisted_weapon(e)]
+            extra = strip_denied_equipment(self.db, extra)
+            extra = drop_weapons_taken(self.db, extra, self.run_state)
+            for e in gate_offer_pool(self.db, extra, self.run_state, player):
+                if e not in pool:
+                    pool.append(e)
+        return pool
+
+    def on_new_equipment_button(self):
+        """Same flow as NEW WEAPON, drawing only from the equipment/ability pool."""
+        if not (self.run_state.player1_weapon and self.run_state.player2_weapon):
+            self.update_status("Choose starting weapons for both players first")
+            return
+        self._manual_equipment_only = True
+        self._manual_queue = ['player1', 'player2']
+        self._manual_results = {}
+        self._next_manual_weapon()
+
     def _grant_weapon(self, player, weapon):
         """Add a weapon; if it's an upgrade and the player dual-wields the base,
         also grant the dual version of the upgrade (#3)."""
@@ -8441,6 +8480,7 @@ class HaloGUI(QMainWindow):
         if not (self.run_state.player1_weapon and self.run_state.player2_weapon):
             self.update_status("Choose starting weapons for both players first")
             return
+        self._manual_equipment_only = False
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._next_manual_weapon()
@@ -8453,8 +8493,13 @@ class HaloGUI(QMainWindow):
         self._finish_manual_weapon()
 
     def _show_manual_weapon_selection(self, player):
-        pool = self._weapon_offer_pool(player)
+        equip_only = getattr(self, '_manual_equipment_only', False)
+        pool = (self._equipment_offer_pool(player) if equip_only
+                else self._weapon_offer_pool(player))
         if not pool:
+            if equip_only:
+                who = "Player 1" if player == 'player1' else "Player 2"
+                self.update_status("No equipment left to offer %s on this level" % who)
             return False
         # New Weapon cards carry a tied negative unless disabled in CONFIG.
         with_enemy = self._weapon_choice_negatives()
@@ -8463,7 +8508,8 @@ class HaloGUI(QMainWindow):
         self.display_weapon_selection(choices, is_player2=(player == 'player2'), mode='add')
         who = "Player 1" if player == 'player1' else "Player 2"
         suffix = " (comes with a negative)" if with_enemy else ""
-        self.update_status(f"🔫 New weapon for {who}: pick one{suffix}")
+        icon = "🎒 New equipment" if equip_only else "🔫 New weapon"
+        self.update_status(f"{icon} for {who}: pick one{suffix}")
         return True
 
     def on_manual_weapon_selected(self, player, choice_id):
@@ -8476,11 +8522,15 @@ class HaloGUI(QMainWindow):
                                         'enemy': selected.get('enemy_mod')}
         self.update_weapon_display()
         who = "Player 1" if player == 'player1' else "Player 2"
-        self.update_status(f"{who} gained a new weapon: {selected['weapon']}!")
+        kind = ("equipment" if self.db.is_equipment(selected['weapon'])
+                else ("ability" if ability_of_item(selected['weapon']) else "weapon"))
+        self.update_status(f"{who} gained new {kind}: {selected['weapon']}!")
         self._next_manual_weapon()
 
     def reroll_manual_weapon(self, choice_id, player):
-        pool = self._weapon_offer_pool(player)
+        pool = (self._equipment_offer_pool(player)
+                if getattr(self, '_manual_equipment_only', False)
+                else self._weapon_offer_pool(player))
         self._reroll_weapon_choice(choice_id, weapon_pool=pool,
                                    exclude_weapons=set(self.run_state.weapons_for(player)),
                                    with_enemy=self._weapon_choice_negatives(),
@@ -8688,7 +8738,24 @@ class HaloGUI(QMainWindow):
             QPushButton:hover { background-color: #4a6a3a; }
         """)
         self.new_weapon_btn.clicked.connect(self.on_new_weapon_button)
+        # Sibling of NEW WEAPON, same flow, equipment/ability pool only. Coloured with
+        # the equipment scheme so the two read as different draws at a glance.
+        self.new_equipment_btn = QPushButton("🎒 NEW EQUIPMENT")
+        self.new_equipment_btn.setToolTip(
+            "Draw a piece of equipment for both players, from what this level actually "
+            "stocks. Same rules as NEW WEAPON — blacklist, already owned, taken by the "
+            "other player — just narrowed to equipment. In Halo 1 it offers the "
+            "flashlight abilities instead, which are that game's equipment slot.")
+        self.new_equipment_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2a3a5a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #3a4f7a; }
+        """)
+        self.new_equipment_btn.clicked.connect(self.on_new_equipment_button)
         button_layout.addWidget(self.new_weapon_btn)
+        button_layout.addWidget(self.new_equipment_btn)
 
         self.save_btn = QPushButton("💾 SAVE SELECTION")
         self.save_btn.setToolTip("Write this run (picks, weapons, history, options) to a save file "
