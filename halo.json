@@ -9365,23 +9365,24 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
-					"game": ["Halo 1", "Halo 2", "Halo 3: ODST"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"init_defaults": {
 						"Halo 1": { "tag": "actv characters\\elite\\*", "source": "actv characters\\grunt\\grunt minor plasma pistol", "only_if_zero": "Grenade Stimulus", "copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"], "set": { "Grenade Stimulus": "Visible Target" } }
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3: ODST"] },
+						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3: ODST", "Halo 3"] },
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
 					],
-					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of 13 levels and ODST on 8 of 8; Halo 3 is left out because only 1 of its 8 levels defines it."
+					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of the 13 levels that field them and ODST on 8 of 8. Halo 3 has it on ONE, Floodgate (050) of 8 -- worth carding, but expect it to do nothing on the others."
 				},
 				"Grenades Chance": {
 					"desc": "Behavior that influences the chance and timing for grenades",
@@ -11458,30 +11459,32 @@
 					]
 				},
 				"Grenades": {
-					"desc": "Grenade throwing \u2014 velocity, range, collateral.",
-					"debug_desc": "Halo 2 only, because only there do the Brutes carry a Grenades block of their own. From Halo 3 on the block is empty on all 16 brute char tags and they inherit `ai\\generic` \u2014 which is what the general **Grenade Properties** card edits. Measured: Halo 2's `brute` has Grenade Velocity 10.0; Halo 3 and ODST have none.",
-					"game": ["Halo 2"],
+					"desc": "Grenade throwing — velocity, range, collateral.",
+					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "char objects\\characters\\brute\\ai\\brute*"
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all" },
-						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all" },
-						{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all" },
-						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all" },
-						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] },
+						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] },
+						{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] },
+						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] },
+						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] }
 					]
 				},
 				"Grenades Chance": {
 					"desc": "How often they throw grenades.",
-					"debug_desc": "Halo 2 only, for the same reason as the Brutes' **Grenades** card: from Halo 3 on their Grenades block is empty and they inherit `ai\\generic`. The general **Grenade Scales** dial covers grenade chance in the later games.",
-					"game": ["Halo 2"],
+					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, so ODST is excluded outright; there they inherit `ai\\\\generic` and the general **Grenade Scales** dial is the handle.",
+					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "char objects\\characters\\brute\\ai\\brute*"
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": "Grenades Properties", "index": "all" }
+						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "skip_games": ["Halo 3: ODST"] },
+						{ "field": "Anti-Vehicle Grenade Chance", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] }
 					]
 				},
 				"Dive From Grenade Chance": {
@@ -11498,7 +11501,7 @@
 				},
 				"Accuracy": {
 					"desc": "How often their shots actually hit you.",
-					"debug_desc": "Accuracy bounds/time (higher, or lower time, is more accurate) and projectile error (lower is more accurate). In Halo 2 this edits the shared AI base, so it also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+					"debug_desc": "Accuracy bounds/time (higher, or lower time, is more accurate) and projectile error (lower is more accurate). In Halo 2 this edits the shared AI base, so it also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.\n\nThe Great Journey (08b) is the exception: its Brutes carry their own firing pattern, which the shared base cannot reach, so Projectile Error is written twice -- once on the base for the other four levels, once on the brute tags for that one. The two land on different tags, so nothing is applied twice.",
 					"game": "Halo 2",
 					"tag": {
 						"Halo 2": "char ai\\generic"
@@ -11507,13 +11510,14 @@
 						{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 						{ "field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds" },
 						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
-						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
+						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased", "group": "Projectile Error" },
+						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "tag": "char objects\\characters\\brute\\ai\\brute*", "harder_when": "decreased", "min": 0, "group": "Projectile Error" }
 					]
 				},
 				"Maximum Firing Distance": {
 					"desc": "How far away they will start shooting at you.",
 					"debug_desc": {
-						"Halo 2": "In Halo 2 the Brutes define no firing range of their own, so this edits the shared AI base and also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
+						"Halo 2": "In Halo 2 the Brutes define no firing range of their own on 4 of the 5 levels that field them, so this edits the shared AI base and also moves Buggers, Heretics, Sentinel Enforcers and the Flood forms. The Great Journey (08b) is the exception -- its brutes carry the field themselves and the base cannot reach them -- so it gets a second, brute-only write.",
 						"Halo 3: ODST": "In ODST the brute tags carry Maximum Firing Range themselves (30.0), so this edits them directly and touches nothing else. That is also why the general **Maximum Firing Distance** card stopped reaching Brutes here -- a card aimed at `ai\\generic` cannot reach an enemy that has outgrown it."
 					},
 					"game": ["Halo 2", "Halo 3: ODST"],
@@ -11522,7 +11526,8 @@
 						"Halo 3: ODST": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all", "group": "Maximum Firing Range" },
+						{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all", "tag": "char objects\\characters\\brute\\ai\\brute*", "games": ["Halo 2"], "group": "Maximum Firing Range" }
 					]
 				},
 				"Melee Leap": {
@@ -11600,6 +11605,18 @@
 					"targets": [
 						{ "field": "Easy/Normal", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Legendary", "block": "Equipment Definitions/Equipment Use", "index": "all", "min": 0, "max": 1 }
+					]
+				},
+				"Rate of Fire": {
+					"desc": "How fast they fire.",
+					"debug_desc": "Halo 2 only, and only The Great Journey (08b) gives its Brutes a firing pattern of their own -- 1 of the 5 Halo 2 levels that field them. On the other four the general **Firing Patterns** card is what reaches them and this card writes nothing.",
+					"game": "Halo 2",
+					"harder_when": "increased",
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": [
+						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 					]
 				}
 			},

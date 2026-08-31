@@ -106,7 +106,7 @@ def _plugin_fields(plugin):
 GENERIC = 'ai' + chr(92) + 'generic'
 
 
-def carded_fields(db, game, enemy, generic_only=False):
+def carded_fields(db, game, enemy, generic_only=False, enemy_only=False):
     """{field name} this enemy's cards target in this game.
 
     `generic_only` narrows it to the fields whose card is aimed at the shared AI base
@@ -127,12 +127,23 @@ def carded_fields(db, game, enemy, generic_only=False):
             tag = he.resolve_gamed(tag, game, games) if isinstance(tag, dict) else tag
             aimed_generic = (isinstance(tag, str)
                              and tag.split(' ', 1)[-1].strip() == GENERIC)
-            if generic_only and not aimed_generic:
-                continue
             ts = mod.get('targets')
             ts = he.resolve_gamed(ts, game, games) if isinstance(ts, dict) else ts
             for t in ts or []:
                 if not isinstance(t, dict) or not he.target_applies(t, game):
+                    continue
+                # A TARGET may redirect onto a tag of its own -- which is how a card
+                # aimed at the shared base still reaches an enemy that defines the
+                # field itself. Judge each target by where IT lands, not by the card's
+                # tag, or a redirect that was added to fix this exact problem keeps
+                # being reported as the problem.
+                own = t.get('tag')
+                own = he.resolve_gamed(own, game, games) if isinstance(own, dict) else own
+                t_generic = (aimed_generic if not isinstance(own, str)
+                             else own.split(' ', 1)[-1].strip() == GENERIC)
+                if generic_only and not t_generic:
+                    continue
+                if enemy_only and t_generic:
                     continue
                 f = t.get('field')
                 f = he.resolve_gamed(f, game, games) if isinstance(f, dict) else f
@@ -260,7 +271,13 @@ def main():
                             pass
         for enemy in list(live[game]):
             carded[game][enemy] = carded_fields(db, game, enemy)
-            viageneric[game][enemy] = carded_fields(db, game, enemy, generic_only=True)
+            viageneric[game][enemy] = (
+                carded_fields(db, game, enemy, generic_only=True)
+                # ...minus anything a sibling target already writes on the enemy's own
+                # tags. A card may do BOTH -- edit the shared base for the levels where
+                # the enemy inherits, and redirect onto the enemy for the levels where
+                # it does not -- and that is a fix, not a finding.
+                - carded_fields(db, game, enemy, enemy_only=True))
         general[game] = general_generic_fields(db, game)
 
     # a field is "carded somewhere" if any game's card set names it
