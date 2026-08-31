@@ -41,6 +41,7 @@ for game, subs, mp in CASES:
     reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
     m = hp.open_map(mp, game)
     plug = reg.get('char')
+    allchar = [p for p, _ in m.find_tags('char', '*')] if plug is not None else []
     print('=' * 92)
     print('%s   %s' % (game, os.path.basename(mp)))
     if plug is None:
@@ -76,7 +77,20 @@ for game, subs, mp in CASES:
             blk = he.resolve_gamed(blk, game, games) if isinstance(blk, dict) else blk
             have = sum(1 for p in tags
                        if m.read_all(cls, p, f, plug, blk, 'all'))
-            rows.append((' / '.join(path[-2:]), f, blk or '-', have, len(tags)))
+            # When the card's own tags carry nothing, is the field defined ANYWHERE?
+            # ai\generic having it means an ancestor walk (or a grow seeded from it)
+            # could rescue the card; nothing having it means no mechanism can.
+            rescue = ''
+            if have == 0:
+                gen = m.read_all(cls, 'ai' + chr(92) + 'generic', f, plug, blk, 'all')
+                if gen:
+                    rescue = 'A: ai/generic has it'
+                else:
+                    anyone = sum(1 for p2 in allchar
+                                 if m.read_all(cls, p2, f, plug, blk, 'all'))
+                    rescue = ('A: %d other tag(s) have it' % anyone if anyone
+                              else 'B: defined on NO tag in this map')
+            rows.append((' / '.join(path[-2:]), f, blk or '-', have, len(tags), rescue))
             break                       # one representative field per card is enough
     tot = len(rows)
     dead = [r for r in rows if r[3] == 0]
@@ -91,5 +105,7 @@ for game, subs, mp in CASES:
         if not rs:
             continue
         print('  --- %s' % label)
-        for name, f, blk, have, n in sorted(rs):
-            print('      %-46s %-26s %-24s %d/%d' % (name, f[:26], blk[:24], have, n))
+        for row in sorted(rs):
+            name, f, blk, have, n = row[:5]
+            rescue = row[5] if len(row) > 5 else ''
+            print('      %-44s %-26s %d/%-3d %s' % (name, f[:26], have, n, rescue))
