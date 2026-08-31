@@ -9172,22 +9172,22 @@
 						{ "field": "Leap Proximity Fraction", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
-			"Armor Lock": {
-				"desc": "How often Elites armour-lock to shrug off your shots, and how long it holds.",
-				"debug_desc": "Stock 15% chance and 5s cooldown on the base Elite; 30%/3.5s/0.5s/3s on the Ultra. The base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
-				"game": "Halo Reach",
-				"tag": "char objects\\characters\\elite\\ai\\elite*",
-				"targets": [
-					{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
-					{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
-					{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
-				],
-				"constraints": [
-					{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
-				]
-			},
+				"Armor Lock": {
+					"desc": "How often Elites armour-lock to shrug off your shots, and how long it holds.",
+					"debug_desc": "Stock 15% chance and 5s cooldown on the base Elite; 30%/3.5s/0.5s/3s on the Ultra. The base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"targets": [
+						{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+						{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+						{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
+					],
+					"constraints": [
+						{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
+					]
+				},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
 					"game": "Halo 1",
@@ -9365,29 +9365,23 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
-					"game": "Halo 1",
+					"game": ["Halo 1", "Halo 2", "Halo 3: ODST"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"init_defaults": {
-						"Halo 1": {
-							"tag": "actv characters\\elite\\*",
-							"source": "actv characters\\grunt\\grunt minor plasma pistol",
-							"only_if_zero": "Grenade Stimulus",
-							"copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"],
-							"set": {
-								"Grenade Stimulus": "Visible Target"
-							}
-						}
+						"Halo 1": { "tag": "actv characters\\elite\\*", "source": "actv characters\\grunt\\grunt minor plasma pistol", "only_if_zero": "Grenade Stimulus", "copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"], "set": { "Grenade Stimulus": "Visible Target" } }
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2"] },
+						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3: ODST"] },
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
-					]
+					],
+					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of 13 levels and ODST on 8 of 8; Halo 3 is left out because only 1 of its 8 levels defines it."
 				},
 				"Grenades Chance": {
 					"desc": "Behavior that influences the chance and timing for grenades",
@@ -9494,16 +9488,16 @@
 				},
 				"Shield Recharge": {
 					"desc": "Delay before Shield begins to recharge and the time it takes",
-					"debug_desc": "Halo 3 is deliberately absent: 030_outskirts fields no elite char tags at all, so there is nothing measured to justify adding it. ODST was added 2026-08-31 -- its elite tags define both fields (15.0 delay, 6.0 time) on 2 tags. In ODST the Elites never actually spawn, so the *Elites are allies* option keeps this out of a run unless you turn it off.",
+					"debug_desc": "Defined on every Halo 2, Halo 3 and ODST level that fields Elites. ODST inherits the Halo 3 entry. In ODST the Elites never spawn, so the *Elites are allies* option keeps this out of a run unless you turn it off.",
 					"tag": {
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
 					},
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": ["Halo 2", "Halo 3: ODST"]
+					"game": ["Halo 2", "Halo 3"]
 				}
 			},
 			"Hunter": {
@@ -9744,6 +9738,19 @@
 						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
 						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 },
 						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+					]
+				},
+				"Rate of Fire": {
+					"desc": "How fast they fire.",
+					"debug_desc": "The Hunters' own firing pattern -- defined on every Halo 2, Halo 3 and ODST level that fields them, so the general **Firing Patterns** card has never reached them. No Hunter rate-of-fire card existed until 2026-08-31.",
+					"game": ["Halo 2", "Halo 3"],
+					"harder_when": "increased",
+					"tag": {
+						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
+					"targets": [
+						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 					]
 				}
 			},
@@ -10062,35 +10069,68 @@
 				},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
-					"game": "Halo 1",
-					"tag": "actr characters\\jackal\\*",
-					"targets": [
-						{ "field": "Maximum Vision Distance", "group": "Vision" },
-						{ "field": "Central Vision Angle", "group": "Vision" },
-						{ "field": "Maximum Vision Angle", "group": "Vision" },
-						{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
-						{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
-					]
+					"game": ["Halo 1", "Halo 3"],
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Maximum Vision Distance", "group": "Vision" },
+							{ "field": "Central Vision Angle", "group": "Vision" },
+							{ "field": "Maximum Vision Angle", "group": "Vision" },
+							{ "field": "Peripheral Vision Angle", "group": "Peripheral Vision" },
+							{ "field": "Peripheral Distance", "group": "Peripheral Vision" }
+						],
+						"Halo 3": [
+							{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "group": "Vision" },
+							{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+							{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+							{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" },
+							{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" }
+						]
+					},
+					"debug_desc": "Jackals define their own Perception block again from Halo 3 on (6 of 6 Halo 3 levels, 9 of 9 ODST), so the general card stopped reaching them there. Halo 2 is deliberately absent: 0 of 9 levels define it, and the general **Vision** card is what covers them."
 				},
 				"Hearing Distance": {
 					"desc": "Hearing Distance",
-					"game": "Halo 1",
-					"tag": "actr characters\\jackal\\*",
-					"targets": [
-						{ "field": "Hearing Distance" }
-					]
+					"game": ["Halo 1", "Halo 3"],
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Hearing Distance" }
+						],
+						"Halo 3": [
+							{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all" }
+						]
+					},
+					"debug_desc": "Jackals define their own Perception block again from Halo 3 on (6 of 6 Halo 3 levels, 9 of 9 ODST), so the general card stopped reaching them there. Halo 2 is deliberately absent: 0 of 9 levels define it, and the general **Hearing Distance** card is what covers them."
 				},
 				"Perception": {
 					"desc": "Notice Projectile, Notice Vehicle, Combat Perception, Guard Perception, Non-Combat Perception",
-					"game": "Halo 1",
-					"tag": "actr characters\\jackal\\*",
-					"targets": [
-						{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
-						{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
-						{ "field": "Combat Perception Time" },
-						{ "field": "Guard Perception Time" },
-						{ "field": "Non-Combat Perception Time" }
-					]
+					"game": ["Halo 1", "Halo 3"],
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Notice Projectile Chance", "min": 0, "max": 1 },
+							{ "field": "Notice Vehicle Chance", "min": 0, "max": 1 },
+							{ "field": "Combat Perception Time" },
+							{ "field": "Guard Perception Time" },
+							{ "field": "Non-Combat Perception Time" }
+						],
+						"Halo 3": [
+							{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Notice Vehicle Chance", "block": "Perception Properties", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Perception Time", "block": "Perception Properties", "index": "all" }
+						]
+					},
+					"debug_desc": "Jackals define their own Perception block again from Halo 3 on (6 of 6 Halo 3 levels, 9 of 9 ODST), so the general card stopped reaching them there. Halo 2 is deliberately absent: 0 of 9 levels define it, and the general **Perception** card is what covers them."
 				},
 				"Cover Chance": {
 					"desc": "How readily they duck into cover instead of standing in the open.",
@@ -10288,6 +10328,22 @@
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
 					]
+				},
+				"Retreat": {
+					"desc": "How readily they break and cower when their squad starts dying.",
+					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": [
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+					]
 				}
 			},
 			"Flood Combat Form": {
@@ -10340,9 +10396,9 @@
 						"Halo 3": "char objects\\characters\\floodcombat*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
+						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased" },
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Hunter Berserk": {
@@ -10368,8 +10424,8 @@
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Velocity", "games": ["Halo 1"], "group": "Leap Velocity" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					]
@@ -10511,6 +10567,22 @@
 						{ "field": "Berserk Distance", "block": "Combatform Properties", "index": "all" },
 						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
 						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+					]
+				},
+				"Grenades": {
+					"desc": "Grenade throwing — velocity, range, collateral.",
+					"debug_desc": "The combat forms carry their own Grenades block on every level that fields them, in all three games, so the general **Grenade Properties** card never reached them.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
+					},
+					"targets": [
+						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all", "group": "Grenade Velocity" },
+						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all", "group": "Grenade Velocity" },
+						{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all", "group": "Grenade Ranges" },
+						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Ranges" },
+						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
 					]
 				}
 			},
@@ -10724,7 +10796,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "min": 0, "max": 1 }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "min": 0, "max": 1 }
 					]
 				},
 				"Melee Leap": {
@@ -10736,8 +10808,8 @@
 					"targets": [
 						{ "field": "Melee Leap Range", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } },
 						{ "field": "Melee Leap Velocity", "games": ["Halo 1"], "group": "Leap Velocity" },
-						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
-						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2"], "group": "Leap Velocity" },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "min": 0, "max": 1 },
 						{ "field": "Melee Leap Ballistic", "block": { "Halo 1": null, "Halo 2": "Charge Properties" } }
 					],
@@ -10976,6 +11048,33 @@
 					"targets": [
 						{ "field": "Group Morph Range", "block": "Morph Properties", "index": "all" }
 					]
+				},
+				"Grenades": {
+					"desc": "Grenade throwing — velocity, range, collateral.",
+					"debug_desc": "The pure forms carry their own Grenades block on every Halo 3 and ODST level that fields them. They first appear in Halo 3, so there is no earlier game to inherit from.",
+					"game": "Halo 3",
+					"tag": {
+						"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"
+					},
+					"targets": [
+						{ "field": "Grenade Velocity", "block": "Grenades Properties", "index": "all", "group": "Grenade Velocity" },
+						{ "field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all", "group": "Grenade Velocity" },
+						{ "field": "Grenade Ranges", "block": "Grenades Properties", "index": "all", "group": "Grenade Ranges" },
+						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Ranges" },
+						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
+					]
+				},
+				"Rate of Fire": {
+					"desc": "How fast the ranged form fires.",
+					"debug_desc": "The pure forms define their own firing pattern on every Halo 3 and ODST level that fields them, so the general **Firing Patterns** card never reached them.",
+					"game": "Halo 3",
+					"harder_when": "increased",
+					"tag": {
+						"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"
+					},
+					"targets": [
+						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
 				}
 			},
 			"Sentinel": {
@@ -11153,6 +11252,18 @@
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
+					]
+				},
+				"Rate of Fire": {
+					"desc": "How fast they fire.",
+					"debug_desc": "Halo 2 only: the Sentinels define their own firing pattern on all 4 levels that field them there, and on none in Halo 3 or ODST, where the general **Firing Patterns** card still reaches them.",
+					"game": "Halo 2",
+					"harder_when": "increased",
+					"tag": {
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+					},
+					"targets": [
+						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 					]
 				}
 			},

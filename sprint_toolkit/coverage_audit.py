@@ -45,17 +45,36 @@ _ROOT = CFG.get('mcc_root') or (
     r'C:\Program Files (x86)\Steam\steamapps\common'
     r'\Halo The Master Chief Collection')
 
-# One representative, densely-populated level per game. A level that fields few enemy
-# types simply reports fewer of them; it cannot produce a false gap, because a gap is
-# only claimed for a field this level actually defines.
+# EVERY level of each game, not one representative. A single map can only under-report:
+# it reports a gap for a field that map defines, so it cannot produce a false positive,
+# but any enemy it does not field is invisible. That bit for real -- auditing Halo 3 on
+# 030_outskirts alone hid every Flood gap, because 030 has no Flood. The union across a
+# game's maps is the only honest answer to "does this character define this field".
 CASES = [
-    ('Halo 2',       ['Halo2MCC', 'Halo2'],
-     os.path.join(_ROOT, 'halo2', 'h2_maps_win64_dx11', '07a_highcharity.map')),
-    ('Halo 3',       ['Halo3MCC', 'Halo3'],
-     os.path.join(_ROOT, 'halo3', 'maps', '030_outskirts.map.bak')),
+    ('Halo 2', ['Halo2MCC', 'Halo2'],
+     os.path.join(_ROOT, 'halo2', 'h2_maps_win64_dx11')),
+    ('Halo 3', ['Halo3MCC', 'Halo3'],
+     os.path.join(_ROOT, 'halo3', 'maps')),
     ('Halo 3: ODST', ['ODSTMCC', 'ODST'],
-     os.path.join(_ROOT, 'halo3odst', 'maps', 'l300.map.bak')),
+     os.path.join(_ROOT, 'halo3odst', 'maps')),
 ]
+
+
+def game_maps(folder):
+    """Every level in a map folder, preferring the pristine .bak where one exists."""
+    if not os.path.isdir(folder):
+        return []
+    out = {}
+    for fn in sorted(os.listdir(folder)):
+        if fn.endswith('.map.bak'):
+            out[fn[:-8]] = os.path.join(folder, fn)
+        elif fn.endswith('.map') and fn[:-4] not in out:
+            out.setdefault(fn[:-4], os.path.join(folder, fn))
+    # shared resource blobs, not levels
+    for junk in ('shared', 'campaign', 'single_player_shared', 'bitmaps', 'sounds'):
+        out.pop(junk, None)
+    return [out[k] for k in sorted(out)]
+
 
 # Fields no card should ever offer: identifiers, indices, editor bookkeeping, and the
 # tag references that name other tags rather than tune a value.
@@ -204,34 +223,42 @@ def main():
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
-    for game, subs, mp in CASES:
-        if not os.path.exists(mp):
-            print('%s: map missing (%s)' % (game, mp)); continue
+    for game, subs, folder in CASES:
+        maps = game_maps(folder)
+        if not maps:
+            print('%s: no maps under %s' % (game, folder)); continue
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
         plug = reg.get('char')
         if plug is None:
             continue
-        m = hp.open_map(mp, game)
         fields = [(f, b) for f, b in _plugin_fields(plug) if _interesting(f)]
         live[game], carded[game], viageneric[game] = {}, {}, {}
         general[game] = set()
-        for enemy in enemies:
-            pats = enemy_tag_patterns(db, enemy)
-            tags = []
-            for pat in pats:
-                tags += [p for p, _ in m.find_tags('char', pat) if p not in tags]
-            if not tags:
+        print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
+        for mp in maps:
+            try:
+                m = hp.open_map(mp, game)
+            except Exception:
                 continue
-            got = set()
-            for f, b in fields:
-                for p in tags:
-                    try:
-                        if m.read_all('char', p, f, plug, b, 'all'):
-                            got.add(f)
-                            break
-                    except Exception:
-                        pass
-            live[game][enemy] = got
+            for enemy in enemies:
+                pats = enemy_tag_patterns(db, enemy)
+                tags = []
+                for pat in pats:
+                    tags += [p for p, _ in m.find_tags('char', pat) if p not in tags]
+                if not tags:
+                    continue
+                got = live[game].setdefault(enemy, set())
+                for f, b in fields:
+                    if f in got:
+                        continue
+                    for p in tags:
+                        try:
+                            if m.read_all('char', p, f, plug, b, 'all'):
+                                got.add(f)
+                                break
+                        except Exception:
+                            pass
+        for enemy in list(live[game]):
             carded[game][enemy] = carded_fields(db, game, enemy)
             viageneric[game][enemy] = carded_fields(db, game, enemy, generic_only=True)
         general[game] = general_generic_fields(db, game)

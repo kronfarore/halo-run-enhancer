@@ -260,9 +260,11 @@ def check_resolution():
                 # weapon's. Resolve the field against THAT class, or every redirect
                 # reads as a missing field in the card's own plugin.
                 tp, tmap, thits = p, found_map, hits
+                use_cls, use_path = cls, tpath
                 if isinstance(resolve_gamed(t.get('tag'), game), str):
                     ttag = resolve_gamed(t['tag'], game)
                     tcls, tpath2 = hm.split_tag(ttag)
+                    use_cls, use_path = tcls, tpath2
                     tp = plugin(game, tcls)
                     if tp is None:
                         report(f'{label} [{game}]: no {tcls} plugin')
@@ -290,11 +292,23 @@ def check_resolution():
                     report(f'{label} [{game}]: FIELD not in plugin: {field!r} '
                            f'(block {block!r})')
                     continue
-                got = any(tmap.follow_all(b, fld['block_offsets'],
-                                          fld.get('block_sizes'), 'all')
-                          for _, b in thits)
+                # EVERY sampled map, not just the first one carrying the tag. Whether a
+                # character defines a block varies BY LEVEL -- the Halo 2 Elites carry
+                # their Grenades block on 9 of the 13 levels that field them -- so
+                # checking one map reports a working card as empty whenever that map
+                # happens to be one of the others. A card is only dead if no sampled
+                # level populates it anywhere.
+                got = False
+                for _mn, m2 in maps_for(game):
+                    h2 = []
+                    for part in use_path.split(' & '):
+                        h2 += m2.find_tags(use_cls, part.strip())
+                    if any(m2.follow_all(b, fld['block_offsets'],
+                                         fld.get('block_sizes'), 'all') for _, b in h2):
+                        got = True
+                        break
                 if not got:
-                    report(f'{label} [{game}]: field EMPTY on all matched tags: {field!r}')
+                    report(f'{label} [{game}]: field EMPTY on every sampled map: {field!r}')
 
 
 if __name__ == '__main__':
