@@ -162,7 +162,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_patch_hub', 'odst_pools_from_map',
                'odst_all_starting_profiles', 'odst_ai_equipment_drops',
                'odst_escort_buff', 'odst_equipment_all_insertions',
-               'odst_profiles_by_insertion',
+               'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -561,6 +561,12 @@ CONFIG = {
     # stride of four is inferred from profile naming and count; see
     # halo_patch.odst_profile_for.
     "odst_profiles_by_insertion": False,
+    # Moving a run up a game used to blank every operator box: the preset key carries
+    # both the tag and the game, and both change between engines, so a Halo 2 leg's
+    # magnitudes could never be found again in Halo 3. On, a card with no value yet in
+    # this game is prefilled from its OWN value in the nearest earlier game. Operators
+    # carry cleanly by construction -- "*1.5" means the same thing on any base value.
+    "carry_magnitudes_across_games": True,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -3713,6 +3719,74 @@ class MagnitudeEditorDialog(QDialog):
         'Shots Per Fire Max': 'Rounds Per Second Max',
     }
 
+    def _source_mod(self, eff):
+        """The halo.json definition this effect was drafted from, or None.
+
+        Matched on name AND on the tag resolving to the same string for the current
+        game, so two enemies that share a card name (every one of them has a `Body
+        Vitality`) cannot be confused for each other."""
+        db = getattr(self.parent_gui, 'db', None)
+        if db is None:
+            return None
+        cached = getattr(self, '_srcmod_cache', None)
+        if cached is None:
+            cached = self._srcmod_cache = {}
+        key = (eff.get('name'), eff.get('tag'))
+        if key in cached:
+            return cached[key]
+        games = db.get_games()
+        pools = [db.weapon_mods, db.enemy_mods, db.boss_mods,
+                 getattr(db, 'equipment_mods', {}) or {}]
+        seqs = [list((p or {}).values()) for p in pools]
+        seqs.append([[m] for m in (db.positive_pool + db.negative_pool
+                                   + db.wildcard_pool + list(db.skull_pool or []))])
+        found = None
+        for seq in seqs:
+            for mods in seq:
+                for m in mods or []:
+                    if m.get('name') != eff.get('name'):
+                        continue
+                    if resolve_gamed(m.get('tag'), self.game, games) == eff.get('tag'):
+                        found = m
+                        break
+                if found:
+                    break
+            if found:
+                break
+        cached[key] = found
+        return found
+
+    def _carry_from_earlier_game(self, eff, target):
+        """This card+field's magnitude from the NEAREST earlier game, or None.
+
+        Moving a run up a game rebuilt every operator box empty, because the preset key
+        is `tag||name||field||game` and BOTH the tag and the game change between engines
+        — so nothing a Halo 2 leg had typed could ever be found again in Halo 3, even
+        though most cards edit the same field for the same reason.
+
+        Operators carry cleanly: `*1.5` means the same thing whatever the vanilla value
+        underneath it is, which is the whole point of storing an operator rather than a
+        number. The earlier game's TAG is read from the card's own definition rather
+        than guessed, so this can only ever find the same card's own history."""
+        field = target.get('field')
+        if not isinstance(field, str):
+            return None
+        db = getattr(self.parent_gui, 'db', None)
+        src = self._source_mod(eff)
+        if db is None or not src or not isinstance(src.get('tag'), dict):
+            return None
+        games = db.get_games()
+        if self.game not in games:
+            return None
+        for g in reversed(games[:games.index(self.game)]):     # nearest earlier first
+            tag = resolve_gamed(src['tag'], g, games)
+            if not isinstance(tag, str) or not tag:
+                continue
+            val = self.presets.get(self._hp.preset_key(tag, eff['name'], field, g))
+            if val not in (None, '') and not isinstance(val, list):
+                return val, g
+        return None
+
     def _fallback_preset_value(self, eff, target):
         src_field = self._FIELD_CARRYOVER.get(target.get('field'))
         db = getattr(self.parent_gui, 'db', None)
@@ -4675,6 +4749,20 @@ class MagnitudeEditorDialog(QDialog):
                         le.setText(str(fallback))
                         le.setToolTip("Carried over from %s (no value set for this field yet)"
                                       % self._FIELD_CARRYOVER.get(t['field'], ''))
+                    elif CONFIG.get('carry_magnitudes_across_games', True):
+                        # Same card, same field, previous game. Shown in the carried
+                        # colour so it is obvious this is a suggestion from the last
+                        # leg rather than something typed for this one — it still has
+                        # to be applied to be remembered here.
+                        carried = self._carry_from_earlier_game(eff, t)
+                        if carried is not None:
+                            val, src_game = carried
+                            le.setText(str(val))
+                            le.setStyleSheet("color: #c8b48a;")
+                            le.setToolTip("Carried over from %s — this card's magnitude "
+                                          "on the previous game. Patch to keep it, or "
+                                          "clear it to leave the field alone."
+                                          % src_game)
             if hasattr(le, 'isReadOnly') and not le.isReadOnly():
                 # #7: rewrite shorthand into its canonical form once the field is left,
                 # so '*.5' reads back as '*0.5' (and is remembered, and shared, that
