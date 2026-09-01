@@ -1379,10 +1379,25 @@ _NONHUMAN_WORDS = ('elite', 'grunt', 'jackal', 'brute', 'hunter', 'flood', 'sent
                    'drone', 'engineer', 'prophet', 'monitor', 'bugger', 'skirmisher')
 
 
-# Humans that stay loyal: a squad containing one of these never flips, even though
-# it classifies as human. Johnson is scripted in several missions and turning him
-# hostile breaks those sequences.
-_BETRAYAL_LOYAL = ('johnson', 'miranda')
+# Humans that stay loyal: a squad containing one of these never flips, even though it
+# classifies as human. These are the STORY characters, and the point is that flipping
+# them buys nothing — they are scripted, most of them cannot be killed at all, and the
+# sequences that depend on them break instead.
+#
+# Read off the real char tags rather than guessed, per game:
+#   Halo 1   `captain`, `captain_ingame` (Keyes)
+#   Halo 2   `marine_johnson*`, `miranda`, `cortana`, `dervish` (the Arbiter)
+#   Halo 3   the same, plus `marine_johnson_boss` / `_halo`
+#   ODST     `marine_odst_buck*`, `_dare`/`_oni_op`, `_dutch`, `_romeo`, `_mickey`,
+#            and `marine_sgt_hero`
+# `dervish` matters because the Arbiter is a PLAYER character in co-op.
+#
+# Matched as substrings against the whole tag path, so `marine_odst_buck_goo` is caught
+# by `_buck` and `captain_ingame` by `captain`.
+_BETRAYAL_LOYAL = (
+    'johnson', 'miranda', 'cortana', 'dervish', 'captain',
+    '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero',
+)
 
 
 def _is_loyal_tag(name):

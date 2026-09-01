@@ -586,7 +586,10 @@ CONFIG = {
     # hero here, every skull already active), simply drops out of the roll and the
     # remaining weights share it out.
     "other_chance": 0.35,
-    "other_weights": {"hero": 1.0, "exhaust": 1.0, "skull": 1.0, "ally": 1.0},
+    # Hero 4 / Exhaust 3 / Ally 2 are the user's chosen defaults. Skull stays at 1:
+    # a skull is a whole-map rule that lasts the REST OF THE RUN, so it should be
+    # the rarest of the four.
+    "other_weights": {"hero": 4.0, "exhaust": 3.0, "skull": 1.0, "ally": 2.0},
     "other_hero_enabled": True,
     "other_exhaust_enabled": True,
     "other_skull_enabled": True,
@@ -7065,18 +7068,24 @@ class OptionsDialog(QDialog):
         # Relative weights, not probabilities: a kind that is off or has nothing left
         # to give drops out and the rest share its share.
         self.other_weight_boxes = {}
-        for key, label, tip in (
-                ('hero', 'Hero', "Recurring archetypes — Brute Chieftains, Sentinel "
-                                 "Enforcers, Elite Zealots. Split off the Boss slot, "
-                                 "which is now only named story fights."),
-                ('exhaust', 'Exhaust', "A one-map negative. Picking one earns a "
-                                       "no-negative choice next round."),
-                ('skull', 'Skull', "A whole-map rule (Betrayal, Eyepatch) rather than "
-                                   "a tag tweak. No longer replaces the Enemy card."),
-                ('ally', 'Ally', "Friend modifiers and anything flagged as a wildcard. "
-                                 "Called Wildcard before.")):
-            row = QHBoxLayout()
-            cb = QCheckBox()
+        _KINDS = (
+            ('hero', 'Hero', "Recurring archetypes — Brute Chieftains, Sentinel "
+                             "Enforcers, Elite Zealots. Split off the Boss slot, which "
+                             "is now only named story fights."),
+            ('exhaust', 'Exhaust', "A one-map negative. Picking one earns a "
+                                   "no-negative choice next round."),
+            ('skull', 'Skull', "A whole-map rule (Betrayal, Eyepatch) rather than a tag "
+                               "tweak. Lasts the REST OF THE RUN once taken, and is "
+                               "never offered twice."),
+            ('ally', 'Ally', "Friend modifiers and anything flagged as a wildcard. "
+                             "Called Wildcard before."),
+        )
+        # Two columns: four kinds in one vertical list pushed the rest of the page down
+        # for no reason. Left column is the first two, right column the last two.
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(18)
+        for i, (key, label, tip) in enumerate(_KINDS):
+            cb = QCheckBox(label)
             cb.setChecked(bool(CONFIG.get('other_%s_enabled' % key, True)))
             cb.setToolTip("Offer %s cards at all." % label)
             sp = QDoubleSpinBox()
@@ -7085,17 +7094,18 @@ class OptionsDialog(QDialog):
             sp.setDecimals(1)
             sp.setValue(float((CONFIG.get('other_weights') or {}).get(key, 1.0)))
             sp.setToolTip(tip + "\n\nRelative weight against the other kinds, not a "
-                                "probability. All four at 1.0 is an even split.")
+                                "probability.")
             sp.setMaximumWidth(80)
             cb.toggled.connect(sp.setEnabled)
             sp.setEnabled(cb.isChecked())
-            row.addWidget(cb)
-            row.addWidget(sp)
-            row.addStretch()
-            holder = QWidget()
-            holder.setLayout(row)
-            rform.addRow("   %s:" % label, holder)
+            row, col = i % 2, (i // 2) * 2
+            grid.addWidget(cb, row, col)
+            grid.addWidget(sp, row, col + 1)
             self.other_weight_boxes[key] = (cb, sp)
+        grid.setColumnStretch(4, 1)
+        _gw = QWidget()
+        _gw.setLayout(grid)
+        rform.addRow("Kinds & weights:", _gw)
 
         self.new_weapon_chance = QDoubleSpinBox()
         self.new_weapon_chance.setRange(0.0, 1.0)
@@ -8494,11 +8504,14 @@ class HaloGUI(QMainWindow):
     def _upgrade_allowed_here(self, weapon):
         return upgrade_allowed_here(self._current_game(), weapon)
 
-    def _weapon_offer_pool(self, player):
-        """Game weapon pool minus owned, plus 'Dual <Weapon>' options for owned
-        one-handed weapons (#7) and upgrade weapons whose base is owned (#3).
-        Dual wield and upgrades only unlock from their configured game onward.
-        Blacklisted weapons are excluded (#1)."""
+    def _anything_offer_pool(self, player):
+        """EVERYTHING this player could still be handed: weapons, duals, upgrades,
+        equipment and abilities.
+
+        The single place the offer RULES live -- blacklist, already owned, taken by the
+        other player, denied equipment, one-ability-per-player. The three buttons are
+        filters over this, never pools of their own, so a rule fixed here is fixed for
+        all of them. Building a second pool is the recurring bug in this codebase."""
         owned = set(self.run_state.weapons_for(player))
         # Pass the player through: ability offers are per-player, so asking without one
         # makes an ability drop out for BOTH players as soon as either takes one.
@@ -8518,6 +8531,13 @@ class HaloGUI(QMainWindow):
         pool = drop_weapons_taken(self.db, pool, self.run_state)
         return gate_offer_pool(self.db, pool, self.run_state, player)
 
+    def _weapon_offer_pool(self, player):
+        """Guns only. NEW WEAPON used to hand out equipment and abilities too, which
+        made it impossible to ask for a gun; NEW ANYTHING is the button that offers
+        the lot now."""
+        return [w for w in self._anything_offer_pool(player)
+                if not self.db.is_equipment(w) and not ability_of_item(w)]
+
     def _equipment_offer_pool(self, player):
         """The equipment and ability items this player could still be given.
 
@@ -8531,7 +8551,7 @@ class HaloGUI(QMainWindow):
         Abilities are included where the game has them: an ability IS the equipment
         slot in Halo 1, so a button that refuses to offer one would be empty there."""
         game = self._current_game()
-        pool = [w for w in self._weapon_offer_pool(player)
+        pool = [w for w in self._anything_offer_pool(player)
                 if self.db.is_equipment(w) or ability_of_item(w)]
         # _weapon_offer_pool only adds equipment when h3_equipment_in_rolls is on --
         # that option governs whether equipment turns up in a WEAPON draw, which is a
@@ -8547,12 +8567,23 @@ class HaloGUI(QMainWindow):
                     pool.append(e)
         return pool
 
+    def on_new_anything_button(self):
+        """Same flow, drawing from EVERYTHING — guns, duals, upgrades, equipment,
+        abilities. What NEW WEAPON used to do before it was narrowed to guns."""
+        if not (self.run_state.player1_weapon and self.run_state.player2_weapon):
+            self.update_status("Choose starting weapons for both players first")
+            return
+        self._manual_mode = 'anything'
+        self._manual_queue = ['player1', 'player2']
+        self._manual_results = {}
+        self._next_manual_weapon()
+
     def on_new_equipment_button(self):
         """Same flow as NEW WEAPON, drawing only from the equipment/ability pool."""
         if not (self.run_state.player1_weapon and self.run_state.player2_weapon):
             self.update_status("Choose starting weapons for both players first")
             return
-        self._manual_equipment_only = True
+        self._manual_mode = 'equipment'
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._next_manual_weapon()
@@ -8569,7 +8600,7 @@ class HaloGUI(QMainWindow):
         if not (self.run_state.player1_weapon and self.run_state.player2_weapon):
             self.update_status("Choose starting weapons for both players first")
             return
-        self._manual_equipment_only = False
+        self._manual_mode = 'weapon'
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
         self._next_manual_weapon()
@@ -8581,14 +8612,24 @@ class HaloGUI(QMainWindow):
                 return
         self._finish_manual_weapon()
 
+    _MANUAL_POOLS = {'weapon': '_weapon_offer_pool',
+                     'equipment': '_equipment_offer_pool',
+                     'anything': '_anything_offer_pool'}
+    _MANUAL_LABEL = {'weapon': ('🔫 New weapon', 'weapons'),
+                     'equipment': ('🎒 New equipment', 'equipment'),
+                     'anything': ('🎁 Something new', 'items')}
+
+    def _manual_pool(self, player):
+        mode = getattr(self, '_manual_mode', 'weapon')
+        return getattr(self, self._MANUAL_POOLS.get(mode, '_weapon_offer_pool'))(player)
+
     def _show_manual_weapon_selection(self, player):
-        equip_only = getattr(self, '_manual_equipment_only', False)
-        pool = (self._equipment_offer_pool(player) if equip_only
-                else self._weapon_offer_pool(player))
+        mode = getattr(self, '_manual_mode', 'weapon')
+        pool = self._manual_pool(player)
         if not pool:
-            if equip_only:
-                who = "Player 1" if player == 'player1' else "Player 2"
-                self.update_status("No equipment left to offer %s on this level" % who)
+            who = "Player 1" if player == 'player1' else "Player 2"
+            self.update_status("No %s left to offer %s on this level"
+                               % (self._MANUAL_LABEL[mode][1], who))
             return False
         # New Weapon cards carry a tied negative unless disabled in CONFIG.
         with_enemy = self._weapon_choice_negatives()
@@ -8597,7 +8638,7 @@ class HaloGUI(QMainWindow):
         self.display_weapon_selection(choices, is_player2=(player == 'player2'), mode='add')
         who = "Player 1" if player == 'player1' else "Player 2"
         suffix = " (comes with a negative)" if with_enemy else ""
-        icon = "🎒 New equipment" if equip_only else "🔫 New weapon"
+        icon = self._MANUAL_LABEL[mode][0]
         self.update_status(f"{icon} for {who}: pick one{suffix}")
         return True
 
@@ -8617,9 +8658,8 @@ class HaloGUI(QMainWindow):
         self._next_manual_weapon()
 
     def reroll_manual_weapon(self, choice_id, player):
-        pool = (self._equipment_offer_pool(player)
-                if getattr(self, '_manual_equipment_only', False)
-                else self._weapon_offer_pool(player))
+        # A reroll stays in the mode the draw started in.
+        pool = self._manual_pool(player)
         self._reroll_weapon_choice(choice_id, weapon_pool=pool,
                                    exclude_weapons=set(self.run_state.weapons_for(player)),
                                    with_enemy=self._weapon_choice_negatives(),
@@ -8818,7 +8858,9 @@ class HaloGUI(QMainWindow):
         button_layout.addWidget(self.generate_btn)
 
         self.new_weapon_btn = QPushButton("🔫 NEW WEAPON")
-        self.new_weapon_btn.setToolTip("Draw a new weapon from the current game's pool for both players")
+        self.new_weapon_btn.setToolTip(
+            "Draw a new WEAPON for both players — guns, duals and upgrades only. "
+            "Equipment and abilities have their own button; NEW ANYTHING offers the lot.")
         self.new_weapon_btn.setStyleSheet("""
             QPushButton {
                 background-color: #3a4a2a; color: white; font-weight: bold;
@@ -8845,6 +8887,21 @@ class HaloGUI(QMainWindow):
         self.new_equipment_btn.clicked.connect(self.on_new_equipment_button)
         button_layout.addWidget(self.new_weapon_btn)
         button_layout.addWidget(self.new_equipment_btn)
+
+        self.new_anything_btn = QPushButton("🎁 NEW ANYTHING")
+        self.new_anything_btn.setToolTip(
+            "Draw from EVERYTHING this level can still hand out — guns, duals, "
+            "upgrades, equipment and abilities together. This is what NEW WEAPON did "
+            "before it was narrowed to guns.")
+        self.new_anything_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4a2f5a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #63407a; }
+        """)
+        self.new_anything_btn.clicked.connect(self.on_new_anything_button)
+        button_layout.addWidget(self.new_anything_btn)
 
         self.save_btn = QPushButton("💾 SAVE SELECTION")
         self.save_btn.setToolTip("Write this run (picks, weapons, history, options) to a save file "
@@ -10248,13 +10305,19 @@ class RunEnhancer:
         return pairs
 
     def _active_negative_names(self):
-        """#5: names of negatives already active this run — every enemy card, plus
-        Exhausts still bound to the current mission. Used to keep a fresh Exhaust
-        from duplicating an active negative."""
+        """Names of negatives already active this run — every enemy card, every SKULL,
+        plus Exhausts still bound to the current mission. Keeps a fresh Exhaust or
+        Skull from duplicating something already in force.
+
+        Skulls have to be listed explicitly. They used to ride in the enemy slot, so
+        `enemy1/2` caught them for free; moving them to their own slot took them out of
+        this set and the same skull could be drafted again and again. A skull is a
+        whole-map rule that lasts the REST OF THE RUN — unlike an Exhaust, nothing ever
+        expires it — so drawing it twice is pure waste."""
         mid = self.run_state.mission_id
         names = set()
         for rd in self.run_state.rounds:
-            for k in ('enemy1', 'enemy2'):
+            for k in ('enemy1', 'enemy2', 'skull1', 'skull2'):
                 m = rd.get(k)
                 if isinstance(m, dict):
                     names.add(m.get('name'))
