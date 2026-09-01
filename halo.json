@@ -582,17 +582,6 @@
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			},
-				"Death Penalty": {
-					"desc": "How many metagame points dying costs you — yours, and a marine's.",
-					"debug_desc": "`matg globals\\\\globals` -> **Campaign Metagame Globals**: Player Death Point Count and Friendly Death Point Count. These are the DEATH side of the metagame and live in the map, unlike the per-kill values, which are read once from `Data\\\\UI\\\\scoredb.xml` at startup and need a restart to change.\n\nStock values differ by game: Halo 3 and ODST charge 25 for your own death and 50 for a marine; Reach charges 0 and 100. Halo 2 has no metagame block at all, and Halo 3 additionally carries `Minimum Death Time` (4.0) in Deprecated AI Globals, which ODST dropped entirely.\n\nA NEGATIVE Friendly Death Point Count is the untested half: if the engine subtracts the value, negating it turns a marine's death into a gain. Not confirmed in game.",
-					"game": ["Halo 3", "Halo Reach"],
-					"tag": "matg globals\\globals",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Player Death Point Count", "block": "Campaign Metagame Globals" },
-						{ "field": "Friendly Death Point Count", "block": "Campaign Metagame Globals" }
-					]
-				},
 			"Sprint Speed": {
 				"desc": "Sprint faster. Tunes the base sprint speed from Options with an operator (+/-/*/=) in the patcher. Halo 1 sprint maps only.",
 				"game": "Halo 1",
@@ -665,16 +654,7 @@
 				"targets": [
 					{ "field": "Camo cooldown", "sprint": "camo_cooldown" }
 				]
-			},
-				"Action Hold Time": {
-					"desc": "How long you must hold Use before it counts as a hold rather than a tap.",
-					"debug_desc": "`matg globals\\\\globals` -> **Player Control** -> Minimum Action Hold Time. Stock 0.2333s in every game from Halo 2 on.\n\n**This is the one tag-side handle on ODST's shared button.** VISR and equipment are the same input there, split only by tap versus hold, and the split is this number: raise it and a tap has longer to register before the hold fires, lower it and holds trigger sooner. It cannot put them on separate buttons — nothing in the tags binds inputs; MCC keeps its bindings in the launcher's own settings, outside the map — but it is what decides which of the two you get.\n\nIt also governs every other hold action, so a large change is felt everywhere you pick something up.",
-					"game": ["Halo 2"],
-					"tag": "matg globals\\\\globals",
-					"targets": [
-						{ "field": "Minimum Action Hold Time", "block": "Player Control", "min": 0.05 }
-					]
-				}
+			}
 		},
 		"Specific Weapon Modifier": {
 			"Assault Rifle": {
