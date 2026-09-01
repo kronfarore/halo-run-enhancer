@@ -17,10 +17,20 @@ exists, works, and edits `ai\generic`, while the enemy it names defines the fiel
 own tags again in this game. Nothing fails there either; the card simply stopped being
 about that enemy.
 
+A fourth section leaves the `char` tag entirely. Everything above only ever looks at
+character BEHAVIOUR, and an enemy's gun, its projectile and its damage effects live in
+other tag classes under the same folder -- so a weapon that belongs to one enemy was
+invisible to all three passes. That section (formerly `enemy_asset_audit.py`, now folded
+in here so one command is the whole check) lists enemy-owned weap/proj/jpt!/hlmt/coll/
+eqip tags that no card reaches. It covers all five games, where the field passes above
+cover the three with a comparable `char` layout.
+
 Usage:
-    python sprint_toolkit/coverage_audit.py                 # the cross-game gaps
+    python sprint_toolkit/coverage_audit.py                 # every section
     python sprint_toolkit/coverage_audit.py --all           # every gap (very noisy)
     python sprint_toolkit/coverage_audit.py --enemy Jackal
+    python sprint_toolkit/coverage_audit.py --only fields   # skip the tag section
+    python sprint_toolkit/coverage_audit.py --only assets   # only the tag section
 """
 import argparse
 import collections
@@ -34,11 +44,16 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 _TOOL = os.path.dirname(_HERE)
 os.chdir(_TOOL)
 sys.path.insert(0, _TOOL)
+sys.path.insert(0, _HERE)          # for the enemy-owned-tag pass, below
 
 _buf = io.StringIO()
 with contextlib.redirect_stdout(_buf):
     import halo_enhancer as he                                    # noqa: E402
     import halo_patch as hp                                       # noqa: E402
+    # The enemy-owned-tag pass. Imported rather than reimplemented: the family ->
+    # enemy mapping is derived from the card database and there must be exactly one
+    # copy of that derivation, or the two audits disagree about who owns what.
+    import enemy_asset_audit as eaa                               # noqa: E402
 
 CFG = json.load(open('settings.json', encoding='utf-8'))
 _ROOT = CFG.get('mcc_root') or (
@@ -223,6 +238,11 @@ def main():
                          'noisy — the char plugin declares hundreds of fields and most '
                          'were never meant to be cards (345 rows for the Jackal alone)')
     ap.add_argument('--enemy', help='restrict to one enemy')
+    ap.add_argument('--only', choices=('fields', 'assets', 'all'), default='all',
+                    help="'fields' = the char-field passes only, 'assets' = the "
+                         "enemy-owned tag pass only. Default runs both.")
+    ap.add_argument('--with-noise', action='store_true',
+                    help='asset pass: include gibs, props and cinematic doubles')
     args = ap.parse_args()
 
     with contextlib.redirect_stdout(io.StringIO()):
@@ -231,6 +251,10 @@ def main():
     enemies = sorted(db.enemy_mods)
     if args.enemy:
         enemies = [e for e in enemies if e.lower() == args.enemy.lower()] or enemies
+
+    if args.only == 'assets':
+        print()
+        return 0 if asset_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
@@ -324,7 +348,79 @@ def main():
                 last = enemy
             print('      %-44s %s' % (f, 'CARDED IN ANOTHER GAME' if elsewhere else ''))
     print()
-    print('%d gap(s) total%s' % (total, '' if args.everything else ' (cross-game only; --all for everything)'))
+    print('%d field gap(s) total%s'
+          % (total, '' if args.everything
+             else ' (cross-game only; --all for everything)'))
+
+    if args.only != 'fields':
+        print()
+        asset_pass(db, args)
+
+
+def asset_pass(db, args):
+    r"""Enemy-owned tags that are NOT the character tag, and whether a card reaches them.
+
+    Everything above this reads `char`, which is only an enemy's BEHAVIOUR. What it
+    hits you with lives elsewhere under the same folder: the gun in `weap`, what that
+    gun fires in `proj`, its damage effects in `jpt!`, its vitality in `hlmt` (Halo 2
+    on) or `coll` (Halo 1). A weapon that belongs to one enemy is therefore invisible
+    to every field pass above -- which is how the Hunter's fuel cannon went uncarded.
+
+    The family -> enemy mapping is DERIVED from each enemy's own char tag naming its
+    folder, so it cannot drift out of step with the card database. A folder no enemy
+    claims is reported rather than dropped: that is where a missing enemy would hide.
+
+    Runs over all five games, where the field passes cover the three with a comparable
+    `char` layout.
+    """
+    want = eaa.PRIMARY
+    fams = eaa.enemy_families(db)
+    grand = 0
+    print('#' * 84)
+    print('ENEMY-OWNED TAGS OUTSIDE char   (%s)' % ', '.join(sorted(want)))
+    for game, subs, folder in eaa.CASES:
+        maps = eaa.game_maps(folder)
+        if not maps:
+            continue
+        carded = eaa.carded_tags(db, game)
+        seen = {}
+        unclaimed = collections.Counter()
+        print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
+        for mp in maps:
+            try:
+                m = hp.open_map(mp, game)
+            except Exception:
+                continue
+            for cls, name in eaa._iter_tags(m):
+                if cls not in want:
+                    continue
+                fam = eaa.family_of(name)
+                if not fam or (eaa.is_noise(name) and not args.with_noise):
+                    continue
+                enemy = fams.get(fam)
+                if enemy is None:
+                    unclaimed[fam] += 1
+                    continue
+                if args.enemy and enemy.lower() != args.enemy.lower():
+                    continue
+                seen.setdefault((enemy, cls, name), set()).add(os.path.basename(mp))
+        rows = [(e, c, n, len(mw)) for (e, c, n), mw in sorted(seen.items())
+                if not eaa.covered(c, n, carded)]
+        print('=' * 84)
+        print('%s   %d enemy-owned tag(s), %d uncarded' % (game, len(seen), len(rows)))
+        last = None
+        for enemy, cls, name, nmaps in rows:
+            if enemy != last:
+                print('  %s' % enemy)
+                last = enemy
+            print('     %-5s %-62s %2d map(s)' % (cls, name[:62], nmaps))
+        grand += len(rows)
+        if unclaimed:
+            print('  -- folders no enemy card claims: %s'
+                  % ', '.join('%s(%d)' % (k, v) for k, v in unclaimed.most_common(8)))
+    print()
+    print('%d uncarded enemy-owned tag(s) total' % grand)
+    return grand
 
 
 if __name__ == '__main__':

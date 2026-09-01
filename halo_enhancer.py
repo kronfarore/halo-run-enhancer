@@ -8176,6 +8176,265 @@ class OptionsDialog(QDialog):
         QMessageBox.information(self, "Apply Sprint to maps", msg)
 
 
+
+class PatchComparerDialog(QDialog):
+    r"""Compare two patch logs — the co-op desync window.
+
+    Two machines in co-op must have byte-identical maps. When they don't, the symptom
+    is vague (odd damage numbers, an enemy that behaves differently on one screen,
+    a crash on load) and the patch code only confirms that something is off. This
+    answers the next question: WHAT is off.
+
+    The heavy lifting is `sprint_toolkit/patch_diff.py`, imported rather than
+    reimplemented so the window and the command line can never drift apart.
+    """
+
+    HOW_TO = (
+        "<b>What this is for</b><br>"
+        "In co-op, both machines must be running the <i>same</i> patched map. The "
+        "patch code in the status bar tells you whether they match — but not what "
+        "differs when they don't. This does."
+        "<br><br><b>How to use it</b><br>"
+        "1. Patch a map. The Enhancer writes a log of every edit to "
+        "<code>patches\\patch_&lt;map&gt;_&lt;date&gt;.json</code>.<br>"
+        "2. Have your co-op partner send you theirs for the same map — it is a small "
+        "text file, any chat or mail works.<br>"
+        "3. Load yours as <b>A</b> and theirs as <b>B</b>, then press Compare.<br>"
+        "<i>Use Latest for this map</i> fills in the newest local log, which is also "
+        "how you compare two of your <i>own</i> patches — e.g. before and after "
+        "changing a magnitude, or to see what a re-patch actually altered."
+        "<br><br><b>Reading the result</b> — findings come most-serious first:<br>"
+        "&nbsp;• <b>Not comparable</b> — different level, difficulty or tool version. "
+        "Fix this first; everything below it is meaningless until you do.<br>"
+        "&nbsp;• <b>Planned on one machine only</b> — the runs disagree, not the maps. "
+        "Different cards drawn, a card blacklisted on one side, or different options. "
+        "Fix it in the run.<br>"
+        "&nbsp;• <b>Same edit, different value</b> — if the two <i>original</i> values "
+        "differ, that side was patched over an already-patched map instead of from its "
+        "<code>.bak</code>, and its multipliers have compounded. Restore and re-patch. "
+        "If the originals agree, the magnitude differed.<br>"
+        "&nbsp;• <b>Did not land on one machine</b> — usually a tag missing from that "
+        "map, so the field is still vanilla there and modified here.<br>"
+        "&nbsp;• <b>No differences</b> — then it is not the patch. Check the dll "
+        "patches, which .map each machine actually loaded, and whether one side "
+        "started the session on an old map."
+        "<br><br>Timestamps and file paths are ignored, and order is ignored — a plan "
+        "is a set of edits, not a sequence."
+    )
+
+    def __init__(self, parent=None, default_mission=''):
+        super().__init__(parent)
+        self.setWindowTitle("Compare Patches")
+        # Deliberately NOT modal: this is a reference window you keep open while you
+        # re-patch a map and compare again.
+        self.setModal(False)
+        self.setMinimumSize(900, 700)
+        self.setWindowFlags(self.windowFlags()
+                            | Qt.WindowMaximizeButtonHint | Qt.WindowMinimizeButtonHint)
+        _sz = CONFIG.get('compare_dialog_size')
+        if isinstance(_sz, (list, tuple)) and len(_sz) == 2:
+            try:
+                self.resize(max(900, int(_sz[0])), max(700, int(_sz[1])))
+            except (TypeError, ValueError):
+                pass
+        self.default_mission = default_mission or ''
+        self.setStyleSheet("""
+            QLineEdit { background-color: #1a1a1a; color: #e0e0e0;
+                        border: 1px solid #3a3a3a; padding: 4px; border-radius: 3px; }
+            QLabel { color: #e0e0e0; }
+            QGroupBox { color: #e0e0e0; border: 1px solid #3a3a3a;
+                        border-radius: 5px; margin-top: 8px; padding-top: 8px; }
+            QGroupBox::title { subcontrol-origin: margin; left: 8px; padding: 0 4px; }
+            QTextEdit { background-color: #141414; color: #e0e0e0;
+                        border: 1px solid #2a2a2a; border-radius: 3px; }
+            QScrollBar:vertical { background: #202020; width: 16px; margin: 0; }
+            QScrollBar::handle:vertical { background: #6a6a6a; min-height: 40px;
+                        border-radius: 5px; border: 1px solid #808080; }
+            QScrollBar::handle:vertical:hover { background: #8fb8ff;
+                        border-color: #8fb8ff; }
+        """)
+
+        root = QVBoxLayout(self)
+
+        help_box = QGroupBox("How to use this")
+        hb = QVBoxLayout(help_box)
+        help_lbl = QLabel(self.HOW_TO)
+        help_lbl.setWordWrap(True)
+        help_lbl.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        hb.addWidget(help_lbl)
+        # The instructions are long on purpose but must not crowd out the result, so
+        # they live in a scroll area with a hard ceiling on their height.
+        help_scroll = QScrollArea()
+        help_scroll.setWidgetResizable(True)
+        help_scroll.setWidget(help_box)
+        help_scroll.setMaximumHeight(230)
+        help_scroll.setFrameShape(QFrame.NoFrame)
+        root.addWidget(help_scroll)
+
+        pick = QGridLayout()
+        self.edit_a = QLineEdit()
+        self.edit_b = QLineEdit()
+        for row, (label, edit, who) in enumerate((
+                ("A — your patch log", self.edit_a, 'a'),
+                ("B — their patch log", self.edit_b, 'b'))):
+            lbl = QLabel(label)
+            lbl.setMinimumWidth(150)
+            pick.addWidget(lbl, row, 0)
+            edit.setPlaceholderText("…\\patches\\patch_<map>_<date>.json")
+            pick.addWidget(edit, row, 1)
+            browse = QPushButton("Browse…")
+            browse.setAutoDefault(False)
+            browse.setDefault(False)
+            browse.clicked.connect(lambda _=False, w=who: self._browse(w))
+            pick.addWidget(browse, row, 2)
+            latest = QPushButton("Latest for this map")
+            latest.setAutoDefault(False)
+            latest.setDefault(False)
+            latest.setToolTip("Fill in the most recent local patch log for this map. "
+                              "Press it on both rows to compare your two newest.")
+            latest.clicked.connect(lambda _=False, w=who: self._latest(w))
+            pick.addWidget(latest, row, 3)
+        pick.setColumnStretch(1, 1)
+        root.addLayout(pick)
+
+        bar = QHBoxLayout()
+        self.compare_btn = QPushButton("⚖  COMPARE")
+        self.compare_btn.setStyleSheet("""
+            QPushButton { background-color: #2a4a5a; color: white; font-weight: bold;
+                          font-size: 14px; padding: 8px 22px; border-radius: 5px; }
+            QPushButton:hover { background-color: #3a6a7a; }
+        """)
+        self.compare_btn.setDefault(True)
+        self.compare_btn.clicked.connect(self.on_compare)
+        bar.addWidget(self.compare_btn)
+
+        self.detail_chk = QCheckBox("Also show the full plan and outcome tables")
+        self.detail_chk.setStyleSheet("QCheckBox { color: #e0e0e0; }")
+        self.detail_chk.setToolTip("Every planned edit and every written row from both "
+                                   "sides, not just the differences.")
+        bar.addWidget(self.detail_chk)
+        bar.addStretch()
+
+        for text, slot, tip in (
+                ("Copy result", self.on_copy, "Copy the report to the clipboard"),
+                ("Open patches folder", self.on_open_folder,
+                 "Where the Enhancer writes patch logs — this is the file to send "
+                 "your partner"),
+                ("Close", self.close, "")):
+            b = QPushButton(text)
+            b.setAutoDefault(False)
+            b.setDefault(False)
+            if tip:
+                b.setToolTip(tip)
+            b.clicked.connect(slot)
+            bar.addWidget(b)
+        root.addLayout(bar)
+
+        self.out = QTextEdit()
+        self.out.setReadOnly(True)
+        self.out.setLineWrapMode(QTextEdit.NoWrap)
+        mono = QFont('Consolas')
+        mono.setStyleHint(QFont.Monospace)
+        mono.setPointSize(9)
+        self.out.setFont(mono)
+        self.out.setPlaceholderText("Pick two patch logs above and press Compare.")
+        root.addWidget(self.out, 1)
+
+    # ---- helpers ---------------------------------------------------------------
+    def _patch_dir(self):
+        return app_data_dir() / "patches"
+
+    def _browse(self, who):
+        start = self._patch_dir()
+        path, _ = QFileDialog.getOpenFileName(
+            self, "Pick a patch log",
+            str(start if start.is_dir() else app_data_dir()),
+            "Patch logs (patch_*.json);;JSON files (*.json);;All files (*)")
+        if path:
+            (self.edit_a if who == 'a' else self.edit_b).setText(path)
+
+    def _latest(self, who):
+        """Newest local log for this map. The B row takes the SECOND newest when A is
+        already showing the newest, which is what you want when comparing two of your
+        own patches — otherwise both rows would name the same file."""
+        d = self._patch_dir()
+        if not d.is_dir():
+            QMessageBox.information(self, "No patch logs yet",
+                                    "Nothing has been patched yet — a log is written "
+                                    "each time you apply effects to a map.")
+            return
+        pat = f"patch_{self.default_mission}_*.json" if self.default_mission else "patch_*.json"
+        found = sorted(d.glob(pat), key=lambda p: p.stat().st_mtime, reverse=True)
+        if not found:
+            QMessageBox.information(self, "No patch logs yet",
+                                    f"No log matching {pat} in\n{d}")
+            return
+        target = self.edit_a if who == 'a' else self.edit_b
+        other = self.edit_b if who == 'a' else self.edit_a
+        pick = str(found[0])
+        if pick == other.text().strip() and len(found) > 1:
+            pick = str(found[1])
+        target.setText(pick)
+
+    def on_open_folder(self):
+        d = self._patch_dir()
+        d.mkdir(exist_ok=True)
+        try:
+            if sys.platform == 'win32':
+                os.startfile(str(d))                  # noqa: S606 - user-invoked
+            else:
+                import subprocess
+                subprocess.Popen(['xdg-open' if sys.platform.startswith('linux')
+                                  else 'open', str(d)])
+        except Exception as e:
+            QMessageBox.warning(self, "Couldn't open it", f"{d}\n\n{e}")
+
+    def on_copy(self):
+        text = self.out.toPlainText()
+        if text:
+            QApplication.clipboard().setText(text)
+
+    def on_compare(self):
+        pa, pb = self.edit_a.text().strip(), self.edit_b.text().strip()
+        missing = [n for n, p in (('A', pa), ('B', pb)) if not p or not Path(p).is_file()]
+        if missing:
+            QMessageBox.warning(self, "Pick two patch logs",
+                                "Not readable: " + ", ".join(missing))
+            return
+        try:
+            import importlib
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            pd = importlib.import_module('patch_diff')
+            importlib.reload(pd)
+        except Exception as e:
+            QMessageBox.critical(self, "Comparer unavailable",
+                                 "sprint_toolkit/patch_diff.py could not be "
+                                 f"loaded:\n\n{e}")
+            return
+        try:
+            QApplication.setOverrideCursor(Qt.WaitCursor)
+            # 'A'/'B', not the filenames: two logs of the same map on the same day
+            # truncate to the same string, which would label both sides identically.
+            # The header above the report names the two files in full.
+            text, n = pd.compare_files(pa, pb, 'A', 'B',
+                                       detail=self.detail_chk.isChecked())
+        except Exception as e:
+            QApplication.restoreOverrideCursor()
+            QMessageBox.critical(self, "Comparison failed",
+                                 f"{type(e).__name__}: {e}")
+            return
+        finally:
+            QApplication.restoreOverrideCursor()
+        header = f"  A = {pa}\n  B = {pb}\n\n"
+        self.out.setPlainText(header + text)
+        self.setWindowTitle("Compare Patches — %s"
+                            % ("no differences" if not n else f"{n} difference(s)"))
+
+    def resizeEvent(self, e):
+        super().resizeEvent(e)
+        CONFIG['compare_dialog_size'] = [self.width(), self.height()]
+
+
 class HaloGUI(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -8958,6 +9217,19 @@ class HaloGUI(QMainWindow):
         self.options_btn.clicked.connect(self.on_options)
         button_layout.addWidget(self.options_btn)
 
+        self.compare_btn = QPushButton("⚖ COMPARE")
+        self.compare_btn.setToolTip("Compare two patch logs — what actually differs "
+                                    "between your patched map and your co-op partner's")
+        self.compare_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #3a3a3a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #4a4a4a; }
+        """)
+        self.compare_btn.clicked.connect(self.on_compare_patches)
+        button_layout.addWidget(self.compare_btn)
+
         self.menu_btn = QPushButton("🏠 MAIN MENU")
         self.menu_btn.setToolTip("Back to the start menu to begin a new run or load a saved one. "
                                  "Unsaved progress in this run is lost.")
@@ -9715,6 +9987,34 @@ class HaloGUI(QMainWindow):
         self.run_state.rounds.append(self._debug_mod_round(label, mod))
         self.update_history()
         self.update_status(f"(debug) Added to run: {label}")
+
+    def on_compare_patches(self):
+        """Open the patch comparer, seeded with the map this run is on.
+
+        Kept as a single non-modal instance: it is a reference window you leave open
+        while you re-patch and compare again, and a second copy would just be two
+        stale views of the same folder."""
+        # The log filename is keyed on the MAP basename, which is not always the
+        # mission id (ODST's are lowercase/uppercase variants of each other), so ask
+        # the same resolver the patcher uses and fall back to the raw id.
+        mission = ''
+        try:
+            import halo_patch
+            game = self.db.get_game_for_mission(self.run_state.mission_id)
+            folder = CONFIG.get('map_game_folder', {}).get(game, '')
+            mission = Path(halo_patch.default_map_path(
+                mcc_root(), folder, self.run_state.mission_id)).stem
+        except Exception:
+            mission = str(getattr(getattr(self, 'run_state', None),
+                                  'mission_id', '') or '')
+        dlg = getattr(self, '_compare_dlg', None)
+        if dlg is None:
+            dlg = self._compare_dlg = PatchComparerDialog(self, mission)
+        else:
+            dlg.default_mission = mission
+        dlg.show()
+        dlg.raise_()
+        dlg.activateWindow()
 
     def on_options(self):
         """Open the Options dialog. On accept, the new values are written to the

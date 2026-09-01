@@ -40,6 +40,7 @@ USAGE
 """
 import argparse
 import glob
+import io
 import json
 import os
 import sys
@@ -283,6 +284,25 @@ def _tables(plans, a, b, na, nb):
                   % (state(r), ('%s / %s' % (r.get('effect', ''),
                                              r.get('field', '')))[:30],
                      _s(r.get('old')), _s(r.get('new')), r.get('tag', '')))
+
+
+def compare_text(a, b, na='A', nb='B', detail=False):
+    """The whole report as a string, for callers with no terminal.
+
+    The GUI needs exactly what the CLI prints, so it must not grow a second
+    implementation that drifts -- both go through here."""
+    import contextlib
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        f, counts, plans = collect(a, b, na, nb)
+        n = report(f, counts, plans, na, nb, detail, a, b)
+    return buf.getvalue(), n
+
+
+def compare_files(path_a, path_b, na=None, nb=None, detail=False):
+    """Load two patch logs and compare them. Returns (text, difference count)."""
+    a, b = load(path_a), load(path_b)
+    return compare_text(a, b, na or 'A', nb or 'B', detail)
 
 
 def main():
