@@ -2946,7 +2946,7 @@ class PairCard(QGroupBox):
 
         if self.pair.get('skull_mod'):
             third.append(self.create_mod_widget(
-                self.pair['skull_mod'], "💀 SKULL (whole map)", "skull", 'skull'))
+                self.pair['skull_mod'], "💀 SKULL", "skull", 'skull'))
 
         for band in (positive, negative, third):
             holder = QWidget()

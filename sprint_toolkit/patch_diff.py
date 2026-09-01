@@ -1,39 +1,42 @@
 r"""Compare two patches of the same level — the co-op desync tool.
 
-WHAT LEVEL TO COMPARE AT
-------------------------
-Three levels exist and they answer different questions. This reports all three,
-because a desync narrows down by which of them disagrees:
+The patch code already tells you THAT two machines disagree. It is printed on both
+screens and comparing two short strings needs no tool. What it cannot tell you is
+what actually differs, which is the only thing you can act on. So this leads with
+the differences themselves, named and explained, and keeps the raw tables behind
+--detail for when you want to read every row yourself.
 
-  1. IDENTITY   same level, same difficulty, same tool version?
-                A different tool version can compute a different value from the same
-                typed operator, and that is invisible at every other level.
+Each finding says what differs, on which side, and — where the data supports it —
+why, because the same visible symptom has several causes that need different fixes:
 
-  2. INTENT     did both machines PLAN the same edits — same tag, same field, same
-                operator? A difference here is a run-state problem: different cards
-                drafted, a card blacklisted on one side, options set differently.
+  a different LEVEL, DIFFICULTY or TOOL VERSION invalidates everything below it.
+        Two patches of different levels have nothing meaningful to compare, and a
+        different tool version can compute a different value from the same typed
+        operator, which shows up as a value difference with no visible cause.
 
-  3. OUTCOME    did the same edits LAND on the same values? This is the one that
-                actually desyncs a session, because it is the bytes in the .map.
-                Two machines can plan identically and still land differently: a map
-                patched from a dirty baseline rather than its .bak compounds, and an
-                effect skipped on one side because a tag was absent leaves that
-                field vanilla there and modified here.
+  a card DRAFTED ON ONE SIDE ONLY is a run-state problem, not a patch problem:
+        different cards drawn, a card blacklisted on one machine, options set
+        differently. Fix it in the run, not in the map.
 
-The patch code in each file is a summary of level 3 only. When the codes match, the
-maps agree and the desync is NOT the patch — look at loading, at the dll patches, or
-at the run itself. When they differ, this says exactly where.
+  the SAME EDIT LANDING ON DIFFERENT VALUES splits by whether the ORIGINAL values
+        agree. If the two maps started from different numbers, one of them was
+        patched over an already-patched map instead of from its .bak, and every
+        multiplier on it has compounded. If they started from the same number and
+        ended somewhere else, the operator or the magnitude differed.
+
+  an edit that FAILED or was SKIPPED on one side leaves that field vanilla there
+        and modified here — the tag was missing from that map, so the two maps
+        disagree even though both machines planned the same thing.
 
 WHAT IS NOT COMPARED
---------------------
-Timestamps, absolute paths and the backup path: those differ between two machines by
-definition and say nothing. Ordering is ignored too — the plan is a set, not a
-sequence.
+    Timestamps, absolute paths and the backup path: those differ between two
+    machines by definition. Ordering is ignored too — a plan is a set, not a
+    sequence.
 
 USAGE
     python sprint_toolkit/patch_diff.py mine.json theirs.json
-    python sprint_toolkit/patch_diff.py --mission l300        # the latest two locally
-    python sprint_toolkit/patch_diff.py a.json b.json --all   # include matching rows
+    python sprint_toolkit/patch_diff.py --mission l300     # the latest two locally
+    python sprint_toolkit/patch_diff.py a.json b.json --detail   # full tables too
 """
 import argparse
 import glob
@@ -61,158 +64,247 @@ def result_key(r):
     return (str(r.get('effect', '')), str(r.get('tag', '')), str(r.get('field', '')))
 
 
-def landed(r):
-    """The value this row actually left in the map, or None when it wrote nothing."""
-    if not r.get('ok') or r.get('skip'):
-        return None
-    return r.get('new')
-
-
 def plan_ops(patch):
-    """{(tag, field, difficulty-flavour): operator} for every planned edit."""
+    """{(tag, field, block): operator} for every planned edit."""
     out = {}
-    for cls, items in (patch.get('groups') or {}).items():
+    for _cls, items in (patch.get('groups') or {}).items():
         for item in items:
             for op in item.get('ops') or []:
-                key = (item.get('tag'), op.get('field'), op.get('block'))
-                out[key] = op.get('op_str', '')
+                out[(item.get('tag'), op.get('field'), op.get('block'))] = \
+                    op.get('op_str', '')
     return out
 
 
-def _fmt(v, width=34):
-    s = '—' if v is None else str(v)
-    return s if len(s) <= width else s[:width - 1] + '…'
+def state(r):
+    """'wrote' / 'failed' / 'skipped' / 'missing' for one result row."""
+    if r is None:
+        return 'missing'
+    if not r.get('ok'):
+        return 'failed'
+    if r.get('skip'):
+        return 'skipped'
+    return 'wrote'
 
 
-def compare(a, b, names, show_all=False):
-    na, nb = names
-    problems = 0
+def why(r):
+    return str(r.get('reason') or '?') if r is not None else ''
 
-    # ---- 1. identity -------------------------------------------------------
-    print('=' * 78)
-    print('IDENTITY')
+
+def _n(v):
+    """Numbers compare loosely — a value round-tripped through JSON on one machine
+    and through a float on the other must not read as a difference."""
+    try:
+        return round(float(v), 6)
+    except (TypeError, ValueError):
+        return v
+
+
+def _s(v):
+    return '(none)' if v is None else str(v)
+
+
+class Findings(object):
+    """Differences in the order they should be READ, not the order they are found.
+
+    A level mismatch makes every value difference below it meaningless, so severity
+    ordering is not cosmetic here — it stops you chasing a hundred value rows that
+    are all explained by the first line."""
+
+    ORDER = ('BLOCKING', 'PLAN', 'VALUE', 'MISSED')
+
+    def __init__(self):
+        self.items = []
+
+    def add(self, sev, headline, detail=None, cause=None):
+        self.items.append((sev, headline, detail, cause))
+
+    def by_severity(self):
+        for sev in self.ORDER:
+            rows = [i for i in self.items if i[0] == sev]
+            if rows:
+                yield sev, rows
+
+    def __len__(self):
+        return len(self.items)
+
+
+HEADINGS = {
+    'BLOCKING': 'These two patches are not comparable',
+    'PLAN': 'Planned on one machine only',
+    'VALUE': 'Same edit, different value in the map',
+    'MISSED': 'Edit did not land on one machine',
+}
+
+
+def collect(a, b, na, nb):
+    f = Findings()
+
+    # ---- identity: a mismatch here explains everything under it ------------
     for key, label in (('map', 'level'), ('target_difficulty', 'difficulty'),
                        ('tool_version', 'tool version')):
         va, vb = a.get(key), b.get(key)
         if key == 'map':
             va, vb = os.path.basename(str(va)), os.path.basename(str(vb))
-        same = va == vb
-        problems += 0 if same else 1
-        print('  %-14s %-28s %-28s %s'
-              % (label, _fmt(va, 28), _fmt(vb, 28), 'ok' if same else '<-- DIFFERS'))
-    ca, cb = a.get('patch_code'), b.get('patch_code')
-    print('  %-14s %-28s %-28s %s'
-          % ('patch code', ca, cb, 'MATCH' if ca == cb else '<-- DIFFERS'))
-    if ca == cb and ca:
-        print()
-        print('  The codes match: both maps were written with the same values. If you '
-              'still desynced,')
-        print('  the cause is not the patch — check the dll patches, the map files '
-              'actually loaded,')
-        print('  and whether one side was still on an older .map when the session '
-              'started.')
+        if va == vb:
+            continue
+        cause = None
+        if key == 'map':
+            cause = ('Different levels. Nothing below this line means anything until '
+                     'you compare two patches of the same map.')
+        elif key == 'target_difficulty':
+            cause = ('Every difficulty-flavoured field writes a different slot, so '
+                     'most value differences below are just this.')
+        else:
+            cause = ('Different tool versions can compute different values from the '
+                     'same typed operator. Update the older side and re-patch.')
+        f.add('BLOCKING', '%s: %s = %s, %s = %s' % (label, na, _s(va), nb, _s(vb)),
+              cause=cause)
 
-    # ---- 2. intent ---------------------------------------------------------
+    # ---- plan: which edits each machine intended ---------------------------
     pa, pb = plan_ops(a), plan_ops(b)
-    only_a = sorted(set(pa) - set(pb))
-    only_b = sorted(set(pb) - set(pa))
-    diff = sorted(k for k in set(pa) & set(pb) if pa[k] != pb[k])
-    print()
-    print('=' * 78)
-    print('INTENT   %d planned edit(s) here, %d there' % (len(pa), len(pb)))
-    if not pa or not pb:
-        # Patches written before the plan was recorded carry an empty `groups`. Listing
-        # every edit as one-sided would read as "the other machine planned nothing",
-        # which is the opposite of what an empty groups block means.
-        side = na if not pa else nb
-        print('  %s recorded no plan (older tool version) — nothing to compare at this'
-              % side)
-        print('  level. The OUTCOME section below is unaffected and is the one that')
-        print('  matters for a desync.')
-    elif not (only_a or only_b or diff):
-        print('  identical — both machines planned the same edits')
-    else:
-        for k in only_a:
-            print('  only %s: %s  %s  %s' % (na, k[0], k[1], pa[k]))
-        for k in only_b:
-            print('  only %s: %s  %s  %s' % (nb, k[0], k[1], pb[k]))
-        for k in diff:
-            print('  operator differs: %s  %s' % (k[0], k[1]))
-            print('        %-10s %-14s %-10s %s' % (na, pa[k], nb, pb[k]))
-        problems += len(only_a) + len(only_b) + len(diff)
+    if pa and pb:
+        for k in sorted(set(pa) - set(pb)):
+            f.add('PLAN', '%s only: %s  %s  %s' % (na, k[1], pa[k], k[0]))
+        for k in sorted(set(pb) - set(pa)):
+            f.add('PLAN', '%s only: %s  %s  %s' % (nb, k[1], pb[k], k[0]))
+        for k in sorted(k for k in set(pa) & set(pb) if pa[k] != pb[k]):
+            f.add('PLAN', 'different operator on %s' % k[1],
+                  detail='%s = %s     %s = %s   (%s)' % (na, pa[k], nb, pb[k], k[0]),
+                  cause='Same field, different magnitude — a card at a different '
+                        'level, or a hand-edited value.')
 
-    # ---- 3. outcome --------------------------------------------------------
+    # ---- outcome: what is actually in the two maps -------------------------
     ra = {result_key(r): r for r in (a.get('results') or [])}
     rb = {result_key(r): r for r in (b.get('results') or [])}
-    keys = sorted(set(ra) | set(rb))
-    rows, same_rows = [], 0
-    for k in keys:
+    agree = 0
+    for k in sorted(set(ra) | set(rb)):
         x, y = ra.get(k), rb.get(k)
-        lx, ly = (landed(x) if x else None), (landed(y) if y else None)
-        if x and y and lx == ly:
-            same_rows += 1
-            if not show_all:
+        sx, sy = state(x), state(y)
+        eff, tag, fld = k
+        name = '%s / %s' % (eff, fld) if eff else fld
+
+        if sx == 'wrote' and sy == 'wrote':
+            if _n(x.get('new')) == _n(y.get('new')):
+                agree += 1
                 continue
-            rows.append((k, x, y, 'same'))
+            same_start = _n(x.get('old')) == _n(y.get('old'))
+            f.add('VALUE', name,
+                  detail=['%s: %s -> %s' % (na, _s(x.get('old')), _s(x.get('new'))),
+                          '%s: %s -> %s' % (nb, _s(y.get('old')), _s(y.get('new')))],
+                  cause=None if same_start else
+                        'The two maps started from DIFFERENT original values — one of '
+                        'them was patched over an already-patched map instead of from '
+                        'its .bak. Restore that side and re-patch.')
             continue
-        if x is None:
-            rows.append((k, None, y, 'only ' + nb))
-        elif y is None:
-            rows.append((k, x, None, 'only ' + na))
+
+        if sx == 'wrote' or sy == 'wrote':
+            good, bad, gn, bn = ((x, y, na, nb) if sx == 'wrote' else (y, x, nb, na))
+            bs = state(bad)
+            f.add('MISSED', name,
+                  detail='%s wrote %s;  %s %s'
+                         % (gn, _s(good.get('new')), bn,
+                            'has no such row' if bs == 'missing'
+                            else '%s (%s)' % (bs, why(bad))),
+                  cause='That field is still vanilla on %s and modified on %s — the '
+                        'two maps genuinely disagree.' % (bn, gn))
+            continue
+        agree += 1                       # both failed or both skipped: consistent
+
+    return f, (len(ra), len(rb), agree), (pa, pb)
+
+
+def report(f, counts, plans, na, nb, detail=False, a=None, b=None):
+    nra, nrb, agree = counts
+    print('=' * 78)
+    if not len(f):
+        print('NO DIFFERENCES.')
+        print('  Same level, same plan, same values in both maps (%d written row(s)).'
+              % nra)
+        print('  If you still desynced, it is not the patch: check the dll patches, '
+              'which .map')
+        print('  files each machine actually loaded, and whether one side started on '
+              'an old map.')
+        return 0
+    print('WHAT DIFFERS   %d finding(s)' % len(f))
+    print('  %s = %s' % (na, os.path.basename(str((a or {}).get('map', '?')))))
+    print('  %s = %s' % (nb, os.path.basename(str((b or {}).get('map', '?')))))
+    for sev, rows in f.by_severity():
+        print()
+        print('%s  (%d)' % (HEADINGS[sev], len(rows)))
+        print('-' * 78)
+        for _sev, headline, det, cause in rows:
+            print('  * %s' % headline)
+            for line in ([det] if isinstance(det, str) else (det or [])):
+                # a long value reads as two labelled lines rather than one that
+                # runs off the terminal and hides the second machine entirely
+                for part in _wrap(line, 70) or ['']:
+                    print('      %s' % part)
+            if cause:
+                for line in _wrap(cause, 70):
+                    print('      %s' % line)
+    print()
+    print('-' * 78)
+    print('%d row(s) here, %d there, %d agree' % (nra, nrb, agree))
+    if detail:
+        _tables(plans, a, b, na, nb)
+    return len(f)
+
+
+def _wrap(text, width):
+    out, line = [], ''
+    for word in text.split():
+        if line and len(line) + 1 + len(word) > width:
+            out.append(line)
+            line = word
         else:
-            rows.append((k, x, y, 'VALUE'))
-    print()
-    print('=' * 78)
-    print('OUTCOME  %d written row(s) here, %d there, %d agree'
-          % (len(ra), len(rb), same_rows))
-    if not rows:
-        print('  every row agrees — the two maps carry the same values')
-    else:
-        print('  %-9s %-30s %-34s %s' % ('', 'effect / field', na, nb))
-        for k, x, y, why in rows:
-            if why == 'same':
-                continue
-            problems += 1
-            eff, tag, fld = k
-            print('  %-9s %-30s %-34s %s'
-                  % (why, _fmt('%s: %s' % (eff, fld), 30),
-                     _fmt(_row_text(x)), _fmt(_row_text(y))))
-            if tag:
-                print('            %s' % tag)
-    print()
-    print('=' * 78)
-    print('%d difference(s)' % problems if problems else 'No differences.')
-    return problems
+            line = (line + ' ' + word).strip()
+    if line:
+        out.append(line)
+    return out
 
 
-def _row_text(r):
-    if r is None:
-        return None
-    if not r.get('ok'):
-        return 'FAILED: %s' % r.get('reason', '?')
-    if r.get('skip'):
-        return 'skipped: %s' % (r.get('reason') or r.get('new') or '')
-    old, new = r.get('old'), r.get('new')
-    return '%s -> %s' % (old, new) if old is not None else str(new)
+def _tables(plans, a, b, na, nb):
+    pa, pb = plans
+    print()
+    print('=' * 78)
+    print('FULL PLAN')
+    for label, p in ((na, pa), (nb, pb)):
+        print('  %s — %d planned edit(s)' % (label, len(p)))
+        for k in sorted(p):
+            print('     %-28s %-14s %s' % (str(k[1])[:28], p[k], k[0]))
+    print()
+    print('=' * 78)
+    print('FULL OUTCOME')
+    for label, patch in ((na, a), (nb, b)):
+        rows = patch.get('results') or []
+        print('  %s — %d row(s)' % (label, len(rows)))
+        for r in rows:
+            print('     %-9s %-30s %s -> %s   %s'
+                  % (state(r), ('%s / %s' % (r.get('effect', ''),
+                                             r.get('field', '')))[:30],
+                     _s(r.get('old')), _s(r.get('new')), r.get('tag', '')))
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('files', nargs='*', help='two patch .json files')
-    ap.add_argument('--mission', help='compare the two most recent local patches of a level')
-    ap.add_argument('--all', dest='show_all', action='store_true',
-                    help='also count the rows that agree')
+    ap.add_argument('--mission',
+                    help='compare the two most recent local patches of a level')
+    ap.add_argument('--detail', action='store_true',
+                    help='print the full plan and outcome tables as well')
+    ap.add_argument('--all', dest='detail', action='store_true',
+                    help=argparse.SUPPRESS)
     args = ap.parse_args()
 
     if args.mission:
-        found = sorted(glob.glob(os.path.join(PATCH_DIR, 'patch_%s_*.json' % args.mission)))
+        found = sorted(glob.glob(os.path.join(PATCH_DIR,
+                                              'patch_%s_*.json' % args.mission)))
         if len(found) < 2:
             print('need two local patches of %s; found %d in %s'
                   % (args.mission, len(found), PATCH_DIR))
             return 1
         files = found[-2:]
-        print('comparing the two most recent local patches of %s:' % args.mission)
     elif len(args.files) == 2:
         files = args.files
     else:
@@ -224,11 +316,13 @@ def main():
             print('no such file: %s' % fn)
             return 1
     a, b = load(files[0]), load(files[1])
-    names = [os.path.basename(f).replace('patch_', '')[:18] for f in files]
     print('  A = %s' % files[0])
     print('  B = %s' % files[1])
+    ca, cb = a.get('patch_code'), b.get('patch_code')
+    print('  patch code   A %s    B %s' % (ca, cb))
     print()
-    return 1 if compare(a, b, ('A', 'B'), args.show_all) else 0
+    f, counts, plans = collect(a, b, 'A', 'B')
+    return 1 if report(f, counts, plans, 'A', 'B', args.detail, a, b) else 0
 
 
 if __name__ == '__main__':

@@ -4688,11 +4688,14 @@
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
+					},
 					"targets": [
-						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4700,11 +4703,14 @@
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
+					},
 					"targets": [
-						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"]}
+						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4712,11 +4718,14 @@
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_beam_firing", "Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"},
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_beam_firing & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam",
+						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam"
+					},
 					"targets": [
-						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
-						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
-						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Melee Seeking": {
@@ -4724,21 +4733,28 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
-					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun", "Halo 3: ODST": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3: ODST": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+					},
 					"targets": [
-						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+						{ "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3"],
-					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"},
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
+					},
 					"targets": [
-						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
-						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
+						{ "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0 }
 					]
 				},
 				"Firing Noise": {
@@ -4746,30 +4762,30 @@
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]}
+						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
 					]
 				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {
-						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam"
+						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
-						{"field": "Maximum Range", "group": "Range" },
-						{"field": "Initial Velocity", "group": "Velocity" },
-						{"field": "Final Velocity", "group": "Velocity" },
-						{"field": "Air Damage Range", "group": "Range"},
-						{"field": "Air Damage Range Max", "group": "Range"},
-						{"field": "Water Damage Range", "group": "Range"},
-						{"field": "Water Damage Range Max", "group": "Range"}
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Water Damage Range", "group": "Range" },
+						{ "field": "Water Damage Range Max", "group": "Range" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4777,8 +4793,8 @@
 					"desc": "How hard the beam hits. In Halo 2 it also arms every Sentinel shooting at you.",
 					"debug_desc": "Damage Lower/Upper Bound. In Halo 2 the player's Sentinel Beam is the exact same weapon the Sentinel enemy fires — one damage tag — so buffing it buffs the enemies too. That is why the Sentinel enemy's own Beam Damage card is Halo 1 only.",
 					"tag": {
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam",
-						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact"
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam",
+						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -4790,7 +4806,7 @@
 				"Melee Damage": {
 					"desc": "How hard your melee hits.",
 					"debug_desc": "Damage Lower/Upper Bound on a melee damage type shared with several weapons. The damage type switches between Halo 2 and Halo 3.",
-					"desc_overrides": { 
+					"desc_overrides": {
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons. The damage type switches from H2 to H3."
 					},
 					"tag": {
@@ -4807,8 +4823,8 @@
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
@@ -4820,8 +4836,8 @@
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
@@ -4833,8 +4849,8 @@
 				"Per Round": {
 					"desc": "Heat per Round, Age (battery drain) per Round",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
@@ -4848,8 +4864,8 @@
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"easier_when": "increased",
 					"targets": [
@@ -4864,8 +4880,8 @@
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -4875,8 +4891,8 @@
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
@@ -9467,12 +9483,25 @@
 					"tag": {
 						"Halo 1": "jpt! characters\\elite\\elite melee",
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
-						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
+						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Elite",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0 }
 					]
 				},
 				"Upgrade Chance": {
@@ -9507,7 +9536,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
-						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -9518,7 +9548,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
-						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -9529,7 +9560,8 @@
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
-						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon"
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
@@ -9543,12 +9575,27 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\fuel rod gun\\explosion",
 						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component",
-						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component"
+						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component",
+						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Hunter Radius": {
+					"desc": "Increases Radius of one type of melee swing",
+					"desc_overrides": { "Halo 3: ODST": "Increases Radius of the Flak Cannon and one type of melee swing", "Halo 1": "Increase Radius of their melee swing" },
+					"tag": {
+						"Halo 1": "jpt! characters\\hunter\\melee",
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
+						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
+						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius" },
+						{ "field": "Radius Max", "group": "Radius" }
 					]
 				},
 				"Vision": {
@@ -9609,14 +9656,17 @@
 					"tag": {
 						"Halo 1": "proj weapons\\fuel rod gun\\fuel rod",
 						"Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component",
-						"Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary"
+						"Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary",
+						"Halo 3: ODST": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary & objects\\characters\\hunter\\hunter_flak_cannon\\projectiles\\flak_bolt"
 					},
 					"targets": [
 						{ "field": "Air Damage Range", "group": "Range" },
 						{ "field": "Air Damage Range Max", "group": "Range" },
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
-						{ "field": "Maximum Range", "group": "Range" }
+						{ "field": "Maximum Range", "group": "Range" },
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]}
 					]
 				},
 				"Accuracy": {
@@ -9752,6 +9802,21 @@
 					},
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
+					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
+						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
+						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon"
+					},
+					"targets": [
+						{"field": "Distribution Function", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "set": "horizontal fan"},
+						{"field": "Distribution Angle", "block": {"Halo 1": "Triggers", "default": "Barrels"}, "index": "all", "zero_is": 0.1, "min": 0}
 					]
 				}
 			},
@@ -10013,6 +10078,27 @@
 							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
 						]
 					}
+				},
+				"Grunt Damage": {
+					"desc": "Damage of Grunt Obstacle Smash and their Backpack Explosion",
+					"tag": {
+						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Grunt Radius": {
+					"desc": "Radius of Grunt Obstacle Smash and their Backpack Explosion",
+					"tag": {
+						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0, "is_zero": 0.25 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0, "is_zero": 0.25 }
+					]
 				},
 				"Stun Behavior": {
 					"desc": "Change the Stun threshold and the stun duration",
@@ -10559,6 +10645,18 @@
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Flood Combat Forms",
+					"tag": {
+						"Halo 1": "jpt! characters\\floodcombat elite\\melee & characters\\floodcombat_human\\melee",
+						"Halo 2": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_charge_first_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_boarding_melee & objects\\characters\\floodcombat_elite\\damage_effects\\floodcombat_elite_obstacle_smash & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_charge_first_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_boarding_melee & objects\\characters\\floodcombat_human\\damage_effects\\floodcombat_human_obstacle_smash & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_charge_first_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_boarding_melee & objects\\characters\\floodcombat_brute\\damage_effects\\floodcombat_brute_obstacle_smash"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0 }
+					]
+				},
 				"Combatform Berserk": {
 					"desc": "Chance to go berserk at different distances and how many can go berserk",
 					"game": "Halo 3",
@@ -10717,6 +10815,18 @@
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Flood Infection Forms",
+					"tag": {
+						"Halo 1": "jpt! characters\\flood_infection\\melee",
+						"Halo 2": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap",
+						"Halo 3": "jpt! objects\\characters\\flood_infection\\damage_effects\\infection_form_bite & objects\\characters\\flood_infection\\damage_effects\\infection_form_shield_zap"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0 }
 					]
 				},
 				"Accuracy": {
@@ -11266,6 +11376,30 @@
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "How many bolts each shot fires.",
+					"debug_desc": "Halo 1's sentinel beam is ENEMY ONLY -- there is no player version to carry this, which is why the Sentinel Beam weapon card set starts at Halo 2. The field is on the enemy's own weapon and is defined on all 4 Halo 1 levels that field Sentinels.",
+					"game": "Halo 1",
+					"tag": {
+						"Halo 1": "weap characters\\sentinel\\sentinel"
+					},
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Triggers", "index": "all", "min": 1 }
+					]
+				},
+				"Distribution Function": {
+					"desc": "Spreads their shots into a fan instead of a single point.",
+					"debug_desc": "Halo 1's sentinel beam is ENEMY ONLY -- there is no player version to carry this, which is why the Sentinel Beam weapon card set starts at Halo 2. The field is on the enemy's own weapon and is defined on all 4 Halo 1 levels that field Sentinels. Paired with Projectiles Per Shot, which is what gives the fan anything to spread.",
+					"game": "Halo 1",
+					"tag": {
+						"Halo 1": "weap characters\\sentinel\\sentinel"
+					},
+					"targets": [
+						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan" },
+						{ "field": "Distribution Angle", "block": "Triggers", "index": "all", "min": 0 }
+					]
 				}
 			},
 			"Bugger": {
@@ -11321,12 +11455,25 @@
 				},
 				"Melee Damage": {
 					"desc": "Melee Damage from Bugger",
-					"game": "Halo 2",
-					"tag": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
+						"Halo 3": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Bugger",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee",
+						"Halo 3": "jpt! objects\\characters\\bugger\\damage_effects\\bugger_melee & objects\\characters\\bugger\\damage_effects\\bugger_boarding_melee"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0 }
 					]
 				},
 				"Melee Behavior": {
@@ -11375,22 +11522,45 @@
 				}
 			},
 			"Brute": {
-			"Armor Lock": {
-				"desc": "How often Brutes armour-lock to shrug off your shots, and how long it holds.",
-				"debug_desc": "Stock 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
-				"game": "Halo Reach",
-				"tag": "char objects\\characters\\brute\\ai\\brute*",
-				"targets": [
-					{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
-					{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
-					{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
-					{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
-				],
-				"constraints": [
-					{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
-				]
-			},
+				"Armor Lock": {
+					"desc": "How often Brutes armour-lock to shrug off your shots, and how long it holds.",
+					"debug_desc": "Stock 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+						{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
+						{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
+					],
+					"constraints": [
+						{ "field": "Armor Lock Maximum Duration", "of": "Armor Lock Safety Duration", "not_below": true, "block": "Movement Properties" }
+					]
+				},
+				"Melee Damage": {
+					"desc": "Melee Damage from Brutes",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\brute\\damage_effects\\brute_melee & objects\\characters\\brute\\damage_effects\\brute_boarding_melee & objects\\characters\\brute\\damage_effects\\brute_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\brute\\damage_effects\\brute_melee & objects\\characters\\brute\\damage_effects\\brute_boarding_melee & objects\\characters\\brute\\damage_effects\\brute_obstacle_smash"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Brutes",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\brute\\damage_effects\\brute_melee & objects\\characters\\brute\\damage_effects\\brute_boarding_melee & objects\\characters\\brute\\damage_effects\\brute_obstacle_smash",
+						"Halo 3": "jpt! objects\\characters\\brute\\damage_effects\\brute_melee & objects\\characters\\brute\\damage_effects\\brute_boarding_melee & objects\\characters\\brute\\damage_effects\\brute_obstacle_smash"
+					},
+					"targets": [
+						{ "field": "Radius", "group": "Radius", "min": 0 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0 }
+					]
+				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts and the chance of one.",
 					"game": ["Halo 2", "Halo 3"],
