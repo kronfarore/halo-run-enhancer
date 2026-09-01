@@ -715,7 +715,11 @@ CONFIG = {
     # owns the required base weapon. Value = base weapon (also the mod source
     # unless the upgrade has its own entry in the JSON). Picking an upgrade while
     # dual-wielding the base also grants "Dual <upgrade>".
-    "weapon_upgrades": {"Brute Plasma Rifle": "Plasma Rifle"},
+    "weapon_upgrades": {"Brute Plasma Rifle": "Plasma Rifle",
+                        # Halo 2 only. Measured against the ordinary beam it is
+                        # the same weapon -- identical projectile, +50% damage,
+                        # and ~12% more heat and ~17% more age per round.
+                        "Sentinel Eliminator Beam": "Sentinel Beam"},
     # An upgrade weapon is a marginal variant of its base (Brute Plasma Rifle vs
     # Plasma Rifle), so it uses the BASE's effects: the base's cards patch the
     # upgrade's tag as well, and the upgrade stops offering its own duplicate cards.
@@ -726,7 +730,8 @@ CONFIG = {
     # may be offered. Halo 3 dropped the Brute Plasma Rifle and made the Needler
     # two-handed, so neither should ever be offered there.
     "weapon_only_in_games": {"Brute Plasma Rifle": ["Halo 2"],
-                             "Dual Needler": ["Halo 2"]},
+                             "Dual Needler": ["Halo 2"],
+                             "Sentinel Eliminator Beam": ["Halo 2"]},
 
     "blacklist_label_separator": ": ",
 }

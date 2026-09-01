@@ -4689,7 +4689,7 @@
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4704,7 +4704,7 @@
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4719,7 +4719,7 @@
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_beam_firing & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam",
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_beam_firing & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam",
 						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam"
 					},
 					"targets": [
@@ -4734,7 +4734,7 @@
 					"ignore": "yes",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3: ODST": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun"
 					},
@@ -4749,7 +4749,7 @@
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4762,20 +4762,20 @@
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
+						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
 					]
 				},
 				"Projectile": {
 					"desc": "Projectile range and velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {
-						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4793,7 +4793,7 @@
 					"desc": "How hard the beam hits. In Halo 2 it also arms every Sentinel shooting at you.",
 					"debug_desc": "Damage Lower/Upper Bound. In Halo 2 the player's Sentinel Beam is the exact same weapon the Sentinel enemy fires — one damage tag — so buffing it buffs the enemies too. That is why the Sentinel enemy's own Beam Damage card is Halo 1 only.",
 					"tag": {
-						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam",
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam\\damage_effects\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam",
 						"Halo 3": "jpt! objects\\weapons\\support_low\\sentinel_gun\\damage_effects\\sentinel_gun_impact & objects\\characters\\sentinel_aggressor\\weapons\\welder\\damage_effects\\sentinel_welder_beam"
 					},
 					"targets": [
@@ -4823,7 +4823,7 @@
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4836,7 +4836,7 @@
 				"Heat Recovery": {
 					"desc": "Threshold for being useable after Overheating and Heat Loss",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4849,7 +4849,7 @@
 				"Per Round": {
 					"desc": "Heat per Round, Age (battery drain) per Round",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
@@ -4864,7 +4864,7 @@
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"easier_when": "increased",
@@ -4880,7 +4880,7 @@
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"easier_when": "decreased",
@@ -4891,13 +4891,194 @@
 				"Projectiles Per Shot": {
 					"desc": "For every projectily, fire this many",
 					"tag": {
-						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder & objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim",
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
 						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": "Barrels" }
 					],
 					"game": ["Halo 2", "Halo 3"]
+				}
+			},
+			"Sentinel Eliminator Beam": {
+				"Magnetism": {
+					"desc": "How hard your aim is pulled toward a target.",
+					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
+					]
+				},
+				"Autoaim": {
+					"desc": "How hard the game steers your shots onto a target.",
+					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 }
+					]
+				},
+				"Rider Damage": {
+					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
+					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam"
+					},
+					"targets": [
+						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 }
+					]
+				},
+				"Melee Seeking": {
+					"desc": "How generously your melee swing snaps onto a target.",
+					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0 }
+					]
+				},
+				"Distribution Function": {
+					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
+					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Distribution Function", "block": "Barrels", "index": "all", "set": "horizontal fan" },
+						{ "field": "Distribution Angle", "block": "Barrels", "index": "all", "zero_is": 0.1, "min": 0 }
+					]
+				},
+				"Firing Noise": {
+					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
+					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
+					]
+				},
+				"Projectile": {
+					"desc": "Projectile range and velocity",
+					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Water Damage Range", "group": "Range" },
+						{ "field": "Water Damage Range Max", "group": "Range" }
+					]
+				},
+				"Beam Damage": {
+					"desc": "How hard the beam hits. In Halo 2 it also arms every Sentinel shooting at you.",
+					"debug_desc": "Damage Lower/Upper Bound. In Halo 2 the player's Sentinel Beam is the exact same weapon the Sentinel enemy fires — one damage tag — so buffing it buffs the enemies too. That is why the Sentinel enemy's own Beam Damage card is Halo 1 only.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\damage_effects\\sentinel_eliminator_beam"
+					},
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Zoom": {
+					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
+					"debug_desc": "UPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Magnification Levels" },
+						{ "field": "Magnification Range" },
+						{ "field": "Magnification Range Max" }
+					]
+				},
+				"Heat Recovery": {
+					"desc": "Threshold for being useable after Overheating and Heat Loss",
+					"debug_desc": "UPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Heat Recovery Threshold", "min": "0", "max": "1" },
+						{ "field": "Heat Loss Per Second", "group": "Heat Loss" },
+						{ "field": "Overheated Heat Loss Per Second", "group": "Heat Loss" }
+					]
+				},
+				"Per Round": {
+					"desc": "Heat per Round, Age (battery drain) per Round",
+					"debug_desc": "UPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Heat Generated Per Round", "block": "Barrels" },
+						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" }
+					]
+				},
+				"More Shooting": {
+					"desc": "How fast this weapon sprays while you hold the trigger.",
+					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+					]
+				},
+				"Fire Recovery Time": {
+					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
+					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
+					]
+				},
+				"Projectiles Per Shot": {
+					"desc": "For every projectily, fire this many",
+					"debug_desc": "UPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
+					"game": "Halo 2",
+					"tag": {
+						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
+					},
+					"targets": [
+						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+					]
 				}
 			},
 			"Energy Blade": {
@@ -9596,9 +9777,9 @@
 					},
 					"tag": {
 						"Halo 1": "jpt! characters\\hunter\\melee",
-						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
-						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
-						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion",
+						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
+						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
+						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
 						"Halo Reach": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
 					},
 					"targets": [
@@ -10094,7 +10275,8 @@
 					"desc": "Damage of Grunt Obstacle Smash and their Backpack Explosion",
 					"tag": {
 						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
-						"Halo Reach": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_destroyed & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation"
+						"Halo Reach": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_destroyed & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
+						"Halo 2": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\heretic_grunt\\damage_effects\\heretic_grunt_obstacle_smash"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -10106,7 +10288,8 @@
 					"desc": "Radius of Grunt Obstacle Smash and their Backpack Explosion",
 					"tag": {
 						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
-						"Halo Reach": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_destroyed & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation"
+						"Halo Reach": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_destroyed & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
+						"Halo 2": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\heretic_grunt\\damage_effects\\heretic_grunt_obstacle_smash"
 					},
 					"targets": [
 						{ "field": "Radius", "group": "Radius", "min": 0, "is_zero": 0.25 },
@@ -11347,7 +11530,7 @@
 				"Explosion Radius": {
 					"desc": "Explosion on death?",
 					"tag": {
-						"Halo 1": "jpt! characters\\sentinel\\explosion",
+						"Halo 1": "jpt! characters\\sentinel\\explosion & characters\\sentinel\\shock wave",
 						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
 						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
@@ -11359,7 +11542,7 @@
 				"Explosion Damage": {
 					"desc": "Explosion on death? Lower Bound, Upper Bound",
 					"tag": {
-						"Halo 1": "jpt! characters\\sentinel\\explosion",
+						"Halo 1": "jpt! characters\\sentinel\\explosion & characters\\sentinel\\shock wave",
 						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
 						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
 					},
@@ -11412,6 +11595,23 @@
 					"targets": [
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan" },
 						{ "field": "Distribution Angle", "block": "Triggers", "index": "all", "min": 0 }
+					]
+				},
+				"Projectile Range Sentinel Beam": {
+					"desc": "Increases the maximum range their beam can reach, and its speed.",
+					"debug_desc": "Halo 1's sentinel beam is ENEMY ONLY, so this sits on the enemy rather than on the Sentinel Beam weapon card set, which starts at Halo 2 for that reason. The projectile is `proj characters\\sentinel\\beam`, defined on all 4 Halo 1 levels that field Sentinels.",
+					"game": "Halo 1",
+					"tag": {
+						"Halo 1": "proj characters\\sentinel\\beam"
+					},
+					"targets": [
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0 },
+						{ "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0 }
 					]
 				}
 			},

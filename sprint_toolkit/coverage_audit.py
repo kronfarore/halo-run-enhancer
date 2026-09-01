@@ -468,6 +468,8 @@ def asset_pass(db, args):
                 fam = eaa.family_of(name)
                 if not fam or (eaa.is_noise(name) and not args.with_noise):
                     continue
+                if eaa.is_ignored(game, cls, name):
+                    continue
                 enemy = fams.get(fam)
                 if enemy is None:
                     unclaimed[fam] += 1

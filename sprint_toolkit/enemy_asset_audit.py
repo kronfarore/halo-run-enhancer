@@ -73,6 +73,23 @@ ROOTS = ('objects' + B + 'characters' + B, 'characters' + B)
 NOISE_PARTS = ('garbage', 'cinematics', 'fx', 'engineer_parts', 'garlic')
 
 
+# Tags that are enemy-owned, gameplay-shaped, and still not worth a card, each for a
+# MEASURED reason rather than a hunch. Matched as a path substring, per game.
+IGNORE = {
+    'Halo 2': [
+        # Every field reads 0 on 06a -- damage, radius, rider scale, duration, all of
+        # it. It is the marker effect the charged bolt fires while winding up, not
+        # something that hits you, so there is nothing an operator could scale.
+        ('jpt!', 'sentinel_aggressor' + B + 'weapons' + B + 'charged_bolt'),
+    ],
+}
+
+
+def is_ignored(game, cls, path):
+    p = str(path).replace('/', B).lower()
+    return any(c == cls and sub.lower() in p for c, sub in IGNORE.get(game, ()))
+
+
 def is_noise(path):
     parts = str(path).replace('/', B).split(B)
     if any(p in NOISE_PARTS for p in parts):
@@ -215,6 +232,8 @@ def main():
                     continue
                 fam = family_of(name)
                 if not fam or (is_noise(name) and not args.with_noise):
+                    continue
+                if is_ignored(game, cls, name):
                     continue
                 enemy = fams.get(fam)
                 if enemy is None:
