@@ -156,6 +156,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult', 'score_live_push',
+               'death_penalty_scaling', 'death_penalty_per_round',
+               'death_penalty_base',
                'difficulty_baseline',
                'odst_red_plasma_as_brute', 'odst_variants_as_base',
                'odst_downgrade_unupgraded', 'odst_shield_into_health',
@@ -484,6 +486,15 @@ CONFIG = {
     # effect without restarting MCC. Harmless when MCC is closed (it reports "not
     # running" and the file edit stands on its own), so it defaults on.
     "score_live_push": True,
+    # Scale the campaign metagame's PLAYER DEATH penalty with how much the run has
+    # taken on: penalty = 25 * (1 + per_round * rounds). Unlike everything else here
+    # this is not a map patch -- Halo 1 and Halo 2 have no campaign metagame in their
+    # own dlls, and the one scoring engine all five games share is the MCC wrapper.
+    # So it is a live process write, and it works in every game for that reason.
+    "death_penalty_scaling": False,
+    "death_penalty_per_round": 0.10,   # +10% of the base penalty per round taken
+    "death_penalty_base": 25.0,        # what MCC ships; 0 rounds leaves it unchanged
+
     # Whole-game enemy dials, per game, applied BEFORE any effect. Empty/absent means
     # "leave the shipped value alone"; a stored 0 means the same (the spin boxes show
     # 0 as "vanilla"). Reach and Halo 4 have entries so the settings survive until
@@ -4400,6 +4411,46 @@ class MagnitudeEditorDialog(QDialog):
                          'reason': pushed.get('reason')})
         return rows
 
+    def _apply_death_penalty(self):
+        r"""Scale the metagame's player-death penalty with the run's round count.
+
+        This is the one patch in the tool that is NOT a map edit, and it has to be:
+        Halo 1 and Halo 2 carry no campaign metagame in their own dlls, so no .map
+        could ever hold this for them. The MCC wrapper is the single scoring engine
+        all five games share, so one live write covers every game -- and being live,
+        it also tracks the round count as the run grows instead of freezing whatever
+        it was when the map was last patched.
+
+        Returns result rows rather than raising, for the same reason the score
+        rescaling does: a map patch that succeeded must not read as failed because a
+        side effect on another process could not be applied.
+        """
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import death_penalty
+        except Exception as e:
+            return [{'tag': 'MCC process', 'effect': 'Death penalty', 'field': 'penalty',
+                     'ok': False, 'reason': 'death_penalty.py unavailable: %s' % e}]
+        rs = getattr(self.parent_gui, 'run_state', None)
+        rounds = len(getattr(rs, 'rounds', None) or [])
+        per = float(CONFIG.get('death_penalty_per_round', 0.10) or 0)
+        base = float(CONFIG.get('death_penalty_base', 25.0) or 25.0)
+        try:
+            res = death_penalty.push(rounds=rounds, per_round=per,
+                                     value=death_penalty.penalty_for(rounds, per, base))
+        except Exception as e:
+            return [{'tag': 'MCC process', 'effect': 'Death penalty', 'field': 'penalty',
+                     'ok': False, 'reason': str(e)}]
+        if not res.get('ok'):
+            # MCC being closed is not a failure -- there is simply nothing to write
+            # into yet, and the next patch with it open will do it.
+            closed = 'not running' in str(res.get('reason', ''))
+            return [{'tag': 'MCC process', 'effect': 'Death penalty', 'field': 'penalty',
+                     'ok': closed, 'skip': closed, 'reason': res.get('reason')}]
+        return [{'tag': 'MCC process', 'effect': 'Death penalty',
+                 'field': '%d round(s) x %+.0f%%' % (rounds, per * 100),
+                 'ok': True, 'old': res.get('old'), 'new': res.get('new')}]
+
     def _push_scores_live(self, path):
         """Mirror the freshly written scoredb.xml into the running MCC.
 
@@ -5785,6 +5836,10 @@ class MagnitudeEditorDialog(QDialog):
                      if CONFIG.get('score_live_push') else "Rescaling metagame scores")
             results.extend(self._run_busy(self._apply_score_scaling,
                                           title="Metagame scores", label=label))
+
+        # Same footing: a live write to another process, never fatal to the map patch.
+        if CONFIG.get('death_penalty_scaling'):
+            results.extend(self._apply_death_penalty())
 
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
@@ -7432,6 +7487,52 @@ class OptionsDialog(QDialog):
             self.score_push_cb.setEnabled(on)
         self.score_scaling_cb.toggled.connect(_sync_score)
         _sync_score()
+
+        # The death penalty is deliberately NOT under the score-scaling checkbox: that
+        # one gates an edit to scoredb.xml, and this is an unrelated live write to the
+        # MCC process that works whether or not scores are being rescaled.
+        self.death_pen_cb = QCheckBox("Dying costs more the further the run gets")
+        self.death_pen_cb.setChecked(bool(CONFIG.get('death_penalty_scaling')))
+        self.death_pen_cb.setToolTip(
+            "The campaign metagame docks you points for dying. This scales that "
+            "penalty with how many rounds the run has taken, so a run that has "
+            "collected a lot of buffs pays more for a death.\n\n"
+            "penalty = base x (1 + per-round x rounds)\n\n"
+            "This is NOT a map patch. Halo 1 and Halo 2 have no campaign metagame in "
+            "their own dlls at all — the one scoring engine every game shares is "
+            "the MCC wrapper, which holds the penalty as a constant. So it is written "
+            "into the running process, which is also why it works in all five games "
+            "and why it re-applies with the current round count on every patch.\n\n"
+            "Nothing shared is overwritten: the constant has another user elsewhere in "
+            "the binary, so the patch gives the death site its own private copy and "
+            "leaves the original untouched. Harmless when MCC is closed.")
+        sform.addRow("Death penalty:", self.death_pen_cb)
+
+        self.death_pen_base = QDoubleSpinBox()
+        self.death_pen_base.setRange(0.0, 10000.0)
+        self.death_pen_base.setSingleStep(5.0)
+        self.death_pen_base.setDecimals(1)
+        self.death_pen_base.setValue(float(CONFIG.get('death_penalty_base', 25.0)))
+        self.death_pen_base.setToolTip("Points a death costs at round 0. MCC ships 25.")
+        sform.addRow("    ↳ Base penalty:", self.death_pen_base)
+
+        self.death_pen_per = QDoubleSpinBox()
+        self.death_pen_per.setRange(0.0, 5.0)
+        self.death_pen_per.setSingleStep(0.05)
+        self.death_pen_per.setDecimals(2)
+        self.death_pen_per.setValue(float(CONFIG.get('death_penalty_per_round', 0.10)))
+        self.death_pen_per.setToolTip(
+            "Fraction of the base added per round taken. At 0.10 and a base of 25, "
+            "round 10 costs 50 and round 20 costs 75.")
+        sform.addRow("    ↳ Per round:", self.death_pen_per)
+
+        def _sync_death(_=False):
+            on = self.death_pen_cb.isChecked()
+            self.death_pen_base.setEnabled(on)
+            self.death_pen_per.setEnabled(on)
+        self.death_pen_cb.toggled.connect(_sync_death)
+        _sync_death()
+
         self._opt_page("Patching").addWidget(scoreg, 30)
 
         # ---- Halo 2 engine patches ----
@@ -7696,6 +7797,9 @@ class OptionsDialog(QDialog):
             'score_step': round(self.score_step.value(), 3),
             'score_cap_mult': round(self.score_cap.value(), 1),
             'score_live_push': self.score_push_cb.isChecked(),
+            'death_penalty_scaling': self.death_pen_cb.isChecked(),
+            'death_penalty_base': self.death_pen_base.value(),
+            'death_penalty_per_round': self.death_pen_per.value(),
             'difficulty_baseline': {
                 g: {k: round(self.baseline_spins[(g, k)].value(), 3)
                     for k, _t in BASELINE_COLS if self.baseline_spins[(g, k)].value()}
