@@ -243,6 +243,9 @@ def main():
                          "enemy-owned tag pass only. Default runs both.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
+    ap.add_argument('--no-useful', action='store_true',
+                    help='asset pass: skip the cross-reference against fields cards '
+                         'already tune (it opens maps, so it is the slow half)')
     args = ap.parse_args()
 
     with contextlib.redirect_stdout(io.StringIO()):
@@ -357,6 +360,70 @@ def main():
         asset_pass(db, args)
 
 
+def _carded_fields_by_class(db, game):
+    r"""{tag class: {(field, block)}} that ANY card already edits in this game.
+
+    This is what turns the raw uncarded-tag list into a worklist. A tag nobody has
+    carded is only interesting if there is something ON it worth tuning, and the
+    strongest evidence that a field is worth tuning is that a card somewhere already
+    tunes it -- the value is known good, the operator shape is known, and the card text
+    is already written. A field no card anywhere touches is the speculative case, and
+    is left out of the useful list on purpose.
+    """
+    games = db.get_games()
+    out = collections.defaultdict(set)
+    pools = [db.weapon_mods, db.enemy_mods, db.boss_mods,
+             getattr(db, 'equipment_mods', {}) or {}]
+    seqs = [list((p or {}).values()) for p in pools]
+    seqs.append([[m] for m in (db.positive_pool + db.negative_pool + db.wildcard_pool
+                               + list(db.skull_pool or []))])
+    for seq in seqs:
+        for mods in seq:
+            for mod in mods or []:
+                if not db._game_ok(mod, game):
+                    continue
+                tag = mod.get('tag')
+                tag = he.resolve_gamed(tag, game, games) if isinstance(tag, dict) else tag
+                ts = mod.get('targets')
+                ts = he.resolve_gamed(ts, game, games) if isinstance(ts, dict) else ts
+                for t in ts or []:
+                    if not isinstance(t, dict) or not he.target_applies(t, game):
+                        continue
+                    own = t.get('tag')
+                    own = (he.resolve_gamed(own, game, games)
+                           if isinstance(own, dict) else own) or tag
+                    if not isinstance(own, str) or ' ' not in own:
+                        continue
+                    cls = own.split(' ', 1)[0]
+                    fld = t.get('field')
+                    if not fld:
+                        continue
+                    blk = t.get('block')
+                    blk = (he.resolve_gamed(blk, game, games)
+                           if isinstance(blk, dict) else blk)
+                    out[cls].add((str(fld), str(blk) if blk else None))
+    return out
+
+
+def _useful_fields(m, cls, path, plug, wanted):
+    """Which already-carded fields this uncarded tag actually DEFINES on this map.
+
+    Defined, not merely declared by the plugin: a plugin lists every field the class
+    can have, and most tags carry only some of them. Reading is the only way to tell,
+    and a field that reads nothing here would make a card that silently does nothing --
+    which is the entire failure mode these audits exist to catch."""
+    got = set()
+    for fld, blk in wanted:
+        if (fld, blk) in got:
+            continue
+        try:
+            if m.read_all(cls, path, fld, plug, blk, 'all'):
+                got.add((fld, blk))
+        except Exception:
+            pass
+    return got
+
+
 def asset_pass(db, args):
     r"""Enemy-owned tags that are NOT the character tag, and whether a card reaches them.
 
@@ -376,14 +443,18 @@ def asset_pass(db, args):
     want = eaa.PRIMARY
     fams = eaa.enemy_families(db)
     grand = 0
+    useful_total = 0
     print('#' * 84)
     print('ENEMY-OWNED TAGS OUTSIDE char   (%s)' % ', '.join(sorted(want)))
     for game, subs, folder in eaa.CASES:
         maps = eaa.game_maps(folder)
         if not maps:
             continue
+        reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
+        by_class = _carded_fields_by_class(db, game) if not args.no_useful else {}
         carded = eaa.carded_tags(db, game)
         seen = {}
+        first_map = {}          # tag -> a map that carries it, for the field read
         unclaimed = collections.Counter()
         print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
         for mp in maps:
@@ -404,22 +475,56 @@ def asset_pass(db, args):
                 if args.enemy and enemy.lower() != args.enemy.lower():
                     continue
                 seen.setdefault((enemy, cls, name), set()).add(os.path.basename(mp))
+                first_map.setdefault((cls, name), mp)
         rows = [(e, c, n, len(mw)) for (e, c, n), mw in sorted(seen.items())
                 if not eaa.covered(c, n, carded)]
         print('=' * 84)
         print('%s   %d enemy-owned tag(s), %d uncarded' % (game, len(seen), len(rows)))
+
+        # Which of the uncarded tags carry a field some card already tunes. One map is
+        # opened per tag CLASS group rather than per tag, since re-opening a 100 MB map
+        # for each of forty tags is the difference between seconds and minutes.
+        useful = {}
+        if by_class:
+            cache = {}
+            for enemy, cls, name, _n in rows:
+                wanted = by_class.get(cls)
+                plug = reg.get(cls)
+                if not wanted or plug is None:
+                    continue
+                mp = first_map.get((cls, name))
+                if mp is None:
+                    continue
+                m = cache.get(mp)
+                if m is None:
+                    try:
+                        m = cache[mp] = hp.open_map(mp, game)
+                    except Exception:
+                        continue
+                hit = _useful_fields(m, cls, name, plug, wanted)
+                if hit:
+                    useful[(enemy, cls, name)] = hit
+        if useful:
+            print('  --- USEFUL: uncarded, but carries a field a card already tunes')
+            for (enemy, cls, name), flds in sorted(useful.items()):
+                print('      %-16s %-5s %s' % (enemy, cls, name[:56]))
+                for f, b in sorted(flds):
+                    print('           %-40s %s' % (f, b or ''))
+            useful_total += len(useful)
         last = None
         for enemy, cls, name, nmaps in rows:
+            mark = '  << USEFUL' if (enemy, cls, name) in useful else ''
             if enemy != last:
                 print('  %s' % enemy)
                 last = enemy
-            print('     %-5s %-62s %2d map(s)' % (cls, name[:62], nmaps))
+            print('     %-5s %-62s %2d map(s)%s' % (cls, name[:62], nmaps, mark))
         grand += len(rows)
         if unclaimed:
             print('  -- folders no enemy card claims: %s'
                   % ', '.join('%s(%d)' % (k, v) for k, v in unclaimed.most_common(8)))
     print()
-    print('%d uncarded enemy-owned tag(s) total' % grand)
+    print('%d uncarded enemy-owned tag(s) total, %d of them USEFUL '
+          '(carry a field some card already tunes)' % (grand, useful_total))
     return grand
 
 
