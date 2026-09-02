@@ -9139,6 +9139,16 @@
 	},	
 	"Enemy modifiers": {
 		"General modifiers": {
+			"AI Base I am not scared": {
+				"desc": "How much it takes to frighten anyone who has no threshold of their own.",
+				"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.\\n\\nThis is the shared-base copy: it edits `ai\\\\generic` and so moves every character that has NOT defined its own threshold. The per-enemy cards cover the ones that have.",
+				"game": ["Halo 2", "Halo 3", "Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+					{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+				]
+			},
 			"AI Base Accuracy": {
 				"desc": "How accurate every enemy is, across the board.",
 				"debug_desc": "`Accuracy Bounds` and its Max are the range an enemy's accuracy drifts between, `Accuracy Time` how long it takes to settle there. Difficulty-prefixed, so the row follows the difficulty being patched.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: **all 33 tags inherit accuracy, not one defines it.**",
@@ -9468,6 +9478,16 @@
 		},
 		"Specific Enemy modifier": {
 			"Elite": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 2", "Halo Reach"],
+					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
@@ -9863,6 +9883,16 @@
 				}
 			},
 			"Hunter": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
@@ -10176,6 +10206,16 @@
 				}
 			},
 			"Grunt": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
@@ -10526,6 +10566,16 @@
 				}
 			},
 			"Jackal": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Body Recharge": {
 					"desc": "How much health they win back after taking damage.",
 					"debug_desc": "`Body Recharge Fraction` is the share of max health the Jackal can win back, with the delay before it starts and the time it takes.\\n\\nThe Brute has had this card since Halo 2 and the Jackal never did, though it defines the block in every game. Halo 3 and ODST ship 0.2 on the jackal and major and 0.25 on the sniper; Reach ships 0.2 on all three.\\n\\n**Halo 2 is deliberately left out.** The jackal defines the block there too, but at 0 on every tag across all 43 maps, and `ai\\\\generic` sets no value either -- the mechanic is simply unused in Halo 2, so a card would be inventing behaviour rather than exposing it.",
@@ -11686,6 +11736,15 @@
 				}
 			},
 			"Sentinel": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"}
+					]
+				},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
 					"game": "Halo 1",
@@ -11917,6 +11976,16 @@
 				}
 			},
 			"Bugger": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Grenades": {
 					"desc": "How hard and how far they throw grenades.",
 					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",
@@ -12058,6 +12127,16 @@
 				}
 			},
 			"Brute": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
@@ -12336,6 +12415,16 @@
 				}
 			},
 			"Skirmisher": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Retreat": {
 					"desc": "Whether they break and run when the squad starts dying.",
 					"debug_desc": "Cower time plus the three retreat chances -- leader dead, one peer dead, a second peer dead.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. Skirmishers define all five as 0, so they never cower and never retreat. The cower bases (3.0 and 5.0) are `ai\\\\generic`'s own values, i.e. what a Skirmisher would have inherited had it not defined the block; the three chance bases are 0.5, matching the Engineer's Peer Dead Retreat Chance, the closest Reach sibling that sets one.",
@@ -12448,6 +12537,16 @@
 				}
 			},
 			"Engineer": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
