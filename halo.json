@@ -6105,46 +6105,58 @@
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
-						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
-						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"]}
+						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
-					"game": ["Halo 3"],
-					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+						"Halo Reach": "jpt! objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\damage_effects\\machinegun_turret_bullet"
+					},
 					"targets": [
-						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
-						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
-						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] }
 					]
 				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
-						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
-						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+						{ "field": "Acceleration Time", "block": "Barrels", "index": "all" },
+						{ "field": "Deceleration Time", "block": "Barrels", "index": "all" }
 					]
 				},
 				"Melee Seeking": {
@@ -6152,18 +6164,23 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret"
+					},
 					"targets": [
-						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+						{ "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
 						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
@@ -6171,8 +6188,11 @@
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
 						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
 						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
@@ -6181,20 +6201,24 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3"]}
+						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet" }, "follows_choice": true, "games": ["Halo 3"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet" }, "follows_choice": true, "games": ["Halo 3"] }
 					]
 				},
 				"Bullet Damage": {
 					"desc": "Damage per bullet (mounted and detached)",
-					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
+						"Halo Reach": "jpt! objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\damage_effects\\machinegun_turret_bullet"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -6204,23 +6228,29 @@
 				"Projectile": {
 					"desc": "Range and speed of the bullets",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": "Halo 3",
-					"tag": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
+						"Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet"
+					},
 					"targets": [
-						{"field": "Maximum Range", "group": "Range" },
-						{"field": "Initial Velocity", "group": "Velocity" },
-						{"field": "Final Velocity", "group": "Velocity" },
-						{"field": "Air Damage Range", "group": "Range"},
-						{"field": "Air Damage Range Max", "group": "Range"},
-						{"field": "Water Damage Range", "group": "Range"},
-						{"field": "Water Damage Range Max", "group": "Range"}
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Water Damage Range", "group": "Range" },
+						{ "field": "Water Damage Range Max", "group": "Range" }
 					]
 				},
 				"More Shooting": {
 					"desc": "How fast this weapon sprays while you hold the trigger.",
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"easier_when": "increased",
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
@@ -6232,8 +6262,11 @@
 				"Fire Recovery Time": {
 					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
@@ -6242,8 +6275,11 @@
 				"Magazine": {
 					"desc": "Rounds when detached",
 					"ignore": "yes",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret"
+					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
 						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
@@ -6254,8 +6290,11 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
@@ -6267,46 +6306,58 @@
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
-						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
-						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"]}
+						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
-					"game": ["Halo 3"],
-					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+						"Halo Reach": "jpt! objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\damage_effects\\plasma_turret_bolt"
+					},
 					"targets": [
-						{"field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1},
-						{"field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0},
-						{"field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0}
+						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] }
 					]
 				},
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
-					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
-						{"field": "Acceleration Time", "block": "Barrels", "index": "all"},
-						{"field": "Deceleration Time", "block": "Barrels", "index": "all"}
+						{ "field": "Acceleration Time", "block": "Barrels", "index": "all" },
+						{ "field": "Deceleration Time", "block": "Barrels", "index": "all" }
 					]
 				},
 				"Melee Seeking": {
@@ -6314,18 +6365,23 @@
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.\n\nMarked `ignore` on this weapon: the pyramid is what a MELEE weapon is built around, and every gun merely carries one because the engine gives every weapon a melee. The card stays wired and verified here, so enabling it is a one-word edit, but only the Energy Blade and Gravity Hammer offer it.",
 					"ignore": "yes",
 					"game": ["Halo 3", "Halo 3: ODST"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon"
+					},
 					"targets": [
-						{"field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0},
-						{"field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0}
+						{ "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Angles p", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
+						{ "field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Movement Penalty Type": {
 					"desc": "When this turret slows you down: all the time, or only while you are zoomed in or reloading.",
 					"debug_desc": "The `Movement Penalized` enum, which gates the Forward/Sideways Movement Penalty the Movement Penalties card tunes. Options are Always, When Zoomed, and When Zoomed Or Reloading; all four turrets ship at Always.\n\nOffered only where BOTH halves already exist — a weapon with no Movement Penalties has nothing for the type to gate, and one with no Zoom card can never enter the zoomed state the other two options wait for. That is why it rides alongside those two cards rather than being offered on every weapon that happens to carry the field.\n\nSet by NAME like every choice, though this enum happens to be ordered the same in Halo 3, ODST and Reach.\n\nWhen Zoomed is deliberately NOT offered: turrets carry no ammunition and cannot be reloaded today, so it and When Zoomed Or Reloading would behave identically. Offering the broader one keeps the card correct if reloading is ever added to them.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
 						{ "field": "Movement Penalized", "choice": true, "options": ["Always", "When Zoomed Or Reloading"] }
 					]
@@ -6333,8 +6389,11 @@
 				"Movement Penalties": {
 					"desc": "How much this turret slows you down while you are lugging it around.",
 					"debug_desc": "`Forward Movement Penalty` and `Sideways Movement Penalty` on the weapon, both moved together — they are one concept split into two fields, and setting them apart only makes strafing and advancing disagree. `Movement Penalized` gates when they apply and ships at `always` on all four turrets.\n\nOnly the four detached turrets set these at all: measured 0.40 in Halo 3 and 0.20 in ODST on Machine Gun, Plasma Cannon, Missile Pod and Flamethrower. The Flak Cannon looks like a turret but is a carried support weapon and sits at 0.00 everywhere, so it has no card. The card is written for Halo 3 and ODST picks it up through game inheritance, on the same tags.\n\n1.0 would pin you in place; 0 removes the penalty entirely and lets you run with a turret at full speed. The '&' in the tag also covers each turret's INTEGRATED variant, the one bolted to a vehicle; those ship at 0.00 because you are seated, so an operator leaves them at 0 and only the carried version moves.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
 						{ "field": "Forward Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 },
 						{ "field": "Sideways Movement Penalty", "group": "Movement Penalties", "harder_when": "increased", "min": 0, "max": 1 }
@@ -6343,20 +6402,24 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 3"],
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon"
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt"}, "follows_choice": true, "games": ["Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt"}, "follows_choice": true, "games": ["Halo 3"]}
+						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt" }, "follows_choice": true, "games": ["Halo 3"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt" }, "follows_choice": true, "games": ["Halo 3"] }
 					]
 				},
 				"Bullet Damage": {
 					"desc": "Damage per bolt (mounted and detached)",
-					"game": "Halo 3",
-					"tag": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
+						"Halo Reach": "jpt! objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\damage_effects\\plasma_turret_bolt"
+					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -6366,23 +6429,29 @@
 				"Projectile": {
 					"desc": "Range and speed of the bolts",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": "Halo 3",
-					"tag": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt",
+						"Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt"
+					},
 					"targets": [
-						{"field": "Maximum Range", "group": "Range" },
-						{"field": "Initial Velocity", "group": "Velocity" },
-						{"field": "Final Velocity", "group": "Velocity" },
-						{"field": "Air Damage Range", "group": "Range"},
-						{"field": "Air Damage Range Max", "group": "Range"},
-						{"field": "Water Damage Range", "group": "Range"},
-						{"field": "Water Damage Range Max", "group": "Range"}
+						{ "field": "Maximum Range", "group": "Range" },
+						{ "field": "Initial Velocity", "group": "Velocity" },
+						{ "field": "Final Velocity", "group": "Velocity" },
+						{ "field": "Air Damage Range", "group": "Range" },
+						{ "field": "Air Damage Range Max", "group": "Range" },
+						{ "field": "Water Damage Range", "group": "Range" },
+						{ "field": "Water Damage Range Max", "group": "Range" }
 					]
 				},
 				"More Shooting": {
 					"desc": "How fast this weapon sprays while you hold the trigger.",
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"easier_when": "increased",
 					"targets": [
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
@@ -6394,8 +6463,11 @@
 				"Fire Recovery Time": {
 					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
-					"game": ["Halo 3"],
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"easier_when": "decreased",
 					"targets": [
 						{ "field": "Fire Recovery Time", "block": "Barrels" }
@@ -6404,8 +6476,11 @@
 				"Magazine": {
 					"desc": "Rounds when detached",
 					"ignore": "yes",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret"
+					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
 						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
@@ -6416,8 +6491,11 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"game": "Halo 3",
-					"tag": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+					},
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
