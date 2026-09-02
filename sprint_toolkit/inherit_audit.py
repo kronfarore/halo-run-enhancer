@@ -128,14 +128,32 @@ for game, subs, mps in CASES:
                                         for mm in maps))
                     rescue = ('A: %d other tag(s) have it' % anyone if anyone
                               else 'B: defined on NO tag in this map')
-            rows.append((' / '.join(path[-2:]), f, blk or '-', have, len(tags), rescue))
-            break                       # one representative field per card is enough
+            rows.append((' / '.join(path[-2:]), f, blk or '-', have, len(tags),
+                         rescue))
+            # EVERY field, not one representative. A card can be alive through one
+            # target and dead through another -- Cover Chance lands its chance fields
+            # and misses Cover Chance Time -- and a per-card verdict hides exactly
+            # that. Rows are per FIELD; the summary below folds them back per card.
     tot = len(rows)
     dead = [r for r in rows if r[3] == 0]
     part = [r for r in rows if 0 < r[3] < r[4]]
     full = [r for r in rows if r[3] == r[4]]
-    print('  %d enemy cards here: %d define the block on EVERY tag, '
-          '%d on SOME, %d on NONE' % (tot, len(full), len(part), len(dead)))
+    # per card: alive if ANY of its fields lands, wholly dead if none do
+    bycard = collections.defaultdict(list)
+    for r in rows:
+        bycard[r[0]].append(r)
+    wholly = [c for c, rs in bycard.items() if all(r[3] == 0 for r in rs)]
+    partly = [c for c, rs in bycard.items()
+              if any(r[3] == 0 for r in rs) and any(r[3] for r in rs)]
+    print('  %d field-target(s) across %d card(s): %d land on EVERY tag, '
+          '%d on SOME, %d on NONE'
+          % (tot, len(bycard), len(full), len(part), len(dead)))
+    print('  cards: %d wholly dead, %d partly dead (some fields land, some do not)'
+          % (len(wholly), len(partly)))
+    if wholly:
+        print('  --- WHOLLY DEAD: %s' % ', '.join(sorted(wholly)))
+    if partly:
+        print('  --- PARTLY DEAD: %s' % ', '.join(sorted(partly)))
     gen = any(mm.find_tags('char', 'ai' + chr(92) + 'generic') for mm in maps)
     print('  (ai\\generic present: %s)' % bool(gen))
     for label, rs in (('NONE (inherits — card is a no-op today)', dead),

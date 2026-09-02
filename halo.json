@@ -9186,7 +9186,7 @@
 				"targets": [
 					{"field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0, "harder_when": "decreased"},
 					{"field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0},
-					{"field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1, "zero_is": 0.5, "harder_when": "increased"}
+					{"field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
 				]
 			},
 			"Player Preference": {
@@ -9548,6 +9548,7 @@
 				},
 				"Cover Chance": {
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
+					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
@@ -10218,6 +10219,7 @@
 				},
 				"Cover Chance": {
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
+					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -10632,6 +10634,7 @@
 				},
 				"Cover Chance": {
 					"desc": "How readily they duck into cover instead of standing in the open.",
+					"skip_games": ["Halo Reach"],
 					"debug_desc": "Halo 1 uses dive-into / emerge-from cover chance; Halo 2 uses a cover-seeking chance. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
@@ -12512,7 +12515,7 @@
 					"targets": [
 						{ "field": "Shield Boost Radius Maximum", "block": "Engineer Properties", "index": "all" },
 						{ "field": "Shield Boost Period", "block": "Engineer Properties", "index": "all" },
-						{ "field": "Shield Boost Strength", "block": "Engineer Properties", "index": "all" }
+						{ "field": "Shield Boost Strength", "block": "Engineer Properties", "index": "all", "games": ["Halo 3: ODST"] }
 					]
 				}
 			}
