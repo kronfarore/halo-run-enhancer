@@ -5482,6 +5482,15 @@ class MagnitudeEditorDialog(QDialog):
                     continue
                 tag = db.eqip_tag_for(w, self.game)
                 p = tag.split(' ', 1)[1].strip() if tag else None
+                # A tag may name SEVERAL paths joined by '&' so a card patches every
+                # variant -- Reach's Armor Lock is armor_lockup plus Jorge's own
+                # armor_lockup_jorge. Placement needs ONE object, and the whole joined
+                # string was being handed through as if it were a path: the placement
+                # landed on the last variant, which no level ships, and the row came
+                # back ok=True having placed nothing. The first path is the canonical
+                # one.
+                if p and '&' in p:
+                    p = p.split('&')[0].strip()
                 if p and p not in seen:
                     seen.add(p)
                     out.append(p)
