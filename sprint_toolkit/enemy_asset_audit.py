@@ -82,10 +82,26 @@ IGNORE = {
         # something that hits you, so there is nothing an operator could scale.
         ('jpt!', 'sentinel_aggressor' + B + 'weapons' + B + 'charged_bolt'),
     ],
+    'Halo Reach': [
+        # An Armor Lock copy the Hunter never uses: it carries the ability's shape
+        # (Warmup Time 0.15, Override Camera, Invincibility Mode) but NO energy
+        # economy -- recharge rate, activation energy and drain all read 0, so it can
+        # neither be triggered nor sustained. Confirmed non-functional by the user.
+        ('eqip', 'hunter' + B + 'hunter_roadblock'),
+    ],
 }
+
+# Classes that are enemy-owned but never the place an ENEMY card edits. An enemy's
+# vitality, stun and recharge live in its `char` tag; `hlmt` and `coll` carry the
+# MODEL's damage info, which is the PLAYER's health pool (see the Player Health /
+# Shield / Recharge Delay cards) and, in Halo 1 only, the Elite and Jackal Recharge
+# Delay cards -- both already carded. Reporting them as enemy gaps is noise.
+IGNORE_CLASSES = {'hlmt', 'coll'}
 
 
 def is_ignored(game, cls, path):
+    if cls in IGNORE_CLASSES:
+        return True
     p = str(path).replace('/', B).lower()
     return any(c == cls and sub.lower() in p for c, sub in IGNORE.get(game, ()))
 
