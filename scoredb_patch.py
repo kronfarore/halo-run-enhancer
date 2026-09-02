@@ -390,3 +390,38 @@ def restore(scoredb):
         shutil.copy2(bak, scoredb)
         return True
     return False
+
+
+# Marines are the one bucket whose sign is a GAMEPLAY question rather than a constant.
+# Normally killing one is a betrayal and costs points; under the Betrayal skull they are
+# ordinary enemies and should pay out like any other kill.
+MARINE_ROW = re.compile(r'(type="_campaign_metagame_bucket_type_marine"[^/]*?)'
+                        r'score="(-?[\d.]+)"')
+
+
+def set_marine_sign(scoredb, positive):
+    """Force every Marine row's score positive or negative, magnitude untouched.
+
+    Sign-only and idempotent on purpose, so it composes with `apply()` rather than
+    fighting it: the scaler rewrites the whole file from the pristine baseline on every
+    patch, and this runs after it and only flips what it finds. Calling it twice, or
+    calling it on a file the scaler just regenerated, both land on the same result.
+
+    Returns the number of rows changed (0 when they were already the wanted sign).
+    """
+    with open(scoredb, encoding='utf-8') as f:
+        text = f.read()
+    n = [0]
+
+    def sub(m):
+        cur = float(m.group(2))
+        want = abs(cur) if positive else -abs(cur)
+        if want != cur:
+            n[0] += 1
+        return '%sscore="%g"' % (m.group(1), want)
+
+    out = MARINE_ROW.sub(sub, text)
+    if n[0]:
+        with open(scoredb, 'w', encoding='utf-8', newline='') as f:
+            f.write(out)
+    return n[0]

@@ -156,6 +156,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'auto_new_weapon_abilities', 'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult', 'score_live_push',
+               'betrayal_marines_score',
                'death_penalty_scaling', 'death_penalty_per_round',
                'death_penalty_base',
                'difficulty_baseline',
@@ -491,6 +492,13 @@ CONFIG = {
     # this is not a map patch -- Halo 1 and Halo 2 have no campaign metagame in their
     # own dlls, and the one scoring engine all five games share is the MCC wrapper.
     # So it is a live process write, and it works in every game for that reason.
+    # Under the Betrayal skull the Marines turn on you, so killing one stops
+    # being a betrayal and should pay out like any other kill. Two things have to
+    # be true for that: the ScoreDB Marine rows must be positive, and the
+    # wrapper's sign guard has to be opened, because it discards a row that is
+    # not negative and charges a flat -50 instead. Both are undone when the run
+    # has no Betrayal, so a normal run keeps vanilla scoring.
+    "betrayal_marines_score": True,
     "death_penalty_scaling": False,
     "death_penalty_per_round": 0.10,   # +10% of the base penalty per round taken
     "death_penalty_base": 25.0,        # what MCC ships; 0 rounds leaves it unchanged
@@ -4411,6 +4419,70 @@ class MagnitudeEditorDialog(QDialog):
                          'reason': pushed.get('reason')})
         return rows
 
+    def _apply_betrayal_scoring(self, skulls):
+        r"""Make Marines score like enemies while the Betrayal skull is active.
+
+        Betrayal turns every human squad on the player, at which point charging you for
+        killing one is backwards. Two independent things stand in the way and BOTH have
+        to be handled, which is why this is one step rather than a scoredb edit:
+
+          * the ScoreDB Marine rows are negative, and
+          * the wrapper only honours a row when it IS negative -- `jbe` at
+            +0x00437F6E -- discarding anything else in favour of a flat -50.
+
+        So the rows are flipped positive and the guard is opened. Measured in game in
+        Halo 2 and Halo 3: Marines then award their row value, scaled by the difficulty
+        multiplier like any other kill.
+
+        Runs AFTER the score rescale, which regenerates the whole file from the pristine
+        baseline; the flip is sign-only and idempotent so the two compose in that order.
+        Both halves are undone when the run has no Betrayal, so turning the skull off --
+        or patching a different map -- puts vanilla scoring back.
+        """
+        import scoredb_patch
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        on = any(str(s).strip().lower() == 'betrayal' for s in (skulls or ()))
+        path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+        if not os.path.exists(path):
+            return []
+        rows = []
+        try:
+            changed = scoredb_patch.set_marine_sign(path, positive=on)
+        except Exception as e:
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Betrayal scoring',
+                     'field': 'Marine rows', 'ok': False, 'reason': str(e)}]
+        try:
+            import death_penalty, score_live
+        except Exception as e:
+            return [{'tag': 'MCC process', 'effect': 'Betrayal scoring',
+                     'field': 'sign guard', 'ok': False, 'reason': str(e)}]
+        pushed = score_live.push_from_xml(path) if changed else None
+        h, base, pid, err = death_penalty.attach()
+        if err:
+            closed = 'not running' in str(err)
+            return [{'tag': 'MCC process', 'effect': 'Betrayal scoring',
+                     'field': 'sign guard', 'ok': closed, 'skip': closed,
+                     'reason': err}]
+        try:
+            if on:
+                ok, e = death_penalty.betrayal_open(h, base)
+            else:
+                ok, e = death_penalty.betrayal_restore(h, base)
+        finally:
+            death_penalty.k32.CloseHandle(h)
+        tail = ''
+        if pushed is not None:
+            tail = (' — pushed live (%d records)' % pushed['written']
+                    if pushed.get('ok') else ' — live push failed: %s'
+                    % pushed.get('reason'))
+        rows.append({'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Betrayal scoring',
+                     'field': 'Marine rows', 'ok': bool(ok),
+                     'old': 'cost points' if on else 'award points',
+                     'new': ('award points%s' % tail) if on
+                            else ('cost points%s' % tail),
+                     'reason': None if ok else e})
+        return rows
+
     def _apply_death_penalty(self):
         r"""Scale the metagame's player-death penalty with the run's round count.
 
@@ -5836,6 +5908,14 @@ class MagnitudeEditorDialog(QDialog):
                      if CONFIG.get('score_live_push') else "Rescaling metagame scores")
             results.extend(self._run_busy(self._apply_score_scaling,
                                           title="Metagame scores", label=label))
+
+        # AFTER the rescale: that regenerates scoredb.xml from the pristine baseline,
+        # so a sign flip applied before it would simply be overwritten.
+        if CONFIG.get('betrayal_marines_score'):
+            results.extend(self._run_busy(
+                lambda: self._apply_betrayal_scoring(skulls),
+                title="Betrayal scoring",
+                label="Setting how Marines score"))
 
         # Same footing: a live write to another process, never fatal to the map patch.
         if CONFIG.get('death_penalty_scaling'):
@@ -7526,6 +7606,23 @@ class OptionsDialog(QDialog):
             "round 10 costs 50 and round 20 costs 75.")
         sform.addRow("    ↳ Per round:", self.death_pen_per)
 
+        self.betrayal_score_cb = QCheckBox(
+            "Betrayal skull: killing Marines awards points instead of costing them")
+        self.betrayal_score_cb.setChecked(bool(CONFIG.get('betrayal_marines_score', True)))
+        self.betrayal_score_cb.setToolTip(
+            "Under the Betrayal skull every human squad turns on you, so charging you "
+            "for killing a Marine is backwards.\n\n"
+            "Two things have to change together for that to work, which is why this is "
+            "one switch: the ScoreDB Marine rows have to be positive, AND the wrapper's "
+            "sign guard has to be opened — it discards any row that is not "
+            "negative and charges a flat -50 instead. That guard is why setting the "
+            "Marine scores positive by hand never did anything.\n\n"
+            "Applied only while the run actually has Betrayal; both halves are put back "
+            "otherwise, so a normal run keeps vanilla scoring. Measured in Halo 2 and "
+            "Halo 3: Marines then pay out their row value, scaled by difficulty like "
+            "any other kill.")
+        sform.addRow("Betrayal scoring:", self.betrayal_score_cb)
+
         def _sync_death(_=False):
             on = self.death_pen_cb.isChecked()
             self.death_pen_base.setEnabled(on)
@@ -7797,6 +7894,7 @@ class OptionsDialog(QDialog):
             'score_step': round(self.score_step.value(), 3),
             'score_cap_mult': round(self.score_cap.value(), 1),
             'score_live_push': self.score_push_cb.isChecked(),
+            'betrayal_marines_score': self.betrayal_score_cb.isChecked(),
             'death_penalty_scaling': self.death_pen_cb.isChecked(),
             'death_penalty_base': self.death_pen_base.value(),
             'death_penalty_per_round': self.death_pen_per.value(),
