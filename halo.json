@@ -9580,7 +9580,7 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 1", "Halo 2", "Halo Reach"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
@@ -9630,7 +9630,7 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
@@ -9683,7 +9683,7 @@
 						{ "field": "Target Tracking" },
 						{ "field": "Target Leading" }
 					],
-					"game": "Halo 1"
+					"game": ["Halo 1", "Halo Reach"]
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
@@ -9776,7 +9776,7 @@
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				}
 			},
 			"Hunter": {
@@ -10038,7 +10038,7 @@
 				"Berserk": {
 					"desc": "How long Hunters rampage once they charge, and how far they push it.",
 					"debug_desc": "UNVERIFIED. Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may do nothing at all until that is confirmed in-game. Covers charge rampage cooldown, perimeter and limits.",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
 					"targets": [
@@ -10379,7 +10379,7 @@
 				},
 				"Kamikaze": {
 					"desc": "Suicide-charge chance and limits",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
 					"targets": [
 						{ "field": "Broken Kamikaze Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
@@ -10388,7 +10388,7 @@
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
@@ -10669,11 +10669,11 @@
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach"]
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
@@ -10683,7 +10683,7 @@
 				"Retreat": {
 					"desc": "How readily they break and cower when their squad starts dying.",
 					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
 						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
@@ -11711,7 +11711,7 @@
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and vitality threshold",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
@@ -11844,7 +11844,7 @@
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts and the chance of one.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11874,7 +11874,7 @@
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and the vitality threshold that triggers it.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11898,7 +11898,7 @@
 				},
 				"Body Recharge": {
 					"desc": "Did you know Brutes can regenerate Health? Recharge Fraction = % of Max Health they can regain.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11912,7 +11912,7 @@
 				"Grenades": {
 					"desc": "Grenade throwing — velocity, range, collateral.",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11928,7 +11928,7 @@
 				"Grenades Chance": {
 					"desc": "How often they throw grenades.",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, so ODST is excluded outright; there they inherit `ai\\\\generic` and the general **Grenade Scales** dial is the handle.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11941,7 +11941,7 @@
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving away from a grenade.",
 					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11984,7 +11984,7 @@
 				"Melee Leap": {
 					"desc": "How far and how fast they lunge when they close on you.",
 					"debug_desc": "Lunge range, velocity, chance and ballistic arc, on the Brutes' OWN Charge Properties -- nothing shared. Defined on 1 brute tag in Halo 2, 2 in Halo 3 and 5 in ODST; the rest inherit from those. Added 2026-08-31: the Brutes have carried these fields since Halo 2 and never had a card for them.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
@@ -11999,7 +11999,7 @@
 				},
 				"Shield down Berserk": {
 					"desc": "Chance to berserk when shields are deplteded depending on how far away they are, sorted in the right pair",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
@@ -12010,7 +12010,7 @@
 				},
 				"More Berserking": {
 					"desc": "Berserking Cooldown and how many can berserk at the same time",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all"},
@@ -12020,7 +12020,7 @@
 				},
 				"Leader Charge": {
 					"desc": "Behavior for a leader to charge in",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" , "games": ["Halo 2", "Halo 3"], "min": 0, "max": 1 },
@@ -12030,7 +12030,7 @@
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
@@ -12039,7 +12039,7 @@
 				},
 				"Deployable Shield Use": {
 					"desc": "Cover use and bubble-shield deployment thresholds",
-					"game": "Halo 3",
+					"game": ["Halo 3", "Halo Reach"],
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
@@ -12164,7 +12164,7 @@
 			"Engineer": {
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": "Halo 3: ODST",
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
@@ -12173,7 +12173,7 @@
 				},
 				"Cover Properties": {
 					"desc": "Cover-seeking time and the vitality threshold that triggers it.",
-					"game": "Halo 3: ODST",
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
 						{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
@@ -12192,7 +12192,7 @@
 				},
 				"Retreat": {
 					"desc": "Cower time and flee chance when a leader or peers die.",
-					"game": "Halo 3: ODST",
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
 						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
@@ -12204,7 +12204,7 @@
 				},
 				"Death": {
 					"desc": "How high it rises when killed, how long the rise takes, and the delay and body vitality of the detonation.",
-					"game": "Halo 3: ODST",
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
 						{ "field": "Death Height", "block": "Engineer Properties", "index": "all" },
@@ -12215,7 +12215,7 @@
 				},
 				"Shield Boost": {
 					"desc": "Radius, refresh period and strength of the shields it grants nearby allies.",
-					"game": "Halo 3: ODST",
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
 						{ "field": "Shield Boost Radius Maximum", "block": "Engineer Properties", "index": "all" },
