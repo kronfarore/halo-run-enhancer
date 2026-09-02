@@ -10,8 +10,11 @@ only way left to find out what Anger does is to watch memory with it on and off.
         Decode the live skull mask. Run it with skulls off, then with Anger on: bit 0
         flipping is the empirical proof of the bit mapping the disassembly derived.
 
-    python sprint_toolkit/skull_diff.py snap A1
-        Snapshot halo1.dll's writable data to reports/skull_A1.bin.
+    python sprint_toolkit/skull_diff.py snap A1 level+condition as a note
+        Snapshot halo1.dll's writable data to reports/skull_A1.bin. Every run also
+        appends its readable values -- mask, active skulls, expanded flags, whether a
+        level is loaded -- to reports/skull_log.jsonl, so a reading is never lost just
+        because a terminal scrolled.
 
     python sprint_toolkit/skull_diff.py diff A1 A2 B1
         Bytes that differ between A1 and B1 but NOT between A1 and A2. A1/A2 are two
@@ -102,6 +105,48 @@ def read(h, addr, size):
     return buf.raw[:got.value]
 
 
+LOG = os.path.join(OUT, 'skull_log.jsonl')
+
+
+def log(kind, **fields):
+    """Append every reading to a log, because a measurement nobody wrote down is a
+    measurement that has to be taken again.
+
+    One JSON object per line: machine-readable for later comparison, and printed as it
+    is written so the run itself is the receipt. The binary snapshot is the bulk data;
+    this is the part a person can actually read back -- what the mask said, which
+    flags were set, which level state it was taken in.
+    """
+    import datetime
+    import json
+    rec = dict(when=datetime.datetime.now().isoformat(timespec='seconds'),
+               kind=kind, **fields)
+    os.makedirs(OUT, exist_ok=True)
+    with open(LOG, 'a', encoding='utf-8') as f:
+        f.write(json.dumps(rec, ensure_ascii=False) + '\n')
+    return rec
+
+
+def state(h, base):
+    """Everything readable about the current skull state, as plain values."""
+    out = {}
+    raw = read(h, base + MASK_RVA, 8)
+    out['mask'] = struct.unpack('<Q', raw)[0] if raw else None
+    if out['mask'] is not None:
+        out['active'] = [BITS.get(b, 'bit %d' % b)
+                         for b in range(64) if out['mask'] >> b & 1]
+        out['anger'] = bool(out['mask'] & 1)
+    blob = read(h, base + FLAG_LO, FLAG_HI - FLAG_LO + 1)
+    if blob is not None:
+        out['flags_raw'] = blob.hex()
+        out['flags_set'] = [FLAG_NAMES.get(FLAG_LO + i, 'byte +%d' % i)
+                            for i, c in enumerate(blob) if c]
+    g = read(h, base + GUARD_RVA, 4)
+    out['guard'] = struct.unpack('<I', g)[0] if g else None
+    out['level_loaded'] = bool(out['guard'])
+    return out
+
+
 def attach():
     pid = find_pid()
     if not pid:
@@ -125,7 +170,9 @@ def attach():
 # to be made in-level, not from the main menu.
 FLAG_LO, FLAG_HI = 0x1C421B9, 0x1C421D5
 FLAG_NAMES = {0x1C421C9: 'blind', 0x1C421CE: 'anger', 0x1C421D5: 'masterblaster'}
-GUARD_RVA = 0x2B406C5
+# cmp dword ptr [rip+0x2abd0e5] sits at rva 0x835E0 and is 7 bytes, so it tests
+# 0x835E7 + 0x2abd0e5 = 0x2B406CC. An earlier value here was mis-added by 7.
+GUARD_RVA = 0x2B406CC
 
 
 def show_mask(h, base):
@@ -151,7 +198,7 @@ def show_mask(h, base):
                                          if g == 0 else ''))
 
 
-def snap(h, base, tag):
+def snap(h, base, tag, note=''):
     os.makedirs(OUT, exist_ok=True)
     path = os.path.join(OUT, 'skull_%s.bin' % tag)
     chunks, addr, end = [], base + DATA_RVA, base + DATA_RVA + DATA_SIZE
@@ -161,12 +208,18 @@ def snap(h, base, tag):
         chunks.append(got if got else b'\x00' * min(step, end - addr))
         addr += step
     blob = b''.join(chunks)
-    raw = read(h, base + MASK_RVA, 8)
-    mask = struct.unpack('<Q', raw)[0] if raw else 0
+    st = state(h, base)
+    mask = st.get('mask') or 0
     with open(path, 'wb') as f:
         f.write(struct.pack('<QQ', mask, len(blob)) + blob)
-    print('snapshot %s: %.1f MB, mask 0x%X (anger %s)'
-          % (tag, len(blob) / 1048576.0, mask, 'ON' if mask & 1 else 'off'))
+    rec = log('snap', tag=tag, note=note, bytes=len(blob), file=path, **st)
+    print('snapshot %s: %.1f MB, mask 0x%X, anger %s, level_loaded %s, flags %s'
+          % (tag, len(blob) / 1048576.0, mask,
+             'ON' if rec.get('anger') else 'off', rec.get('level_loaded'),
+             rec.get('flags_set') or 'none'))
+    print('   logged to %s' % LOG)
+    if not rec.get('level_loaded'):
+        print('   NOTE: no level is loaded, so this snapshot holds no skull state')
 
 
 def load(tag):
@@ -202,6 +255,14 @@ def diff(a1, a2, b1, limit):
         else:
             cur = [i, i]
             runs.append(cur)
+    log('diff', baseline=a1, baseline2=a2, test=b1,
+        masks={a1: m1, a2: m2, b1: m3}, raw_differences=sum(1 for i in range(n)
+                                                            if d1[i] != d3[i]),
+        noise_bytes=sum(noise), stable_bytes=len(hits), runs=len(runs),
+        first_runs=[{'rva': DATA_RVA + s,
+                     'from': d1[s:e + 1][:12].hex(),
+                     'to': d3[s:e + 1][:12].hex()} for s, e in runs[:limit]])
+    print('logged to %s' % LOG)
     print('%d run(s); first %d:' % (len(runs), min(limit, len(runs))))
     for s, e in runs[:limit]:
         rva = DATA_RVA + s
@@ -224,7 +285,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('mode', choices=('mask', 'snap', 'diff'))
-    ap.add_argument('tags', nargs='*')
+    ap.add_argument('tags', nargs='*',
+                    help='snap: a tag, then any words as a note ("snap A1 silent '
+                         'cartographer, paused at first control")')
     ap.add_argument('--limit', type=int, default=40)
     a = ap.parse_args()
     if a.mode == 'diff':
@@ -238,11 +301,13 @@ def main():
         return 1
     if a.mode == 'mask':
         show_mask(h, base)
+        log('mask', **state(h, base))
+        print('logged to %s' % LOG)
     else:
         if not a.tags:
             print('snap needs a tag, e.g. "snap A1"')
             return 2
-        snap(h, base, a.tags[0])
+        snap(h, base, a.tags[0], ' '.join(a.tags[1:]))
     return 0
 
 

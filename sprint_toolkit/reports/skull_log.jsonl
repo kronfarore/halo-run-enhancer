@@ -1,0 +1,2 @@
+{"when": "2026-09-02T18:37:09", "kind": "mask", "mask": 1, "active": ["anger"], "anger": true, "flags_raw": "0000000000000000000000000000000000000000000100000000000000", "flags_set": ["anger"], "guard": 0, "level_loaded": false}
+{"when": "2026-09-02T18:37:29", "kind": "mask", "mask": 1, "active": ["anger"], "anger": true, "flags_raw": "0000000000000000000000000000000000000000000100000000000000", "flags_set": ["anger"], "guard": 1, "level_loaded": true}
