@@ -355,7 +355,9 @@ def xml_sections():
         if not m:
             continue
         out[label] = collections.Counter(
-            float(v) for v in re.findall(r'\bscore="([\d.]+)"', m.group(1)))
+            # -? matters: the betrayal rows are the negative ones, and without it this
+            # counted the file as if they did not exist.
+            float(v) for v in re.findall(r'\bscore="(-?[\d.]+)"', m.group(1)))
     return out
 
 
@@ -378,9 +380,16 @@ def candidates(h):
             if (key & 0xFFFF) > 0x40 or (key >> 16) > 0x40:
                 continue
             sc, sk = struct.unpack_from('<ff', data, off + N_SCORE)
-            if not (1.0 <= sc <= SCORE_MAX and float(sc).is_integer()):
+            # abs(), NOT sc >= 1.0. Every BETRAYAL row in scoredb.xml is negative --
+            # Marine -50, Spartan -100, the vehicles -50..-200 -- so a positive-only
+            # filter threw away all 26 of them before they could become candidates.
+            # The table then read as 89 records against the file's 115, the push never
+            # wrote a betrayal row, and editing the Marine scores appeared to do
+            # nothing in game because only a restart could ever apply them.
+            if not (1.0 <= abs(sc) <= SCORE_MAX and float(sc).is_integer()):
                 continue
-            if sk != 0.0 and not (1.0 <= sk <= SCORE_MAX and float(sk).is_integer()):
+            if sk != 0.0 and not (1.0 <= abs(sk) <= SCORE_MAX
+                                  and float(sk).is_integer()):
                 continue
             left, parent, right = struct.unpack_from('<QQQ', data, off)
             if not all(0x10000 < p < (1 << 47) for p in (left, parent, right)):
