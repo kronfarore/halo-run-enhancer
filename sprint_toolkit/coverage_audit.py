@@ -65,6 +65,10 @@ with contextlib.redirect_stdout(_buf):
     # enemy mapping is derived from the card database and there must be exactly one
     # copy of that derivation, or the two audits disagree about who owns what.
     import enemy_asset_audit as eaa                               # noqa: E402
+    # Placement data: which turrets a level actually puts in the world. Its
+    # Halo 1 and Halo 2 vehicle support is what makes those two games
+    # answerable at all -- without it they reported no vehicles whatsoever.
+    import weapon_availability as wa                              # noqa: E402
 
 CFG = json.load(open('settings.json', encoding='utf-8'))
 _ROOT = CFG.get('mcc_root') or (
@@ -249,10 +253,13 @@ def main():
                          'noisy — the char plugin declares hundreds of fields and most '
                          'were never meant to be cards (345 rows for the Jackal alone)')
     ap.add_argument('--enemy', help='restrict to one enemy')
-    ap.add_argument('--only', choices=('fields', 'assets', 'turrets', 'all'),
+    ap.add_argument('--only',
+                    choices=('fields', 'assets', 'turrets', 'placed', 'all'),
                     default='all',
-                    help="'fields' = the char-field passes, 'assets' = the enemy-owned "
-                         "tag pass, 'turrets' = the turret pass. Default runs all three.")
+                    help="'fields' = the char-field passes, 'assets' = the "
+                         "enemy-owned tag pass, 'turrets' = every uncarded turret "
+                         "tag, 'placed' = only the turrets a level actually places "
+                         "and that are not just some vehicle's gun. Default runs all.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
     ap.add_argument('--no-useful', action='store_true',
@@ -273,6 +280,9 @@ def main():
     if args.only == 'turrets':
         print()
         return 0 if turret_pass(db, args) == 0 else 1
+    if args.only == 'placed':
+        print()
+        return 0 if placed_turret_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
@@ -375,6 +385,8 @@ def main():
         asset_pass(db, args)
         print()
         turret_pass(db, args)
+        print()
+        placed_turret_pass(db, args)
 
 
 def _carded_fields_by_class(db, game):
@@ -461,6 +473,153 @@ TURRET_CLASSES = {'vehi', 'weap', 'proj', 'jpt!'}
 def _is_turret(name):
     low = str(name or '').lower()
     return any(k in low for k in TURRET_MARKERS)
+
+
+def placed_turret_pass(db, args):
+    r"""Turrets that are a thing in their own right AND that a level actually places.
+
+    `turret_pass` above answers "what turret tags is nothing carding", which is the
+    honest full picture and 300 rows long. This answers the narrower question you act
+    on: which turrets are worth a card at all. Three filters, each doing work:
+
+      1. NOT owned by a bigger vehicle -- the same ownership rule, so the Warthog's
+         chaingun and the Wraith's mortar drop out.
+      2. The OWNER must itself be turret-shaped. This is what rules out a turret that
+         is ONLY a part of a vehicle: the Phantom's plasma turret survives filter 1,
+         because a Phantom is a standalone vehicle, but it is still just the Phantom's
+         gun. A Shade or a fixed plasma_cannon IS the turret.
+      3. PLACED in a campaign map, read from the Vehicles palette. A resident tag
+         proves nothing and a palette entry with no placements proves nothing --
+         placement is the proof. This is why the pass needs Halo 1 and Halo 2 vehicle
+         support in weapon_availability; without it both games reported nothing.
+
+    Each row also carries the two signals that decide whether a turret is interesting
+    to a PLAYER-side card, since a turret that cannot be picked up or that never runs
+    dry is a card for the enemy or for a vehicle instead:
+
+      detach   the folder has a `detach_gun` damage effect -- the engine's own "player
+               ripped this off its mount" event
+      ammo     whether the turret's weapons declare a Magazines element at all. No
+               Magazines means no reserve to run out: unlimited.
+    """
+    grand = 0
+    print('#' * 84)
+    print('TURRETS WORTH CARDING   (standalone, and actually placed)')
+    for game, subs, folder in eaa.CASES:
+        maps = eaa.game_maps(folder)
+        if not maps:
+            continue
+        reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
+        wp = reg.get('weap')
+        carded = eaa.carded_tags(db, game)
+        placed = collections.Counter()
+        turret_tags, vehi_folders, detach_folders = [], set(), set()
+        all_weaps = []                     # (folder, tag) for every weap in the game
+        print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
+        for mp in maps:
+            try:
+                m = hp.open_map(mp, game)
+            except Exception:
+                continue
+            for base, rec in (wa.vehicle_survey(m, game) or {}).items():
+                placed[base] += rec['placed']
+            for cls, name in eaa._iter_tags(m):
+                if not name:
+                    continue
+                low = str(name).lower()
+                if cls in ('vehi', 'gint'):
+                    vehi_folders.add(low.rsplit(chr(92), 1)[0])
+                if cls == 'jpt!' and 'detach' in low:
+                    detach_folders.add(low.rsplit(chr(92), 1)[0])
+                if cls == 'weap' and (low, name) not in all_weaps:
+                    all_weaps.append((low, name))
+                if cls in TURRET_CLASSES and _is_turret(name):
+                    if eaa.is_noise(name) or eaa.is_ignored(game, cls, name):
+                        continue
+                    if (cls, name) not in turret_tags:
+                        turret_tags.append((cls, name))
+
+        def top_owner(path):
+            parts = str(path).lower().split(chr(92))
+            own = None
+            for i in range(len(parts), 0, -1):
+                if chr(92).join(parts[:i]) in vehi_folders:
+                    own = chr(92).join(parts[:i])
+                    break
+            if own is None:
+                return None
+            up = own.split(chr(92))
+            for i in range(1, len(up)):
+                if chr(92).join(up[:i]) in vehi_folders:
+                    return chr(92).join(up[:i])
+            return own
+
+        sets = collections.defaultdict(list)
+        for cls, name in turret_tags:
+            fold = str(name).rsplit(chr(92), 1)[0]
+            own = top_owner(fold)
+            key = own if own is not None else fold.lower()
+            if not _is_turret(key):
+                continue                       # only a part of some vehicle
+            if not eaa.covered(cls, name, carded):
+                sets[key].append((cls, name))
+
+        weaps_under = collections.defaultdict(list)
+        for low, name in all_weaps:
+            for key in sets:
+                if low.startswith(key):
+                    weaps_under[key].append(name)
+
+        rows = []
+        for key, parts in sets.items():
+            n = placed.get(key.rsplit(chr(92), 1)[-1], 0)
+            if n <= 0:
+                continue
+            detach = any(d.startswith(key) for d in detach_folders)
+            # Ammo is read from EVERY weap the turret owns, not just the uncarded
+            # ones. On Halo 3 and ODST the gun itself is already carded as a player
+            # weapon, so the uncarded parts are the vehi and a damage effect -- asking
+            # only those gave "no weap of its own" for turrets that plainly have one.
+            #
+            # And a Magazines element is not by itself proof of finite ammo: Halo 1's
+            # `c gun turret gun` declares one holding 0/0/0, which is a magazine that
+            # can never run down. Rounds > 0 is the real test.
+            rounds = 0
+            for wname in weaps_under.get(key, ()):
+                if wp is None:
+                    break
+                for mp in maps:
+                    try:
+                        m = hp.open_map(mp, game)
+                    except Exception:
+                        continue
+                    if not m.find_tags('weap', wname):
+                        continue
+                    try:
+                        r = m.read_all('weap', wname, 'Rounds Total Initial', wp,
+                                       'Magazines', 'all')
+                    except Exception:
+                        r = None
+                    for _p, v in (r or []):
+                        try:
+                            rounds = max(rounds, int(v))
+                        except (TypeError, ValueError):
+                            pass
+                    break
+            rows.append((n, key, sorted(set(parts)), detach, rounds))
+        grand += len(rows)
+        print('=' * 84)
+        print('%s   %d turret(s) worth a look' % (game, len(rows)))
+        for n, key, parts, detach, rounds in sorted(rows, key=lambda r: -r[0]):
+            ammo = ('%d rounds' % rounds) if rounds > 0 else 'UNLIMITED'
+            keep = 'CARD' if (detach and rounds > 0) else 'skip'
+            print('   %-46s placed x%-4d detach=%-4s ammo=%-11s %s'
+                  % (key[:46], n, 'yes' if detach else 'no', ammo, keep))
+            for cls, name in parts:
+                print('        %-5s %s' % (cls, name))
+    print()
+    print('%d placed standalone turret(s) with uncarded parts' % grand)
+    return grand
 
 
 def turret_pass(db, args):
