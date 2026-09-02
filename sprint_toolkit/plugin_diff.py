@@ -71,11 +71,26 @@ def cards_using(group, field_names, game):
     data = json.load(open(HALO_JSON, encoding='utf-8'))
     out = {}
 
-    def games_of(node):
+    def offered_in(node):
+        """Is this card offered in `game`? Mirrors halo_enhancer's own gating: an
+        explicit game list, MINUS skip_games, with ODST inheriting Halo 3.
+
+        skip_games was ignored here at first, which reported `Stun Time` and
+        `Stun Penalty` as broken in Reach when both already carry
+        skip_games: ["Halo Reach"] -- i.e. the exact gating this check exists to
+        recommend was read as its absence."""
         g = node.get('games') or node.get('game')
+        skip = node.get('skip_games')
+        skip = [skip] if isinstance(skip, str) else list(skip or [])
+        want = {game}
+        if game == 'Halo 3: ODST':
+            want.add('Halo 3')           # ODST inherits Halo 3 cards
+        if any(s in want for s in skip):
+            return False
         if g is None:
-            return None
-        return [g] if isinstance(g, str) else list(g)
+            return True
+        gs = [g] if isinstance(g, str) else list(g)
+        return any(x in want for x in gs)
 
     def visit(node, owner):
         if isinstance(node, dict):
@@ -83,10 +98,28 @@ def cards_using(group, field_names, game):
             tags = [tag] if isinstance(tag, str) else (
                 list(tag.values()) if isinstance(tag, dict) else [])
             if tags and any(str(t).startswith(group + ' ') for t in tags):
-                gs = games_of(node)
-                if gs is None or game in gs:
-                    for t in node.get('targets') or []:
+                if offered_in(node):
+                    # `targets` is a list, or a dict keyed by game -- the game-keyed
+                    # form was skipped entirely before, so cards written that way
+                    # (Stun Time on hlmt) contributed nothing to this check.
+                    tg = node.get('targets')
+                    rows = []
+                    if isinstance(tg, list):
+                        rows = tg
+                    elif isinstance(tg, dict):
+                        for gk, v in tg.items():
+                            if gk == game or (game == 'Halo 3: ODST' and gk == 'Halo 3'):
+                                rows += v if isinstance(v, list) else [v]
+                    for t in rows:
                         if not isinstance(t, dict):
+                            continue
+                        # A TARGET carries its own games/skip_games, and that is where
+                        # this kind of breakage is normally fixed -- Brute's
+                        # `Vitality Fraction Bubbleshield` and Engineer's
+                        # `Shield Boost Strength` are both already pinned to ODST while
+                        # the card itself stays offered in Reach. Reading only the card
+                        # reported all three as broken when none were.
+                        if not offered_in(t):
                             continue
                         f = t.get('field')
                         names = [f] if isinstance(f, str) else (
@@ -155,10 +188,37 @@ def main():
         print("\n=== BLOCKS gone since %s (%d) ===" % (o.a, len(gone_blocks)))
         for b in sorted(gone_blocks):
             print("   %s" % b)
-        print("\n=== FIELDS gone since %s (%d) ===" % (o.a, len(gone)))
-        leaves = {f.rpartition('/')[2] for f in gone}
+        # MOVED is not REMOVED. Reach relocated `Full Speed Multiplier` from
+        # Player Control to Player Information; keyed by full path that reads as a
+        # deletion, and the Reach Sprint Speed card -- which already names the new
+        # block and works -- was reported as broken. A leaf name that still exists
+        # somewhere in the later tag is a move, and cards are matched by leaf name,
+        # so counting moves as breakage is a guaranteed false positive.
+        # ...but only for leaf names distinctive enough to mean something. `Name` sits
+        # in 37 blocks of Reach's scnr and `Flags` in 50, so a bare name match there is
+        # noise, not a move. Anything above this many homes is treated as a common
+        # label and left in the removed list.
+        COMMON_LEAF = 6
+        b_leaves = {}
+        for f in bf:
+            b_leaves.setdefault(f.rpartition('/')[2], []).append(f)
+        moved = {}
+        for f in gone:
+            where = b_leaves.get(f.rpartition('/')[2]) or []
+            if 0 < len(where) <= COMMON_LEAF:
+                moved[f] = where
+        really_gone = [f for f in gone if f not in moved]
+
+        if moved:
+            print("\n=== FIELDS moved to another block in %s (%d) ==="
+                  % (o.b, len(moved)))
+            for f in sorted(moved):
+                print("   %-52s -> %s" % (f, ', '.join(sorted(moved[f]))))
+
+        print("\n=== FIELDS gone since %s (%d) ===" % (o.a, len(really_gone)))
+        leaves = {f.rpartition('/')[2] for f in really_gone}
         used = cards_using(o.group, leaves, o.b)
-        for f in sorted(gone):
+        for f in sorted(really_gone):
             leaf = f.rpartition('/')[2]
             who = used.get(leaf)
             print("   %-58s %s" % (f, ('USED BY: ' + ', '.join(sorted(who))) if who else ''))

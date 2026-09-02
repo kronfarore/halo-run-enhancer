@@ -10982,6 +10982,7 @@
 			},
 			"Flood Combat Form": {
 				"Vision": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Vision Distance, Angles, Peripheral",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -10997,6 +10998,7 @@
 					]
 				},
 				"Hearing Distance": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Hearing Distance",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -11008,6 +11010,7 @@
 					]
 				},
 				"Perception": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Notice Projectile, Notice Vehicle, Combat/Guard/Non-Combat Perception (Halo 3 merges the three times into one Perception Time)",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -11023,6 +11026,7 @@
 					]
 				},
 				"Melee Behavior": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -11049,6 +11053,7 @@
 					"game": "Halo 1"
 				},
 				"Melee Leap": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Melee Leap Range, Melee Leap Velocity, Melee Leap Chance, Melee Leap Ballistic",
 					"tag": {
 						"Halo 1": "actr characters\\floodcombat*",
@@ -11075,6 +11080,7 @@
 					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
+					"skip_games": ["Halo Reach"],
 					"desc": "How far away they will start shooting at you.",
 					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Maximum Firing Distance modifier." },
@@ -11093,6 +11099,7 @@
 					}
 				},
 				"Rate of Fire": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Firing Patterns modifier." },
 					"tag": {
@@ -11111,6 +11118,7 @@
 					}
 				},
 				"Accuracy": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Enemy weapon accuracy.",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
@@ -11148,6 +11156,7 @@
 					"game": "Halo 1"
 				},
 				"Body Vitality": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
@@ -11164,6 +11173,7 @@
 					}
 				},
 				"Shield Vitality": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Shield Capacity",
 					"tag": {
 						"Halo 1": "actv characters\\floodcombat*",
@@ -11180,6 +11190,7 @@
 					}
 				},
 				"Melee Damage": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Melee Damage from Flood Combat Forms",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcombat elite\\melee & characters\\floodcombat_human\\melee",
@@ -11193,6 +11204,7 @@
 					]
 				},
 				"Melee Radius": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Melee Radius from Flood Combat Forms",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcombat elite\\melee & characters\\floodcombat_human\\melee",
@@ -11445,6 +11457,7 @@
 					]
 				},
 				"Melee Behavior": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
 					"tag": {
 						"Halo 1": "actr characters\\floodcarrier\\*",
@@ -11482,6 +11495,7 @@
 					"game": "Halo 1"
 				},
 				"Body Vitality": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Health",
 					"tag": {
 						"Halo 1": "actv characters\\floodcarrier\\*",
@@ -11498,6 +11512,7 @@
 					}
 				},
 				"Pop Radius": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Might increase the explosion when they die?",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
@@ -11510,6 +11525,7 @@
 					]
 				},
 				"Pop Damage": {
+					"skip_games": ["Halo Reach"],
 					"desc": "Damage on pop? Lower Bound, Higher Bound",
 					"tag": {
 						"Halo 1": "jpt! characters\\floodcarrier\\bdoy destroyed",
@@ -13257,7 +13273,6 @@
 			"Elite General": {
 				"Melee Behavior": {
 					"desc": "How often the General swings at you, and from how far.",
-					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
@@ -13271,7 +13286,6 @@
 				},
 				"Grenade Chance": {
 					"desc": "How often the General throws grenades at you.",
-					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
@@ -13312,7 +13326,6 @@
 			"Elite Zealot": {
 				"Grenade Chance": {
 					"desc": "How often the Zealot throws grenades at you.",
-					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",

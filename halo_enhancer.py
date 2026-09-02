@@ -1755,6 +1755,13 @@ class ModifierDatabase:
             'debug_desc': mod_data.get('debug_desc'),          # mechanism, shown as a tooltip
             'tag': mod_data.get('tag', ''),
             'games': self._parse_games(mod_data.get('game')),
+            # The card-level DENY list. `skip_games` was implemented for TARGETS only
+            # (see target_applies), so a card carrying it was still offered everywhere
+            # -- Stun Time, Stun Penalty and the three Cover Chance gates all said
+            # "not in Reach" and were all offered in Reach regardless, writing to
+            # matg/char fields Reach no longer has. Silent no-ops, but the card still
+            # took a slot that a working one could have had.
+            'skip_games': self._parse_games(mod_data.get('skip_games')),
             'wildcard': bool(mod_data.get('wildcard', False)),
             'skull': mod_data.get('skull'),   # #7: whole-map rule, not a tag edit
             # Name(s) of skull(s) that neutralise this effect. Only surfaced on the
@@ -2271,6 +2278,10 @@ class ModifierDatabase:
 
     @staticmethod
     def _game_ok(mod, game):
+        # Deny list first, and it wins over the allow list -- the same precedence
+        # target_applies documents for per-target gating.
+        if game is not None and game in (mod.get('skip_games') or []):
+            return False
         games = mod.get('games')
         if (not games) or (game is None) or (game in games):
             return True

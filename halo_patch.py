@@ -697,7 +697,9 @@ _STARTING_SLOTS = {
     # plugin and confirmed on all nine campaign maps: every profile carries 'weap'
     # magic at +0x28 and an ident that resolves to the weapon the level really starts
     # you with -- AR on m10/m45/m70, magnum on m50, DMR on m52/m60.
-    'Halo Reach': {'ref_size': 16, 'id_at': 0xC,
+    # 'equipment' is Reach-only: the armor ability the profile spawns you holding,
+    # a 16-byte eqip tagRef the earlier games have no equivalent of.
+    'Halo Reach': {'ref_size': 16, 'id_at': 0xC, 'equipment': 0x54,
                    'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
                    'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
 }
@@ -762,6 +764,56 @@ def _h3_profile_role(index, name):
     else:
         return None, False
     return role, ('respawn' in n) or (generic and index in (1, 3))
+
+
+# Reach names its Player Starting Profiles, and unlike Halo 3 the names are worth
+# trusting: every one of the 49 campaign profiles says what it is. The catch is that
+# the index convention the earlier games rely on is GONE. Nightfall ships
+#
+#     0 sp_normal_initial   1 sp_heroic_initial   2 sp_legendary_initial
+#     3 sp_normal_coop_initial  4 sp_normal_coop_respawn  5 sp_heroic_coop_initial ...
+#
+# so the pre-H3 default of "write profiles 0 and 1" armed Normal and Heroic and left
+# Legendary vanilla, and the respawn options -- which hardcode index 1 -- emptied the
+# HEROIC INITIAL profile instead of a respawn one. Both are name-driven here instead.
+_REACH_PROFILE_MARKERS = ('single', 'coop', 'initial', 'starting', 'respawn',
+                          'default', 'player')
+
+
+def _reach_profile_role(name, has_ability):
+    """(is_player, is_respawn) for a Reach Player Starting Profile.
+
+    The player test is the ARMOR ABILITY, not the name. Every profile Reach actually
+    spawns a player on carries one (sprint on most, jet_pack on Exodus's
+    profile_jetpack, armor_lockup on the Pillar of Autumn respawns), and across all
+    ten campaign maps exactly two profiles lack one: `profile_zealot` on Tip of the
+    Spear and `v_profile` on The Package. Both are scripted loadout templates, and
+    both are the ones a name-marker rule alone would also have to guess about. The
+    ability test is strictly the more inclusive of the two -- it keeps the per-area
+    player profiles (profile_outpost, profile_spire, profile_combat, profile_jetpack,
+    profile_full_health) that carry no name marker at all. Names are still consulted,
+    so a profile that says what it is is trusted even if the ability ref is missing."""
+    n = (name or '').strip().lower()
+    is_player = bool(has_ability) or any(k in n for k in _REACH_PROFILE_MARKERS)
+    return is_player, ('respawn' in n)
+
+
+def _reach_profiles(m, game, scnr_base, boff, esize, count):
+    """{index: (is_player, is_respawn)} for every Reach starting profile."""
+    lay = _STARTING_SLOTS.get(game) or {}
+    eq = lay.get('equipment')
+    roles = {}
+    for i in range(count):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        nm = bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+        has = False
+        if eq is not None:
+            rid = struct.unpack_from('<I', m.data, poff + eq + lay['id_at'])[0]
+            has = rid not in (0, 0xFFFFFFFF) and (rid & 0xFFFF) < len(getattr(m, 'tags', []))
+        roles[i] = _reach_profile_role(nm, has)
+    return roles
 
 
 # Profiles the ability toolkit appends to a Halo 2 scenario (sprint_toolkit's
@@ -1202,14 +1254,33 @@ def _apply_starting_equipment(m, game, registry, starting):
         # profiles 'dutch', 'buck', 'odst02', 'Player' and plain 'a', so "not allies"
         # armed squadmates.
         default = [0] if third_gen else [0, 1]
+        reach_roles = None
+        if str(game).strip() == 'Halo Reach':
+            # Reach's profiles are keyed by difficulty AND co-op AND insertion area,
+            # so there is no fixed index to write. Every non-respawn player profile
+            # gets the picks; the respawn ones are left to the respawn options below.
+            reach_roles = _reach_profiles(m, game, scnr_base, boff, esize, count)
+            # Default is every player profile, respawns included -- the pre-H3 [0, 1]
+            # meant "spawn and respawn", and this is that same intent spelled out for a
+            # map that can have nine of them. The respawn options subtract from it.
+            hold = bool(starting.get('skip_respawn')) or bool(starting.get('null_respawn'))
+            default = [i for i, (pl, resp) in sorted(reach_roles.items())
+                       if pl and not (hold and resp)] or [0]
         if str(game).strip() in SECOND_GEN_GAMES:
             # Halo 2's own profiles only: index 1 is the ability toolkit's `ab_sprint`
             # on 08b_deltacontrol (the one map that ships a single profile), and
             # arming it would replace the `unarmed` token the sprint ability needs.
             own = _h2_own_profiles(_h2_profile_names(m, scnr_base, boff, esize, count))
             default = own[:2] or [0]
-        _null_profiles([p for p in (starting.get('null_profiles') or []) if 0 <= p < count],
-                       lambda i: f'Profile {i}')
+        nulls = [p for p in (starting.get('null_profiles') or []) if 0 <= p < count]
+        if reach_roles is not None:
+            # "Empty respawn weapons" means index 1 everywhere else. In Reach index 1
+            # is `sp_heroic_initial` on Nightfall and `default_coop` on ONI Sword Base,
+            # so honouring it literally emptied a profile the player STARTS on. Ask the
+            # names instead, and empty every real respawn profile.
+            nulls = ([i for i, (pl, resp) in sorted(reach_roles.items()) if pl and resp]
+                     if starting.get('null_respawn') else [])
+        _null_profiles(nulls, lambda i: f'Profile {i}')
         if starting.get('by_insertion'):
             # Each player gets the profile their OWN insertion point uses, so the picks
             # follow the player instead of being sprayed across every profile. Both
@@ -1239,9 +1310,16 @@ def _apply_starting_equipment(m, game, registry, starting):
             profiles = [i for i in range(count)
                         if not _is_scripted_profile(names[i])]
         else:
-            profiles = [i for i in (starting.get('profiles') or default) if 0 <= i < count]
-            if third_gen:
-                profiles = [i for i in profiles if i == 0]
+            if reach_roles is not None:
+                # The configured index list ([0, 1] by default) means nothing in Reach,
+                # where the same two indices are Normal-initial and Heroic-initial on
+                # one map and single/co-op on the next. Role selection wins outright.
+                profiles = list(default)
+            else:
+                profiles = [i for i in (starting.get('profiles') or default)
+                            if 0 <= i < count]
+                if third_gen:
+                    profiles = [i for i in profiles if i == 0]
         # No guard here: these profiles were named outright, and a map that starts
         # the player unarmed on purpose (Halo 1's a10) should still honour the picks.
         plan = [('primary', profiles, prim, 'Primary Weapon', False),
