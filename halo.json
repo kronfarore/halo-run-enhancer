@@ -6135,15 +6135,14 @@
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3"],
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
-						"Halo Reach": "jpt! objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\damage_effects\\machinegun_turret_bullet"
+						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet"
 					},
 					"targets": [
 						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
-						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] },
-						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] }
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Ramp Up": {
@@ -6336,15 +6335,14 @@
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3"],
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt",
-						"Halo Reach": "jpt! objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\damage_effects\\plasma_turret_bolt"
+						"Halo 3": "jpt! objects\\weapons\\turret\\plasma_cannon\\damage_effects\\plasma_cannon_bolt"
 					},
 					"targets": [
 						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
-						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] },
-						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0, "skip_games": ["Halo Reach"] }
+						{ "field": "Rider Maximum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 },
+						{ "field": "Rider Minimum Transfer Damage Scale", "group": "Rider Damage Scale", "harder_when": "decreased", "min": 0 }
 					]
 				},
 				"Ramp Up": {
