@@ -25,12 +25,20 @@ in here so one command is the whole check) lists enemy-owned weap/proj/jpt!/hlmt
 eqip tags that no card reaches. It covers all five games, where the field passes above
 cover the three with a comparable `char` layout.
 
+A fifth section does turrets, which fall outside BOTH of the above. A turret is not a
+character, so the family derivation cannot claim it, and a mounted one is not a weapon
+pickup either -- it is a VEHICLE placement, which is why a weapons-only reader reports
+zero for a gun you can plainly rip off its mount. The detachable turrets the player
+picks up are already carded as weapons; what this finds is the mounted set an enemy
+sits in and shoots you with.
+
 Usage:
     python sprint_toolkit/coverage_audit.py                 # every section
     python sprint_toolkit/coverage_audit.py --all           # every gap (very noisy)
     python sprint_toolkit/coverage_audit.py --enemy Jackal
-    python sprint_toolkit/coverage_audit.py --only fields   # skip the tag section
+    python sprint_toolkit/coverage_audit.py --only fields   # skip the tag sections
     python sprint_toolkit/coverage_audit.py --only assets   # only the tag section
+    python sprint_toolkit/coverage_audit.py --only turrets  # only the turret section
 """
 import argparse
 import collections
@@ -238,9 +246,10 @@ def main():
                          'noisy — the char plugin declares hundreds of fields and most '
                          'were never meant to be cards (345 rows for the Jackal alone)')
     ap.add_argument('--enemy', help='restrict to one enemy')
-    ap.add_argument('--only', choices=('fields', 'assets', 'all'), default='all',
-                    help="'fields' = the char-field passes only, 'assets' = the "
-                         "enemy-owned tag pass only. Default runs both.")
+    ap.add_argument('--only', choices=('fields', 'assets', 'turrets', 'all'),
+                    default='all',
+                    help="'fields' = the char-field passes, 'assets' = the enemy-owned "
+                         "tag pass, 'turrets' = the turret pass. Default runs all three.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
     ap.add_argument('--no-useful', action='store_true',
@@ -258,6 +267,9 @@ def main():
     if args.only == 'assets':
         print()
         return 0 if asset_pass(db, args) == 0 else 1
+    if args.only == 'turrets':
+        print()
+        return 0 if turret_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
@@ -358,6 +370,8 @@ def main():
     if args.only != 'fields':
         print()
         asset_pass(db, args)
+        print()
+        turret_pass(db, args)
 
 
 def _carded_fields_by_class(db, game):
@@ -422,6 +436,104 @@ def _useful_fields(m, cls, path, plug, wanted):
         except Exception:
             pass
     return got
+
+
+# A turret is not a character, so `enemy_asset_audit`'s family derivation cannot see it,
+# and it is not a weapon pickup either -- a mounted one is a VEHICLE placement, which is
+# why a weapons-only reader reports zero for a gun you can plainly rip off its mount. So
+# turrets fell through every audit so far, the same way the Hunter's fuel cannon did.
+#
+# Two kinds, and only one of them is a gap:
+#   DETACHABLE  objects\weapons\turret\...  the player picks these up, so they are
+#               already offered as weapons and already carded.
+#   MOUNTED     objects\vehicles\..._turret_...\, the Shades, Halo 1's `c gun turret`
+#               -- the ones an ENEMY sits in and shoots you with. Uncarded.
+# The pass reports whatever is uncarded, so the split maintains itself rather than being
+# asserted here.
+TURRET_MARKERS = ('turret', 'shade', 'plasma_cannon', 'machinegun', 'aa_gun',
+                  'gun turret', 'agtg', 'flak_cannon_stationary')
+TURRET_CLASSES = {'vehi', 'weap', 'proj', 'jpt!'}
+
+
+def _is_turret(name):
+    low = str(name or '').lower()
+    return any(k in low for k in TURRET_MARKERS)
+
+
+def turret_pass(db, args):
+    r"""Turret tags no card reaches, and which of them carry an already-carded field.
+
+    Grouped by the folder the tag sits in, because a turret is a SET -- the vehicle, the
+    gun it mounts, what that gun fires, and the damage it does -- and carding one part
+    while missing the rest is the failure this is meant to surface.
+    """
+    grand = useful_total = 0
+    want_fields = not args.no_useful
+    print('#' * 84)
+    print('TURRETS   (%s)' % ', '.join(sorted(TURRET_CLASSES)))
+    for game, subs, folder in eaa.CASES:
+        maps = eaa.game_maps(folder)
+        if not maps:
+            continue
+        reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
+        by_class = _carded_fields_by_class(db, game) if want_fields else {}
+        carded = eaa.carded_tags(db, game)
+        seen, first_map = {}, {}
+        print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
+        for mp in maps:
+            try:
+                m = hp.open_map(mp, game)
+            except Exception:
+                continue
+            for cls, name in eaa._iter_tags(m):
+                if cls not in TURRET_CLASSES or not name or not _is_turret(name):
+                    continue
+                if eaa.is_noise(name) or eaa.is_ignored(game, cls, name):
+                    continue
+                seen.setdefault((cls, name), set()).add(os.path.basename(mp))
+                first_map.setdefault((cls, name), mp)
+        rows = [(c, n, len(mm)) for (c, n), mm in sorted(seen.items())
+                if not eaa.covered(c, n, carded)]
+
+        # Which uncarded ones carry a field some card already tunes -- the same
+        # proven-value test the asset pass uses.
+        useful = {}
+        if by_class and rows:
+            cache = {}
+            for cls, name, _n in rows:
+                wanted, plug = by_class.get(cls), reg.get(cls)
+                mp = first_map.get((cls, name))
+                if not wanted or plug is None or mp is None:
+                    continue
+                m = cache.get(mp)
+                if m is None:
+                    try:
+                        m = cache[mp] = hp.open_map(mp, game)
+                    except Exception:
+                        continue
+                hit = _useful_fields(m, cls, name, plug, wanted)
+                if hit:
+                    useful[(cls, name)] = hit
+
+        print('=' * 84)
+        print('%s   %d turret tag(s), %d uncarded, %d of those useful'
+              % (game, len(seen), len(rows), len(useful)))
+        last = None
+        for cls, name, nmaps in rows:
+            folder_of = str(name).rsplit(chr(92), 1)[0]
+            if folder_of != last:
+                print('  %s' % folder_of)
+                last = folder_of
+            mark = '   << USEFUL' if (cls, name) in useful else ''
+            print('     %-5s %-56s %2d map(s)%s'
+                  % (cls, str(name).rsplit(chr(92), 1)[-1][:56], nmaps, mark))
+            for f, b in sorted(useful.get((cls, name), ())):
+                print('          %-40s %s' % (f, b or ''))
+        grand += len(rows)
+        useful_total += len(useful)
+    print()
+    print('%d uncarded turret tag(s) total, %d of them USEFUL' % (grand, useful_total))
+    return grand
 
 
 def asset_pass(db, args):
