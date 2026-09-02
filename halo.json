@@ -9418,6 +9418,15 @@
 		},
 		"Specific Enemy modifier": {
 			"Elite": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Recharge Delay": {
 					"desc": "How long you have to keep hitting an Elite before its shields stop coming back.",
 					"debug_desc": "`Stun Time` on the collision tag. Stock 12s, 8s for the Spec-Ops Elite. Halo 1 only — from Halo 2 on, the character tag's Shield Recharge Delay governs the AI instead and this field stops being the handle. The wildcard covers both Elite variants.",
@@ -9592,21 +9601,42 @@
 					]
 				},
 				"Rate of Fire": {
-					"desc": "Increases enemy Rate of Fire (shots per second).",
-					"game": ["Halo 1", "Halo 2"],
-					"tag": {
-						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
-					},
-					"harder_when": "increased",
-					"targets": {
-						"Halo 1": [
-							{ "field": "Rate Of Fire" }
-						],
-						"Halo 2": [
-							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
-						]
-					}
+				 "desc": "Increases enemy Rate of Fire (shots per second).",
+				 "game": [
+				  "Halo 1",
+				  "Halo 2",
+				  "Halo Reach"
+				 ],
+				 "tag": {
+				  "Halo 1": "actv characters\\elite\\*",
+				  "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+				  "Halo Reach": "char objects\\characters\\elite\\ai\\elite*"
+				 },
+				 "harder_when": "increased",
+				 "targets": {
+				  "Halo 1": [
+				   {
+				    "field": "Rate Of Fire"
+				   }
+				  ],
+				  "Halo 2": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all"
+				   }
+				  ],
+				  "Halo Reach": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all",
+				    "zero_is": 1.0,
+				    "min": 0
+				   }
+				  ]
+				 },
+				 "debug_desc": "\\n\\nReach: the elite tags define the firing-pattern block themselves, so the general Firing Patterns card no longer reaches them -- but they define Rate Of Fire as 0, and that 0 overrides what generic would have supplied. `zero_is: 1.0` gives the multiply something to act on; 1.0 is the neutral rate, not a measured Elite value, since no Elite tag in Reach ships one."
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -9644,7 +9674,7 @@
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3: ODST", "Halo 3"] },
+						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3: ODST", "Halo 3", "Halo Reach"]},
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -9782,6 +9812,15 @@
 				}
 			},
 			"Hunter": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Hunter Fuel Rod Charging Time": {
 					"desc": "Fuel rod charge time",
 					"tag": {
@@ -10007,7 +10046,7 @@
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
+						{"field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "index": "all", "harder_when": "increased", "min": 0, "max": 1}
 					]
 				},
 				"Hunter Berserk": {
@@ -10083,6 +10122,15 @@
 				}
 			},
 			"Grunt": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Vision": {
 					"desc": "Vision Distance, Angles, Peripheral",
 					"game": "Halo 1",
@@ -10191,26 +10239,50 @@
 					]
 				},
 				"Rate of Fire": {
-					"desc": "Increases enemy Rate of Fire (shots per second).",
-					"debug_desc": "Grunts define their own firing pattern in every game, so this never touches anything else. It named no tag past Halo 2 until 2026-08-31 -- the field was live on the grunt tags in Halo 3 and ODST all along (10.0), and the general **Firing Patterns** card could not reach them because they define the block themselves.",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {
-						"Halo 1": "actv characters\\grunt\\*",
-						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
-					},
-					"harder_when": "increased",
-					"targets": {
-						"Halo 1": [
-							{ "field": "Rate Of Fire" }
-						],
-						"Halo 2": [
-							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
-						],
-						"Halo 3": [
-							{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
-						]
-					}
+				 "desc": "Increases enemy Rate of Fire (shots per second).",
+				 "debug_desc": "Grunts define their own firing pattern in every game, so this never touches anything else. It named no tag past Halo 2 until 2026-08-31 -- the field was live on the grunt tags in Halo 3 and ODST all along (10.0), and the general **Firing Patterns** card could not reach them because they define the block themselves.\\n\\nReach continues the pattern: the grunt tags define the block and ship 1.5, so the card works there by multiplication with no base needed.",
+				 "game": [
+				  "Halo 1",
+				  "Halo 2",
+				  "Halo 3",
+				  "Halo Reach"
+				 ],
+				 "tag": {
+				  "Halo 1": "actv characters\\grunt\\*",
+				  "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+				  "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+				  "Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*"
+				 },
+				 "harder_when": "increased",
+				 "targets": {
+				  "Halo 1": [
+				   {
+				    "field": "Rate Of Fire"
+				   }
+				  ],
+				  "Halo 2": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all"
+				   }
+				  ],
+				  "Halo 3": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all"
+				   }
+				  ],
+				  "Halo Reach": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all",
+				    "min": 0
+				   }
+				  ]
+				 }
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -10259,7 +10331,7 @@
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{ "field": "Grenade Ideal Velocity", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] },
+						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -10275,10 +10347,10 @@
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" }, "min": 0, "max": 1 },
-						{ "field": "Anti-Vehicle Grenade Chance", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"], "min": 0, "max": 1 },
+						{"field": "Anti-Vehicle Grenade Chance", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "max": 1},
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{ "field": "Grenade Throw Delay", "block": { "Halo 2": "Grenades Properties" }, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"] }
+						{"field": "Grenade Throw Delay", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
 					]
 				},
 				"Weapon Damage Modifier": {
@@ -10399,6 +10471,15 @@
 				}
 			},
 			"Jackal": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Recharge Delay": {
 					"desc": "How long you have to keep hitting a Jackal before its shield stops coming back.",
 					"debug_desc": "`Stun Time` on the collision tag, stock 15s — the longest of any Halo 1 character, because the shield gauntlet is a real shield here. Halo 1 only: from Halo 2 on, the character tag's Shield Recharge Delay governs the AI instead.",
@@ -10530,27 +10611,91 @@
 					"game": "Halo 1"
 				},
 				"Cover Properties": {
-					"desc": "How long they stay in cover, and how hurt they have to be to want it.",
-					"debug_desc": "Cover-seeking time plus shield and vitality thresholds. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.",
-					"tag": {
-						"Halo 1": "actr characters\\jackal\\*",
-						"Halo 2": "char ai\\generic",
-						"Halo 3": "char ai\\generic"
-					},
-					"targets": {
-						"Halo 1": [
-							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" },
-							{ "field": "Hide Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
-							{ "field": "Attack Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
-							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
-						],
-						"Halo 2": [
-							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
-							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
-							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
-						]
-					}
+				 "desc": "How long they stay in cover, and how hurt they have to be to want it.",
+				 "debug_desc": "Cover-seeking time plus shield and vitality thresholds. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.\\n\\nReach aims at the jackal tags rather than the shared base: they define the cover block themselves (hide time 3.0-5.0, vitality threshold 0.8), so the Halo 2 and Halo 3 edit on `ai\\\\generic` would no longer land on them.",
+				 "tag": {
+				  "Halo 1": "actr characters\\jackal\\*",
+				  "Halo 2": "char ai\\generic",
+				  "Halo 3": "char ai\\generic",
+				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"
+				 },
+				 "targets": {
+				  "Halo 1": [
+				   {
+				    "field": "Hide Behind Cover Time",
+				    "group": "Hide Behind Cover Time"
+				   },
+				   {
+				    "field": "Hide Behind Cover Time Max",
+				    "group": "Hide Behind Cover Time"
+				   },
+				   {
+				    "field": "Hide Shield Fraction",
+				    "min": "0",
+				    "max": "1",
+				    "group": "Shield Fractions"
+				   },
+				   {
+				    "field": "Attack Shield Fraction",
+				    "min": "0",
+				    "max": "1",
+				    "group": "Shield Fractions"
+				   },
+				   {
+				    "field": "Pursue Shield Fraction",
+				    "min": "0",
+				    "max": "1",
+				    "group": "Shield Fractions"
+				   }
+				  ],
+				  "Halo 2": [
+				   {
+				    "field": "Hide Behind Cover Time",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time"
+				   },
+				   {
+				    "field": "Hide Behind Cover Time Max",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time"
+				   },
+				   {
+				    "field": "Cover Vitality Threshold",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "min": "0",
+				    "max": "1"
+				   }
+				  ],
+				  "Halo Reach": [
+				   {
+				    "field": "Hide Behind Cover Time",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time",
+				    "min": 0
+				   },
+				   {
+				    "field": "Hide Behind Cover Time Max",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time",
+				    "min": 0
+				   },
+				   {
+				    "field": "Cover Vitality Threshold",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "min": 0,
+				    "max": 1
+				   }
+				  ]
+				 },
+				 "game": [
+				  "Halo Reach"
+				 ]
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
@@ -10575,13 +10720,32 @@
 					]
 				},
 				"Rate of Fire": {
-					"desc": "Increases enemy Rate of Fire (shots per second).",
-					"game": "Halo 1",
-					"tag": "actv characters\\jackal\\*",
-					"harder_when": "increased",
-					"targets": [
-						{ "field": "Rate Of Fire" }
-					]
+				 "desc": "Increases enemy Rate of Fire (shots per second).",
+				 "game": [
+				  "Halo 1",
+				  "Halo Reach"
+				 ],
+				 "tag": {
+				  "Halo 1": "actv characters\\jackal\\*",
+				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"
+				 },
+				 "harder_when": "increased",
+				 "targets": {
+				  "Halo 1": [
+				   {
+				    "field": "Rate Of Fire"
+				   }
+				  ],
+				  "Halo Reach": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all",
+				    "min": 0
+				   }
+				  ]
+				 },
+				 "debug_desc": "\\n\\nHalo 1 aims at the jackal ACTOR tag; Reach aims at the jackal char tags, which define their own firing pattern at 3.0. The two games are the only ones this card claims -- Halo 2 through ODST leave the Jackal inheriting, where the general Firing Patterns card already reaches it."
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -11686,6 +11850,28 @@
 				}
 			},
 			"Bugger": {
+				"Grenades": {
+					"desc": "How hard and how far they throw grenades.",
+					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{"field": "Grenade Velocity", "block": "Grenades Properties", "index": "all", "min": 0},
+						{"field": "Grenade Ideal Velocity", "block": "Grenades Properties", "index": "all", "min": 0},
+						{"field": "Grenade Ranges", "block": "Grenades Properties", "index": "all", "min": 0, "group": "Grenade Ranges"},
+						{"field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all", "min": 0, "group": "Grenade Ranges"},
+						{"field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0}
+					]
+				},
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Body Vitality": {
 					"desc": "Health",
 					"game": ["Halo 2", "Halo 3"],
@@ -11727,13 +11913,13 @@
 				"Dive From Grenade Chance": {
 					"desc": "Chance of diving to avoid a grenade",
 					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
 						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"
 					},
 					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1 }
+						{"field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1, "zero_is": 0.5}
 					]
 				},
 				"Melee Damage": {
@@ -11805,6 +11991,15 @@
 				}
 			},
 			"Brute": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Armor Lock": {
 					"desc": "How often Brutes armour-lock to shrug off your shots, and how long it holds.",
 					"debug_desc": "Stock 30% chance, 5s maximum, 1.5s safety, 5s cooldown; Chieftains lock at 100%. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
@@ -12045,7 +12240,7 @@
 					"harder_when": "increased",
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
-						{ "field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all" , "games": ["Halo 3"], "min": 1, "max": 0 },
+						{"field": "Vitality Fraction Shield Equipment", "block": "Cover Properties", "index": "all", "games": ["Halo 3", "Halo Reach"], "min": 1, "max": 0},
 						{ "field": "Vitality Fraction Bubbleshield", "block": "Cover Properties", "index": "all", "games": ["Halo 3: ODST"], "min": 1, "max": 0 },
 						{ "field": "Recent Damage Shield Equipment", "block": "Cover Properties", "index": "all" }
 					]
@@ -12074,6 +12269,28 @@
 				}
 			},
 			"Skirmisher": {
+				"Retreat": {
+					"desc": "Whether they break and run when the squad starts dying.",
+					"debug_desc": "Cower time plus the three retreat chances -- leader dead, one peer dead, a second peer dead.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. Skirmishers define all five as 0, so they never cower and never retreat. The cower bases (3.0 and 5.0) are `ai\\\\generic`'s own values, i.e. what a Skirmisher would have inherited had it not defined the block; the three chance bases are 0.5, matching the Engineer's Peer Dead Retreat Chance, the closest Reach sibling that sets one.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
+					"targets": [
+						{"field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "zero_is": 3.0, "min": 0, "group": "Forced Cower Time"},
+						{"field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "zero_is": 5.0, "min": 0, "group": "Forced Cower Time"},
+						{"field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"},
+						{"field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"},
+						{"field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"}
+					]
+				},
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Leap": {
 					"desc": "How readily Skirmishers leap obstacles to get at you — they already jump higher than anything else.",
 					"debug_desc": "Height and proximity. At 3.0 height they leap higher than anything else in the campaign — four times an Elite.",
@@ -12164,6 +12381,15 @@
 				}
 			},
 			"Engineer": {
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo Reach"],
+					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
+					]
+				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
 					"game": ["Halo 3: ODST", "Halo Reach"],
