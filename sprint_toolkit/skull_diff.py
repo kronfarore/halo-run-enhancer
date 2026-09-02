@@ -147,6 +147,160 @@ def state(h, base):
     return out
 
 
+MEM_COMMIT = 0x1000
+MEM_PRIVATE = 0x20000
+PAGE_READABLE = (0x02, 0x04, 0x20, 0x40)
+
+
+class MEMORY_BASIC_INFORMATION64(ctypes.Structure):
+    _fields_ = [('BaseAddress', ctypes.c_ulonglong),
+                ('AllocationBase', ctypes.c_ulonglong),
+                ('AllocationProtect', w.DWORD), ('__alignment1', w.DWORD),
+                ('RegionSize', ctypes.c_ulonglong), ('State', w.DWORD),
+                ('Protect', w.DWORD), ('Type', w.DWORD), ('__alignment2', w.DWORD)]
+
+
+def regions(h, private_only=True):
+    mbi = MEMORY_BASIC_INFORMATION64()
+    addr = 0
+    while addr < (1 << 47):
+        if not k32.VirtualQueryEx(h, ctypes.c_void_p(addr), ctypes.byref(mbi),
+                                  ctypes.sizeof(mbi)):
+            break
+        if (mbi.State == MEM_COMMIT and mbi.Protect in PAGE_READABLE
+                and (mbi.Type == MEM_PRIVATE or not private_only)):
+            yield mbi.BaseAddress, mbi.RegionSize
+        if mbi.RegionSize == 0:
+            break
+        addr = mbi.BaseAddress + mbi.RegionSize
+
+
+def find(h, needle, limit=8):
+    """Locate a byte string in the process -- used to find the TAG HEAP.
+
+    The DLL's .data does not contain the loaded tags: `levels\\b30` is in there but
+    `characters\\elite\\elite` is not, so a diff of .data alone can never see a change
+    to an actor's firing values. Finding the region that does hold them is what makes
+    the real measurement possible.
+    """
+    hits = []
+    for base, size in regions(h):
+        if size > (1 << 30):
+            continue
+        blob = read(h, base, min(size, 1 << 26))
+        if not blob:
+            continue
+        start = 0
+        while len(hits) < limit:
+            i = blob.find(needle, start)
+            if i < 0:
+                break
+            hits.append((base, size, base + i))
+            start = i + 1
+        if len(hits) >= limit:
+            break
+    return hits
+
+
+def tag_region(h, needle=None):
+    """The region holding the loaded map's TAG data, found by a tag path it contains.
+
+    This is where an AI's firing values live. It is a private heap allocation, NOT part
+    of halo1.dll -- the DLL's .data holds `levels\\b30` but no tag paths at all -- so a
+    diff of the DLL alone is blind to exactly the values a skull would change.
+    """
+    needle = needle or ('characters' + chr(92) + 'elite'
+                        + chr(92) + 'elite').encode('latin1')
+    hits = find(h, needle, limit=1)
+    if not hits:
+        return None, None
+    rbase, rsize, _at = hits[0]
+    return rbase, rsize
+
+
+def tagsnap(h, base, tag, note=''):
+    rbase, rsize = tag_region(h)
+    if not rbase:
+        print('tag heap not found -- is a level loaded?')
+        return
+    os.makedirs(OUT, exist_ok=True)
+    path = os.path.join(OUT, 'tags_%s.bin' % tag)
+    chunks, addr, end = [], rbase, rbase + rsize
+    step = 1 << 20
+    while addr < end:
+        got = read(h, addr, min(step, end - addr))
+        chunks.append(got if got else b'\x00' * min(step, end - addr))
+        addr += step
+    blob = b''.join(chunks)
+    st = state(h, base)
+    with open(path, 'wb') as f:
+        f.write(struct.pack('<QQQ', rbase, len(blob), st.get('mask') or 0) + blob)
+    log('tagsnap', tag=tag, note=note, region=rbase, bytes=len(blob), file=path, **st)
+    print('tag snapshot %s: region 0x%X, %.1f MB, mask 0x%X, anger %s'
+          % (tag, rbase, len(blob) / 1048576.0, st.get('mask') or 0,
+             'ON' if st.get('anger') else 'off'))
+    print('   logged to %s' % LOG)
+
+
+def tagload(tag):
+    with open(os.path.join(OUT, 'tags_%s.bin' % tag), 'rb') as f:
+        rbase, n, mask = struct.unpack('<QQQ', f.read(24))
+        return rbase, mask, f.read(n)
+
+
+def tagdiff(a, b, limit):
+    ra, ma, da = tagload(a)
+    rb, mb, db = tagload(b)
+    print('%s region 0x%X mask 0x%X   vs   %s region 0x%X mask 0x%X'
+          % (a, ra, ma, b, rb, mb))
+    # The heap is allocated per load, so the two captures need not start at the same
+    # place inside the tag data. Align them on a tag path both contain before diffing;
+    # comparing unaligned blobs would report the whole region as changed.
+    needle = ('characters' + chr(92) + 'elite' + chr(92) + 'elite').encode('latin1')
+    ia, ib = da.find(needle), db.find(needle)
+    if ia < 0 or ib < 0:
+        print('WARNING: alignment anchor not found in one of the snapshots')
+    elif ia != ib:
+        shift = ib - ia
+        print('snapshots are offset by %+d bytes; aligning on the anchor' % shift)
+        if shift > 0:
+            db = db[shift:]
+        else:
+            da = da[-shift:]
+    else:
+        print('anchor at the same offset in both (0x%X) -- aligned' % ia)
+    n = min(len(da), len(db))
+    diffs = [i for i in range(n) if da[i] != db[i]]
+    print('%d differing byte(s) of %d (%.3f%%)' % (len(diffs), n, 100.0 * len(diffs) / n))
+    runs, cur = [], None
+    for i in diffs:
+        if cur and i == cur[1] + 1:
+            cur[1] = i
+        else:
+            cur = [i, i]
+            runs.append(cur)
+    floats = []
+    for s, e in runs:
+        o = s & ~3
+        if e - o > 8:
+            continue
+        try:
+            x = struct.unpack_from('<f', da, o)[0]
+            y = struct.unpack_from('<f', db, o)[0]
+        except Exception:
+            continue
+        if x == x and y == y and (abs(x) < 1e6 and abs(y) < 1e6) and x != y:
+            floats.append((o, x, y))
+    print('%d run(s); %d decode as a changed float' % (len(runs), len(floats)))
+    for o, x, y in floats[:limit]:
+        r = (y / x) if x else float('nan')
+        print('   +0x%08X  %12.5g -> %-12.5g  ratio %.4f' % (o, x, y, r))
+    log('tagdiff', a=a, b=b, masks={a: ma, b: mb}, differing_bytes=len(diffs),
+        total=n, runs=len(runs), float_changes=len(floats),
+        first=[{'off': o, 'from': x, 'to': y} for o, x, y in floats[:limit]])
+    print('logged to %s' % LOG)
+
+
 def attach():
     pid = find_pid()
     if not pid:
@@ -284,12 +438,18 @@ def diff(a1, a2, b1, limit):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('mode', choices=('mask', 'snap', 'diff'))
+    ap.add_argument('mode', choices=('mask', 'snap', 'diff', 'find', 'tagsnap', 'tagdiff'))
     ap.add_argument('tags', nargs='*',
                     help='snap: a tag, then any words as a note ("snap A1 silent '
                          'cartographer, paused at first control")')
     ap.add_argument('--limit', type=int, default=40)
     a = ap.parse_args()
+    if a.mode == 'tagdiff':
+        if len(a.tags) != 2:
+            print('tagdiff needs two tag-snapshot names')
+            return 2
+        tagdiff(a.tags[0], a.tags[1], a.limit)
+        return 0
     if a.mode == 'diff':
         if len(a.tags) != 3:
             print('diff needs three snapshot tags: baseline, baseline-again, test')
@@ -299,6 +459,27 @@ def main():
     h, base = attach()
     if not h:
         return 1
+    if a.mode == 'tagsnap':
+        if not a.tags:
+            print('tagsnap needs a tag, e.g. "tagsnap anger b30 paused"')
+            return 2
+        tagsnap(h, base, a.tags[0], ' '.join(a.tags[1:]))
+        return 0
+    if a.mode == 'find':
+        needle = (' '.join(a.tags) or ('characters' + chr(92) + 'elite'
+                                       + chr(92) + 'elite')).encode('latin1')
+        hits = find(h, needle)
+        print('searching for %r' % needle.decode('latin1'))
+        for rbase, rsize, at in hits:
+            print('   0x%X  in region 0x%X (%.1f MB)'
+                  % (at, rbase, rsize / 1048576.0))
+        if not hits:
+            print('   not found in private committed memory')
+        log('find', needle=needle.decode('latin1'),
+            hits=[{'at': at, 'region': rb, 'region_size': rs}
+                  for rb, rs, at in hits])
+        print('logged to %s' % LOG)
+        return 0
     if a.mode == 'mask':
         show_mask(h, base)
         log('mask', **state(h, base))
