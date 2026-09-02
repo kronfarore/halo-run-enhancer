@@ -69,14 +69,10 @@ _EXTRA = {
     'Halo Reach': {'Vehicles': dict(block=(0x12C, 0xD0), palette=(0x138, 0x10),
                                     pal_id_at=0xC, palette_index=0x0)},
 }
-# Reach is missing from _MAP_WEAPONS (nothing had needed to swap its weapons yet).
-_REACH_WEAPONS = {'weapons': (0x15C, 0xD0), 'palette': (0x168, 0x10), 'pal_id_at': 0xC,
-                  'palette_index': 0x0}
-
-
 def _weapon_layout(game):
-    if game == 'Halo Reach':
-        return _REACH_WEAPONS
+    # Reach used to be carried here as a local copy, because _MAP_WEAPONS had no row
+    # for it. It has one now (derived independently from Reach's own scnr plugin and
+    # landing on the same offsets), so there is one definition again.
     return HP._MAP_WEAPONS.get(game)
 
 
@@ -180,6 +176,29 @@ def vehicle_survey(m, game):
         rec = out.setdefault(base, {'placed': 0, 'cls': cls})
         rec['placed'] += cnt.get(i, 0)
     return out
+
+
+_DB = []
+
+
+def _db():
+    """The halo.json ModifierDatabase, loaded once -- it is what maps a display name
+    ('Sniper Rifle') to the weap tag path the maps are keyed by."""
+    if not _DB:
+        import os as _os
+        _os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+        # load_data prints a checkmark, and on a redirected cp1252 stream that raises
+        # -- which load_data swallows, leaving every pool empty and every lookup a
+        # miss. Only halo_enhancer.main() guards this, and this is not that entry.
+        for _s in (sys.stdout, sys.stderr):
+            try:
+                _s.reconfigure(encoding='utf-8', errors='replace')
+            except Exception:
+                pass
+        import halo_enhancer as _he
+        _he.load_settings()
+        _DB.append(_he.ModifierDatabase())
+    return _DB[0]
 
 
 def resident(m):
@@ -293,6 +312,27 @@ def main(argv=None):
                 for n in sorted(set(pal) | (res if a.verbose else set())):
                     v, why = verdict(n, pal, res)
                     print('      %-30s %-9s %s' % (n, v, why))
+                continue
+            if a.missing:
+                # What this mission OFFERS in halo.json vs what the map can actually
+                # grant. An offer the map cannot honour is the whole point of the
+                # import work, so the verdict per offered weapon is the worklist:
+                # PALETTE and RESIDENT need placements, ABSENT needs the tag too.
+                rows = []
+                for disp in (md.get('weapons') or []):
+                    tag = _db().weap_tag_for(disp, game)
+                    if not tag:
+                        rows.append((disp, '-', 'NO TAG', 'halo.json offers it, no '
+                                     'weap tag maps to it in this game'))
+                        continue
+                    base = tag.split(' ', 1)[1].strip().rsplit(S, 1)[-1]
+                    v, why = verdict(base, pal, res)
+                    if v != 'PLACED':
+                        rows.append((disp, base, v, why))
+                print('   %-10s %d of %d offered weapon(s) not placed'
+                      % (mid, len(rows), len(md.get('weapons') or [])))
+                for disp, base, v, why in rows:
+                    print('      %-22s %-26s %-8s %s' % (disp, base, v, why))
                 continue
             placed = sorted(n for n in pal if pal[n]['placed'])
             palonly = sorted(n for n in pal if not pal[n]['placed'])
