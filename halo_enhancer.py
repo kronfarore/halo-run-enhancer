@@ -6120,13 +6120,21 @@ class MagnitudeEditorDialog(QDialog):
 # difficulty-scaled 8s cap that was cutting the powerup to 4s on Legendary. The
 # diagnostics in h2_dll_patch, and camo-no-difficulty-scale (the conservative
 # alternative to the third edit), are deliberately not offered here.
+# The Arbiter camo fix is a halo2.dll patch like the others, but it exists ONLY to make
+# the Camo ability work on Arbiter levels, so it is presented next to Camo rather than
+# in a list of engine patches. Same machinery, same Apply button -- see H2_CAMO_SET.
+H2_CAMO_SET = (
+    "Arbiter camo fix (no native cloak, no 4s cap)",
+    ['no-camo-grant', 'no-arbiter-camo', 'camo-duration-unlimited'],
+    "Halo 2 Arbiter levels: the Arbiter cloaks on his own, which blocks the camo "
+    "powerup entirely, and the engine cuts any cloak to 8s scaled by difficulty "
+    "(4s on Legendary). This disables his native cloak and the cap, so the Camo "
+    "ability behaves the same as on Chief levels.\n\n"
+    "Writes halo2.dll, so MCC must be CLOSED when you press Apply and restarted "
+    "afterwards. Applied by the same button as the other halo2.dll patches, under "
+    "Patching.")
+
 H2_PATCH_SETS = [
-    ("Arbiter camo fix (no native cloak, no 4s cap)",
-     ['no-camo-grant', 'no-arbiter-camo', 'camo-duration-unlimited'],
-     "Halo 2 Arbiter levels: the Arbiter cloaks on his own, which blocks the camo "
-     "powerup entirely, and the engine cuts any cloak to 8s scaled by difficulty "
-     "(4s on Legendary). This disables his native cloak and the cap, so the Camo "
-     "ability behaves the same as on Chief levels."),
     ("Legendary co-op: no forced Iron",
      ['coop-no-forced-iron'],
      "Halo 2 ENFORCES the Iron skull on Legendary co-op -- it is not a skull you can "
@@ -7140,6 +7148,10 @@ class OptionsDialog(QDialog):
             rform.addRow("Effect every (%s):" % _g, box)
         xform.addRow(self.regen_box)
 
+        # Created here rather than beside the other halo2.dll checkboxes: the Arbiter
+        # camo fix registers into it from the Camo box below, and that is built first.
+        self.h2_patch_boxes = {}
+
         self.camo_box, cform2 = _ability_box("Camo")
         self.camo_duration = QDoubleSpinBox()
         self.camo_duration.setRange(0.5, 60.0)
@@ -7161,6 +7173,19 @@ class OptionsDialog(QDialog):
         self.camo_cooldown.setToolTip("Delay before camo can be used again. It starts when the "
                                       "camo runs out, so a full cycle is duration + cooldown.")
         cform2.addRow("Cooldown:", self.camo_cooldown)
+
+        # Registered into h2_patch_boxes like any other set, so _apply_h2_patches and
+        # _refresh_h2_patches keep working with no knowledge that it moved pages.
+        label, keys, tip = H2_CAMO_SET
+        self.h2_camo_cb = QCheckBox("Arbiter camo fix (halo2.dll)")
+        self.h2_camo_cb.setToolTip(tip)
+        self.h2_patch_boxes[label] = (self.h2_camo_cb, keys)
+        cform2.addRow("Halo 2:", self.h2_camo_cb)
+
+        self.h2_camo_note = QLabel("")
+        self.h2_camo_note.setWordWrap(True)
+        self.h2_camo_note.setStyleSheet("color:#9a9a9a; font-size:11px;")
+        cform2.addRow("", self.h2_camo_note)
         xform.addRow(self.camo_box)
 
         self.sprint_apply_btn = QPushButton("Apply abilities to maps…")
@@ -7675,7 +7700,6 @@ class OptionsDialog(QDialog):
         h2form = QFormLayout(h2g)
         h2form.setLabelAlignment(Qt.AlignRight)
 
-        self.h2_patch_boxes = {}
         for label, keys, tip in H2_PATCH_SETS:
             cb = QCheckBox(label)
             cb.setToolTip(tip)
@@ -7847,13 +7871,25 @@ class OptionsDialog(QDialog):
                 states[label] = ('applied' if st == {'APPLIED'} else
                                  'not applied' if st == {'not applied'} else
                                  'PARTIAL/UNRECOGNISED — re-apply to fix')
+            # The Arbiter fix reports beside Camo on the Abilities page, where the
+            # person deciding whether they need it actually is, so it is left out of
+            # the Patching summary rather than stated twice.
+            camo_label = H2_CAMO_SET[0]
             self.h2_patch_status.setText(
-                '  •  '.join('%s: %s' % (l.split(' (')[0], s) for l, s in states.items())
+                '  •  '.join('%s: %s' % (l.split(' (')[0], s)
+                             for l, s in states.items() if l != camo_label)
                 + '\nMCC must be closed to apply, and restarted for it to take effect.')
+            if hasattr(self, 'h2_camo_note'):
+                self.h2_camo_note.setText(
+                    'halo2.dll: %s. Needed only on Arbiter levels. Applied by the '
+                    '“Apply to halo2.dll” button under Patching — MCC must be closed.'
+                    % states.get(camo_label, '?'))
         except Exception as e:
             for cb, _keys in self.h2_patch_boxes.values():
                 cb.setEnabled(False)
             self.h2_patch_status.setText('halo2.dll not available: %s' % e)
+            if hasattr(self, 'h2_camo_note'):
+                self.h2_camo_note.setText('halo2.dll not available: %s' % e)
 
     def _apply_h2_patches(self):
         try:
