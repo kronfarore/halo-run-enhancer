@@ -89,6 +89,25 @@ STOCK_VALUE = -25.0
 # build that actually puts something there is refused rather than corrupted.
 SLOT = 0x03A24F00
 
+# --- the betrayal sign guard -----------------------------------------------------
+# Betrayal looks the victim up in ScoreDB and then throws the answer away unless it is
+# negative:
+#
+#   00437F65  0f57c0        xorps  xmm0, xmm0
+#   00437F6B  0f2f00        comiss xmm0, [rax]     ; 0 vs the row
+#   00437F6E  7606          jbe    0x437F76        ; 0 <= row -> hardcoded -50
+#   00437F70  f30f1008      movss  xmm1, [rax]     ; else use the row
+#   00437F74  eb08          jmp    0x437F7E
+#   00437F76  f30f100d....  movss  xmm1, -50
+#
+# NOPping the jbe makes the row authoritative whatever its sign. That matters because
+# ApplyPenalty ADDS its argument (`addss xmm0,[rax+0x30]` at +0x0044B800, after the
+# difficulty and skull multipliers), so a POSITIVE row awards points instead of taking
+# them -- which is what turns Marines into ordinary enemies once they are hostile.
+BETRAY_GUARD = 0x00437F6E
+BETRAY_STOCK = bytes.fromhex('7606')       # jbe +6
+BETRAY_OPEN = b'\x90\x90'                  # two NOPs
+
 
 class PROCESSENTRY32(ctypes.Structure):
     _fields_ = [('dwSize', ctypes.c_ulong), ('cntUsage', ctypes.c_ulong),
@@ -238,6 +257,32 @@ def restore(h, base):
     return (True, None) if ok else (False, err)
 
 
+def betrayal_state(h, base):
+    """'stock' / 'open' / 'unknown', plus the raw bytes."""
+    raw = read(h, base + BETRAY_GUARD, 2)
+    if raw is None:
+        return 'unreadable', None
+    return ({BETRAY_STOCK: 'stock', BETRAY_OPEN: 'open'}.get(raw, 'unknown'), raw)
+
+
+def betrayal_open(h, base):
+    """Let a POSITIVE ScoreDB row through, so betraying a Marine can pay out."""
+    what, raw = betrayal_state(h, base)
+    if what == 'open':
+        return True, 'already open'
+    if what != 'stock':
+        return False, ('the guard at rva 0x%08X reads %s, not the expected %s -- this '
+                       'MCC build differs, refusing to write'
+                       % (BETRAY_GUARD, raw.hex() if raw else '?', BETRAY_STOCK.hex()))
+    ok, err = write(h, base + BETRAY_GUARD, BETRAY_OPEN)
+    return (True, None) if ok else (False, err)
+
+
+def betrayal_restore(h, base):
+    ok, err = write(h, base + BETRAY_GUARD, BETRAY_STOCK)
+    return (True, None) if ok else (False, err)
+
+
 def push(rounds=None, per_round=0.10, value=None):
     """One call for the GUI: attach, set, verify, detach. Never raises."""
     h, base, pid, err = attach()
@@ -268,6 +313,10 @@ def main(argv=None):
     ap.add_argument('--value', type=float, help='set the penalty outright')
     ap.add_argument('--show', action='store_true', help='read it and stop')
     ap.add_argument('--restore', action='store_true', help='put the stock -25 back')
+    ap.add_argument('--betrayal', choices=('open', 'restore'),
+                    help="'open' NOPs the sign guard so a POSITIVE ScoreDB row is "
+                         "honoured (betraying a Marine can then pay out); 'restore' "
+                         "puts the stock jbe back")
     args = ap.parse_args(argv)
 
     h, base, pid, err = attach()
@@ -278,15 +327,32 @@ def main(argv=None):
         val, at, disp = state(h, base)
         origin = ('stock literal' if at == STOCK_LITERAL
                   else 'our slot' if at == SLOT else 'unknown')
+        bstate, braw = betrayal_state(h, base)
         print('%s  pid %d  base 0x%X' % (EXE, pid, base))
         print('  player death penalty  %s   (reads rva 0x%08X, %s)'
               % (val, at, origin))
+        print('  betrayal sign guard   %s   (%s at rva 0x%08X)'
+              % (bstate, braw.hex() if braw else '?', BETRAY_GUARD))
+        if args.betrayal:
+            if args.betrayal == 'open':
+                ok, err = betrayal_open(h, base)
+            else:
+                ok, err = betrayal_restore(h, base)
+            print('  betrayal guard -> %s: %s'
+                  % (args.betrayal, 'ok' if ok else 'FAILED: %s' % err))
+            print('  now %s' % betrayal_state(h, base)[0])
+            if not (args.show or args.restore or args.rounds is not None
+                    or args.value is not None):
+                return 0 if ok else 1
         if args.show:
             return 0
         if args.restore:
             ok, err = restore(h, base)
-            print('  restored' if ok else '  restore failed: %s' % err)
-            return 0 if ok else 1
+            ok2, err2 = betrayal_restore(h, base)
+            print('  death penalty restored' if ok else '  restore failed: %s' % err)
+            print('  betrayal guard restored' if ok2 else
+                  '  guard restore failed: %s' % err2)
+            return 0 if (ok and ok2) else 1
         if args.value is None and args.rounds is None:
             ap.error('need --rounds, --value, --show or --restore')
         want = (args.value if args.value is not None
