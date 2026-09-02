@@ -120,6 +120,14 @@ def attach():
     return h, base
 
 
+# the expanded per-skull bytes, and the guard the expander tests before filling them.
+# Both stay zero at the menu: the skull state is built at LEVEL LOAD, so any check has
+# to be made in-level, not from the main menu.
+FLAG_LO, FLAG_HI = 0x1C421B9, 0x1C421D5
+FLAG_NAMES = {0x1C421C9: 'blind', 0x1C421CE: 'anger', 0x1C421D5: 'masterblaster'}
+GUARD_RVA = 0x2B406C5
+
+
 def show_mask(h, base):
     raw = read(h, base + MASK_RVA, 8)
     if raw is None:
@@ -130,6 +138,17 @@ def show_mask(h, base):
     on = [BITS.get(b, 'bit %d' % b) for b in range(64) if v >> b & 1]
     print('active: %s' % (', '.join(on) if on else '(none)'))
     print('ANGER (bit 0) is %s' % ('ON' if v & 1 else 'off'))
+    blob = read(h, base + FLAG_LO, FLAG_HI - FLAG_LO + 1)
+    guard = read(h, base + GUARD_RVA, 4)
+    if blob is not None:
+        setb = [FLAG_NAMES.get(FLAG_LO + i, 'byte +%d' % i)
+                for i, c in enumerate(blob) if c]
+        print('expanded flags: %s' % (', '.join(setb) if setb else 'none set'))
+        print('   raw %s' % blob.hex())
+    if guard:
+        g = struct.unpack('<I', guard)[0]
+        print('expander guard = %d%s' % (g, '   (0 = no level loaded yet)'
+                                         if g == 0 else ''))
 
 
 def snap(h, base, tag):
