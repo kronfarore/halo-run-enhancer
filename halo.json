@@ -10471,6 +10471,17 @@
 				}
 			},
 			"Jackal": {
+				"Body Recharge": {
+					"desc": "How much health they win back after taking damage.",
+					"debug_desc": "`Body Recharge Fraction` is the share of max health the Jackal can win back, with the delay before it starts and the time it takes.\\n\\nThe Brute has had this card since Halo 2 and the Jackal never did, though it defines the block in every game. Halo 3 and ODST ship 0.2 on the jackal and major and 0.25 on the sniper; Reach ships 0.2 on all three.\\n\\n**Halo 2 is deliberately left out.** The jackal defines the block there too, but at 0 on every tag across all 43 maps, and `ai\\\\generic` sets no value either -- the mechanic is simply unused in Halo 2, so a card would be inventing behaviour rather than exposing it.",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"targets": [
+						{"field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1},
+						{"field": "Body Recharge Delay Time", "block": "Vitality Properties", "index": "all", "min": 0},
+						{"field": "Body Recharge Time", "block": "Vitality Properties", "index": "all", "min": 0}
+					]
+				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
