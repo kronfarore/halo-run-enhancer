@@ -36,9 +36,12 @@ Usage:
     python sprint_toolkit/coverage_audit.py                 # every section
     python sprint_toolkit/coverage_audit.py --all           # every gap (very noisy)
     python sprint_toolkit/coverage_audit.py --enemy Jackal
-    python sprint_toolkit/coverage_audit.py --only fields   # skip the tag sections
-    python sprint_toolkit/coverage_audit.py --only assets   # only the tag section
-    python sprint_toolkit/coverage_audit.py --only turrets  # only the turret section
+    python sprint_toolkit/coverage_audit.py --only fields   # sections 1-3 (char only)
+    python sprint_toolkit/coverage_audit.py --only assets   # section 4
+    python sprint_toolkit/coverage_audit.py --only turrets  # section 5
+
+The five sections group into three --only choices: the first three all read `char`
+through a plugin and share one sweep, so they are selected together as 'fields'.
 """
 import argparse
 import collections
@@ -468,6 +471,7 @@ def turret_pass(db, args):
     while missing the rest is the failure this is meant to surface.
     """
     grand = useful_total = 0
+    standalone_total = [0]
     want_fields = not args.no_useful
     print('#' * 84)
     print('TURRETS   (%s)' % ', '.join(sorted(TURRET_CLASSES)))
@@ -478,7 +482,7 @@ def turret_pass(db, args):
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
         by_class = _carded_fields_by_class(db, game) if want_fields else {}
         carded = eaa.carded_tags(db, game)
-        seen, first_map = {}, {}
+        seen, first_map, vehi_folders = {}, {}, set()
         print('%s: reading %d level(s)…' % (game, len(maps)), flush=True)
         for mp in maps:
             try:
@@ -486,6 +490,16 @@ def turret_pass(db, args):
             except Exception:
                 continue
             for cls, name in eaa._iter_tags(m):
+                # Every vehicle's own folder, whatever it is called -- the
+                # ownership map the grouping below is built on. `gint` counts as
+                # well as `vehi`: the Scarab is a GIANT, not a vehicle, so a
+                # vehi-only sweep left its main_turret looking like a standalone
+                # emplacement instead of the gun on the biggest vehicle in the
+                # game. Derived rather than listed, so it needs no per-game
+                # upkeep, and it is what keeps `warthog\turrets\chaingun` filed
+                # under the warthog while `c_turret_ap` stands on its own.
+                if cls in ('vehi', 'gint') and name:
+                    vehi_folders.add(str(name).rsplit(chr(92), 1)[0].lower())
                 if cls not in TURRET_CLASSES or not name or not _is_turret(name):
                     continue
                 if eaa.is_noise(name) or eaa.is_ignored(game, cls, name):
@@ -515,24 +529,71 @@ def turret_pass(db, args):
                 if hit:
                     useful[(cls, name)] = hit
 
+        # Splitting the turret an enemy climbs into from the gun bolted onto some
+        # other vehicle. "Does its folder hold a vehicle" is NOT the test: in Halo's
+        # object model every turret seat is itself a vehicle, so the Wraith's mortar
+        # answers yes just as loudly as a Shade does. What actually separates them is
+        # whether an ANCESTOR folder is a vehicle too -- `wraith\turrets\mortar` sits
+        # under `wraith`, while `c_turret_ap` sits under plain `objects\vehicles` and
+        # belongs to nothing. Derived, so it needs no per-game list.
+        # Which vehicle a tag belongs to: the DEEPEST vehicle folder that is a prefix
+        # of its own. That is what keeps a turret's parts with the turret -- the
+        # Shade's `c_turret_ap\weapon\gun` sits in no vehicle folder itself, but its
+        # nearest vehicle ancestor is the Shade, so it groups there rather than being
+        # filed as somebody else's mounted gun.
+        def owner(name):
+            parts = str(name).lower().split(chr(92))[:-1]      # drop the tag basename
+            for i in range(len(parts), 0, -1):
+                f = chr(92).join(parts[:i])
+                if f in vehi_folders:
+                    return f
+            return None
+
+        def standalone(name):
+            own = owner(name)
+            if own is None:
+                return False
+            up = own.split(chr(92))
+            for i in range(1, len(up)):
+                if chr(92).join(up[:i]) in vehi_folders:
+                    return False                               # owned by that vehicle
+            return True
+
+        # Three answers, not two. A tag that no vehicle claims at ALL is a fixed
+        # emplacement rather than somebody's mounted gun -- Halo 2's
+        # `objects\weapons\fixed\plasma_cannon` is the case -- and filing it under
+        # "vehicle-mounted" would be simply untrue.
+        groups = [('STANDALONE turrets — an enemy mans these',
+                   [r for r in rows if standalone(r[1])]),
+                  ('guns belonging to another vehicle',
+                   [r for r in rows if owner(r[1]) and not standalone(r[1])]),
+                  ('fixed emplacements — no vehicle claims these',
+                   [r for r in rows if not owner(r[1])])]
         print('=' * 84)
         print('%s   %d turret tag(s), %d uncarded, %d of those useful'
               % (game, len(seen), len(rows), len(useful)))
-        last = None
-        for cls, name, nmaps in rows:
-            folder_of = str(name).rsplit(chr(92), 1)[0]
-            if folder_of != last:
-                print('  %s' % folder_of)
-                last = folder_of
-            mark = '   << USEFUL' if (cls, name) in useful else ''
-            print('     %-5s %-56s %2d map(s)%s'
-                  % (cls, str(name).rsplit(chr(92), 1)[-1][:56], nmaps, mark))
-            for f, b in sorted(useful.get((cls, name), ())):
-                print('          %-40s %s' % (f, b or ''))
+        for title, grp in groups:
+            if not grp:
+                continue
+            print('  --- %s  (%d)' % (title, len(grp)))
+            last = None
+            for cls, name, nmaps in grp:
+                folder_of = str(name).rsplit(chr(92), 1)[0]
+                if folder_of != last:
+                    print('      %s' % folder_of)
+                    last = folder_of
+                mark = '   << USEFUL' if (cls, name) in useful else ''
+                print('         %-5s %-52s %2d map(s)%s'
+                      % (cls, str(name).rsplit(chr(92), 1)[-1][:52], nmaps, mark))
+                for f, b in sorted(useful.get((cls, name), ())):
+                    print('              %-38s %s' % (f, b or ''))
         grand += len(rows)
         useful_total += len(useful)
+        standalone_total[0] += sum(1 for r in rows if standalone(r[1]))
     print()
-    print('%d uncarded turret tag(s) total, %d of them USEFUL' % (grand, useful_total))
+    print('%d uncarded turret tag(s) total, %d of them USEFUL '
+          '(%d are STANDALONE turrets, the rest are guns on other vehicles)'
+          % (grand, useful_total, standalone_total[0]))
     return grand
 
 
