@@ -1,3 +1,4 @@
-# Live-memory captures: tens of MB each, reproducible by re-running the tool.
-# The readings that matter are in reports/*.jsonl, which IS tracked.
-sprint_toolkit/reports/*.bin
+# Live-memory captures: tens of MB each and reproducible by re-running the tool.
+# Patterns in a .gitignore are relative to ITS directory, so this must be *.bin --
+# a repo-root path here matches nothing, which is how an 80 MB capture got pushed.
+*.bin
