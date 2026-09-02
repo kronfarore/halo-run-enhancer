@@ -11,10 +11,29 @@ with contextlib.redirect_stdout(buf):
 
 CFG = json.load(open('settings.json', encoding='utf-8'))
 R = r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection'
+# Several maps per game, unioned. One map can only UNDER-report: an enemy it does not
+# field is invisible, and Reach in particular spreads its cast thinly -- the Engineer
+# is on m30 onward, the Bugger on m35/m52/m70, the Brute on m50/m70. A tag counts as
+# defining a block if it defines it on ANY of these.
 CASES = [
-    ('Halo 2',       ['Halo2MCC', 'Halo2'],  R + r'\halo2\h2_maps_win64_dx11\07a_highcharity.map'),
-    ('Halo 3',       ['Halo3MCC', 'Halo3'],  R + r'\halo3\maps\030_outskirts.map.bak'),
-    ('Halo 3: ODST', ['ODSTMCC', 'ODST'],    R + r'\halo3odst\maps\l300.map.bak'),
+    ('Halo 2',       ['Halo2MCC', 'Halo2'],  [
+        R + r'\halo2\h2_maps_win64_dx11' + os.sep + '07a_highcharity.map',
+        R + r'\halo2\h2_maps_win64_dx11' + os.sep + '03a_oldmombasa.map',
+        R + r'\halo2\h2_maps_win64_dx11' + os.sep + '05a_deltaapproach.map']),
+    ('Halo 3',       ['Halo3MCC', 'Halo3'],  [
+        R + r'\halo3\maps' + os.sep + '030_outskirts.map.bak',
+        R + r'\halo3\maps' + os.sep + '050_floodvoice.map.bak',
+        R + r'\halo3\maps' + os.sep + '120_halo.map.bak']),
+    ('Halo 3: ODST', ['ODSTMCC', 'ODST'],    [
+        R + r'\halo3odst\maps\l300.map.bak',
+        R + r'\halo3odst\maps\sc110.map.bak',
+        R + r'\halo3odst\maps\sc140.map.bak']),
+    ('Halo Reach',   ['ReachMCC', 'Reach'],  [
+        R + r'\haloreach\maps\m10.map',
+        R + r'\haloreach\maps\m30.map',
+        R + r'\haloreach\maps\m35.map',
+        R + r'\haloreach\maps\m50.map',
+        R + r'\haloreach\maps\m70.map']),
 ]
 DIFF = 'Impossible'
 games = db.get_games()
@@ -37,19 +56,34 @@ def walk(node, path):
 for k in ('Enemy modifiers',):
     walk(d[k], [k])
 
-for game, subs, mp in CASES:
+for game, subs, mps in CASES:
     reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
-    m = hp.open_map(mp, game)
+    maps = []
+    for one in mps:
+        try:
+            maps.append(hp.open_map(one, game))
+        except Exception:
+            pass
+    if not maps:
+        print('%s: none of its maps opened' % game)
+        continue
+    m = maps[0]
     plug = reg.get('char')
-    allchar = [p for p, _ in m.find_tags('char', '*')] if plug is not None else []
+    allchar = sorted({p for mm in maps for p, _ in mm.find_tags('char', '*')})         if plug is not None else []
     print('=' * 92)
-    print('%s   %s' % (game, os.path.basename(mp)))
+    print('%s   %d map(s): %s'
+          % (game, len(maps), ', '.join(os.path.basename(x) for x in mps)))
     if plug is None:
         print('  no char plugin'); continue
     rows = []
     for path, c in cards:
-        g = c.get('game'); g = [g] if isinstance(g, str) else g
-        if not db._game_ok(c, game):
+        # halo.json says "game"; a BUILT mod says "games". _game_ok reads the built
+        # key, so calling it on a raw card returns True for every game and the audit
+        # silently evaluated every card against every game. Normalise first.
+        if not db._game_ok({'games': db._parse_games(c.get('game')),
+                            'skip_games': c.get('skip_games')}, game):
+            continue
+        if game in (c.get('skip_games') or []):
             continue
         tag = c.get('tag')
         tag = he.resolve_gamed(tag, game, games) if isinstance(tag, dict) else tag
@@ -61,7 +95,8 @@ for game, subs, mp in CASES:
         if not ts:
             continue
         cls, tpath = hp.hm.split_tag(tag)
-        tags = [p for p, _ in m.find_tags(cls, tpath.split(' & ')[0])]
+        tags = sorted({p for mm in maps
+                       for p, _ in mm.find_tags(cls, tpath.split(' & ')[0])})
         if not tags:
             continue
         for t in ts:
@@ -76,18 +111,21 @@ for game, subs, mp in CASES:
             blk = t.get('block')
             blk = he.resolve_gamed(blk, game, games) if isinstance(blk, dict) else blk
             have = sum(1 for p in tags
-                       if m.read_all(cls, p, f, plug, blk, 'all'))
+                       if any(mm.read_all(cls, p, f, plug, blk, 'all')
+                              for mm in maps))
             # When the card's own tags carry nothing, is the field defined ANYWHERE?
             # ai\generic having it means an ancestor walk (or a grow seeded from it)
             # could rescue the card; nothing having it means no mechanism can.
             rescue = ''
             if have == 0:
-                gen = m.read_all(cls, 'ai' + chr(92) + 'generic', f, plug, blk, 'all')
+                gen = any(mm.read_all(cls, 'ai' + chr(92) + 'generic', f,
+                                      plug, blk, 'all') for mm in maps)
                 if gen:
                     rescue = 'A: ai/generic has it'
                 else:
                     anyone = sum(1 for p2 in allchar
-                                 if m.read_all(cls, p2, f, plug, blk, 'all'))
+                                 if any(mm.read_all(cls, p2, f, plug, blk, 'all')
+                                        for mm in maps))
                     rescue = ('A: %d other tag(s) have it' % anyone if anyone
                               else 'B: defined on NO tag in this map')
             rows.append((' / '.join(path[-2:]), f, blk or '-', have, len(tags), rescue))
@@ -96,9 +134,9 @@ for game, subs, mp in CASES:
     dead = [r for r in rows if r[3] == 0]
     part = [r for r in rows if 0 < r[3] < r[4]]
     full = [r for r in rows if r[3] == r[4]]
-    print('  %d enemy cards on this map: %d define the block on EVERY tag, '
+    print('  %d enemy cards here: %d define the block on EVERY tag, '
           '%d on SOME, %d on NONE' % (tot, len(full), len(part), len(dead)))
-    gen = sum(1 for p in [x for x, _ in m.find_tags('char', 'ai' + chr(92) + 'generic')] for _ in [1])
+    gen = any(mm.find_tags('char', 'ai' + chr(92) + 'generic') for mm in maps)
     print('  (ai\\generic present: %s)' % bool(gen))
     for label, rs in (('NONE (inherits — card is a no-op today)', dead),
                       ('SOME (base defines it, variants inherit)', part)):
