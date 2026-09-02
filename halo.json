@@ -160,16 +160,15 @@
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Invincibility", "Regenerator", "Superflare"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"020": {
 				"name": "Crow's Nest",
 				"enemies": ["Brute", "Bugger", "Grunt", "Jackal"],
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Spike Rifle", "Flak Cannon", "Brute Shot"],
-				"turrets": ["Machine Gun"],
+				"turrets": ["Machine Gun", "Plasma Cannon"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Invisibility", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Invisibility", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"030": {
 				"name": "Tsavo Highway",
@@ -177,25 +176,23 @@
 				"weapons": ["Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Brute Shot"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"040": {
 				"name": "The Storm",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Missile Pod"],
-				"turrets": ["Machine Gun", "Missile Pod"],
+				"turrets": ["Machine Gun", "Missile Pod", "Plasma Cannon"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
-				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"],
-				"turret": ["Machine Gun", "Plasma Cannon", "Missile Pod"]
+				"equipment": ["Bubble Shield", "Instant Cover", "Grav Lift", "Invincibility", "Power Drain", "Regenerator", "Superflare"]
 			},
 			"050": {
 				"name": "Floodgate",
 				"enemies": ["Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form"],
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Rocket Launcher", "Brute Shot"],
-				"turrets": ["Flamethrower", "Machine Gun"],
+				"turrets": ["Flamethrower", "Machine Gun", "Plasma Cannon"],
 				"grenades": ["Frag Grenade", "Claymore Grenade"],
-				"equipment": ["Bubble Shield", "Instant Cover", "Regenerator", "Trip Mine"],
-				"turret": ["Machine Gun", "Plasma Cannon", "Flamethrower"]
+				"equipment": ["Bubble Shield", "Instant Cover", "Regenerator", "Trip Mine"]
 			},
 			"070": {
 				"name": "The Ark",
@@ -203,7 +200,7 @@
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"100": {
 				"name": "The Covenant",
@@ -211,26 +208,24 @@
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade"],
 				"equipment": ["Auto Turret", "Bubble Shield", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"110": {
 				"name": "Cortana",
 				"enemies": ["Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form"],
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Mauler", "Needler", "Plasma Pistol", "Assault Rifle", "Battle Rifle", "Beam Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Brute Shot"],
-				"turrets": ["Flamethrower"],
+				"turrets": ["Flamethrower", "Machine Gun"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Claymore Grenade", "Firebomb Grenade"],
-				"equipment": ["Bubble Shield", "Instant Cover", "Invisibility"],
-				"turret": ["Machine Gun", "Flamethrower"]
+				"equipment": ["Bubble Shield", "Instant Cover", "Invisibility"]
 			},
 			"120": {
 				"name": "Halo",
 				"enemies": ["Flood Carrier Form", "Flood Combat Form", "Flood Infection Form", "Flood Pure Form", "Sentinel"],
 				"boss": "343 Guilty Spark",
 				"weapons": ["Energy Blade", "Gravity Hammer", "Magnum", "Needler", "Assault Rifle", "Battle Rifle", "Covenant Carbine", "Plasma Rifle", "Shotgun", "SMG", "Sniper Rifle", "Spike Rifle", "Flak Cannon", "Rocket Launcher", "Spartan Laser", "Brute Shot", "Sentinel Beam"],
-				"turrets": ["Flamethrower"],
+				"turrets": ["Flamethrower", "Machine Gun"],
 				"grenades": [],
-				"equipment": ["Auto Turret", "Invincibility"],
-				"turret": ["Machine Gun", "Flamethrower"]
+				"equipment": ["Auto Turret", "Invincibility"]
 			}
 		},
 		"Halo 3: ODST": {
@@ -246,10 +241,9 @@
 				"name": "Tayari Plaza",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spike Rifle"],
-				"turrets": ["Machine Gun"],
+				"turrets": ["Machine Gun", "Plasma Cannon"],
 				"grenades": ["Claymore Grenade", "Firebomb Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Plasma Cannon"]
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc110": {
 				"name": "Uplift Reserve",
@@ -279,10 +273,9 @@
 				"name": "NMPD HQ",
 				"enemies": ["Brute", "Bugger", "Grunt", "Hunter", "Jackal"],
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Silenced SMG", "Sniper Rifle", "Spartan Laser", "Spike Rifle", "Missile Pod"],
-				"turrets": ["Machine Gun", "Missile Pod"],
+				"turrets": ["Machine Gun", "Missile Pod", "Plasma Cannon"],
 				"grenades": ["Claymore Grenade", "Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Machine Gun", "Missile Pod", "Plasma Cannon"]
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"sc150": {
 				"name": "Kikowani Station",
@@ -296,10 +289,9 @@
 				"name": "Data Hive",
 				"enemies": ["Brute", "Bugger", "Engineer", "Grunt", "Jackal"],
 				"weapons": ["Assault Rifle", "Auto Magnum", "Battle Rifle", "Beam Rifle", "Brute Shot", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Mauler", "Needler", "Plasma Pistol", "Plasma Rifle", "SMG", "Shotgun", "Sniper Rifle", "Spike Rifle"],
-				"turrets": ["Flamethrower", "Machine Gun"],
+				"turrets": ["Flamethrower", "Machine Gun", "Plasma Cannon"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"],
-				"turret": ["Flamethrower", "Plasma Cannon"]
+				"equipment": ["Auto Turret", "Bubble Shield", "Grav Lift", "Instant Cover", "Invincibility", "Invisibility", "Jammer", "Power Drain", "Regenerator", "Superflare", "Trip Mine"]
 			},
 			"l300": {
 				"name": "Coastal Highway",
@@ -317,7 +309,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Magnum", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield"],
-				"turret": ["Machine Gun"]
+				"turrets": ["Machine Gun"]
 			},
 			"m20": {
 				"name": "ONI Sword Base",
@@ -325,7 +317,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Target Locator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Sprint"],
-				"turret": ["Machine Gun"]
+				"turrets": ["Machine Gun"]
 			},
 			"m30": {
 				"name": "Nightfall",
@@ -333,7 +325,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Health Pack", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Plasma Cannon"]
+				"turrets": ["Plasma Cannon"]
 			},
 			"m35": {
 				"name": "Tip of the Spear",
@@ -341,7 +333,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m45": {
 				"name": "Long Night of Solace",
@@ -349,7 +341,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m50": {
 				"name": "Exodus",
@@ -357,7 +349,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack", "Sprint"],
-				"turret": ["Machine Gun"]
+				"turrets": ["Machine Gun"]
 			},
 			"m52": {
 				"name": "New Alexandria",
@@ -365,7 +357,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
-				"turret": []
+				"turrets": []
 			},
 			"m60": {
 				"name": "The Package",
@@ -373,7 +365,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Grenade Launcher", "Needle Rifle", "Needler", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Sprint"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			},
 			"m70": {
 				"name": "The Pillar of Autumn",
@@ -381,7 +373,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Hologram", "Sprint"],
-				"turret": ["Plasma Cannon"]
+				"turrets": ["Plasma Cannon"]
 			},
 			"m70_bonus": {
 				"name": "Lone Wolf",
@@ -390,7 +382,7 @@
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Gravity Hammer", "Grenade Launcher", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle", "Spartan Laser", "Spike Rifle", "Target Locator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack"],
-				"turret": ["Machine Gun", "Plasma Cannon"]
+				"turrets": ["Machine Gun", "Plasma Cannon"]
 			}
 		}
 	},
