@@ -22,8 +22,9 @@ character BEHAVIOUR, and an enemy's gun, its projectile and its damage effects l
 other tag classes under the same folder -- so a weapon that belongs to one enemy was
 invisible to all three passes. That section (formerly `enemy_asset_audit.py`, now folded
 in here so one command is the whole check) lists enemy-owned weap/proj/jpt!/hlmt/coll/
-eqip tags that no card reaches. It covers all five games, where the field passes above
-cover the three with a comparable `char` layout.
+eqip tags that no card reaches. It covers all five games, as do the field passes above
+from Halo 2 on -- Halo 1 is the only game left out, its actor tags being a different
+layout entirely.
 
 A fifth section does turrets, which fall outside BOTH of the above. A turret is not a
 character, so the family derivation cannot claim it, and a mounted one is not a weapon
@@ -87,6 +88,16 @@ CASES = [
      os.path.join(_ROOT, 'halo3', 'maps')),
     ('Halo 3: ODST', ['ODSTMCC', 'ODST'],
      os.path.join(_ROOT, 'halo3odst', 'maps')),
+    # Reach's char layout is close enough to run the same passes: it adds 22 blocks and
+    # 112 fields over ODST and removes one block, so the field walk works unchanged.
+    # What it does NOT share is field NAMES -- Reach replaced the Perception set
+    # (Central/Maximum Vision Angle, Peripheral Distance) with Reliable/Peripheral
+    # Vision Distance and Surprise Distance -- so a Vision or Perception gap here is a
+    # rename, not an oversight, and needs a Reach-specific target rather than adding
+    # Reach to the existing card. Reach also ships no .map.bak, so this reads the live
+    # maps; that is fine for the question asked, which is whether a block is DEFINED.
+    ('Halo Reach', ['ReachMCC', 'Reach'],
+     os.path.join(_ROOT, 'haloreach', 'maps')),
 ]
 
 

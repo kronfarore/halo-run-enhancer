@@ -4903,7 +4903,8 @@
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
 						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
-					]
+					],
+					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
@@ -4915,7 +4916,8 @@
 					"targets": [
 						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
 						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 }
-					]
+					],
+					"affected_by_skull": "Eyepatch"
 				},
 				"Rider Damage": {
 					"desc": "How much of this weapon's damage reaches someone sitting in a vehicle.",
