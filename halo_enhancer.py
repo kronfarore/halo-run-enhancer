@@ -501,7 +501,9 @@ CONFIG = {
     "betrayal_marines_score": True,
     "death_penalty_scaling": False,
     "death_penalty_per_round": 0.10,   # +10% of the base penalty per round taken
-    "death_penalty_base": 25.0,        # what MCC ships; 0 rounds leaves it unchanged
+    # MCC ships 25. 100 is the tool's default because 25 is barely felt against
+    # kill scores that run to hundreds a fight.
+    "death_penalty_base": 100.0,
 
     # Whole-game enemy dials, per game, applied BEFORE any effect. Empty/absent means
     # "leave the shipped value alone"; a stored 0 means the same (the spin boxes show
@@ -4456,7 +4458,10 @@ class MagnitudeEditorDialog(QDialog):
         except Exception as e:
             return [{'tag': 'MCC process', 'effect': 'Betrayal scoring',
                      'field': 'sign guard', 'ok': False, 'reason': str(e)}]
-        pushed = score_live.push_from_xml(path) if changed else None
+        # Honour the same Live push switch the score rescale uses: without it the
+        # file edit stands and a restart applies it, exactly as for scores.
+        pushed = (score_live.push_from_xml(path)
+                  if changed and CONFIG.get('score_live_push', True) else None)
         h, base, pid, err = death_penalty.attach()
         if err:
             closed = 'not running' in str(err)
@@ -4506,7 +4511,7 @@ class MagnitudeEditorDialog(QDialog):
         rs = getattr(self.parent_gui, 'run_state', None)
         rounds = len(getattr(rs, 'rounds', None) or [])
         per = float(CONFIG.get('death_penalty_per_round', 0.10) or 0)
-        base = float(CONFIG.get('death_penalty_base', 25.0) or 25.0)
+        base = float(CONFIG.get('death_penalty_base', 100.0) or 100.0)
         try:
             res = death_penalty.push(rounds=rounds, per_round=per,
                                      value=death_penalty.penalty_for(rounds, per, base))
@@ -6357,6 +6362,24 @@ class OptionsDialog(QDialog):
             "built and deployed since \u2014 ability plumbing, imported weapons, HUD edits.")
         self.restore_vault_btn.clicked.connect(self._restore_from_archive)
         vform.addRow("Restore archive:", self.restore_vault_btn)
+
+        # Maps are only half of what this tool changes. The other half lives outside the
+        # map folders -- two game dlls, a shared MCC data file, and writes into the
+        # running process -- and a Steam "verify integrity" was the only way back from
+        # those, which re-downloads tens of GB and deletes modded maps as a side effect
+        # (see the map-wipe notes). This is the targeted alternative.
+        self.restore_stock_btn = QPushButton("Revert engine patches…")
+        self.restore_stock_btn.setToolTip(
+            "Undo everything this tool changes OUTSIDE the map files:\n\n"
+            "  • halo2.dll and halo3odst.dll — every applied byte patch\n"
+            "  • Data\\UI\\scoredb.xml — back to its pristine .bak\n"
+            "  • the running MCC — the death penalty and the betrayal sign guard\n\n"
+            "Maps are NOT touched: use ‘Restore all .bak’ or ‘Restore from "
+            "archive’ above for those. Between the two you get back to a stock game "
+            "without a Steam verify, which re-downloads tens of GB and deletes modded "
+            "maps on the way.")
+        self.restore_stock_btn.clicked.connect(self._restore_stock_engine)
+        vform.addRow("Revert engine:", self.restore_stock_btn)
         self._opt_page("Patching").addWidget(vault_g, 20)
 
         # ---- Run rules ----
@@ -7540,31 +7563,13 @@ class OptionsDialog(QDialog):
         self.score_cap.setToolTip("Largest multiplier any enemy may reach. 0 = no cap.")
         sform.addRow("    ↳ Cap multiplier:", self.score_cap)
 
-        self.score_push_cb = QCheckBox("Also push the new scores into a running MCC")
-        self.score_push_cb.setChecked(bool(CONFIG.get('score_live_push', True)))
-        self.score_push_cb.setToolTip(
-            "MCC parses scoredb.xml once at startup, so without this every score change "
-            "costs a full restart \u2014 and a Microsoft account login with it.\n\n"
-            "With it on, the patcher writes the same numbers straight into the parsed "
-            "score records in the running game, matched by enemy bucket, so the change "
-            "takes effect immediately. The file is written either way, so a later "
-            "restart lands on the same values.\n\n"
-            "Harmless when MCC is closed: it simply reports that and the file edit "
-            "stands on its own. Turn it off to go back to file-only patching.")
-        sform.addRow("Live push:", self.score_push_cb)
-
-        score_note = QLabel("MCC reads this file only at startup. With the live push "
-                            "off (or MCC closed at patch time), restart the game for a "
-                            "score change to take effect.")
-        score_note.setWordWrap(True)
-        score_note.setStyleSheet("color:#c8a45a; font-size:11px;")
-        sform.addRow("", score_note)
-
         def _sync_score(_=False):
             on = self.score_scaling_cb.isChecked()
             self.score_step.setEnabled(on)
             self.score_cap.setEnabled(on)
-            self.score_push_cb.setEnabled(on)
+            # NOT score_push_cb: the live push now serves Betrayal scoring as well, and
+            # that works with score rescaling switched off. Greying it out here left the
+            # betrayal flip unable to reach the running game for no stated reason.
         self.score_scaling_cb.toggled.connect(_sync_score)
         _sync_score()
 
@@ -7592,8 +7597,10 @@ class OptionsDialog(QDialog):
         self.death_pen_base.setRange(0.0, 10000.0)
         self.death_pen_base.setSingleStep(5.0)
         self.death_pen_base.setDecimals(1)
-        self.death_pen_base.setValue(float(CONFIG.get('death_penalty_base', 25.0)))
-        self.death_pen_base.setToolTip("Points a death costs at round 0. MCC ships 25.")
+        self.death_pen_base.setValue(float(CONFIG.get('death_penalty_base', 100.0)))
+        self.death_pen_base.setToolTip(
+            "Points a death costs at round 0. MCC itself ships 25, which is barely "
+            "felt against kill scores that run to hundreds in a single fight.")
         sform.addRow("    ↳ Base penalty:", self.death_pen_base)
 
         self.death_pen_per = QDoubleSpinBox()
@@ -7602,9 +7609,9 @@ class OptionsDialog(QDialog):
         self.death_pen_per.setDecimals(2)
         self.death_pen_per.setValue(float(CONFIG.get('death_penalty_per_round', 0.10)))
         self.death_pen_per.setToolTip(
-            "Fraction of the base added per round taken. At 0.10 and a base of 25, "
-            "round 10 costs 50 and round 20 costs 75.")
-        sform.addRow("    ↳ Per round:", self.death_pen_per)
+            "Fraction of the base added per round taken. At 0.10 and a base of 100, "
+            "round 10 costs 200 and round 20 costs 300.")
+        sform.addRow("    ↳ Scaling per round:", self.death_pen_per)
 
         self.betrayal_score_cb = QCheckBox(
             "Betrayal skull: killing Marines awards points instead of costing them")
@@ -7622,6 +7629,33 @@ class OptionsDialog(QDialog):
             "Halo 3: Marines then pay out their row value, scaled by difficulty like "
             "any other kill.")
         sform.addRow("Betrayal scoring:", self.betrayal_score_cb)
+
+        self.score_push_cb = QCheckBox("Also push the new scores into a running MCC")
+        self.score_push_cb.setChecked(bool(CONFIG.get('score_live_push', True)))
+        self.score_push_cb.setToolTip(
+            "MCC parses scoredb.xml once at startup, so without this every score change "
+            "costs a full restart \u2014 and a Microsoft account login with it.\n\n"
+            "With it on, the patcher writes the same numbers straight into the parsed "
+            "score records in the running game, matched by enemy bucket, so the change "
+            "takes effect immediately. The file is written either way, so a later "
+            "restart lands on the same values.\n\n"
+            "Harmless when MCC is closed: it simply reports that and the file edit "
+            "stands on its own. Turn it off to go back to file-only patching.\n\n"
+            "Covers both things that write scoredb.xml — the score rescaling above "
+            "and Betrayal scoring — so it stays available even with rescaling off.\n\n"
+            "The Death penalty does NOT need this. It has no file at all: it is written "
+            "straight into the running MCC either way, which is what lets it work in "
+            "Halo 1 and Halo 2, where there is no campaign metagame in the game's own "
+            "dll to patch.")
+        sform.addRow("Live push:", self.score_push_cb)
+
+        score_note = QLabel("MCC reads this file only at startup. With the live push "
+                            "off (or MCC closed at patch time), restart the game for a "
+                            "score change to take effect.")
+        score_note.setWordWrap(True)
+        score_note.setStyleSheet("color:#c8a45a; font-size:11px;")
+        sform.addRow("", score_note)
+
 
         def _sync_death(_=False):
             on = self.death_pen_cb.isChecked()
@@ -7967,6 +8001,152 @@ class OptionsDialog(QDialog):
             'camo_duration_s': round(self.camo_duration.value(), 1),
             'camo_cooldown_s': round(self.camo_cooldown.value(), 1),
         }
+
+
+    def _restore_stock_engine(self):
+        r"""Undo everything this tool changes outside the map files.
+
+        The map folders are only half of it. Two game dlls get byte patches, a shared
+        MCC data file gets rewritten, and two more edits are written straight into the
+        running process. Until now the only way back from those was a Steam "verify
+        integrity", which re-downloads tens of GB and DELETES modded maps on the way --
+        the thing that wiped the campaign twice. This is the targeted alternative.
+
+        Deliberately not touching maps: those have their own two restore buttons right
+        above, they are the expensive part, and folding them in would make this one
+        click able to undo a whole evening's rebuilds.
+
+        Every step is independent and none of them can raise out of here: a dll that is
+        already stock, a missing .bak and a closed MCC are all ordinary outcomes, and
+        one failing must not stop the others from being undone.
+        """
+        # Lazily, as everywhere else here. The dll tools report by PRINTING, so their
+        # output has to be captured to tell "reverted" from "already stock" from
+        # "REFUSING".
+        import contextlib
+        import io
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        # A loaded dll cannot be written: Windows holds the mapping for as long as the
+        # process lives, so with MCC open every revert fails with the same permission
+        # error. Checking once and saying so beats emitting that error per patch and
+        # letting it read as damage. The other two halves work fine with MCC open --
+        # the process patches REQUIRE it -- so they still run, and the dll half is
+        # simply offered again once MCC is closed.
+        mcc_open = False
+        try:
+            import death_penalty as _dp
+            mcc_open = bool(_dp.find_pid())
+        except Exception:
+            pass
+        note = ("MCC is RUNNING, so the two dlls will be skipped \u2014 a loaded dll "
+                "cannot be written. Close MCC and press this again to finish them."
+                if mcc_open else
+                "The dll changes need MCC fully restarted to take effect.")
+        if QMessageBox.question(
+                self, "Revert engine patches",
+                "Undo everything outside the map files?\n\n"
+                "  \u2022 halo2.dll and halo3odst.dll \u2014 every applied byte patch\n"
+                "  \u2022 Data\\UI\\scoredb.xml \u2014 restored from its .bak\n"
+                "  \u2022 the running MCC \u2014 death penalty and betrayal sign guard\n\n"
+                "Maps are NOT affected. " + note,
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
+            return
+
+        lines, failed = [], 0
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        try:
+            if mcc_open:
+                lines.append("halo2.dll / halo3odst.dll: SKIPPED — MCC is running "
+                             "and a loaded dll cannot be written.")
+                lines.append("  Close MCC and press this again to revert those.")
+            # ---- the two game dlls ----------------------------------------------
+            for label, mod_name, lister in ([] if mcc_open else (
+                    ("halo2.dll", 'h2_dll_patch', 'stateful'),
+                    ("halo3odst.dll", 'odst_dll_patch', 'blind'))):
+                try:
+                    mod = __import__(mod_name)
+                except Exception as e:
+                    lines.append("%s: tool unavailable (%s)" % (label, e))
+                    failed += 1
+                    continue
+                if not os.path.exists(getattr(mod, 'DLL', '')):
+                    lines.append("%s: not installed here" % label)
+                    continue
+                undone = []
+                for name in list(mod.PATCHES):
+                    try:
+                        # h2 can say what is applied; odst cannot, so it is asked to
+                        # revert everything and reports "already reverted" for the rest.
+                        if lister == 'stateful' and mod.state_of(name) != 'APPLIED':
+                            continue
+                        buf = io.StringIO()
+                        with contextlib.redirect_stdout(buf):
+                            mod.apply(name, revert=True)
+                        if 'REFUSING' in buf.getvalue():
+                            lines.append("%s: %s REFUSED (bytes not recognised)"
+                                         % (label, name))
+                            failed += 1
+                        elif 'already' not in buf.getvalue():
+                            undone.append(name)
+                    except Exception as e:
+                        lines.append("%s: %s failed (%s)" % (label, name, e))
+                        failed += 1
+                lines.append("%s: %s" % (label, ", ".join(undone) if undone
+                                         else "already stock"))
+
+            # ---- the shared MCC score file ---------------------------------------
+            try:
+                import scoredb_patch
+                path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+                if not os.path.exists(path):
+                    lines.append("scoredb.xml: not found under the MCC root")
+                elif scoredb_patch.restore(path):
+                    lines.append("scoredb.xml: restored from .bak")
+                    if CONFIG.get('score_live_push', True):
+                        import score_live
+                        r = score_live.push_from_xml(path)
+                        lines.append("  live push: %s"
+                                     % ("%d record(s)" % r['written'] if r.get('ok')
+                                        else r.get('reason')))
+                else:
+                    lines.append("scoredb.xml: no .bak to restore from "
+                                 "(it was never patched)")
+            except Exception as e:
+                lines.append("scoredb.xml: failed (%s)" % e)
+                failed += 1
+
+            # ---- the running process ---------------------------------------------
+            try:
+                import death_penalty
+                h, base, pid, err = death_penalty.attach()
+                if err:
+                    lines.append("running MCC: %s" % err)
+                else:
+                    try:
+                        ok1 = death_penalty.restore(h, base)[0]
+                        ok2 = death_penalty.betrayal_restore(h, base)[0]
+                    finally:
+                        death_penalty.k32.CloseHandle(h)
+                    lines.append("running MCC: death penalty %s, sign guard %s"
+                                 % ("restored" if ok1 else "FAILED",
+                                    "restored" if ok2 else "FAILED"))
+                    failed += (0 if ok1 else 1) + (0 if ok2 else 1)
+            except Exception as e:
+                lines.append("running MCC: failed (%s)" % e)
+                failed += 1
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        body = "\n".join(lines)
+        tail = ("\n\nClose MCC and press this again to finish the dll half."
+                if mcc_open else
+                "\n\nRestart MCC for the dll changes to take effect \u2014 a dll is "
+                "mapped at process start, so reloading a level is not enough.")
+        if failed:
+            QMessageBox.warning(self, "Revert engine patches",
+                                body + "\n\n%d step(s) failed." % failed + tail)
+        else:
+            QMessageBox.information(self, "Revert engine patches", body + tail)
 
     def _vault_module(self, title):
         """Import the vault tool, reporting rather than raising if it is missing."""
