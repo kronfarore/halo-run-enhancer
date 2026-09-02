@@ -9139,6 +9139,56 @@
 	},	
 	"Enemy modifiers": {
 		"General modifiers": {
+			"AI Base Accuracy": {
+				"desc": "How accurate every enemy is, across the board.",
+				"debug_desc": "`Accuracy Bounds` and its Max are the range an enemy's accuracy drifts between, `Accuracy Time` how long it takes to settle there. Difficulty-prefixed, so the row follows the difficulty being patched.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: **all 33 tags inherit accuracy, not one defines it.**",
+				"game": ["Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds"},
+					{"field": "Accuracy Bounds Max", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds"},
+					{"field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased", "min": 0}
+				]
+			},
+			"AI Base Target Tracking": {
+				"desc": "How well every enemy tracks and leads a moving target.",
+				"debug_desc": "`Target Tracking` (0.9 on the base) is how tightly they follow you, `Target Leading` (0.5) how far ahead of your movement they aim.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: 30 of 33 tags inherit these; only one Elite, one Grunt and one Jackal variant define them.",
+				"game": ["Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1, "group": "Target Tracking"},
+					{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1, "group": "Target Tracking"}
+				]
+			},
+			"AI Base Firing Range": {
+				"desc": "How far away every enemy will start shooting at you.",
+				"debug_desc": "`Maximum Firing Range`, 12.0 on the shared base.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: 30 of 33 tags inherit it.",
+				"game": ["Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all", "min": 0}
+				]
+			},
+			"AI Base Grenade Chance": {
+				"desc": "How readily every enemy reaches for a grenade.",
+				"debug_desc": "`Grenade Chance`, 0.25 on the shared base.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: 24 of 33 tags inherit it -- the Brute, Grunt and a few Elite and Bugger variants carry their own, and keep them.",
+				"game": ["Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1}
+				]
+			},
+			"AI Base Melee Behavior": {
+				"desc": "How often and how quickly every enemy swings at you.",
+				"debug_desc": "`Melee Attack Delay Timer` (4.0 on the base) and `Melee Attack Timeout` (2.5) are the pause before and the window of a melee attempt; `Melee Chance` is how willing they are, and the base ships it at 0.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: 25 of 33 tags inherit the melee block.",
+				"game": ["Halo Reach"],
+				"tag": "char ai\\generic",
+				"targets": [
+					{"field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0, "harder_when": "decreased"},
+					{"field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0},
+					{"field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1, "zero_is": 0.5, "harder_when": "increased"}
+				]
+			},
 			"Player Preference": {
 				"desc": "How much enemies focus you instead of your allies.",
 				"debug_desc": "Set on the shared `ai\\generic` parent that every character inherits, so it moves the whole campaign at once. Stock 0.25.",
@@ -9940,6 +9990,7 @@
 				},
 				"Maximum Firing Distance Hunter Fuel Rod": {
 					"desc": "Increases range in witch they can use their weapon, as well as their effective weapon range",
+					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -9970,6 +10021,7 @@
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
+					"skip_games": ["Halo Reach"],
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
@@ -9993,6 +10045,7 @@
 				},
 				"Target Tracking & Leading": {
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
+					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -13102,6 +13155,7 @@
 			"Elite General": {
 				"Melee Behavior": {
 					"desc": "How often the General swings at you, and from how far.",
+					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
@@ -13115,6 +13169,7 @@
 				},
 				"Grenade Chance": {
 					"desc": "How often the General throws grenades at you.",
+					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
@@ -13155,6 +13210,7 @@
 			"Elite Zealot": {
 				"Grenade Chance": {
 					"desc": "How often the Zealot throws grenades at you.",
+					"skip_games": ["Halo Reach"],
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
