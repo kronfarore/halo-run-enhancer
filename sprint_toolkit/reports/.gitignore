@@ -1,0 +1,3 @@
+# Live-memory captures: tens of MB each, reproducible by re-running the tool.
+# The readings that matter are in reports/*.jsonl, which IS tracked.
+sprint_toolkit/reports/*.bin
