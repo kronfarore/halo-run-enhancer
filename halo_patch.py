@@ -692,6 +692,14 @@ _STARTING_SLOTS = {
     'Halo 3: ODST': {'ref_size': 16, 'id_at': 0xC,
                      'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
                      'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
+    # Reach moves the Player Starting Profile block (scnr 0x268, element 0x68) but the
+    # slots inside it sit exactly where Halo 1 and Halo 3 put them. Read off the Reach
+    # plugin and confirmed on all nine campaign maps: every profile carries 'weap'
+    # magic at +0x28 and an ident that resolves to the weapon the level really starts
+    # you with -- AR on m10/m45/m70, magnum on m50, DMR on m52/m60.
+    'Halo Reach': {'ref_size': 16, 'id_at': 0xC,
+                   'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
+                   'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
 }
 
 # H3 tag idents are (index + salt) << 16 | index. Sampling every tagRef in the
@@ -1004,9 +1012,17 @@ def _h2_duplicate_squad(m, registry, squad_name, extra, spread=0.6):
 def _weap_ref_id(m, name, game=None, salt=None):
     """Full tag ident (H1/H3) / datum (H2) for a weap tag by name, or None if that
     tag isn't in this map — the safety net for a picked weapon the map lacks."""
-    if str(game).strip() in THIRD_GEN_GAMES:                # H3/ODST: mint the ident
+    if str(game).strip() in (THIRD_GEN_GAMES | FOURTH_GEN_GAMES):
+        # The tag table stores a salt PER TAG, so the ident is readable rather than
+        # guessable: ident = (salt << 16) | index, parsed into every tag by
+        # Halo3Map._parse_index. Checked against every weapon-palette reference on the
+        # Halo 3 and Reach campaign maps -- 191 refs, zero mismatches. Reach needs it:
+        # its salt varies per tag, so the old fixed-salt mint would produce a ref that
+        # points nowhere. The mint stays as a fallback for a map whose table is odd.
         for t in getattr(m, 'tags', []):
             if t.get('class') == 'weap' and t.get('name') == name:
+                if t.get('ident'):
+                    return t['ident']
                 i = t['index']
                 s = _H3_IDENT_SALT if salt is None else salt
                 return (((i + s) & 0xFFFF) << 16) | (i & 0xFFFF)
@@ -1612,6 +1628,13 @@ _MAP_EQUIPMENT = {
     # to a Halo 3 piece still reports "not in this level's palette" — correctly.
     'Halo 3: ODST': {'items': (0x118, 0x8C), 'palette': (0x124, 0x10), 'pal_id_at': 0xC,
                      'palette_index': 0x0},
+    # Reach: Equipment 0x144 (entry 0xB4), palette 0x150. Verified the same way as the
+    # weapons row -- every palette entry resolves to an eqip tag, and the palettes read
+    # like the levels do: m30 carries health_pack, active_camouflage, hologram and jet
+    # pack, m50 sprint/jet pack/armor lock/drop shield. This is what the armour
+    # abilities need in order to be PLACED rather than only tuned.
+    'Halo Reach': {'items': (0x144, 0xB4), 'palette': (0x150, 0x10), 'pal_id_at': 0xC,
+                   'palette_index': 0x0},
 }
 
 
@@ -1835,6 +1858,12 @@ _MAP_WEAPONS = {
     # while keeping the same entry sizes, so the within-entry offsets carry over.
     'Halo 3: ODST': {'weapons': (0x130, 0xA8), 'palette': (0x13C, 0x10), 'pal_id_at': 0xC,
                      'palette_index': 0x0, 'rounds_left': 0x6C, 'rounds_loaded': 0x6E},
+    # Reach grows the placement entry to 0xD0 and moves the rounds fields with it.
+    # Read off its scnr plugin and verified on m10/m20/m30/m35/m50/m70: every palette
+    # entry resolves to a weap tag and no placement's palette index falls outside the
+    # palette. Without this row, map weapon replacement silently did nothing in Reach.
+    'Halo Reach': {'weapons': (0x15C, 0xD0), 'palette': (0x168, 0x10), 'pal_id_at': 0xC,
+                   'palette_index': 0x0, 'rounds_left': 0x70, 'rounds_loaded': 0x72},
 }
 
 # ODST's Auto Magnum / Silenced SMG / red Plasma Rifle and the base weapons they
@@ -2047,6 +2076,11 @@ _SPAWNS_BY_GAME = {
     # read separately by odst_player_starts() below.
     'Halo 3': {'block': (0x24C, 0x18), 'bsp': 0x14},
     'Halo 3: ODST': {'block': (0x280, 0x1C), 'bsp': None, 'insertion': 0x14},
+    # Reach follows ODST rather than Halo 3: its Player Starting Locations block
+    # (scnr 0x274, entry 0x1C) declares an Insertion Point Index at 0x14, not a BSP
+    # Index, so 'bsp' is None here for the same reason it is for ODST -- reading that
+    # field as a BSP would build a nonsense visibility mask.
+    'Halo Reach': {'block': (0x274, 0x1C), 'bsp': None, 'insertion': 0x14},
 }
 
 
@@ -2585,7 +2619,10 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     lay = _MAP_EQUIPMENT.get(str(game).strip())
     scnr_base = _scnr_base(m)
     groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
-    if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST')
+    # Reach joins once its Equipment layout exists: same placement shape, same 16-byte
+    # palette tagRef, and the ident it needs is now READ from the tag table rather than
+    # minted, which is what made a Reach ref unwritable before.
+    if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
             or not lay or scnr_base is None or not any(groups)):
         return out
     ioff, ies = lay['items']

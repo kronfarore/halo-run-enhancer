@@ -909,12 +909,13 @@ def has_equipment(game):
 def equipment_placement_supported(game):
     """Games whose equipment can be PLACED into a map (starting gear, Map Presence).
 
-    Narrower than has_equipment on purpose. Placement needs a per-game scenario
-    layout, and `_MAP_EQUIPMENT` in halo_patch has none for Reach — so Reach can be
-    offered its armour abilities and have their tags tuned, while the placement paths
-    stay switched off instead of quietly producing a spec that writes nothing.
+    Narrower than has_equipment: placement needs a per-game scenario layout in
+    halo_patch's `_MAP_EQUIPMENT`. Reach joined that table once its Equipment block
+    (scnr 0x144, entry 0xB4, palette 0x150) was read off its plugin and verified on the
+    campaign maps, so all three games place equipment now. Halo 1 and Halo 2 have the
+    layout but not the rest of the loadout machinery, which is why they stay out.
     """
-    return str(game).strip() in ('Halo 3', 'Halo 3: ODST')
+    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
 
 
 def weapon_upgrades():

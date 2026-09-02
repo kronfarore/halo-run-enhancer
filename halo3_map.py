@@ -176,10 +176,17 @@ class Halo3Map:
         self.tags = []
         for i in range(self.n_tags):
             gi = self.i16(to + i * 8)
+            salt = struct.unpack_from(chr(60)+chr(72), self.data, to + i * 8 + 2)[0]
             memaddr = self.u32(to + i * 8 + 4)
             cls = self.groups[gi] if 0 <= gi < self.n_groups else None
+            # The salt is stored PER TAG, so a tag's ident is readable rather than
+            # guessable: ident = (salt << 16) | index. That matters because the salt is
+            # not constant within a map -- Reach's varies per tag, and even in Halo 3
+            # the fixed-salt fallback had a known outlier. Anything minting a tagRef
+            # should use this.
             self.tags.append({
-                'index': i, 'class': cls, 'memaddr': memaddr,
+                'index': i, 'class': cls, 'memaddr': memaddr, 'salt': salt,
+                'ident': ((salt << 16) | i) & 0xFFFFFFFF,
                 'base': self.data2off(memaddr), 'name': None,
             })
 
