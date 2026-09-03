@@ -2162,10 +2162,10 @@ _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 # shipped and confirmed in game, so this only adds a Reach row.
 _EQ_OFFSETS = {
     'Halo Reach': {'uid': 0x3C, 'folder': 0x44, 'attach': 0x34, 'gameflags': None,
-                   'never_bit': 6},
+                   'never_bit': 6, 'type': 0x42},
 }
 _EQ_DEFAULT_OFFSETS = {'uid': _EQ_UID, 'folder': _EQ_FOLDER, 'attach': _EQ_ATTACH,
-                       'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3}
+                       'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3, 'type': 0x3E}
 
 
 def _eq_offsets(game):
@@ -2882,8 +2882,17 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                         for i, (p, b) in enumerate(extra)]
         elif si < len(spawns):
             targets = [(si, spawns[si][0], _mask_for(*spawns[si]))]
+        elif spawns:
+            # FEWER LOCATIONS THAN PLAYERS. Reach's m50, m70 and m70_bonus declare
+            # exactly ONE Player Starting Location, so player 2 matched nothing here
+            # and was reported as a skip -- they got no equipment at all, on three of
+            # the ten maps. Fall back to the last location, which is what the ODST
+            # branch above already does for the same reason; the ring offset below is
+            # what keeps two players' items from landing inside each other.
+            pos, bsp = spawns[-1]
+            targets = [(si, pos, _mask_for(pos, bsp))]
         else:
-            # a non-error outcome (solo level, no player 2): report as a skip
+            # a non-error outcome (a level with no starting locations at all)
             for tag in items:
                 out.append({'effect': 'starting equipment',
                             'field': str(tag).rsplit('\\', 1)[-1], 'ok': True, 'skip': True,
@@ -2915,10 +2924,16 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     fallback_done.add((label, si))
                     plan.append((pi, fb[1], fb[2], label, bkey, added, 'fallback'))
                 else:
-                    # tight ring around the base point so multiple items don't
-                    # interpenetrate; keyed per cluster so each ring starts fresh
-                    kk = ring.get(bkey, 0)
-                    ring[bkey] = kk + 1
+                    # Tight ring around the base point so multiple items don't
+                    # interpenetrate. Keyed by the POSITION, not by the player or
+                    # cluster: where two players share a base point -- which is now
+                    # the normal case on the three Reach maps with a single starting
+                    # location -- a per-player ring restarted at angle 0 for each of
+                    # them and stacked both loadouts on the same spot.
+                    rkey = (round(base_pos[0], 2), round(base_pos[1], 2),
+                            round(base_pos[2], 2))
+                    kk = ring.get(rkey, 0)
+                    ring[rkey] = kk + 1
                     ang = kk * 1.9
                     p = (base_pos[0] + 0.8 * math.cos(ang),
                          base_pos[1] + 0.8 * math.sin(ang), base_pos[2])
@@ -2928,16 +2943,29 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
 
     # A template placement that already spawns on its own, so new elements inherit
     # valid Type / Source / BSP Policy instead of guessed values.
-    tmpl = next((i for i in range(N)
-                 if not struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
-                 & (_PLACE_NOT_AUTO | (1 << eqo['never_bit']))), None)
+    # A VALID Type is the first requirement, not auto-spawning. Exodus (m50) ships one
+    # placement that is all zeros with Type -1, and it is the only one of its 46 that
+    # is not flagged Not Automatically -- so an auto-first scan picked exactly the one
+    # element that carries no usable Type, and every appended placement inherited
+    # Type -1 and never spawned. Auto is still preferred among valid candidates, but
+    # only as a tie-break: the copy clears NOT_AUTO/NEVER on the new element anyway.
+    def _type_ok(i):
+        off = eqo.get('type')
+        if off is None:
+            return True
+        return struct.unpack_from('<h', m.data, base + i * ies + off)[0] >= 0
+
+    def _is_auto(i):
+        return not (struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
+                    & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])))
+
+    tmpl = next((i for i in range(N) if _type_ok(i) and _is_auto(i)), None)
     if tmpl is None:
-        # Preferring an auto-spawning placement is only about inheriting sane flags,
-        # and the copy clears NOT_AUTO/NEVER on the new element anyway (below). What
-        # the template really supplies is Type, Source and BSP Policy, which every
-        # placement has. Mombasa Streets and ONI Alpha Site flag ALL their equipment
-        # non-auto — script-spawned — and refusing there meant no starting equipment
-        # at all on two levels for no real reason.
+        # Mombasa Streets and ONI Alpha Site flag ALL their equipment non-auto --
+        # script-spawned -- and refusing there meant no starting equipment at all on
+        # two levels for no real reason. Take any placement with a usable Type.
+        tmpl = next((i for i in range(N) if _type_ok(i)), None)
+    if tmpl is None:
         tmpl = 0 if N else None
     if tmpl is None:
         return out + [{'effect': 'starting equipment', 'ok': False,
