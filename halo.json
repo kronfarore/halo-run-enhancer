@@ -13107,7 +13107,7 @@
 			"Elite Honor Guard": {
 				"Body Vitality": {
 					"desc": "How much punishment the Honor Guard takes before it dies.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
@@ -13118,7 +13118,7 @@
 				},
 				"Shield Vitality": {
 					"desc": "How much the Honor Guard's shields absorb before they break.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"harder_when": "increased",
@@ -13129,7 +13129,7 @@
 				},
 				"Melee Behavior": {
 					"desc": "How often the Honor Guard swings at you, and from how far.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Charge Properties", "grow": true },
@@ -13142,7 +13142,7 @@
 				},
 				"Grenade Chance": {
 					"desc": "How often the Honor Guard throws grenades at you.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo 2",
 					"tag": "char objects\\characters\\elite\\ai\\elite_honor_guard",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_honor_guard", "block": "Grenades Properties", "grow": true },
@@ -13226,7 +13226,7 @@
 			"Elite Specops Commander": {
 				"Body Vitality": {
 					"desc": "How much punishment the Spec-Ops Commander takes before it dies.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
@@ -13237,7 +13237,7 @@
 				},
 				"Shield Vitality": {
 					"desc": "How much the Spec-Ops Commander's shields absorb before they break.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"harder_when": "increased",
@@ -13248,7 +13248,7 @@
 				},
 				"Melee Behavior": {
 					"desc": "How often the Spec-Ops Commander swings at you, and from how far.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Charge Properties", "grow": true },
@@ -13261,7 +13261,7 @@
 				},
 				"Grenade Chance": {
 					"desc": "How often the Spec-Ops Commander throws grenades at you.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": ["Halo 3", "Halo 3: ODST"],
 					"tag": "char objects\\characters\\elite\\ai\\elite_specops_commander",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_specops_commander", "block": "Grenades Properties", "grow": true },
@@ -13273,7 +13273,7 @@
 			"Elite General": {
 				"Melee Behavior": {
 					"desc": "How often the General swings at you, and from how far.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Charge Properties", "grow": true },
@@ -13286,7 +13286,7 @@
 				},
 				"Grenade Chance": {
 					"desc": "How often the General throws grenades at you.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_general",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Grenades Properties", "grow": true },
@@ -13326,7 +13326,7 @@
 			"Elite Zealot": {
 				"Grenade Chance": {
 					"desc": "How often the Zealot throws grenades at you.",
-					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so the card cannot bite until the values are inserted. Block insertion is wired into the patcher; until it runs for this character the row shows the inherited value and patches nothing.",
+					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
 					"game": "Halo Reach",
 					"tag": "char objects\\characters\\elite\\ai\\elite_story*",
 					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_story*", "block": "Grenades Properties", "grow": true },
