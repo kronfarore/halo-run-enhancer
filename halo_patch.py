@@ -2161,11 +2161,18 @@ _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 # Halo 3 and ODST keep the values they have always used: their starting equipment is
 # shipped and confirmed in game, so this only adds a Reach row.
 _EQ_OFFSETS = {
-    'Halo Reach': {'uid': 0x3C, 'folder': 0x44, 'attach': 0x34, 'gameflags': None,
-                   'never_bit': 6, 'type': 0x42},
+    # `attach` is Can Attach To BSP Flags -- the same gate Halo 3 keeps at 0x50, which
+    # Reach moved to 0x54. Pointing it at Reach's Zone Set Flags (0x34) instead was
+    # wrong twice over: the BSP-attach mask was never written, so the appended object
+    # kept the TEMPLATE's mask and could not attach to the BSP it was standing in, and
+    # a zone mask got written where none was wanted. Zone Set Flags is now its own
+    # entry, written 0 = unrestricted.
+    'Halo Reach': {'uid': 0x3C, 'folder': 0x44, 'attach': 0x54, 'gameflags': None,
+                   'never_bit': 6, 'type': 0x42, 'zone': 0x34},
 }
 _EQ_DEFAULT_OFFSETS = {'uid': _EQ_UID, 'folder': _EQ_FOLDER, 'attach': _EQ_ATTACH,
-                       'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3, 'type': 0x3E}
+                       'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3, 'type': 0x3E,
+                       'zone': None}
 
 
 def _eq_offsets(game):
@@ -2455,6 +2462,12 @@ _PLACEMENT_BLOCKS = {
     'Halo 3: ODST': {'scenery': (0xD0, 0xB4), 'bipeds': (0xE8, 0x74),
                      'vehicles': (0x100, 0xA8), 'equipment': (0x118, 0x8C),
                      'weapons': (0x130, 0xA8), 'crates': (0x5FC, 0xB0)},
+    # Reach was missing entirely, so _nearest_placement_mask returned None for it and
+    # the dead-spawn detector could not run on a Reach map at all. Read off
+    # ReachMCC/scnr.xml; the element sizes all grew, which is why every offset moved.
+    'Halo Reach': {'scenery': (0xFC, 0xDC), 'bipeds': (0x114, 0x78),
+                   'vehicles': (0x12C, 0xD0), 'equipment': (0x144, 0xB4),
+                   'weapons': (0x15C, 0xD0), 'crates': (0x600, 0xD8)},
 }
 _PLACE_POS, _PLACE_ATTACH = 0x8, 0x50
 
@@ -2471,9 +2484,10 @@ def _nearest_placement_mask(m, pos, game):
         base = _block_base(m, scnr + off)
         if not base or n <= 0:
             continue
+        att_at = _eq_offsets(game)['attach']
         for i in range(n):
             e = base + i * esize
-            att = struct.unpack_from('<H', m.data, e + _PLACE_ATTACH)[0]
+            att = struct.unpack_from('<H', m.data, e + att_at)[0]
             if not att:
                 continue
             p = struct.unpack_from('<fff', m.data, e + _PLACE_POS)
@@ -2514,26 +2528,42 @@ def _spawn_is_dead(m, pos, game):
     return True
 
 
-def _live_equipment_spot(m, game):
+def _live_equipment_spot(m, game, near=None):
     """Position and mask of an equipment placement that actually renders.
 
     Used when the spawn is dead: a pickup spot the level itself uses is somewhere
     the player demonstrably goes. A zero attach mask means the placement never
     renders, so those are skipped -- on Kikowani that is exactly what separates the
-    two far-flung placements from the four beside the real start."""
+    two far-flung placements from the four beside the real start.
+
+    `near` picks the CLOSEST such spot to a point instead of the first in the block.
+    Taking the first is arbitrary, and on Reach arbitrary is a long way: it put the
+    drop 128 units from m20's starting location when a valid spot sat at 71, and 537
+    units away on m52. The starting location may not be exactly where the player is
+    put down, but it is the level's own declaration of where the mission begins, so
+    it is a far better anchor than block order."""
     lay = _MAP_EQUIPMENT.get(str(game).strip())
     scnr = _scnr_base(m)
     if not lay or scnr is None:
         return None
     off, esize = lay['items']
     n, base = m.i32(scnr + off), _block_base(m, scnr + off)
+    att_at = _eq_offsets(game)['attach']
+    best = None
     for i in range(max(0, n)):
         e = base + i * esize
-        att = struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+        att = struct.unpack_from('<H', m.data, e + att_at)[0]
         if not att:
             continue
-        return struct.unpack_from('<fff', m.data, e + _EQ_POS), att
-    return None
+        p = struct.unpack_from('<fff', m.data, e + _EQ_POS)
+        if any(v != v for v in p):          # NaN guard, as in _spawn_is_dead
+            continue
+        if near is None:
+            return p, att
+        d = sum((a - b) ** 2 for a, b in zip(p, near))
+        if best is None or d < best[0]:
+            best = (d, p, att)
+    return (best[1], best[2]) if best else None
 
 
 def _h3_mask_at(m, pos, game='Halo 3'):
@@ -2545,7 +2575,14 @@ def _h3_mask_at(m, pos, game='Halo 3'):
     there would change masks on maps that already work, with no evidence of a problem
     to fix — the ODST tables are present so it can be switched over if that changes.
     """
-    if str(game).strip() == 'Halo 3: ODST':
+    # Reach joins ODST here. Scanning EVERY placement class beats scanning weapons
+    # alone, and Reach needs it more than either: its starting locations sit far from
+    # any gun (70.8 units on m20, 140.7 on m45), so a weapons-only scan picks whatever
+    # happens to be nearest across the level and can return a BSP the drop point is
+    # not in -- and a wrong Can Attach To BSP Flags means the object silently never
+    # spawns. Halo 3 is left on the weapons scan deliberately: its equipment is
+    # shipped and confirmed in game, and its spawns are not isolated (only 040 is).
+    if str(game).strip() in ('Halo 3: ODST', 'Halo Reach'):
         got = _nearest_placement_mask(m, pos, game)
         if got:
             return got
@@ -2554,9 +2591,14 @@ def _h3_mask_at(m, pos, game='Halo 3'):
     scnr = _scnr_base(m)
     wN, wb = max(0, m.i32(scnr + wo)), _block_base(m, scnr + wo)
     best, bestd = 1, None
+    # Reach moved Can Attach To BSP Flags from 0x50 to 0x54, and the object placement
+    # blocks share the field layout within a game, so the equipment offset serves the
+    # weapons block too. Reading 0x50 on a Reach element returned a Connection Marker
+    # stringid as if it were a BSP mask.
+    att_at = _eq_offsets(game)['attach']
     for i in range(wN) if wb else []:
         e = wb + i * we
-        att = struct.unpack_from('<H', m.data, e + _EQ_ATTACH)[0]
+        att = struct.unpack_from('<H', m.data, e + att_at)[0]
         if not att:
             continue
         wp = struct.unpack_from('<fff', m.data, e + _EQ_POS)
@@ -2774,9 +2816,15 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # ODST only for now. 040_voi's spawn is just as isolated (30.0 units), but Halo 3
     # levels have not been re-tested against this and H3 starting equipment works
     # today, so moving its drop point is a separate, verifiable change.
-    if (not anchor and str(game).strip() == 'Halo 3: ODST'
+    # Reach joins ODST here too, and it is the bigger case: SIX of its ten campaign
+    # maps have an isolated starting location (m20 m30 m45 m52 m60 m70), against one
+    # in Halo 3 and one in ODST. Reach starts most missions from a cinematic or a
+    # vehicle, so the scenario's Player Starting Location is frequently not where the
+    # player is put down -- which is why equipment dropped there was never found.
+    if (not anchor and str(game).strip() in ('Halo 3: ODST', 'Halo Reach')
             and _spawn_is_dead(m, spawns[0][0], game)):
-        spot = _live_equipment_spot(m, game)
+        # anchored on the starting location, not on block order
+        spot = _live_equipment_spot(m, game, near=spawns[0][0])
         if spot:
             anchor, anchor_mask = spot
             dead_spawn = spawns[0][0]
@@ -2851,17 +2899,12 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     extra.append((pos, bsp))
 
     def _mask_for(pos, bsp):
-        # Reach's mask is a ZONE SET mask, not a BSP mask, and 0 means UNRESTRICTED --
-        # which is what Reach's own placements overwhelmingly use (47 of 55 on m30,
-        # 22 of 22 on m10, 33 of 33 on m70). So write 0 and let the placement live
-        # everywhere, rather than deriving a mask from a reader whose offsets are
-        # Halo 3's. Deriving one here produced a garbage non-zero mask that pinned the
-        # drop to arbitrary zone sets -- the second reason nothing appeared in game.
-        if str(game).strip() == 'Halo Reach':
-            return 0
-        # ODST spawns carry no BSP index (they use insertion points), so the BSP a
-        # placement must attach to is derived from the nearest vanilla weapon there
-        # instead — the same approximation the curated anchors already use.
+        # ODST and Reach spawns carry no BSP index (ODST uses insertion points, Reach
+        # stores -1), so the BSP a placement must ATTACH to is derived from the
+        # nearest vanilla placement there instead — the same approximation the curated
+        # anchors already use. Getting this mask wrong is silent: the object is in the
+        # scenario, has a valid type, and simply cannot attach to the BSP it stands
+        # in, so nothing spawns.
         return (1 << bsp) if bsp >= 0 else _h3_mask_at(m, pos, game)
 
     ring = {}                   # base-point key -> how many items dropped there so far
@@ -3013,6 +3056,12 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                          ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)    # immune to object_destroy_folder
         struct.pack_into('<H', m.data, e + eqo['attach'], mask)
+        if eqo.get('zone') is not None:
+            # Reach's zone-set mask is a SEPARATE field from the BSP-attach one, and
+            # 0 means unrestricted -- which is what Reach's own placements use
+            # (22/22 on m10, 47/55 on m30). The template's mask could restrict the
+            # drop to zone sets the player never enters, so it is cleared outright.
+            struct.pack_into('<H', m.data, e + eqo['zone'], 0)
         if eqo['gameflags'] is not None:
             # Reach has no Multiplayer Flags on a placement at all, so there is
             # nothing to clear -- writing anyway would corrupt whatever it does keep.
