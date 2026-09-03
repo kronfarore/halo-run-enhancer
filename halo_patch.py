@@ -2439,20 +2439,24 @@ _H3_LOADOUT_ANCHOR = {
     # are isolated, because most missions begin in a cinematic or a vehicle and the
     # player is put down somewhere the scenario never records.
     #
-    # m20 is a DIAGNOSTIC anchor right now, not a final one. It sits on the vanilla
-    # frag-grenade pair at (-127.1, -127.7, 14.4) / attach 0x40 -- the one spot on this
-    # map the player has confirmed reaching and seeing ability pickups at. Putting our
-    # drop exactly there separates "does an appended placement spawn at all" from "is
-    # the anchor somewhere the player goes", which no amount of map reading has been
-    # able to settle: vanilla m20 has no armor_lockup placement in ANY class, but a
-    # script-spawned one would not appear in a placement block either, so the two
-    # pickups seen in play cannot be attributed from the file alone.
+    # m20: the supply cluster the player described, found by its Target Locator, which
+    # is the one landmark here that is unique in the file. Everything they listed is
+    # within 1.2 units of it and all of it is AUTO -- so this is demonstrably a spot
+    # the engine spawns pickups at and the player reaches:
     #
-    # Once that test reports, this moves to the medikit at (32.5, -68.5, 4.1) --
-    # a `health_cabinet` scenery placement at (30.6, -66.6, 2.9) whose neighbouring
-    # AUTO crates share its Can Attach To BSP Flags of 0x80, and which is 71 units from
-    # the declared start rather than 104.
-    'm20':         (-127.1, -127.7, 14.4),
+    #   target_laser  (-57.3, 34.7, 13.1)   attach 0x10  auto   "a target locator"
+    #   dmr           (-57.4, 35.9, 13.1)   attach 0x10  auto   "2 dmr"
+    #   dmr           (-57.5, 35.8, 13.1)   attach 0x10  auto
+    #   equipment_case (-58.1, 33.1, 12.8)  attach 0x10  auto   the "crates" -- scenery
+    #   equipment_case (-57.3, 34.6, 12.9)  attach 0x10  auto   cases the guns sit in
+    #   equipment_case (-57.4, 35.8, 12.9)  attach 0x10  auto
+    #
+    # The third case holds nothing in vanilla, which is where the two armor locks the
+    # player sees must come from -- no armor_lockup placement exists in ANY class on
+    # this map, so they are script-spawned. The player was right that they are not ours.
+    # This is ~106 units from the declared starting location, which is the measure of
+    # how little that location is worth on Reach.
+    'm20':         (-56.8, 34.3, 13.1),
 }
 
 # (map -> equipment basenames) that do NOT stream at that map's start — their model
