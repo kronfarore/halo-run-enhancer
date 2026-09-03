@@ -2142,6 +2142,35 @@ _EQ_PALETTE, _EQ_NAME, _EQ_FLAGS, _EQ_POS = 0x0, 0x2, 0x4, 0x8
 _EQ_NODES, _EQ_UID, _EQ_FOLDER, _EQ_ATTACH, _EQ_GAMEFLAGS = 0x24, 0x38, 0x42, 0x50, 0x5C
 _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
 
+# REACH MOVES THESE, and using Halo 3's offsets on a Reach element is why starting
+# equipment placed nothing in game on nine of the ten Reach maps while every result
+# row said ok=True. Read off each game's scnr plugin:
+#
+#            UID   OriginBSP  Type  BSPPolicy  Folder  ZoneFlags  MPFlags  esz
+#   Halo 3   0x38  0x3C       0x3E  0x40       0x42    --         --       0x8C
+#   ODST     0x38  0x3C       0x3E  0x40       0x42    0x32       0x63     0x8C
+#   Reach    0x3C  0x40       0x42  0x33       0x44    0x34       --       0xB4
+#
+# The fatal one is Folder: Halo 3 keeps Editor Folder Index at 0x42 and Reach keeps
+# **Type** there, so writing the -1 that makes a placement immune to
+# object_destroy_folder set Reach's object Type to 0xFFFF -- an invalid type the
+# engine will not spawn. The UID and zone-mask writes landed on the wrong fields too
+# (0x38 is Reach's Light Airprobe Name), and Reach dropped Multiplayer Flags entirely,
+# so that write had no legitimate target at all.
+#
+# Halo 3 and ODST keep the values they have always used: their starting equipment is
+# shipped and confirmed in game, so this only adds a Reach row.
+_EQ_OFFSETS = {
+    'Halo Reach': {'uid': 0x3C, 'folder': 0x44, 'attach': 0x34, 'gameflags': None,
+                   'never_bit': 6},
+}
+_EQ_DEFAULT_OFFSETS = {'uid': _EQ_UID, 'folder': _EQ_FOLDER, 'attach': _EQ_ATTACH,
+                       'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3}
+
+
+def _eq_offsets(game):
+    return _EQ_OFFSETS.get(str(game).strip(), _EQ_DEFAULT_OFFSETS)
+
 
 # ODST's Player Starting Locations block moved and grew, and it has NO BSP Index --
 # where Halo 3 has one at 0x14, ODST has an Insertion Point Index, matching the
@@ -2703,6 +2732,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
             or not lay or scnr_base is None or not any(groups)):
         return out
+    eqo = _eq_offsets(game)
     ioff, ies = lay['items']
     poff, pes = lay['palette']
     N = max(0, m.i32(scnr_base + ioff))
@@ -2821,6 +2851,14 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     extra.append((pos, bsp))
 
     def _mask_for(pos, bsp):
+        # Reach's mask is a ZONE SET mask, not a BSP mask, and 0 means UNRESTRICTED --
+        # which is what Reach's own placements overwhelmingly use (47 of 55 on m30,
+        # 22 of 22 on m10, 33 of 33 on m70). So write 0 and let the placement live
+        # everywhere, rather than deriving a mask from a reader whose offsets are
+        # Halo 3's. Deriving one here produced a garbage non-zero mask that pinned the
+        # drop to arbitrary zone sets -- the second reason nothing appeared in game.
+        if str(game).strip() == 'Halo Reach':
+            return 0
         # ODST spawns carry no BSP index (they use insertion points), so the BSP a
         # placement must attach to is derived from the nearest vanilla weapon there
         # instead — the same approximation the curated anchors already use.
@@ -2892,7 +2930,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # valid Type / Source / BSP Policy instead of guessed values.
     tmpl = next((i for i in range(N)
                  if not struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
-                 & (_PLACE_NOT_AUTO | _PLACE_NEVER)), None)
+                 & (_PLACE_NOT_AUTO | (1 << eqo['never_bit']))), None)
     if tmpl is None:
         # Preferring an auto-spawning placement is only about inheriting sane flags,
         # and the copy clears NOT_AUTO/NEVER on the new element anyway (below). What
@@ -2929,7 +2967,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
 
     # --- grow the placements ---
     m.data[dest:dest + N * ies] = m.data[base:base + N * ies]
-    uids = [m.u32(base + i * ies + _EQ_UID) for i in range(N)]
+    uids = [m.u32(base + i * ies + eqo['uid']) for i in range(N)]
     nxt = max(u & 0xFFFF for u in uids) + 1
     salt = uids[tmpl] >> 16
 
@@ -2938,14 +2976,19 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
         struct.pack_into('<h', m.data, e + _EQ_PALETTE, pi)
         struct.pack_into('<h', m.data, e + _EQ_NAME, -1)
-        fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0] & ~(_PLACE_NOT_AUTO | _PLACE_NEVER)
+        fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0] & ~(
+            _PLACE_NOT_AUTO | (1 << eqo['never_bit']))
         struct.pack_into('<I', m.data, e + _EQ_FLAGS, fl)
         struct.pack_into('<fff', m.data, e + _EQ_POS, pos[0], pos[1], pos[2])
         struct.pack_into('<ii', m.data, e + _EQ_NODES, 0, 0)     # own no Node Orientations
-        struct.pack_into('<I', m.data, e + _EQ_UID, ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
-        struct.pack_into('<h', m.data, e + _EQ_FOLDER, -1)       # immune to object_destroy_folder
-        struct.pack_into('<H', m.data, e + _EQ_ATTACH, mask)
-        struct.pack_into('<H', m.data, e + _EQ_GAMEFLAGS, 0)     # campaign, not MP-only
+        struct.pack_into('<I', m.data, e + eqo['uid'],
+                         ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        struct.pack_into('<h', m.data, e + eqo['folder'], -1)    # immune to object_destroy_folder
+        struct.pack_into('<H', m.data, e + eqo['attach'], mask)
+        if eqo['gameflags'] is not None:
+            # Reach has no Multiplayer Flags on a placement at all, so there is
+            # nothing to clear -- writing anyway would corrupt whatever it does keep.
+            struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)  # campaign, not MP-only
         if mode == 'fallback':
             where = "at nearest weapon (can't stream at start)"
         elif anchor:

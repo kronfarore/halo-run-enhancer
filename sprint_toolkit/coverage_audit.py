@@ -256,6 +256,78 @@ def enemy_tag_patterns(db, enemy):
     return out
 
 
+# Things a mission list OFFERS that have no cards, and that the USER HAS DECIDED to
+# leave that way. They are reported as DEFERRED, never as gaps, so they stop coming
+# back round as findings. Each entry records whose call it was and why, because that
+# is the part that gets lost -- the fact itself is re-derivable in a minute.
+#
+# Add to this list rather than arguing with the audit output. Removing an entry turns
+# it back into a normal gap.
+OFFER_DEFERRED = {
+    ('Halo Reach', 'Health Pack'):
+        "USER'S CALL, repeatedly (last 2026-09-03): do not card it and do not keep "
+        "raising it. The eqip tag is real and carries 15 tunables, so this is a "
+        "decision and not a missing capability.",
+    ('Halo 1', 'Flamethrower'):
+        "USER'S CALL (2026-08-26): its card set is Halo 3 only. The flamethrower is "
+        "not normally available in Halo 1, so it waits until every H1 weapon ships "
+        "on every map -- one entry in a much larger job, not a one-off patch.",
+}
+
+
+def offer_pass(db, args):
+    r"""Every name a mission list can OFFER, against whether it resolves to cards.
+
+    The field passes above ask "does this character have an uncarded field". This asks
+    the blunter question one level up: can the run offer this THING at all, and is
+    there anything to draft once it does. A name with no cards and no tag is a dead
+    offer -- it can be picked and does nothing -- which no other section here sees,
+    because there is no tag for them to find a field on.
+    """
+    gaps = 0
+    for game in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach'):
+        mids = [m for m, g in db.mission_games.items() if g == game]
+        if not mids:
+            continue
+        rows, deferred = [], []
+        seen = set()
+        for attr, kind in (('mission_weapons', 'weapon'),
+                           ('mission_equipment', 'equipment'),
+                           ('mission_grenades', 'grenade'),
+                           ('mission_turrets', 'turret')):
+            for mid in mids:
+                for name in (getattr(db, attr, {}) or {}).get(mid) or []:
+                    if (kind, name) in seen:
+                        continue
+                    seen.add((kind, name))
+                    if kind == 'equipment':
+                        cards = [m for m in (db.equipment_mods.get(name) or [])
+                                 if db._game_ok(m, game)]
+                        tag = db.eqip_tag_for(name, game)
+                    else:
+                        cards = [m for m in db.weapon_mods.get(
+                            db.resolve_weapon(name), []) if db._game_ok(m, game)]
+                        tag = db.weap_tag_for(name, game)
+                    if cards:
+                        continue
+                    why = OFFER_DEFERRED.get((game, name))
+                    (deferred if why else rows).append((kind, name, tag, why))
+        print('=' * 84)
+        print('%-14s %d offer(s) with no cards, %d deferred'
+              % (game, len(rows), len(deferred)))
+        for kind, name, tag, _ in sorted(rows):
+            gaps += 1
+            print('   %-10s %-22s %s' % (kind, name,
+                                         'NO TAG EITHER -- dead offer' if not tag
+                                         else 'tag resolves, no cards'))
+        for kind, name, tag, why in sorted(deferred):
+            print('   %-10s %-22s DEFERRED' % (kind, name))
+            print('        %s' % why)
+    print()
+    print('%d un-deferred offer gap(s) total' % gaps)
+    return gaps
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -265,12 +337,15 @@ def main():
                          'were never meant to be cards (345 rows for the Jackal alone)')
     ap.add_argument('--enemy', help='restrict to one enemy')
     ap.add_argument('--only',
-                    choices=('fields', 'assets', 'turrets', 'placed', 'all'),
+                    choices=('fields', 'assets', 'turrets', 'placed', 'offers',
+                             'all'),
                     default='all',
                     help="'fields' = the char-field passes, 'assets' = the "
                          "enemy-owned tag pass, 'turrets' = every uncarded turret "
                          "tag, 'placed' = only the turrets a level actually places "
-                         "and that are not just some vehicle's gun. Default runs all.")
+                         "and that are not just some vehicle's gun, 'offers' = names "
+                         "a mission list offers that resolve to no cards. Default "
+                         "runs all.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
     ap.add_argument('--no-useful', action='store_true',
@@ -294,6 +369,9 @@ def main():
     if args.only == 'placed':
         print()
         return 0 if placed_turret_pass(db, args) == 0 else 1
+    if args.only == 'offers':
+        print()
+        return 0 if offer_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
@@ -398,6 +476,8 @@ def main():
         turret_pass(db, args)
         print()
         placed_turret_pass(db, args)
+        print()
+        offer_pass(db, args)
 
 
 def _carded_fields_by_class(db, game):

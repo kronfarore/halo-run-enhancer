@@ -24,6 +24,19 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import assembly_plugins                              # noqa: E402
 
+# Groups whose NEW-field side the user has decided not to build from, so a sweep does
+# not keep re-proposing the same work. `matg` is the standing one: the ODST -> Reach
+# diff surfaces big new blocks (Co-Op Difficulty 33 fields, Damage 15, Active Camo 11,
+# Default Player Traits 35 with sub-blocks) and the answer has been "ignore" every time
+# it has come up, most recently 2026-09-03.
+#
+# This suppresses the ADDED side only. The REMOVED side still reports, because that is
+# breakage rather than a proposal -- a card naming a field the later game dropped is a
+# bug whatever anyone decided about new work.
+ADDED_SIDE_IGNORED = {
+    'matg': 'user has repeatedly said to ignore the new matg fields',
+}
+
 PLUGINS = assembly_plugins.plugins_dir()
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HALO_JSON = os.path.join(TOOL, 'halo.json')
@@ -161,7 +174,17 @@ def main():
     new_blocks = [b for b in bb if b not in ab]
     gone_blocks = [b for b in ab if b not in bb]
 
-    if not o.removed_only:
+    skip_added = ADDED_SIDE_IGNORED.get(o.group) and not o.added_only
+    if skip_added:
+        # Named explicitly rather than silently dropped: the reader should know the
+        # added side exists and was a decision, not that the diff found nothing.
+        print("\n=== %d block(s) and %d field(s) new in %s: NOT LISTED ==="
+              % (len(new_blocks),
+                 len([f for f in bf if f not in af]), o.b))
+        print("   %s" % ADDED_SIDE_IGNORED[o.group])
+        print("   --added-only overrides this.")
+
+    if not o.removed_only and not skip_added:
         print("\n=== BLOCKS new in %s (%d) ===" % (o.b, len(new_blocks)))
         for b in sorted(new_blocks):
             kids = [f for f in bf if f.startswith(b + '/')]

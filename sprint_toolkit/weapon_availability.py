@@ -5,17 +5,36 @@ that test does not generalise: it keys on the weap `First Person` block, which t
 plugins never name and Halo 1 does not have at all. So this asks the scenario instead,
 which every game answers the same way.
 
-Four verdicts, strongest first:
+Five verdicts, strongest first:
 
-  PLACED    the scenario places it -- a real pickup, or for a detached turret a
-            VEHICLE placement. This is proof.
-  PALETTE   it sits in a palette but nothing places it. Something else spawns it: a
-            script, or a squad carrying it. Treat as likely, not proven -- Halo 3's
-            The Storm carries the missile pod exactly this way and it is unmistakably
-            there in play.
-  RESIDENT  the tag is in the map but in no palette. Usually a shared dependency, or
-            a weapon another tag references; rarely obtainable.
-  ABSENT    not in the map at all. Inserting it means importing the tag first.
+  PLACED         the scenario places it -- a real pickup, or for a detached turret a
+                 VEHICLE placement -- and at least one placement spawns automatically.
+                 This is proof it exists; see the distance note below for whether you
+                 will meet it early.
+  SCRIPTED ONLY  placed, but EVERY placement is flagged Not Automatically (or Never
+                 Placed), so nothing appears unless a script spawns that spot. Just
+                 under half of a Reach level's weapon spots are like this.
+  PALETTE        it sits in a palette but nothing places it. Something else spawns it:
+                 a script, or a squad carrying it. Treat as likely, not proven --
+                 Halo 3's The Storm carries the missile pod exactly this way and it is
+                 unmistakably there in play.
+  RESIDENT       the tag is in the map but in no palette. Usually a shared dependency,
+                 or a weapon another tag references; rarely obtainable.
+  ABSENT         not in the map at all. Inserting it means importing the tag first.
+
+WHY A PLACED WEAPON CAN STILL BE MISSING WHERE YOU ARE
+------------------------------------------------------
+PLACED says the level contains it, not that you will find it. Both extra numbers on
+that row exist because a swapped-in weapon looked completely absent in play:
+
+  * how many placements spawn automatically, when only some do -- the raw placement
+    count overstates it
+  * `start +N` -- how far the nearest AUTOMATIC placement is from the mission start
+
+Nightfall's energy sword is the case: 7 placements, 5 of them automatic, and still not
+findable until deep into the level, because all five sit a long way from the spawn.
+Neither the count nor the flags could have predicted that; the distance does. Fixing
+it means adding the asset near the start, which is a Guerilla job.
 
 Turrets matter here: they are placed as VEHICLES, not weapon pickups, so a
 Weapons-only reader reports 0 for a machinegun turret you can plainly rip off its
@@ -102,6 +121,66 @@ def _palette(m, scnr, pal_off, elem, id_at):
     return out
 
 
+# Per-placement fields that decide whether a placement the block CONTAINS is a thing
+# the player can actually walk up to. Offsets differ by game and Reach is the only one
+# with a zone-set mask -- Halo 3 and ODST gate by BSP instead and declare no
+# `Zone Set Flags` at all, so their entries carry None and the zone column stays blank.
+#
+# Read off each game's own scnr plugin, and the same within-entry offsets serve the
+# Weapons and Equipment blocks in that game.
+_PLACE_EXTRA = {
+    'Halo 3':       {'flags': 0x4, 'pos': 0x8, 'zone_flags': None, 'bsp_policy': 0x40,
+                     'origin_bsp': 0x3C},
+    'Halo 3: ODST': {'flags': 0x4, 'pos': 0x8, 'zone_flags': None, 'bsp_policy': 0x40,
+                     'origin_bsp': 0x3C},
+    'Halo Reach':   {'flags': 0x4, 'pos': 0x8, 'zone_flags': 0x34, 'bsp_policy': 0x33,
+                     'origin_bsp': 0x40},
+}
+# Placement Flags bits that decide whether a row in the block becomes an object the
+# player can walk up to. MEASURED on Reach's campaign, which is what corrected an
+# earlier guess that zone sets were the gate:
+#
+#   m10  12 placements 0x100, 10 placements 0x101
+#   m30  25 placements 0x100, 30 placements 0x101
+#   m70  27 x 0x101, 4 x 0x301, 2 x 0x100
+#
+# 0x100 is bit 8 "Create At Rest" and is on nearly everything. The bit that matters is
+# bit 0, NOT AUTOMATICALLY: the engine does not spawn that placement on its own, a
+# script has to. Just under half of every level's weapon spots are like this, so a
+# swap that lands on them produces a weapon which is genuinely in the map and simply
+# never appears -- which is exactly how Nightfall's energy sword behaved.
+#
+# Zone Set Flags turned out NOT to be the gate: the mask is 0 for 22/22 placements on
+# m10, 47/55 on m30 and 33/33 on m70, and 0 means UNRESTRICTED rather than nowhere.
+# The handful of non-zero masks (mask 12 on m30) pair with BSP Policy 2, Manual BSP
+# Index. It is still reported, because a non-zero mask really does restrict, but it
+# explains far less than the flags do.
+NOT_AUTOMATICALLY_BIT = 0
+NEVER_PLACED_BIT = 6
+# Zone Sets block: scnr 0xAC, 0x13C elements, with the name as a plain ascii string at
+# +0x4 (there is a stringid at +0x0 as well, but the ascii needs no string table).
+_ZONE_SETS = (0xAC, 0x13C)
+_ZONE_NAME_AT = 0x4
+
+
+def zone_set_names(m, scnr):
+    """['set name', ...] in bit order, so a Zone Set Flags mask can be read out loud."""
+    off, elem = _ZONE_SETS
+    try:
+        n = m.i32(scnr + off)
+    except Exception:
+        return []
+    names = []
+    for i in range(max(0, min(n, 16))):
+        e = m.follow(scnr, [off], [elem], i)
+        if e is None:
+            names.append('?')
+            continue
+        raw = bytes(m.data[e + _ZONE_NAME_AT:e + _ZONE_NAME_AT + 0x100])
+        names.append(raw.split(b'\0')[0].decode('latin-1') or ('set %d' % i))
+    return names
+
+
 def survey(m, game, weap_names=None):
     """{basename: {'placed': n, 'blocks': {block: n}}} for every palette in the map."""
     weap_names = weap_names if weap_names is not None else resident(m)
@@ -123,13 +202,49 @@ def survey(m, game, weap_names=None):
                         lay2['palette'][0], lay2['palette'][1],
                         lay2['pal_id_at'], lay2.get('palette_index', 0))
     out = {}
+    extra = _PLACE_EXTRA.get(str(game).strip()) or {}
+    # Where the mission starts, so a placement's distance from it can be reported.
+    # Every starting location is used and the nearest wins: which one is the live spawn
+    # is its own unsolved question in Reach (the insertion-point index), and taking the
+    # minimum means this number never depends on resolving that.
+    try:
+        starts = [p for p, _bsp in HP.h3_player_spawns(m, game)]
+    except Exception:
+        starts = []
     for bname, (off, elem, pal_off, pal_elem, id_at, idx_at) in blocks.items():
         pal = _palette(m, scnr, pal_off, pal_elem, id_at)
         if not pal:
             continue
         cnt = collections.Counter()
+        live = collections.Counter()
+        near = {}                             # palette idx -> nearest auto placement          # placements NOT flagged Never Placed
+        zmask = collections.Counter()         # union of Zone Set Flags, per palette idx
         for el in m.follow_all(scnr, [off], [elem], 'all'):
-            cnt[struct.unpack_from('<h', m.data, el + idx_at)[0]] += 1
+            pi = struct.unpack_from('<h', m.data, el + idx_at)[0]
+            cnt[pi] += 1
+            auto = True
+            if extra.get('flags') is not None:
+                fl = struct.unpack_from('<I', m.data, el + extra['flags'])[0]
+                auto = not (fl & ((1 << NEVER_PLACED_BIT)
+                                  | (1 << NOT_AUTOMATICALLY_BIT)))
+            if auto:
+                live[pi] += 1
+                # Distance from the mission start to the nearest AUTOMATIC placement.
+                # This is the number that answers "will I have this weapon early",
+                # and neither the placement count nor the flags can stand in for it:
+                # on a patched m10 the energy sword has 7 placements and 5 of them
+                # automatic, and it still could not be found until deep into the
+                # level, because all five sit far from where the player starts.
+                if starts and extra.get('pos') is not None:
+                    px, py, pz = struct.unpack_from('<fff', m.data,
+                                                    el + extra['pos'])
+                    for (sx, sy, sz) in starts:
+                        d = ((px - sx) ** 2 + (py - sy) ** 2 + (pz - sz) ** 2) ** 0.5
+                        if pi not in near or d < near[pi]:
+                            near[pi] = d
+            if extra.get('zone_flags') is not None:
+                zmask[pi] |= struct.unpack_from(
+                    '<H', m.data, el + extra['zone_flags'])[0]
         for i, nm, cls in pal:
             # Keep weapons, and keep a VEHICLE only when a weapon of the same name
             # is also in the map -- that is a mounted turret whose gun the player can
@@ -140,10 +255,18 @@ def survey(m, game, weap_names=None):
             cls = cls or 'weap'
             if cls != 'weap' and not (cls == 'vehi' and nm in weap_names):
                 continue
-            rec = out.setdefault(nm, {'placed': 0, 'blocks': {}})
+            rec = out.setdefault(nm, {'placed': 0, 'blocks': {}, 'live': 0,
+                                      'zones': 0, 'has_zones': False,
+                                      'near': None})
             n = cnt.get(i, 0)
             rec['placed'] += n
+            rec['live'] += live.get(i, 0)
             rec['blocks'][bname] = rec['blocks'].get(bname, 0) + n
+            if extra.get('zone_flags') is not None:
+                rec['zones'] |= zmask.get(i, 0)
+                rec['has_zones'] = True
+            if i in near and (rec.get('near') is None or near[i] < rec['near']):
+                rec['near'] = near[i]
     return out
 
 
@@ -206,13 +329,44 @@ def resident(m):
     return {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('weap', '*')}
 
 
-def verdict(name, pal, res):
-    if name in pal and pal[name]['placed'] > 0:
-        where = ', '.join('%s x%d' % (b, n) for b, n in sorted(pal[name]['blocks'].items())
+def verdict(name, pal, res, zones=None, start_zone=0):
+    r"""(verdict, why) for one weapon.
+
+    PLACED is not the end of the story, and assuming it was cost an in-game test: a
+    weapon can be placed, render correctly and still be unreachable at the point the
+    mission starts, because its placements live in a zone set that streams in later.
+    Nightfall's energy sword is the case that taught this -- swapped in, present, and
+    only found deep into the level. Two qualifiers now split that out:
+
+      NOT AT START   placements exist but none is in the mission's first zone set
+      NEVER PLACED   every placement carries Placement Flags bit 6, so the engine
+                     spawns none of them however many rows the block holds
+
+    Both mean "add the asset where the player will be", which is a Guerilla job, and
+    both used to read as a clean PLACED.
+    """
+    rec = pal.get(name)
+    if rec and rec['placed'] > 0:
+        where = ', '.join('%s x%d' % (b, n) for b, n in sorted(rec['blocks'].items())
                           if n)
-        return 'PLACED', where
-    if name in pal:
-        return 'PALETTE', 'in %s, never placed' % ', '.join(sorted(pal[name]['blocks']))
+        auto = rec.get('live', rec['placed'])
+        note = ''
+        if rec.get('has_zones') and rec.get('zones'):
+            note = ' -- restricted to %s' % ', '.join(
+                zones[i] if zones and i < len(zones) else 'set %d' % i
+                for i in range(16) if rec['zones'] & (1 << i))
+        if not auto:
+            return 'SCRIPTED ONLY', ('%s, every placement needs a script '
+                                     '(Not Automatically / Never Placed)%s'
+                                     % (where, note))
+        d = rec.get('near')
+        dist = ', start +%.0f' % d if d is not None else ''
+        if auto < rec['placed']:
+            return 'PLACED', ('%s, %d of %d spawn automatically%s%s'
+                              % (where, auto, rec['placed'], dist, note))
+        return 'PLACED', where + dist + note
+    if rec:
+        return 'PALETTE', 'in %s, never placed' % ', '.join(sorted(rec['blocks']))
     if name in res:
         return 'RESIDENT', 'tag present, in no palette'
     return 'ABSENT', 'not in this map'
@@ -298,19 +452,21 @@ def main(argv=None):
             m = HP.open_map(path, game)
             res = resident(m)
             pal = survey(m, game, res)
+            _t = m.find_tags('scnr', '*')
+            zones = zone_set_names(m, _t[0][1]) if _t else []
             if a.weapon:
                 hits = sorted(n for n in set(pal) | res if a.weapon.lower() in n.lower())
                 if not hits:
-                    v, why = verdict(a.weapon, pal, res)
+                    v, why = verdict(a.weapon, pal, res, zones)
                     print('   %-10s %-9s %s' % (mid, v, why))
                 for n in hits:
-                    v, why = verdict(n, pal, res)
+                    v, why = verdict(n, pal, res, zones)
                     print('   %-10s %-26s %-9s %s' % (mid, n, v, why))
                 continue
             if a.all or a.verbose:
                 print('   %s (%s)' % (mid, md.get('name', '')))
                 for n in sorted(set(pal) | (res if a.verbose else set())):
-                    v, why = verdict(n, pal, res)
+                    v, why = verdict(n, pal, res, zones)
                     print('      %-30s %-9s %s' % (n, v, why))
                 continue
             if a.missing:
@@ -326,7 +482,7 @@ def main(argv=None):
                                      'weap tag maps to it in this game'))
                         continue
                     base = tag.split(' ', 1)[1].strip().rsplit(S, 1)[-1]
-                    v, why = verdict(base, pal, res)
+                    v, why = verdict(base, pal, res, zones)
                     if v != 'PLACED':
                         rows.append((disp, base, v, why))
                 print('   %-10s %d of %d offered weapon(s) not placed'

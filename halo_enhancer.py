@@ -5206,9 +5206,18 @@ class MagnitudeEditorDialog(QDialog):
         return box
 
     def _set_swap(self, weapon, val):
-        """Slider/spin both route here: cap so the total across weapons stays ≤ 100%,
-        then mirror the capped value into both widgets (signals blocked)."""
-        others = sum(s.value() for k, s in self._swap_sliders.items() if k != weapon)
+        """Slider/spin both route here: cap so the total stays ≤ 100% WITHIN this
+        item's family, then mirror the capped value into both widgets (signals
+        blocked).
+
+        The cap is per family because the two families replace different placement
+        blocks: 100% of the weapon spots and 100% of the equipment spots are not
+        competing for the same 100%. Sharing one budget meant a couple of weapon
+        sliders could leave an equipment slider unable to move at all.
+        """
+        fam = self._swap_family(weapon)
+        others = sum(s.value() for k, s in self._swap_sliders.items()
+                     if k != weapon and self._swap_family(k) == fam)
         val = max(0, min(int(val), 100 - others))
         for wdg in (self._swap_sliders[weapon], self._swap_spins.get(weapon)):
             if wdg is not None and wdg.value() != val:
@@ -5216,31 +5225,63 @@ class MagnitudeEditorDialog(QDialog):
         self._update_swap_total()
 
     def _update_swap_total(self):
-        if self._swap_total_lbl is not None:
-            t = sum(s.value() for s in self._swap_sliders.values())
-            self._swap_total_lbl.setText(f"Total: {t}% of the map's weapon spots (max 100%)")
-            self._swap_total_lbl.setStyleSheet("color:%s; font-size:12px;" % ('#e0803a' if t >= 100 else '#888'))
+        if self._swap_total_lbl is None:
+            return
+        tot = {}
+        for k, s in self._swap_sliders.items():
+            fam = self._swap_family(k)
+            tot[fam] = tot.get(fam, 0) + s.value()
+        parts, hot = [], False
+        for fam, label in (('weapon', "weapon spots"), ('equipment', "equipment spots")):
+            if fam in tot:
+                parts.append(f"{tot[fam]}% of the map's {label}")
+                hot = hot or tot[fam] >= 100
+        self._swap_total_lbl.setText(('Total: ' + ', '.join(parts) + ' (max 100% each)')
+                                     if parts else '')
+        self._swap_total_lbl.setStyleSheet("color:%s; font-size:12px;"
+                                           % ('#e0803a' if hot else '#888'))
 
     def _weapon_swaps_spec(self):
-        """{weap-tag: rate} from the sliders, or None. Also snapshots the rates onto
-        the run so they persist for the session."""
+        """({weap-tag: rate}, {eqip-tag: rate}) from the sliders. Either may be empty.
+
+        The two families are SEPARATE replacements and always were, in the patcher:
+        weapons rewrite the scenario Weapons block, equipment the Equipment block.
+        This used to ask `weap_tag_for` for every slider, which returns None for a
+        piece of equipment -- so an equipment slider was collected, silently dropped,
+        and the run reported nothing to do. `_swap_family` keeps the two apart, and
+        `_set_swap` budgets them apart too: one family filling up used to eat the
+        other's headroom even though they replace different placements.
+        """
         db = getattr(self.parent_gui, 'db', None) if self.parent_gui else None
         if db is None:
-            return None
-        rates, swaps = {}, {}
+            return {}, {}
+        rates, swaps, eswaps = {}, {}, {}
         for wname, sl in getattr(self, '_swap_sliders', {}).items():
             if sl.value() <= 0:
                 continue
             rates[wname] = sl.value()
-            tag = db.weap_tag_for(wname, self.game)
-            if tag:
-                swaps[tag] = swaps.get(tag, 0.0) + sl.value() / 100.0
+            if self._swap_family(wname) == 'equipment':
+                tag = db.eqip_tag_for(wname, self.game)
+                if tag:
+                    # A tag may name several variants joined by '&' so a card patches
+                    # them together; a placement is one object, so take the first.
+                    tag = tag.split('&')[0].strip()
+                    eswaps[tag] = eswaps.get(tag, 0.0) + sl.value() / 100.0
+            else:
+                tag = db.weap_tag_for(wname, self.game)
+                if tag:
+                    swaps[tag] = swaps.get(tag, 0.0) + sl.value() / 100.0
         rs = getattr(self.parent_gui, 'run_state', None)
         if rs is not None and rates:
             opts = getattr(rs, 'options', None)
             if isinstance(opts, dict):
                 opts['weapon_swap_rates'] = rates
-        return swaps or None
+        return swaps, eswaps
+
+    def _swap_family(self, name):
+        """'equipment' or 'weapon' -- which placement block this slider replaces."""
+        db = getattr(self.parent_gui, 'db', None) if self.parent_gui else None
+        return 'equipment' if (db is not None and db.is_equipment(name)) else 'weapon'
 
     def _player_slots(self):
         """(slot 1, slot 2) as run-state player keys, honouring the swap option.
@@ -5818,7 +5859,16 @@ class MagnitudeEditorDialog(QDialog):
         starting = self._starting_weapons_spec()
         # Cards and sliders are the same mechanism and never both shown, so whichever
         # is active supplies the swaps.
-        weapon_swaps = card_swaps or self._weapon_swaps_spec()
+        # The sliders and the Map Presence card rows are two ways to say the same
+        # thing, so the cards win where both name something -- but the EQUIPMENT half
+        # has to be merged rather than dropped, per family. Before this, a slider's
+        # equipment share never reached the patcher at all, and any card row at all
+        # silently discarded every slider.
+        slider_swaps, slider_equip = self._weapon_swaps_spec()
+        weapon_swaps = card_swaps or slider_swaps or None
+        for tag, rate in (slider_equip or {}).items():
+            if tag not in equip_swaps:
+                equip_swaps[tag] = rate
         spawn_equipment = self._spawn_equipment_spec()
         zoom_ui = self._zoom_ui_spec(plan)
         remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
