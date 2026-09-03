@@ -2435,6 +2435,18 @@ _H3_LOADOUT_ANCHOR = {
     '020_base':    (-25.8, 44.4, -7.2),      # hallway by the armory racks
     '100_citadel': (-254.0, 215.2, -10.5),   # the on-foot start after the Pelican
     '120_halo':    (-269.6, -424.1, -10.0),  # just before the drop to the control centre
+    # REACH. Its starting locations are the least trustworthy of any game -- six of ten
+    # are isolated, because most missions begin in a cinematic or a vehicle and the
+    # player is put down somewhere the scenario never records.
+    #
+    # m20 was picked apart by hand against the level itself: the medikit the player can
+    # actually walk to is a `health_cabinet` scenery placement at (30.6, -66.6, 2.9),
+    # 71 units from the declared starting location, and the nearest AUTO placements to
+    # it (crates at 36.7,-70.6,4.1) share its Can Attach To BSP Flags of 0x80. The
+    # declared start is in a different BSP entirely, which is why a drop there could
+    # not attach and never spawned. This anchor sits between the cabinet and those
+    # crates, at their floor height.
+    'm20':         (32.5, -68.5, 4.1),
 }
 
 # (map -> equipment basenames) that do NOT stream at that map's start — their model
