@@ -1982,12 +1982,28 @@ class ModifierDatabase:
                 override = None
         if override:
             return override
+        # PREFER a tag that names this game explicitly. `resolve_gamed` hands a
+        # PLAIN-STRING tag back unchanged for every game, so a card authored for
+        # Halo 2/3 with a bare `weap objects\weapons\...` string answers for Halo 1
+        # too -- and whichever card happened to come first won. That is why Halo 1's
+        # Plasma Pistol and Sniper Rifle resolved to the Halo 3 paths and could not be
+        # set as starting weapons ("weapon not in this map: plasma_pistol"), even
+        # though halo.json carries the correct `weap weapons\plasma pistol\...` on
+        # other cards of the same weapon. Per-game dicts are checked first; the old
+        # first-match behaviour is the fallback, so nothing that worked changes.
+        fallback = None
         for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
-            tag = resolve_gamed(mod.get('tag'), game, self.get_games())
-            if isinstance(tag, str) and tag.startswith('weap '):
-                # first of a multi-tag effect; they are variants of one weapon
-                return tag.split(' & ')[0].strip()
-        return None
+            raw = mod.get('tag')
+            tag = resolve_gamed(raw, game, self.get_games())
+            if not (isinstance(tag, str) and tag.startswith('weap ')):
+                continue
+            # first of a multi-tag effect; they are variants of one weapon
+            one = tag.split(' & ')[0].strip()
+            if isinstance(raw, dict):
+                return one
+            if fallback is None:
+                fallback = one
+        return fallback
 
     def eqip_tag_for(self, name, game):
         """The `eqip ...` tag for a piece of equipment, taken from any of its effects.
