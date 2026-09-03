@@ -2439,14 +2439,20 @@ _H3_LOADOUT_ANCHOR = {
     # are isolated, because most missions begin in a cinematic or a vehicle and the
     # player is put down somewhere the scenario never records.
     #
-    # m20 was picked apart by hand against the level itself: the medikit the player can
-    # actually walk to is a `health_cabinet` scenery placement at (30.6, -66.6, 2.9),
-    # 71 units from the declared starting location, and the nearest AUTO placements to
-    # it (crates at 36.7,-70.6,4.1) share its Can Attach To BSP Flags of 0x80. The
-    # declared start is in a different BSP entirely, which is why a drop there could
-    # not attach and never spawned. This anchor sits between the cabinet and those
-    # crates, at their floor height.
-    'm20':         (32.5, -68.5, 4.1),
+    # m20 is a DIAGNOSTIC anchor right now, not a final one. It sits on the vanilla
+    # frag-grenade pair at (-127.1, -127.7, 14.4) / attach 0x40 -- the one spot on this
+    # map the player has confirmed reaching and seeing ability pickups at. Putting our
+    # drop exactly there separates "does an appended placement spawn at all" from "is
+    # the anchor somewhere the player goes", which no amount of map reading has been
+    # able to settle: vanilla m20 has no armor_lockup placement in ANY class, but a
+    # script-spawned one would not appear in a placement block either, so the two
+    # pickups seen in play cannot be attributed from the file alone.
+    #
+    # Once that test reports, this moves to the medikit at (32.5, -68.5, 4.1) --
+    # a `health_cabinet` scenery placement at (30.6, -66.6, 2.9) whose neighbouring
+    # AUTO crates share its Can Attach To BSP Flags of 0x80, and which is 71 units from
+    # the declared start rather than 104.
+    'm20':         (-127.1, -127.7, 14.4),
 }
 
 # (map -> equipment basenames) that do NOT stream at that map's start — their model
