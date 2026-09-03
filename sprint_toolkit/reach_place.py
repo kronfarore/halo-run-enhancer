@@ -36,11 +36,21 @@ theory is that the tags are not STREAMED in those zones.
     # weapons too, and put it on the scenario's own starting location
     python reach_place.py --map m20 --at-spawn --weapons "magnum,shotgun" --lift 0.3
 
-    # put the map back
+    # walk a trail from a spot that WORKS back to one that does not: whichever
+    # marker is the last one you can see is the boundary
+    python reach_place.py --map m20 --at -57.3 34.7 13.1 --steps 12 \
+        --toward -39.59 -70.68 15.48
+
+    # put the map back to vanilla (only needed when you are FINISHED -- every run
+    # already starts by copying the .bak over the live map)
     python reach_place.py --map m20 --restore
 
 Patches FROM <map>.bak and never modifies it, so the GUI's baseline is untouched and
-a normal patch restores everything. MCC must be closed: it holds the map open.
+a normal patch restores everything. Every run starts by copying that baseline over the
+live map, so tests never stack and there is no need to --restore between them.
+
+MCC can stay running. It only locks the file while that MAP is loaded, so patching
+from the main menu (or while a different mission is up) works fine.
 """
 import argparse
 import math
@@ -65,16 +75,37 @@ DEFAULT_MASK = 0xFFFF          # every BSP; the narrow alternative is a per-area
 
 
 def _db():
+    # load_data prints a checkmark, and on a redirected cp1252 stream that raises --
+    # which load_data swallows, leaving every pool empty and every lookup a miss.
+    # Only halo_enhancer.main() guards this, and this is not that entry point.
+    for st in (sys.stdout, sys.stderr):
+        try:
+            st.reconfigure(encoding='utf-8', errors='replace')
+        except Exception:
+            pass
     import halo_enhancer as he
     he.load_settings()
     return he, he.ModifierDatabase()
 
 
-def _mcc_running():
+def _copy_baseline(bak, live):
+    """Start every run from the pristine map.
+
+    This is also why there is no need to --restore between tests: each run discards
+    the previous patch by overwriting the live map from the baseline. --restore only
+    exists to leave the map vanilla when you are finished.
+
+    MCC does NOT have to be closed -- it only holds the file while that map is
+    LOADED, so patching from the menu or another mission is fine. The old version
+    refused whenever the process existed, which denied far more than it needed to.
+    The file lock is the real test, so let the copy fail and say what it means.
+    """
     try:
-        import skull_diff as SD
-        return bool(SD.find_pid())
-    except Exception:
+        shutil.copy2(bak, live)
+        return True
+    except PermissionError:
+        print('cannot write %s -- the map is open in MCC.' % os.path.basename(live))
+        print('Leave the mission (the main menu is enough); MCC itself can stay up.')
         return False
 
 
@@ -222,6 +253,12 @@ def main(argv=None):
                     help="use the scenario's Player Starting Location 0")
     ap.add_argument('--equipment', default='', help='comma-separated names')
     ap.add_argument('--weapons', default='', help='comma-separated names')
+    ap.add_argument('--toward', nargs=3, type=float, metavar=('X', 'Y', 'Z'),
+                    help='lay a TRAIL of single markers from --at to here, instead '
+                         'of a ring, so the point where they stop appearing is the '
+                         'boundary of whatever is gating them')
+    ap.add_argument('--steps', type=int, default=10,
+                    help='markers along the trail (default 10)')
     ap.add_argument('--radius', type=float, default=2.5)
     ap.add_argument('--lift', type=float, default=0.0,
                     help='raise every drop by this much; guards against floor burial')
@@ -239,9 +276,8 @@ def main(argv=None):
     if not os.path.isfile(bak):
         raise SystemExit('no pristine baseline at %s -- refusing to touch the map' % bak)
     if a.restore:
-        if _mcc_running():
-            raise SystemExit('MCC is running; close it first')
-        shutil.copy2(bak, live)
+        if not _copy_baseline(bak, live):
+            return 1
         print('restored %s from its baseline' % live)
         return 0
     if a.list:
@@ -250,29 +286,51 @@ def main(argv=None):
         m = HP.open_map(bak, GAME)
         cmd_list(m, (m.find_tags('scnr', '*') or [(None, None)])[0][1])
         return 0
-    if _mcc_running():
-        raise SystemExit('MCC is running; close it first (it holds the map open)')
     if not (a.at or a.at_spawn):
         raise SystemExit('give --at X Y Z or --at-spawn')
-
-    shutil.copy2(bak, live)
+    if not _copy_baseline(bak, live):
+        return 1
     m = HP.open_map(live, GAME)
     scnr = (m.find_tags('scnr', '*') or [(None, None)])[0][1]
     spot = tuple(a.at) if a.at else HP.h3_player_spawns(m, GAME)[0][0]
     mask = int(str(a.mask), 0)
     he, db = _db()
-    print('centre (%8.2f, %8.2f, %7.2f)  radius %.2f  lift %.2f  attach 0x%04X'
-          % (spot[0], spot[1], spot[2], a.radius, a.lift, mask))
-    n = 0
     eq = [s.strip() for s in a.equipment.split(',') if s.strip()]
     wp = [s.strip() for s in a.weapons.split(',') if s.strip()]
-    if eq:
-        n += place(m, scnr, 'equipment', eq, spot, a.radius, a.lift, mask, db, he)
-    if wp:
-        # offset half a step so weapons interleave with the equipment ring
-        step = math.pi / max(1, len(wp))
-        n += place(m, scnr, 'weapons', wp, spot, a.radius, a.lift, mask, db, he,
-                   start_angle=step)
+    n = 0
+
+    if a.toward:
+        # TRAIL: markers along the line from a spot that WORKS to one that does not,
+        # so the point where they stop appearing is the boundary. That is the shape
+        # of the streaming question -- a ring at one coordinate can only ever say
+        # yes or no about that coordinate.
+        dest = tuple(a.toward)
+        items = (eq + wp) or ['Armor Lock', 'Sprint', 'Jet Pack', 'Active Camouflage']
+        kinds = (['equipment'] * len(eq)) + (['weapons'] * len(wp))
+        if not kinds:
+            kinds = ['equipment'] * 4
+        span = sum((d - s) ** 2 for s, d in zip(spot, dest)) ** 0.5
+        print('trail  (%8.2f, %8.2f, %7.2f) -> (%8.2f, %8.2f, %7.2f)'
+              % (spot + dest))
+        print('       %d step(s) over %.1f units, lift %.2f, attach 0x%04X'
+              % (a.steps, span, a.lift, mask))
+        for i in range(a.steps):
+            f = i / float(max(1, a.steps - 1))
+            at = tuple(s + (d - s) * f for s, d in zip(spot, dest))
+            name = items[i % len(items)]
+            kind = kinds[i % len(kinds)]
+            print('   step %2d  %5.1f units out' % (i, span * f))
+            n += place(m, scnr, kind, [name], at, 0.0, a.lift, mask, db, he)
+    else:
+        print('centre (%8.2f, %8.2f, %7.2f)  radius %.2f  lift %.2f  attach 0x%04X'
+              % (spot[0], spot[1], spot[2], a.radius, a.lift, mask))
+        if eq:
+            n += place(m, scnr, 'equipment', eq, spot, a.radius, a.lift, mask, db, he)
+        if wp:
+            # offset half a step so weapons interleave with the equipment ring
+            step = math.pi / max(1, len(wp))
+            n += place(m, scnr, 'weapons', wp, spot, a.radius, a.lift, mask, db, he,
+                       start_angle=step)
     if not n:
         print('nothing placed; map left at its baseline')
         return 1
