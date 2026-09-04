@@ -145,6 +145,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'zoom_ui_on_scopeless', 'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
+               'reach_pools_from_map',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -442,6 +443,10 @@ CONFIG = {
     # Off by default: it changes how every chapter break LOOKS, which is a taste
     # call, not a fix.
     "keep_title_hud": False,
+    # Off by default so a user on STOCK maps keeps the full halo.json list. On, the
+    # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
+    # Reach map makes worth doing.
+    "reach_pools_from_map": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -1690,6 +1695,7 @@ class ModifierDatabase:
         self.equipment_mods = {}    # equipment name -> [mods], offered once it's owned
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
         self._odst_pool_cache = {}  # mission_id -> offer names derived from the map
+        self._reach_pool_cache = {}  # (mission, kind) -> names the Reach map can grant
         try:
             self.load_data()
         except Exception as e:
@@ -2105,6 +2111,56 @@ class ModifierDatabase:
         self._odst_pool_cache[mission_id] = names
         return names
 
+    def reach_map_pool(self, mission_id, kind='weapons'):
+        """Which of the level's declared items its MAP can actually grant.
+
+        Same shape as odst_map_pool and for the same reason, but Reach needs it more:
+        an ability the cache does not already carry cannot be made to spawn by
+        patching at all, so offering it is offering something the run cannot deliver.
+        A rebuilt map carries markers and the pool grows to match, which is exactly
+        the difference this is meant to reflect.
+
+        Filters the level's OWN halo.json list rather than inventing names from tags,
+        so nothing is offered that the level never declared. Returns [] when the map
+        cannot be read, and the caller then keeps the full list -- a missing map must
+        never silently narrow anything.
+        """
+        key = (mission_id, kind)
+        if key in self._reach_pool_cache:
+            return self._reach_pool_cache[key]
+        declared = list((self.mission_weapons if kind == 'weapons'
+                         else self.mission_equipment).get(mission_id) or [])
+        names = []
+        try:
+            import halo_patch
+            folder = CONFIG.get('map_game_folder', {}).get('Halo Reach')
+            base = Path(mcc_root()) / folder / (mission_id + '.map')
+            path = Path(str(base) + '.bak') if Path(str(base) + '.bak').exists() else base
+            m = halo_patch.open_map(str(path), 'Halo Reach')
+            # ONLY narrow a map that has been PREPARED. Placement membership does not
+            # predict whether an ability will spawn -- m10 places Drop Shield in
+            # vanilla and it still will not appear, while Camouflage is in no palette
+            # there and works -- so narrowing an unprepared map would drop offers that
+            # demonstrably function. A map with markers is one the user has rebuilt on
+            # purpose, and there the placements ARE the truth.
+            if not halo_patch.reach_named_markers(m, 'Halo Reach'):
+                self._reach_pool_cache[key] = []
+                return []
+            have = halo_patch.reach_map_items(m, 'Halo Reach', kind)
+            for disp in declared:
+                tag = (self.weap_tag_for(disp, 'Halo Reach') if kind == 'weapons'
+                       else self.eqip_tag_for(disp, 'Halo Reach'))
+                if not tag:
+                    continue
+                bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(chr(92), 1)[-1]
+                if bn in have and disp not in names:
+                    names.append(disp)
+        except Exception as e:
+            print(f"Reach {kind} pool from map failed for {mission_id}: {e}")
+            names = []
+        self._reach_pool_cache[key] = names
+        return names
+
     def get_level_weapons(self, mission_id):
         """Weapon pool for a level: its `weapons` list (plus grenades unless
         disabled in CONFIG), restricted to entries that resolve to real mods.
@@ -2113,6 +2169,9 @@ class ModifierDatabase:
         if (CONFIG.get('odst_pools_from_map')
                 and self.mission_games.get(mission_id) == 'Halo 3: ODST'):
             wl = self.odst_map_pool(mission_id) or wl
+        if (CONFIG.get('reach_pools_from_map')
+                and self.mission_games.get(mission_id) == 'Halo Reach'):
+            wl = self.reach_map_pool(mission_id, 'weapons') or wl
         # ODST's Auto Magnum / Silenced SMG. Treated as the base weapon, the level
         # offers the ordinary card (the variant is what the player actually gets, in
         # the map); treated as upgrades, the base card is what the level offers and
@@ -5286,6 +5345,17 @@ class MagnitudeEditorDialog(QDialog):
         """'equipment' or 'weapon' -- which placement block this slider replaces."""
         db = getattr(self.parent_gui, 'db', None) if self.parent_gui else None
         return 'equipment' if (db is not None and db.is_equipment(name)) else 'weapon'
+
+    def _level_equipment(self):
+        """The level's equipment offers, narrowed to what its MAP can grant when the
+        Reach option is on. Off, or for any other game, the halo.json list is returned
+        untouched -- a user on stock maps must keep the full list."""
+        mid = self.run_state.mission_id
+        declared = list(self.db.mission_equipment.get(mid) or [])
+        if (CONFIG.get('reach_pools_from_map')
+                and self.db.mission_games.get(mid) == 'Halo Reach'):
+            return self.db.reach_map_pool(mid, 'equipment') or declared
+        return declared
 
     def _player_slots(self):
         """(slot 1, slot 2) as run-state player keys, honouring the swap option.
@@ -9313,7 +9383,7 @@ class HaloGUI(QMainWindow):
         # (which only feeds the automatic per-pair rolls) — equipment has to be added
         # to BOTH or the button never offers any.
         if has_equipment(self._current_game()) and CONFIG.get('h3_equipment_in_rolls'):
-            for e in (self.db.mission_equipment.get(self.run_state.mission_id) or []):
+            for e in self._level_equipment():
                 if e not in owned and not self._blacklisted_weapon(e):
                     pool.append(e)
         pool = strip_denied_equipment(self.db, pool)
@@ -9347,7 +9417,7 @@ class HaloGUI(QMainWindow):
         # different question from whether this button may hand one out.
         if has_equipment(game) and not CONFIG.get('h3_equipment_in_rolls'):
             owned = set(self.run_state.weapons_for(player))
-            extra = [e for e in (self.db.mission_equipment.get(self.run_state.mission_id) or [])
+            extra = [e for e in self._level_equipment()
                      if e not in owned and not self._blacklisted_weapon(e)]
             extra = strip_denied_equipment(self.db, extra)
             extra = drop_weapons_taken(self.db, extra, self.run_state)
@@ -10937,7 +11007,7 @@ class RunEnhancer:
         # picked piece just grants the item, same as a weapon with no mods would.
         game = self.db.get_game_for_mission(self.run_state.mission_id)
         if has_equipment(game) and CONFIG.get('h3_equipment_in_rolls'):
-            pool += list(self.db.mission_equipment.get(self.run_state.mission_id) or [])
+            pool += list(self._level_equipment())
         # Duals and upgrades: the New Weapon BUTTON has always offered these, the
         # automatic rolls never did. Opt in per kind, so an existing run's rolls keep
         # behaving as before unless the option is turned on.

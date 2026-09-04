@@ -1840,6 +1840,11 @@ def _apply_equipment_swaps(m, game, swaps):
                                   [(a[0], a[1], _h3_stream_mask(m, ioff, ies, a[0])) for a in assign])
     else:
         slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    # Same rule as the weapon swap: a MARKER is the player's own equipment position
+    # and must not be scattered over. Without this the starting-equipment pass and the
+    # replacement pass fight, and replacement wins because it runs second.
+    for _pi in list(reach_protected_slots(m, game, block='equipment')):
+        slots.pop(_pi, None)
     names = {a[0]: a[2] for a in assign}
     done = {}
     for slot, pi in slots.items():
@@ -2800,39 +2805,110 @@ _OBJECT_NAMES = {
 REACH_MARKER_PREFIX = 'enhancer_marker'
 
 
-def reach_named_markers(m, game, prefix=REACH_MARKER_PREFIX):
+def _reach_named_placements(m, game, block):
+    """[(placement index, Object Names index)] for placements that HAVE a name."""
+    lay = (_MAP_WEAPONS if block == 'weapons' else _MAP_EQUIPMENT).get(
+        str(game).strip())
+    scnr = _scnr_base(m)
+    if not lay or scnr is None:
+        return []
+    ioff, ies = lay['weapons' if block == 'weapons' else 'items']
+    n = max(0, m.i32(scnr + ioff))
+    base = _block_base(m, scnr + ioff)
+    out = []
+    for i in range(n) if base else []:
+        ni = struct.unpack_from('<h', m.data, base + i * ies + 0x2)[0]
+        if ni >= 0:
+            out.append((i, ni))
+    return out
+
+
+def _reach_name_delta(m, game, wanted):
+    """Offset from an Object Names stringID index to the real string-table index.
+
+    Calibrated per map, never hardcoded. Scored only over placements that are NAMED
+    AND inert: a marker is by definition a placement the designer named and left
+    flagged Not Automatically, and that pair of conditions is what makes exactly one
+    offset fit. Scoring more loosely ties, because the sids and the table indices are
+    both sequential -- every offset then lines up the same number of pairs and the
+    winner is arbitrary.
+    """
+    cache = getattr(m, '_reach_delta', None)
+    if cache is not None:
+        return cache
+    spec = _OBJECT_NAMES[str(game).strip()]
+    off, esize, _kind = spec
+    scnr = _scnr_base(m)
+    obase = _block_base(m, scnr + off)
+    ocount = max(0, m.i32(scnr + off))
+    never = 1 << _eq_offsets(game)['never_bit']
+    pairs = []
+    for block in ('equipment', 'weapons'):
+        lay = (_MAP_WEAPONS if block == 'weapons' else _MAP_EQUIPMENT).get(
+            str(game).strip())
+        if not lay:
+            continue
+        ioff, ies = lay['weapons' if block == 'weapons' else 'items']
+        ibase = _block_base(m, scnr + ioff)
+        for pi, ni in _reach_named_placements(m, game, block):
+            if not (0 <= ni < ocount) or not ibase:
+                continue
+            fl = struct.unpack_from('<I', m.data, ibase + pi * ies + _EQ_FLAGS)[0]
+            if not (fl & (_PLACE_NOT_AUTO | never)):
+                continue                       # a marker is inert; this one is live
+            sid = struct.unpack_from('<I', m.data, obase + ni * esize)[0] & 0xFFFF
+            pairs.append(sid)
+    best, best_score = None, 0
+    for sid in pairs:
+        for ti in wanted:
+            d = ti - sid
+            score = sum(1 for s2 in pairs if (s2 + d) in wanted)
+            if score > best_score:
+                best, best_score = d, score
+    m._reach_delta = best if best_score else None
+    return m._reach_delta
+
+
+def reach_named_markers(m, game, prefix=REACH_MARKER_PREFIX, block='equipment'):
     """{name: placement index} for placements the LEVEL DESIGNER named.
 
-    This is the good version of marker matching. A named placement says which PLAYER
-    a position belongs to, so the patcher sets that position's palette entry to
-    whatever that player picked instead of guessing a spot or relying on block order.
+    A named placement says which PLAYER a position belongs to, so the patcher sets that
+    position's palette entry to whatever that player picked rather than guessing a spot
+    or relying on block order. `enhancer_marker1` is player 1, `enhancer_marker2`
+    player 2.
 
-    Reach's Object Names hold a stringID, and resolving one is not straightforward:
-    `resolve_stringid` returns real strings but from the wrong part of the table --
-    m10's names come back as `bnet_pro` and other UI text. The sids ARE sequential and
-    the run is contiguous, so only the base is wrong, and the offset is recovered here
-    by CALIBRATION rather than hardcoded: find the table indices of the strings that
-    start with `prefix`, then take the delta that the most Object Names entries agree
-    on. On m10 both markers independently give +4747, and requiring agreement is what
-    stops a coincidental single match from setting a wrong base.
+    Resolved from the PLACEMENT side -- placement Name index -> Object Names entry --
+    and never from the entry's own Placement Index. On m10 those disagree: the entries
+    naming the two equipment markers report `type=Weapon, placement=20/21`, which if
+    believed sends the lookup to two vanilla rifles on the far side of the level. The
+    placement's own Name index is the authoritative link.
+
+    `block` picks which placement block to read; the same Object Names block and Name
+    field serve equipment and weapons alike, so weapon markers need no new mechanism.
     """
     spec = _OBJECT_NAMES.get(str(game).strip())
     scnr = _scnr_base(m)
     if not spec or scnr is None:
         return {}
     off, esize, kind = spec
-    n = max(0, m.i32(scnr + off))
-    base = _block_base(m, scnr + off)
-    if not base or not n:
+    ocount = max(0, m.i32(scnr + off))
+    obase = _block_base(m, scnr + off)
+    if not obase or not ocount:
+        return {}
+    named = _reach_named_placements(m, game, block)
+    if not named:
         return {}
     if kind == 'ascii':
+        # Halo 3 / ODST store the name inline, so no calibration is needed.
         out = {}
-        for i in range(n):
-            e = base + i * esize
-            nm = bytes(m.data[e:e + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
-            pidx = struct.unpack_from('<h', m.data, e + 0x22)[0]
-            if nm.startswith(prefix) and pidx >= 0:
-                out[nm] = pidx
+        for pi, ni in named:
+            if not (0 <= ni < ocount):
+                continue
+            e = obase + ni * esize
+            nm = bytes(m.data[e:e + 0x20]).split(bytes([0]))[0].decode(
+                'latin1', 'replace')
+            if nm.startswith(prefix):
+                out[nm] = pi
         return out
     if not (hasattr(m, '_locate_stringids') and m._locate_stringids()):
         return {}
@@ -2843,63 +2919,27 @@ def reach_named_markers(m, game, prefix=REACH_MARKER_PREFIX):
             wanted[i] = s
     if not wanted:
         return {}
-    sids = []
-    for i in range(n):
-        e = base + i * esize
-        sids.append((struct.unpack_from('<I', m.data, e)[0] & 0xFFFF,
-                     struct.unpack_from('<h', m.data, e + 0x6)[0]))
-    # Scoring a delta by "how many entries match a wanted string" is DEGENERATE here:
-    # the sids are sequential and so are the table indices, so every offset lines up
-    # the same number of pairs and the winner is arbitrary. On m10 that picked
-    # placements 512/513 instead of 20/21.
-    #
-    # The constraint that actually discriminates is the Placement Index: it has to
-    # point at a real row of the block we are naming. Only a handful of entries can
-    # satisfy that, so a delta is scored by how many DISTINCT wanted strings it
-    # resolves to an in-range placement, and a delta that cannot place them all is
-    # rejected outright.
-    # An in-range placement index is still not selective enough on its own -- plenty of
-    # entries point at one, so many deltas tie and the winner is again arbitrary (that
-    # picked placements 3 and 4). The property that actually DEFINES a marker is that
-    # it is flagged Not Automatically: it sits inert until the patcher switches it on.
-    # Scoring only those makes the correct delta the only one that fits.
-    lay = _MAP_EQUIPMENT[str(game).strip()]
-    eqo = _eq_offsets(game)
-    ioff, ies = lay['items']
-    limit = max(0, m.i32(scnr + ioff))
-    ibase = _block_base(m, scnr + ioff)
-    inert = set()
-    for i in range(limit) if ibase else []:
-        fl = struct.unpack_from('<I', m.data, ibase + i * ies + _EQ_FLAGS)[0]
-        if fl & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])):
-            inert.add(i)
-    best, best_score = None, 0
-    for si0, _p0 in sids:
-        for ti in wanted:
-            d = ti - si0
-            hit = {}
-            for sj, pj in sids:
-                s = wanted.get(sj + d)
-                if s and pj in inert:
-                    hit[s] = pj
-            if len(hit) > best_score:
-                best, best_score = hit, len(hit)
-    return best or {}
+    delta = _reach_name_delta(m, game, wanted)
+    if delta is None:
+        return {}
+    out = {}
+    for pi, ni in named:
+        if not (0 <= ni < ocount):
+            continue
+        sid = struct.unpack_from('<I', m.data, obase + ni * esize)[0] & 0xFFFF
+        nm = wanted.get(sid + delta)
+        if nm:
+            out[nm] = pi
+    return out
 
 
 def reach_equipment_markers(m, game):
     """{eqip basename: [placement index, ...]} for every INERT equipment placement.
 
-    Reach's story, settled on m10: an ability the vanilla cache does not already use
-    will not spawn from a placement we add, however correct that placement is. All six
-    are resident with real tag data and an identical model chain, and no eqip field
-    separates the three that work from the three that do not -- the vanilla map lacks
-    the resource/streaming layer and only an editing-kit rebuild adds it.
-
-    So a prepared Reach map carries a MARKER for each ability: one placement, put where
-    it should appear, flagged Not Automatically so it sits inert. The patcher's job
-    becomes flipping that bit rather than inventing a position -- which also means the
-    position is the level designer's choice rather than a guess from a spawn point.
+    The UNNAMED fallback. A named marker says which player a position belongs to and
+    is preferred; this catches a prepared map whose markers were never named, where
+    block order is all there is to go on -- the first inert placement of a piece is
+    player 1's, the second player 2's.
     """
     lay = _MAP_EQUIPMENT.get(str(game).strip())
     scnr = _scnr_base(m)
@@ -2927,6 +2967,59 @@ def reach_equipment_markers(m, game):
         if fl & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])):
             out.setdefault(nm, []).append(i)
     return out
+
+
+def reach_map_items(m, game, kind='weapons'):
+    """Basenames of what this Reach map can actually give the player.
+
+    The rule differs by kind because the evidence does:
+
+      weapons    everything in the weapon PALETTE. Map replacement can repoint any
+                 placement at any palette entry, and a palette entry means the level
+                 ships that weapon's resources.
+      equipment  only what the map PLACES -- automatically, or as an inert marker.
+                 Palette membership is NOT enough here: m10 ships drop_shield in its
+                 vanilla palette and it still would not spawn from a patched-in
+                 placement, because the cache lacks its resources. Anything with a
+                 real placement has demonstrably got them.
+    """
+    lay = (_MAP_WEAPONS if kind == 'weapons' else _MAP_EQUIPMENT).get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not lay or scnr is None:
+        return set()
+    poff, pes = lay['palette']
+    pbase = _block_base(m, scnr + poff)
+    pcount = max(0, m.i32(scnr + poff))
+    names = {}
+    for i in range(pcount) if pbase else []:
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if nm:
+            names[i] = str(nm).rsplit(chr(92), 1)[-1]
+    if kind == 'weapons':
+        return set(names.values())
+    ioff, ies = lay['items']
+    ibase = _block_base(m, scnr + ioff)
+    out = set()
+    for i in range(max(0, m.i32(scnr + ioff))) if ibase else []:
+        nm = names.get(struct.unpack_from('<h', m.data, ibase + i * ies)[0])
+        if nm:
+            out.add(nm)
+    return out
+
+
+def reach_protected_slots(m, game, block='equipment'):
+    """Placement indices a swap must LEAVE ALONE.
+
+    A named marker is the player's own loadout position: the patcher puts the ability
+    (later the weapon) they picked on it. Map replacement scatters picks over existing
+    placements, so without this it would happily overwrite the very placement the
+    starting-equipment pass just set, and the player would arrive to find something
+    else there. Only Reach has markers, so this is empty everywhere else.
+    """
+    if str(game).strip() != 'Halo Reach':
+        return set()
+    named = reach_named_markers(m, game, block=block)
+    return set(named.values())
 
 
 def _reach_set_marker(m, game, index, tag_path):
@@ -3475,6 +3568,11 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     # never bites. Confining to placement BSPs would only under-place a common weapon
     # whose own placements happen to cluster in a few zones.
     slots = _spread_slots(N, [(a[0], a[1]) for a in assign])
+    # Never scatter a pick onto a MARKER. It is the player's own loadout position and
+    # the starting-equipment pass has already put their choice there; overwriting it
+    # would silently swap the item they picked for something else.
+    for _pi in list(reach_protected_slots(m, game, block='weapons')):
+        slots.pop(_pi, None)
     info = {a[0]: (a[2], a[3], a[4]) for a in assign}
     done = {}
     for slot, pi in slots.items():
