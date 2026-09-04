@@ -3000,8 +3000,15 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     kk = ring.get(rkey, 0)
                     ring[rkey] = kk + 1
                     ang = kk * 1.9
-                    p = (base_pos[0] + 0.8 * math.cos(ang),
-                         base_pos[1] + 0.8 * math.sin(ang), base_pos[2])
+                    # 0.8 units is too tight for Reach: a ring of six abilities at
+                    # that radius on m20 put five of them INSIDE the equipment cases
+                    # the level's guns sit in -- one was visible but stuck in a wall
+                    # and the rest could not be found at all. 2.0 clears that scenery.
+                    # Halo 3 and ODST keep 0.8, where the drops are shipped and
+                    # confirmed in game and a wider ring is an untested change.
+                    rad = 2.0 if str(game).strip() == 'Halo Reach' else 0.8
+                    p = (base_pos[0] + rad * math.cos(ang),
+                         base_pos[1] + rad * math.sin(ang), base_pos[2])
                     plan.append((pi, p, base_mask, label, bkey, added, 'start'))
     if not plan:
         return out
