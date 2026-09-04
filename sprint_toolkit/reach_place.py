@@ -267,6 +267,10 @@ def main(argv=None):
     ap.add_argument('--list', action='store_true',
                     help='show spawns, palettes and resident tags, then exit')
     ap.add_argument('--restore', action='store_true', help='copy the .bak back')
+    ap.add_argument('--no-reset', action='store_true',
+                    help='patch the LIVE map instead of starting from the baseline, '
+                         'so this stacks on top of an edit made by another tool '
+                         '(reach_keep_hud) instead of discarding it')
     a = ap.parse_args(argv)
 
     live = V.resolve(GAME, a.map)
@@ -288,8 +292,10 @@ def main(argv=None):
         return 0
     if not (a.at or a.at_spawn):
         raise SystemExit('give --at X Y Z or --at-spawn')
-    if not _copy_baseline(bak, live):
+    if not a.no_reset and not _copy_baseline(bak, live):
         return 1
+    if a.no_reset:
+        print('stacking on the LIVE map (baseline not restored)')
     m = HP.open_map(live, GAME)
     scnr = (m.find_tags('scnr', '*') or [(None, None)])[0][1]
     spot = tuple(a.at) if a.at else HP.h3_player_spawns(m, GAME)[0][0]
