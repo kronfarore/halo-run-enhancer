@@ -152,6 +152,112 @@ def _resolve(db, he, kind, name, m):
     return None
 
 
+def transplant(m, scnr, donor_path, bak, mask, lift, keep_not_auto=False):
+    """Copy the placements a DONOR build has beyond the baseline onto this map.
+
+    The workflow this exists for: pick the coordinates in Foundation or Sapien, build
+    the map in the editing kit, then bring just the POSITIONS across onto the vanilla
+    cache. That answers "will the game spawn something here" without shipping the
+    rebuilt map, which for m10 is 858MB against the stock 421MB.
+
+    "Beyond the baseline" is simply index >= the baseline's placement count: an editor
+    appends, so the additions are the tail. Their attach mask comes across too -- it is
+    the editor's own answer for that spot and worth more than anything derived here.
+
+    Not Automatically is CLEARED by default. A marker placed in the editor usually has
+    it set, meaning a script has to spawn it; transplanted as-is it would sit there
+    invisible and read as a failed transplant.
+    """
+    lay = HP._MAP_EQUIPMENT[GAME]
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    donor = HP.open_map(donor_path, GAME)
+    dscnr = HP._scnr_base(donor)
+    dn = donor.i32(dscnr + ioff)
+    dbase = HP._block_base(donor, dscnr + ioff)
+    dpal = {}
+    for i in range(max(0, donor.i32(dscnr + poff))):
+        e = HP._block_base(donor, dscnr + poff) + i * pes
+        nm = HP._tag_name_by_id(donor, donor.u32(e + lay['pal_id_at']))
+        dpal[i] = str(nm).replace('/', S) if nm else None
+    base_map = HP.open_map(bak, GAME)
+    bn = base_map.i32(HP._scnr_base(base_map) + ioff)
+    if dn <= bn:
+        print('   donor has %d placement(s), baseline %d -- nothing added' % (dn, bn))
+        return 0
+    print('   donor adds %d placement(s) beyond the baseline of %d' % (dn - bn, bn))
+
+    N = m.i32(scnr + ioff)
+    base = HP._block_base(m, scnr + ioff)
+    pc = m.i32(scnr + poff)
+    pal = _palette(m, scnr, lay)
+    plan, new_pal = [], []
+    for i in range(bn, dn):
+        e = dbase + i * ies
+        pi_d = struct.unpack_from('<h', donor.data, e)[0]
+        path = dpal.get(pi_d)
+        if not path:
+            print('   SKIP donor [%d]: palette entry does not resolve' % i)
+            continue
+        pos = struct.unpack_from('<fff', donor.data, e + OFF['pos'])
+        att = struct.unpack_from('<H', donor.data, e + OFF['attach'])[0]
+        key = path.lower()
+        if key in pal:
+            pi = pal[key]
+        else:
+            datum = HP._h3_tag_datum(m, 'eqip', path)
+            if datum is None:
+                print('   SKIP %-22s not resident in the vanilla map'
+                      % path.rsplit(S, 1)[-1])
+                continue
+            pi = pc + len(new_pal)
+            new_pal.append(datum)
+            pal[key] = pi
+        plan.append((pi, (pos[0], pos[1], pos[2] + lift), path.rsplit(S, 1)[-1],
+                     att if att else mask))
+    if not plan:
+        return 0
+    tmpl = _template(m, base, N, ies)
+    uids = [m.u32(base + i * ies + OFF['uid']) for i in range(N)]
+    salt, nxt = uids[tmpl] >> 16, max(u & 0xFFFF for u in uids) + 1
+    sizes = [(N + len(plan)) * ies] + ([(pc + len(new_pal)) * pes] if new_pal else [])
+    got = HP._h3_reserve(m, sizes)
+    if got is None:
+        print('   no free run to grow the blocks')
+        return 0
+    dest = got[0]
+    if new_pal:
+        pdest = got[1]
+        pbase = HP._block_base(m, scnr + poff)
+        m.data[pdest:pdest + pc * pes] = m.data[pbase:pbase + pc * pes]
+        ref = m.data[pbase:pbase + pes]
+        for j, datum in enumerate(new_pal):
+            e = pdest + (pc + j) * pes
+            m.data[e:e + pes] = ref
+            struct.pack_into('<I', m.data, e + lay['pal_id_at'], datum)
+        struct.pack_into('<i', m.data, scnr + poff, pc + len(new_pal))
+        struct.pack_into('<I', m.data, scnr + poff + 4, m.off2data(pdest))
+    m.data[dest:dest + N * ies] = m.data[base:base + N * ies]
+    for k, (pi, pos, label, att) in enumerate(plan):
+        e = dest + (N + k) * ies
+        m.data[e:e + ies] = m.data[base + tmpl * ies: base + (tmpl + 1) * ies]
+        struct.pack_into('<h', m.data, e + OFF['pal'], pi)
+        struct.pack_into('<h', m.data, e + OFF['name'], -1)
+        fl = struct.unpack_from('<I', m.data, e + OFF['flags'])[0]
+        fl = fl if keep_not_auto else (fl & ~(NOT_AUTO | NEVER))
+        struct.pack_into('<I', m.data, e + OFF['flags'], fl)
+        struct.pack_into('<fff', m.data, e + OFF['pos'], *pos)
+        struct.pack_into('<H', m.data, e + OFF['zone'], 0)
+        struct.pack_into('<H', m.data, e + OFF['attach'], att)
+        struct.pack_into('<h', m.data, e + OFF['folder'], -1)
+        struct.pack_into('<I', m.data, e + OFF['uid'],
+                         ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        print('   %-20s (%8.2f,%8.2f,%8.2f) attach=0x%04X' % (label, *pos, att))
+    struct.pack_into('<i', m.data, scnr + ioff, N + len(plan))
+    struct.pack_into('<I', m.data, scnr + ioff + 4, m.off2data(dest))
+    return len(plan)
+
+
 def place(m, scnr, kind, names, spot, radius, lift, mask, db, he, start_angle=0.0):
     lay = HP._MAP_EQUIPMENT[GAME] if kind == 'equipment' else HP._MAP_WEAPONS[GAME]
     boff, esz = lay['items'] if kind == 'equipment' else lay['weapons']
@@ -267,6 +373,15 @@ def main(argv=None):
     ap.add_argument('--list', action='store_true',
                     help='show spawns, palettes and resident tags, then exit')
     ap.add_argument('--restore', action='store_true', help='copy the .bak back')
+    ap.add_argument('--from-map', metavar='PATH',
+                    help='TRANSPLANT: copy the placements a DONOR build of this map '
+                         'has beyond the baseline (what you added in Foundation or '
+                         'Sapien) onto the vanilla map, so the coordinates can be '
+                         'tested without shipping the rebuilt cache')
+    ap.add_argument('--keep-not-auto', action='store_true',
+                    help='transplant: leave Not Automatically set. Off by default, '
+                         'because a transplanted marker with it set needs a script to '
+                         'spawn and will look like the transplant failed')
     ap.add_argument('--no-reset', action='store_true',
                     help='patch the LIVE map instead of starting from the baseline, '
                          'so this stacks on top of an edit made by another tool '
@@ -305,7 +420,10 @@ def main(argv=None):
     wp = [s.strip() for s in a.weapons.split(',') if s.strip()]
     n = 0
 
-    if a.toward:
+    if a.from_map:
+        n = transplant(m, scnr, a.from_map, bak, mask, a.lift,
+                       keep_not_auto=a.keep_not_auto)
+    elif a.toward:
         # TRAIL: markers along the line from a spot that WORKS to one that does not,
         # so the point where they stop appearing is the boundary. That is the shape
         # of the streaming question -- a ring at one coordinate can only ever say
