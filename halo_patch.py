@@ -2788,6 +2788,105 @@ def _no_equipment_reason(game):
     return 'equipment not present in this level'
 
 
+#: Object Names block per game: (scnr offset, element size, name kind). Reach stores
+#: the name as a stringID; Halo 3 and ODST as a 32-byte ASCII string.
+_OBJECT_NAMES = {
+    'Halo 3':       (0xA8, 0x24, 'ascii'),
+    'Halo 3: ODST': (0xC4, 0x24, 'ascii'),
+    'Halo Reach':   (0xF0, 0x08, 'sid'),
+}
+#: What the user names a marker in Sapien. `enhancer_marker1` is player 1's position,
+#: `enhancer_marker2` player 2's.
+REACH_MARKER_PREFIX = 'enhancer_marker'
+
+
+def reach_named_markers(m, game, prefix=REACH_MARKER_PREFIX):
+    """{name: placement index} for placements the LEVEL DESIGNER named.
+
+    This is the good version of marker matching. A named placement says which PLAYER
+    a position belongs to, so the patcher sets that position's palette entry to
+    whatever that player picked instead of guessing a spot or relying on block order.
+
+    Reach's Object Names hold a stringID, and resolving one is not straightforward:
+    `resolve_stringid` returns real strings but from the wrong part of the table --
+    m10's names come back as `bnet_pro` and other UI text. The sids ARE sequential and
+    the run is contiguous, so only the base is wrong, and the offset is recovered here
+    by CALIBRATION rather than hardcoded: find the table indices of the strings that
+    start with `prefix`, then take the delta that the most Object Names entries agree
+    on. On m10 both markers independently give +4747, and requiring agreement is what
+    stops a coincidental single match from setting a wrong base.
+    """
+    spec = _OBJECT_NAMES.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not spec or scnr is None:
+        return {}
+    off, esize, kind = spec
+    n = max(0, m.i32(scnr + off))
+    base = _block_base(m, scnr + off)
+    if not base or not n:
+        return {}
+    if kind == 'ascii':
+        out = {}
+        for i in range(n):
+            e = base + i * esize
+            nm = bytes(m.data[e:e + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+            pidx = struct.unpack_from('<h', m.data, e + 0x22)[0]
+            if nm.startswith(prefix) and pidx >= 0:
+                out[nm] = pidx
+        return out
+    if not (hasattr(m, '_locate_stringids') and m._locate_stringids()):
+        return {}
+    wanted = {}
+    for i in range(getattr(m, 'str_tbl_count', 0)):
+        s = m._string_at(i)
+        if s and s.startswith(prefix):
+            wanted[i] = s
+    if not wanted:
+        return {}
+    sids = []
+    for i in range(n):
+        e = base + i * esize
+        sids.append((struct.unpack_from('<I', m.data, e)[0] & 0xFFFF,
+                     struct.unpack_from('<h', m.data, e + 0x6)[0]))
+    # Scoring a delta by "how many entries match a wanted string" is DEGENERATE here:
+    # the sids are sequential and so are the table indices, so every offset lines up
+    # the same number of pairs and the winner is arbitrary. On m10 that picked
+    # placements 512/513 instead of 20/21.
+    #
+    # The constraint that actually discriminates is the Placement Index: it has to
+    # point at a real row of the block we are naming. Only a handful of entries can
+    # satisfy that, so a delta is scored by how many DISTINCT wanted strings it
+    # resolves to an in-range placement, and a delta that cannot place them all is
+    # rejected outright.
+    # An in-range placement index is still not selective enough on its own -- plenty of
+    # entries point at one, so many deltas tie and the winner is again arbitrary (that
+    # picked placements 3 and 4). The property that actually DEFINES a marker is that
+    # it is flagged Not Automatically: it sits inert until the patcher switches it on.
+    # Scoring only those makes the correct delta the only one that fits.
+    lay = _MAP_EQUIPMENT[str(game).strip()]
+    eqo = _eq_offsets(game)
+    ioff, ies = lay['items']
+    limit = max(0, m.i32(scnr + ioff))
+    ibase = _block_base(m, scnr + ioff)
+    inert = set()
+    for i in range(limit) if ibase else []:
+        fl = struct.unpack_from('<I', m.data, ibase + i * ies + _EQ_FLAGS)[0]
+        if fl & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])):
+            inert.add(i)
+    best, best_score = None, 0
+    for si0, _p0 in sids:
+        for ti in wanted:
+            d = ti - si0
+            hit = {}
+            for sj, pj in sids:
+                s = wanted.get(sj + d)
+                if s and pj in inert:
+                    hit[s] = pj
+            if len(hit) > best_score:
+                best, best_score = hit, len(hit)
+    return best or {}
+
+
 def reach_equipment_markers(m, game):
     """{eqip basename: [placement index, ...]} for every INERT equipment placement.
 
@@ -2828,6 +2927,43 @@ def reach_equipment_markers(m, game):
         if fl & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])):
             out.setdefault(nm, []).append(i)
     return out
+
+
+def _reach_set_marker(m, game, index, tag_path):
+    """Point a named marker at `tag_path` and switch it on. Grows the palette if the
+    map does not already stock that piece."""
+    lay = _MAP_EQUIPMENT[str(game).strip()]
+    scnr = _scnr_base(m)
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    label = str(tag_path).rsplit(chr(92), 1)[-1]
+    pbase = _block_base(m, scnr + poff)
+    pc = max(0, m.i32(scnr + poff))
+    want = str(tag_path).replace('/', chr(92)).lower()
+    pi = None
+    for i in range(pc):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if nm and str(nm).replace('/', chr(92)).lower() == want:
+            pi = i
+            break
+    if pi is None:
+        datum = _h3_tag_datum(m, 'eqip', tag_path)
+        if datum is None:
+            return {'effect': 'starting equipment', 'field': label, 'ok': True,
+                    'skip': True, 'reason': _no_equipment_reason(game)}
+        added = _append_equipment_palette(m, lay, scnr, [datum])
+        if not added:
+            return {'effect': 'starting equipment', 'field': label, 'ok': False,
+                    'reason': 'could not grow the equipment palette'}
+        pi = added[datum]
+        # the palette moved; re-read the placement base before writing into it
+        scnr = _scnr_base(m)
+    e = _block_base(m, scnr + ioff) + index * ies
+    struct.pack_into('<h', m.data, e, pi)
+    pos = reach_enable_marker(m, game, index)
+    return {'effect': 'starting equipment', 'field': label, 'ok': True,
+            'old': 'marker', 'new': 'on marker %d at (%.0f, %.0f, %.0f)'
+                                    % (index, pos[0], pos[1], pos[2])}
 
 
 def reach_enable_marker(m, game, index):
@@ -2873,6 +3009,30 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # reach_equipment_markers). Anything with no marker falls through to the append
     # path below, which is what still serves Halo 3 and ODST.
     if str(game).strip() == 'Halo Reach':
+        # NAMED markers first. `enhancer_marker1` is player 1's position and
+        # `enhancer_marker2` player 2's, so group i goes to marker i+1 and the
+        # position's palette entry is repointed at whatever that player picked --
+        # no guessing a spot, no reliance on block order, and the coordinates are
+        # the designer's.
+        named = reach_named_markers(m, game)
+        if named:
+            left = []
+            for gi, g in enumerate(groups):
+                keep = []
+                slot = named.get('%s%d' % (REACH_MARKER_PREFIX, gi + 1))
+                for t in g:
+                    if slot is None:
+                        keep.append(t)
+                        continue
+                    r = _reach_set_marker(m, game, slot, t)
+                    out.append(r)
+                    slot = None          # one item per named position
+                    if not r.get('ok'):
+                        keep.append(t)
+                left.append(keep)
+            groups = left
+            if not any(groups):
+                return out
         markers = reach_equipment_markers(m, game)
         if markers:
             left = []
