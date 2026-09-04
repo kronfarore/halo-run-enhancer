@@ -47,6 +47,16 @@ leaving Falcons and forklifts out.
     python weapon_availability.py --game "Halo 1" --map b30 --verbose
     python weapon_availability.py --all --missing        # what halo.json offers but
                                                          # the map cannot supply
+    python weapon_availability.py --game "Halo Reach" --both     # weapons AND abilities
+    python weapon_availability.py --equipment --map m30          # abilities only
+
+MARKER, in the equipment output, is a placement the map CONTAINS but has flagged Not
+Automatically: it sits at the coordinates a designer chose and does nothing until the
+patcher clears that bit. That is how a rebuilt Reach map carries an ability -- the
+rebuild is what puts the ability's resources in the cache, and the marker is the
+parked placement the patcher switches on. An ability the vanilla cache never uses
+cannot be made to spawn by patching alone, which is why REBUILD NEEDED is spelled
+out rather than left as "not placed".
 Reads only; MCC may be running.
 """
 import argparse
@@ -378,6 +388,59 @@ _REACH_ABILITIES = ['Armor Lock', 'Active Camouflage', 'Drop Shield', 'Hologram'
                     'Jet Pack', 'Sprint']
 
 
+def _equipment_rows(m, game, indent='      '):
+    """Print one line per armour ability for an ALREADY-OPEN map. Shared by
+    --equipment (equipment only) and --both (alongside the weapons)."""
+    lay = HP._MAP_EQUIPMENT.get(game)
+    if not lay:
+        return 0
+    extra = _PLACE_EXTRA.get(game) or {}
+    fl_at = extra.get('flags', 0x4)
+    scnr = HP._scnr_base(m)
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    n = m.i32(scnr + ioff)
+    base = HP._block_base(m, scnr + ioff)
+    names = {}
+    for i in range(max(0, m.i32(scnr + poff))):
+        e = HP._block_base(m, scnr + poff) + i * pes
+        nm = HP._tag_name_by_id(m, m.u32(e + lay['pal_id_at']))
+        names[i] = str(nm).rsplit(S, 1)[-1] if nm else '?'
+    auto, marker = {}, {}
+    for i in range(max(0, n)) if base else []:
+        e = base + i * ies
+        nm = names.get(struct.unpack_from('<h', m.data, e)[0])
+        if not nm:
+            continue
+        fl = struct.unpack_from('<I', m.data, e + fl_at)[0]
+        d = marker if fl & ((1 << NOT_AUTOMATICALLY_BIT)
+                            | (1 << NEVER_PLACED_BIT)) else auto
+        d[nm] = d.get(nm, 0) + 1
+    res = {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('eqip', '*')}
+    ready = 0
+    for disp in _REACH_ABILITIES:
+        tag = _db().eqip_tag_for(disp, game)
+        if not tag:
+            print('%s%-26s %-12s %s' % (indent, disp, 'NO TAG', 'none in halo.json'))
+            continue
+        bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(S, 1)[-1]
+        if auto.get(bn):
+            v, why = 'PLACED', '%d spawn automatically' % auto[bn]
+            ready += 1
+        elif marker.get(bn):
+            v, why = 'MARKER', ('%d inert placement(s) -- the patcher flips '
+                                'Not Automatically' % marker[bn])
+            ready += 1
+        elif bn in names.values():
+            v, why = 'PALETTE', 'in the palette, never placed -- REBUILD NEEDED'
+        elif bn in res:
+            v, why = 'RESIDENT', 'tag present, not in a palette -- REBUILD NEEDED'
+        else:
+            v, why = 'ABSENT', 'not in this map -- REBUILD NEEDED'
+        print('%s%-26s %-12s %s' % (indent, disp, v, why))
+    return ready
+
+
 def _equipment_main(a):
     r"""Is each map REBUILT with a marker for every armour ability?
 
@@ -422,52 +485,10 @@ def _equipment_main(a):
         if not path:
             continue
         m = HP.open_map(path, game)
-        scnr = HP._scnr_base(m)
-        ioff, ies = lay['items']
-        poff, pes = lay['palette']
-        n = m.i32(scnr + ioff)
-        base = HP._block_base(m, scnr + ioff)
-        names = {}
-        for i in range(max(0, m.i32(scnr + poff))):
-            e = HP._block_base(m, scnr + poff) + i * pes
-            nm = HP._tag_name_by_id(m, m.u32(e + lay['pal_id_at']))
-            names[i] = str(nm).rsplit(S, 1)[-1] if nm else '?'
-        auto, marker = {}, {}
-        for i in range(max(0, n)) if base else []:
-            e = base + i * ies
-            pi = struct.unpack_from('<h', m.data, e)[0]
-            nm = names.get(pi)
-            if not nm:
-                continue
-            fl = struct.unpack_from('<I', m.data, e + fl_at)[0]
-            if fl & ((1 << NOT_AUTOMATICALLY_BIT) | (1 << NEVER_PLACED_BIT)):
-                marker[nm] = marker.get(nm, 0) + 1
-            else:
-                auto[nm] = auto.get(nm, 0) + 1
-        res = {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('eqip', '*')}
-        ready = 0
-        for disp in _REACH_ABILITIES:
-            tag = _db().eqip_tag_for(disp, game)
-            if not tag:
-                print('%-10s %-20s %-9s %s' % (mid, disp, 'NO TAG', 'none in halo.json'))
-                continue
-            bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(S, 1)[-1]
-            if auto.get(bn):
-                v, why = 'PLACED', '%d spawn automatically' % auto[bn]
-                ready += 1
-            elif marker.get(bn):
-                v, why = 'MARKER', ('%d inert placement(s) -- flip Not Automatically'
-                                    % marker[bn])
-                ready += 1
-            elif bn in names.values():
-                v, why = 'PALETTE', 'in the palette, never placed -- REBUILD NEEDED'
-            elif bn in res:
-                v, why = 'RESIDENT', 'tag present, not in the palette -- REBUILD NEEDED'
-            else:
-                v, why = 'ABSENT', 'not in this map -- REBUILD NEEDED'
-            print('%-10s %-20s %-9s %s' % (mid, disp, v, why))
-        print('%-10s %d of %d ability(ies) ready to spawn without a rebuild'
-              % ('', ready, len(_REACH_ABILITIES)))
+        print('   %s (%s)' % (mid, doc['Missions'][game][mid].get('name', '')))
+        ready = _equipment_rows(m, game)
+        print('      %d of %d ready without a rebuild'
+              % (ready, len(_REACH_ABILITIES)))
     return 0
 
 
@@ -521,6 +542,8 @@ def main(argv=None):
     ap.add_argument('--missing', action='store_true',
                     help="only what halo.json's mission list offers but the map cannot")
     ap.add_argument('--verbose', action='store_true')
+    ap.add_argument('--both', action='store_true',
+                    help='weapons AND equipment for each map in one listing')
     ap.add_argument('--equipment', action='store_true',
                     help='check the EQUIPMENT block instead: which armour abilities '
                          'each map can spawn, and whether the map has been rebuilt '
@@ -530,6 +553,11 @@ def main(argv=None):
                          'level actually places, which is how you find turrets')
     a = ap.parse_args(argv)
 
+    if a.equipment or a.both:
+        # Load the effect database NOW. It prints a startup banner on first use, and
+        # lazily loading it mid-listing dropped fifty lines of mission list into the
+        # middle of a map's table.
+        _db()
     if a.equipment:
         return _equipment_main(a)
     if a.vehicles:
@@ -602,6 +630,11 @@ def main(argv=None):
             for n in sorted(pal):
                 v, why = verdict(n, pal, res, zones)
                 print('      %-26s %-12s %s' % (n, v, why))
+            if a.both and game in HP._MAP_EQUIPMENT:
+                print('      -- equipment --')
+                ready = _equipment_rows(m, game)
+                print('      %d of %d abilit(ies) ready without a rebuild'
+                      % (ready, len(_REACH_ABILITIES)))
     return 0
 
 
