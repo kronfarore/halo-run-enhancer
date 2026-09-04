@@ -334,6 +334,51 @@ def _db():
     return _DB[0]
 
 
+def offered(game):
+    """[(display name, tag basename)] the enhancer can offer in this game.
+
+    The per-map listings only ever walked the scenario palette, so a weapon the map
+    does not carry at all was simply invisible -- which is how six absent weapons on
+    m20 went unnoticed. The goal is every weapon offered in the game, so the worklist
+    has to start from the offer list, not from the map.
+    """
+    out = []
+    for disp in sorted(_db().weapon_mods):
+        tag = _db().weap_tag_for(disp, game)
+        if not tag:
+            continue
+        out.append((disp, tag.split(' ', 1)[1].strip().rsplit(S, 1)[-1]))
+    return out
+
+
+_UNIVERSE = {}
+
+
+def game_universe(game, doc):
+    """Every weap tag basename that exists in ANY map of this game.
+
+    Splits the two very different reasons a weapon is missing from a map. One is that
+    the map does not carry it but the game does, which an editing-kit rebuild can fix.
+    The other is that the weapon is not in the game at all -- the enhancer offers
+    eleven Halo 3 weapons for Reach whose tags resolve to another game's paths, and no
+    amount of Sapien work will ever place a Battle Rifle in Reach. Telling a user to
+    add one is worse than saying nothing.
+    """
+    if game in _UNIVERSE:
+        return _UNIVERSE[game]
+    seen = set()
+    for mid in doc['Missions'].get(game, {}):
+        path = V.resolve(game, mid)
+        if not path:
+            continue
+        try:
+            seen |= resident(HP.open_map(path, game))
+        except Exception:
+            continue
+    _UNIVERSE[game] = seen
+    return seen
+
+
 def resident(m):
     """Every weap tag basename physically in the map."""
     return {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('weap', '*')}
@@ -586,6 +631,9 @@ def main(argv=None):
     ap.add_argument('--all', action='store_true', help='list every weapon per map')
     ap.add_argument('--missing', action='store_true',
                     help="only what halo.json's mission list offers but the map cannot")
+    ap.add_argument('--gaps', action='store_true',
+                    help='every weapon the game offers vs what each map can grant -- '
+                         'the only view that shows weapons ABSENT from a map')
     ap.add_argument('--verbose', action='store_true')
     ap.add_argument('--both', action='store_true',
                     help='weapons AND equipment for each map in one listing')
@@ -648,6 +696,29 @@ def main(argv=None):
                     v, why = verdict(n, pal, res, zones, live=live)
                     print('      %-30s %-9s %s' % (n, v, why))
                 continue
+            if a.gaps:
+                uni = game_universe(game, doc)
+                rows = []
+                for disp, base in offered(game):
+                    v, why = verdict(base, pal, res, zones, live=live)
+                    if v == 'ABSENT' and base not in uni:
+                        v, why = 'NOT IN GAME', 'no map of this game has the tag'
+                    rows.append((disp, base, v, why))
+                order = {'ABSENT': 0, 'RESIDENT': 1, 'PALETTE': 2,
+                         'SCRIPTED ONLY': 3, 'PLACED': 4, 'NOT IN GAME': 8}
+                rows.sort(key=lambda r: (order.get(r[2], 9), r[0]))
+                absent = [r for r in rows if r[2] == 'ABSENT']
+                nog = [r for r in rows if r[2] == 'NOT IN GAME']
+                notlive = [r for r in rows
+                           if r[2] not in ('ABSENT', 'NOT IN GAME')
+                           and 'NOT RESIDENT' in r[3]]
+                print('   %s (%s): %d offered, %d ABSENT (Sapien can add), '
+                      '%d need residency, %d NOT IN GAME (should not be offered)'
+                      % (mid, md.get('name', ''), len(rows), len(absent),
+                         len(notlive), len(nog)))
+                for disp, base, v, why in rows:
+                    print('      %-24s %-24s %-13s %s' % (disp, base, v, why))
+                continue
             if a.missing:
                 # What this mission OFFERS in halo.json vs what the map can actually
                 # grant. An offer the map cannot honour is the whole point of the
@@ -676,6 +747,13 @@ def main(argv=None):
             for n in sorted(pal):
                 v, why = verdict(n, pal, res, zones, live=live)
                 print('      %-26s %-12s %s' % (n, v, why))
+            uni = game_universe(game, doc)
+            gap = [d for d, b in offered(game)
+                   if verdict(b, pal, res, zones, live=live)[0] == 'ABSENT'
+                   and b in uni]
+            if gap:
+                print('      %d offered weapon(s) ABSENT from this map: %s'
+                      % (len(gap), ', '.join(gap)))
             if a.both and game in HP._MAP_EQUIPMENT:
                 print('      -- equipment --')
                 ready = _equipment_rows(m, game)
