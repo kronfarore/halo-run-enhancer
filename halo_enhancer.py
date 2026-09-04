@@ -7467,8 +7467,9 @@ class OptionsDialog(QDialog):
             "title still appears but the HUD stays up and the bars do not.\n\n"
             "An in-map script edit -- no editing kit and no rebuild -- and reversible "
             "like everything else: turn it off and re-patch.\n\nHalo 1 and Halo 2 "
-            "use an older script format and are skipped; their keep_hud tools still "
-            "need an editing-kit rebuild.")
+            "already have this and are skipped: h1_keep_hud.py and h2_keep_hud.py "
+            "apply it to the editing-kit sources and the rebuilt maps carry it. "
+            "Run either with --status to check.")
         form.addRow("Chapter titles:", self.keep_title_hud_cb)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")

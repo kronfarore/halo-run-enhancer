@@ -29,9 +29,20 @@
 # while the title still draws. The title verbs themselves are never touched, so
 # chapter titles still appear.
 #
-# Halo 1 and Halo 2 are NOT supported: their scenarios use an older script format that
-# this record layout does not describe. Their keep_hud tools remain the EK-source
-# route.
+# HALO 1 AND HALO 2 ARE ALREADY DONE, by a different route. h1_keep_hud.py and
+# h2_keep_hud.py edit the editing kit's script SOURCES and the rebuilt map carries the
+# edit; both are applied to every deployed map today. So this module skips those two
+# games on purpose -- there is nothing left to fix there, and a patch-time edit would
+# be a second, conflicting copy of the same change.
+#
+# For the record, since it was worth establishing and is easy to get wrong: Halo 2's
+# scenario IS readable by this code's layout (Script Expressions 0x238, element 0x14 --
+# the same record 4 bytes narrower). What stops a name-based search is that Halo 1 and
+# Halo 2 store function names as OPCODES, not strings; their string blob holds only
+# literals and script names. The Halo 2 opcodes are 0x0274 hud_cinematic_fade,
+# 0x0230 cinematic_show_letterbox, 0x0232 cinematic_set_title, 0x0013 sleep, identical
+# across all 13 maps. Halo 1 has no expression tagblock at all -- a Script Syntax Data
+# blob at 0x474 instead (56-byte header, 20-byte nodes).
 
 import struct
 
@@ -153,8 +164,16 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
     """Orphan every call that hides the HUD for a title. Returns a result dict."""
     g = str(game).strip()
     if g not in SCRIPT_BLOCKS:
+        # NOT a missing feature. Halo 1 and Halo 2 already have this, applied at BUILD
+        # time by sprint_toolkit/h1_keep_hud.py and h2_keep_hud.py -- they edit the
+        # editing kit's script sources and the rebuilt map carries the edit. Both are
+        # currently applied to every deployed map (`--status` says "edit is in the
+        # deployed map" on all 10 H1 levels and all 13 H2 missions), so there is
+        # nothing for a patch-time edit to do here and doing one anyway would be a
+        # second, conflicting copy of the same change.
         return {'ok': True, 'skip': True,
-                'reason': '%s uses an older script format; not supported' % g}
+                'reason': '%s gets this at build time from %s_keep_hud.py; already '
+                          'in the deployed maps' % (g, 'h1' if g == 'Halo 1' else 'h2')}
     if scnr_base is None:
         return {'ok': False, 'reason': 'no scnr'}
     t = Tree(m, g, block_base, scnr_base)
