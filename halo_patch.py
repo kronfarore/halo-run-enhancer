@@ -2772,6 +2772,76 @@ def _fix_autoturret_team(m, game, registry):
     return out
 
 
+def _no_equipment_reason(game):
+    """Why a piece could not be placed, and in Reach what to do about it.
+
+    Reach earns the longer message: an ability the vanilla cache does not already use
+    cannot be made to spawn by patching at all -- the map has to be rebuilt in the
+    editing kit with that ability placed, which imports its resources. Reporting a bare
+    "not present in this level" there sends the reader looking for a bug in the patcher,
+    which is where several sessions went.
+    """
+    if str(game).strip() == 'Halo Reach':
+        return ('not in this level -- Reach needs the map REBUILT in the editing kit '
+                'with this ability placed (weapon_availability.py --equipment says '
+                'which maps are ready)')
+    return 'equipment not present in this level'
+
+
+def reach_equipment_markers(m, game):
+    """{eqip basename: [placement index, ...]} for every INERT equipment placement.
+
+    Reach's story, settled on m10: an ability the vanilla cache does not already use
+    will not spawn from a placement we add, however correct that placement is. All six
+    are resident with real tag data and an identical model chain, and no eqip field
+    separates the three that work from the three that do not -- the vanilla map lacks
+    the resource/streaming layer and only an editing-kit rebuild adds it.
+
+    So a prepared Reach map carries a MARKER for each ability: one placement, put where
+    it should appear, flagged Not Automatically so it sits inert. The patcher's job
+    becomes flipping that bit rather than inventing a position -- which also means the
+    position is the level designer's choice rather than a guess from a spawn point.
+    """
+    lay = _MAP_EQUIPMENT.get(str(game).strip())
+    scnr = _scnr_base(m)
+    if not lay or scnr is None:
+        return {}
+    eqo = _eq_offsets(game)
+    ioff, ies = lay['items']
+    poff, pes = lay['palette']
+    base = _block_base(m, scnr + ioff)
+    pbase = _block_base(m, scnr + poff)
+    if not base or not pbase:
+        return {}
+    names = {}
+    for i in range(max(0, m.i32(scnr + poff))):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if nm:
+            names[i] = str(nm).replace('/', chr(92)).lower()
+    out = {}
+    for i in range(max(0, m.i32(scnr + ioff))):
+        e = base + i * ies
+        nm = names.get(struct.unpack_from('<h', m.data, e)[0])
+        if not nm:
+            continue
+        fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0]
+        if fl & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])):
+            out.setdefault(nm, []).append(i)
+    return out
+
+
+def reach_enable_marker(m, game, index):
+    """Clear Not Automatically / Never Placed on one placement, so it spawns."""
+    lay = _MAP_EQUIPMENT[str(game).strip()]
+    eqo = _eq_offsets(game)
+    ioff, ies = lay['items']
+    e = _block_base(m, _scnr_base(m) + ioff) + index * ies
+    fl = struct.unpack_from('<I', m.data, e + _EQ_FLAGS)[0]
+    struct.pack_into('<I', m.data, e + _EQ_FLAGS,
+                     fl & ~(_PLACE_NOT_AUTO | (1 << eqo['never_bit'])))
+    return struct.unpack_from('<fff', m.data, e + _EQ_POS)
+
+
 def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     """Grant Halo 3 starting equipment by APPENDING placements at the player start.
 
@@ -2796,6 +2866,33 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
             or not lay or scnr_base is None or not any(groups)):
         return out
+    # REACH: prefer flipping a marker the map already carries over inventing a spot.
+    # A rebuilt Reach map ships one inert placement per ability, put where the designer
+    # wants it; enabling that is both more reliable than a derived position and the
+    # only route that works at all for an ability the vanilla cache cannot spawn (see
+    # reach_equipment_markers). Anything with no marker falls through to the append
+    # path below, which is what still serves Halo 3 and ODST.
+    if str(game).strip() == 'Halo Reach':
+        markers = reach_equipment_markers(m, game)
+        if markers:
+            left = []
+            for g in groups:
+                keep = []
+                for t in g:
+                    key = str(t).replace('/', chr(92)).lower()
+                    idxs = markers.get(key)
+                    if idxs:
+                        pos = reach_enable_marker(m, game, idxs.pop(0))
+                        out.append({'effect': 'starting equipment',
+                                    'field': str(t).rsplit(chr(92), 1)[-1], 'ok': True,
+                                    'old': 'inert marker',
+                                    'new': 'enabled at (%.0f, %.0f, %.0f)' % pos})
+                    else:
+                        keep.append(t)
+                left.append(keep)
+            groups = left
+            if not any(groups):
+                return out
     eqo = _eq_offsets(game)
     ioff, ies = lay['items']
     poff, pes = lay['palette']
@@ -2868,7 +2965,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         datum = _h3_tag_datum(m, 'eqip', tag)
         if datum is None:
             out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
-                        'skip': True, 'reason': 'equipment not present in this level'})
+                        'skip': True, 'reason': _no_equipment_reason(game)})
             return None, None
         # duplicate guard: reuse an entry already present by datum (name-independent)
         if datum in pal_by_datum:
@@ -3104,8 +3201,19 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
             # point), else the player index whose start it is.
             where = ('at start cluster %s' % str(bkey)[1:] if str(bkey).startswith('c')
                      else 'on spawn %s' % bkey)
-        out.append({'effect': 'starting equipment', 'field': label, 'ok': True,
-                    'old': 'not present', 'new': where + (' (+palette)' if added else '')})
+        row = {'effect': 'starting equipment', 'field': label, 'ok': True,
+               'old': 'not present', 'new': where + (' (+palette)' if added else '')}
+        if str(game).strip() == 'Halo Reach':
+            # An APPENDED Reach placement is a guess in two ways: this map ships no
+            # marker for the piece, and if the vanilla cache never uses that ability
+            # it will not spawn here no matter how the placement reads. Measured on
+            # m10: three of six spawned from a patched-in placement, all six from the
+            # rebuild. Say so on the row rather than letting a silent no-show look
+            # like a patcher bug.
+            row['note'] = ('appended, not a marker -- if it does not appear this map '
+                           'needs rebuilding with the ability placed '
+                           '(weapon_availability.py --equipment)')
+        out.append(row)
 
     # repoint the placements last, so the map stays consistent if anything above raised
     struct.pack_into('<i', m.data, scnr_base + ioff, N + len(plan))

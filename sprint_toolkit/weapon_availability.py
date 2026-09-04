@@ -372,6 +372,105 @@ def verdict(name, pal, res, zones=None, start_zone=0):
     return 'ABSENT', 'not in this map'
 
 
+#: The Reach armour abilities, by display name. Health Pack is deliberately absent --
+#: the user has ruled it out repeatedly and it has no eqip tag in halo.json.
+_REACH_ABILITIES = ['Armor Lock', 'Active Camouflage', 'Drop Shield', 'Hologram',
+                    'Jet Pack', 'Sprint']
+
+
+def _equipment_main(a):
+    r"""Is each map REBUILT with a marker for every armour ability?
+
+    This exists because of what m10 settled: an ability the vanilla cache does not
+    already use will not spawn from a patched-in placement, however correct that
+    placement is. All six are resident with real tag data and an identical model
+    chain, and no eqip field separates the three that work from the three that do
+    not -- what the vanilla map lacks is the resource/streaming layer, and only an
+    editing-kit rebuild adds that.
+
+    So the question per map is no longer "can I place this" but "has this map been
+    rebuilt with the ability present", and the marker pattern used on m10 is the
+    answer: one placement of every ability, appended past the stock block, flagged
+    Not Automatically so it sits inert until the patcher flips that bit.
+
+    Verdicts per ability:
+
+      MARKER      a Not-Automatically placement exists -- the rebuild pattern. The
+                  patcher only has to clear the flag.
+      PLACED      the level places it and it spawns on its own already.
+      SCRIPTED    placed, but every placement is Not Automatically AND the map is not
+                  otherwise prepared, so a script owns it.
+      PALETTE     in the palette, never placed. Needs the rebuild.
+      RESIDENT    tag present, not in the palette. Needs the rebuild.
+      ABSENT      not in the map at all.
+    """
+    tool = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    doc = json.load(open(os.path.join(tool, 'halo.json'), encoding='utf-8'))
+    game = a.game or 'Halo Reach'
+    lay = HP._MAP_EQUIPMENT.get(game)
+    if not lay:
+        print('no equipment layout for %s' % game)
+        return 1
+    extra = _PLACE_EXTRA.get(game) or {}
+    fl_at = extra.get('flags', 0x4)
+    print('\n=== %s: equipment / armour-ability readiness ===' % game)
+    print('%-10s %-20s %-9s %s' % ('map', 'ability', 'verdict', 'detail'))
+    for mid in doc['Missions'].get(game, {}):
+        if a.map and mid != a.map:
+            continue
+        path = V.resolve(game, mid)
+        if not path:
+            continue
+        m = HP.open_map(path, game)
+        scnr = HP._scnr_base(m)
+        ioff, ies = lay['items']
+        poff, pes = lay['palette']
+        n = m.i32(scnr + ioff)
+        base = HP._block_base(m, scnr + ioff)
+        names = {}
+        for i in range(max(0, m.i32(scnr + poff))):
+            e = HP._block_base(m, scnr + poff) + i * pes
+            nm = HP._tag_name_by_id(m, m.u32(e + lay['pal_id_at']))
+            names[i] = str(nm).rsplit(S, 1)[-1] if nm else '?'
+        auto, marker = {}, {}
+        for i in range(max(0, n)) if base else []:
+            e = base + i * ies
+            pi = struct.unpack_from('<h', m.data, e)[0]
+            nm = names.get(pi)
+            if not nm:
+                continue
+            fl = struct.unpack_from('<I', m.data, e + fl_at)[0]
+            if fl & ((1 << NOT_AUTOMATICALLY_BIT) | (1 << NEVER_PLACED_BIT)):
+                marker[nm] = marker.get(nm, 0) + 1
+            else:
+                auto[nm] = auto.get(nm, 0) + 1
+        res = {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('eqip', '*')}
+        ready = 0
+        for disp in _REACH_ABILITIES:
+            tag = _db().eqip_tag_for(disp, game)
+            if not tag:
+                print('%-10s %-20s %-9s %s' % (mid, disp, 'NO TAG', 'none in halo.json'))
+                continue
+            bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(S, 1)[-1]
+            if auto.get(bn):
+                v, why = 'PLACED', '%d spawn automatically' % auto[bn]
+                ready += 1
+            elif marker.get(bn):
+                v, why = 'MARKER', ('%d inert placement(s) -- flip Not Automatically'
+                                    % marker[bn])
+                ready += 1
+            elif bn in names.values():
+                v, why = 'PALETTE', 'in the palette, never placed -- REBUILD NEEDED'
+            elif bn in res:
+                v, why = 'RESIDENT', 'tag present, not in the palette -- REBUILD NEEDED'
+            else:
+                v, why = 'ABSENT', 'not in this map -- REBUILD NEEDED'
+            print('%-10s %-20s %-9s %s' % (mid, disp, v, why))
+        print('%-10s %d of %d ability(ies) ready to spawn without a rebuild'
+              % ('', ready, len(_REACH_ABILITIES)))
+    return 0
+
+
 def _vehicles_main(a):
     """--vehicles: every Vehicles-palette entry per map, with its placement count."""
     tool = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -422,11 +521,17 @@ def main(argv=None):
     ap.add_argument('--missing', action='store_true',
                     help="only what halo.json's mission list offers but the map cannot")
     ap.add_argument('--verbose', action='store_true')
+    ap.add_argument('--equipment', action='store_true',
+                    help='check the EQUIPMENT block instead: which armour abilities '
+                         'each map can spawn, and whether the map has been rebuilt '
+                         'with a marker for each (see _equipment_main)')
     ap.add_argument('--vehicles', action='store_true',
                     help='list the Vehicles palette instead, unfiltered -- what a '
                          'level actually places, which is how you find turrets')
     a = ap.parse_args(argv)
 
+    if a.equipment:
+        return _equipment_main(a)
     if a.vehicles:
         return _vehicles_main(a)
 
@@ -490,11 +595,13 @@ def main(argv=None):
                 for disp, base, v, why in rows:
                     print('      %-22s %-26s %-8s %s' % (disp, base, v, why))
                 continue
-            placed = sorted(n for n in pal if pal[n]['placed'])
-            palonly = sorted(n for n in pal if not pal[n]['placed'])
-            print('   %-10s placed %-2d: %s' % (mid, len(placed), ', '.join(placed)[:96]))
-            if palonly:
-                print('   %-10s palette-only: %s' % ('', ', '.join(palonly)[:96]))
+            # ONE LINE PER WEAPON. The old two-line form packed every name into a
+            # comma list truncated at 96 characters, so the interesting entries fell
+            # off the end and nothing could be grepped or eyeballed down a column.
+            print('   %s (%s)' % (mid, md.get('name', '')))
+            for n in sorted(pal):
+                v, why = verdict(n, pal, res, zones)
+                print('      %-26s %-12s %s' % (n, v, why))
     return 0
 
 
