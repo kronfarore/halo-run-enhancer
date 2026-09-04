@@ -339,7 +339,7 @@ def resident(m):
     return {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('weap', '*')}
 
 
-def verdict(name, pal, res, zones=None, start_zone=0):
+def _verdict(name, pal, res, zones=None, start_zone=0):
     r"""(verdict, why) for one weapon.
 
     PLACED is not the end of the story, and assuming it was cost an in-game test: a
@@ -380,6 +380,51 @@ def verdict(name, pal, res, zones=None, start_zone=0):
     if name in res:
         return 'RESIDENT', 'tag present, in no palette'
     return 'ABSENT', 'not in this map'
+
+
+def verdict(name, pal, res, zones=None, start_zone=0, live=None):
+    """_verdict, plus whether the tag is resident when the mission starts.
+
+    A placement is inert if its tag is not in the first zone set's pool, however
+    correct the placement is -- that accounted for every weapon that would not spawn
+    on m10. This is a separate axis from the placement zone-set restriction above:
+    that one asks where the PLACEMENT lives, this asks whether the TAG is loaded.
+    Unlike ABSENT it is fixable without an editing kit, so it is a qualifier and not
+    a verdict of its own.
+    """
+    v, why = _verdict(name, pal, res, zones, start_zone)
+    if live is not None and v != 'ABSENT' and name not in live:
+        why = (why + ' -- ') if why else ''
+        why += 'NOT RESIDENT at start, run reach_pools --fix'
+    return v, why
+
+
+def start_resident(m, game):
+    """Basenames whose tag bit is set in the mission's FIRST zone set (Reach only).
+
+    Returns None where the question does not apply, so a caller can tell "not asked"
+    from "not resident".
+    """
+    if str(game).strip() != 'Halo Reach':
+        return None
+    try:
+        import reach_pools as RP
+        zb = RP.zone_base(m)
+    except Exception:
+        return None
+    except SystemExit:
+        return None
+    sets = RP.zone_sets(m, zb)
+    out = set()
+    for t in m.tags:
+        if t.get('class') not in ('weap', 'eqip'):
+            continue
+        i = t.get('index')
+        if i is None:
+            continue
+        if RP.START_SET in RP.resident_in(m, sets, i):
+            out.add(str(t.get('name')).rsplit(S, 1)[-1])
+    return out
 
 
 #: The Reach armour abilities, by display name. Health Pack is deliberately absent --
@@ -585,21 +630,22 @@ def main(argv=None):
             m = HP.open_map(path, game)
             res = resident(m)
             pal = survey(m, game, res)
+            live = start_resident(m, game)
             _t = m.find_tags('scnr', '*')
             zones = zone_set_names(m, _t[0][1]) if _t else []
             if a.weapon:
                 hits = sorted(n for n in set(pal) | res if a.weapon.lower() in n.lower())
                 if not hits:
-                    v, why = verdict(a.weapon, pal, res, zones)
+                    v, why = verdict(a.weapon, pal, res, zones, live=live)
                     print('   %-10s %-9s %s' % (mid, v, why))
                 for n in hits:
-                    v, why = verdict(n, pal, res, zones)
+                    v, why = verdict(n, pal, res, zones, live=live)
                     print('   %-10s %-26s %-9s %s' % (mid, n, v, why))
                 continue
             if a.all or a.verbose:
                 print('   %s (%s)' % (mid, md.get('name', '')))
                 for n in sorted(set(pal) | (res if a.verbose else set())):
-                    v, why = verdict(n, pal, res, zones)
+                    v, why = verdict(n, pal, res, zones, live=live)
                     print('      %-30s %-9s %s' % (n, v, why))
                 continue
             if a.missing:
@@ -615,7 +661,7 @@ def main(argv=None):
                                      'weap tag maps to it in this game'))
                         continue
                     base = tag.split(' ', 1)[1].strip().rsplit(S, 1)[-1]
-                    v, why = verdict(base, pal, res, zones)
+                    v, why = verdict(base, pal, res, zones, live=live)
                     if v != 'PLACED':
                         rows.append((disp, base, v, why))
                 print('   %-10s %d of %d offered weapon(s) not placed'
@@ -628,7 +674,7 @@ def main(argv=None):
             # off the end and nothing could be grepped or eyeballed down a column.
             print('   %s (%s)' % (mid, md.get('name', '')))
             for n in sorted(pal):
-                v, why = verdict(n, pal, res, zones)
+                v, why = verdict(n, pal, res, zones, live=live)
                 print('      %-26s %-12s %s' % (n, v, why))
             if a.both and game in HP._MAP_EQUIPMENT:
                 print('      -- equipment --')
