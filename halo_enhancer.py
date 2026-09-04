@@ -144,6 +144,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
+               'keep_title_hud',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -438,6 +439,9 @@ CONFIG = {
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
+    # Off by default: it changes how every chapter break LOOKS, which is a taste
+    # call, not a fix.
+    "keep_title_hud": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -5917,6 +5921,7 @@ class MagnitudeEditorDialog(QDialog):
                 starting=starting, weapon_swaps=weapon_swaps,
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                 remove_cutscenes=remove_cutscenes,
+                keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
@@ -7453,6 +7458,19 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
+        self.keep_title_hud_cb = QCheckBox(
+            "Keep the HUD up through chapter titles (Halo 3 / ODST / Reach)")
+        self.keep_title_hud_cb.setChecked(bool(CONFIG.get('keep_title_hud')))
+        self.keep_title_hud_cb.setToolTip(
+            "Chapter and cinematic titles fade the HUD out and draw black bars. This "
+            "removes the HIDING half of each pair and keeps every restore, so the "
+            "title still appears but the HUD stays up and the bars do not.\n\n"
+            "An in-map script edit -- no editing kit and no rebuild -- and reversible "
+            "like everything else: turn it off and re-patch.\n\nHalo 1 and Halo 2 "
+            "use an older script format and are skipped; their keep_hud tools still "
+            "need an editing-kit rebuild.")
+        form.addRow("Chapter titles:", self.keep_title_hud_cb)
+
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
         self.red_plasma_cb = QCheckBox("ODST: treat the Red Plasma Rifle as the Brute Plasma Rifle")
         self.red_plasma_cb.setChecked(bool(CONFIG.get('odst_red_plasma_as_brute')))
@@ -8015,6 +8033,7 @@ class OptionsDialog(QDialog):
             'remove_boss_mods': not self._user_boss_cards,  # inverted UI ("Add Boss card"); boss_mods_removed() ORs in single-game at runtime
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
+            'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),

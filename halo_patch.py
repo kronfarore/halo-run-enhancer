@@ -4057,7 +4057,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               equipment_swaps=None, spawn_equipment=None, sprint=None,
               difficulty_baseline=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
-              add_respawn_profile=False, extra_squads=None):
+              add_respawn_profile=False, extra_squads=None,
+              keep_title_hud=False):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -4310,6 +4311,25 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
+
+    if keep_title_hud:
+        # Keep the HUD up through chapter/cinematic titles. An in-map script edit, so
+        # unlike the h1/h2/h3_keep_hud tools it needs no editing kit and no rebuild --
+        # which is what makes it usable as a run option at all. Halo 1 and Halo 2
+        # report a skip: their scenarios use an older script format.
+        import hud_titles
+        rep = hud_titles.remove_title_hud_hiding(m, game, _block_base, _scnr_base(m))
+        row = {'tag': 'scnr', 'field': 'chapter title HUD',
+               'effect': 'Keep HUD during titles'}
+        if rep.get('skip'):
+            row.update(ok=True, skip=True, reason=rep.get('reason'))
+        elif rep.get('ok'):
+            row.update(ok=True, skip=(rep.get('removed', 0) == 0), old='hidden',
+                       new='%d hide call(s) removed, %d restore(s) kept'
+                           % (rep.get('removed', 0), rep.get('kept', 0)))
+        else:
+            row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+        results.append(row)
 
     if remove_cutscenes and str(game).strip() in THIRD_GEN_GAMES:
         # Halo 3 opt-in: neutralise the Cortana/Gravemind vision cutscenes on the map
