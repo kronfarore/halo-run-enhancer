@@ -160,10 +160,79 @@ def _skip(t, group):
     return None
 
 
+def build_time_state(game):
+    """What h1/h2_keep_hud have actually done, as one line -- or None if it cannot be
+    determined (no editing kit on this machine, say).
+
+    Halo 1 and Halo 2 get this edit at BUILD time, so the patch report should say what
+    the state of that edit IS rather than just "skipped". The three things worth
+    distinguishing are: the source is vanilla (nothing was ever applied), the source is
+    marked and the map was rebuilt after it (working), and the source is marked but the
+    deployed map is OLDER than the edit (a rebuild is owed and the game will not show
+    it). The last one is the failure this reporting exists to catch -- it is invisible
+    in game and looks exactly like the feature not working.
+    """
+    import os
+    import sys as _sys
+    here = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+    if here not in _sys.path:
+        _sys.path.insert(0, here)
+    try:
+        mod = __import__('h1_keep_hud' if str(game).strip() == 'Halo 1'
+                         else 'h2_keep_hud')
+        srcs = mod.sources()
+    except Exception:
+        return None
+    if not srcs:
+        return None
+    not_built = set(getattr(mod, 'NOT_BUILT', ()) or ())
+    applied = stale = vanilla = 0
+    for p in srcs:
+        try:
+            with open(p, 'r', encoding='latin-1') as f:
+                text = f.read()
+        except Exception:
+            continue
+        lvl = os.path.basename(os.path.dirname(os.path.dirname(p)))
+        if lvl in not_built:
+            continue
+        marked = mod.MARK in text
+        # only the scripts that carry these beats are interesting; a level script with
+        # no title beat is neither applied nor missing
+        if not marked and not any(v in text for v in
+                                  ('hud_cinematic_fade', 'show_hud', 'cinematic_set_title')):
+            continue
+        if not marked:
+            vanilla += 1
+            continue
+        mp = os.path.join(getattr(mod, 'DEPLOYED', ''), lvl + '.map')
+        try:
+            if os.path.exists(mp) and os.path.getmtime(mp) >= os.path.getmtime(p):
+                applied += 1
+            else:
+                stale += 1
+        except Exception:
+            stale += 1
+    tool = 'h1_keep_hud' if str(game).strip() == 'Halo 1' else 'h2_keep_hud'
+    if stale:
+        return ('%s applies this at build time: %d script(s) edited but the deployed '
+                'map is OLDER -- rebuild needed' % (tool, stale))
+    if applied:
+        return ('already applied at build time by %s (%d script(s) live in the '
+                'deployed maps)' % (tool, applied))
+    if vanilla:
+        return ('%s has not been run: sources are vanilla, so titles still hide the '
+                'HUD here' % tool)
+    return None
+
+
 def remove_title_hud_hiding(m, game, block_base, scnr_base):
     """Orphan every call that hides the HUD for a title. Returns a result dict."""
     g = str(game).strip()
     if g not in SCRIPT_BLOCKS:
+        state = build_time_state(g)
+        if state:
+            return {'ok': True, 'skip': True, 'reason': state}
         # NOT a missing feature. Halo 1 and Halo 2 already have this, applied at BUILD
         # time by sprint_toolkit/h1_keep_hud.py and h2_keep_hud.py -- they edit the
         # editing kit's script sources and the rebuilt map carries the edit. Both are
