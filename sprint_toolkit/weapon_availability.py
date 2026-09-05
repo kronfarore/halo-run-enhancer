@@ -347,7 +347,7 @@ def offered(game):
         tag = _db().weap_tag_for(disp, game)
         if not tag:
             continue
-        out.append((disp, tag.split(' ', 1)[1].strip().rsplit(S, 1)[-1]))
+        out.append((disp, tag.split(' & ')[0].split(' ', 1)[1].strip().rsplit(S, 1)[-1]))
     return out
 
 
@@ -697,27 +697,34 @@ def main(argv=None):
                     print('      %-30s %-9s %s' % (n, v, why))
                 continue
             if a.gaps:
+                # The ceiling is what the GAME has, not what the mod list mentions:
+                # a weapon whose tag exists in no map of this game can never be
+                # placed, and halo.json does not offer those anyway. Anything the
+                # game does have is fair game for this map, whether the mission
+                # currently offers it or not -- that difference is the worklist.
                 uni = game_universe(game, doc)
+                here = set(md.get('weapons') or [])
                 rows = []
                 for disp, base in offered(game):
+                    if base not in uni:
+                        continue
                     v, why = verdict(base, pal, res, zones, live=live)
-                    if v == 'ABSENT' and base not in uni:
-                        v, why = 'NOT IN GAME', 'no map of this game has the tag'
-                    rows.append((disp, base, v, why))
+                    rows.append((disp, base, disp in here, v, why))
                 order = {'ABSENT': 0, 'RESIDENT': 1, 'PALETTE': 2,
-                         'SCRIPTED ONLY': 3, 'PLACED': 4, 'NOT IN GAME': 8}
-                rows.sort(key=lambda r: (order.get(r[2], 9), r[0]))
-                absent = [r for r in rows if r[2] == 'ABSENT']
-                nog = [r for r in rows if r[2] == 'NOT IN GAME']
+                         'SCRIPTED ONLY': 3, 'PLACED': 4}
+                rows.sort(key=lambda r: (order.get(r[3], 9), r[0]))
+                absent = [r for r in rows if r[3] == 'ABSENT']
                 notlive = [r for r in rows
-                           if r[2] not in ('ABSENT', 'NOT IN GAME')
-                           and 'NOT RESIDENT' in r[3]]
-                print('   %s (%s): %d offered, %d ABSENT (Sapien can add), '
-                      '%d need residency, %d NOT IN GAME (should not be offered)'
-                      % (mid, md.get('name', ''), len(rows), len(absent),
-                         len(notlive), len(nog)))
-                for disp, base, v, why in rows:
-                    print('      %-24s %-24s %-13s %s' % (disp, base, v, why))
+                           if r[3] != 'ABSENT' and 'NOT RESIDENT' in r[4]]
+                unoffered = [r for r in rows if not r[2] and r[3] != 'ABSENT']
+                print('   %s (%s): %d of the game, %d offered here, %d ABSENT '
+                      '(Sapien can add), %d need residency, %d grantable but '
+                      'not offered'
+                      % (mid, md.get('name', ''), len(rows), len(here),
+                         len(absent), len(notlive), len(unoffered)))
+                for disp, base, off, v, why in rows:
+                    print('      %-22s %-24s %-8s %-13s %s'
+                          % (disp, base, 'offered' if off else '-', v, why))
                 continue
             if a.missing:
                 # What this mission OFFERS in halo.json vs what the map can actually
