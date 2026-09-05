@@ -23,14 +23,43 @@ What is known about the toolchain (2026-08-12):
     short of rebuilding the whole campaign.
 """
 import argparse
+import io
+import json
 import os
 import shutil
 import subprocess
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+import halo_patch as HP                                          # noqa: E402
 
 EK = r"F:\SteamLibrary\steamapps\common\H3ODSTEK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
 SCENARIO = r"levels\atlas\%s\%s"
+MAP_SUBDIR = 'halo3odst/maps'
+
+
+def baseline_root():
+    """The enhancer's configured Baselines folder, or '' for the sibling .bak."""
+    try:
+        with io.open(os.path.join(os.path.dirname(HERE), 'settings.json'),
+                     encoding='utf-8') as f:
+            return json.load(f).get('baseline_root') or ''
+    except Exception:
+        return ''
+
+
+def baseline_of(dst):
+    """The patcher's baseline for this map, wherever it is configured to live.
+
+    Resolved through halo_patch so this tool and apply_run can never disagree: with a
+    Baselines folder set, writing a sibling `.bak` here would leave the patcher
+    reading one file while this wrote another.
+    """
+    return HP.baseline_path(dst, baseline_root(), MAP_SUBDIR)
 # The map that was in place before the first EK install, kept under its own name.
 SAVED = '.working'
 
@@ -51,13 +80,14 @@ def build(name, platform='pc', extra=()):
 
 
 def status(name):
-    for label, path in (('game   ', os.path.join(GAME, name + '.map')),
-                        ('saved  ', os.path.join(GAME, name + '.map' + SAVED)),
-                        ('baseline', os.path.join(GAME, name + '.map.bak')),
-                        ('shipped ', os.path.join(GAME, name + '.map.shipped')),
+    live = os.path.join(GAME, name + '.map')
+    for label, path in (('game   ', live),
+                        ('saved  ', live + SAVED),
+                        ('baseline', baseline_of(live)),
+                        ('shipped ', live + '.shipped'),
                         ('EK     ', os.path.join(EK, 'maps', name + '.map'))):
-        print('  %s %s' % (label, ('%d bytes' % os.path.getsize(path))
-                           if os.path.exists(path) else '(absent)'))
+        print('  %s %-11s %s' % (label, ('%d bytes' % os.path.getsize(path))
+                                 if os.path.exists(path) else '(absent)', path))
 
 
 def install(name, baseline=True):
@@ -74,27 +104,62 @@ def install(name, baseline=True):
     so nothing is lost and Steam verification is not needed to get it back.
     """
     dst = os.path.join(GAME, name + '.map')
-    bak, shipped = dst + '.bak', dst + '.shipped'
+    bak, shipped = baseline_of(dst), dst + '.shipped'
     src = os.path.join(EK, 'maps', name + '.map')
     if not os.path.exists(src):
         # The build output is pruned after a successful install, so reinstalling
-        # sources from .bak instead -- which holds the same rebuild.
+        # sources from the baseline instead -- which holds the same rebuild.
         shipped_size = os.path.getsize(shipped) if os.path.exists(shipped) else -1
         if os.path.exists(bak) and os.path.getsize(bak) != shipped_size:
             src = bak
-            print('  no EK build; reinstalling from the .bak baseline')
+            print('  no EK build; reinstalling from the baseline')
         else:
-            raise SystemExit('no EK build at %s, and .bak is not a rebuild' % src)
+            raise SystemExit('no EK build at %s, and the baseline is not a rebuild'
+                             % src)
     if not os.path.exists(shipped) and os.path.exists(bak):
-        shutil.copy2(bak, shipped)
-        print('  preserved the shipped map as %s' % os.path.basename(shipped))
+        # Only when the candidate can still plausibly BE the shipped map. Once a
+        # rebuild has been installed the baseline IS that rebuild, and copying it
+        # into .shipped would enshrine it as the vanilla original forever --
+        # map_vault treats .shipped as pristine by construction. The same size as
+        # the build being installed means it is already a rebuild.
+        if os.path.getsize(bak) == os.path.getsize(src):
+            print('  NOT preserving the baseline as the shipped map: it is the same '
+                  'size as the build being installed, so it is already a rebuild. '
+                  'The vanilla %s is not on this disk.' % name)
+        else:
+            shutil.copy2(bak, shipped)
+            print('  preserved the shipped map as %s' % os.path.basename(shipped))
     if src != dst:
         shutil.copy2(src, dst)
     print('  installed the EK build (%d bytes)' % os.path.getsize(dst))
     if baseline and src != bak:
-        shutil.copy2(src, bak)
-        print('  .bak now points at the rebuild, so apply_run patches from it')
+        publish_baseline(name)
     prune(name)
+
+
+def publish_baseline(name):
+    """Make the CURRENT live map the patcher's baseline.
+
+    Publishing from the live map rather than from the build output is what lets this
+    be re-run after anything that edits an installed map -- zone pools, dual-wield
+    plumbing, prepare_map. apply_run rebuilds every run from the baseline and saves
+    over the live map, so a baseline captured before those edits undoes them on the
+    next patch, silently.
+    """
+    dst = os.path.join(GAME, name + '.map')
+    if not os.path.exists(dst):
+        print('  no installed map at %s' % dst)
+        return False
+    bak = baseline_of(dst)
+    try:
+        os.makedirs(os.path.dirname(bak), exist_ok=True)
+        shutil.copy2(dst, bak)
+    except OSError as ex:
+        print('  could NOT publish the baseline (%s) -- the next patch would rebuild '
+              'from a stale one and undo this map' % ex)
+        return False
+    print('  baseline published: %s' % bak)
+    return True
 
 
 # Scratch copies that duplicate something already kept. `.shipped` is the vanilla
@@ -111,8 +176,8 @@ def prune(name):
     rebuild, which matters on a disk with 16 GB free.
     """
     dst = os.path.join(GAME, name + '.map')
-    if not (os.path.exists(dst + '.shipped') and os.path.exists(dst + '.bak')):
-        print('  not pruning: .shipped and .bak must both exist first')
+    if not (os.path.exists(dst + '.shipped') and os.path.exists(baseline_of(dst))):
+        print('  not pruning: .shipped and the baseline must both exist first')
         return
     freed = 0
     for suffix in PRUNABLE:
@@ -145,8 +210,9 @@ def restore(name, stock=False):
             print('  restored %d bytes from %s'
                   % (os.path.getsize(dst), os.path.basename(src)))
             if src.endswith('.shipped'):
-                print('  NOTE: .bak still holds the rebuild -- delete it too for a '
-                      'fully stock map, or the next GUI patch restores the rebuild')
+                print('  NOTE: the baseline still holds the rebuild (%s) -- delete it '
+                      'too for a fully stock map, or the next GUI patch restores the '
+                      'rebuild' % baseline_of(dst))
             return
     raise SystemExit('nothing to restore for %s' % name)
 
@@ -161,6 +227,9 @@ def main(argv=None):
                     help='--restore puts back the shipped original, not the pre-EK map')
     ap.add_argument('--status')
     ap.add_argument('--prune', help='delete the redundant copies for this map')
+    ap.add_argument('--baseline', metavar='MAP',
+                    help='republish the baseline from the CURRENT live map -- run '
+                         'this after anything that edits an installed map')
     ap.add_argument('--platform', default='pc')
     ap.add_argument('--no-baseline', action='store_true',
                     help='install without repointing .bak at the rebuild')
@@ -169,13 +238,15 @@ def main(argv=None):
         build(a.build, a.platform)
     if a.install:
         install(a.install, baseline=not a.no_baseline)
+    if a.baseline:
+        publish_baseline(a.baseline)
     if a.prune:
         prune(a.prune)
     if a.restore:
         restore(a.restore, stock=a.stock)
     if a.status:
         status(a.status)
-    if not any((a.build, a.install, a.restore, a.status, a.prune)):
+    if not any((a.build, a.install, a.restore, a.status, a.prune, a.baseline)):
         ap.print_help()
     return 0
 

@@ -249,12 +249,23 @@ def main(argv=None):
     names = map_names() if a.audit else [a.map]
 
     for name in names:
+        # Everything up to the scenario base is per-map and can fail per-map: --audit
+        # walks every mission, so one unreadable map must not take the sweep down.
+        # V.resolve returns None for a map that is not installed, and _scnr_base
+        # RETURNS None for a map with no scnr tag rather than raising -- neither is an
+        # exception, so neither is caught by an except alone.
         path = V.resolve(GAME, name)
-        m = HP.open_map(path, GAME)
+        if not path:
+            print('%-5s skipped (not installed)' % name)
+            continue
         try:
+            m = HP.open_map(path, GAME)
             scnr = HP._scnr_base(m)
         except Exception as ex:
             print('%-5s skipped (%s)' % (name, ex))
+            continue
+        if scnr is None:
+            print('%-5s skipped (no scenario tag)' % name)
             continue
         zb = zone_base(m)
         sets = zone_sets(m, zb)
