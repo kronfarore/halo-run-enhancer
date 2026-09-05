@@ -15,13 +15,18 @@ map that looks right and does not work:
     python reach_ek_build.py --check                # lint placements, no building
     python reach_ek_build.py --status
 
+The map list comes from halo.json, so only real missions are built -- HREK also
+carries m05 and m70_a, which the game does not run and which are an hour of nothing.
+
 A build takes minutes per map with long silent stretches and looks hung when it is not;
-it ends with "successfully built cache file". Twelve maps is roughly an hour.
+it ends with "successfully built cache file". Ten maps is roughly an hour.
 """
 import argparse
+import json
 import os
 import shutil
 import subprocess
+import io
 import struct
 import sys
 import time
@@ -37,8 +42,19 @@ EK = r"F:\SteamLibrary\steamapps\common\HREK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\haloreach\maps")
 SCENARIO = r"levels\solo\%s\%s"
-MAPS = ['m05', 'm10', 'm20', 'm30', 'm35', 'm45',
-        'm50', 'm52', 'm60', 'm70', 'm70_a', 'm70_bonus']
+def campaign_maps():
+    """The missions halo.json actually offers, in its own order.
+
+    HREK has scenarios the game does not run as missions -- m05 and m70_a build
+    happily and are an hour of nothing. halo.json is the list that decides what the
+    enhancer can be played on, so it is the list worth building.
+    """
+    doc = json.load(io.open(os.path.join(os.path.dirname(HERE), 'halo.json'),
+                            encoding='utf-8'))
+    return list(doc['Missions']['Halo Reach'])
+
+
+MAPS = campaign_maps()
 
 #: Placement Flags, Reach scnr. Create At Rest is the one that is easy to forget in
 #: Sapien and hard to diagnose afterwards: without it a weapon is spawned falling
@@ -176,7 +192,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--all', action='store_true',
-                    help='build, install and set residency for every campaign map')
+                    help='build, install and set residency for every halo.json mission')
     ap.add_argument('--maps', help='comma-separated subset for --all/--check/--status')
     ap.add_argument('--build', action='append', default=[], metavar='MAP')
     ap.add_argument('--install', action='append', default=[], metavar='MAP')
