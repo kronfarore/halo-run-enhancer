@@ -306,6 +306,22 @@ def baseline_args(game):
             'map_subdir': CONFIG.get('map_game_folder', {}).get(game, '')}
 
 
+def baseline_source(map_path, game):
+    """The map to READ vanilla values from: the baseline if one exists, else the live map.
+
+    Four callers need this and all four used to spell it `<map>.bak` directly. Once the
+    baseline store moves off the game folder that name resolves to nothing and the
+    fallback quietly hands back the PATCHED live map -- so every "vanilla" figure the
+    UI showed would be whatever the last run wrote, with no error anywhere. Routing it
+    through halo_patch keeps it pointed at wherever the baseline actually lives.
+    """
+    import halo_patch                  # imported lazily, as everywhere else here
+    args = baseline_args(game)
+    cand = halo_patch.baseline_path(str(map_path), args['baseline_root'],
+                                    args['map_subdir'])
+    return cand if os.path.exists(cand) else str(map_path)
+
+
 def load_settings():
     try:
         with open(app_data_dir() / SETTINGS_FILE, encoding='utf-8') as f:
@@ -2116,8 +2132,8 @@ class ModifierDatabase:
         try:
             import halo_patch          # imported lazily, as everywhere else here
             base = Path(mcc_root()) / folder / (mission_id + '.map')
-            path = Path(str(base) + '.bak') if Path(str(base) + '.bak').exists() else base
-            m = halo_patch.open_map(str(path), 'Halo 3: ODST')
+            m = halo_patch.open_map(baseline_source(base, 'Halo 3: ODST'),
+                                    'Halo 3: ODST')
             table = CONFIG.get('odst_map_pool_names', {})
             for short in halo_patch.odst_player_weapons(m):
                 nm = table.get(short)
@@ -2153,8 +2169,7 @@ class ModifierDatabase:
             import halo_patch
             folder = CONFIG.get('map_game_folder', {}).get('Halo Reach')
             base = Path(mcc_root()) / folder / (mission_id + '.map')
-            path = Path(str(base) + '.bak') if Path(str(base) + '.bak').exists() else base
-            m = halo_patch.open_map(str(path), 'Halo Reach')
+            m = halo_patch.open_map(baseline_source(base, 'Halo Reach'), 'Halo Reach')
             # ONLY narrow a map that has been PREPARED. Placement membership does not
             # predict whether an ability will spawn -- m10 places Drop Shield in
             # vanilla and it still will not appear, while Camouflage is in no palette
@@ -3595,11 +3610,11 @@ class MagnitudeEditorDialog(QDialog):
 
     def _read_source(self):
         """Load (once) the map used to display vanilla values — the pristine
-        .bak if it exists, else the map itself. False if it can't be read."""
+        baseline if it exists, else the map itself. False if it can't be read."""
         if self._srcmap is not None:
             return self._srcmap
         path = self.map_edit.text().strip()
-        src = path + '.bak' if Path(path + '.bak').is_file() else path
+        src = baseline_source(path, self.game)
         try:
             self._srcmap = self._hp.open_map(src, self.game)
         except Exception:
@@ -8636,8 +8651,7 @@ class OptionsDialog(QDialog):
                 path = map_vault.resolve(game, mid)
                 if not path:
                     continue
-                src = path + '.bak' if os.path.exists(path + '.bak') else path
-                m = halo_patch.open_map(src, game)
+                m = halo_patch.open_map(baseline_source(path, game), game)
                 return halo_patch.read_difficulty_baseline(m, registry, difficulty)
         except Exception as e:
             if CONFIG.get('debug_mode'):
