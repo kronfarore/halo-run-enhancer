@@ -908,10 +908,13 @@ def prepare(name, do_build=True, placeable=(), verify_only=False,
     make_placeable(m, [w for w in (placeable or ok) if w in ok])
 
     m.save(path)
-    # .bak must carry the same preparation, or the first patch rebuilds without it.
+    # The baseline must carry the same preparation, or the first patch rebuilds
+    # without it. Resolved rather than assumed to be a sibling: the store moves.
     import shutil
-    shutil.copy2(path, path + '.bak')
-    print('    saved, and .bak updated to match')
+    bak = V.baseline_for(GAME, path)
+    os.makedirs(os.path.dirname(bak), exist_ok=True)
+    shutil.copy2(path, bak)
+    print('    saved, and the baseline updated to match (%s)' % bak)
 
     m2 = HP.open_map(path, GAME)
     zb2 = Z._zone_tag(m2)['base']

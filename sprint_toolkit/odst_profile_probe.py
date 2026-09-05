@@ -69,6 +69,8 @@ os.chdir(_TOOL)
 sys.path.insert(0, _TOOL)
 
 import halo_patch as hp                                          # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import map_vault as V                                            # noqa: E402
 
 GAME = 'Halo 3: ODST'
 SUBDIRS = ['ODSTMCC', 'ODST']
@@ -125,8 +127,7 @@ def main():
     args = ap.parse_args()
 
     real = os.path.join(MAPS, args.mission + '.map')
-    bak = real + '.bak'
-    src = bak if os.path.exists(bak) else real
+    src = V.pristine_source('Halo 3: ODST', real)
     if not os.path.exists(src):
         print('no such map: %s' % real); return 1
 

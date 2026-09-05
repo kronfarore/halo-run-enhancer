@@ -35,6 +35,7 @@ import paths  # noqa: E402  (install paths — edit paths.py)
 
 sys.path.insert(0, paths.TOOL)
 import halo_patch as hp  # noqa: E402
+import map_vault as V  # noqa: E402
 
 PLUGINS = paths.PLUGINS
 
@@ -296,7 +297,7 @@ def main():
                  "   Pass the DEPLOYED game map (this is what you play in-game), e.g.\n"
                  "   a bare id resolves automatically:  python sprint_tune.py a10 ...\n"
                  "   or the full path:  \"%s\\a10.map\"" % (a.map_path, base))
-    bak = Path(str(path) + '.bak')
+    bak = Path(V.baseline_for('Halo 1', path))
 
     reg = hp.PluginRegistry(PLUGINS, ['Halo1MCC', 'Halo1'])
     mg, wp = reg.get('matg'), reg.get('weap')

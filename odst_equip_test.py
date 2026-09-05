@@ -28,6 +28,14 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+
+def _vault():
+    """map_vault, imported on demand -- it lives in sprint_toolkit, not beside this."""
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                    'sprint_toolkit'))
+    import map_vault
+    return map_vault
+
 MAPS = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
 PAL_OFF, PAL_ELEM, PAL_ID_AT = 0x124, 0x10, 0xC     # scnr Equipment Palette (ODST)
@@ -94,13 +102,13 @@ def main(argv=None):
 
     import halo_patch as HP
     path, m = _open(a.level)
-    bak = path + '.bak'
+    bak = _vault().baseline_for('Halo 3: ODST', path)
 
     if a.restore:
         if not os.path.exists(bak):
-            raise SystemExit('no .bak beside ' + path)
+            raise SystemExit('no baseline at ' + bak)
         shutil.copy2(bak, path)
-        print('restored %s from its .bak' % os.path.basename(path))
+        print('restored %s from %s' % (os.path.basename(path), bak))
         return 0
 
     scnr = HP._scnr_base(m)

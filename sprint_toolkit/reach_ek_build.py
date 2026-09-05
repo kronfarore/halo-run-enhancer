@@ -121,7 +121,9 @@ def install(name):
     m50 has an empty play tag too.)
     """
     dst = os.path.join(GAME, name + '.map')
-    bak, shipped = dst + '.bak', dst + '.shipped'
+    # The baseline is wherever it is configured to live, not necessarily a sibling --
+    # this reads it to decide whether .shipped can still be taken from it.
+    bak, shipped = HP.baseline_path(dst, baseline_root(), MAP_SUBDIR), dst + '.shipped'
     src = os.path.join(EK, 'maps', name + '.map')
     if not os.path.exists(src):
         print('  no build output at %s' % src)

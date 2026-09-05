@@ -27,7 +27,9 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
-import paths  # noqa: E402  (install paths — edit paths.py)
+import paths  # noqa: E402
+sys.path.insert(0, paths.TOOL)
+import map_vault as V  # noqa: E402  (install paths — edit paths.py)
 import h1_loosetag as L  # noqa: E402
 import install_script  # noqa: E402  (keeps global_scripts.hsc in sync with sprint.hsc)
 
@@ -184,7 +186,7 @@ def main():
         shutil.copy2(gamemap, gamebak)
         print('backed up vanilla game map ->', os.path.basename(gamebak))
     shutil.copy2(os.path.join(HCEEK, 'maps', a.map + '.map'), gamemap)
-    for stale in (gamemap + '.bak',):
+    for stale in (V.baseline_for('Halo 1', gamemap),):
         if os.path.exists(stale):
             os.remove(stale)
     print('deployed to halo1\\maps\\%s.map' % a.map)

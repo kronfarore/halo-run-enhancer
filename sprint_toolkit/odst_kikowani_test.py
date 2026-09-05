@@ -39,6 +39,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import halo_patch as HP                                          # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import map_vault as V                                            # noqa: E402
 
 ODST = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\halo3odst\maps")
@@ -46,8 +48,8 @@ MAP = os.path.join(ODST, 'sc150.map')
 # The baseline to rebuild from. This used to be a private .kikotest copy so the GUI's
 # .bak stayed untouched, but .bak IS the right baseline now -- odst_ek_build points it
 # at the rebuilt map -- and a second 427 MB copy per level is not worth keeping.
-PRISTINE = MAP + '.bak'
 GAME = 'Halo 3: ODST'
+PRISTINE = V.baseline_for(GAME, MAP)
 REAL = (-326.0, 184.0, 4.6)           # from odst_poswatch, live
 
 # Deliberately unmistakable: neither is in sc150's vanilla loadout, and both are

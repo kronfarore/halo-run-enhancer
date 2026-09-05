@@ -7,6 +7,8 @@ buf = io.StringIO()
 with contextlib.redirect_stdout(buf):
     import halo_enhancer as he
     import halo_patch as hp
+    sys.path.insert(0, os.path.join(os.getcwd(), 'sprint_toolkit'))
+    import map_vault as V
     db = he.ModifierDatabase()
 
 CFG = json.load(open('settings.json', encoding='utf-8'))
@@ -21,13 +23,13 @@ CASES = [
         R + r'\halo2\h2_maps_win64_dx11' + os.sep + '03a_oldmombasa.map',
         R + r'\halo2\h2_maps_win64_dx11' + os.sep + '05a_deltaapproach.map']),
     ('Halo 3',       ['Halo3MCC', 'Halo3'],  [
-        R + r'\halo3\maps' + os.sep + '030_outskirts.map.bak',
-        R + r'\halo3\maps' + os.sep + '050_floodvoice.map.bak',
-        R + r'\halo3\maps' + os.sep + '120_halo.map.bak']),
+        R + r'\halo3\maps' + os.sep + '030_outskirts.map',
+        R + r'\halo3\maps' + os.sep + '050_floodvoice.map',
+        R + r'\halo3\maps' + os.sep + '120_halo.map']),
     ('Halo 3: ODST', ['ODSTMCC', 'ODST'],    [
-        R + r'\halo3odst\maps\l300.map.bak',
-        R + r'\halo3odst\maps\sc110.map.bak',
-        R + r'\halo3odst\maps\sc140.map.bak']),
+        R + r'\halo3odst\maps\l300.map',
+        R + r'\halo3odst\maps\sc110.map',
+        R + r'\halo3odst\maps\sc140.map']),
     ('Halo Reach',   ['ReachMCC', 'Reach'],  [
         R + r'\haloreach\maps\m10.map',
         R + r'\haloreach\maps\m30.map',
@@ -57,6 +59,7 @@ for k in ('Enemy modifiers',):
     walk(d[k], [k])
 
 for game, subs, mps in CASES:
+    mps = [V.pristine_source(game, m) for m in mps]
     reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
     maps = []
     for one in mps:

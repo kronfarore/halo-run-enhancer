@@ -594,7 +594,7 @@ def targets_for(path):
     the test. The baseline gets the same edit, and --revert puts both back.
     """
     out = [path]
-    bak = path + '.bak'
+    bak = V.baseline_for(GAME, path)
     if os.path.exists(bak):
         out.append(bak)
     return out
@@ -679,7 +679,7 @@ def main(argv=None):
         return 0
     if a.wire_player:
         import shutil
-        for t in (a.wire_player, a.wire_player + '.bak'):
+        for t in (a.wire_player, V.baseline_for(GAME, a.wire_player)):
             if not os.path.exists(t):
                 continue
             m = HP.open_map(t, GAME)

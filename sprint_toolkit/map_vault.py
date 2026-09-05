@@ -95,8 +95,20 @@ def baseline_root():
 
 
 def baseline_for(game, map_path):
-    """Where this map's patcher baseline lives -- the bytes apply_run rebuilds from."""
-    return HP.baseline_path(str(map_path), baseline_root(), MAP_FOLDER.get(game, ''))
+    """Where this map's patcher baseline lives -- the bytes apply_run rebuilds from.
+
+    ONLY maps that sit in the game's own map folder are redirected to the baseline
+    root. The root mirrors the game folders, so a map somewhere else -- an Editing Kit
+    build output, a scratch copy -- has no place in it, and mapping one there by
+    basename would collide with the deployed map of the same name. Those keep the
+    sibling `.bak` they have always had. sprint_tune is the caller that proves it:
+    batch_build hands it a map in the kit's own maps folder, not in halo1/maps.
+    """
+    d = os.path.normcase(os.path.abspath(os.path.dirname(str(map_path))))
+    home = os.path.normcase(os.path.abspath(map_dir(game))) if game in MAP_FOLDER else None
+    if home is None or d != home:
+        return str(map_path) + '.bak'
+    return HP.baseline_path(str(map_path), baseline_root(), MAP_FOLDER[game])
 
 
 def pristine_source(game, map_path):

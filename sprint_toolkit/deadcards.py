@@ -5,13 +5,18 @@ os.chdir(r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief C
 sys.path.insert(0, os.getcwd())
 import halo_patch as hp
 import halo_enhancer as he
+sys.path.insert(0, os.path.join(os.getcwd(), 'sprint_toolkit'))
+import map_vault as V
 
 CFG = json.load(open('settings.json', encoding='utf-8'))
 R = r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Collection'
 CASES = [
-    ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l300.map.bak'),
-    ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l200.map.bak'),
-    ('Halo 3',       ['Halo3MCC', 'Halo3'], R + r'\halo3\maps\030_outskirts.map.bak'),
+    # Plain .map paths -- V.pristine_source picks the baseline where there is one.
+    # These used to name `.map.bak` directly, which stops resolving the moment the
+    # baseline store moves and leaves the audit silently reading PATCHED maps.
+    ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l300.map'),
+    ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l200.map'),
+    ('Halo 3',       ['Halo3MCC', 'Halo3'], R + r'\halo3\maps\030_outskirts.map'),
     ('Halo 2',       ['Halo2MCC', 'Halo2'], R + r'\halo2\h2_maps_win64_dx11\08b_deltacontrol.map'),
 ]
 DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
@@ -38,6 +43,7 @@ for k in d:
 
 games = list(d['Missions'].keys())
 for game, subs, mp in CASES:
+    mp = V.pristine_source(game, mp)
     reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
     m = hp.open_map(mp, game)
     print('=' * 78)

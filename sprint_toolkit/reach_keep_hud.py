@@ -174,7 +174,7 @@ def main(argv=None):
     live = V.resolve(GAME, a.map)
     if not live:
         raise SystemExit('no such Reach map: %s' % a.map)
-    bak = live + '.bak'
+    bak = V.baseline_for(GAME, live)
     if not os.path.isfile(bak):
         raise SystemExit('no pristine baseline at %s' % bak)
 
