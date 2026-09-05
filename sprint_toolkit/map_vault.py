@@ -38,6 +38,7 @@ what the patcher actually touches.
 """
 import argparse
 import hashlib
+import io
 import json
 import os
 import shutil
@@ -77,6 +78,38 @@ def maps_for(game):
         raise SystemExit('no Missions entry for %r (have: %s)'
                          % (game, ', '.join(missions)))
     return sorted(missions[game])
+
+
+def baseline_root():
+    """The enhancer's configured Baselines folder, or '' for the sibling .bak.
+
+    Read straight out of settings.json rather than by importing halo_enhancer, which
+    would drag in Qt for one string. Every toolkit tool that needs a pristine map
+    should come through here, so there is exactly one answer per install.
+    """
+    try:
+        with io.open(os.path.join(TOOL, 'settings.json'), encoding='utf-8') as f:
+            return json.load(f).get('baseline_root') or ''
+    except Exception:
+        return ''
+
+
+def baseline_for(game, map_path):
+    """Where this map's patcher baseline lives -- the bytes apply_run rebuilds from."""
+    return HP.baseline_path(str(map_path), baseline_root(), MAP_FOLDER.get(game, ''))
+
+
+def pristine_source(game, map_path):
+    """The map to READ vanilla values from: the baseline if there is one, else the map.
+
+    The whole toolkit used to spell this `<map>.bak` inline. That name stops resolving
+    the moment the baseline store moves off the game folder, and every one of those
+    callers had "else the live map" as its fallback -- so they would quietly start
+    reading the PATCHED map and reporting its values as vanilla. Going through here
+    keeps them pointed at wherever the baseline actually is.
+    """
+    cand = baseline_for(game, map_path)
+    return cand if os.path.exists(cand) else str(map_path)
 
 
 def map_dir(game):

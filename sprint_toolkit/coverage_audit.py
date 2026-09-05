@@ -101,20 +101,17 @@ CASES = [
 ]
 
 
-def game_maps(folder):
-    """Every level in a map folder, preferring the pristine .bak where one exists."""
-    if not os.path.isdir(folder):
-        return []
-    out = {}
-    for fn in sorted(os.listdir(folder)):
-        if fn.endswith('.map.bak'):
-            out[fn[:-8]] = os.path.join(folder, fn)
-        elif fn.endswith('.map') and fn[:-4] not in out:
-            out.setdefault(fn[:-4], os.path.join(folder, fn))
-    # shared resource blobs, not levels
-    for junk in ('shared', 'campaign', 'single_player_shared', 'bitmaps', 'sounds'):
-        out.pop(junk, None)
-    return [out[k] for k in sorted(out)]
+def game_maps(folder, game=None):
+    """Delegates to enemy_asset_audit, which owns the one pristine-aware version.
+
+    This file used to carry a near-identical copy that differed only in its junk list,
+    so a fix to one silently missed the other -- and three of the four callers here
+    already went through eaa.game_maps.
+    """
+    # eaa returns a list of paths and already drops a SUPERSET of the blobs this
+    # file used to filter (its junk list adds ui and mainmenu), so there is nothing
+    # left to strip here.
+    return eaa.game_maps(folder, game)
 
 
 # Fields no card should ever offer: identifiers, indices, editor bookkeeping, and the
@@ -376,7 +373,7 @@ def main():
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
     for game, subs, folder in CASES:
-        maps = game_maps(folder)
+        maps = game_maps(folder, game)
         if not maps:
             print('%s: no maps under %s' % (game, folder)); continue
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
@@ -597,7 +594,7 @@ def placed_turret_pass(db, args):
     print('#' * 84)
     print('TURRETS WORTH CARDING   (standalone, and actually placed)')
     for game, subs, folder in eaa.CASES:
-        maps = eaa.game_maps(folder)
+        maps = eaa.game_maps(folder, game)
         if not maps:
             continue
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
@@ -726,7 +723,7 @@ def turret_pass(db, args):
     print('#' * 84)
     print('TURRETS   (%s)' % ', '.join(sorted(TURRET_CLASSES)))
     for game, subs, folder in eaa.CASES:
-        maps = eaa.game_maps(folder)
+        maps = eaa.game_maps(folder, game)
         if not maps:
             continue
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)
@@ -870,7 +867,7 @@ def asset_pass(db, args):
     print('#' * 84)
     print('ENEMY-OWNED TAGS OUTSIDE char   (%s)' % ', '.join(sorted(want)))
     for game, subs, folder in eaa.CASES:
-        maps = eaa.game_maps(folder)
+        maps = eaa.game_maps(folder, game)
         if not maps:
             continue
         reg = hp.PluginRegistry(CFG['assembly_plugins_dir'], subs)

@@ -15,6 +15,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import halo_patch as HP                                          # noqa: E402
+import map_vault as V                                         # noqa: E402
 
 ROOTS = {
     'Halo 3: ODST': (r"C:\Program Files (x86)\Steam\steamapps\common"
@@ -83,8 +84,8 @@ def main(argv=None):
         if not f.endswith('.map') or f[:-4].lower() in SKIP:
             continue
         path = os.path.join(root, f)
-        if a.bak and os.path.isfile(path + '.bak'):
-            path += '.bak'
+        if a.bak:
+            path = V.pristine_source(a.game, path)
         try:
             rows, pal = scan(path, a.game, reg)
         except Exception as ex:

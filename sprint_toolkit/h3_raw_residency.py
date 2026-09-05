@@ -28,6 +28,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import halo_patch as HP                                          # noqa: E402
+import map_vault as V                                         # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import h3_zone_pools as Z                                        # noqa: E402
 
@@ -121,8 +122,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     path = os.path.join(MAPS[a.game], a.map + '.map')
-    if a.bak and os.path.isfile(path + '.bak'):
-        path += '.bak'
+    if a.bak:
+        path = V.pristine_source(a.game, path)
     m = HP.open_map(path, a.game)
     zt, pt = Z._zone_tag(m), _play_tag(m)
     if not zt or not pt:

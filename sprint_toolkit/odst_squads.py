@@ -37,6 +37,8 @@ _TOOL = os.path.dirname(_HERE)
 sys.path.insert(0, _TOOL)
 
 import halo_patch as hp                                          # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import map_vault as V                                            # noqa: E402
 
 # Both games' scnr plugins declare these at the same offsets; kept per game anyway
 # because every other ODST scenario block DID shift relative to Halo 3.
@@ -141,7 +143,7 @@ def main():
     folder = MAP_FOLDER.get(args.game, '')
     for mid in args.maps:
         base = os.path.join(root, *folder.split('/'), mid + '.map')
-        path = base + '.bak' if os.path.exists(base + '.bak') else base
+        path = V.pristine_source(args.game, base)
         if not os.path.exists(path):
             print('%s: no such map (%s)' % (mid, path)); continue
         m = hp.open_map(path, args.game)

@@ -37,9 +37,12 @@ _TOOL = os.path.dirname(_HERE)
 os.chdir(_TOOL)
 sys.path.insert(0, _TOOL)
 
+sys.path.insert(0, _HERE)
+
 with contextlib.redirect_stdout(io.StringIO()):
     import halo_enhancer as he                                     # noqa: E402
     import halo_patch as hp                                        # noqa: E402
+    import map_vault as V                                          # noqa: E402
 
 B = chr(92)
 CFG = json.load(open('settings.json', encoding='utf-8'))
@@ -129,7 +132,16 @@ def _iter_tags(m):
             yield t.get('class'), t.get('name') or ''
 
 
-def game_maps(folder):
+def game_maps(folder, game=None):
+    """Every level in a map folder, each read from its PRISTINE copy where there is one.
+
+    An audit that reads a patched map reports the run's values as vanilla, silently.
+    This used to find the baseline by looking for a `.map.bak` sibling, which stops
+    existing the moment the baseline store moves off the game folder -- and the
+    fallback here is the live map, so the wrong answer looks exactly like the right
+    one. `game` routes the lookup through map_vault instead; without it the old
+    sibling scan is kept so nothing that has not been updated changes behaviour.
+    """
     if not os.path.isdir(folder):
         return []
     out = {}
@@ -138,6 +150,9 @@ def game_maps(folder):
             out[fn[:-8]] = os.path.join(folder, fn)
         elif fn.endswith('.map') and fn[:-4] not in out:
             out.setdefault(fn[:-4], os.path.join(folder, fn))
+    if game:
+        out = {k: V.pristine_source(game, v) if v.endswith('.map') else v
+               for k, v in out.items()}
     for junk in ('shared', 'campaign', 'single_player_shared', 'bitmaps', 'sounds',
                  'ui', 'mainmenu'):
         out.pop(junk, None)
@@ -232,7 +247,7 @@ def main():
 
     grand = 0
     for game, subs, folder in CASES:
-        maps = game_maps(folder)
+        maps = game_maps(folder, game)
         if not maps:
             continue
         carded = carded_tags(db, game)

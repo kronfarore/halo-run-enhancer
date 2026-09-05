@@ -36,6 +36,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import halo_patch as HP                                          # noqa: E402
+import map_vault as V                                         # noqa: E402
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import h3_zone_pools as Z                                        # noqa: E402
 import h3_raw_residency as R                                     # noqa: E402
@@ -47,8 +48,10 @@ PAGE_ELEM = R.PLAY_PAGE_ELEM        # 0x58
 class Cache:
     def __init__(self, name, game='Halo 3: ODST', vanilla=False):
         path = os.path.join(Z.MAPS[game], name + '.map')
-        if vanilla and os.path.isfile(path + '.bak'):
-            path += '.bak'
+        if vanilla:
+            # The baseline is wherever the Baselines folder says; a sibling .bak
+            # stops existing once that store moves off the game folder.
+            path = V.pristine_source(game, path)
         self.name, self.path = name, path
         self.m = HP.open_map(path, game)
         self.zb = Z._zone_tag(self.m)['base']

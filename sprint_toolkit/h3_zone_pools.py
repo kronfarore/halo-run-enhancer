@@ -34,6 +34,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import halo_patch as HP                                          # noqa: E402
+import map_vault as V                                         # noqa: E402
 
 MAPS = {
     'Halo 3: ODST': (r"C:\Program Files (x86)\Steam\steamapps\common"
@@ -282,8 +283,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
 
     path = os.path.join(MAPS[a.game], a.map + '.map')
-    if a.bak and os.path.isfile(path + '.bak'):
-        path += '.bak'
+    if a.bak:
+        path = V.pristine_source(a.game, path)
     m = HP.open_map(path, a.game)
     zt = _zone_tag(m)
     if not zt:
