@@ -34,11 +34,13 @@ what the patcher actually touches.
     python map_vault.py --pack "Halo 1" --yes
     python map_vault.py --verify "Halo 1"
     python map_vault.py --unpack "Halo 1" [--only b30] [--to-shipped]
+    python map_vault.py --move-baselines E:\HaloBaselines [--games "Halo Reach"] --yes
 """
 import argparse
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 import zipfile
@@ -96,19 +98,29 @@ def resolve(game, name):
     return None
 
 
-def originals(game, path):
+def originals(game, path, baseline_root=None):
     """Candidate pristine copies for a map, best first.
 
     Conventions differ per game. H1/H3/ODST keep `<map>.bak` beside the map (and this
     toolkit adds `<map>.shipped`), while Halo 2 keeps a whole parallel directory,
     `h2_maps_win64_dx11_bak`, holding both `.map.bak` and `.map.vanilla.bak`.
     `.vanilla.bak` is the most explicit claim of all, so it wins.
+
+    A configured `baseline_root` holds the patcher's baseline after `move_baselines`
+    has walked it off the game folder. It is the same file under a different name, so
+    it ranks exactly where the sibling `.bak` ranks -- behind `.vanilla.bak` and
+    `.shipped`, both of which claim to be the SHIPPED map rather than merely the
+    bytes the last patch was built from.
     """
     out = []
     for suffix in ('.vanilla.bak', '.shipped', '.bak'):
         cand = path + suffix
         if os.path.exists(cand):
             out.append((cand, suffix.lstrip('.')))
+    if baseline_root and game in MAP_FOLDER:
+        cand = HP.baseline_path(path, baseline_root, MAP_FOLDER[game])
+        if cand != path + '.bak' and os.path.exists(cand):
+            out.append((cand, 'bak'))
     d, base = os.path.split(path)
     alt = d + '_bak'
     if os.path.isdir(alt):
@@ -327,6 +339,92 @@ def unpack(game, only=None, to_shipped=False, dest=None):
             print('  restored %s -> %s' % (n, os.path.basename(dst)))
 
 
+def move_baselines(root, games=None, only=None, write=False, keep=False):
+    """Move each map's patcher baseline into one root, off the game folders.
+
+    The patcher's baseline is the sibling `<map>.map.bak`: the bytes apply_run rebuilds
+    every run from. Leaving it beside the map has two costs -- it doubles each game's
+    map folder on the system drive, and a Steam update deletes modded maps in place,
+    taking the only pristine copy with them. This walks each `.bak` to
+    `<root>/<game folder>/<map name>`, which is exactly where `halo_patch.baseline_path`
+    looks once the root is configured, so the two can never disagree about the layout.
+
+    Nothing is deleted that has not been read back and hashed first. A destination that
+    already exists is compared, never overwritten: an identical one means an earlier run
+    got that far and the source is safe to drop, and a DIFFERENT one is left completely
+    alone and reported, because only the user knows which of the two is the real
+    original.
+
+    Halo 2's parallel `h2_maps_win64_dx11_bak` folder is deliberately untouched. That is
+    a separate vanilla archive that `originals()` still finds; only the patcher's own
+    sibling baseline moves.
+    """
+    if not root:
+        raise SystemExit('--move-baselines needs a destination folder')
+    picked = [g for g in MAP_FOLDER if not games or g in games]
+    moved = skipped = conflicts = 0
+    freed = 0
+    for game in picked:
+        try:
+            names = maps_for(game)
+        except SystemExit as ex:
+            print('%-14s skipped (%s)' % (game, ex))
+            continue
+        print('%s' % game)
+        for name in names:
+            if only and name not in only:
+                continue
+            live = resolve(game, name)
+            if not live:
+                continue
+            src = live + '.bak'
+            dst = HP.baseline_path(live, root, MAP_FOLDER[game])
+            short = os.path.basename(live)
+            if not os.path.exists(src):
+                continue
+            if os.path.exists(dst):
+                if sha256(src) == sha256(dst):
+                    print('  %-28s already at the root, identical' % short)
+                    if write and not keep:
+                        os.remove(src)
+                        freed += os.path.getsize(dst)
+                        moved += 1
+                    continue
+                print('  %-28s CONFLICT: a DIFFERENT file is already at the root; '
+                      'left alone' % short)
+                conflicts += 1
+                continue
+            size = os.path.getsize(src)
+            if not write:
+                print('  %-28s would move %d bytes' % (short, size))
+                skipped += 1
+                continue
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            shutil.copy2(src, dst)
+            if sha256(src) != sha256(dst):
+                os.remove(dst)
+                print('  %-28s COPY VERIFY FAILED; source kept, destination removed'
+                      % short)
+                conflicts += 1
+                continue
+            if not keep:
+                os.remove(src)
+                freed += size
+            moved += 1
+            print('  %-28s moved %d bytes' % (short, size))
+    print()
+    if write:
+        print('%d baseline(s) at the root, %.1f GB freed beside the maps%s'
+              % (moved, freed / (1 << 30),
+                 (', %d conflict(s) left alone' % conflicts) if conflicts else ''))
+        print('Set the Baselines folder to %s (Options -> Patching) so the patcher '
+              'reads from there.' % root)
+    else:
+        print('dry run: %d baseline(s) would move%s. Pass --yes to do it.'
+              % (skipped, (', %d conflict(s)' % conflicts) if conflicts else ''))
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -343,6 +441,11 @@ def main(argv=None):
     ap.add_argument('--hash', action='store_true', help='survey also hashes each map')
     ap.add_argument('--dest', help='destination folder for the archive')
     ap.add_argument('--yes', action='store_true', help='actually write the archive')
+    ap.add_argument('--move-baselines', metavar='ROOT', dest='move_baselines',
+                    help='move every <map>.map.bak into ROOT, off the game folders')
+    ap.add_argument('--games', help='comma list of games for --move-baselines')
+    ap.add_argument('--keep-source', action='store_true',
+                    help='copy baselines to ROOT without deleting the originals')
     a = ap.parse_args(argv)
     only = set(a.only.split(',')) if a.only else None
     if a.survey:
@@ -353,7 +456,11 @@ def main(argv=None):
         verify(a.verify, a.dest)
     if a.unpack:
         unpack(a.unpack, only, a.to_shipped, a.dest)
-    if not any((a.survey, a.pack, a.verify, a.unpack)):
+    if a.move_baselines:
+        move_baselines(a.move_baselines,
+                       set(x.strip() for x in a.games.split(',')) if a.games else None,
+                       only, a.yes, a.keep_source)
+    if not any((a.survey, a.pack, a.verify, a.unpack, a.move_baselines)):
         ap.print_help()
     return 0
 

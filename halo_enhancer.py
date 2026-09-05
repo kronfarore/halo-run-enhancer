@@ -286,13 +286,24 @@ ZOOM_DONOR_WEAPONS = {
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
                  'shared_session_dir', 'shared_session_autosave',
-                 'vault_dir') + OPTION_KEYS
+                 'vault_dir', 'baseline_root') + OPTION_KEYS
 
 
 def mcc_root():
     """The remembered MCC install folder, or the tool's parent as a fallback (works
     for the default <MCC>/tool layout). Every map is resolved under here."""
     return CONFIG.get('mcc_root') or str(Path(__file__).resolve().parent.parent)
+
+
+def baseline_args(game):
+    """The kwargs apply_run needs to find this game's pristine baselines.
+
+    Kept in one place because every caller needs the same pair and halo_patch cannot
+    read CONFIG -- it imports nothing but the stdlib and halo_map, so the root has to
+    be handed to it. An unset root yields the sibling `.bak` behaviour unchanged.
+    """
+    return {'baseline_root': CONFIG.get('baseline_root') or '',
+            'map_subdir': CONFIG.get('map_game_folder', {}).get(game, '')}
 
 
 def load_settings():
@@ -730,6 +741,13 @@ CONFIG = {
     "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
                         "Halo 3": "halo3/maps", "Halo 3: ODST": "halo3odst/maps",
                         "Halo Reach": "haloreach/maps"},
+    # Where the PRISTINE maps live -- the bytes every patch rebuilds from. Empty means
+    # the sibling `<map>.map.bak` each game has always used. Point it at another drive
+    # and the game folders hold only what MCC loads, which also puts the originals out
+    # of reach of a Steam update (which deletes modded maps in place). The per-game
+    # subfolder from map_game_folder is kept under the root, because Halo 1 and Reach
+    # both name their maps with bare mission ids.
+    "baseline_root": "",
     # A game that reuses another's effects. ODST is a later Halo 3 build sharing its
     # tag paths, so effects authored for Halo 3 apply there unless a field ODST
     # removed says otherwise. See HaloDB._game_ok.
@@ -5988,6 +6006,7 @@ class MagnitudeEditorDialog(QDialog):
             results, backup = self._run_busy(lambda: self._hp.apply_run(
                 map_path, plan, self.registry,
                 self.target_difficulty, game=self.game,
+                **baseline_args(self.game),
                 starting=starting, weapon_swaps=weapon_swaps,
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                 remove_cutscenes=remove_cutscenes,
@@ -6030,6 +6049,7 @@ class MagnitudeEditorDialog(QDialog):
                 hub_results, _ = self._run_busy(lambda: self._hp.apply_run(
                     hub, plan, self.registry,
                     self.target_difficulty, game=self.game,
+                    **baseline_args(self.game),
                     skulls=skulls,
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
@@ -6205,6 +6225,7 @@ class MagnitudeEditorDialog(QDialog):
             results, backup = self._run_busy(lambda: self._hp.apply_run(
                 map_path, plan, self.registry,
                 self.target_difficulty, game=self.game,
+                **baseline_args(self.game),
                 from_baseline=False))
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
@@ -6493,6 +6514,17 @@ class OptionsDialog(QDialog):
             "writes is resolved under here. The same setting as the patcher's MCC "
             "folder box — changing it in either place changes both.",
             default=mcc_root())
+        self.baseline_root_edit = _folder_row(
+            "Baselines folder:", 'baseline_root',
+            "Select the folder holding the pristine maps",
+            "Where the PRISTINE maps live — the bytes every patch rebuilds from. "
+            "Leave EMPTY to keep them beside each map as <map>.map.bak, which is what "
+            "the patcher has always done. Point it at another drive and the game "
+            "folders hold only what MCC loads, and the originals sit out of reach of a "
+            "Steam update (which deletes modded maps in place). The per-game subfolder "
+            "is kept under this root, so all five games can share it. Use "
+            "‘Move baselines…’ to populate it from the .bak files you "
+            "already have.")
         self.plugins_dir_edit = _folder_row(
             "Assembly plugins:", 'assembly_plugins_dir',
             "Select Assembly plugins folder",
@@ -8174,6 +8206,9 @@ class OptionsDialog(QDialog):
             # co-op partner's machine. values() is also used to write CONFIG, so
             # returning them here is what makes the Options copy take effect.
             'mcc_root': self.mcc_root_edit.text().strip() or None,
+            # Empty is meaningful here (it selects the sibling .bak), so unlike
+            # mcc_root this must NOT collapse to None.
+            'baseline_root': self.baseline_root_edit.text().strip(),
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
             'swap_player_loadouts': self.swap_players_cb.isChecked(),
             'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
@@ -8404,7 +8439,9 @@ class OptionsDialog(QDialog):
                     continue
                 for n in names:
                     live = map_vault.resolve(game, n)
-                    origs = map_vault.originals(game, live) if live else []
+                    origs = (map_vault.originals(game, live,
+                                                 CONFIG.get('baseline_root') or None)
+                             if live else [])
                     if origs:
                         got.append((origs[0][0], live, origs[0][1]))
                     else:
@@ -8758,7 +8795,8 @@ class OptionsDialog(QDialog):
             for mid, mp in present:
                 try:
                     results, _ = halo_patch.apply_run(mp, [], registry, difficulty,
-                                                      game='Halo 1', sprint=cfg)
+                                                      game='Halo 1', sprint=cfg,
+                                                      **baseline_args('Halo 1'))
                 except Exception as e:
                     skipped.append(f"{mid}: error — {e}")
                     continue

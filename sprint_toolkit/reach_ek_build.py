@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 r"""Build Reach campaign maps with the HREK, install them, and finish the recipe.
 
-Building is only the first of three steps, and skipping either of the others leaves a
+Building is only the first of four steps, and skipping any of the others leaves a
 map that looks right and does not work:
 
   1. tool.exe build-cache-file levels\solo\<map>\<map> pc
-  2. install over haloreach\maps\<map>.map AND refresh <map>.map.bak -- the patcher
-     builds every run FROM .bak, so a stale .bak silently throws the rebuild away
+  2. install over haloreach\maps\<map>.map
   3. residency: a tag whose bit is clear in the first zone set's pool cannot be built
      by the engine at mission start, so its placement is inert. See reach_pools.py.
+  4. publish the baseline the patcher rebuilds from -- LAST, from the finished live
+     map. apply_run builds every run FROM the baseline and saves over the live map, so
+     a baseline captured before step 3 is one that throws residency away on the next
+     patch, silently. Publishing last is what makes that ordering impossible to get
+     wrong. Where the baseline lives is the enhancer's Baselines folder setting when
+     one is configured, else the sibling <map>.map.bak.
 
-    python reach_ek_build.py --all                  # build + install + residency, all maps
-    python reach_ek_build.py --build m20 --install m20
+    python reach_ek_build.py --all                  # all four steps, every mission
+    python reach_ek_build.py --build m20 --install m20   # --install does steps 2-4
     python reach_ek_build.py --check                # lint placements, no building
     python reach_ek_build.py --status
 
@@ -42,6 +47,23 @@ EK = r"F:\SteamLibrary\steamapps\common\HREK"
 GAME = (r"C:\Program Files (x86)\Steam\steamapps\common"
         r"\Halo The Master Chief Collection\haloreach\maps")
 SCENARIO = r"levels\solo\%s\%s"
+MAP_SUBDIR = 'haloreach/maps'
+
+
+def baseline_root():
+    """The enhancer's configured Baselines folder, or '' for the sibling .bak.
+
+    Read straight out of settings.json rather than by importing halo_enhancer, which
+    would drag in Qt for one string.
+    """
+    try:
+        with io.open(os.path.join(os.path.dirname(HERE), 'settings.json'),
+                     encoding='utf-8') as f:
+            return json.load(f).get('baseline_root') or ''
+    except Exception:
+        return ''
+
+
 def campaign_maps():
     """The missions halo.json actually offers, in its own order.
 
@@ -83,14 +105,20 @@ def build(name, platform='pc'):
     return ok
 
 
-def install(name, baseline=True):
-    """Install the build and make it the patcher's baseline.
+def install(name):
+    """Copy the build into the game folder, preserving the shipped map once.
 
-    apply_run patches FROM `<map>.bak` when it exists and saves over `<map>`, so a
-    .bak still holding the shipped map would rebuild from vanilla on the next run and
-    wipe everything the rebuild added -- silently, with no error. The rebuild IS the
-    pristine state now, so .bak points at it; the shipped original is kept as
-    `<map>.map.shipped`, a name apply_run never looks at.
+    Deliberately does NOT touch the patcher's baseline: that is publish_baseline's
+    job and it has to run after residency. See the module docstring.
+
+    The shipped original is kept as `<map>.map.shipped`, a name apply_run never looks
+    at -- but ONLY when the candidate can still plausibly BE the shipped map. Once a
+    rebuild has been installed, the map beside it and the old baseline are both that
+    rebuild, and copying one into `.shipped` would enshrine it as the vanilla original
+    forever; map_vault treats `.shipped` as pristine by construction. A candidate the
+    same size as the build being installed is a rebuild, so it is refused loudly rather
+    than mislabelled. (The empty-`play`-tag rebuild marker does NOT work here: vanilla
+    m50 has an empty play tag too.)
     """
     dst = os.path.join(GAME, name + '.map')
     bak, shipped = dst + '.bak', dst + '.shipped'
@@ -100,18 +128,44 @@ def install(name, baseline=True):
         return False
     if not os.path.exists(shipped):
         origin = bak if os.path.exists(bak) else (dst if os.path.exists(dst) else None)
-        if origin:
+        if origin and os.path.getsize(origin) == os.path.getsize(src):
+            print('  NOT preserving %s as the shipped map: it is the same size as the '
+                  'build being installed, so it is already a rebuild. The vanilla %s '
+                  'is not on this disk -- restore it from your backups if you want one.'
+                  % (os.path.basename(origin), name))
+        elif origin:
             shutil.copy2(origin, shipped)
             print('  preserved the shipped map as %s' % os.path.basename(shipped))
     try:
         shutil.copy2(src, dst)
-    except PermissionError:
-        print('  %s is loaded in MCC -- leave the mission and retry' % name)
+    except (PermissionError, OSError) as ex:
+        print('  could not install %s (%s)' % (name, ex))
+        print('  if the map is loaded in MCC, leave the mission and retry')
         return False
     print('  installed (%d bytes)' % os.path.getsize(dst))
-    if baseline:
-        shutil.copy2(src, bak)
-        print('  .bak refreshed, so the patcher builds runs from the rebuild')
+    return True
+
+
+def publish_baseline(name):
+    """Make the FINISHED live map the patcher's baseline. Always the last step.
+
+    Publishing from the live map rather than from the build output is the whole point:
+    whatever the map is when the recipe ends is what the next patch rebuilds from, so
+    residency (and anything else written after the install) can never be dropped.
+    """
+    dst = os.path.join(GAME, name + '.map')
+    if not os.path.exists(dst):
+        print('  no installed map at %s' % dst)
+        return False
+    bak = HP.baseline_path(dst, baseline_root(), MAP_SUBDIR)
+    try:
+        os.makedirs(os.path.dirname(bak), exist_ok=True)
+        shutil.copy2(dst, bak)
+    except OSError as ex:
+        print('  could NOT publish the baseline (%s) -- the next patch would rebuild '
+              'from a stale one and undo this map' % ex)
+        return False
+    print('  baseline published: %s' % bak)
     return True
 
 
@@ -134,6 +188,12 @@ def check(name):
     such placements -- so a raw count is noise. What matters is the NOT AUTOMATICALLY
     ones, because those are the marker-style placements the patcher switches on at
     positions nobody has watched an object land in. Those are the ones to name.
+
+    Read that column with the vanilla figure in hand. Measured on the SHIPPED m50
+    (m50.map.shipped, 409,841,664 bytes -- the live m50 has since been rebuilt): 87
+    placements, 55 without Create At Rest, 53 of those marker-style. The filter removes
+    two placements, not the noise, so it narrows nothing on a stock map. What the
+    column is good for is watching the number MOVE after an edit, never its value.
     """
     path = os.path.join(GAME, name + '.map')
     if not os.path.exists(path):
@@ -143,7 +203,11 @@ def check(name):
     try:
         scnr = HP._scnr_base(m)
     except Exception as ex:
+        scnr = None
         print('  %-10s unreadable (%s)' % (name, ex))
+        return
+    if scnr is None:                     # _scnr_base RETURNS None, it does not raise
+        print('  %-10s has no scenario tag' % name)
         return
     sep = chr(92)
     total = restless = marker_restless = 0
@@ -180,12 +244,19 @@ def check(name):
 
 
 def status(name):
-    for label, path in (('game    ', os.path.join(GAME, name + '.map')),
-                        ('baseline', os.path.join(GAME, name + '.map.bak')),
-                        ('shipped ', os.path.join(GAME, name + '.map.shipped')),
+    """Every copy of this map, and where the patcher's baseline actually is.
+
+    The baseline row follows the configured Baselines folder rather than assuming the
+    sibling .bak, so --status keeps telling the truth after the store moves.
+    """
+    live = os.path.join(GAME, name + '.map')
+    for label, path in (('game    ', live),
+                        ('baseline', HP.baseline_path(live, baseline_root(), MAP_SUBDIR)),
+                        ('shipped ', live + '.shipped'),
                         ('EK build', os.path.join(EK, 'maps', name + '.map'))):
-        print('  %-8s %s' % (label, ('%d bytes' % os.path.getsize(path))
-                             if os.path.exists(path) else '(absent)'))
+        print('  %-8s %-11s %s'
+              % (label, ('%d bytes' % os.path.getsize(path))
+                 if os.path.exists(path) else '(absent)', path))
 
 
 def main(argv=None):
@@ -218,8 +289,9 @@ def main(argv=None):
         return 0
     if a.check:
         print('placements missing Create At Rest -- they are dropped, not set down.')
-        print('Vanilla script-spawned placements lack it too (untouched m50 has 53),')
-        print('so read the marker-style column only for maps you have edited.')
+        print('Vanilla script-spawned placements lack it too: the SHIPPED m50 has 87')
+        print('placements, 55 without Create At Rest, 53 of them marker-style. Watch')
+        print('these numbers MOVE after an edit -- the values themselves are vanilla.')
         for name in picked:
             check(name)
         return 0
@@ -241,8 +313,14 @@ def main(argv=None):
             if not install(name):
                 failed.append(name)
                 continue
-            if not a.no_residency:
-                residency(name)
+            if not a.no_residency and not residency(name):
+                # A map with no residency pass is not finished, and publishing its
+                # baseline would freeze that half-done state in as the pristine one.
+                failed.append(name)
+                continue
+            if not publish_baseline(name):
+                failed.append(name)
+                continue
             check(name)
             done.append(name)
         print()
@@ -252,18 +330,38 @@ def main(argv=None):
             print('failed: %s' % ', '.join(failed))
         return 1 if failed else 0
 
+    if a.dry_run and (a.build or a.install or a.residency):
+        print('would build: %s' % (', '.join(a.build) or '-'))
+        print('would install (+ residency + baseline): %s'
+              % (', '.join(a.install) or '-'))
+        print('would set residency for: %s' % (', '.join(a.residency) or '-'))
+        return 0
+    bad = []
     for name in a.build:
         print('=== build %s' % name)
-        build(name)
+        if not build(name):
+            bad.append(name)
     for name in a.install:
+        # Steps 2-4 together, because the recipe only works whole: a map installed
+        # without residency does not spawn its weapons, and a baseline published
+        # before residency undoes it on the next patch.
         print('=== install %s' % name)
-        install(name)
+        ok = install(name)
+        if ok and not a.no_residency:
+            ok = residency(name)
+        if ok:
+            ok = publish_baseline(name)
+        if not ok:
+            bad.append(name)
     for name in a.residency:
         print('=== residency %s' % name)
-        residency(name)
+        if residency(name) and not publish_baseline(name):
+            bad.append(name)
     if not (a.build or a.install or a.residency):
         ap.print_help()
-    return 0
+    if bad:
+        print('failed: %s' % ', '.join(sorted(set(bad))))
+    return 1 if bad else 0
 
 
 if __name__ == '__main__':

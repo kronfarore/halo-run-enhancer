@@ -272,6 +272,34 @@ def default_map_path(mcc_root, map_subdir, mission_id):
     return str(matches[0]) if matches else str(exact)
 
 
+def baseline_path(map_path, baseline_root=None, map_subdir=None):
+    """Where the PRISTINE copy of `map_path` lives -- the bytes every patch rebuilds from.
+
+    Two stores, one meaning. With no `baseline_root` this is the sibling `<map>.bak`
+    every game has always used. Given a root it becomes
+    `<baseline_root>/<map_subdir>/<map name>`, so the originals can sit on another
+    drive and the game folder holds only what MCC actually loads -- which also puts
+    them out of reach of a Steam update, which deletes modded maps in place.
+
+    `map_subdir` is carried through because one root has to hold five games whose map
+    names collide: Halo 1 and Reach both use bare mission ids.
+
+    A root that resolves back onto the live map itself is ignored rather than obeyed --
+    patching would then read and write one file and the "seed the pristine copy" step
+    would copy it over itself.
+    """
+    sibling = str(map_path) + '.bak'
+    if not baseline_root:
+        return sibling
+    d = Path(baseline_root)
+    if map_subdir:
+        d = d / map_subdir
+    cand = d / Path(map_path).name
+    same = (os.path.normcase(os.path.abspath(str(cand)))
+            == os.path.normcase(os.path.abspath(str(map_path))))
+    return sibling if same else str(cand)
+
+
 # Some H2 char fields (e.g. Placement Properties' Upgrade Chance family) are
 # difficulty-variant by SUFFIX ("<field> (Legendary)") using different tier
 # names than the matg/weap-style difficulty PREFIX ("Impossible <field>"),
@@ -4424,7 +4452,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               difficulty_baseline=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
-              keep_title_hud=False):
+              keep_title_hud=False, baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -4436,8 +4464,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     (e.g. a spent one-map Exhaust) cleanly removes it — the baseline restores the
     bytes and only the remaining effects are re-applied. Pass from_baseline=False
     to instead patch the live file in place (used by the debug single-field
-    patch, which must not wipe the other already-applied effects)."""
-    bak = Path(str(map_path) + '.bak')
+    patch, which must not wipe the other already-applied effects).
+
+    `baseline_root`/`map_subdir` move that pristine copy off the game folder entirely;
+    see `baseline_path`. Unset, the baseline stays the sibling `.bak` it has always
+    been, so every existing caller keeps its behaviour."""
+    bak = Path(baseline_path(map_path, baseline_root, map_subdir))
     baseline = str(bak) if (from_baseline and backup and bak.exists()) else map_path
     m = open_map(baseline, game)
     results = []
@@ -4733,8 +4765,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):
         if backup:
-            bp = Path(str(map_path) + '.bak')
+            bp = Path(baseline_path(map_path, baseline_root, map_subdir))
             if not bp.exists():                     # keep the pristine original
+                bp.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(map_path, bp)
             backup_path = str(bp)
         m.save(map_path)
