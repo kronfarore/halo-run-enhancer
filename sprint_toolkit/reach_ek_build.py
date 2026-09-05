@@ -271,6 +271,10 @@ def main(argv=None):
     ap.add_argument('--check', action='store_true',
                     help='lint installed maps for placements without Create At Rest')
     ap.add_argument('--status', action='store_true')
+    ap.add_argument('--finish', action='store_true',
+                    help='steps 3-4 (residency, then publish the baseline) for the '
+                         'picked maps -- no building. Repairs baselines published by '
+                         'an older run, or by an --all that was interrupted.')
     ap.add_argument('--no-residency', action='store_true',
                     help='with --all, build and install only')
     ap.add_argument('--dry-run', action='store_true',
@@ -295,6 +299,29 @@ def main(argv=None):
         for name in picked:
             check(name)
         return 0
+
+    if a.finish:
+        # Residency is idempotent (reach_pools only fixes what is not already
+        # resident), so this is safe to run over maps that are already correct --
+        # what it really guarantees is that the baseline matches the finished map.
+        if a.dry_run:
+            print('would set residency for and republish the baseline of: %s'
+                  % ', '.join(picked))
+            return 0
+        bad = []
+        for name in picked:
+            print()
+            print('=== finish %s' % name)
+            if not a.no_residency and not residency(name):
+                bad.append(name)
+                continue
+            if not publish_baseline(name):
+                bad.append(name)
+        print()
+        print('%d finished, %d failed' % (len(picked) - len(bad), len(bad)))
+        if bad:
+            print('failed: %s' % ', '.join(bad))
+        return 1 if bad else 0
 
     if a.all:
         if a.dry_run:
