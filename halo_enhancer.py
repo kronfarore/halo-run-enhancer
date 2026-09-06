@@ -9369,6 +9369,7 @@ class HaloGUI(QMainWindow):
             self.loaded_run_path = None
             self.shared_run_path = None
             self.run_state.mission_id = mid
+            self._ensure_map_pools(mid)
             info = self.db.mission_enemies.get(mid)
             if info:
                 self.run_state.mission_name = info['name']
@@ -9955,6 +9956,10 @@ class HaloGUI(QMainWindow):
         if sel_mid:
             self.run_state.mission_id = sel_mid
             self.run_state.mission_name = self.db.mission_enemies[sel_mid]['name']
+            # Deferred to the first idle moment: setup_ui runs before the window is
+            # shown, and parenting a modal dialog to a half-built window is its own
+            # bug. By the time this fires there is a window to sit in front of.
+            QTimer.singleShot(0, lambda m=sel_mid: self._ensure_map_pools(m))
         self.game_combo.currentIndexChanged.connect(self.on_game_changed)
         self.mission_combo.currentIndexChanged.connect(self.on_mission_changed)
         header_layout.addWidget(self.mission_combo)
@@ -10213,6 +10218,7 @@ class HaloGUI(QMainWindow):
         if not mid:
             return
         self.run_state.mission_id = mid
+        self._ensure_map_pools(mid)
         self.run_state.mission_name = self.db.mission_enemies[mid]['name']
         if self.run_state.phase == 'weapon_selection':
             # Before weapons are locked in: switch to this game's weapon pool
