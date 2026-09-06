@@ -4,6 +4,7 @@ import copy
 import html
 import json
 import os
+import struct
 import random
 import shutil
 import sys
@@ -127,28 +128,51 @@ SETTINGS_FILE = 'settings.json'
 # baseline's size and mtime and re-derived when either moves. A few hundred bytes per
 # mission.
 POOL_CACHE_FILE = 'map_pool_cache.json'
+# Bumped when the stamp changes meaning; a file from an older scheme is discarded
+# rather than reinterpreted, because a stale stamp that happens to match would hand
+# back names for a different map.
+POOL_CACHE_VERSION = 2
 _POOL_DISK = None
+#: XOR of every u32 past the header, stored IN the header. See Halo3Map.CHECKSUM_OFF.
+_MAP_CHECKSUM_AT = 0x360
 
 
 def _pool_disk():
     global _POOL_DISK
     if _POOL_DISK is None:
+        _POOL_DISK = {}
         try:
             with open(app_data_dir() / POOL_CACHE_FILE, encoding='utf-8') as f:
-                _POOL_DISK = json.load(f)
-            if not isinstance(_POOL_DISK, dict):
-                _POOL_DISK = {}
+                doc = json.load(f)
+            if (isinstance(doc, dict)
+                    and doc.get('version') == POOL_CACHE_VERSION
+                    and isinstance(doc.get('entries'), dict)):
+                _POOL_DISK = doc['entries']
         except Exception:
-            _POOL_DISK = {}
+            pass
     return _POOL_DISK
 
 
 def _pool_stamp(path):
+    """[size, cache checksum] -- a stamp that survives being COPIED.
+
+    An mtime says when THIS machine wrote the file, so a cache keyed by one is
+    worthless to anyone else even for a byte-identical map. The checksum identifies
+    the BUILD instead: it lives in the map header, travels with the bytes, and
+    changes whenever the map does. Reading it is a four-byte seek rather than the
+    800 MB load that deriving the pool costs, so it stays cheap enough to check
+    every time.
+    """
     try:
-        st = os.stat(str(path))
+        size = os.stat(str(path)).st_size
+        with open(path, 'rb') as f:
+            f.seek(_MAP_CHECKSUM_AT)
+            raw = f.read(4)
     except OSError:
         return None
-    return [st.st_size, int(st.st_mtime)]
+    if len(raw) != 4:
+        return None
+    return [size, struct.unpack('<I', raw)[0]]
 
 
 def pool_cache_get(key, path):
@@ -171,7 +195,8 @@ def pool_cache_put(key, path, names):
     try:
         tmp = app_data_dir() / (POOL_CACHE_FILE + '.tmp')
         with open(tmp, 'w', encoding='utf-8') as f:
-            json.dump(_POOL_DISK, f, indent=1, sort_keys=True)
+            json.dump({'version': POOL_CACHE_VERSION, 'entries': _POOL_DISK},
+                      f, indent=1, sort_keys=True)
         os.replace(tmp, app_data_dir() / POOL_CACHE_FILE)
     except Exception:
         pass
