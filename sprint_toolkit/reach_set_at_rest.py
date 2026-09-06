@@ -93,13 +93,14 @@ def fix(path, write):
 def forget_pool_cache(names):
     """Drop these missions' remembered pools, so the next look re-derives them.
 
-    The pool cache is keyed by the map's size and its cache checksum, and that
-    checksum is an XOR: flipping the SAME bit an even number of times cancels. This
-    tool does exactly that -- six placements, one bit each -- so m10 and m20 came out
-    of it byte-changed and stamp-identical. The names this edit produces happen to be
-    unaffected (a pool is palette membership and placement existence, not flags), but
-    a map editor that cannot be seen by the stamp must not rely on that; it should say
-    so itself.
+    Belt and braces. The pool stamp is now an exact digest, so this edit IS visible to
+    it and the entries would be refreshed anyway -- but that was not true when this
+    tool was written: the stamp was the map's own XOR checksum, and flipping the same
+    bit an even number of times cancels, which is exactly what this tool does. Both
+    maps came out of the first run byte-changed and stamp-identical.
+
+    Kept because a tool that edits a map in place should not have to reason about how
+    good someone else's change detection is.
     """
     try:
         import halo_enhancer as he

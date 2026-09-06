@@ -1,6 +1,7 @@
 # halo_enhancer.py - Final version
 
 import copy
+import hashlib
 import html
 import json
 import os
@@ -131,10 +132,50 @@ POOL_CACHE_FILE = 'map_pool_cache.json'
 # Bumped when the stamp changes meaning; a file from an older scheme is discarded
 # rather than reinterpreted, because a stale stamp that happens to match would hand
 # back names for a different map.
-POOL_CACHE_VERSION = 2
+POOL_CACHE_VERSION = 3
 _POOL_DISK = None
-#: XOR of every u32 past the header, stored IN the header. See Halo3Map.CHECKSUM_OFF.
-_MAP_CHECKSUM_AT = 0x360
+#: Digests of map files this machine has already hashed, so the hash is paid once per
+#: file rather than once per question. Keyed by path, size and mtime -- mtime is used
+#: HERE, where it belongs: not as part of a map's identity (that has to survive being
+#: copied to another machine) but as "has anything touched this file since I looked".
+#: Local by definition, so it is never shipped.
+POOL_HASH_FILE = 'map_pool_hashes.json'
+_POOL_HASHES = None
+
+
+def _hash_memo():
+    global _POOL_HASHES
+    if _POOL_HASHES is None:
+        _POOL_HASHES = {}
+        try:
+            with open(app_data_dir() / POOL_HASH_FILE, encoding='utf-8') as f:
+                doc = json.load(f)
+            if isinstance(doc, dict):
+                _POOL_HASHES = doc
+        except Exception:
+            pass
+    return _POOL_HASHES
+
+
+def _save_hash_memo():
+    try:
+        tmp = app_data_dir() / (POOL_HASH_FILE + '.tmp')
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(_POOL_HASHES, f, indent=1, sort_keys=True)
+        os.replace(tmp, app_data_dir() / POOL_HASH_FILE)
+    except Exception:
+        pass
+
+
+def _file_digest(path):
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        while True:
+            chunk = f.read(8 << 20)
+            if not chunk:
+                break
+            h.update(chunk)
+    return h.hexdigest()
 
 
 def _pool_disk():
@@ -154,25 +195,38 @@ def _pool_disk():
 
 
 def _pool_stamp(path):
-    """[size, cache checksum] -- a stamp that survives being COPIED.
+    """[size, sha256] -- exact, and it survives being COPIED.
 
-    An mtime says when THIS machine wrote the file, so a cache keyed by one is
-    worthless to anyone else even for a byte-identical map. The checksum identifies
-    the BUILD instead: it lives in the map header, travels with the bytes, and
-    changes whenever the map does. Reading it is a four-byte seek rather than the
-    800 MB load that deriving the pool costs, so it stays cheap enough to check
-    every time.
+    Two things have to be true at once. The stamp must identify the MAP rather than
+    this machine's copy of it, or a cache cannot ship with the maps it describes --
+    an mtime fails that immediately. And it must actually notice a change: the map's
+    own header checksum is an XOR, so flipping the same bit an even number of times
+    cancels, and a bulk flag edit did exactly that here -- two maps came out
+    byte-changed and stamp-identical.
+
+    A full digest is both. It costs 0.69s for an 800 MB map, which is far too much to
+    pay per question, so it is paid per FILE instead: _hash_memo() remembers the
+    digest against the path's size and mtime, and mtime earns its keep there as "has
+    anything touched this since I looked" rather than as identity.
     """
     try:
-        size = os.stat(str(path)).st_size
-        with open(path, 'rb') as f:
-            f.seek(_MAP_CHECKSUM_AT)
-            raw = f.read(4)
+        st = os.stat(str(path))
     except OSError:
         return None
-    if len(raw) != 4:
+    key = os.path.normcase(os.path.abspath(str(path)))
+    memo = _hash_memo()
+    ent = memo.get(key)
+    if (isinstance(ent, list) and len(ent) == 3
+            and ent[0] == st.st_size and ent[1] == int(st.st_mtime)
+            and isinstance(ent[2], str)):
+        return [st.st_size, ent[2]]
+    try:
+        digest = _file_digest(path)
+    except OSError:
         return None
-    return [size, struct.unpack('<I', raw)[0]]
+    memo[key] = [st.st_size, int(st.st_mtime), digest]
+    _save_hash_memo()
+    return [st.st_size, digest]
 
 
 def pool_cache_get(key, path):
