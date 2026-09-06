@@ -197,6 +197,42 @@ def pool_cache_get(key, path):
         return None
 
 
+def run_busy(parent, fn, title="Patching", label="Working"):
+    """Run fn() off the GUI thread while showing an animated busy dialog, so a long
+    job is visibly distinct from a hang. Returns fn()'s value; re-raises whatever it
+    raised. The work must be pure file/tag work with no Qt calls -- the GUI thread only
+    spins the event loop and the dots."""
+    result = {}
+
+    def work():
+        try:
+            result['value'] = fn()
+        except BaseException as e:          # carry it back to the GUI thread to re-raise
+            result['error'] = e
+
+    dlg = QProgressDialog(label, None, 0, 0, parent)  # 0,0 = indeterminate busy bar
+    dlg.setWindowTitle(title)
+    dlg.setCancelButton(None)                         # cannot be interrupted safely
+    dlg.setWindowModality(Qt.WindowModal)
+    dlg.setMinimumDuration(0)
+    dlg.setAutoClose(False)
+    dlg.setAutoReset(False)
+    dlg.show()
+    t = threading.Thread(target=work, daemon=True)
+    t.start()
+    dots = 0
+    while t.is_alive():
+        dots = dots % 3 + 1
+        dlg.setLabelText(label + "." * dots + " " * (3 - dots))
+        QApplication.processEvents()
+        t.join(0.6)                                   # ~every 0.6 s a dot appears
+    QApplication.processEvents()
+    dlg.close()
+    if 'error' in result:
+        raise result['error']
+    return result.get('value')
+
+
 def pool_cache_put(key, path, names):
     """Remember names for this map, best effort.
 
@@ -2218,6 +2254,57 @@ class ModifierDatabase:
     def get_available_weapons(self):
         return list(self.weapon_mods.keys())
 
+    def _pool_src(self, game, mission_id):
+        """The file a map pool is read from -- the patch baseline, wherever it lives."""
+        folder = (CONFIG.get('map_game_folder', {}) or {}).get(game)
+        if not folder:
+            return None
+        return baseline_source(Path(mcc_root()) / folder / (mission_id + '.map'), game)
+
+    def map_pool_kinds(self, mission_id):
+        """(game, kinds) whose pools this mission reads from its map, honouring the
+        options. Empty when nothing has to be read."""
+        game = self.mission_games.get(mission_id)
+        if game == 'Halo Reach' and CONFIG.get('reach_pools_from_map'):
+            return game, ('weapons', 'equipment')
+        if game == 'Halo 3: ODST' and CONFIG.get('odst_pools_from_map'):
+            return game, ('weapons',)
+        return game, ()
+
+    def map_pools_ready(self, mission_id):
+        """Can the pools be answered without reading the map?
+
+        Reading one means loading the whole cache file -- 21 seconds for a rebuilt
+        Reach map -- so a caller can use this to decide whether the work deserves a
+        progress dialog. When everything is already remembered the answer is instant
+        and a dialog would only flicker.
+        """
+        game, kinds = self.map_pool_kinds(mission_id)
+        if not kinds:
+            return True
+        src = self._pool_src(game, mission_id)
+        for kind in kinds:
+            if game == 'Halo Reach':
+                if (mission_id, kind) in self._reach_pool_cache:
+                    continue
+            elif mission_id in self._odst_pool_cache:
+                continue
+            if src is None:
+                return False
+            if pool_cache_get('%s|%s|%s' % (game, mission_id, kind), src) is None:
+                return False
+        return True
+
+    def warm_map_pools(self, mission_id):
+        """Derive this mission's map pools now, so nothing stalls later. No Qt here --
+        this is meant to be run off the GUI thread."""
+        game, kinds = self.map_pool_kinds(mission_id)
+        for kind in kinds:
+            if game == 'Halo Reach':
+                self.reach_map_pool(mission_id, kind)
+            else:
+                self.odst_map_pool(mission_id)
+
     def odst_map_pool(self, mission_id):
         """Offer names for every weapon the level's MAP can actually give a player.
 
@@ -2228,11 +2315,10 @@ class ModifierDatabase:
         """
         if mission_id in self._odst_pool_cache:
             return self._odst_pool_cache[mission_id]
-        names, folder = [], CONFIG.get('map_game_folder', {}).get('Halo 3: ODST')
+        names = []
         try:
             import halo_patch          # imported lazily, as everywhere else here
-            base = Path(mcc_root()) / folder / (mission_id + '.map')
-            src = baseline_source(base, 'Halo 3: ODST')
+            src = self._pool_src('Halo 3: ODST', mission_id)
             ck = 'Halo 3: ODST|%s|weapons' % mission_id
             remembered = pool_cache_get(ck, src)
             if remembered is not None:
@@ -2297,9 +2383,7 @@ class ModifierDatabase:
         names = []
         try:
             import halo_patch
-            folder = CONFIG.get('map_game_folder', {}).get('Halo Reach')
-            base = Path(mcc_root()) / folder / (mission_id + '.map')
-            src = baseline_source(base, 'Halo Reach')
+            src = self._pool_src('Halo Reach', mission_id)
             ck = 'Halo Reach|%s|%s' % (mission_id, kind)
             remembered = pool_cache_get(ck, src)
             if remembered is not None:
@@ -5911,39 +5995,7 @@ class MagnitudeEditorDialog(QDialog):
         return db.weap_tag_for(w, self.game)
 
     def _run_busy(self, fn, title="Patching", label="Working"):
-        """Run fn() off the GUI thread while showing an animated busy dialog, so a long
-        patch is visibly distinct from a hang. Returns fn()'s value; re-raises whatever
-        it raised. Patching is pure file/tag work with no Qt calls, so a plain worker
-        thread is safe — the GUI thread only spins the event loop and the dots."""
-        result = {}
-
-        def work():
-            try:
-                result['value'] = fn()
-            except BaseException as e:      # carry it back to the GUI thread to re-raise
-                result['error'] = e
-
-        dlg = QProgressDialog(label, None, 0, 0, self)   # 0,0 = indeterminate busy bar
-        dlg.setWindowTitle(title)
-        dlg.setCancelButton(None)                        # patching can't be interrupted safely
-        dlg.setWindowModality(Qt.WindowModal)
-        dlg.setMinimumDuration(0)
-        dlg.setAutoClose(False)
-        dlg.setAutoReset(False)
-        dlg.show()
-        t = threading.Thread(target=work, daemon=True)
-        t.start()
-        dots = 0
-        while t.is_alive():
-            dots = dots % 3 + 1
-            dlg.setLabelText(label + "." * dots + " " * (3 - dots))
-            QApplication.processEvents()
-            t.join(0.6)                                  # ~every 0.6 s a dot appears
-        QApplication.processEvents()
-        dlg.close()
-        if 'error' in result:
-            raise result['error']
-        return result.get('value')
+        return run_busy(self, fn, title, label)
 
     def _apply(self):
         map_path = self.map_edit.text().strip()
@@ -10173,10 +10225,33 @@ class HaloGUI(QMainWindow):
         else:
             self._reset_for_new_round(f"Game changed to {game}")
 
+    def _ensure_map_pools(self, mission_id):
+        """Read what this level can grant, behind a progress dialog when it is slow.
+
+        With a pools-from-map option on, the first question about a level loads the
+        whole cache file -- 21 seconds for a rebuilt Reach map. Left where it falls
+        that lands in the middle of generating pairs or rerolling a card, looking like
+        a hang. Doing it here means it happens once, where the user has just asked for
+        this level and expects a pause, and every later question is answered from
+        memory.
+
+        Silent when the answer is already known, so a warm cache never flickers a
+        dialog, and never fatal: the pool functions fall back to the level's own list.
+        """
+        try:
+            if self.db.map_pools_ready(mission_id):
+                return
+            name = self.db.mission_enemies.get(mission_id, {}).get('name', mission_id)
+            run_busy(self, lambda: self.db.warm_map_pools(mission_id),
+                     "Reading the map", "Reading what %s can grant" % name)
+        except Exception as e:
+            print(f"map pool warm-up failed for {mission_id}: {e}")
+
     def on_mission_changed(self):
         mission_id = self.mission_combo.currentData()
         if not mission_id or mission_id == self.run_state.mission_id:
             return
+        self._ensure_map_pools(mission_id)
         self.run_state.mission_id = mission_id
         self.run_state.mission_name = self.db.mission_enemies[mission_id]['name']
         if self.run_state.phase == 'weapon_selection':
