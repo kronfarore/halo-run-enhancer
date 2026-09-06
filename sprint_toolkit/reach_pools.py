@@ -18,7 +18,7 @@ indices. Reading them as indices makes every object look absent, working ones in
     python reach_pools.py m10 --fix-all --write     # every palette entry, both kinds
 """
 import argparse
-import glob
+import io
 import os
 import struct
 import sys
@@ -220,13 +220,17 @@ def pick_donor(rows, kind):
 
 
 def map_names():
-    folder = os.path.dirname(V.resolve(GAME, 'm10'))
-    out = []
-    for p in sorted(glob.glob(os.path.join(folder, 'm*.map'))):
-        b = os.path.basename(p)[:-4]
-        if b[1:].isdigit():
-            out.append(b)
-    return out
+    """The missions halo.json lists, in its own order.
+
+    Globbing the map folder for m<digits> both invented work and skipped a mission:
+    m05 and m70_a are HREK scenarios the game never runs, while m70_bonus was dropped
+    because its name is not all digits -- so --audit quietly reported on nine of ten
+    missions and looked complete.
+    """
+    import json
+    tool = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    with io.open(os.path.join(tool, 'halo.json'), encoding='utf-8') as f:
+        return list(json.load(f)['Missions'][GAME])
 
 
 def main(argv=None):
