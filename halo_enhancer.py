@@ -176,22 +176,41 @@ def _pool_stamp(path):
 
 
 def pool_cache_get(key, path):
-    """Remembered names for this map, or None when the map has moved on."""
-    ent = _pool_disk().get(key)
-    stamp = _pool_stamp(path)
-    if not isinstance(ent, dict) or stamp is None or ent.get('stamp') != stamp:
+    """Remembered names for this map, or None when the map has moved on.
+
+    Never raises. The cache is an optimisation: if anything about it is wrong --
+    missing, unreadable, corrupt, written by a future version, shipped with entries
+    for maps this machine does not have -- the only correct outcome is a miss, and
+    the caller derives the answer the slow way. A cache must not be able to break the
+    thing it is caching.
+    """
+    try:
+        ent = _pool_disk().get(key)
+        stamp = _pool_stamp(path)
+        if not isinstance(ent, dict) or stamp is None or ent.get('stamp') != stamp:
+            return None
+        names = ent.get('names')
+        if not isinstance(names, list):
+            return None
+        return [n for n in names if isinstance(n, str)]
+    except Exception:
         return None
-    names = ent.get('names')
-    return list(names) if isinstance(names, list) else None
 
 
 def pool_cache_put(key, path, names):
-    """Remember names for this map. Only ever called after a SUCCESSFUL read -- a
-    transient failure must not be cached, or it would stick until the map changed."""
-    stamp = _pool_stamp(path)
-    if stamp is None:
+    """Remember names for this map, best effort.
+
+    Only ever called after a SUCCESSFUL read -- a transient failure must not be
+    cached, or it would stick until the map changed. Never raises: a read-only or
+    full disk costs the next session a re-derive, nothing more.
+    """
+    try:
+        stamp = _pool_stamp(path)
+        if stamp is None:
+            return
+        _pool_disk()[key] = {'stamp': stamp, 'names': list(names)}
+    except Exception:
         return
-    _pool_disk()[key] = {'stamp': stamp, 'names': list(names)}
     try:
         tmp = app_data_dir() / (POOL_CACHE_FILE + '.tmp')
         with open(tmp, 'w', encoding='utf-8') as f:

@@ -8,6 +8,10 @@ map that looks right and does not work:
   2. install over haloreach\maps\<map>.map
   3. residency: a tag whose bit is clear in the first zone set's pool cannot be built
      by the engine at mission start, so its placement is inert. See reach_pools.py.
+     (A fresh EK build is already resident by construction -- tool.exe pools whatever
+     the scenario references -- so this is a no-op there and matters for shipped maps.)
+  4. warm the pool cache, so the first pick of each mission is instant. Keyed by the
+     map's checksum, so the file is valid on any machine installing the same builds.
   4. publish the baseline the patcher rebuilds from -- LAST, from the finished live
      map. apply_run builds every run FROM the baseline and saves over the live map, so
      a baseline captured before step 3 is one that throws residency away on the next
@@ -182,6 +186,51 @@ def residency(name, write=True):
         return False
 
 
+_DB = []
+
+
+def _pool_db():
+    """The enhancer's database, built once. Only used for warming the pool cache.
+
+    load_data prints a checkmark, which on a redirected cp1252 stream raises -- and
+    the enhancer swallows that, leaving every pool empty and every lookup a miss. So
+    the streams are widened before it is imported, the same guard weapon_availability
+    needs.
+    """
+    if not _DB:
+        for st in (sys.stdout, sys.stderr):
+            try:
+                st.reconfigure(encoding='utf-8', errors='replace')
+            except Exception:
+                pass
+        import halo_enhancer as he
+        he.load_settings()
+        _DB.append(he.ModifierDatabase())
+    return _DB[0]
+
+
+def warm(name):
+    """Derive and remember what this map can grant.
+
+    Two reasons this belongs in the build. It saves the person who built the maps a
+    21-second stall the first time they pick each mission -- and because the cache is
+    keyed by the map's own checksum rather than a local timestamp, the file it writes
+    is valid on ANY machine that installs these same builds. Players do not build
+    maps, so shipping this alongside them is the only way they ever get a warm cache.
+
+    Never fatal: a pool that cannot be derived or written costs time, nothing else.
+    """
+    try:
+        db = _pool_db()
+        w = len(db.reach_map_pool(name, 'weapons'))
+        e = len(db.reach_map_pool(name, 'equipment'))
+        print('  pool cached: %d weapon(s), %d abilit(ies)' % (w, e))
+        return True
+    except Exception as ex:
+        print('  pool cache skipped (%s: %s)' % (type(ex).__name__, ex))
+        return False
+
+
 def check(name):
     """Report placements that will not behave, without touching anything.
 
@@ -279,6 +328,10 @@ def main(argv=None):
                          'an older run, or by an --all that was interrupted.')
     ap.add_argument('--no-residency', action='store_true',
                     help='with --all, build and install only')
+    ap.add_argument('--warm', action='append', default=[], metavar='MAP',
+                    help='derive and remember what the map can grant')
+    ap.add_argument('--no-warm', action='store_true',
+                    help='with --all, skip warming the pool cache')
     ap.add_argument('--dry-run', action='store_true',
                     help='say what --all would do, build nothing')
     a = ap.parse_args(argv)
@@ -350,6 +403,8 @@ def main(argv=None):
             if not publish_baseline(name):
                 failed.append(name)
                 continue
+            if not a.no_warm:
+                warm(name)          # after publishing: keyed by the NEW baseline
             check(name)
             done.append(name)
         print()
@@ -380,13 +435,20 @@ def main(argv=None):
             ok = residency(name)
         if ok:
             ok = publish_baseline(name)
+        if ok and not a.no_warm:
+            warm(name)
         if not ok:
             bad.append(name)
     for name in a.residency:
         print('=== residency %s' % name)
         if residency(name) and not publish_baseline(name):
             bad.append(name)
-    if not (a.build or a.install or a.residency):
+        elif not a.no_warm:
+            warm(name)
+    for name in a.warm:
+        print('=== warm %s' % name)
+        warm(name)
+    if not (a.build or a.install or a.residency or a.warm):
         ap.print_help()
     if bad:
         print('failed: %s' % ', '.join(sorted(set(bad))))

@@ -10,7 +10,6 @@ patches/
 sprint_toolkit/out/
 magnitude_presets.json
 settings.json 
-map_pool_cache.json
 
 # Manual backups & scratch copies
 halo_enhancer_backup*.py
