@@ -1730,6 +1730,7 @@ class ModifierDatabase:
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
         self._odst_pool_cache = {}  # mission_id -> offer names derived from the map
         self._reach_pool_cache = {}  # (mission, kind) -> names the Reach map can grant
+        self._reach_name_table = {}  # kind -> {tag basename: offer name}
         try:
             self.load_data()
         except Exception as e:
@@ -2145,19 +2146,43 @@ class ModifierDatabase:
         self._odst_pool_cache[mission_id] = names
         return names
 
+    def _reach_offer_names(self, kind):
+        """{tag basename: offer name} for everything the enhancer has cards for.
+
+        Built from the mod tables rather than a hand-kept list, so a weapon can only
+        be offered if it actually has modifiers to draw.
+        """
+        table = self._reach_name_table.get(kind)
+        if table is not None:
+            return table
+        table = {}
+        mods = self.weapon_mods if kind == 'weapons' else self.equipment_mods
+        for disp in sorted(mods):
+            tag = (self.weap_tag_for(disp, 'Halo Reach') if kind == 'weapons'
+                   else self.eqip_tag_for(disp, 'Halo Reach'))
+            if not tag or ' ' not in tag:
+                continue
+            bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(chr(92), 1)[-1]
+            table.setdefault(bn, disp)
+        self._reach_name_table[kind] = table
+        return table
+
     def reach_map_pool(self, mission_id, kind='weapons'):
-        """Which of the level's declared items its MAP can actually grant.
+        """Everything the level's MAP can actually grant -- which may EXCEED its list.
 
         Same shape as odst_map_pool and for the same reason, but Reach needs it more:
         an ability the cache does not already carry cannot be made to spawn by
         patching at all, so offering it is offering something the run cannot deliver.
-        A rebuilt map carries markers and the pool grows to match, which is exactly
-        the difference this is meant to reflect.
 
-        Filters the level's OWN halo.json list rather than inventing names from tags,
-        so nothing is offered that the level never declared. Returns [] when the map
-        cannot be read, and the caller then keeps the full list -- a missing map must
-        never silently narrow anything.
+        This reads the map rather than filtering the level's halo.json list, so it
+        widens as well as narrows. Every rebuilt Reach map carries all 23 of the
+        game's weapons and all six abilities, while the mission lists offer 12 to 21
+        of them -- those lists stay vanilla for players on stock maps, and this is the
+        option that opens the rest up. Declared names keep their halo.json order so
+        the familiar entries stay put and the newcomers follow.
+
+        Returns [] when the map cannot be read, and the caller then keeps the level
+        list -- a missing map must never silently change anything.
         """
         key = (mission_id, kind)
         if key in self._reach_pool_cache:
@@ -2180,13 +2205,27 @@ class ModifierDatabase:
                 self._reach_pool_cache[key] = []
                 return []
             have = halo_patch.reach_map_items(m, 'Halo Reach', kind)
-            for disp in declared:
-                tag = (self.weap_tag_for(disp, 'Halo Reach') if kind == 'weapons'
-                       else self.eqip_tag_for(disp, 'Halo Reach'))
-                if not tag:
-                    continue
-                bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(chr(92), 1)[-1]
-                if bn in have and disp not in names:
+            table = self._reach_offer_names(kind)
+            offered = {table[bn] for bn in have if bn in table}
+
+            def _canon(n):
+                return (self.resolve_weapon(n) if kind == 'weapons'
+                        else self.resolve_equipment(n)) or n
+            # A level may declare an ALIAS -- eight missions say "Magnum" where the
+            # card is "Pistol". Matching on the raw string drops the declared entry
+            # and re-adds the same weapon under its canonical name, which reads as a
+            # loss and moves it to the end. Compare canonically, keep the level's own
+            # spelling and position.
+            by_canon = {}
+            for disp in offered:
+                by_canon.setdefault(_canon(disp), disp)
+            for disp in declared:                      # halo.json order first
+                hit = by_canon.get(_canon(disp))
+                if hit and disp not in names:
+                    names.append(disp)
+                    offered.discard(hit)
+            for disp in sorted(offered):               # then what the map adds
+                if disp not in names:
                     names.append(disp)
         except Exception as e:
             print(f"Reach {kind} pool from map failed for {mission_id}: {e}")
@@ -5704,6 +5743,9 @@ class MagnitudeEditorDialog(QDialog):
         # map rather than the list, or the option widens the offers but not the donors.
         if CONFIG.get('odst_pools_from_map') and db.mission_games.get(mid) == 'Halo 3: ODST':
             onmap |= set(db.odst_map_pool(mid) or ())
+        # Reach reads the same way for the same reason, now that its pool widens too.
+        if CONFIG.get('reach_pools_from_map') and db.mission_games.get(mid) == 'Halo Reach':
+            onmap |= set(db.reach_map_pool(mid, 'weapons') or ())
         return [w for w in ZOOM_DONOR_WEAPONS.get(self.game, []) if w in onmap]
 
     def _build_zoom_source_row(self):
@@ -7565,6 +7607,9 @@ class OptionsDialog(QDialog):
         patch_odst_g = QGroupBox("Map patching — Halo 3: ODST")
         odform = QFormLayout(patch_odst_g)
         odform.setLabelAlignment(Qt.AlignRight)
+        patch_reach_g = QGroupBox("Map patching — Halo Reach")
+        rcform = QFormLayout(patch_reach_g)
+        rcform.setLabelAlignment(Qt.AlignRight)
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
 
@@ -7767,8 +7812,28 @@ class OptionsDialog(QDialog):
         form.addRow("Halo 3 profiles:", self.h3_all_chief_cb)
         form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
 
+        self.reach_pools_cb = QCheckBox(
+            "Reach: offer every weapon and ability the prepared map supports")
+        self.reach_pools_cb.setChecked(bool(CONFIG.get('reach_pools_from_map')))
+        self.reach_pools_cb.setToolTip(
+            "Off: each Reach level offers its own weapon and ability list, which "
+            "is roughly what that level stocks in the shipped game -- so the levels "
+            "stay distinct, and a player on unmodified maps is never offered "
+            "something the run cannot deliver."
+            "\n\n"
+            "On: the pool is rebuilt from what the map file can really hand a "
+            "player, which on a PREPARED map is all 23 Reach weapons and all six "
+            "armour abilities, on every mission. That is what rebuilding the maps "
+            "bought."
+            "\n\n"
+            "Read from the map, and only from a map carrying enhancer markers, so "
+            "a level that was never rebuilt keeps its own list instead of offering "
+            "weapons that would never appear.")
+        rcform.addRow("Reach pools:", self.reach_pools_cb)
+
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
+        self._opt_page("Patching").addWidget(patch_reach_g, 40)
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -8159,6 +8224,7 @@ class OptionsDialog(QDialog):
             'odst_shield_into_health': self.odst_shield_health_cb.isChecked(),
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
+            'reach_pools_from_map': self.reach_pools_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
