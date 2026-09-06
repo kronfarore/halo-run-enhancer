@@ -3129,7 +3129,7 @@ def reach_spawn_ready(m, game):
     return str(game).strip() == 'Halo Reach' and bool(reach_named_markers(m, game))
 
 
-def _apply_spawn_weapons(m, game, spec):
+def _apply_spawn_weapons(m, game, spec, registry=None):
     """Reach: hand a player their weapons by PLACING them at the marker.
 
     The alternative to writing the Starting Profile. A profile weapon is in the
@@ -3148,8 +3148,13 @@ def _apply_spawn_weapons(m, game, spec):
     the arrangement proven in game: thirteen weapons at one marker's coordinates, all
     thirteen present.
 
-    Weapons stack, each a little above the last. They are placed Create At Rest, so
-    they stay where they are put instead of dropping through the floor.
+    Weapons ring the marker at `radius` so a handful of them stay individually
+    reachable, and are placed Create At Rest so they stay where they are put.
+
+    Each carries FULL magazines read from its own weap tag, exactly as the Starting
+    Profile path does: these weapons are the run's starting weapons, so a Magazine
+    card already applied this run has to reach them too. Reading the tag rather than
+    copying the template's counts is what makes that work -- the ops run before this.
     """
     out = []
     if str(game).strip() != 'Halo Reach':
@@ -3187,7 +3192,10 @@ def _apply_spawn_weapons(m, game, spec):
         if isinstance(nm, str):
             pal[nm.replace('/', chr(92)).lower()] = i
 
-    LIFT, STACK = 0.30, 0.40
+    LIFT = 0.30
+    radius = spec.get('radius')
+    radius = 0.25 if radius is None else max(0.0, float(radius))
+    weap_plug = registry.get('weap') if registry is not None else None
     plan = []
     for gi, g in enumerate(groups):
         key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
@@ -3199,14 +3207,39 @@ def _apply_spawn_weapons(m, game, spec):
                             'reason': 'no %s on this map' % key})
             continue
         (ax, ay, az), mask = anchor
-        for k, t in enumerate(g):
+        placeable = [t for t in g
+                     if pal.get(str(t).replace('/', chr(92)).lower()) is not None]
+        n = len(placeable)
+        seat = 0
+        for t in g:
             short = str(t).rsplit(chr(92), 1)[-1]
             pi = pal.get(str(t).replace('/', chr(92)).lower())
             if pi is None:
                 out.append({'effect': 'spawned weapons', 'field': short, 'ok': False,
                             'reason': 'not in this level weapon palette'})
                 continue
-            plan.append((pi, (ax, ay, az + LIFT + k * STACK), mask, short, key))
+            # One weapon sits ON the marker; several ring it, so they are individually
+            # reachable instead of one pile the player can only pick the top of.
+            if n > 1 and radius > 0:
+                ang = 2.0 * math.pi * seat / n
+                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang),
+                       az + LIFT)
+            else:
+                pos = (ax, ay, az + LIFT)
+            seat += 1
+            # Full magazines, from the weapon's OWN tag as it stands now.
+            loaded = total = None
+            wb = _weap_base(m, str(t))
+            if wb is not None and weap_plug is not None:
+                loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug,
+                                          block='Magazines', index=0)
+                total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug,
+                                         block='Magazines', index=0)
+            # A battery weapon has no Magazines block; 0/0 is what vanilla stores for
+            # those and means "the tag's own default", which is the full charge.
+            plan.append((pi, pos, mask, short, key,
+                         0 if loaded is None else int(loaded),
+                         0 if total is None else int(total)))
     if not plan:
         return out
 
@@ -3241,7 +3274,7 @@ def _apply_spawn_weapons(m, game, spec):
     salt = (uids[tmpl] >> 16) if uids else 0
     nxt = (max(u & 0xFFFF for u in uids) + 1) if uids else 1
     eqo = _eq_offsets(game)
-    for k, (pi, pos, mask, short, key) in enumerate(plan):
+    for k, (pi, pos, mask, short, key, loaded, total) in enumerate(plan):
         e = dest + (N + k) * wes
         m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
         struct.pack_into('<h', m.data, e, pi)
@@ -3253,8 +3286,14 @@ def _apply_spawn_weapons(m, game, spec):
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)
         struct.pack_into('<I', m.data, e + eqo['uid'],
                          ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        struct.pack_into('<h', m.data, e + lay['rounds_left'],
+                         max(-32768, min(32767, total)))
+        struct.pack_into('<h', m.data, e + lay['rounds_loaded'],
+                         max(-32768, min(32767, loaded)))
         out.append({'effect': 'spawned weapons', 'field': short, 'ok': True,
-                    'old': key, 'new': 'placed at (%.1f, %.1f, %.1f)' % pos})
+                    'old': key,
+                    'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds'
+                           % (pos + (loaded, total))})
     struct.pack_into('<i', m.data, scnr + woff, N + len(plan))
     struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))
     return out
@@ -3291,50 +3330,87 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # reach_equipment_markers). Anything with no marker falls through to the append
     # path below, which is what still serves Halo 3 and ODST.
     if str(game).strip() == 'Halo Reach':
-        # NAMED markers first. `enhancer_marker1` is player 1's position and
-        # `enhancer_marker2` player 2's, so group i goes to marker i+1 and the
-        # position's palette entry is repointed at whatever that player picked --
-        # no guessing a spot, no reliance on block order, and the coordinates are
-        # the designer's.
+        # A prepared Reach map ships one inert equipment placement per ability, put
+        # where the designer wants it, and two of them are NAMED as the players'
+        # positions. Three passes, most specific first, and each remembers what it
+        # consumed so the next cannot hand out the same placement twice.
+        used = set()
+        # 1. `enhancer_marker1` is player 1's position and `enhancer_marker2` player
+        #    2's: group i goes to marker i+1 and the position is repointed at that
+        #    player's FIRST pick. No guessing a spot, no reliance on block order.
         named = reach_named_markers(m, game)
-        if named:
-            left = []
-            for gi, g in enumerate(groups):
-                keep = []
-                slot = named.get('%s%d' % (REACH_MARKER_PREFIX, gi + 1))
-                for t in g:
-                    if slot is None:
-                        keep.append(t)
-                        continue
-                    r = _reach_set_marker(m, game, slot, t)
+        for gi, g in enumerate(groups):
+            slot = named.get('%s%d' % (REACH_MARKER_PREFIX, gi + 1))
+            if slot is None or not g:
+                continue
+            r = _reach_set_marker(m, game, slot, g[0])
+            out.append(r)
+            if r.get('ok'):
+                used.add(slot)
+                groups[gi] = g[1:]
+        if not any(groups):
+            return out
+        by_tag = reach_equipment_markers(m, game)
+        # Spares must come from the MARKER CLUSTER, not from anywhere inert in the
+        # level. A prepared map puts its ability placements together at the player's
+        # position; the rest of the inert equipment is the level's own -- ammo crates
+        # and script drops scattered through the mission. Repointing one of those does
+        # two bad things at once: it drops the ability tens of units from the player,
+        # no better than the start anchor, and it deletes a pickup the level meant to
+        # offer. Measured on m20: the first free "spare" was a rocket_launcher_ammo
+        # crate 40 units away.
+        anchors = []
+        _ib = _block_base(m, scnr_base + lay['items'][0])
+        for _mi in named.values():
+            anchors.append(struct.unpack_from(
+                '<fff', m.data, _ib + _mi * lay['items'][1] + _EQ_POS))
+
+        def _near_cluster(i):
+            if not anchors:
+                return False
+            q = struct.unpack_from('<fff', m.data,
+                                   _ib + i * lay['items'][1] + _EQ_POS)
+            return any(sum((q[k] - a[k]) ** 2 for k in range(3)) ** 0.5 <= 8.0
+                       for a in anchors)
+
+        spare = sorted(i for idxs in by_tag.values() for i in idxs
+                       if i not in used and _near_cluster(i))
+        left = []
+        for g in groups:
+            keep = []
+            for t in g:
+                key = str(t).replace('/', chr(92)).lower()
+                # 2. An inert placement OF THIS PIECE, if the map still has one --
+                #    then it spawns exactly where the designer put that ability.
+                mine = [i for i in by_tag.get(key, []) if i not in used]
+                if mine:
+                    i = mine[0]
+                    used.add(i)
+                    spare = [x for x in spare if x != i]
+                    pos = reach_enable_marker(m, game, i)
+                    out.append({'effect': 'starting equipment',
+                                'field': str(t).rsplit(chr(92), 1)[-1], 'ok': True,
+                                'old': 'inert marker',
+                                'new': 'enabled at (%.0f, %.0f, %.0f)' % pos})
+                    continue
+                # 3. None left of this piece, but a spare placement of ANOTHER one can
+                #    be repointed -- which is what the named markers already do. This
+                #    is the case that used to fall through to the start anchor: a map
+                #    ships one placement per ability, so asking for two of the same
+                #    ability, or for one already spent as a named marker, exhausted it
+                #    and the item landed half a level away instead of in the cluster.
+                if spare:
+                    i = spare.pop(0)
+                    used.add(i)
+                    r = _reach_set_marker(m, game, i, t)
                     out.append(r)
-                    slot = None          # one item per named position
-                    if not r.get('ok'):
-                        keep.append(t)
-                left.append(keep)
-            groups = left
-            if not any(groups):
-                return out
-        markers = reach_equipment_markers(m, game)
-        if markers:
-            left = []
-            for g in groups:
-                keep = []
-                for t in g:
-                    key = str(t).replace('/', chr(92)).lower()
-                    idxs = markers.get(key)
-                    if idxs:
-                        pos = reach_enable_marker(m, game, idxs.pop(0))
-                        out.append({'effect': 'starting equipment',
-                                    'field': str(t).rsplit(chr(92), 1)[-1], 'ok': True,
-                                    'old': 'inert marker',
-                                    'new': 'enabled at (%.0f, %.0f, %.0f)' % pos})
-                    else:
-                        keep.append(t)
-                left.append(keep)
-            groups = left
-            if not any(groups):
-                return out
+                    if r.get('ok'):
+                        continue
+                keep.append(t)
+            left.append(keep)
+        groups = left
+        if not any(groups):
+            return out
     eqo = _eq_offsets(game)
     ioff, ies = lay['items']
     poff, pes = lay['palette']
@@ -4859,7 +4935,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         results.extend(_apply_starting_equipment(m, game, registry, starting))
 
     if spawn_weapons:
-        results.extend(_apply_spawn_weapons(m, game, spawn_weapons))
+        results.extend(_apply_spawn_weapons(m, game, spawn_weapons, registry))
     if spawn_equipment:
         # Halo 3 starting equipment. Structural (it grows the Equipment block by
         # relocating it), so it runs after every value op — but before the zoom UI,

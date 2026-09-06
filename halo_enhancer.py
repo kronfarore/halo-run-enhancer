@@ -367,6 +367,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'keep_title_hud',
                'reach_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
+               'reach_placement_radius',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -697,6 +698,7 @@ CONFIG = {
     "reach_pools_from_map": False,
     "reach_spawn_starting_weapons": False,
     "reach_spawn_all_weapons": False,
+    "reach_placement_radius": 0.25,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -5998,7 +6000,10 @@ class MagnitudeEditorDialog(QDialog):
             groups = [p1, p2]
         else:
             groups = [p1 + [x for x in p2 if x not in p1]]
-        return {'groups': groups} if any(groups) else None
+        if not any(groups):
+            return None
+        return {'groups': groups,
+                'radius': float(CONFIG.get('reach_placement_radius', 0.25))}
 
     def _spawn_equipment_spec(self):
         """Halo 3 starting equipment: the equipment each player carries, appended as
@@ -8180,6 +8185,27 @@ class OptionsDialog(QDialog):
         _sync_reach_spawn()
         rcform.addRow("", self.reach_spawn_all_cb)
 
+        self.reach_radius = QDoubleSpinBox()
+        self.reach_radius.setRange(0.0, 5.0)
+        self.reach_radius.setSingleStep(0.05)
+        self.reach_radius.setDecimals(2)
+        self.reach_radius.setValue(float(CONFIG.get('reach_placement_radius', 0.25)))
+        self.reach_radius.setToolTip(
+            "How far from the marker several placed weapons are spread. One weapon "
+            "sits on the marker; several ring it at this radius so each can be picked "
+            "up on its own. Too small and they read as one pile; too large and they "
+            "reach into whatever the level put around that spot -- 2.0 on m20 pushed "
+            "items inside the equipment cases. 0 stacks them.")
+        self._reach_radius_row = QWidget()
+        _rr = QHBoxLayout(self._reach_radius_row)
+        _rr.setContentsMargins(0, 0, 0, 0)
+        _rr.addWidget(QLabel("Placement radius:"))
+        _rr.addWidget(self.reach_radius)
+        _rr.addStretch(1)
+        # Debug only: a tuning number, not a decision anyone should have to make.
+        self._reach_radius_row.setVisible(bool(CONFIG.get('debug_mode')))
+        rcform.addRow("", self._reach_radius_row)
+
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
@@ -8576,6 +8602,7 @@ class OptionsDialog(QDialog):
             'reach_pools_from_map': self.reach_pools_cb.isChecked(),
             'reach_spawn_starting_weapons': self.reach_spawn_weapons_cb.isChecked(),
             'reach_spawn_all_weapons': self.reach_spawn_all_cb.isChecked(),
+            'reach_placement_radius': float(self.reach_radius.value()),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
