@@ -335,6 +335,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
                'reach_pools_from_map',
+               'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -663,6 +664,8 @@ CONFIG = {
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
     "reach_pools_from_map": False,
+    "reach_spawn_starting_weapons": False,
+    "reach_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -5792,7 +5795,8 @@ class MagnitudeEditorDialog(QDialog):
                 'h3_all_chief': (self.game == 'Halo 3'
                                  and bool(CONFIG.get('h3_all_chief_profiles', True))),
                 'skip_respawn': bool(CONFIG.get('coop_no_starting_weapons')),
-                'null_respawn': null_coop}
+                'null_respawn': null_coop,
+                'spawn_instead': self._reach_spawns_weapons()}
 
     def _sprint_spec(self):
         """Sprint config for this patch. None for non-Halo-1 games (no sprint maps
@@ -5907,6 +5911,58 @@ class MagnitudeEditorDialog(QDialog):
             'camo_cooldown_ticks': max(0, round(max(0.0, vals['camo_cooldown']) * 30)),
             'card_reports': card_reports,
         }
+
+    def _reach_spawns_weapons(self):
+        """Is this run handing weapons over by PLACING them rather than by profile?"""
+        return (self.game == 'Halo Reach'
+                and bool(CONFIG.get('set_starting_weapons'))
+                and bool(CONFIG.get('reach_spawn_starting_weapons')))
+
+    def _spawn_weapons_spec(self):
+        """Reach: the weapons to place at each player's marker.
+
+        The alternative to the Starting Profile. Player 1's weapons go to
+        `enhancer_marker1` and player 2's to `enhancer_marker2`; by default only each
+        player's FIRST weapon is placed, and the 'all selected' option places every
+        weapon they hold, stacked at the same spot.
+
+        Returns None unless the run is actually in that mode, so the patcher's
+        profile path stays untouched for everyone else.
+        """
+        if not self._reach_spawns_weapons():
+            return None
+        rs = getattr(self.parent_gui, 'run_state', None)
+        db = getattr(self.parent_gui, 'db', None)
+        if rs is None or db is None:
+            return None
+        first_only = not CONFIG.get('reach_spawn_all_weapons')
+
+        def paths(names):
+            out, seen = [], set()
+            for w in (names or []):
+                if db.is_equipment(w):
+                    continue                    # abilities have their own marker path
+                tag = db.weap_tag_for(w, self.game)
+                if not tag or ' ' not in tag:
+                    continue
+                # A tag may join several variants with '&' so one card patches them
+                # all; a placement is ONE object, so take the first.
+                pth = tag.split(' ', 1)[1].split('&')[0].strip()
+                if pth and pth not in seen:
+                    seen.add(pth)
+                    out.append(pth)
+                    if first_only:
+                        break
+            return out
+
+        slot1, slot2 = self._player_slots()
+        p1 = paths(getattr(rs, slot1 + '_weapons', None))
+        p2 = paths(getattr(rs, slot2 + '_weapons', None))
+        if bool(CONFIG.get('two_player_coop', True)):
+            groups = [p1, p2]
+        else:
+            groups = [p1 + [x for x in p2 if x not in p1]]
+        return {'groups': groups} if any(groups) else None
 
     def _spawn_equipment_spec(self):
         """Halo 3 starting equipment: the equipment each player carries, appended as
@@ -6238,6 +6294,7 @@ class MagnitudeEditorDialog(QDialog):
             if tag not in equip_swaps:
                 equip_swaps[tag] = rate
         spawn_equipment = self._spawn_equipment_spec()
+        spawn_weapons = self._spawn_weapons_spec()
         zoom_ui = self._zoom_ui_spec(plan)
         remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
@@ -6290,6 +6347,7 @@ class MagnitudeEditorDialog(QDialog):
                 skulls=skulls,
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
+                spawn_weapons=spawn_weapons,
                 sprint=sprint,
                 difficulty_baseline=self._baseline_spec(),
                 red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
@@ -8050,6 +8108,40 @@ class OptionsDialog(QDialog):
             "weapons that would never appear.")
         rcform.addRow("Reach pools:", self.reach_pools_cb)
 
+        self.reach_spawn_weapons_cb = QCheckBox(
+            "Reach: place the starting weapons at the markers instead")
+        self.reach_spawn_weapons_cb.setChecked(
+            bool(CONFIG.get('reach_spawn_starting_weapons')))
+        self.reach_spawn_weapons_cb.setToolTip(
+            "Off: the run writes its weapon picks into the Player Starting Profile, so "
+            "the player begins the level holding them. "
+            "On: the profile weapon slots are CLEARED and the picks are placed on the "
+            "floor at the enhancer markers instead -- player 1's at marker 1, player "
+            "2's at marker 2 -- to be picked up. The level's own opening loadout "
+            "survives, and the run can hand over more weapons than a profile has slots "
+            "for. Needs a rebuilt map: without markers there is nowhere to put them, "
+            "and the run says so rather than quietly arming nobody.")
+        rcform.addRow("Starting weapons:", self.reach_spawn_weapons_cb)
+
+        self.reach_spawn_all_cb = QCheckBox(
+            "↳ place every selected weapon, not just the first")
+        self.reach_spawn_all_cb.setChecked(bool(CONFIG.get('reach_spawn_all_weapons')))
+        self.reach_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, which matches what a "
+            "profile could have given them. "
+            "On: every weapon that player holds is placed, stacked at their marker. "
+            "They overlap, which is untidy and perfectly usable -- it is the only way "
+            "to hand over an arsenal a two-slot profile cannot express.")
+
+        def _sync_reach_spawn(on=None):
+            on = self.reach_spawn_weapons_cb.isChecked()
+            self.reach_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.reach_spawn_all_cb.setChecked(False)
+        self.reach_spawn_weapons_cb.toggled.connect(_sync_reach_spawn)
+        _sync_reach_spawn()
+        rcform.addRow("", self.reach_spawn_all_cb)
+
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 40)
@@ -8444,6 +8536,8 @@ class OptionsDialog(QDialog):
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
             'reach_pools_from_map': self.reach_pools_cb.isChecked(),
+            'reach_spawn_starting_weapons': self.reach_spawn_weapons_cb.isChecked(),
+            'reach_spawn_all_weapons': self.reach_spawn_all_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),

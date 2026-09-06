@@ -1219,6 +1219,13 @@ def _apply_starting_equipment(m, game, registry, starting):
     # 2-player coop is the only case where the two picks land on different profiles
     # rather than the two slots of the same one (#8).
     prim, sec = starting.get('primary'), starting.get('secondary')
+    if starting.get('spawn_instead'):
+        # The picks are being PLACED at the markers instead of written into a profile.
+        # Clearing the slots is the other half of that, not a separate option: leaving
+        # them set would hand the player the same weapon twice, once in hand and once
+        # on the floor, and the floor copy would look like it had failed to work.
+        prim = sec = None
+        starting = dict(starting, null_empty_slots=True)
     if game == 'Halo 3' and starting.get('h3_coop'):
         roles = {}
         for i in range(count):
@@ -2174,6 +2181,11 @@ _H3_SPAWN_BSP, _H3_SPAWN_TYPE = 0x14, 0x16
 _EQ_PALETTE, _EQ_NAME, _EQ_FLAGS, _EQ_POS = 0x0, 0x2, 0x4, 0x8
 _EQ_NODES, _EQ_UID, _EQ_FOLDER, _EQ_ATTACH, _EQ_GAMEFLAGS = 0x24, 0x38, 0x42, 0x50, 0x5C
 _PLACE_NOT_AUTO, _PLACE_NEVER = 1 << 0, 1 << 3
+# Bit 8, and the same in every third-generation scnr. Without it an object is spawned
+# FALLING rather than set down, so it tumbles, sinks into the floor, or ends up out of
+# reach -- which reads exactly like a spawn that never happened. Anything this file
+# appends should carry it.
+_PLACE_AT_REST = 1 << 8
 
 # REACH MOVES THESE, and using Halo 3's offsets on a Reach element is why starting
 # equipment placed nothing in game on nine of the ten Reach maps while every result
@@ -3110,6 +3122,142 @@ def reach_enable_marker(m, game, index):
     struct.pack_into('<I', m.data, e + _EQ_FLAGS,
                      fl & ~(_PLACE_NOT_AUTO | (1 << eqo['never_bit'])))
     return struct.unpack_from('<fff', m.data, e + _EQ_POS)
+
+
+def reach_spawn_ready(m, game):
+    """Can this map actually take placed weapons? True only if it carries markers."""
+    return str(game).strip() == 'Halo Reach' and bool(reach_named_markers(m, game))
+
+
+def _apply_spawn_weapons(m, game, spec):
+    """Reach: hand a player their weapons by PLACING them at the marker.
+
+    The alternative to writing the Starting Profile. A profile weapon is in the
+    player's hands on the first frame; a placed one lies at their feet and is picked
+    up, which is the point -- the level's own opening loadout survives, and a run can
+    hand over several weapons at once without inventing profile slots for them.
+
+    `spec` = {'groups': [[weap tag path, ...], ...]}: group i belongs to player i+1 and
+    goes to `enhancer_marker<i+1>`. Every tag in a group is placed, so the caller
+    decides whether a group holds one weapon or all of them.
+
+    Placements are APPENDED at the marker's coordinates rather than repointing
+    anything. The marker itself is an equipment placement -- it is what the abilities
+    use -- and the inert weapon placements around it are the designer's, so taking one
+    over would silently delete a pickup the level meant to offer. Appending was also
+    the arrangement proven in game: thirteen weapons at one marker's coordinates, all
+    thirteen present.
+
+    Weapons stack, each a little above the last. They are placed Create At Rest, so
+    they stay where they are put instead of dropping through the floor.
+    """
+    out = []
+    if str(game).strip() != 'Halo Reach':
+        return out
+    lay = _MAP_WEAPONS.get('Halo Reach')
+    scnr = _scnr_base(m)
+    groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
+    if not lay or scnr is None or not any(groups):
+        return out
+
+    named = reach_named_markers(m, game)
+    if not named:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'this map carries no enhancer markers'}]
+    E = _MAP_EQUIPMENT['Halo Reach']
+    eoff, ees = E['items']
+    ebase = _block_base(m, scnr + eoff)
+    anchors = {}
+    for nm, idx in named.items():
+        e = ebase + idx * ees
+        anchors[nm] = (struct.unpack_from('<fff', m.data, e + _EQ_POS),
+                       struct.unpack_from('<H', m.data, e + 0x54)[0])
+
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    N = max(0, m.i32(scnr + woff))
+    base = _block_base(m, scnr + woff)
+    pbase = _block_base(m, scnr + poff)
+    if not N or not base or not pbase:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'level has no weapon placements to extend'}]
+    pal = {}
+    for i in range(max(0, m.i32(scnr + poff))):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if isinstance(nm, str):
+            pal[nm.replace('/', chr(92)).lower()] = i
+
+    LIFT, STACK = 0.30, 0.40
+    plan = []
+    for gi, g in enumerate(groups):
+        key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
+        anchor = anchors.get(key)
+        if anchor is None:
+            for t in g:
+                out.append({'effect': 'spawned weapons',
+                            'field': str(t).rsplit(chr(92), 1)[-1], 'ok': False,
+                            'reason': 'no %s on this map' % key})
+            continue
+        (ax, ay, az), mask = anchor
+        for k, t in enumerate(g):
+            short = str(t).rsplit(chr(92), 1)[-1]
+            pi = pal.get(str(t).replace('/', chr(92)).lower())
+            if pi is None:
+                out.append({'effect': 'spawned weapons', 'field': short, 'ok': False,
+                            'reason': 'not in this level weapon palette'})
+                continue
+            plan.append((pi, (ax, ay, az + LIFT + k * STACK), mask, short, key))
+    if not plan:
+        return out
+
+    # A template with a VALID Type, so appended elements inherit real Type / Source /
+    # BSP Policy rather than guessed ones. Auto is only a tie-break -- the copy clears
+    # NOT_AUTO/NEVER anyway, and a map can ship an all-zero placement whose Type is -1.
+    tyoff = _eq_offsets(game).get('type')
+
+    def _type_ok(i):
+        if tyoff is None:
+            return True
+        return struct.unpack_from('<h', m.data, base + i * wes + tyoff)[0] >= 0
+
+    def _is_auto(i):
+        return not (struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0]
+                    & (_PLACE_NOT_AUTO | (1 << _eq_offsets(game)['never_bit'])))
+
+    tmpl = next((i for i in range(N) if _type_ok(i) and _is_auto(i)), None)
+    if tmpl is None:
+        tmpl = next((i for i in range(N) if _type_ok(i)), None)
+    if tmpl is None:
+        return out + [{'effect': 'spawned weapons', 'ok': False,
+                       'reason': 'no weapon placement to use as a template'}]
+
+    got = _h3_reserve(m, [(N + len(plan)) * wes])
+    if got is None:
+        return out + [{'effect': 'spawned weapons', 'ok': False,
+                       'reason': 'no free space to grow the weapon block'}]
+    dest = got[0]
+    m.data[dest:dest + N * wes] = m.data[base:base + N * wes]
+    uids = [m.u32(base + i * wes + _eq_offsets(game)['uid']) for i in range(N)]
+    salt = (uids[tmpl] >> 16) if uids else 0
+    nxt = (max(u & 0xFFFF for u in uids) + 1) if uids else 1
+    eqo = _eq_offsets(game)
+    for k, (pi, pos, mask, short, key) in enumerate(plan):
+        e = dest + (N + k) * wes
+        m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
+        struct.pack_into('<h', m.data, e, pi)
+        struct.pack_into('<h', m.data, e + 0x2, -1)          # unnamed
+        struct.pack_into('<I', m.data, e + _EQ_FLAGS, _PLACE_AT_REST)
+        struct.pack_into('<fff', m.data, e + _EQ_POS, *pos)
+        struct.pack_into('<H', m.data, e + eqo['zone'], 0)   # every zone set
+        struct.pack_into('<H', m.data, e + 0x54, mask)       # the marker's own BSPs
+        struct.pack_into('<h', m.data, e + eqo['folder'], -1)
+        struct.pack_into('<I', m.data, e + eqo['uid'],
+                         ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        out.append({'effect': 'spawned weapons', 'field': short, 'ok': True,
+                    'old': key, 'new': 'placed at (%.1f, %.1f, %.1f)' % pos})
+    struct.pack_into('<i', m.data, scnr + woff, N + len(plan))
+    struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))
+    return out
 
 
 def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
@@ -4461,7 +4609,8 @@ def _apply_sprint(m, game, registry, cfg):
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
-              equipment_swaps=None, spawn_equipment=None, sprint=None,
+              equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
+              sprint=None,
               difficulty_baseline=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
@@ -4697,8 +4846,20 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if starting:
         # After the ops (so any Magazine effect is already in the weap tags),
         # set the player Starting Profile weapons + rounds from the run's picks.
+        if starting.get('spawn_instead') and not reach_spawn_ready(m, game):
+            # Clearing the profile is only half of placing the weapons, and doing
+            # half leaves the player with nothing at all -- worse than either mode
+            # on its own. With no markers there is nowhere to place them, so write
+            # the profile as usual and say why.
+            starting = dict(starting, spawn_instead=False)
+            spawn_weapons = None
+            results.append({'effect': 'spawned weapons', 'ok': False,
+                            'reason': 'no enhancer markers on this map; wrote the '
+                                      'starting profile instead'})
         results.extend(_apply_starting_equipment(m, game, registry, starting))
 
+    if spawn_weapons:
+        results.extend(_apply_spawn_weapons(m, game, spawn_weapons))
     if spawn_equipment:
         # Halo 3 starting equipment. Structural (it grows the Equipment block by
         # relocating it), so it runs after every value op — but before the zoom UI,
