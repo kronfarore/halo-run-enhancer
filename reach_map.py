@@ -3,10 +3,9 @@
 # Reach is a *fourth-generation* Blam cache, but on MCC it is close enough to the
 # Halo 3 / ODST cache (halo3_map.Halo3Map) that this is a thin subclass. Verified
 # empirically against all 12 shipped campaign maps (m05 .. m70_bonus) plus
-# ff_unearthed. LITTLE-endian, header version 13, header size 0x4000 — all shared
-# with Halo 3.
+# ff_unearthed. LITTLE-endian and header version 13, both shared with Halo 3.
 #
-# The FOUR divergences from Halo 3, and nothing else:
+# The FIVE divergences from Halo 3, and nothing else:
 #
 #   1. INDEX HEADER SIZE. Halo 3 puts the 'tags' magic at index_header+0x44; Reach
 #      puts it at +0x48. The four (count, address) descriptor pairs sit at the same
@@ -30,7 +29,12 @@
 #      (file table, file index, string table, string index) resolve exactly. This is
 #      strictly better than the Halo 3 path — full stringID coverage, no anchors.
 #
-#   4. GROUP ENTRY / TAG ENTRY / PARTITIONS / CHECKSUM: byte-for-byte Halo 3. The
+#   4. HEADER SIZE. 0xA000, not Halo 3's 0x4000 -- see HEADER_SIZE below. This one
+#      used to be described here as shared with Halo 3, which was wrong in the worst
+#      direction: update_checksum XORs from HEADER_SIZE to EOF, so the stale figure
+#      writes a bad checksum into every patched map.
+#
+#   5. GROUP ENTRY / TAG ENTRY / PARTITIONS / CHECKSUM: byte-for-byte Halo 3. The
 #      6-partition table @0x300, virt_base @0x2E0, index header VA @0x2E8, the
 #      0x10-byte tag-group entry ([magic][parent][grandparent][stringid]), the 8-byte
 #      tag-table entry ([group idx i16][salt u16][memaddr u32]) and the 0x360 XOR
@@ -98,10 +102,27 @@ class ReachMap(Halo3Map):
         return self.partitions[i][2] + (va - self.partitions[i][0])
 
     def off2data(self, off):
-        """Inverse of data2off."""
+        """Inverse of data2off, or None if the offset has no representable pointer.
+
+        The bias is what makes the None matter here. Halo3Map cannot produce a wrong
+        answer -- with no subtraction its result is always a real address -- but an
+        address below DATA_BIAS makes this one go negative, and `>> 2` on a negative
+        floors toward -inf before `& 0xFFFFFFFF` wraps it into a perfectly
+        plausible-looking pointer. Nineteen of this method's twenty callers feed the
+        result straight into struct.pack_into, so a wrapped value would be written
+        into a map as a block pointer with nothing raised anywhere.
+
+        Shipped maps should never reach it: the biased space starts at DATA_BIAS by
+        construction. That is the reason to fail loudly rather than the reason to
+        skip the check -- if it ever does go low, something is wrong upstream and a
+        corrupt map is the worst way to find out.
+        """
         for la, sz, fb in self.partitions:
             if fb is not None and fb <= off < fb + sz:
-                return (((la + (off - fb)) - self.DATA_BIAS) >> 2) & 0xFFFFFFFF
+                va = la + (off - fb)
+                if va < self.DATA_BIAS:
+                    return None
+                return ((va - self.DATA_BIAS) >> 2) & 0xFFFFFFFF
         return None
 
     # --- the four string tables ---
