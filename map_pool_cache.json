@@ -449,6 +449,66 @@
     914071552,
     "eaa43ae1c9bea03f6f7e7286b06ed552115035ae0d7824f1d556c1ccbd532d22"
    ]
+  },
+  "baseline|Halo 1|Impossible": {
+   "stamp": [
+    272759588,
+    "841fa4032db6e24d724148efd87de56803727c39c7d08bf96e0554cb37efd489"
+   ],
+   "value": {
+    "damage": 1.7999999523162842,
+    "rof": 1.5,
+    "shield": 1.399999976158142,
+    "vitality": 1.399999976158142
+   }
+  },
+  "baseline|Halo 2|Impossible": {
+   "stamp": [
+    645260800,
+    "e8fa10fe9d4b55bb15b40891ff3875ee4a4997ac44d7dbd54a3d6360e92502d8"
+   ],
+   "value": {
+    "damage": 1.5,
+    "rof": 1.5,
+    "shield": 1.0,
+    "vitality": 1.0
+   }
+  },
+  "baseline|Halo 3: ODST|Impossible": {
+   "stamp": [
+    732319744,
+    "ed52b73868e4c79ff5b143a2e2e31738e31eaf37888ed0fc2cb4c49979545652"
+   ],
+   "value": {
+    "damage": 1.600000023841858,
+    "rof": 1.0,
+    "shield": 1.0,
+    "vitality": 1.0
+   }
+  },
+  "baseline|Halo 3|Impossible": {
+   "stamp": [
+    548282368,
+    "c1e58bbf544c11cf90ff7e7317a240bf44b6544684e30d08078fef9b493ae417"
+   ],
+   "value": {
+    "damage": 1.600000023841858,
+    "rof": 1.0,
+    "shield": 1.0,
+    "vitality": 1.0
+   }
+  },
+  "baseline|Halo Reach|Impossible": {
+   "stamp": [
+    881459200,
+    "dafc24a24883a07659b38cfcaad63aee43c3d2e8c738ba83aa75c25da63a6695"
+   ],
+   "value": {
+    "damage": 1.600000023841858,
+    "rof": 1.0,
+    "shield": 1.0,
+    "vitality": 1.0
+   }
   }
  },
  "version": 3

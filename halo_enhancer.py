@@ -229,6 +229,37 @@ def _pool_stamp(path):
     return [st.st_size, digest]
 
 
+def stamped_get(key, path):
+    """A remembered value for this exact map, or None. Never raises."""
+    try:
+        ent = _pool_disk().get(key)
+        stamp = _pool_stamp(path)
+        if not isinstance(ent, dict) or stamp is None or ent.get('stamp') != stamp:
+            return None
+        return ent.get('value')
+    except Exception:
+        return None
+
+
+def stamped_put(key, path, value):
+    """Remember a value against this map, best effort. Never raises."""
+    try:
+        stamp = _pool_stamp(path)
+        if stamp is None:
+            return
+        _pool_disk()[key] = {'stamp': stamp, 'value': value}
+    except Exception:
+        return
+    try:
+        tmp = app_data_dir() / (POOL_CACHE_FILE + '.tmp')
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump({'version': POOL_CACHE_VERSION, 'entries': _POOL_DISK},
+                      f, indent=1, sort_keys=True)
+        os.replace(tmp, app_data_dir() / POOL_CACHE_FILE)
+    except Exception:
+        pass
+
+
 def pool_cache_get(key, path):
     """Remembered names for this map, or None when the map has moved on.
 
@@ -2351,6 +2382,22 @@ class ModifierDatabase:
             if pool_cache_get('%s|%s|%s' % (game, mission_id, kind), src) is None:
                 return False
         return True
+
+    def level_equipment(self, mission_id):
+        """The level's equipment offers, narrowed to what its MAP can grant when the
+        Reach option is on. Off, or for any other game, the halo.json list is returned
+        untouched -- a user on stock maps must keep the full list.
+
+        Lives on the database because THREE classes ask for it -- HaloGUI for both
+        offer pools, RunEnhancer for the automatic rolls -- and it was defined on a
+        fourth that never called it, so every one of those was an AttributeError
+        waiting for the option that reaches them.
+        """
+        declared = list(self.mission_equipment.get(mission_id) or [])
+        if (CONFIG.get('reach_pools_from_map')
+                and self.mission_games.get(mission_id) == 'Halo Reach'):
+            return self.reach_map_pool(mission_id, 'equipment') or declared
+        return declared
 
     def warm_map_pools(self, mission_id):
         """Derive this mission's map pools now, so nothing stalls later. No Qt here --
@@ -5672,17 +5719,6 @@ class MagnitudeEditorDialog(QDialog):
         db = getattr(self.parent_gui, 'db', None) if self.parent_gui else None
         return 'equipment' if (db is not None and db.is_equipment(name)) else 'weapon'
 
-    def _level_equipment(self):
-        """The level's equipment offers, narrowed to what its MAP can grant when the
-        Reach option is on. Off, or for any other game, the halo.json list is returned
-        untouched -- a user on stock maps must keep the full list."""
-        mid = self.run_state.mission_id
-        declared = list(self.db.mission_equipment.get(mid) or [])
-        if (CONFIG.get('reach_pools_from_map')
-                and self.db.mission_games.get(mid) == 'Halo Reach'):
-            return self.db.reach_map_pool(mid, 'equipment') or declared
-        return declared
-
     def _player_slots(self):
         """(slot 1, slot 2) as run-state player keys, honouring the swap option.
 
@@ -7001,7 +7037,9 @@ class OptionsDialog(QDialog):
                 bgrid.addWidget(cell, r + 2, c + 1)
                 self.baseline_spins[(game, key)] = sp
                 self.baseline_vanilla[(game, key)] = van
-        self._refresh_baseline_vanilla()
+        # Deferred: this reads maps, and doing it while the dialog is still being
+        # built means the window never paints until it finishes.
+        QTimer.singleShot(0, self._refresh_baseline_vanilla)
         self.diff_combo.currentIndexChanged.connect(
             lambda *_a: self._refresh_baseline_vanilla())
         self._opt_page("Run rules").addWidget(base_g)
@@ -8144,7 +8182,7 @@ class OptionsDialog(QDialog):
 
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
-        self._opt_page("Patching").addWidget(patch_reach_g, 40)
+        self._opt_page("Patching").addWidget(patch_reach_g, 80)
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -8992,11 +9030,24 @@ class OptionsDialog(QDialog):
         cache = getattr(self, '_baseline_vanilla_cache', None)
         if cache is None:
             cache = self._baseline_vanilla_cache = {}
+
+        def _load():
+            for game in BASELINE_GAMES:
+                key = (game, diff)
+                if key not in cache:
+                    cache[key] = self._read_baseline_for(game, diff)
+
+        # A miss opens one campaign map per game, and on a rebuilt Reach install that
+        # is a gigabyte. Doing it silently inside the constructor is what made opening
+        # Options look like a hang, so it is announced -- and the memo means it only
+        # ever happens once per map rather than once per session.
+        if any((g, diff) not in cache for g in BASELINE_GAMES):
+            run_busy(self, _load, "Reading shipped values",
+                     "Reading what each game ships")
+        else:
+            _load()
         for game in BASELINE_GAMES:
-            key = (game, diff)
-            if key not in cache:
-                cache[key] = self._read_baseline_for(game, diff)
-            vals = cache[key]
+            vals = cache.get((game, diff))
             for k, _title in BASELINE_COLS:
                 lab = self.baseline_vanilla.get((game, k))
                 if lab is None:
@@ -9030,8 +9081,19 @@ class OptionsDialog(QDialog):
                 path = map_vault.resolve(game, mid)
                 if not path:
                     continue
-                m = halo_patch.open_map(baseline_source(path, game), game)
-                return halo_patch.read_difficulty_baseline(m, registry, difficulty)
+                # These are Bungie's shipped values: they change only when the map
+                # does, and reading one means loading hundreds of megabytes. Remember
+                # them against the map so the dialog pays it once, not once a session.
+                src = baseline_source(path, game)
+                ck = 'baseline|%s|%s' % (game, difficulty)
+                seen = stamped_get(ck, src)
+                if isinstance(seen, dict):
+                    return seen
+                m = halo_patch.open_map(src, game)
+                vals = halo_patch.read_difficulty_baseline(m, registry, difficulty)
+                if isinstance(vals, dict):
+                    stamped_put(ck, src, vals)
+                return vals
         except Exception as e:
             if CONFIG.get('debug_mode'):
                 print('baseline read failed for %s @ %s: %s' % (game, difficulty, e))
@@ -9815,7 +9877,7 @@ class HaloGUI(QMainWindow):
         # (which only feeds the automatic per-pair rolls) — equipment has to be added
         # to BOTH or the button never offers any.
         if has_equipment(self._current_game()) and CONFIG.get('h3_equipment_in_rolls'):
-            for e in self._level_equipment():
+            for e in self.db.level_equipment(self.run_state.mission_id):
                 if e not in owned and not self._blacklisted_weapon(e):
                     pool.append(e)
         pool = strip_denied_equipment(self.db, pool)
@@ -9849,7 +9911,7 @@ class HaloGUI(QMainWindow):
         # different question from whether this button may hand one out.
         if has_equipment(game) and not CONFIG.get('h3_equipment_in_rolls'):
             owned = set(self.run_state.weapons_for(player))
-            extra = [e for e in self._level_equipment()
+            extra = [e for e in self.db.level_equipment(self.run_state.mission_id)
                      if e not in owned and not self._blacklisted_weapon(e)]
             extra = strip_denied_equipment(self.db, extra)
             extra = drop_weapons_taken(self.db, extra, self.run_state)
@@ -11467,7 +11529,7 @@ class RunEnhancer:
         # picked piece just grants the item, same as a weapon with no mods would.
         game = self.db.get_game_for_mission(self.run_state.mission_id)
         if has_equipment(game) and CONFIG.get('h3_equipment_in_rolls'):
-            pool += list(self._level_equipment())
+            pool += list(self.db.level_equipment(self.run_state.mission_id))
         # Duals and upgrades: the New Weapon BUTTON has always offered these, the
         # automatic rolls never did. Opt in per kind, so an existing run's rolls keep
         # behaving as before unless the option is turned on.
