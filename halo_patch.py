@@ -2885,15 +2885,28 @@ def _reach_name_delta(m, game, wanted):
             if not (fl & (_PLACE_NOT_AUTO | never)):
                 continue                       # a marker is inert; this one is live
             sid = struct.unpack_from('<I', m.data, obase + ni * esize)[0] & 0xFFFF
-            pairs.append(sid)
-    best, best_score = None, 0
-    for sid in pairs:
+            pairs.append((block, ni, sid))
+    # Two offsets can explain the same number of markers, and then picking whichever
+    # was scanned first is a coin toss that has already landed wrong: on m52 the true
+    # offset 4747 names equipment 29 and 30 -- the ability pair the designer marked --
+    # while 4870 names an unrelated rocket launcher and its ammo crate 540 units away,
+    # and the launcher scans first. So a tie is broken on shape instead of order.
+    # Markers are placed as a set: they live in ONE placement block and their Object
+    # Names entries sit together. A coincidence rarely does both.
+    best, best_key = None, None
+    for _blk, _ni, sid in pairs:
         for ti in wanted:
             d = ti - sid
-            score = sum(1 for s2 in pairs if (s2 + d) in wanted)
-            if score > best_score:
-                best, best_score = d, score
-    m._reach_delta = best if best_score else None
+            hit = [(b2, n2) for (b2, n2, s2) in pairs if (s2 + d) in wanted]
+            if not hit:
+                continue
+            targets = {s2 + d for (_b2, _n2, s2) in pairs if (s2 + d) in wanted}
+            entries = [n2 for (_b2, n2) in hit]
+            key = (len(targets), -len({b2 for (b2, _n2) in hit}),
+                   -(max(entries) - min(entries)))
+            if best_key is None or key > best_key:
+                best, best_key = d, key
+    m._reach_delta = best if (best_key and best_key[0]) else None
     return m._reach_delta
 
 
