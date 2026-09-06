@@ -121,6 +121,61 @@ class _NullWriter:
 # Settings that persist across runs (editable in-app), stored next to saves.
 SETTINGS_FILE = 'settings.json'
 
+# Which weapons a prepared map can grant, remembered across sessions. Deriving it
+# means reading the whole cache file -- 21 seconds for a rebuilt Reach map, 10 for
+# ODST -- and the answer only changes when the map does, so it is keyed by the
+# baseline's size and mtime and re-derived when either moves. A few hundred bytes per
+# mission.
+POOL_CACHE_FILE = 'map_pool_cache.json'
+_POOL_DISK = None
+
+
+def _pool_disk():
+    global _POOL_DISK
+    if _POOL_DISK is None:
+        try:
+            with open(app_data_dir() / POOL_CACHE_FILE, encoding='utf-8') as f:
+                _POOL_DISK = json.load(f)
+            if not isinstance(_POOL_DISK, dict):
+                _POOL_DISK = {}
+        except Exception:
+            _POOL_DISK = {}
+    return _POOL_DISK
+
+
+def _pool_stamp(path):
+    try:
+        st = os.stat(str(path))
+    except OSError:
+        return None
+    return [st.st_size, int(st.st_mtime)]
+
+
+def pool_cache_get(key, path):
+    """Remembered names for this map, or None when the map has moved on."""
+    ent = _pool_disk().get(key)
+    stamp = _pool_stamp(path)
+    if not isinstance(ent, dict) or stamp is None or ent.get('stamp') != stamp:
+        return None
+    names = ent.get('names')
+    return list(names) if isinstance(names, list) else None
+
+
+def pool_cache_put(key, path, names):
+    """Remember names for this map. Only ever called after a SUCCESSFUL read -- a
+    transient failure must not be cached, or it would stick until the map changed."""
+    stamp = _pool_stamp(path)
+    if stamp is None:
+        return
+    _pool_disk()[key] = {'stamp': stamp, 'names': list(names)}
+    try:
+        tmp = app_data_dir() / (POOL_CACHE_FILE + '.tmp')
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(_POOL_DISK, f, indent=1, sort_keys=True)
+        os.replace(tmp, app_data_dir() / POOL_CACHE_FILE)
+    except Exception:
+        pass
+
 # Gameplay options exposed in the Options menu. These are BOTH global defaults
 # (persisted in settings.json) AND snapshotted into each saved run, so loading a
 # run restores the options it was played with. Keep this list in sync with
@@ -2133,13 +2188,19 @@ class ModifierDatabase:
         try:
             import halo_patch          # imported lazily, as everywhere else here
             base = Path(mcc_root()) / folder / (mission_id + '.map')
-            m = halo_patch.open_map(baseline_source(base, 'Halo 3: ODST'),
-                                    'Halo 3: ODST')
+            src = baseline_source(base, 'Halo 3: ODST')
+            ck = 'Halo 3: ODST|%s|weapons' % mission_id
+            remembered = pool_cache_get(ck, src)
+            if remembered is not None:
+                self._odst_pool_cache[mission_id] = remembered
+                return remembered
+            m = halo_patch.open_map(src, 'Halo 3: ODST')
             table = CONFIG.get('odst_map_pool_names', {})
             for short in halo_patch.odst_player_weapons(m):
                 nm = table.get(short)
                 if nm and nm not in names:
                     names.append(nm)
+            pool_cache_put(ck, src, names)
         except Exception as e:
             print(f"ODST pool from map failed for {mission_id}: {e}")
             names = []
@@ -2194,7 +2255,13 @@ class ModifierDatabase:
             import halo_patch
             folder = CONFIG.get('map_game_folder', {}).get('Halo Reach')
             base = Path(mcc_root()) / folder / (mission_id + '.map')
-            m = halo_patch.open_map(baseline_source(base, 'Halo Reach'), 'Halo Reach')
+            src = baseline_source(base, 'Halo Reach')
+            ck = 'Halo Reach|%s|%s' % (mission_id, kind)
+            remembered = pool_cache_get(ck, src)
+            if remembered is not None:
+                self._reach_pool_cache[key] = remembered
+                return remembered
+            m = halo_patch.open_map(src, 'Halo Reach')
             # ONLY narrow a map that has been PREPARED. Placement membership does not
             # predict whether an ability will spawn -- m10 places Drop Shield in
             # vanilla and it still will not appear, while Camouflage is in no palette
@@ -2202,6 +2269,7 @@ class ModifierDatabase:
             # demonstrably function. A map with markers is one the user has rebuilt on
             # purpose, and there the placements ARE the truth.
             if not halo_patch.reach_named_markers(m, 'Halo Reach'):
+                pool_cache_put(ck, src, [])
                 self._reach_pool_cache[key] = []
                 return []
             have = halo_patch.reach_map_items(m, 'Halo Reach', kind)
@@ -2227,6 +2295,7 @@ class ModifierDatabase:
             for disp in sorted(offered):               # then what the map adds
                 if disp not in names:
                     names.append(disp)
+            pool_cache_put(ck, src, names)
         except Exception as e:
             print(f"Reach {kind} pool from map failed for {mission_id}: {e}")
             names = []
