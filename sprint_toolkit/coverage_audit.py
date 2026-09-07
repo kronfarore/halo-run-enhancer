@@ -942,7 +942,10 @@ def asset_pass(db, args):
             print('  --- USEFUL: uncarded, but carries a field a card already tunes')
             for (enemy, cls, name), flds in sorted(useful.items()):
                 print('      %-16s %-5s %s' % (enemy, cls, name[:56]))
-                for f, b in sorted(flds):
+                # Same None-vs-str ordering trap as the section above: `b` is None
+                # for a root-level field, and Halo 4's assets are the first to mix
+                # both in one set. This site was missed when that one was fixed.
+                for f, b in sorted(flds, key=lambda fb: (fb[0] or '', fb[1] or '')):
                     print('           %-40s %s' % (f, b or ''))
             useful_total += len(useful)
         last = None
