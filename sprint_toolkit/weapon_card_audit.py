@@ -41,7 +41,8 @@ import map_vault as V                                            # noqa: E402
 PLUGINS = assembly_plugins.plugins_dir()
 SUBDIRS = {'Halo 1': ['Halo1MCC', 'Halo1'], 'Halo 2': ['Halo2MCC', 'Halo2'],
            'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST'],
-           'Halo Reach': ['ReachMCC', 'Reach']}
+           'Halo Reach': ['ReachMCC', 'Reach'],
+           'Halo 4': ['Halo4MCC', 'Halo4']}
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 HALO_JSON = os.path.join(TOOL, 'halo.json')
 

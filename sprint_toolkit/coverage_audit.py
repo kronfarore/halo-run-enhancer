@@ -98,6 +98,13 @@ CASES = [
     # maps; that is fine for the question asked, which is whether a block is DEFINED.
     ('Halo Reach', ['ReachMCC', 'Reach'],
      os.path.join(_ROOT, 'haloreach', 'maps')),
+    # Halo 4 keeps Reach's char shape closely enough to run the same passes. Note the
+    # one offset that moved and would fail silently: Grenades Properties is 0x228 esz
+    # 0x40 here against Reach's 0x204/0x3C. Like Reach it ships no .map.bak, so this
+    # reads the live maps -- fine for the question asked, which is whether a block is
+    # DEFINED.
+    ('Halo 4', ['Halo4MCC', 'Halo4'],
+     os.path.join(_ROOT, 'halo4', 'maps')),
 ]
 
 
@@ -282,7 +289,8 @@ def offer_pass(db, args):
     because there is no tag for them to find a field on.
     """
     gaps = 0
-    for game in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach'):
+    for game in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach',
+                 'Halo 4'):
         mids = [m for m, g in db.mission_games.items() if g == game]
         if not mids:
             continue

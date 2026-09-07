@@ -315,6 +315,14 @@ def collect(name):
                       'equipment': sorted(equipment_carried)}
     rec['grenade_types'] = sorted(char_grenades)
     rec['cell_grenades'] = sorted(cell_grenades)
+    # Which detached turret weapons exist in this map at all. Deliberately the TAG
+    # INDEX rather than the weapon palette: the detached variant is what the player
+    # ends up holding after ripping the gun off, and it is spawned by the engine on
+    # detach, so it need not be in a palette or placed anywhere.
+    rec['detachable'] = sorted({pat for _, _, pat in TURRETS
+                               if any(pat in _norm(t['name'])
+                                      for t in c.map.tags
+                                      if t['class'] == 'weap' and t['name'])})
     return rec
 
 
@@ -407,16 +415,33 @@ EQUIPMENT = [
 # never placed) and the scripted story drops.
 IGNORE_EQUIPMENT = ('equipment/shield_projector/', 'equipment/story_drops/')
 
-# Mounted guns the player can actually man. The vehicle palette also holds Forerunner
-# emplacements (anti_infantry_turret, anti_vehicle_turret, tracer_turret) and the
-# set-piece UNSC guns (asteroid_gun, unsc_artillery, turret_missile_battery), which are
-# scripted props or rail sections rather than turrets a run can hand out. They are
-# deliberately left out rather than invented into the vocabulary; --unmapped lists them
-# so the choice stays visible.
+# Mounted guns the player can actually take.
+#
+# THE TEST IS A DETACHED WEAPON TAG, not the emplacement. A turret only earns a place
+# in a run if the player can rip it off its mount and carry it, and Halo 4 says so in
+# the tags: a detachable emplacement ships a separate `weapon\...` variant beside it,
+# and the engine is explicit enough about the distinction to ship a
+# `plasma_turret_mounted_nodetach`. So each row pairs the emplacement with the weapon
+# that must ALSO be in the map, and `mission_lists` emits the turret only when both are
+# there -- the rule checks itself per map rather than being asserted once here.
+#
+# The Shade is the case that motivated it (user, 2026-09-07). It is placed on Requiem,
+# Infinity and Shutdown, and it is static: its only weapon is
+# `storm_shade\weapons\storm_shade_plasma_cannon`, mounted, with no detached variant
+# anywhere in the game. It is NOT a turret a run can hand out. Do not re-add it.
+#
+# Left out for the same reason, all detachless: the Forerunner emplacements
+# (anti_infantry_turret, anti_vehicle_turret, tracer_turret) and the set-piece UNSC
+# guns (asteroid_gun, unsc_artillery, turret_missile_battery), which are scripted props
+# or rail sections. --unmapped lists them so the choice stays visible.
+#
+# Note the Machine Gun's detached tag does NOT live beside its emplacement the way the
+# Plasma Cannon's does -- it is off in `objects/weapons/turret/`.
 TURRETS = [
-    ('vehicles/human/turrets/machinegun/', 'Machine Gun'),
-    ('vehicles/covenant/turrets/plasma_turret/', 'Plasma Cannon'),
-    ('vehicles/covenant/turrets/storm_shade/', 'Shade'),
+    ('vehicles/human/turrets/machinegun/', 'Machine Gun',
+     'weapons/turret/storm_machinegun_turret/'),
+    ('vehicles/covenant/turrets/plasma_turret/', 'Plasma Cannon',
+     'turrets/plasma_turret/weapon/plasma_turret_detached/'),
 ]
 
 # Names halo.json has no modifier/equipment entry for yet. Checked against
@@ -489,11 +514,15 @@ def mission_lists(rec):
         else:
             unmapped.append(('equipment', t))
 
+    detachable = set(rec.get('detachable', ()))
     for t in set(rec['vehicle']['placed']) | set(rec['vehicle']['squad']):
-        m = _match(t, TURRETS)
-        if m:
-            turrets.add(m[1])
+        m = _match(t, [(pat, (name, det)) for pat, name, det in TURRETS])
+        if m and m[1][1] in detachable:
+            turrets.add(m[1][0])
         elif '/turrets/' in _norm(t):
+            # Either nothing claims it, or it claims a detached weapon this map does
+            # not have -- both mean "not a turret a run can hand out", and both should
+            # be visible rather than silently dropped.
             unmapped.append(('turret', t))
 
     out = {'enemies': sorted(enemies), 'weapons': sorted(weapons),

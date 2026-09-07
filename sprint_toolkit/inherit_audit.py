@@ -36,6 +36,12 @@ CASES = [
         R + r'\haloreach\maps\m35.map',
         R + r'\haloreach\maps\m50.map',
         R + r'\haloreach\maps\m70.map']),
+    # The three richest Halo 4 missions by character count -- Reclaimer 23, Composer 23,
+    # Shutdown 21. Between them they field every species the campaign has.
+    ('Halo 4',       ['Halo4MCC', 'Halo4'],  [
+        R + r'\halo4\maps\m60_rescue.map',
+        R + r'\halo4\maps\m70_liftoff.map',
+        R + r'\halo4\maps\m80_delta.map']),
 ]
 DIFF = 'Impossible'
 games = db.get_games()

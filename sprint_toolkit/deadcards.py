@@ -18,6 +18,10 @@ CASES = [
     ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l200.map'),
     ('Halo 3',       ['Halo3MCC', 'Halo3'], R + r'\halo3\maps\030_outskirts.map'),
     ('Halo 2',       ['Halo2MCC', 'Halo2'], R + r'\halo2\h2_maps_win64_dx11\08b_deltacontrol.map'),
+    # Halo 4 ships no .map.bak either, so this reads the live map -- fine for the
+    # question asked, which is whether a tag carries the field at all. Shutdown is the
+    # pick because it fields both factions and the widest weapon set.
+    ('Halo 4',       ['Halo4MCC', 'Halo4'], R + r'\halo4\maps\m70_liftoff.map'),
 ]
 DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
 

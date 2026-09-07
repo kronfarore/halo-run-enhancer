@@ -46,6 +46,7 @@ GAMES = {
     'Halo 3':       (['Halo3MCC', 'Halo3'], os.path.join(_ROOT, 'halo3', 'maps')),
     'Halo 3: ODST': (['ODSTMCC', 'ODST'], os.path.join(_ROOT, 'halo3odst', 'maps')),
     'Halo Reach':   (['ReachMCC', 'Reach'], os.path.join(_ROOT, 'haloreach', 'maps')),
+    'Halo 4':       (['Halo4MCC', 'Halo4'], os.path.join(_ROOT, 'halo4', 'maps')),
 }
 JUNK = ('shared', 'campaign', 'single_player_shared', 'bitmaps', 'sounds', 'ui',
         'mainmenu')

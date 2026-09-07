@@ -43,7 +43,8 @@ HALO_JSON = os.path.join(TOOL, 'halo.json')
 
 SUBDIRS = {'Halo 1': ['Halo1MCC', 'Halo1'], 'Halo 2': ['Halo2MCC', 'Halo2'],
            'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST'],
-           'Halo Reach': ['ReachMCC', 'Reach']}
+           'Halo Reach': ['ReachMCC', 'Reach'],
+           'Halo 4': ['Halo4MCC', 'Halo4']}
 # Structural noise, not fields anyone would build a card on.
 SKIP_TAGS = {'comment', 'undefined', 'unused'}
 

@@ -398,7 +398,7 @@
 				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "SAW", "Sentinel Beam", "Shotgun", "Sniper Rifle", "Storm Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Hardlight Shield"],
-				"turrets": ["Plasma Cannon", "Shade"]
+				"turrets": ["Plasma Cannon"]
 			},
 			"m30_cryptum": {
 				"name": "Forerunner",
@@ -412,8 +412,7 @@
 				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight", "Sentinel"],
 				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "Sniper Rifle", "Storm Rifle", "Target Designator"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
-				"equipment": ["Hardlight Shield", "Jet Pack"],
-				"turrets": ["Shade"]
+				"equipment": ["Hardlight Shield", "Jet Pack"]
 			},
 			"m60_rescue": {
 				"name": "Reclaimer",
@@ -429,7 +428,7 @@
 				"weapons": ["Assault Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "DMR", "Flak Cannon", "Gravity Hammer", "LightRifle", "Needler", "Plasma Pistol", "Railgun", "SAW", "Scattershot", "Shotgun", "Storm Rifle", "Suppressor"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
 				"equipment": ["Active Camouflage", "Thruster Pack"],
-				"turrets": ["Plasma Cannon", "Shade"]
+				"turrets": ["Plasma Cannon"]
 			},
 			"m80_delta": {
 				"name": "Composer",
