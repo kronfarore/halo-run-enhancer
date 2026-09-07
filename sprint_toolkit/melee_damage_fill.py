@@ -55,7 +55,13 @@ GAMES = {
                ['m10_crash', 'm020', 'm30_cryptum', 'm60_rescue', 'm40_invasion',
                 'm70_liftoff', 'm80_delta', 'm90_sacrifice']),
 }
+# Offsets inside a Melee Damage Parameters element (Reach and Halo 4 share them).
 MELEE_DAMAGE_REF = 0x18
+CLANG_REFS = [('Clang Melee Damage', 0x78),
+              ('Clang Melee Against Melee Weapon Damage', 0x98)]
+# Halo 3 has no such block -- its melee tagRefs sit at the weap ROOT, and it has no
+# "against melee weapon" ref at all; that pair arrives in Reach.
+H3_CLANG_ROOT = 0x2EC
 MODEL = ('Assault Rifle', 'Melee Damage')   # the card whose text and targets to copy
 
 
@@ -129,12 +135,16 @@ def collect(game, wanted, sw, order):
             arr = m.data2off(m.u32(t['base'] + off + 4))
             if not arr or cnt <= 0:
                 continue
-            ident = m.u32(arr + MELEE_DAMAGE_REF + 0xC)
-            if ident == 0xFFFFFFFF:
-                continue
-            r = m.tag(ident & 0xFFFF)
-            if r and r['name']:
-                out[w] = r['name']
+            names = []
+            for off in [MELEE_DAMAGE_REF] + [o for _n, o in CLANG_REFS]:
+                ident = m.u32(arr + off + 0xC)
+                if ident == 0xFFFFFFFF:
+                    continue
+                r = m.tag(ident & 0xFFFF)
+                if r and r['name'] and r['name'] not in names:
+                    names.append(r['name'])
+            if names:
+                out[w] = names
         if len(out) == len(want_tags):
             break
     return out
@@ -178,13 +188,14 @@ def main():
     for w, games in sorted(gap.items()):
         rows = {}
         for g in games:
-            tag = refs.get(g, {}).get(w)
-            if tag:
-                rows[g] = 'jpt! ' + tag
+            names = refs.get(g, {}).get(w)
+            if names:
+                rows[g] = 'jpt! ' + ' & '.join(names)
         if rows:
             plan[w] = rows
-        print('%-20s %s' % (w, ', '.join('%s -> %s' % (g, t.rsplit(SEP, 1)[-1])
-                                         for g, t in rows.items()) or 'NO REF FOUND'))
+        print('%-20s %s' % (w, ' | '.join(
+            '%s -> %s' % (g, ', '.join(x.rsplit(SEP, 1)[-1] for x in t[5:].split(' & ')))
+            for g, t in rows.items()) or 'NO REF FOUND'))
     print('\n%d Melee Damage card(s) to add' % len(plan))
     if not a.apply:
         print('(report only -- pass --apply)')

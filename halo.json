@@ -843,8 +843,8 @@
 					"tag": {
 						"Halo 1": "jpt! weapons\\assault rifle\\melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -1131,7 +1131,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -1499,7 +1499,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -1860,7 +1860,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -2239,7 +2239,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -2520,7 +2520,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -2809,7 +2809,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -3071,7 +3071,7 @@
 						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
-					"tag": {"Halo 1": "jpt! weapons\\shotgun\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 1": "jpt! weapons\\shotgun\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -3897,7 +3897,7 @@
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -4770,8 +4770,8 @@
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -5016,7 +5016,7 @@
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -5758,7 +5758,7 @@
 					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
 					"tag": {
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -5957,8 +5957,8 @@
 					"desc": "Lower Bound and Upper Bound Damage. One effect shared with other weapons.",
 					"tag": {
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\crush_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\crush_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -6097,8 +6097,8 @@
 					"desc": "Lower Bound and Upper Bound Damage. Effect shared with other weapons.",
 					"tag": {
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
-						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -6954,7 +6954,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -7151,7 +7151,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -7375,7 +7375,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -7549,7 +7549,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -7756,7 +7756,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -7976,7 +7976,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -8235,7 +8235,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -8438,7 +8438,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
-					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -8740,7 +8740,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -8942,7 +8942,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9127,7 +9127,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9368,7 +9368,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\sword_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9482,7 +9482,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9666,7 +9666,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9833,7 +9833,7 @@
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. Effect shared with other weapons.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9921,7 +9921,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": {"Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": {"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -10226,7 +10226,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -10431,7 +10431,7 @@
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
 					"game": ["Halo 4"],
-					"tag": "jpt! globals\\damage_effects\\strike_melee",
+					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
