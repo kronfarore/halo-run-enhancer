@@ -528,6 +528,30 @@ def baseline_args(game):
             'map_subdir': CONFIG.get('map_game_folder', {}).get(game, '')}
 
 
+_SRC_PRELOAD = {}
+
+
+def preload_source(map_path, game):
+    """Open the map the patcher reads shipped values from, off the GUI thread.
+
+    Building that dialog shows every card's vanilla value, so it opens the baseline:
+    a couple of seconds for Halo 2's 100 MB, but a GIGABYTE on a rebuilt Reach
+    install, and the window cannot paint until it finishes. Doing it here means the
+    wait is announced instead of looking like a hang, and the dialog then finds the
+    map already open. Never raises -- a failure just leaves the read where it was.
+    """
+    try:
+        import halo_patch                 # imported lazily, as everywhere else here
+        src = baseline_source(map_path, game)
+        key = (os.path.normcase(os.path.abspath(src)), str(game))
+        if _SRC_PRELOAD.get('key') != key:
+            _SRC_PRELOAD.clear()
+            _SRC_PRELOAD['map'] = halo_patch.open_map(src, game)
+            _SRC_PRELOAD['key'] = key
+    except Exception:
+        _SRC_PRELOAD.clear()
+
+
 def baseline_source(map_path, game):
     """The map to READ vanilla values from: the baseline if one exists, else the live map.
 
@@ -1293,14 +1317,26 @@ def drop_weapons_taken(db, weapons, run_state):
     Equipment and abilities are left alone: they carry their own sharing rules (a piece
     of equipment is not a weapon slot, and sprint/camo already have a one-per-run
     pair), so weapon uniqueness must not quietly become the rule for them too.
+
+    REACH IS THE EXCEPTION. Its armour abilities are a closed set of six, one carried
+    at a time, and a level offers only the ones its map can grant -- so an ability the
+    other player already holds is not a duplicate to shrug at, it is an offer that
+    cannot be honoured. Two rounds spend four of the six, and in the third both players
+    were offered the same one and both could take it. Halo 3's equipment is consumable
+    and genuinely shareable, so it keeps the exemption.
     """
     if run_state is None:
         return list(weapons)
     held = set(run_state.weapons_for('player1')) | set(run_state.weapons_for('player2'))
     if not held:
         return list(weapons)
+    try:
+        one_each = db.get_game_for_mission(run_state.mission_id) == 'Halo Reach'
+    except Exception:
+        one_each = False
     return [w for w in weapons
-            if w not in held or is_ability_item(w) or db.is_equipment(w)]
+            if w not in held or is_ability_item(w)
+            or (db.is_equipment(w) and not one_each)]
 
 
 def ability_offer_pool(db, game, run_state, player=None):
@@ -3950,6 +3986,24 @@ class MagnitudeEditorDialog(QDialog):
     def _build_registry(self):
         self.registry = self._hp.PluginRegistry(CONFIG.get('assembly_plugins_dir'), self.subdirs)
 
+    def _baseline_root_changed(self):
+        """Remember the folder and drop the cached read, so the values shown next come
+        from wherever the baselines now live rather than from the old location."""
+        new = self.baseline_edit.text().strip()
+        if new == (CONFIG.get('baseline_root') or ''):
+            return
+        CONFIG['baseline_root'] = new
+        save_settings()
+        self._srcmap = None
+        _SRC_PRELOAD.clear()
+
+    def _browse_baseline_root(self):
+        start = self.baseline_edit.text().strip() or mcc_root() or str(app_data_dir())
+        path = QFileDialog.getExistingDirectory(self, "Baselines folder", start)
+        if path:
+            self.baseline_edit.setText(path)
+            self._baseline_root_changed()
+
     def _read_source(self):
         """Load (once) the map used to display vanilla values — the pristine
         baseline if it exists, else the map itself. False if it can't be read."""
@@ -3957,6 +4011,13 @@ class MagnitudeEditorDialog(QDialog):
             return self._srcmap
         path = self.map_edit.text().strip()
         src = baseline_source(path, self.game)
+        key = (os.path.normcase(os.path.abspath(src)), str(self.game))
+        if _SRC_PRELOAD.get('key') == key and _SRC_PRELOAD.get('map') is not None:
+            # Opened for us before the dialog was built. Taken rather than shared, so
+            # a gigabyte is not held twice once the dialog owns it.
+            self._srcmap = _SRC_PRELOAD.pop('map')
+            _SRC_PRELOAD.clear()
+            return self._srcmap
         try:
             self._srcmap = self._hp.open_map(src, self.game)
         except Exception:
@@ -4419,6 +4480,25 @@ class MagnitudeEditorDialog(QDialog):
         reload_btn.clicked.connect(self._reload)
         maprow.addWidget(reload_btn)
         head.addLayout(maprow)
+
+        brow = QHBoxLayout()
+        brow.addWidget(QLabel("Baselines folder:"))
+        self.baseline_edit = QLineEdit(CONFIG.get('baseline_root') or '')
+        self.baseline_edit.setPlaceholderText(
+            "empty — keep the pristine copies beside the maps, in the MCC folder")
+        self.baseline_edit.setToolTip(
+            "Where the pristine copy of each map lives: the bytes every patch is "
+            "rebuilt from, and what the shipped values above are read from. Empty "
+            "means the old arrangement, a .bak beside each map inside the MCC folder. "
+            "Pointing it at another drive keeps the originals off the system disk and "
+            "out of reach of a Steam update, which deletes modded maps in place. "
+            "Shared with the same setting in Options.")
+        self.baseline_edit.editingFinished.connect(self._baseline_root_changed)
+        brow.addWidget(self.baseline_edit, 1)
+        bbrowse = QPushButton("Browse…")
+        bbrowse.clicked.connect(self._browse_baseline_root)
+        brow.addWidget(bbrowse)
+        head.addLayout(brow)
 
         drow = QHBoxLayout()
         drow.addWidget(QLabel("Difficulty:"))
@@ -11511,8 +11591,11 @@ class HaloGUI(QMainWindow):
         game_folder = CONFIG.get('map_game_folder', {}).get(game, '')
         map_path = halo_patch.default_map_path(mcc_root(), game_folder, self.run_state.mission_id)
         presets_path = str(app_data_dir() / "magnitude_presets.json")
-        # Building the dialog reads the (possibly large, ~100 MB) H2 source map,
-        # which can take a couple of seconds — show a wait cursor meanwhile.
+        # Building the dialog reads the baseline map to show shipped values. That is
+        # ~100 MB in Halo 2 and a gigabyte on a rebuilt Reach install, so it is read
+        # here, announced, rather than silently inside the constructor.
+        run_busy(self, lambda: preload_source(map_path, game),
+                 "Opening the patcher", "Reading the map's shipped values")
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
             dlg = MagnitudeEditorDialog(self, effects, subdirs, map_path, presets_path,
