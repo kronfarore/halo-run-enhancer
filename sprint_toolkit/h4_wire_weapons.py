@@ -113,6 +113,19 @@ SKIP_CARDS = {
     'Gravity Hammer/Accuracy Penalties':
         "Halo 4's gravity hammer ships an empty accuracy-penalty block, so every "
         'write lands in nothing.',
+    # Both found by running deadcards.py against the newly authored weapons. Note the
+    # distinction that decides these: a field reading ZERO is fine and stays (a
+    # multiply on it does nothing, which is the user's own rule), but an EMPTY BLOCK
+    # is different -- the write lands nowhere at all, so the card would be offered and
+    # do literally nothing.
+    'Scattershot/Pellet Spread':
+        "the Conical Spread block is empty on Halo 4's spread_gun shard. The Shotgun "
+        'it is modelled on fills it (5 yaw / 3 pitch / 3 spread), so the Scattershot '
+        'must scatter some other way.',
+    'Incineration Cannon/Target Tracking':
+        'its Target Tracking block is empty -- it does not track. (The Rocket Launcher '
+        'it is modelled on DOES: 1.5 / 0.25 / 0.25, checked on Requiem and Infinity, '
+        'which is why this needs naming rather than dropping the whole card family.)',
     'Energy Blade/Slice Damage':
         'Halo 4 has no slice_melee. Its sword melees with dash_melee, which the Energy '
         "Blade's own Dash Damage card already tunes -- wiring this one there would put "
@@ -131,6 +144,7 @@ TAG_OVERRIDES = {
     # split Campaign / Firefight / Multiplayer. Shipped values: every row 2/2/1/1.0.
     'Frag Grenade/Maximum Count': 'gggl globals' + SEP + 'grenade_list',
     'Plasma Grenade/Maximum Count': 'gggl globals' + SEP + 'grenade_list',
+    'Pulse Grenade/Maximum Count': 'gggl globals' + SEP + 'grenade_list',
 }
 
 
@@ -261,8 +275,19 @@ def _fp_wildcard(weapon, cls, have, patterns):
     if not weaps:
         return None
     stem = _leaf(weaps[0]).replace('storm_', '')
-    pattern = '*fp_%s*' % stem
-    return pattern if _wild_hits(pattern, have.get(cls, ())) else None
+    # Try the stem, then the stem with a variant suffix taken off. Several weapons
+    # ship only a `_pve` copy in campaign -- `storm_rail_gun_pve`,
+    # `storm_sticky_detonator_pve` -- while the first-person graph is named for the
+    # plain weapon (`fp_rail_gun`, `fp_sticky_detonator`).
+    stems = [stem]
+    for suf in ('_pve', '_npc', '_knight', '_pawnhead'):
+        if stem.endswith(suf):
+            stems.append(stem[:-len(suf)])
+    for s in stems:
+        pattern = '*fp_%s*' % s
+        if _wild_hits(pattern, have.get(cls, ())):
+            return pattern
+    return None
 
 
 # weap /Melee Damage Parameters, and the `Melee Damage` tagRef inside its element.
@@ -426,18 +451,27 @@ def h4_tag_for(weapon, inherited, have, patterns, melee):
             # answers. A card can legitimately name several damage effects -- the
             # Gravity Hammer's Hammer Damage names its explosion AND its impulse --
             # and resolving only the first quietly halved that card in Halo 4.
-            paths, why, seen = [], None, set()
+            paths, seen = [], set()
             for src in inherited_paths:
-                got, w = disambiguate(cands, src)
-                if got is None:
-                    why = why or w
-                    continue
-                for g in got:
+                got, _w = disambiguate(cands, src)
+                for g in (got or ()):
                     if g not in seen:
                         seen.add(g)
                         paths.append(g)
             if not paths:
-                return None, why or 'no Halo 4 match for %s' % _leaf(inherited_paths[0])
+                # Nothing matched by name. Take EVERY proj/jpt the weapon owns rather
+                # than reporting the card (user, 2026-09-07): a card is about the
+                # weapon, so it should reach all of the weapon's own damage and
+                # projectile tags, and the worst case is a multiply landing on a zero
+                # field, which does nothing. This is what unblocked the Forerunner
+                # weapons, whose Halo 4 names are nothing like their models'.
+                #
+                # Deliberately only the FALLBACK: where a weapon's cards already carve
+                # its tags up between them -- the Plasma Pistol's Bullet Damage vs
+                # Charged Damage, the Needler's Needle Damage vs Explosion Damage --
+                # disambiguation succeeds, and sweeping everything in would collapse a
+                # distinction the card set is built on.
+                paths = list(cands)
         tag = cls + ' ' + ' & '.join(paths)
     return tag, None
 
@@ -747,8 +781,13 @@ def main():
         for cname, card in sw[weapon].items():
             if not isinstance(card, dict):
                 continue
-            if isinstance(card.get('tag'), dict) and GAME in card['tag']:
-                continue                                # already wired
+            g = card.get('game')
+            gl = [g] if isinstance(g, str) else list(g or [])
+            if (isinstance(card.get('tag'), dict) and GAME in card['tag']) or GAME in gl:
+                # Already wired. The `game` half of the test matters: a card whose
+                # inherited wildcard still resolves gets no Halo 4 tag entry at all,
+                # so testing the tag dict alone re-offered all 24 of those every run.
+                continue
             why_skip = skip_reason(weapon, cname)
             if why_skip:
                 skipped.append((weapon, cname, why_skip))
