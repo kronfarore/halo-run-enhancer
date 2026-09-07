@@ -108,6 +108,24 @@ SKIP_CARDS = {
     'Gravity Hammer/Accuracy Penalties':
         "Halo 4's gravity hammer ships an empty accuracy-penalty block, so every "
         'write lands in nothing.',
+    'Energy Blade/Slice Damage':
+        'Halo 4 has no slice_melee. Its sword melees with dash_melee, which the Energy '
+        "Blade's own Dash Damage card already tunes -- wiring this one there would put "
+        'two cards on the same field.',
+}
+
+
+# Cards whose Halo 4 tag is a DIFFERENT TAG, not a renamed one, so no amount of path
+# matching can find it. Keyed `Weapon/Card`.
+TAG_OVERRIDES = {
+    # Halo 4 moved the player's grenade counts out of matg into their own `gggl` tag,
+    # `globals/grenade_list`. Its Grenades block keeps the same `Maximum Count` field
+    # name and the same row order the card already indexes -- row 0 frag, row 1 plasma,
+    # row 2 storm_energy_drain_grenade (the Pulse Grenade) -- and adds Initial Count,
+    # Grenadier Extra Count, Drop Percentage and Resourceful Scavenge Percentage, each
+    # split Campaign / Firefight / Multiplayer. Shipped values: every row 2/2/1/1.0.
+    'Frag Grenade/Maximum Count': 'gggl globals' + SEP + 'grenade_list',
+    'Plasma Grenade/Maximum Count': 'gggl globals' + SEP + 'grenade_list',
 }
 
 
@@ -242,15 +260,48 @@ def _fp_wildcard(weapon, cls, have, patterns):
     return pattern if _wild_hits(pattern, have.get(cls, ())) else None
 
 
+# weap /Melee Damage Parameters, and the `Melee Damage` tagRef inside its element.
+# Halo 3 kept a whole ladder of melee tagRefs at the weap ROOT (Player / 1st / 2nd /
+# 3rd Hit / Lunge / Empty / Clang); Halo 4 moved the survivors into this block.
+MELEE_BLOCK = (0x360, 0xC8)
+MELEE_DAMAGE_REF = 0x18
+
+
 def campaign_tags():
-    """{class: {full tag name}} across every Halo 4 campaign map."""
-    have = {}
+    """({class: {tag name}}, {weap tag: its Melee Damage jpt!}) over the campaign.
+
+    The melee map is collected in the same pass because it costs nothing here and a
+    second pass would mean opening eight maps of up to 860MB again.
+    """
+    have, melee = {}, {}
     for mid, _ in hc.CAMPAIGN:
         m = halo_patch.open_map(os.path.join(hc.MAPS, mid + '.map'), GAME)
         for t in m.tags:
-            if t.get('name'):
-                have.setdefault(t['class'], set()).add(t['name'])
-    return have
+            if not t.get('name'):
+                continue
+            have.setdefault(t['class'], set()).add(t['name'])
+            if t['class'] == 'weap' and t['base'] is not None and t['name'] not in melee:
+                ref = _melee_ref(m, t['base'])
+                if ref:
+                    melee[t['name']] = ref
+    return have, melee
+
+
+def _melee_ref(m, base):
+    """The jpt! a weapon's Melee Damage Parameters names, or None."""
+    off, _esz = MELEE_BLOCK
+    try:
+        count = m.i32(base + off)
+        arr = m.data2off(m.u32(base + off + 4))
+        if not arr or count <= 0:
+            return None
+        ident = m.u32(arr + MELEE_DAMAGE_REF + 0xC)
+        if ident == 0xFFFFFFFF:
+            return None
+        r = m.tag(ident & 0xFFFF)
+        return r['name'] if r and r['name'] else None
+    except Exception:
+        return None
 
 
 def h4_paths(name, cls, have, patterns):
@@ -296,11 +347,15 @@ def field_names(target, order):
     return [p + f for p in DIFF_PREFIXES] if target.get('diff_prefix_nl') else [f]
 
 
-def check(weapon, card, have, registry, order, patterns):
-    """(ok, tag-or-reason). ok means the tag exists in Halo 4 and every field resolves."""
-    inherited = resolve(card.get('tag'), GAME, order)
-    if not isinstance(inherited, str) or ' ' not in inherited:
-        return False, 'no tag to inherit'
+def h4_tag_for(weapon, inherited, have, patterns, melee):
+    """(tag, reason). `tag` is the Halo 4 tag string for an inherited one, or None
+    meaning "the inherited tag already resolves, leave it alone". `reason` is set
+    instead when there is no answer.
+
+    Shared by the card's own tag and by a TARGET's tag redirect -- the Firing Noise
+    cards point their Impact/Detonation Noise targets at the projectile, so the same
+    rename has to be resolved for a second class on the same card.
+    """
     cls, _, rest = inherited.partition(' ')
     inherited_paths = [p.strip() for p in rest.split('&')]
 
@@ -316,8 +371,20 @@ def check(weapon, card, have, registry, order, patterns):
         keep = [q for q in (_shared_in_h4(p, have.get(cls, ())) for p in inherited_paths)
                 if q]
         if not keep:
-            return False, 'shared tag absent in Halo 4: ' + ', '.join(
-                _leaf(p) for p in inherited_paths)
+            # Halo 4 dropped `smash_melee` and `slice_melee` -- it melees almost
+            # everything with `strike_melee`. Rather than infer a replacement from the
+            # name, ask the WEAPON what its melee actually is: `Melee Damage
+            # Parameters / Melee Damage` on its own weap tag is the authority, and it
+            # is how the Flak Cannon, Spartan Laser and Sentinel Beam were resolved.
+            own = None
+            for wp in h4_paths(weapon, 'weap', have, patterns):
+                own = melee.get(wp)
+                if own:
+                    break
+            if not own:
+                return None, 'shared tag absent in Halo 4: ' + ', '.join(
+                    _leaf(p) for p in inherited_paths)
+            keep = [own]
         tag = cls + ' ' + ' & '.join(keep)
     elif any('*' in p for p in inherited_paths):
         # A WILDCARD tag, which the animation cards use (`jmad *fp_assault_rifle*`).
@@ -336,15 +403,15 @@ def check(weapon, card, have, registry, order, patterns):
         else:
             derived = _fp_wildcard(weapon, cls, have, patterns)
             if derived is None:
-                return False, 'wildcard matches nothing in Halo 4 (%s %s)' % (
+                return None, 'wildcard matches nothing in Halo 4 (%s %s)' % (
                     cls, ', '.join(inherited_paths))
             tag = cls + ' ' + derived
     else:
         cands = h4_paths(weapon, cls, have, patterns)
         if not cands:
             if weapon not in patterns:
-                return False, 'no Halo 4 tag pattern for %s' % weapon
-            return False, 'tag absent in Halo 4 (%s)' % cls
+                return None, 'no Halo 4 tag pattern for %s' % weapon
+            return None, 'tag absent in Halo 4 (%s)' % cls
         if cls == 'weap' or len(cands) == 1:
             # weap keeps every variant on purpose -- see the module docstring. One
             # candidate needs no narrowing whatever the class.
@@ -352,8 +419,34 @@ def check(weapon, card, have, registry, order, patterns):
         else:
             paths, why = disambiguate(cands, inherited_paths[0])
             if paths is None:
-                return False, why
+                return None, why
         tag = cls + ' ' + ' & '.join(paths)
+    return tag, None
+
+
+NON_PLUGIN_KEYS = ('reload_anim', 'swap_anim', 'map_swap', 'map_equip',
+                   'equip_drop', 'choice', 'derived')
+
+
+def check(weapon, cname, card, have, registry, order, patterns, melee):
+    """(ok, plan-or-reason).
+
+    A plan is {'tag': <card tag or None>, 'targets': {index: {...}}}, where a target
+    entry names the edits that target needs: its own `tag` redirect gaining a Halo 4
+    path, its `games` allow-list gaining Halo 4, or an explicit Halo 4 `nth`.
+    """
+    inherited = resolve(card.get('tag'), GAME, order)
+    if not isinstance(inherited, str) or ' ' not in inherited:
+        return False, 'no tag to inherit'
+    cls = inherited.split(' ', 1)[0]
+    override = TAG_OVERRIDES.get('%s/%s' % (weapon, cname))
+    if override:
+        cls = override.split(' ', 1)[0]
+        tag, why = override, None
+    else:
+        tag, why = h4_tag_for(weapon, inherited, have, patterns, melee)
+    if why:
+        return False, why
 
     plugin = registry.get(cls)
     if plugin is None:
@@ -361,23 +454,58 @@ def check(weapon, card, have, registry, order, patterns):
     targets = resolve(card.get('targets'), GAME, order) or []
     if not targets:
         return False, 'no targets for Halo 4'
-    bad, good = [], 0
-    for t in targets:
+    bad, good, tplan = [], 0, {}
+    for i, t in enumerate(targets):
         if not isinstance(t, dict):
             continue
+        # A target can carry its own `games` allow-list, and one that does not name
+        # Halo 4 stays inert however well the field resolves.
+        if isinstance(t.get('games'), list) and GAME not in t['games']:
+            tplan.setdefault(i, {})['games'] = True
         # Targets that do not read a plugin field at all -- the animation scalers and
         # the placement/equipment ops go through their own machinery, so asking the
         # plugin about them would report a working card as broken.
-        if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'map_swap',
-                                  'map_equip', 'equip_drop', 'choice', 'derived')):
+        if any(t.get(k) for k in NON_PLUGIN_KEYS):
             continue
+
+        # A target can also REDIRECT to another tag, in another class. The Firing
+        # Noise cards do: `Firing Noise` is on the weapon, but Impact and Detonation
+        # Noise are on its PROJECTILE. Checking those against the card's own weap
+        # plugin reported 16 perfectly good cards as having an absent field.
+        tplugin, own = plugin, t.get('tag')
+        if own is not None:
+            it = resolve(own, GAME, order)
+            if not isinstance(it, str) or ' ' not in it:
+                bad.append('(target tag unresolved)')
+                continue
+            tcls = it.split(' ', 1)[0]
+            ttag, twhy = h4_tag_for(weapon, it, have, patterns, melee)
+            if twhy:
+                bad.append('target tag: ' + twhy)
+                continue
+            if ttag and isinstance(own, dict) and GAME not in own:
+                tplan.setdefault(i, {})['tag'] = ttag
+            tplugin = registry.get(tcls)
+            if tplugin is None:
+                bad.append('no %s plugin for Halo 4' % tcls)
+                continue
+
         blk = resolve(t.get('block'), GAME, order)
         nth = resolve(t.get('nth'), GAME, order) or 0
         names = field_names(t, order)
         if not names:
             bad.append('(unnamed field)')
             continue
-        if any(plugin.find(n, blk, nth) for n in names):
+        if any(tplugin.find(n, blk, nth) for n in names):
+            good += 1
+        elif nth and any(tplugin.find(n, blk, 0) for n in names):
+            # `nth` counts DECLARATIONS of the field name, and Halo 3 declares the
+            # Barrels error fields twice where Reach and Halo 4 declare them once. A
+            # card carrying a bare `nth: 1` therefore asks Halo 4 for a second
+            # declaration that does not exist -- and Halo 4's single one is the
+            # equivalent of Halo 3's second (same 0x7C/0x80 offsets). So record an
+            # explicit Halo 4 nth of 0 rather than reporting the card.
+            tplan.setdefault(i, {})['nth'] = 0
             good += 1
         else:
             bad.append(names[0] + (' in %s' % blk if blk else ''))
@@ -388,9 +516,9 @@ def check(weapon, card, have, registry, order, patterns):
         scope = ('field absent (%d of %d resolve)' % (good, good + len(bad))
                  if good else 'field absent')
         return False, scope + ': ' + '; '.join(bad)
-    # `None` means "the inherited tag already resolves in Halo 4" -- wire the game
-    # list and leave the tag alone.
-    return True, tag
+    # A `tag` of None means "the inherited tag already resolves in Halo 4" -- wire the
+    # game list and leave it alone.
+    return True, {'tag': tag, 'targets': tplan}
 
 
 # ------------------------------------------------------------------ JSON surgery
@@ -421,8 +549,10 @@ def _indent(line):
     return line[:len(line) - len(line.lstrip())]
 
 
-def wire_card(lines, weapon, card, tag, order):
+def wire_card(lines, weapon, card, plan, order):
     """Add Halo 4 to one card. Returns True if anything changed."""
+    tag = plan['tag']
+    tplan = plan.get('targets') or {}
     w = _find(lines, lambda l: l.strip() == '"%s": {' % weapon, 0, len(lines) - 1)
     if w is None:
         return False
@@ -503,7 +633,55 @@ def wire_card(lines, weapon, card, tag, order):
                     body[-1] = body[-1].rstrip() + ','
                 lines[src:src] = body
                 changed = True
+                ce += len(body)
+
+    # --- per-target edits: a tag redirect, a `games` allow-list, an explicit nth
+    if tplan and tg is not None:
+        te = _find(lines, lambda l: l.strip().startswith(']'), tg, ce)
+        rows = [k for k in range(tg + 1, (te if te is not None else ce))
+                if lines[k].lstrip().startswith('{')]
+        for idx, edits in sorted(tplan.items()):
+            if idx >= len(rows):
+                continue
+            k = rows[idx]
+            if not lines[k].rstrip().rstrip(',').endswith('}'):
+                # A target spread over several lines. None of the cards this tool
+                # wires is written that way, and guessing at one would be the kind of
+                # silent mis-edit the whole tool exists to avoid.
+                continue
+            lines[k] = _edit_target(lines[k], edits)
+            changed = True
     return changed
+
+
+def _edit_target(line, edits):
+    """Apply one target's Halo 4 edits to its single JSON line, in place."""
+    if edits.get('tag'):
+        i = line.find('"tag": {')
+        if i >= 0:
+            j = line.index('}', i)
+            if '"Halo 4"' not in line[i:j]:
+                line = (line[:j].rstrip().rstrip(',')
+                        + ', "Halo 4": ' + json.dumps(edits['tag'], ensure_ascii=False)
+                        + line[j:])
+    if edits.get('games'):
+        i = line.find('"games": [')
+        if i >= 0:
+            j = line.index(']', i)
+            if '"Halo 4"' not in line[i:j]:
+                line = line[:j].rstrip().rstrip(',') + ', "Halo 4"' + line[j:]
+    if edits.get('nth') is not None:
+        i = line.find('"nth":')
+        if i >= 0:
+            rest = line[i + len('"nth":'):]
+            val = rest.split(',')[0].split('}')[0].strip()
+            if not val.startswith('{'):
+                # Promote a bare nth to a per-game dict. `default` keeps every other
+                # game on exactly what it had; resolve_gamed checks the exact game
+                # first and `default` second.
+                line = (line[:i] + '"nth": {"default": %s, "Halo 4": %d}'
+                        % (val, edits['nth']) + rest[rest.index(val) + len(val):])
+    return line
 
 
 def main():
@@ -525,7 +703,7 @@ def main():
     names = {ALIAS.get(n, n) for n in names}
 
     print('resolving Halo 4 tags across %d campaign maps...' % len(hc.CAMPAIGN))
-    have = campaign_tags()
+    have, melee = campaign_tags()
     patterns = tag_patterns()
     registry = halo_patch.PluginRegistry(PLUGINS, SUBDIRS)
 
@@ -557,17 +735,23 @@ def main():
             if why_skip:
                 skipped.append((weapon, cname, why_skip))
                 continue
-            good, why = check(weapon, card, have, registry, order, patterns)
+            good, why = check(weapon, cname, card, have, registry, order, patterns,
+                              melee)
             (ok if good else bad).append((weapon, cname, why))
 
     print('\n=== would wire (%d) ===' % len(ok))
     if a.show_ok:
-        for w, n, tag in ok:
+        for w, n, plan in ok:
+            tag = plan['tag']
             shown = tag.split(' ', 1)[1][:78] if tag else '(inherited tag already resolves)'
-            print('   %-16s %-26s %s' % (w, n, shown))
+            extra = ''
+            if plan.get('targets'):
+                kinds = sorted({k for e in plan['targets'].values() for k in e})
+                extra = '   [+%s]' % ','.join(kinds)
+            print('   %-16s %-26s %s%s' % (w, n, shown, extra))
     else:
         byw = {}
-        for w, n, _ in ok:
+        for w, n, _plan in ok:
             byw.setdefault(w, []).append(n)
         for w in sorted(byw):
             print('   %-16s %d: %s' % (w, len(byw[w]), ', '.join(sorted(byw[w]))))
@@ -597,8 +781,8 @@ def main():
         return
     lines = open(HALO_JSON, encoding='utf-8').read().split('\n')
     written = 0
-    for w, n, tag in ok:
-        if wire_card(lines, w, n, tag, order):
+    for w, n, plan in ok:
+        if wire_card(lines, w, n, plan, order):
             written += 1
     out = '\n'.join(lines)
     json.loads(out)                      # refuse to write anything unparseable

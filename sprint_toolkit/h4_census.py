@@ -397,10 +397,16 @@ WEAPONS = [
 IGNORE_WEAPONS = ('weapons/melee/jackal_shield/', 'weapons/melee/unarmed/',
                   'characters/storm_pawn/weapons/')
 
+# The player's three grenades, and the authority for that is `globals/grenade_list`
+# (a `gggl` tag) rather than a guess from the names: its Grenades block has exactly
+# three rows and their Equipment refs are storm_frag_grenade, storm_plasma_grenade and
+# **storm_energy_drain_grenade**. `storm_disruption_grenade` was mapped to Pulse here
+# first, on the strength of the name and of being squad-assigned on Midnight, and that
+# was wrong -- it is not one of the three the player carries.
 GRENADES = [
     ('weapons/grenade/storm_frag_grenade/', 'Frag Grenade'),
     ('weapons/grenade/storm_plasma_grenade/', 'Plasma Grenade'),
-    ('weapons/grenade/storm_disruption_grenade/', 'Pulse Grenade'),   # NEW
+    ('weapons/grenade/storm_energy_drain_grenade/', 'Pulse Grenade'),   # NEW
 ]
 EQUIPMENT = [
     ('equipment/storm_active_camo/', 'Active Camouflage'),

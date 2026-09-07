@@ -719,8 +719,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -732,7 +732,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -791,16 +791,17 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\assault rifle\\assault rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
-						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle"
+						"Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -821,8 +822,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Bullet Damage": {
@@ -879,7 +880,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -976,8 +977,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -989,7 +990,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1047,18 +1048,19 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\pistol\\pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum",
 						"Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum",
-						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum"
+						"Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum",
+						"Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Dual Weapon Error": {
@@ -1109,8 +1111,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Bullet Damage": {
@@ -1166,7 +1168,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -1263,7 +1265,7 @@
 						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
+						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -1287,8 +1289,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1300,7 +1302,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1379,20 +1381,21 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\plasma pistol\\plasma pistol",
 						"Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 						"Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
 						"Halo 3: ODST": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
-						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol"
+						"Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol",
+						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Homing (Charged)": {
@@ -1403,8 +1406,8 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
-						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Dual Weapon Error": {
@@ -1452,8 +1455,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"]}
 					]
 				},
 				"Bullet Damage": {
@@ -1613,7 +1616,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }	
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
 					]
 				},
 				"Per Round (Charged)": {
@@ -1628,8 +1631,8 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1 },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": 1, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" },
-						{ "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3"] }
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": 1, "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" },
+						{ "field": "Charged Drain Rate", "block": "New Triggers", "games": ["Halo 3", "Halo 4"] }
 					]
 				},
 				"More Shooting": {
@@ -2042,8 +2045,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2055,7 +2058,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2125,18 +2128,19 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\needler\\needler",
 						"Halo 2": "weap objects\\weapons\\pistol\\needler\\needler",
 						"Halo 3": "weap objects\\weapons\\pistol\\needler\\needler",
 						"Halo 3: ODST": "weap objects\\weapons\\pistol\\needler\\needler",
-						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler"
+						"Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler",
+						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Homing": {
@@ -2147,8 +2151,8 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
-						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Dual Weapon Error": {
@@ -2199,7 +2203,7 @@
 					"targets": [
 						{ "field": "Timer" },
 						{ "field": "Timer Max" },
-						{"field": "Super Detonation Projectile Count", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 1}
+						{"field": "Super Detonation Projectile Count", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 1}
 					]
 				},
 				"Needle Damage": {
@@ -2270,7 +2274,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -2377,7 +2381,7 @@
 						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
+						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -2400,8 +2404,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2413,7 +2417,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2471,18 +2475,19 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire — and hear the round land. On a sniper that second one is what gives your position away.",
 					"debug_desc": "The sniper rifle is the special case this card exists for. Every other weapon is fired at roughly the same place the round lands, so its firing noise and its projectile's impact noise reach the same enemies. A sniper is not: you fire from cover far away, and the impact noise goes off in the middle of the enemies you are shooting at. Halo 2, Halo 3 and ODST ship the rifle at Shout (the loudest tier) with the projectile at Loud, so silencing the weapon alone would still announce every shot at the target's end. This card sets both.\n\nHalo 1's sniper rifle is the other oddity: at Medium it is the only weapon in the whole game quieter than Loud, and its projectile already matches at Medium — so it starts out roughly as stealthy as an ODST silenced weapon. Reach went the other way and dropped its sniper from Shout to Loud.\n\nThe `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\sniper rifle\\sniper rifle",
 						"Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
-						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle"
+						"Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -2550,7 +2555,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -2643,7 +2648,7 @@
 						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
 						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
+						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" }
 					]
 				}
 			},
@@ -2656,8 +2661,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2667,9 +2672,9 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"targets": [
-						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
+						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2744,25 +2749,26 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
-						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach"]}
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
+						{"field": {"Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo Reach", "Halo 4"]}
 					]
 				},
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\rocket launcher\\rocket launcher",
 						"Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
 						"Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
 						"Halo 3: ODST": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
-						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher"
+						"Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher",
+						"Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -2838,7 +2844,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -2929,8 +2935,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2942,7 +2948,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -3001,18 +3007,19 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\shotgun\\shotgun",
 						"Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
 						"Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
-						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun"
+						"Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Pellet Spread": {
@@ -3044,8 +3051,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo 4"]}
 					]
 				},
 				"Bullet Damage": {
@@ -3099,7 +3106,7 @@
 						{ "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
 				"Reload Time": {
@@ -3679,7 +3686,7 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -3691,7 +3698,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -3740,15 +3747,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]}
+						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -3869,14 +3877,15 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
@@ -4146,7 +4155,7 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4158,7 +4167,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4207,15 +4216,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]}
+						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -4307,7 +4317,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
 						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4359,13 +4369,14 @@
 					"desc": "Spread of the shot, Minimum Error and Maximum Error",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
-						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle"
+						"Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
 					},
 					"targets": [
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
+						{ "field": "Error Angle", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				}
 			},
 			"Covenant Carbine": {
@@ -4387,7 +4398,7 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4399,7 +4410,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4448,15 +4459,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
-						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]}
+						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 4": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 4": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -4577,14 +4589,15 @@
 					"desc": "Weapon Spread",
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
-						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine"
+						"Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine",
+						"Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"
 					},
 					"targets": [
-						{ "field": "Minimum Error", "block": "Barrels", "nth": 1, "group": "Error Angle" },
-						{ "field": "Error Angle", "block": "Barrels", "nth": 1, "group": "Error Angle" },
-						{ "field": "Error Angle Max", "block": "Barrels", "nth": 1, "group": "Error Angle" }
+						{ "field": "Minimum Error", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" },
+						{ "field": "Error Angle", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" },
+						{ "field": "Error Angle Max", "block": "Barrels", "nth": {"default": 1, "Halo 4": 0}, "group": "Error Angle" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
@@ -4614,8 +4627,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4627,7 +4640,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4687,15 +4700,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
-						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon"
+						"Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon",
+						"Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3"]},
-						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3"]}
+						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"]}
 					]
 				},
 				"Homing": {
@@ -4706,8 +4720,8 @@
 					"targets": [
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
-						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
-						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach"]}
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -4726,8 +4740,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"]}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4754,14 +4768,15 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -4791,7 +4806,7 @@
 						{ "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Loaded Maximum", "block": "Magazines" },
 						{ "field": "Rounds Reloaded", "block": "Magazines" },
-						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
+						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				},
@@ -4876,7 +4891,7 @@
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
 						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4892,7 +4907,7 @@
 					"targets": [
 						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
 						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
-						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3"] }
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4944,15 +4959,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
-						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder"
+						"Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder",
+						"Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
-						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
+						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] }
 					]
 				},
 				"Projectile": {
@@ -4997,14 +5013,15 @@
 					},
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee",
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 2", "Halo 3"]
+					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
@@ -5044,7 +5061,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
 						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST"], "group": "Age Generated Per Round" }
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5284,8 +5301,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5297,7 +5314,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5385,7 +5402,7 @@
 				},
 				"Maximum Count": {
 					"desc": "Maximum amount of Grenade by Type",
-					"tag": "matg globals\\globals",
+					"tag": {"default": "matg globals\\globals", "Halo 4": "gggl globals\\grenade_list"},
 					"targets": [
 						{ "field": "Maximum Count", "block": "Grenades", "index": 0 }
 					]
@@ -5411,7 +5428,7 @@
 				},
 				"Maximum Count": {
 					"desc": "Maximum amount of Grenade by Type",
-					"tag": "matg globals\\globals",
+					"tag": {"default": "matg globals\\globals", "Halo 4": "gggl globals\\grenade_list"},
 					"targets": [
 						{ "field": "Maximum Count", "block": "Grenades", "index": 1 }
 					]
@@ -5864,8 +5881,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5877,7 +5894,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5974,8 +5991,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5987,7 +6004,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6075,14 +6092,15 @@
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. Effect shared with other weapons.",
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee"
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 3"]
+					"game": ["Halo 3", "Halo 4"]
 				},
 				"Beam Damage": {
 					"desc": "Damage per beam tick (the beam is 5 ticks)",
@@ -6320,7 +6338,7 @@
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
 						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6336,7 +6354,7 @@
 					"targets": [
 						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
 						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
-						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"] }
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo 4"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6411,15 +6429,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet" }, "follows_choice": true, "games": ["Halo 3"] },
-						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet" }, "follows_choice": true, "games": ["Halo 3"] }
+						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] }
 					]
 				},
 				"Bullet Damage": {
@@ -6531,7 +6550,7 @@
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
 						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
+						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6547,7 +6566,7 @@
 					"targets": [
 						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
 						{ "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
-						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST"] }
+						{ "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo 4"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6622,15 +6641,16 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated",
-						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
+						"Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted",
+						"Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
-						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt" }, "follows_choice": true, "games": ["Halo 3"] },
-						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt" }, "follows_choice": true, "games": ["Halo 3"] }
+						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt", "Halo 4": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\projectiles\\plasma_turret_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
+						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt", "Halo 4": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\projectiles\\plasma_turret_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] }
 					]
 				},
 				"Bullet Damage": {
@@ -6934,8 +6954,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -6947,7 +6967,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -7016,8 +7036,8 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"targets": [
 						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "follows_choice": true},
@@ -7033,7 +7053,7 @@
 						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
 						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
 						{"field": "Rounds Reloaded", "block": "Magazines"},
-						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
 					]
 				},
 				"More Shooting": {
@@ -7088,8 +7108,8 @@
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
 						{"field": "Water Damage Range Max", "group": "Range"},
-						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]},
-						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach"]}
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"]},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo Reach", "Halo 4"]}
 					]
 				},
 				"Explosion Damage": {
@@ -7121,8 +7141,8 @@
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
+						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
+						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -7134,7 +7154,7 @@
 					"targets": [
 						{"field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
 						{"field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo Reach"]}
+						{"field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"]}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -7191,8 +7211,8 @@
 				"Firing Noise": {
 					"desc": "How far away enemies hear you fire. Silent sneaks past them entirely; Shout pulls in the whole area.",
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
-					"game": ["Halo Reach"],
-					"tag": "weap objects\\weapons\\rifle\\dmr\\dmr",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"targets": [
 						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "follows_choice": true},
@@ -7218,7 +7238,7 @@
 						{"field": {"Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum"}, "block": "Magazines"},
 						{"field": "Rounds Loaded Maximum", "block": "Magazines"},
 						{"field": "Rounds Reloaded", "block": "Magazines"},
-						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
+						{"field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"]}
 					]
 				},
 				"Projectiles Per Shot": {
@@ -7237,7 +7257,7 @@
 						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
 						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
 						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": 0, "group": "Error Angle" },
-						{"field": "Deviation Angle", "games": ["Halo Reach"], "min": 0, "group": "Error Angle" }
+						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" }
 					]
 				},
 				"Projectile": {
