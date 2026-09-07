@@ -1081,10 +1081,13 @@ ABILITY_BLURBS = {
     'camo': "Press the flashlight key to turn invisible for a few seconds.",
 }
 
-# Abilities limited to one player per run. Empty: every ability is per-player now.
-# Sprint is confirmed working in co-op, and camo gained a pickup per player
-# (camo_ability0/1) so two players no longer contend over one shared object.
-ABILITY_ONE_PER_RUN = set()
+# Abilities limited to one player per run -- all of them, by choice rather than by
+# necessity. The technical reasons are long gone: sprint is confirmed working in
+# co-op, and camo gained a pickup per player (camo_ability0/1) so two players no
+# longer contend over one shared object. What is left is a draft argument. There are
+# four abilities and two players, so letting both hold the same one spends a pick on
+# something the run already has, and a duplicate reads as the offer having failed.
+ABILITY_ONE_PER_RUN = set(ABILITY_ITEMS.values())
 
 
 # halo.json tuning cards carry a `sprint` marker on their target whose value is the
@@ -1306,37 +1309,32 @@ def _tags_not_already_in(twin, base):
 
 
 def drop_weapons_taken(db, weapons, run_state):
-    """Weapons are UNIQUE across the run: one already held by either player is not
-    offered again, to anyone.
+    """Nothing already held by either player is offered again, to anyone.
 
-    Excluding only the asking player's own weapons meant player 2 kept being offered
-    what player 1 had drafted rounds earlier. Every path that can put a weapon card on
-    screen has to apply this, or the duplicate just reappears on whichever path was
-    missed -- the New Weapon button, the automatic rolls and the rerolls all pass here.
+    Excluding only the asking player's own picks meant player 2 kept being offered what
+    player 1 had drafted rounds earlier. Every path that can put a card on screen has
+    to apply this, or the duplicate reappears on whichever path was missed -- the New
+    Weapon button, the automatic rolls and the rerolls all come through here.
 
-    Equipment and abilities are left alone: they carry their own sharing rules (a piece
-    of equipment is not a weapon slot, and sprint/camo already have a one-per-run
-    pair), so weapon uniqueness must not quietly become the rule for them too.
+    Equipment and abilities used to be exempt, on the grounds that they are not weapon
+    slots and carry their own sharing rules. Reach showed what that exemption costs:
+    six armour abilities, one carried at a time, and a level offering only what its map
+    can grant -- two rounds spend four of them, and in the third both players were
+    offered the same one and both could take it. An offer that cannot be honoured is
+    worse than a narrow pool.
 
-    REACH IS THE EXCEPTION. Its armour abilities are a closed set of six, one carried
-    at a time, and a level offers only the ones its map can grant -- so an ability the
-    other player already holds is not a duplicate to shrug at, it is an offer that
-    cannot be honoured. Two rounds spend four of the six, and in the third both players
-    were offered the same one and both could take it. Halo 3's equipment is consumable
-    and genuinely shareable, so it keeps the exemption.
+    The same argument holds wherever the pool is a small set of distinct things rather
+    than a stock of consumables, so it is now the rule everywhere: Halo 3 and ODST
+    equipment, and the abilities in Halo 1 and whatever Halo 2 gains. `db` is kept in
+    the signature because every caller passes it and the classification helpers may
+    need it again.
     """
     if run_state is None:
         return list(weapons)
     held = set(run_state.weapons_for('player1')) | set(run_state.weapons_for('player2'))
     if not held:
         return list(weapons)
-    try:
-        one_each = db.get_game_for_mission(run_state.mission_id) == 'Halo Reach'
-    except Exception:
-        one_each = False
-    return [w for w in weapons
-            if w not in held or is_ability_item(w)
-            or (db.is_equipment(w) and not one_each)]
+    return [w for w in weapons if w not in held]
 
 
 def ability_offer_pool(db, game, run_state, player=None):
