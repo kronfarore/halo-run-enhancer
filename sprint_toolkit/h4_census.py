@@ -80,12 +80,18 @@ GAME = 'Halo 4'
 # The keys are the FULL map basenames rather than Reach-style short ids because
 # `mission_enemies` and friends are keyed by mission id ALONE, with no game in the key:
 # 'm10', 'm30', 'm60' and 'm70' would every one of them collide with Reach's.
+# NOTE THE ORDER: m60 comes BEFORE m40. The map numbers do NOT run in story order
+# here, the same trap ODST's mission ids set. m40_invasion is RECLAIMER -- it holds the
+# Mammoth, Lasky and the Target Designator (with a mission-specific `_m40` variant),
+# none of which belong to Infinity -- and m60_rescue is INFINITY. Getting this backwards
+# was a real mistake in this file, caught by the user. halo.json keeps file order and
+# the enhancer deliberately does not sort, so the order here is the order players see.
 CAMPAIGN = [
     ('m10_crash', 'Dawn'),
     ('m020', 'Requiem'),
     ('m30_cryptum', 'Forerunner'),
-    ('m40_invasion', 'Infinity'),
-    ('m60_rescue', 'Reclaimer'),
+    ('m60_rescue', 'Infinity'),
+    ('m40_invasion', 'Reclaimer'),
     ('m70_liftoff', 'Shutdown'),
     ('m80_delta', 'Composer'),
     ('m90_sacrifice', 'Midnight'),
@@ -368,7 +374,11 @@ WEAPONS = [
     ('weapons/rifle/storm_rail_gun/', 'Railgun'),           # NEW
     ('weapons/pistol/storm_magnum/', 'Magnum'),             # alias -> "Pistol"
     ('weapons/pistol/storm_sticky_detonator/', 'Sticky Detonator'),   # NEW
-    ('weapons/pistol/storm_target_laser/', 'Target Designator'),      # NEW
+    # Target Designator DELIBERATELY ABSENT (user, 2026-09-07): it is a scenario
+    # weapon for Reclaimer's Mammoth section -- it designates for an off-map MAC
+    # that exists on no other map, so handing it out anywhere else does nothing.
+    # Its tags (`storm_target_laser`, `storm_target_laser_m40`) show up under
+    # --unmapped, which is where a deliberate omission belongs.
     ('weapons/support_high/storm_rocket_launcher/', 'Rocket Launcher'),
     ('weapons/support_high/storm_spartan_laser/', 'Spartan Laser'),
     ('weapons/rifle/storm_assault_carbine/', 'Storm Rifle'),          # NEW
@@ -456,7 +466,7 @@ TURRETS = [
 # Rifle, DMR, Sentinel Beam, Concussion Rifle and Gravity Hammer are all already
 # there, and Magnum resolves through the existing alias to Pistol.
 NEW_VOCAB = {'Knight', 'Crawler', 'Watcher', 'SAW', 'Railgun',
-             'Sticky Detonator', 'Target Designator', 'Storm Rifle', 'Boltshot',
+             'Sticky Detonator', 'Storm Rifle', 'Boltshot',
              'LightRifle', 'Suppressor', 'Binary Rifle', 'Scattershot',
              'Incineration Cannon', 'Pulse Grenade', 'Hardlight Shield',
              'Promethean Vision', 'Thruster Pack', 'Shade'}

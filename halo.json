@@ -407,20 +407,20 @@
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
 				"equipment": ["Auto Turret", "Hardlight Shield"]
 			},
-			"m40_invasion": {
-				"name": "Infinity",
-				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight", "Sentinel"],
-				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "Sniper Rifle", "Storm Rifle", "Target Designator"],
-				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
-				"equipment": ["Hardlight Shield", "Jet Pack"]
-			},
 			"m60_rescue": {
-				"name": "Reclaimer",
+				"name": "Infinity",
 				"enemies": ["Crawler", "Elite", "Grunt", "Hunter", "Jackal", "Knight", "Watcher"],
 				"weapons": ["Assault Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Railgun", "Rocket Launcher", "Scattershot", "Shotgun", "Storm Rifle", "Suppressor"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
 				"equipment": ["Hologram", "Promethean Vision"],
 				"turrets": ["Machine Gun"]
+			},
+			"m40_invasion": {
+				"name": "Reclaimer",
+				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight", "Sentinel"],
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "Sniper Rifle", "Storm Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Hardlight Shield", "Jet Pack"]
 			},
 			"m70_liftoff": {
 				"name": "Shutdown",
@@ -838,12 +838,13 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"game": ["Halo 1", "Halo 3", "Halo 4"],
+					"game": ["Halo 1", "Halo 3", "Halo 4", "Halo Reach"],
 					"desc_overrides": { "Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons." },
 					"tag": {
 						"Halo 1": "jpt! weapons\\assault rifle\\melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -1485,7 +1486,7 @@
 				},
 				"Charged Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\charged bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt & objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt_aoe", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt"},
+					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\charged bolt", "Halo 2": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo 3": "jpt! objects\\weapons\\pistol\\plasma_pistol\\damage_effects\\plasma_pistol_overcharge_bolt", "Halo Reach": "jpt! objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt & objects\\weapons\\pistol\\plasma_pistol\\projectiles\\damage_effects\\plasma_pistol_charged_bolt_aoe", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt & objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\damage_effects\\storm_plasma_pistol_charged_bolt_aoe"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -2787,7 +2788,7 @@
 				},
 				"Radius": {
 					"desc": "Min to Max Radius",
-					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_impact"},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
@@ -2795,7 +2796,7 @@
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\explosion", "Halo 2": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion & objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_impact", "Halo 3": "jpt! objects\\weapons\\support_high\\rocket_launcher\\damage_effects\\rocket_launcher_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_equipment_explosion & objects\\weapons\\support_high\\rocket_launcher\\projectiles\\damage_effects\\rocket_launcher_rocket_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_explosion & objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\damage_effects\\storm_rocket_launcher_rocket_impact"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -4747,7 +4748,7 @@
 				},
 				"Radius": {
 					"desc": "Min to Max Radius of the flak explosion",
-					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_impact"},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
@@ -4756,7 +4757,7 @@
 				},
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
-					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion"},
+					"tag": {"Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_impact"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -4769,14 +4770,15 @@
 					"tag": {
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee",
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach"]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -5393,7 +5395,7 @@
 			"Frag Grenade": {
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_impact"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -5409,7 +5411,7 @@
 				},
 				"Radius": {
 					"desc": "How big of kaboom?",
-					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_impact"},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
@@ -5419,7 +5421,7 @@
 			"Plasma Grenade": {
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_attached_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_impact"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -5435,7 +5437,7 @@
 				},
 				"Radius": {
 					"desc": "How big of kaboom?",
-					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_explosion"},
+					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_impact"},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
@@ -5755,14 +5757,15 @@
 				"Melee Damage": {
 					"desc": "Lower Bound and Upper Bound Damage. Shared with other weapons.",
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
+						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 3"]
+					"game": ["Halo 3", "Halo Reach"]
 				},
 				"Projectile": {
 					"desc": "Range and speed of the spikes",
@@ -5943,7 +5946,7 @@
 				"Hammer Damage": {
 					"desc": "Damage of the gravity blast",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion"},
+					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
@@ -5954,19 +5957,20 @@
 					"desc": "Lower Bound and Upper Bound Damage. One effect shared with other weapons.",
 					"tag": {
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee & objects\\weapons\\damage_effects\\crush_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\crush_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\crush_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\crush_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 3", "Halo 4"]
+					"game": ["Halo 3", "Halo 4", "Halo Reach"]
 				},
 				"Hammer Radius": {
 					"desc": "Blast radius of the gravity blast",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion"},
+					"tag": {"default": "jpt! objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_explosion & objects\\weapons\\melee\\gravity_hammer\\damage_effects\\gravity_hammer_impulse", "Halo 4": "jpt! objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_explosion & objects\\weapons\\melee\\storm_gravity_hammer\\damage_effects\\storm_gravity_hammer_impulse"},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
@@ -6093,14 +6097,15 @@
 					"desc": "Lower Bound and Upper Bound Damage. Effect shared with other weapons.",
 					"tag": {
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee",
-						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
+						"Halo 4": "jpt! globals\\damage_effects\\strike_melee",
+						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 3", "Halo 4"]
+					"game": ["Halo 3", "Halo 4", "Halo Reach"]
 				},
 				"Beam Damage": {
 					"desc": "Damage per beam tick (the beam is 5 ticks)",
@@ -7115,7 +7120,7 @@
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach", "Halo 4"],
-					"tag": {"default": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion & objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_impact", "Halo 4": "jpt! objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\damage_effects\\storm_concussion_rifle_grenade_explosion"},
+					"tag": {"default": "jpt! objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_explosion & objects\\weapons\\rifle\\concussion_rifle\\projectiles\\damage_effects\\concussion_rifle_grenade_impact", "Halo 4": "jpt! objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\damage_effects\\storm_concussion_rifle_grenade_explosion & objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\damage_effects\\storm_concussion_rifle_grenade_impact"},
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage" },
 						{"field": "Damage Upper Bound", "group": "Damage" },

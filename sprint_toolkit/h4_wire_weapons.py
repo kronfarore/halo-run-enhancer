@@ -34,10 +34,9 @@ few pickups (Shutdown places three weapons in the whole mission), so the LightRi
 player is actually holding is nearly always the `_npc` one off a dead Knight. A card
 naming only the base would silently miss it.
 
-`_pawnhead` is excluded on the opposite reasoning: those are the Crawler's head-mounted
-guns, a body part the player never picks up, so tuning them under a PLAYER weapon card
-would only buff the enemy shooting at you. They are listed by --variants so the call
-stays visible.
+`_pawnhead` is wired too, on the same reasoning applied consistently: it is a variant
+of the weapon, and a card that tunes the weapon tunes its variants -- the way an enemy
+card tunes a character's variants. --variants prints the full map it will write.
 
     python sprint_toolkit/h4_wire_weapons.py               # report only
     python sprint_toolkit/h4_wire_weapons.py --variants    # the tag map it will write
@@ -76,8 +75,14 @@ TURRET_TAGS = {
                     'vehicles/human/turrets/machinegun/weapon/'),
     'Plasma Cannon': ('vehicles/covenant/turrets/plasma_turret/weapon/',),
 }
-# Variants that exist but must NOT be wired. See the module docstring.
-EXCLUDE_VARIANTS = ('_pawnhead',)
+# Nothing is excluded. `_npc`, `_knight` and `_pawnhead` are all patched alongside the
+# base, on the user's call (2026-09-07): they are weapon variants in exactly the sense
+# that a character variant is a character variant, so a card that tunes the weapon
+# tunes all of them at once. `_pawnhead` was briefly held back here on the argument
+# that a Crawler's head gun is a body part the player never holds -- that is true and
+# it is not the point, because the card is about the WEAPON, not about whose hands it
+# is in. Kept as an empty tuple rather than deleted so the decision stays visible.
+EXCLUDE_VARIANTS = ()
 # Suffixes that split ONE damage effect into who it lands on rather than naming two
 # different effects. A card that means the effect wants every one of them.
 AUDIENCE_SUFFIXES = ('_enemy', '_friendly')
@@ -417,9 +422,22 @@ def h4_tag_for(weapon, inherited, have, patterns, melee):
             # candidate needs no narrowing whatever the class.
             paths = cands
         else:
-            paths, why = disambiguate(cands, inherited_paths[0])
-            if paths is None:
-                return None, why
+            # Disambiguate EVERY inherited path, not just the first, and union the
+            # answers. A card can legitimately name several damage effects -- the
+            # Gravity Hammer's Hammer Damage names its explosion AND its impulse --
+            # and resolving only the first quietly halved that card in Halo 4.
+            paths, why, seen = [], None, set()
+            for src in inherited_paths:
+                got, w = disambiguate(cands, src)
+                if got is None:
+                    why = why or w
+                    continue
+                for g in got:
+                    if g not in seen:
+                        seen.add(g)
+                        paths.append(g)
+            if not paths:
+                return None, why or 'no Halo 4 match for %s' % _leaf(inherited_paths[0])
         tag = cls + ' ' + ' & '.join(paths)
     return tag, None
 
