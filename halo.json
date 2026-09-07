@@ -384,6 +384,68 @@
 				"equipment": ["Armor Lock", "Drop Shield", "Jet Pack"],
 				"turrets": ["Machine Gun", "Plasma Cannon"]
 			}
+		},
+		"Halo 4": {
+			"m10_crash": {
+				"name": "Dawn",
+				"enemies": ["Elite", "Grunt", "Jackal"],
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Magnum", "Needler", "Plasma Pistol", "Storm Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"]
+			},
+			"m020": {
+				"name": "Requiem",
+				"enemies": ["Elite", "Grunt", "Hunter", "Jackal", "Sentinel"],
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "SAW", "Sentinel Beam", "Shotgun", "Sniper Rifle", "Storm Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Active Camouflage", "Hardlight Shield"],
+				"turrets": ["Plasma Cannon", "Shade"]
+			},
+			"m30_cryptum": {
+				"name": "Forerunner",
+				"enemies": ["Crawler", "Elite", "Grunt", "Hunter", "Jackal", "Knight", "Watcher"],
+				"weapons": ["Assault Rifle", "Boltshot", "Covenant Carbine", "Flak Cannon", "Incineration Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Storm Rifle", "Suppressor"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Auto Turret", "Hardlight Shield"]
+			},
+			"m40_invasion": {
+				"name": "Infinity",
+				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight", "Sentinel"],
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "Sniper Rifle", "Storm Rifle", "Target Designator"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Hardlight Shield", "Jet Pack"],
+				"turrets": ["Shade"]
+			},
+			"m60_rescue": {
+				"name": "Reclaimer",
+				"enemies": ["Crawler", "Elite", "Grunt", "Hunter", "Jackal", "Knight", "Watcher"],
+				"weapons": ["Assault Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Railgun", "Rocket Launcher", "Scattershot", "Shotgun", "Storm Rifle", "Suppressor"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Hologram", "Promethean Vision"],
+				"turrets": ["Machine Gun"]
+			},
+			"m70_liftoff": {
+				"name": "Shutdown",
+				"enemies": ["Crawler", "Elite", "Grunt", "Hunter", "Jackal", "Knight", "Watcher"],
+				"weapons": ["Assault Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "DMR", "Flak Cannon", "Gravity Hammer", "LightRifle", "Needler", "Plasma Pistol", "Railgun", "SAW", "Scattershot", "Shotgun", "Storm Rifle", "Suppressor"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Active Camouflage", "Thruster Pack"],
+				"turrets": ["Plasma Cannon", "Shade"]
+			},
+			"m80_delta": {
+				"name": "Composer",
+				"enemies": ["Elite", "Grunt", "Hunter", "Jackal"],
+				"weapons": ["Assault Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "DMR", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Shotgun", "Spartan Laser", "Sticky Detonator", "Storm Rifle"],
+				"grenades": ["Frag Grenade", "Plasma Grenade"],
+				"equipment": ["Active Camouflage", "Auto Turret", "Thruster Pack"],
+				"turrets": ["Machine Gun", "Plasma Cannon"]
+			},
+			"m90_sacrifice": {
+				"name": "Midnight",
+				"enemies": ["Crawler", "Knight", "Sentinel", "Watcher"],
+				"weapons": ["Battle Rifle", "Binary Rifle", "Boltshot", "Covenant Carbine", "Gravity Hammer", "Incineration Cannon", "LightRifle", "Scattershot", "Suppressor"],
+				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
+				"equipment": ["Auto Turret", "Hardlight Shield", "Promethean Vision"]
+			}
 		}
 	},
 	"Player Modifiers": {
