@@ -29,12 +29,18 @@ THIRD_GEN_GAMES = {'Halo 3', 'Halo 3: ODST'}
 # block offsets are Halo 3's (starting slots, cutscene removal, ident minting) and
 # those have not been verified against Reach.
 FOURTH_GEN_GAMES = {'Halo Reach'}
+# Games on the fifth-generation (Halo 4 MCC) cache. `halo4_map.Halo4Map` subclasses
+# ReachMap, and the same reasoning keeps it out of FOURTH_GEN_GAMES: that set also
+# gates Reach-specific block offsets (placements, starting profiles, weapon pools)
+# that have not been measured against Halo 4.
+FIFTH_GEN_GAMES = {'Halo 4'}
 
 
 def open_map(map_path, game=None):
     """Open a map with the right parser for its game: Halo 2 -> `Halo2Map`
     (second-gen), Halo 3 -> `Halo3Map` (third-gen), Reach -> `ReachMap`
-    (fourth-gen), everything else -> the Halo 1 `HaloMap`."""
+    (fourth-gen), Halo 4 -> `Halo4Map` (fifth-gen), everything else -> the Halo 1
+    `HaloMap`."""
     g = str(game).strip()
     if g in SECOND_GEN_GAMES:
         import halo2_map
@@ -45,6 +51,9 @@ def open_map(map_path, game=None):
     if g in FOURTH_GEN_GAMES:
         import reach_map
         return reach_map.ReachMap(map_path)
+    if g in FIFTH_GEN_GAMES:
+        import halo4_map
+        return halo4_map.Halo4Map(map_path)
     return hm.HaloMap(map_path)
 
 

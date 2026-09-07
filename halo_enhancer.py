@@ -792,8 +792,7 @@ CONFIG = {
 
     # Whole-game enemy dials, per game, applied BEFORE any effect. Empty/absent means
     # "leave the shipped value alone"; a stored 0 means the same (the spin boxes show
-    # 0 as "vanilla"). Reach and Halo 4 have entries so the settings survive until
-    # those games are actually installed.
+    # 0 as "vanilla").
     "difficulty_baseline": {},
     # ODST's obtainable plasma rifle is the RED tag, which Halo 2 shipped as the
     # separate Brute Plasma Rifle. With this on it is offered under that name and
@@ -1002,10 +1001,12 @@ CONFIG = {
     "plugin_subdirs_by_game": {"Halo 1": ["Halo1MCC", "Halo1"], "Halo 2": ["Halo2MCC", "Halo2"],
                                "Halo 3": ["Halo3MCC", "Halo3"],
                                "Halo 3: ODST": ["ODSTMCC", "ODST"],
-                               "Halo Reach": ["ReachMCC", "Reach"]},
+                               "Halo Reach": ["ReachMCC", "Reach"],
+                               "Halo 4": ["Halo4MCC", "Halo4"]},
     "map_game_folder": {"Halo 1": "halo1/maps", "Halo 2": "halo2/h2_maps_win64_dx11",
                         "Halo 3": "halo3/maps", "Halo 3: ODST": "halo3odst/maps",
-                        "Halo Reach": "haloreach/maps"},
+                        "Halo Reach": "haloreach/maps",
+                        "Halo 4": "halo4/maps"},
     # Where the PRISTINE maps live -- the bytes every patch rebuilds from. Empty means
     # the sibling `<map>.map.bak` each game has always used. Point it at another drive
     # and the game folders hold only what MCC loads, which also puts the originals out
@@ -1883,13 +1884,11 @@ def target_fields_display(mod_data, game, games):
 
 
 GAME_SHORT = {'Halo 1': 'H1', 'Halo 2': 'H2', 'Halo 3': 'H3', 'Halo 3: ODST': 'ODST',
-              'Halo Reach': 'Reach'}
+              'Halo Reach': 'Reach', 'Halo 4': 'H4'}
 
-# Every game the difficulty baseline offers a row for. Halo 4 is not installed here
-# (its folder holds only sound stubs), so its vanilla readouts show as absent -- but
-# the settings persist, so it is ready if that game ever arrives. Reach WAS in that
-# position and no longer is: it is installed, parses, and its name here must match the
-# key halo.json's Missions section uses, which is 'Halo Reach' (no colon).
+# Every game the difficulty baseline offers a row for. All six are installed and
+# parse. The names here must match the keys halo.json's Missions section uses, which
+# is why Reach is 'Halo Reach' (no colon).
 BASELINE_GAMES = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4']
 BASELINE_COLS = [('vitality', 'Vitality'), ('shield', 'Shield'),
                  ('damage', 'Damage'), ('rof', 'Rate of Fire')]
@@ -9178,7 +9177,7 @@ class OptionsDialog(QDialog):
             sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
             import map_vault
             if game not in map_vault.MAP_FOLDER:
-                return None                      # Reach / Halo 4: no map folder at all
+                return None                      # a game with no map folder at all
             subdirs = CONFIG.get('plugin_subdirs_by_game', {}).get(game, [])
             registry = halo_patch.PluginRegistry(CONFIG.get('assembly_plugins_dir'),
                                                  subdirs)
