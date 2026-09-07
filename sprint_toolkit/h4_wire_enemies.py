@@ -249,8 +249,7 @@ def check(species, cname, card, have, registry, order, families,
     for i, t in enumerate(targets):
         if not isinstance(t, dict):
             continue
-        if isinstance(t.get('games'), list) and GAME not in t['games']:
-            tplan.setdefault(i, {})['games'] = True
+        gated_out = isinstance(t.get('games'), list) and GAME not in t['games']
         if any(t.get(k) for k in W.NON_PLUGIN_KEYS):
             continue
         tplugin, own = plugin, t.get('tag')
@@ -278,6 +277,15 @@ def check(species, cname, card, have, registry, order, families,
             continue
         if any(tplugin.find(n, blk, nth) for n in names):
             good += 1
+            if gated_out:
+                tplan.setdefault(i, {})['games'] = True
+        elif gated_out:
+            # Correctly gated to another game AND the field does not exist here --
+            # nothing to widen and nothing wrong. Grunt/Grenades Chance carries
+            # `Grenade Check Time` and `Encounter Grenade Timeout` under
+            # `games: ["Halo 1"]`, and they are Halo 1 `actv` fields that no later
+            # plugin declares; blindly widening them reported a sound card as broken.
+            continue
         elif nth and any(tplugin.find(n, blk, 0) for n in names):
             tplan.setdefault(i, {})['nth'] = 0
             good += 1
@@ -316,6 +324,9 @@ def main():
                 continue
             g = card.get('game')
             gl = [g] if isinstance(g, str) else list(g or [])
+            if GAME in (card.get('skip_games') or []):
+                # A card explicitly denied this game. Not pending work.
+                continue
             if (isinstance(card.get('tag'), dict) and GAME in card['tag']) or GAME in gl:
                 continue
             why = skip_reason(sp, cname)

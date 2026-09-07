@@ -11588,15 +11588,33 @@
 			},
 			"Vision": {
 				"desc": "General enemy vision \u2014 distance, angles, peripheral \u2014 via the shared generic AI base. Exception: the Flood Combat forms.",
-				"game": ["Halo 2", "Halo 3"],
-				"tag": "char ai\\generic",
-				"targets": [
-					{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Vision" },
-					{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
-					{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
-					{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" },
-					{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Peripheral Vision" }
-				]
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"default": "char ai\\generic", "Halo Reach": "char ai\\generic*", "Halo 4": "char ai\\generic*"},
+				"targets": {
+					"default": [
+						{ "field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Vision" },
+						{ "field": "Central Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+						{ "field": "Maximum Vision Angle", "block": "Perception Properties", "index": "all", "group": "Vision" },
+						{ "field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "group": "Peripheral Vision" },
+						{ "field": "Peripheral Distance", "block": "Perception Properties", "index": "all", "min": "0", "group": "Peripheral Vision" }
+					],
+					"Halo Reach": [
+						{"field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Reliable Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Surprise Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"},
+						{"field": "Maximum Peripheral Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"},
+						{"field": "Reliable Peripheral Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"}
+					],
+					"Halo 4": [
+						{"field": "Maximum Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Reliable Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Surprise Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Vision"},
+						{"field": "Peripheral Vision Angle", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"},
+						{"field": "Maximum Peripheral Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"},
+						{"field": "Reliable Peripheral Vision Distance", "block": "Perception Properties", "index": "all", "min": 0, "group": "Peripheral Vision"}
+					]
+				}
 			},
 			"Hearing Distance": {
 				"desc": "General enemy hearing range via the shared generic AI base. Exception: the Flood Combat forms.",
@@ -11907,53 +11925,53 @@
 				},
 				"Rate of Fire": {
 					"skip_games": ["Halo 4"],
-				 "desc": "Increases enemy Rate of Fire (shots per second).",
-				 "game": [
-				  "Halo 1",
-				  "Halo 2",
-				  "Halo Reach",
-				  "Halo 4"
-				 ],
-				 "tag": {
-				  "Halo 1": "actv characters\\elite\\*",
-				  "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-				  "Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
-				  "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
-				 },
-				 "harder_when": "increased",
-				 "targets": {
-				  "Halo 1": [
-				   {
-				    "field": "Rate Of Fire"
-				   }
-				  ],
-				  "Halo 2": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all"
-				   }
-				  ],
-				  "Halo 4": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all",
-				    "zero_is": 1.0,
-				    "min": 0
-				   }
-				  ],
-				  "Halo Reach": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all",
-				    "zero_is": 1.0,
-				    "min": 0
-				   }
-				  ]
-				 },
-				 "debug_desc": "\\n\\nReach: the elite tags define the firing-pattern block themselves, so the general Firing Patterns card no longer reaches them -- but they define Rate Of Fire as 0, and that 0 overrides what generic would have supplied. `zero_is: 1.0` gives the multiply something to act on; 1.0 is the neutral rate, not a measured Elite value, since no Elite tag in Reach ships one."
+					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"game": [
+						"Halo 1",
+						"Halo 2",
+						"Halo Reach",
+						"Halo 4"
+					],
+					"tag": {
+						"Halo 1": "actv characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
+					},
+					"harder_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Rate Of Fire"
+							}
+						],
+						"Halo 2": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all"
+							}
+						],
+						"Halo 4": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all",
+								"zero_is": 1.0,
+								"min": 0
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all",
+								"zero_is": 1.0,
+								"min": 0
+							}
+						]
+					},
+					"debug_desc": "\\n\\nReach: the elite tags define the firing-pattern block themselves, so the general Firing Patterns card no longer reaches them -- but they define Rate Of Fire as 0, and that 0 overrides what generic would have supplied. `zero_is: 1.0` gives the multiply something to act on; 1.0 is the neutral rate, not a measured Elite value, since no Elite tag in Reach ships one."
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -12618,50 +12636,50 @@
 					]
 				},
 				"Rate of Fire": {
-				 "desc": "Increases enemy Rate of Fire (shots per second).",
-				 "debug_desc": "Grunts define their own firing pattern in every game, so this never touches anything else. It named no tag past Halo 2 until 2026-08-31 -- the field was live on the grunt tags in Halo 3 and ODST all along (10.0), and the general **Firing Patterns** card could not reach them because they define the block themselves.\\n\\nReach continues the pattern: the grunt tags define the block and ship 1.5, so the card works there by multiplication with no base needed.",
-				 "game": [
-				  "Halo 1",
-				  "Halo 2",
-				  "Halo 3",
-				  "Halo Reach"
-				 ],
-				 "tag": {
-				  "Halo 1": "actv characters\\grunt\\*",
-				  "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-				  "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
-				  "Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*"
-				 },
-				 "harder_when": "increased",
-				 "targets": {
-				  "Halo 1": [
-				   {
-				    "field": "Rate Of Fire"
-				   }
-				  ],
-				  "Halo 2": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all"
-				   }
-				  ],
-				  "Halo 3": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all"
-				   }
-				  ],
-				  "Halo Reach": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all",
-				    "min": 0
-				   }
-				  ]
-				 }
+					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"debug_desc": "Grunts define their own firing pattern in every game, so this never touches anything else. It named no tag past Halo 2 until 2026-08-31 -- the field was live on the grunt tags in Halo 3 and ODST all along (10.0), and the general **Firing Patterns** card could not reach them because they define the block themselves.\\n\\nReach continues the pattern: the grunt tags define the block and ship 1.5, so the card works there by multiplication with no base needed.",
+					"game": [
+						"Halo 1",
+						"Halo 2",
+						"Halo 3",
+						"Halo Reach"
+					],
+					"tag": {
+						"Halo 1": "actv characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*"
+					},
+					"harder_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Rate Of Fire"
+							}
+						],
+						"Halo 2": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all"
+							}
+						],
+						"Halo 3": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all"
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all",
+								"min": 0
+							}
+						]
+					}
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -12724,14 +12742,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
 						{ "field": "Grenade Chance", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" }, "min": 0, "max": 1 },
-						{"field": "Anti-Vehicle Grenade Chance", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "max": 1},
+						{"field": "Anti-Vehicle Grenade Chance", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "max": 1},
 						{ "field": "Grenade Check Time", "games": ["Halo 1"] },
 						{ "field": "Encounter Grenade Timeout", "games": ["Halo 1"] },
-						{"field": "Grenade Throw Delay", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
+						{"field": "Grenade Throw Delay", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Weapon Damage Modifier": {
@@ -12864,6 +12883,16 @@
 				}
 			},
 			"Jackal": {
+				"Arm Shield": {
+					"desc": "How much punishment their arm shield takes before it breaks.",
+					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "hlmt objects\\weapons\\melee\\jackal_shield\\jackal_shield", "Halo 4": "hlmt objects\\weapons\\melee\\jackal_shield\\jackal_shield*"},
+					"targets": [
+						{"field": "Maximum Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
+						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"}
+					]
+				},
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
@@ -12917,6 +12946,7 @@
 					]
 				},
 				"Vision": {
+					"skip_games": ["Halo Reach", "Halo 4"],
 					"desc": "Vision Distance, Angles, Peripheral",
 					"game": ["Halo 1", "Halo 3"],
 					"tag": {
@@ -13028,116 +13058,116 @@
 					"game": "Halo 1"
 				},
 				"Cover Properties": {
-				 "desc": "How long they stay in cover, and how hurt they have to be to want it.",
-				 "debug_desc": "Cover-seeking time plus shield and vitality thresholds. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.\\n\\nReach aims at the jackal tags rather than the shared base: they define the cover block themselves (hide time 3.0-5.0, vitality threshold 0.8), so the Halo 2 and Halo 3 edit on `ai\\\\generic` would no longer land on them.",
-				 "tag": {
-				  "Halo 1": "actr characters\\jackal\\*",
-				  "Halo 2": "char ai\\generic",
-				  "Halo 3": "char ai\\generic",
-				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
-				  "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
-				 },
-				 "targets": {
-				  "Halo 1": [
-				   {
-				    "field": "Hide Behind Cover Time",
-				    "group": "Hide Behind Cover Time"
-				   },
-				   {
-				    "field": "Hide Behind Cover Time Max",
-				    "group": "Hide Behind Cover Time"
-				   },
-				   {
-				    "field": "Hide Shield Fraction",
-				    "min": "0",
-				    "max": "1",
-				    "group": "Shield Fractions"
-				   },
-				   {
-				    "field": "Attack Shield Fraction",
-				    "min": "0",
-				    "max": "1",
-				    "group": "Shield Fractions"
-				   },
-				   {
-				    "field": "Pursue Shield Fraction",
-				    "min": "0",
-				    "max": "1",
-				    "group": "Shield Fractions"
-				   }
-				  ],
-				  "Halo 2": [
-				   {
-				    "field": "Hide Behind Cover Time",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time"
-				   },
-				   {
-				    "field": "Hide Behind Cover Time Max",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time"
-				   },
-				   {
-				    "field": "Cover Vitality Threshold",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "min": "0",
-				    "max": "1"
-				   }
-				  ],
-				  "Halo 4": [
-				   {
-				    "field": "Hide Behind Cover Time",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time",
-				    "min": 0
-				   },
-				   {
-				    "field": "Hide Behind Cover Time Max",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time",
-				    "min": 0
-				   },
-				   {
-				    "field": "Cover Vitality Threshold",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "min": 0,
-				    "max": 1
-				   }
-				  ],
-				  "Halo Reach": [
-				   {
-				    "field": "Hide Behind Cover Time",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time",
-				    "min": 0
-				   },
-				   {
-				    "field": "Hide Behind Cover Time Max",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "group": "Hide Behind Cover Time",
-				    "min": 0
-				   },
-				   {
-				    "field": "Cover Vitality Threshold",
-				    "block": "Cover Properties",
-				    "index": "all",
-				    "min": 0,
-				    "max": 1
-				   }
-				  ]
-				 },
-				 "game": [
-				  "Halo Reach",
-				  "Halo 4"
-				 ]
+					"desc": "How long they stay in cover, and how hurt they have to be to want it.",
+					"debug_desc": "Cover-seeking time plus shield and vitality thresholds. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.\\n\\nReach aims at the jackal tags rather than the shared base: they define the cover block themselves (hide time 3.0-5.0, vitality threshold 0.8), so the Halo 2 and Halo 3 edit on `ai\\\\generic` would no longer land on them.",
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char ai\\generic",
+						"Halo 3": "char ai\\generic",
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Hide Behind Cover Time",
+								"group": "Hide Behind Cover Time"
+							},
+							{
+								"field": "Hide Behind Cover Time Max",
+								"group": "Hide Behind Cover Time"
+							},
+							{
+								"field": "Hide Shield Fraction",
+								"min": "0",
+								"max": "1",
+								"group": "Shield Fractions"
+							},
+							{
+								"field": "Attack Shield Fraction",
+								"min": "0",
+								"max": "1",
+								"group": "Shield Fractions"
+							},
+							{
+								"field": "Pursue Shield Fraction",
+								"min": "0",
+								"max": "1",
+								"group": "Shield Fractions"
+							}
+						],
+						"Halo 2": [
+							{
+								"field": "Hide Behind Cover Time",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time"
+							},
+							{
+								"field": "Hide Behind Cover Time Max",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time"
+							},
+							{
+								"field": "Cover Vitality Threshold",
+								"block": "Cover Properties",
+								"index": "all",
+								"min": "0",
+								"max": "1"
+							}
+						],
+						"Halo 4": [
+							{
+								"field": "Hide Behind Cover Time",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time",
+								"min": 0
+							},
+							{
+								"field": "Hide Behind Cover Time Max",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time",
+								"min": 0
+							},
+							{
+								"field": "Cover Vitality Threshold",
+								"block": "Cover Properties",
+								"index": "all",
+								"min": 0,
+								"max": 1
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Hide Behind Cover Time",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time",
+								"min": 0
+							},
+							{
+								"field": "Hide Behind Cover Time Max",
+								"block": "Cover Properties",
+								"index": "all",
+								"group": "Hide Behind Cover Time",
+								"min": 0
+							},
+							{
+								"field": "Cover Vitality Threshold",
+								"block": "Cover Properties",
+								"index": "all",
+								"min": 0,
+								"max": 1
+							}
+						]
+					},
+					"game": [
+						"Halo Reach",
+						"Halo 4"
+					]
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
@@ -13163,42 +13193,42 @@
 					]
 				},
 				"Rate of Fire": {
-				 "desc": "Increases enemy Rate of Fire (shots per second).",
-				 "game": [
-				  "Halo 1",
-				  "Halo Reach",
-				  "Halo 4"
-				 ],
-				 "tag": {
-				  "Halo 1": "actv characters\\jackal\\*",
-				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
-				  "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
-				 },
-				 "harder_when": "increased",
-				 "targets": {
-				  "Halo 1": [
-				   {
-				    "field": "Rate Of Fire"
-				   }
-				  ],
-				  "Halo 4": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all",
-				    "min": 0
-				   }
-				  ],
-				  "Halo Reach": [
-				   {
-				    "field": "Rate Of Fire",
-				    "block": "Firing Pattern Properties/Firing Patterns",
-				    "index": "all",
-				    "min": 0
-				   }
-				  ]
-				 },
-				 "debug_desc": "\\n\\nHalo 1 aims at the jackal ACTOR tag; Reach aims at the jackal char tags, which define their own firing pattern at 3.0. The two games are the only ones this card claims -- Halo 2 through ODST leave the Jackal inheriting, where the general Firing Patterns card already reaches it."
+					"desc": "Increases enemy Rate of Fire (shots per second).",
+					"game": [
+						"Halo 1",
+						"Halo Reach",
+						"Halo 4"
+					],
+					"tag": {
+						"Halo 1": "actv characters\\jackal\\*",
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
+					},
+					"harder_when": "increased",
+					"targets": {
+						"Halo 1": [
+							{
+								"field": "Rate Of Fire"
+							}
+						],
+						"Halo 4": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all",
+								"min": 0
+							}
+						],
+						"Halo Reach": [
+							{
+								"field": "Rate Of Fire",
+								"block": "Firing Pattern Properties/Firing Patterns",
+								"index": "all",
+								"min": 0
+							}
+						]
+					},
+					"debug_desc": "\\n\\nHalo 1 aims at the jackal ACTOR tag; Reach aims at the jackal char tags, which define their own firing pattern at 3.0. The two games are the only ones this card claims -- Halo 2 through ODST leave the Jackal inheriting, where the general Firing Patterns card already reaches it."
 				},
 				"Accuracy": {
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
@@ -13268,7 +13298,6 @@
 					}
 				},
 				"Shield Vitality": {
-					"skip_games": ["Halo 4"],
 					"desc": "Shield Power",
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
@@ -13278,13 +13307,13 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Shield Vitality" }
+							{ "field": "Shield Vitality"}
 						],
 						"Halo 4": [
-							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "zero_is": 5}
 						],
 						"Halo 2": [
-							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
+							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
 						]
 					}
 				},
@@ -14800,6 +14829,16 @@
 				}
 			},
 			"Skirmisher": {
+				"Arm Shield": {
+					"desc": "How much punishment their bracers take before they break.",
+					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.",
+					"game": ["Halo Reach"],
+					"tag": {"Halo Reach": "hlmt objects\\weapons\\melee\\skirmisher_bracers\\skirmisher_bracers"},
+					"targets": [
+						{"field": "Maximum Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
+						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"}
+					]
+				},
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
