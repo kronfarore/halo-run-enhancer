@@ -55,6 +55,13 @@ for game, subs, mp in CASES:
     for path, c in cards:
         if not he._game_ok_static(c, game) if hasattr(he, '_game_ok_static') else False:
             continue
+        # `skip_games` is a DENY list and wins over the allow list, exactly as
+        # _game_ok has it. Without this the audit reports cards that were
+        # deliberately gated out of a game -- which is the opposite of dead.
+        sk = c.get('skip_games')
+        sk = [sk] if isinstance(sk, str) else (sk or [])
+        if game in sk:
+            continue
         g = c.get('game')
         g = [g] if isinstance(g, str) else g
         if g and game not in g:

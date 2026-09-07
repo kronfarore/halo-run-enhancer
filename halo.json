@@ -11809,8 +11809,8 @@
 					]
 				},
 				"Cover Chance": {
+					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
-					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
@@ -11974,6 +11974,7 @@
 					"debug_desc": "\\n\\nReach: the elite tags define the firing-pattern block themselves, so the general Firing Patterns card no longer reaches them -- but they define Rate Of Fire as 0, and that 0 overrides what generic would have supplied. `zero_is: 1.0` gives the multiply something to act on; 1.0 is the neutral rate, not a measured Elite value, since no Elite tag in Reach ships one."
 				},
 				"Accuracy": {
+					"skip_games": ["Halo 4"],
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"game": ["Halo 1", "Halo 2"],
 					"tag": {
@@ -12134,6 +12135,7 @@
 					]
 				},
 				"Upgrade Chance": {
+					"skip_games": ["Halo 4"],
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
@@ -12336,8 +12338,8 @@
 					]
 				},
 				"Accuracy": {
+					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
-					"skip_games": ["Halo Reach"],
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
@@ -12552,8 +12554,8 @@
 					]
 				},
 				"Cover Chance": {
+					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Chance of seeking cover (Halo 2 scales all 3 Cover Properties ranges); Emerge From Cover is Halo 1 only",
-					"skip_games": ["Halo Reach"],
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -12682,6 +12684,7 @@
 					}
 				},
 				"Accuracy": {
+					"skip_games": ["Halo 4"],
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
@@ -12784,6 +12787,7 @@
 					}
 				},
 				"Upgrade Chance": {
+					"skip_games": ["Halo 4"],
 					"desc": "Chance of spawning as a tougher upgraded variant, per upgrade pool size",
 					"tag": {
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -12851,6 +12855,7 @@
 					]
 				},
 				"Stun Behavior": {
+					"skip_games": ["Halo 4"],
 					"desc": "Change the Stun threshold and the stun duration",
 					"tag": {
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -13013,7 +13018,7 @@
 				},
 				"Cover Chance": {
 					"desc": "How readily they duck into cover instead of standing in the open.",
-					"skip_games": ["Halo Reach"],
+					"skip_games": ["Halo Reach", "Halo 4"],
 					"debug_desc": "Halo 1 uses dive-into / emerge-from cover chance; Halo 2 uses a cover-seeking chance. In Halo 2 this edits the shared AI base, so it also moves Jackals and Sentinel Enforcers.",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
@@ -13231,6 +13236,7 @@
 					"debug_desc": "\\n\\nHalo 1 aims at the jackal ACTOR tag; Reach aims at the jackal char tags, which define their own firing pattern at 3.0. The two games are the only ones this card claims -- Halo 2 through ODST leave the Jackal inheriting, where the general Firing Patterns card already reaches it."
 				},
 				"Accuracy": {
+					"skip_games": ["Halo 4"],
 					"desc": "Enemy weapon accuracy. H1: projectile error. H2: accuracy bounds/time.",
 					"desc_overrides": { "Halo 3": "In Halo 3 this is one of the few enemies that defines its own values, so it overrides the general Accuracy modifier." },
 					"tag": {
