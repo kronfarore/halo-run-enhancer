@@ -10574,43 +10574,76 @@
 			"Energy Drain": {
 				"desc": "How fast the jet pack burns its meter while you fly.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
-				"targets": [
-					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
-					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"}
-				]
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\jet_pack\\jet_pack",
+					"Halo 4": "eqip objects\\equipment\\storm_jet_pack\\storm_jet_pack*"
+				},
+				"targets": {
+					"default": [
+						{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+						{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+					],
+					"Halo 4": [
+						{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+						{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"},
+						{"field": "Deactivation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+					]
+				}
 			},
 			"Recharge": {
 				"desc": "How quickly the jet pack refuels once you land.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
-				"targets": [
-					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
-				]
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\jet_pack\\jet_pack",
+					"Halo 4": "eqip objects\\equipment\\storm_jet_pack\\storm_jet_pack*"
+				},
+				"targets": {
+					"default": [
+						{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					]
+				}
 			},
 			"Activation Energy": {
 				"desc": "How much fuel you need banked before you can take off.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\jet_pack\\jet_pack",
+					"Halo 4": "eqip objects\\equipment\\storm_jet_pack\\storm_jet_pack*"
+				},
 				"targets": [
 					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
 				]
 			},
 			"Thrust": {
 				"desc": "How hard the jet pack pushes, and how long the push lasts.",
-				"debug_desc": "Reach's `Jetpack` block. `Thrust Attack Time` (2.5) is how long thrust builds, `Thrust Decay Time` (0.5) how fast it bleeds off, `Negative Velocity Acceleration Scale` (1.9) how hard it fights a fall, `Grounded Acceleration Magnitude` (1.3) the kick off the ground, and `Landing Anticipation Time` (0.5) the cutoff as you come down.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\jet_pack\\jet_pack",
-				"targets": [
-					{"field": "Thrust Attack Time", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
-					{"field": "Thrust Decay Time", "block": "Jetpack", "index": 0, "min": 0},
-					{"field": "Negative Velocity Acceleration Scale", "block": "Jetpack", "index": 0, "min": 0},
-					{"field": "Grounded Acceleration Magnitude", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
-					{"field": "Landing Anticipation Time", "block": "Jetpack", "index": 0, "min": 0}
-				]
+				"debug_desc": "Reach's `Jetpack` block. `Thrust Attack Time` (2.5) is how long thrust builds, `Thrust Decay Time` (0.5) how fast it bleeds off, `Negative Velocity Acceleration Scale` (1.9) how hard it fights a fall, `Grounded Acceleration Magnitude` (1.3) the kick off the ground, and `Landing Anticipation Time` (0.5) the cutoff as you come down.\\n\\nHalo 4 renamed this block `Jetpack` -> `Jet Pack` and nested it under `Abilities`. Every field survived the move; the rename alone is why this card read nothing in Halo 4 before. Halo 4 keeps Reach's attack 2.5, decay 0.5 and landing 0.5, and only the two acceleration figures differ: negative-velocity scale 1.45 and grounded 1.3, against 1.9 and 1.7 on the campaign `_pve` tag, which climbs harder than the multiplayer one.",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\jet_pack\\jet_pack",
+					"Halo 4": "eqip objects\\equipment\\storm_jet_pack\\storm_jet_pack*"
+				},
+				"targets": {
+					"default": [
+						{"field": "Thrust Attack Time", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
+						{"field": "Thrust Decay Time", "block": "Jetpack", "index": 0, "min": 0},
+						{"field": "Negative Velocity Acceleration Scale", "block": "Jetpack", "index": 0, "min": 0},
+						{"field": "Grounded Acceleration Magnitude", "block": "Jetpack", "index": 0, "harder_when": "decreased", "min": 0},
+						{"field": "Landing Anticipation Time", "block": "Jetpack", "index": 0, "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Thrust Attack Time", "block": "Jet Pack", "index": 0, "harder_when": "decreased", "min": 0},
+						{"field": "Thrust Decay Time", "block": "Jet Pack", "index": 0, "min": 0},
+						{"field": "Negative Velocity Acceleration Scale", "block": "Jet Pack", "index": 0, "min": 0},
+						{"field": "Grounded Acceleration Magnitude", "block": "Jet Pack", "index": 0, "harder_when": "decreased", "min": 0},
+						{"field": "Landing Anticipation Time", "block": "Jet Pack", "index": 0, "min": 0}
+					]
+				}
 			}
 		},
 		"Armor Lock": {
@@ -10715,27 +10748,48 @@
 			"Energy Drain": {
 				"desc": "How fast staying invisible burns the meter.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
-				"targets": [
-					{"field": "Activation Energy Cost", "harder_when": "decreased"}
-				]
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+					"Halo 4": "eqip objects\\equipment\\storm_active_camo\\storm_active_camo*"
+				},
+				"targets": {
+					"default": [
+						{"field": "Activation Energy Cost", "harder_when": "decreased"}
+					],
+					"Halo 4": [
+						{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+						{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "increased"},
+						{"field": "Deactivation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+					]
+				}
 			},
 			"Recharge": {
 				"desc": "How quickly your camo comes back.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
-				"targets": [
-					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
-					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
-				]
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+					"Halo 4": "eqip objects\\equipment\\storm_active_camo\\storm_active_camo*"
+				},
+				"targets": {
+					"default": [
+						{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					]
+				}
 			},
 			"Activation Energy": {
 				"desc": "How much meter you need banked to go invisible.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+					"Halo 4": "eqip objects\\equipment\\storm_active_camo\\storm_active_camo*"
+				},
 				"targets": [
 					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
 				]
@@ -10743,8 +10797,11 @@
 			"Camo Break": {
 				"desc": "How much moving and shooting gives you away.",
 				"debug_desc": "`Movement Speed Domain` (2.0) is the speed at which moving fully breaks your camo -- raise it and you can move faster while still faded -- and `Awareness Time` (0.5) how long enemies keep looking once something tips them off. The matg `Active Camo` block holds the global reference speeds this is measured against.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+					"Halo 4": "eqip objects\\equipment\\storm_active_camo\\storm_active_camo*"
+				},
 				"targets": [
 					{"field": "Movement Speed Domain", "harder_when": "decreased", "min": 0},
 					{"field": "Awareness Time", "harder_when": "decreased", "min": 0}
@@ -10753,8 +10810,11 @@
 			"Motion Tracker Noise": {
 				"desc": "The false blips your camo scatters on enemy radar.",
 				"debug_desc": "The same block Halo 3's Jammer uses: Reach's camo scatters `Noise Count` (10) false blips within `Noise Radius` (10) after `Arm Time` (1s), plus a `Flash Radius` (5).",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\active_camouflage\\active_camouflage",
+					"Halo 4": "eqip objects\\equipment\\storm_active_camo\\storm_active_camo*"
+				},
 				"targets": [
 					{"field": "Arm Time", "block": "Motion Tracker Noise", "index": 0, "min": 0},
 					{"field": "Noise Radius", "block": "Motion Tracker Noise", "index": 0, "harder_when": "decreased", "min": 0},
@@ -10767,8 +10827,11 @@
 			"Energy Drain": {
 				"desc": "How much meter each decoy costs you.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\hologram\\hologram",
+					"Halo 4": "eqip objects\\equipment\\storm_hologram\\storm_hologram"
+				},
 				"targets": [
 					{"field": "Activation Energy Cost", "harder_when": "decreased"}
 				]
@@ -10776,17 +10839,28 @@
 			"Recharge": {
 				"desc": "How quickly you can send out another decoy.",
 				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\hologram\\hologram",
-				"targets": [
-					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
-				]
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\hologram\\hologram",
+					"Halo 4": "eqip objects\\equipment\\storm_hologram\\storm_hologram"
+				},
+				"targets": {
+					"default": [
+						{"field": "Recharge Rate", "harder_when": "decreased", "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					]
+				}
 			},
 			"Duration": {
 				"desc": "How long the decoy walks before it fades.",
 				"debug_desc": "The dome and its healing field live in a SECOND tag, `drop_shield_shield`, not in the ability you carry -- so both rows redirect there with a per-target `tag`. `Proximity Mine / Self Destruct Time` (15s) is the dome's life and `Tree Of Life / Radius` (1.1) the healing field.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\hologram\\hologram",
+					"Halo 4": "eqip objects\\equipment\\storm_hologram\\storm_hologram"
+				},
 				"targets": [
 					{"field": "Hologram Duration", "block": "Hologram", "index": 0, "harder_when": "decreased", "min": 0}
 				]
@@ -10794,11 +10868,146 @@
 			"Shimmer": {
 				"desc": "How readable the decoy is as a fake.",
 				"debug_desc": "`Shimmer Decrease Rate` (0.5) is how fast the decoy settles into looking solid; `Shimmer Bullet Ping` (1.0) how much it flares when shot -- the tell that gives a hologram away.",
-				"game": "Halo Reach",
-				"tag": "eqip objects\\equipment\\hologram\\hologram",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": {
+					"default": "eqip objects\\equipment\\hologram\\hologram",
+					"Halo 4": "eqip objects\\equipment\\storm_hologram\\storm_hologram"
+				},
 				"targets": [
 					{"field": "Shimmer Decrease Rate", "block": "Hologram", "index": 0, "min": 0},
 					{"field": "Shimmer Bullet Ping", "block": "Hologram", "index": 0, "min": 0}
+				]
+			}
+		},
+		"Hardlight Shield": {
+			"Energy Drain": {
+				"desc": "How fast holding the shield up burns your meter.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_active_shield\\storm_active_shield*",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Deactivation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can raise it.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_active_shield\\storm_active_shield*",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the meter comes back once you drop it.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_active_shield\\storm_active_shield*",
+				"targets": [
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Warmup Time": {
+				"desc": "How long the shield takes to come up, and to be ready again.",
+				"debug_desc": "The Hardlight Shield's toughness lives in the `Abilities / IWHBYDaddy` block -- the shield is a child object the ability spawns in front of you, and that block is how the parent drives it. `Shield Damage To Energy Scale` (-1.0) is the conversion: every point of damage the shield eats costs that much meter, so multiplying it makes the shield break faster under the same fire. `Visual Activation Time` (0.5) is how long the panel takes to come up.\\n\\nThis is also the only Halo 4 ability with a non-zero `Warmup Time` and `Cooldown Time` (0.25 each), which is why it is the only one carrying that card.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_active_shield\\storm_active_shield*",
+				"targets": [
+					{"field": "Warmup Time", "harder_when": "increased", "min": 0},
+					{"field": "Cooldown Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Shield Strength": {
+				"desc": "How much punishment the shield soaks before your meter is gone.",
+				"debug_desc": "The Hardlight Shield's toughness lives in the `Abilities / IWHBYDaddy` block -- the shield is a child object the ability spawns in front of you, and that block is how the parent drives it. `Shield Damage To Energy Scale` (-1.0) is the conversion: every point of damage the shield eats costs that much meter, so multiplying it makes the shield break faster under the same fire. `Visual Activation Time` (0.5) is how long the panel takes to come up.\\n\\nThis is also the only Halo 4 ability with a non-zero `Warmup Time` and `Cooldown Time` (0.25 each), which is why it is the only one carrying that card.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_active_shield\\storm_active_shield*",
+				"targets": [
+					{"field": "Shield Damage To Energy Scale", "block": "IWHBYDaddy", "harder_when": "decreased"},
+					{"field": "Visual Activation Time", "block": "IWHBYDaddy", "harder_when": "increased", "min": 0}
+				]
+			}
+		},
+		"Promethean Vision": {
+			"Energy Drain": {
+				"desc": "How fast a Promethean Vision pulse burns your meter.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_forerunner_vision\\storm_forerunner_vision*",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Deactivation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can scan.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_forerunner_vision\\storm_forerunner_vision*",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the meter comes back after a scan.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_forerunner_vision\\storm_forerunner_vision*",
+				"targets": [
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Vision Range": {
+				"desc": "How far the scan reaches, and how long what it finds stays lit.",
+				"debug_desc": "`Abilities / Vision Mode`. `Maximum Tell Distance` (26.25) is how far Promethean Vision reaches -- past it nothing lights up -- and it is the dial that decides whether the ability is a room scanner or a building scanner. `Motion Sensor Tell Blip Ticks` (90) is how long a pinged enemy keeps showing on the motion sensor afterwards.\\n\\nRaising either makes the game EASIER, so the harder direction on both rows is down.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_forerunner_vision\\storm_forerunner_vision*",
+				"targets": [
+					{"field": "Maximum Tell Distance", "block": "Vision Mode", "harder_when": "decreased", "min": 0},
+					{"field": "Motion Sensor Tell Blip Ticks", "block": "Vision Mode", "harder_when": "decreased", "min": 0}
+				]
+			}
+		},
+		"Thruster Pack": {
+			"Energy Drain": {
+				"desc": "What one thrust costs you.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_thruster_pack\\*",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Activation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can dodge.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_thruster_pack\\*",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly you get another dodge.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_thruster_pack\\*",
+				"targets": [
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Thrust": {
+				"desc": "How hard the dodge throws you.",
+				"debug_desc": "`Abilities / Special Move`. The Thruster Pack is a one-shot, not a drain: it charges the FULL meter up front (`Activation Energy Cost` -1.0, `Minimum Activation Energy` 1.0) and has no active drain at all, so the only thing governing how often you get one is the recharge. `Speed Multiplier` (0.82, and 0.9 on the campaign `_pve` tag) is how hard the dodge throws you and `Danger Radius` (3.5) how much room it needs.\\n\\nThe Flood variant `flood_storm_thruster_pack` sits in the same folder and the tag wildcard catches it, so infected thrusters move with yours.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_thruster_pack\\*",
+				"targets": [
+					{"field": "Speed Multiplier", "block": "Special Move", "harder_when": "decreased", "min": 0},
+					{"field": "Danger Radius", "block": "Special Move", "min": 0}
 				]
 			}
 		},
@@ -11301,25 +11510,98 @@
 			},
 			"Projectiles Per Shot": {
 				"desc": "More shots per shot for the turret",
-				"game": "Halo 3",
+				"game": ["Halo 3", "Halo 4"],
 				"tag": {
-					"Halo 3": "weap objects\\equipment\\autoturret\\autoturret_beam"
+					"Halo 3": "weap objects\\equipment\\autoturret\\autoturret_beam",
+					"Halo 4": "weap objects\\equipment\\storm_auto_turret\\weapon\\weapon*"
 				},
 				"targets": [
 					{ "field": "Projectiles Per Shot", "block": "Barrels", "index": "all" }
 				]
 			},
 			"Turret Damage": {
-				"desc": "Melee Damage from Elite",
+				"desc": "How hard the deployable turret hits.",
+				"debug_desc": "\\n\\nHalo 3 put the deployable turret's damage on `autoturret_beam_impact`. Halo 4 has no such tag: the Autosentry fires `turret_secondary_round` (14.0 across all three bounds) and carries a `turret_explosion` family for its death blast, which ships at 0.0 on every bound and so is inert until something raises it. All three campaign variants -- stock, `_pve` and `_knight` -- are covered by the wildcards.",
+				"game": ["Halo 3", "Halo 4"],
 				"tag": {
-					"Halo 3": "jpt! objects\\equipment\\autoturret\\damage_effects\\autoturret_beam_impact"
+					"Halo 3": "jpt! objects\\equipment\\autoturret\\damage_effects\\autoturret_beam_impact",
+					"Halo 4": "jpt! objects\\equipment\\storm_auto_turret\\damage effects\\turret_secondary_round* & objects\\equipment\\storm_auto_turret\\damage effects\\turret_explosion*"
 				},
 				"targets": [
 					{ "field": "Damage Lower Bound", "group": "Damage" },
 					{ "field": "Damage Upper Bound", "group": "Damage" },
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
-			}	
+			},	
+			"Energy Drain": {
+				"desc": "How fast a deployed Autosentry burns your meter.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Active Energy Rate", "group": "Energy", "harder_when": "decreased"},
+					{"field": "Deactivation Energy Cost", "group": "Energy", "harder_when": "decreased"}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can deploy it.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the meter comes back after it expires.",
+				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` does not exist in Halo 4** -- it is the only equipment field the game removes -- so the Recharge card runs on `Energy Recovery Time` alone here.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Turret Drain": {
+				"desc": "How long a deployed Autosentry lasts before it runs you dry.",
+				"debug_desc": "The Autosentry's own drain multipliers, on top of the shared meter: `Turret Idle Equipment Drain Multiplier` (0.125) is what it costs you while the drone is deployed but not shooting, and `Turret Inactive Equipment Drain Multiplier` (0.0) while it is stowed. Raising the idle multiplier is what shortens a single deployment.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Turret Idle Equipment Drain Multiplier", "block": "Auto Turret", "harder_when": "increased", "min": 0},
+					{"field": "Turret Inactive Equipment Drain Multiplier", "block": "Auto Turret", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Orbit": {
+				"desc": "How closely and how quickly the drone circles you.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Orbit Range", "block": "Auto Turret", "min": 0},
+					{"field": "Orbit Rate", "block": "Auto Turret", "min": 0}
+				]
+			},
+			"Chase Speed": {
+				"desc": "How far and how fast the drone will follow you.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Maximum Range", "block": "Auto Turret", "harder_when": "decreased", "min": 0},
+					{"field": "Maximum Velocity", "block": "Auto Turret", "harder_when": "decreased", "min": 0},
+					{"field": "Maximum Acceleration", "block": "Auto Turret", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Deploy Time": {
+				"desc": "How long before the drone is up and shooting.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
+				"targets": [
+					{"field": "Spawn In Time", "block": "Auto Turret", "harder_when": "increased", "min": 0},
+					{"field": "Turret Halt Engage Time", "block": "Auto Turret", "harder_when": "increased", "min": 0}
+				]
+			}
 		},	
 		"Invisibility": {
 			"Map Presence": {
