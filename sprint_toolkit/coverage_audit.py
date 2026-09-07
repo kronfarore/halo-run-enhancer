@@ -840,7 +840,11 @@ def turret_pass(db, args):
                 mark = '   << USEFUL' if (cls, name) in useful else ''
                 print('         %-5s %-52s %2d map(s)%s'
                       % (cls, str(name).rsplit(chr(92), 1)[-1][:52], nmaps, mark))
-                for f, b in sorted(useful.get((cls, name), ())):
+                # `b` (the block) is None for a root-level field, and Python will not
+        # order None against a str -- Halo 4 is the first game whose data mixes
+        # both in one set, which is what turned this into a crash.
+        for f, b in sorted(useful.get((cls, name), ()),
+                           key=lambda fb: (fb[0] or '', fb[1] or '')):
                     print('              %-38s %s' % (f, b or ''))
         grand += len(rows)
         useful_total += len(useful)

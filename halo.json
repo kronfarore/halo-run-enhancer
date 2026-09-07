@@ -11704,18 +11704,18 @@
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
-					"game": ["Halo 2", "Halo Reach"],
-					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"game": ["Halo 2", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"targets": [
 						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
-						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach", "Halo 4"], "group": "Scary Threshold"}
 					]
 				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
-					"game": ["Halo Reach"],
-					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"targets": [
 						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
 					]
@@ -11733,8 +11733,8 @@
 				"Leap": {
 					"desc": "How readily Elites vault obstacles to get at you.",
 					"debug_desc": "Height and proximity. Stock 0.8 height / 0.4 proximity; the jetpack Elite is 2.0/0.5. Both fields are new in Reach — no earlier game has them.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Maximum Leap Height", "block": "Movement Properties", "index": "all", "min": 0 },
@@ -11744,8 +11744,8 @@
 				"Armor Lock": {
 					"desc": "How often Elites armour-lock to shrug off your shots, and how long it holds.",
 					"debug_desc": "Stock 15% chance and 5s cooldown on the base Elite; 30%/3.5s/0.5s/3s on the Ultra. The base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"targets": [
 						{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
@@ -11818,7 +11818,8 @@
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
@@ -11829,7 +11830,8 @@
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -11838,6 +11840,12 @@
 							{ "field": "Hide Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
 							{ "field": "Attack Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" },
 							{ "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
+						],
+						"Halo 4": [
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
@@ -11852,12 +11860,13 @@
 					"tag": {
 						"Halo 1": "actr characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
+						{ "field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 4"], "index": "all", "harder_when": "increased", "min": 0, "max": 1 }
 					]
 				},
 				"Elite Berserk": {
@@ -11885,10 +11894,11 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"game": ["Halo 1", "Halo 2", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -11899,12 +11909,14 @@
 				 "game": [
 				  "Halo 1",
 				  "Halo 2",
-				  "Halo Reach"
+				  "Halo Reach",
+				  "Halo 4"
 				 ],
 				 "tag": {
 				  "Halo 1": "actv characters\\elite\\*",
 				  "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-				  "Halo Reach": "char objects\\characters\\elite\\ai\\elite*"
+				  "Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+				  "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 				 },
 				 "harder_when": "increased",
 				 "targets": {
@@ -11918,6 +11930,15 @@
 				    "field": "Rate Of Fire",
 				    "block": "Firing Pattern Properties/Firing Patterns",
 				    "index": "all"
+				   }
+				  ],
+				  "Halo 4": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all",
+				    "zero_is": 1.0,
+				    "min": 0
 				   }
 				  ],
 				  "Halo Reach": [
@@ -11956,19 +11977,20 @@
 				},
 				"Grenades": {
 					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
 						"Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"init_defaults": {
 						"Halo 1": { "tag": "actv characters\\elite\\*", "source": "actv characters\\grunt\\grunt minor plasma pistol", "only_if_zero": "Grenade Stimulus", "copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"], "set": { "Grenade Stimulus": "Visible Target" } }
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3: ODST", "Halo 3", "Halo Reach"]},
+						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3: ODST", "Halo 3", "Halo Reach", "Halo 4"]},
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -12003,13 +12025,14 @@
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
-						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
 						{ "field": "Target Tracking" },
 						{ "field": "Target Leading" }
 					],
-					"game": ["Halo 1", "Halo Reach"]
+					"game": ["Halo 1", "Halo Reach", "Halo 4"]
 				},
 				"Weapon Damage Modifier": {
 					"desc": "Fraction of damage of the weapon used",
@@ -12026,11 +12049,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -12042,11 +12069,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\elite\\*",
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Shield Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -12059,7 +12090,8 @@
 						"Halo 1": "jpt! characters\\elite\\elite melee",
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\heretic\\damage_effects\\heretic_melee & objects\\characters\\heretic\\damage_effects\\heretic_boarding_melee & objects\\characters\\heretic\\damage_effects\\heretic_obstacle_smash",
 						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
-						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
+						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo 4": "jpt! objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -12072,7 +12104,8 @@
 					"tag": {
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\heretic\\damage_effects\\heretic_melee & objects\\characters\\heretic\\damage_effects\\heretic_boarding_melee & objects\\characters\\heretic\\damage_effects\\heretic_obstacle_smash",
 						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
-						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash"
+						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
+						"Halo 4": "jpt! objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
 					},
 					"targets": [
 						{ "field": "Radius", "group": "Radius", "min": 0 },
@@ -12096,13 +12129,14 @@
 					"debug_desc": "Defined on every Halo 2, Halo 3 and ODST level that fields Elites. ODST inherits the Halo 3 entry. In ODST the Elites never spawn, so the *Elites are allies* option keeps this out of a run unless you turn it off.",
 					"tag": {
 						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
-						"Halo 3": "char objects\\characters\\elite\\ai\\elite*"
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo Reach"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				}
 			},
 			"Hunter": {
@@ -12119,8 +12153,8 @@
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
-					"game": ["Halo Reach"],
-					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"},
 					"targets": [
 						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
 					]
@@ -12132,7 +12166,8 @@
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon",
-						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod"
+						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+						"Halo 4": "weap objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod"
 					},
 					"targets": [
 						{ "field": "Charging Time", "block": { "Halo 1": "Triggers", "Halo 2": "New Triggers" } }
@@ -12145,7 +12180,8 @@
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon",
-						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod"
+						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+						"Halo 4": "weap objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod"
 					},
 					"targets": [
 						{ "field": "Projectiles Per Shot", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } }
@@ -12158,13 +12194,14 @@
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon",
-						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod"
+						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+						"Halo 4": "weap objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod"
 					},
 					"targets": [
 						{ "field": "Rounds Per Second", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Rounds Per Second Max", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
-						{ "field": "Shots Per Fire", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2"] },
-						{ "field": "Shots Per Fire Max", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2"] }
+						{ "field": "Shots Per Fire", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2", "Halo 4"] },
+						{ "field": "Shots Per Fire Max", "block": { "Halo 2": "Barrels" }, "games": ["Halo 2", "Halo 4"] }
 					]
 				},
 				"Hunter Fuel Rod Damage": {
@@ -12174,7 +12211,8 @@
 						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component",
 						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component",
 						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_component & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion",
-						"Halo Reach": "jpt! objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\hunter_fuel_rod_explosion & objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\hunter_fuel_rod_impact"
+						"Halo Reach": "jpt! objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\hunter_fuel_rod_explosion & objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\hunter_fuel_rod_impact",
+						"Halo 4": "jpt! objects\\characters\\storm_hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\storm_hunter_fuel_rod_explosion & objects\\characters\\storm_hunter\\hunter_fuel_rod\\projectiles\\damage_effects\\storm_hunter_fuel_rod_impact"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -12193,7 +12231,8 @@
 						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
 						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
 						"Halo 3: ODST": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_flak_cannon_explosion & objects\\characters\\hunter\\damage_effects\\hunter_particle_cannon_shake",
-						"Halo Reach": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee"
+						"Halo Reach": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
+						"Halo 4": "jpt! objects\\characters\\storm_hunter\\damage_effects\\storm_hunter_charge_first_melee"
 					},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
@@ -12261,7 +12300,8 @@
 						"Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component",
 						"Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary",
 						"Halo 3: ODST": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary & objects\\characters\\hunter\\hunter_flak_cannon\\projectiles\\flak_bolt",
-						"Halo Reach": "proj objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\hunter_fuel_rod_bolt"
+						"Halo Reach": "proj objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\hunter_fuel_rod_bolt",
+						"Halo 4": "proj objects\\characters\\storm_hunter\\hunter_fuel_rod\\projectiles\\storm_hunter_fuel_rod_bolt"
 					},
 					"targets": [
 						{ "field": "Air Damage Range", "group": "Range" },
@@ -12269,8 +12309,8 @@
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
 						{ "field": "Maximum Range", "group": "Range" },
-						{ "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"] },
-						{ "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach"] }
+						{ "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"] },
+						{ "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 1", "Halo Reach", "Halo 4"] }
 					]
 				},
 				"Accuracy": {
@@ -12331,11 +12371,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -12347,13 +12391,14 @@
 					"tag": {
 						"Halo 1": "actr characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"debug_desc": "Melee Chance was allow-listed to Halo 2 until 2026-08-31, though the hunter tags define it in ODST too (0.75).",
 					"targets": [
 						{ "field": { "Halo 1": "Melee Attack Delay", "Halo 2": "Melee Attack Delay Timer" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "decreased"},
 						{ "field": { "Halo 1": "Melee Charge Time", "Halo 2": "Melee Attack Timeout" }, "block": { "Halo 1": null, "Halo 2": "Charge Properties" }, "index": "all", "harder_when": "increased" },
-						{"field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "index": "all", "harder_when": "increased", "min": 0, "max": 1}
+						{"field": "Melee Chance", "block": "Charge Properties", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "index": "all", "harder_when": "increased", "min": 0, "max": 1}
 					]
 				},
 				"Hunter Berserk": {
@@ -12375,7 +12420,8 @@
 						"Halo 1": "jpt! characters\\hunter\\melee",
 						"Halo 2": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
 						"Halo 3": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee",
-						"Halo Reach": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_boarding_melee & objects\\characters\\hunter\\damage_effects\\melee_left & objects\\characters\\hunter\\damage_effects\\melee_right & objects\\characters\\hunter\\damage_effects\\melee_back & objects\\characters\\hunter\\damage_effects\\melee_bump_away"
+						"Halo Reach": "jpt! objects\\characters\\hunter\\damage_effects\\hunter_smash & objects\\characters\\hunter\\damage_effects\\hunter_charge_first_melee & objects\\characters\\hunter\\damage_effects\\hunter_boarding_melee & objects\\characters\\hunter\\damage_effects\\melee_left & objects\\characters\\hunter\\damage_effects\\melee_right & objects\\characters\\hunter\\damage_effects\\melee_back & objects\\characters\\hunter\\damage_effects\\melee_bump_away",
+						"Halo 4": "jpt! objects\\characters\\storm_hunter\\damage_effects\\storm_hunter_smash & objects\\characters\\storm_hunter\\damage_effects\\storm_hunter_charge_first_melee & objects\\characters\\storm_hunter\\damage_effects\\melee_left & objects\\characters\\storm_hunter\\damage_effects\\melee_right & objects\\characters\\storm_hunter\\damage_effects\\melee_back & objects\\characters\\storm_hunter\\damage_effects\\melee_bump_away"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -12386,9 +12432,9 @@
 				"Berserk": {
 					"desc": "How long Hunters rampage once they charge, and how far they push it.",
 					"debug_desc": "UNVERIFIED. Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may do nothing at all until that is confirmed in-game. Covers charge rampage cooldown, perimeter and limits.",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"harder_when": "increased",
-					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
+					"tag": {"default": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"},
 					"targets": [
 						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all", "harder_when": "decreased" },
 						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
@@ -12414,13 +12460,14 @@
 				"Distribution Function": {
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
-					"game": ["Halo 1", "Halo 3", "Halo Reach"],
+					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "weap weapons\\fuel rod gun\\hunter fuel rod",
 						"Halo 2": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon",
 						"Halo 3: ODST": "weap objects\\characters\\hunter\\hunter_particle_cannon\\hunter_particle_cannon & objects\\characters\\hunter\\hunter_flak_cannon\\flak_cannon",
-						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod"
+						"Halo Reach": "weap objects\\characters\\hunter\\hunter_fuel_rod\\hunter_fuel_rod",
+						"Halo 4": "weap objects\\characters\\storm_hunter\\hunter_fuel_rod\\storm_storm_hunter_fuel_rod"
 					},
 					"targets": [
 						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
@@ -12432,18 +12479,18 @@
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
-					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"targets": [
 						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
-						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach", "Halo 4"], "group": "Scary Threshold"}
 					]
 				},
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
-					"game": ["Halo Reach"],
-					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"targets": [
 						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
 					]
@@ -12509,7 +12556,8 @@
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
@@ -12520,12 +12568,18 @@
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
 							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" }
+						],
+						"Halo 4": [
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						],
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time" },
@@ -12550,7 +12604,8 @@
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -12630,7 +12685,8 @@
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*plasma pistol",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
@@ -12645,11 +12701,12 @@
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
 						{ "field": "Grenade Velocity", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
-						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
+						{"field": "Grenade Ideal Velocity", "block": {"Halo 2": "Grenades Properties"}, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{ "field": "Grenade Ranges", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Grenade Ranges Max", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } },
 						{ "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
@@ -12686,11 +12743,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -12715,12 +12776,20 @@
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
-						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*"
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Friend Killed Panic Chance" },
 							{ "field": "Leader Killed Panic Chance" }
+						],
+						"Halo 4": [
+							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
 						],
 						"Halo 2": [
 							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
@@ -12771,8 +12840,8 @@
 				},
 				"Kamikaze": {
 					"desc": "Suicide-charge chance and limits",
-					"game": ["Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"targets": [
 						{ "field": "Broken Kamikaze Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1 },
 						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 }
@@ -12780,8 +12849,8 @@
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": ["Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\grunt\\ai\\grunt*",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
@@ -12792,18 +12861,18 @@
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
-					"game": ["Halo Reach"],
-					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"targets": [
 						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"},
-						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach"], "group": "Scary Threshold"}
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "games": ["Halo Reach", "Halo 4"], "group": "Scary Threshold"}
 					]
 				},
 				"Body Recharge": {
 					"desc": "How much health they win back after taking damage.",
 					"debug_desc": "`Body Recharge Fraction` is the share of max health the Jackal can win back, with the delay before it starts and the time it takes.\\n\\nThe Brute has had this card since Halo 2 and the Jackal never did, though it defines the block in every game. Halo 3 and ODST ship 0.2 on the jackal and major and 0.25 on the sniper; Reach ships 0.2 on all three.\\n\\n**Halo 2 is deliberately left out.** The jackal defines the block there too, but at 0 on every tag across all 43 maps, and `ai\\\\generic` sets no value either -- the mechanic is simply unused in Halo 2, so a card would be inventing behaviour rather than exposing it.",
-					"game": ["Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"targets": [
 						{"field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1},
 						{"field": "Body Recharge Delay Time", "block": "Vitality Properties", "index": "all", "min": 0},
@@ -12813,8 +12882,8 @@
 				"Flanking": {
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
-					"game": ["Halo Reach"],
-					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"targets": [
 						{"field": "Fight Flank Chance", "block": "Engage Properties", "index": "all", "zero_is": 1.0, "min": 0, "max": 1, "harder_when": "increased"}
 					]
@@ -12832,8 +12901,8 @@
 				"Leap": {
 					"desc": "How readily Jackals vault obstacles to get at you.",
 					"debug_desc": "Only the sniper Jackal defines these (0.25 height, 0.2 proximity). The shield-gauntlet Jackals inherit them and are unaffected by this card.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Maximum Leap Height", "block": "Movement Properties", "index": "all", "min": 0 },
@@ -12935,7 +13004,8 @@
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
@@ -12957,7 +13027,8 @@
 				  "Halo 1": "actr characters\\jackal\\*",
 				  "Halo 2": "char ai\\generic",
 				  "Halo 3": "char ai\\generic",
-				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"
+				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+				  "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 				 },
 				 "targets": {
 				  "Halo 1": [
@@ -13009,6 +13080,29 @@
 				    "max": "1"
 				   }
 				  ],
+				  "Halo 4": [
+				   {
+				    "field": "Hide Behind Cover Time",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time",
+				    "min": 0
+				   },
+				   {
+				    "field": "Hide Behind Cover Time Max",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "group": "Hide Behind Cover Time",
+				    "min": 0
+				   },
+				   {
+				    "field": "Cover Vitality Threshold",
+				    "block": "Cover Properties",
+				    "index": "all",
+				    "min": 0,
+				    "max": 1
+				   }
+				  ],
 				  "Halo Reach": [
 				   {
 				    "field": "Hide Behind Cover Time",
@@ -13034,7 +13128,8 @@
 				  ]
 				 },
 				 "game": [
-				  "Halo Reach"
+				  "Halo Reach",
+				  "Halo 4"
 				 ]
 				},
 				"Firing Positions": {
@@ -13053,7 +13148,8 @@
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -13063,17 +13159,27 @@
 				 "desc": "Increases enemy Rate of Fire (shots per second).",
 				 "game": [
 				  "Halo 1",
-				  "Halo Reach"
+				  "Halo Reach",
+				  "Halo 4"
 				 ],
 				 "tag": {
 				  "Halo 1": "actv characters\\jackal\\*",
-				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"
+				  "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+				  "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 				 },
 				 "harder_when": "increased",
 				 "targets": {
 				  "Halo 1": [
 				   {
 				    "field": "Rate Of Fire"
+				   }
+				  ],
+				  "Halo 4": [
+				   {
+				    "field": "Rate Of Fire",
+				    "block": "Firing Pattern Properties/Firing Patterns",
+				    "index": "all",
+				    "min": 0
 				   }
 				  ],
 				  "Halo Reach": [
@@ -13115,7 +13221,8 @@
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
 						{ "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
@@ -13138,11 +13245,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -13154,11 +13265,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\jackal\\*",
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Shield Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -13169,18 +13284,19 @@
 					"desc": "Delay before Shield begins to recharge and the time it takes",
 					"tag": {
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties" },
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo Reach"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their pack leader",
-					"game": ["Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\jackal\\ai\\jackal*",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
@@ -13189,10 +13305,11 @@
 				"Retreat": {
 					"desc": "How readily they break and cower when their squad starts dying.",
 					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
-						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
 						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
@@ -13978,8 +14095,8 @@
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.",
-					"game": ["Halo 2", "Halo 3"],
-					"tag": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*", "Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"},
 					"targets": [
 						{"field": "Scary Target Threshold", "block": "Cover Properties", "index": "all", "min": 0, "harder_when": "decreased", "group": "Scary Threshold"}
 					]
@@ -14021,12 +14138,18 @@
 					"tag": {
 						"Halo 1": "actr characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
-						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time" },
 							{ "field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time" }
+						],
+						"Halo 4": [
+							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": 0, "group": "Hide Behind Cover Time" },
+							{ "field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": 0, "group": "Hide Behind Cover Time" },
+							{ "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
 						],
 						"Halo 2": [
 							{ "field": "Hide Behind Cover Time", "block": "Cover Properties", "index": 0, "group": "Hide Behind Cover Time" },
@@ -14047,10 +14170,11 @@
 				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 1", "Halo 2", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -14089,11 +14213,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
-						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Body Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -14105,11 +14233,15 @@
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
-						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
 					},
 					"targets": {
 						"Halo 1": [
 							{ "field": "Shield Vitality" }
+						],
+						"Halo 4": [
+							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
 						],
 						"Halo 2": [
 							{ "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true }
@@ -14118,20 +14250,21 @@
 				},
 				"Beam Damage": {
 					"desc": "Beam Damage",
-					"tag": "jpt! characters\\sentinel\\beam",
+					"tag": {"default": "jpt! characters\\sentinel\\beam", "Halo 4": "jpt! objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound", "group": "Damage" },
 						{ "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": "Halo 1"
+					"game": ["Halo 1", "Halo 4"]
 				},
 				"Explosion Radius": {
 					"desc": "Explosion on death?",
 					"tag": {
 						"Halo 1": "jpt! characters\\sentinel\\explosion & characters\\sentinel\\shock wave",
 						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
-						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
+						"Halo 4": "jpt! objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"
 					},
 					"targets": [
 						{ "field": "Radius", "group": "Radius" },
@@ -14143,7 +14276,8 @@
 					"tag": {
 						"Halo 1": "jpt! characters\\sentinel\\explosion & characters\\sentinel\\shock wave",
 						"Halo 2": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
-						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death"
+						"Halo 3": "jpt! objects\\characters\\sentinel_aggressor\\damage_effects\\death & objects\\characters\\sentinel_aggressor\\damage_effects\\emp_death",
+						"Halo 4": "jpt! objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -14153,8 +14287,8 @@
 				},
 				"Leader Leash": {
 					"desc": "How far they stray from their group leader",
-					"game": "Halo 3",
-					"tag": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+					"game": ["Halo 3", "Halo 4"],
+					"tag": {"default": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*", "Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"},
 					"targets": [
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
@@ -14163,10 +14297,11 @@
 				"Rate of Fire": {
 					"desc": "How fast they fire.",
 					"debug_desc": "Halo 2 only: the Sentinels define their own firing pattern on all 4 levels that field them there, and on none in Halo 3 or ODST, where the general **Firing Patterns** card still reaches them.",
-					"game": "Halo 2",
+					"game": ["Halo 2", "Halo 4"],
 					"harder_when": "increased",
 					"tag": {
-						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*"
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
 					},
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
@@ -14199,9 +14334,10 @@
 				"Projectile Range Sentinel Beam": {
 					"desc": "Increases the maximum range their beam can reach, and its speed.",
 					"debug_desc": "Halo 1's sentinel beam is ENEMY ONLY, so this sits on the enemy rather than on the Sentinel Beam weapon card set, which starts at Halo 2 for that reason. The projectile is `proj characters\\sentinel\\beam`, defined on all 4 Halo 1 levels that field Sentinels.",
-					"game": "Halo 1",
+					"game": ["Halo 1", "Halo 4"],
 					"tag": {
-						"Halo 1": "proj characters\\sentinel\\beam"
+						"Halo 1": "proj characters\\sentinel\\beam",
+						"Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"
 					},
 					"targets": [
 						{ "field": "Air Damage Range", "group": "Range" },
@@ -14854,6 +14990,329 @@
 						{ "field": "Shield Boost Radius Maximum", "block": "Engineer Properties", "index": "all" },
 						{ "field": "Shield Boost Period", "block": "Engineer Properties", "index": "all" },
 						{ "field": "Shield Boost Strength", "block": "Engineer Properties", "index": "all", "games": ["Halo 3: ODST"] }
+					]
+				}
+			},
+			"Knight": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "group": "Scary Threshold", "harder_when": "decreased", "min": 0, "index": "all"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "group": "Scary Threshold", "harder_when": "decreased", "min": 0, "index": "all"}
+					]
+				},
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "harder_when": "increased", "min": 0, "max": 1, "zero_is": 1.0, "index": "all"}
+					]
+				},
+				"Leap": {
+					"desc": "How readily Elites vault obstacles to get at you.",
+					"debug_desc": "Height and proximity. Stock 0.8 height / 0.4 proximity; the jetpack Elite is 2.0/0.5. Both fields are new in Reach — no earlier game has them.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Maximum Leap Height", "block": "Movement Properties", "min": 0, "index": "all"},
+						{"field": "Leap Proximity Fraction", "block": "Movement Properties", "min": 0, "max": 1, "index": "all"}
+					]
+				},
+				"Armor Lock": {
+					"desc": "How often Elites armour-lock to shrug off your shots, and how long it holds.",
+					"debug_desc": "Stock 15% chance and 5s cooldown on the base Elite; 30%/3.5s/0.5s/3s on the Ultra. The base Elite ships Safety and Maximum Duration at 0, so those two only bite on the Ultra until values are inserted. Raising chance and duration makes them harder; raising the cooldown makes them easier.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Armor Lock Chance", "block": "Movement Properties", "min": 0, "max": 1, "index": "all"},
+						{"field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "min": 0, "max": 1, "index": "all"},
+						{"field": "Armor Lock Safety Duration", "block": "Movement Properties", "min": 0, "index": "all"},
+						{"field": "Armor Lock Maximum Duration", "block": "Movement Properties", "min": 0, "index": "all"},
+						{"field": "Armor Lock Cooldown", "block": "Movement Properties", "min": 0, "index": "all"}
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1}
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time and shield thresholds (Halo 2 scales all 3 Cover Properties entries)",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Hide Behind Cover Time", "block": "Cover Properties", "group": "Hide Behind Cover Time", "index": "all"},
+						{"field": "Hide Behind Cover Time Max", "block": "Cover Properties", "group": "Hide Behind Cover Time", "index": "all"},
+						{"field": "Cover Shield Fraction", "block": "Cover Properties", "group": "Shield Fractions", "min": "0", "max": "1", "index": "all"},
+						{"field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "group": "Shield Fractions", "min": "0", "max": "1", "index": "all"}
+					]
+				},
+				"Melee Behavior": {
+					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Melee Attack Delay Timer", "block": "Charge Properties", "harder_when": "decreased", "index": "all"},
+						{"field": "Melee Attack Timeout", "block": "Charge Properties", "harder_when": "increased", "index": "all"},
+						{"field": "Melee Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1, "index": "all"}
+					]
+				},
+				"Grenades": {
+					"desc": "Grenade throwing behaviour, Velocity, Range, Colleteral",
+					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of the 13 levels that field them and ODST on 8 of 8. Halo 3 has it on ONE, Floodgate (050) of 8 -- worth carding, but expect it to do nothing on the others.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Grenade Velocity", "block": "Grenades Properties"},
+						{"field": "Grenade Ideal Velocity", "block": "Grenades Properties"},
+						{"field": "Grenade Ranges", "block": "Grenades Properties"},
+						{"field": "Grenade Ranges Max", "block": "Grenades Properties"},
+						{"field": "Collateral Damage Radius", "block": "Grenades Properties"}
+					]
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
+					]
+				},
+				"Melee Damage": {
+					"desc": "Melee Damage from Elite",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Melee Radius": {
+					"desc": "Melee Radius from Elite",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee",
+					"targets": [
+						{"field": "Radius", "group": "Radius", "min": 0},
+						{"field": "Radius Max", "group": "Radius", "min": 0}
+					]
+				},
+				"Shield Recharge": {
+					"desc": "Delay before Shield begins to recharge and the time it takes",
+					"debug_desc": "Defined on every Halo 2, Halo 3 and ODST level that fields Elites. ODST inherits the Halo 3 entry. In ODST the Elites never spawn, so the *Elites are allies* option keeps this out of a run unless you turn it off.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Shield Recharge Delay Time", "block": "Vitality Properties"},
+						{"field": "Shield Recharge Time", "block": "Vitality Properties"}
+					]
+				}
+			},
+			"Crawler": {
+				"I am not scared": {
+					"desc": "How much it takes to frighten them.",
+					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Scary Target Threshold", "block": "Cover Properties", "group": "Scary Threshold", "harder_when": "decreased", "min": 0, "index": "all"},
+						{"field": "Always Defensive Scary Threshold", "block": "Cover Properties", "group": "Scary Threshold", "harder_when": "decreased", "min": 0, "index": "all"}
+					]
+				},
+				"Flanking": {
+					"desc": "How often they break off and come at you from the side.",
+					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Fight Flank Chance", "block": "Engage Properties", "harder_when": "increased", "min": 0, "max": 1, "zero_is": 1.0, "index": "all"}
+					]
+				},
+				"Dive From Grenade Chance": {
+					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1}
+					]
+				},
+				"Cover Properties": {
+					"desc": "Cover-seeking time; vitality threshold to trigger cover (Halo 2 scales all 3 Cover Properties entries)",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Hide Behind Cover Time", "block": "Cover Properties", "group": "Hide Behind Cover Time", "index": "all"},
+						{"field": "Hide Behind Cover Time Max", "block": "Cover Properties", "group": "Hide Behind Cover Time", "index": "all"},
+						{"field": "Cover Vitality Threshold", "block": "Cover Properties", "min": "0", "max": "1", "index": "all"}
+					]
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
+					]
+				},
+				"Retreat": {
+					"desc": "Cowering time and the chance to flee when a leader or nearby peers die",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Forced Cower Time Bounds", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all"},
+						{"field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all"},
+						{"field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"},
+						{"field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"},
+						{"field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"}
+					]
+				},
+				"Melee Damage": {
+					"desc": "How hard a Crawler hits you in melee.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\characters\\storm_pawn\\damage effects\\storm_pawn_melee",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Melee Radius": {
+					"desc": "How far a Crawler's melee reaches.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\characters\\storm_pawn\\damage effects\\storm_pawn_melee",
+					"targets": [
+						{"field": "Radius", "group": "Radius", "min": 0},
+						{"field": "Radius Max", "group": "Radius", "min": 0}
+					]
+				},
+				"Kamikaze": {
+					"desc": "Suicide-charge chance and limits",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Broken Kamikaze Chance", "block": "Charge Properties", "min": 0, "max": 1, "index": "all"},
+						{"field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "min": 0, "index": "all"}
+					]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their pack leader",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Maximum Leader Distance", "block": "General Properties"},
+						{"field": "Absolute Maximum Leader Distance", "block": "General Properties"}
+					]
+				}
+			},
+			"Watcher": {
+				"Maximum Firing Distance": {
+					"desc": "Increases range in witch they can use their weapon",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Maximum Firing Range"}
+					]
+				},
+				"Target Tracking & Leading": {
+					"desc": "Where to shoot on moving targets, and how much they lead — 0..1",
+					"game": ["Halo 4"],
+					"tag": "char ai\\generic",
+					"targets": [
+						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"},
+						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
+					]
+				},
+				"Body Vitality": {
+					"desc": "Health",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
+					]
+				},
+				"Shield Vitality": {
+					"desc": "Shield Capacity",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true}
+					]
+				},
+				"Beam Damage": {
+					"desc": "Beam Damage",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Explosion Radius": {
+					"desc": "Explosion on death?",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"targets": [
+						{"field": "Radius", "group": "Radius"},
+						{"field": "Radius Max", "group": "Radius"}
+					]
+				},
+				"Explosion Damage": {
+					"desc": "Explosion on death? Lower Bound, Upper Bound",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Leader Leash": {
+					"desc": "How far they stray from their group leader",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Maximum Leader Distance", "block": "General Properties"},
+						{"field": "Absolute Maximum Leader Distance", "block": "General Properties"}
+					]
+				},
+				"Rate of Fire": {
+					"desc": "How fast they fire.",
+					"debug_desc": "Halo 2 only: the Sentinels define their own firing pattern on all 4 levels that field them there, and on none in Halo 3 or ODST, where the general **Firing Patterns** card still reaches them.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
+					]
+				},
+				"Projectile Range": {
+					"desc": "How far the Watcher's beam carries.",
+					"game": ["Halo 4"],
+					"tag": "proj objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"targets": [
+						{"field": "Air Damage Range", "group": "Range"},
+						{"field": "Air Damage Range Max", "group": "Range"},
+						{"field": "Initial Velocity", "group": "Velocity"},
+						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Maximum Range", "group": "Range"},
+						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0},
+						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0}
 					]
 				}
 			}
