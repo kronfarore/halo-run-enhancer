@@ -110,6 +110,11 @@ SKIP_CARDS = {
     'Watcher/Cover Properties':
         'the Watcher defines no Cover Properties at all, which the model scoring '
         'predicted (Sentinel misses Cover x4).',
+    # Halo 4 ships no jpt! under `characters/storm_grunt/` at all -- the methane-tank
+    # explosion is not a per-grunt damage tag there. Dropped on the user's call
+    # rather than left pending.
+    'Grunt/Grunt Damage': 'Halo 4 has no grunt backpack damage tag.',
+    'Grunt/Grunt Radius': 'Halo 4 has no grunt backpack damage tag.',
     'Jackal/Cover Chance':
         'measured dead: `ai\\generic` is present in Halo 4 but `Cover Chance Time` and '
         '`Cover Chance Time Max` are defined on NO tag in the map, so the write lands '
@@ -227,7 +232,9 @@ def check(species, cname, card, have, registry, order, families,
         # the second kind, and its `block` walks back to Halo 1's `Triggers` where
         # every later game says `Barrels`. Neither is a Halo 4 gap; both would need a
         # modern equivalent authored, which is a different job.
-        return False, 'Halo 1-only card -- a modern equivalent would have to be authored'
+        return None, ('Halo 1-only card: its game list names no game after Halo 1, '
+                      'and Halo 1 keeps AI on actr/actv and vitality on coll. '
+                      'Verified across all 30 of them -- not a Halo 4 gap.')
     tag, why = enemy_tag_for(species, inherited, families, have, retarget)
     if why:
         return False, why
@@ -316,6 +323,10 @@ def main():
                 skipped.append((sp, cname, why))
                 continue
             good, res = check(sp, cname, card, have, registry, order, families)
+            if good is None:
+                # A closed category, not pending work -- reported with the skips.
+                skipped.append((sp, cname, res))
+                continue
             if good and res['tag'] is None and not gl and not res.get('targets'):
                 # No `game` key means the card already applies everywhere, and its
                 # inherited tag already resolves in Halo 4 -- there is nothing to
