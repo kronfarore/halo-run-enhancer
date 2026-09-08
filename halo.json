@@ -9417,6 +9417,17 @@
 				}
 			},
 			"LightRifle": {
+				"Scoped Damage": {
+					"desc": "How hard a scoped LightRifle shot hits.",
+					"debug_desc": "The LightRifle hits harder scoped, and that is a separate damage effect rather than a multiplier: `storm_forerunner_rifle` does **5.33** a shot from the hip and `storm_forerunner_rifle_combined` does **23.5** scoped, a bit over four times as much.\n\nBoth were on one Bullet Damage card, so the scoped shot could not be tuned on its own. The two PROJECTILES are identical -- 250 m at 3000 velocity either way -- which is why only the damage splits and the Projectile card still names both.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\rifle\\storm_forerunner_rifle\\projectiles\\damage_effects\\storm_forerunner_rifle_combined",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
@@ -9501,7 +9512,7 @@
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\rifle\\storm_forerunner_rifle\\projectiles\\damage_effects\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\projectiles\\damage_effects\\storm_forerunner_rifle_combined",
+					"tag": "jpt! objects\\weapons\\rifle\\storm_forerunner_rifle\\projectiles\\damage_effects\\storm_forerunner_rifle",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9776,6 +9787,31 @@
 				}
 			},
 			"Boltshot": {
+				"Charged Shot Damage": {
+					"desc": "How hard a charged Boltshot blast hits.",
+					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_charged_shot",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Charged Shot Range": {
+					"desc": "How far a charged Boltshot blast reaches, and how wide.",
+					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
+					"game": ["Halo 4"],
+					"tag": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Maximum Range", "group": "Range", "min": 0},
+						{"field": "Air Damage Range", "group": "Range", "min": 0},
+						{"field": "Air Damage Range Max", "group": "Range", "min": 0},
+						{"field": "Initial Velocity", "group": "Velocity", "min": 0},
+						{"field": "Final Velocity", "group": "Velocity", "min": 0}
+					]
+				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
@@ -9855,7 +9891,7 @@
 					"desc": "Projectile range and velocity",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo 4"],
-					"tag": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_charged_blast",
+					"tag": "proj objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\storm_stasis_pistol_bolt_npc",
 					"targets": [
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
@@ -9873,7 +9909,7 @@
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_bolt & objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_charged_shot",
+					"tag": "jpt! objects\\weapons\\pistol\\storm_stasis_pistol\\projectiles\\damage_effects\\storm_stasis_pistol_bolt",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
