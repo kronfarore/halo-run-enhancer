@@ -28,7 +28,7 @@ def openm(mid):
     return maps[mid]
 
 
-def read_any(tag, field, block, index):
+def read_any(tag, field, block, index, nth=0):
     """(value, map, tagpath) for the first campaign map where this target reads."""
     cls, _, rest = tag.partition(' ')
     pl = reg.get(cls)
@@ -46,7 +46,7 @@ def read_any(tag, field, block, index):
             if not hit:
                 continue
             v = m.read_tag_field(t['base'], field, pl, block,
-                                 0 if index is None else index)
+                                 0 if index is None else index, nth)
             if v is not None:
                 return v, mid, n.rsplit(SEP, 1)[-1]
     return None, None, None
@@ -77,7 +77,8 @@ for entry, cards in doc['Equipment'].items():
             if not isinstance(f, str):
                 continue
             total += 1
-            v, mid, where = read_any(tag, f, t.get('block'), t.get('index'))
+            v, mid, where = read_any(tag, f, t.get('block'), t.get('index'),
+                                     t.get('nth', 0) or 0)
             if v is None:
                 bad += 1
                 rows.append(('DEAD', cname, f, t.get('block'), '', ''))

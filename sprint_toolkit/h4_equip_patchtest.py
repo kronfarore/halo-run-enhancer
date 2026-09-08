@@ -43,7 +43,8 @@ for entry, cards in doc['Equipment'].items():
                 continue
             f = W.resolve(t.get('field'), 'Halo 4', order)
             if isinstance(f, str):
-                ops.append((entry, cname, tag, f, t.get('block'), t.get('index')))
+                ops.append((entry, cname, tag, f, t.get('block'), t.get('index'),
+                            t.get('nth', 0) or 0))
 
 print('%d Halo 4 equipment targets to write\n' % len(ops))
 tot_ok = tot_none = 0
@@ -53,12 +54,12 @@ for mid in MAPS:
     shutil.copyfile(src, dst)
     m = hp.open_map(dst, 'Halo 4')
     hits = fails = skipped = 0
-    for entry, cname, tag, f, block, index in ops:
+    for entry, cname, tag, f, block, index, nth in ops:
         cls, _, rest = tag.partition(' ')
         pl = reg.get(cls)
         for path in [p.strip() for p in rest.split('&')]:
             res = m.apply_field(cls, path, f, 'mul', 2.0, pl, block,
-                                0 if index is None else index)
+                                0 if index is None else index, nth)
             for r in (res or []):
                 # Two benign outcomes, neither a fault:
                 #   'not present in this map' -- an ability this mission does not

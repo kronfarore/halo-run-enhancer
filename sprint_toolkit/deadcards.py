@@ -100,8 +100,16 @@ for game, subs, mp in CASES:
             blk = t.get('block')
             blk = he.resolve_gamed(blk, game, games) if isinstance(blk, dict) else blk
             idx = t.get('index', 0)
+            # `nth` picks WHICH declaration of a repeated field name to read, and
+            # ignoring it reads the wrong one. Halo 4 declares `Maximum Vitality`
+            # twice on hlmt -- once in Old Damage Info, once at the tag root -- so a
+            # card carrying nth:1 was being read at nth 0, finding an empty block,
+            # and reported DEAD while writing perfectly well.
+            nth = t.get('nth', 0)
+            nth = he.resolve_gamed(nth, game, games) if isinstance(nth, dict) else nth
             try:
-                if m.read_all(cls, first, f, plugin, blk, idx if idx is not None else 0):
+                if m.read_all(cls, first, f, plugin, blk, idx if idx is not None else 0,
+                              nth or 0):
                     live += 1
             except Exception:
                 live += 1                               # can't tell; don't accuse it

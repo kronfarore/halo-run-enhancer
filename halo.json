@@ -11463,13 +11463,21 @@
 			},
 			"Vitality": {
 				"desc": "How much punishment the Auto Turret takes before it dies.",
-				"debug_desc": "The turret has no vitality of its own and inherits it from the shared generic AI base, so this also moves the only other characters that inherit it: Flood Infection Forms, mounted turrets, Cortana and Truth.",
-				"game": "Halo 3",
-				"tag": "char ai\\generic",
+				"debug_desc": "IN HALO 3 the turret has no vitality of its own and inherits it from the shared generic AI base, so this also moves the only other characters that inherit it: Flood Infection Forms, mounted turrets, Cortana and Truth.\\n\\nThe Autosentry drone is a VEHICLE: the ability's `Weapon` reference points at `storm_auto_turret\\turret_mounted_pve`, whose model is `storm_auto_turret\\turret\\turret_pve`. Its health is **102 on the campaign `_pve` model and 51 on the multiplayer one**, identical across all eight campaign maps.\n\nThe value is NOT in `Old Damage Info`, which is a zero-element block here. Halo 4's `hlmt` declares a SECOND `Maximum Vitality` at the tag root (0x104), part of the newer damage model where the root pool is divided by each `Damage Sections` entry's `Vitality Percentage` -- the drone has one section at 100%, so it simply has 102 health. Reach carries the same root group at 0xD0.\n\n**`nth: 1` is load-bearing**: the plugin declares `Maximum Vitality` twice and a bare lookup returns the Old Damage Info one, which for this tag would write into an empty block and do nothing.",
+				"game": ["Halo 3", "Halo 4"],
+				"tag": {
+					"Halo 3": "char ai\\generic",
+					"Halo 4": "hlmt objects\\equipment\\storm_auto_turret\\turret\\turret*"
+				},
 				"harder_when": "increased",
-				"targets": [
-					{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
-				]
+				"targets": {
+					"default": [
+						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
+					],
+					"Halo 4": [
+						{"field": "Maximum Vitality", "nth": 1, "min": 1}
+					]
+				}
 			},
 			"Charges": {
 				"desc": "How many charges does the equipment hold",
@@ -11573,7 +11581,7 @@
 			},
 			"Orbit": {
 				"desc": "How closely and how quickly the drone circles you.",
-				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThe drone DOES have health, but not where Halo 3 keeps it: `Old Damage Info` is a zero-element block on its model tags, and the value sits in Halo 4's second, root-level `Maximum Vitality` (102 on `_pve`, 51 otherwise). See the Vitality (Halo 4) card.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
 				"targets": [
@@ -11583,7 +11591,7 @@
 			},
 			"Chase Speed": {
 				"desc": "How far and how fast the drone will follow you.",
-				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThe drone DOES have health, but not where Halo 3 keeps it: `Old Damage Info` is a zero-element block on its model tags, and the value sits in Halo 4's second, root-level `Maximum Vitality` (102 on `_pve`, 51 otherwise). See the Vitality (Halo 4) card.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
 				"targets": [
@@ -11594,7 +11602,7 @@
 			},
 			"Deploy Time": {
 				"desc": "How long before the drone is up and shooting.",
-				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThere is no Vitality card for Halo 4: the drone's model tags (`storm_auto_turret\\turret\\turret` and `turret_pve`) ship a ZERO-ELEMENT `Old Damage Info` block -- measured on m10, m30 and m40 -- so it has no health to scale. Halo 3's Vitality card stays on Halo 3.",
+				"debug_desc": "Halo 4's Autosentry is nothing like Halo 3's deployable turret. It is a drone that orbits you, driven from the `Abilities / Auto Turret` block, and its `Weapon` reference points at a VEHICLE (`storm_auto_turret\\turret_mounted`) rather than at a weapon.\\n\\n`Orbit Range` (0.13) and `Orbit Rate` (1.0) are how it circles; `Maximum Range` (1.0), `Maximum Velocity` (8.0) and `Maximum Acceleration` (0.2) how far and how fast it will chase; `Turret Halt Engage Time` (0.4) the pause before it opens up and `Spawn In Time` (1.0) how long it takes to appear.\\n\\nThe drone DOES have health, but not where Halo 3 keeps it: `Old Damage Info` is a zero-element block on its model tags, and the value sits in Halo 4's second, root-level `Maximum Vitality` (102 on `_pve`, 51 otherwise). See the Vitality (Halo 4) card.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_auto_turret\\storm_auto_turret*",
 				"targets": [
@@ -12394,7 +12402,7 @@
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\heretic\\damage_effects\\heretic_melee & objects\\characters\\heretic\\damage_effects\\heretic_boarding_melee & objects\\characters\\heretic\\damage_effects\\heretic_obstacle_smash",
 						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
 						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
-						"Halo 4": "jpt! objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
+						"Halo 4": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -12409,7 +12417,7 @@
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\heretic\\damage_effects\\heretic_melee & objects\\characters\\heretic\\damage_effects\\heretic_boarding_melee & objects\\characters\\heretic\\damage_effects\\heretic_obstacle_smash",
 						"Halo 3": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
 						"Halo Reach": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_melee_sword & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash",
-						"Halo 4": "jpt! objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
+						"Halo 4": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\storm_elite\\damage_effects\\storm_elite_ejection_melee"
 					},
 					"targets": [
 						{ "field": "Radius", "group": "Radius", "min": 0 },
@@ -15435,7 +15443,7 @@
 				"Melee Damage": {
 					"desc": "Melee Damage from Elite",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee",
+					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee & objects\\characters\\storm_knight\\damage_effects\\storm_knight_smash & objects\\characters\\storm_knight\\damage_effects\\storm_knight_leap",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -15445,7 +15453,7 @@
 				"Melee Radius": {
 					"desc": "Melee Radius from Elite",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee",
+					"tag": "jpt! objects\\characters\\storm_knight\\damage_effects\\knight_melee & objects\\characters\\storm_knight\\damage_effects\\storm_knight_smash & objects\\characters\\storm_knight\\damage_effects\\storm_knight_leap",
 					"targets": [
 						{"field": "Radius", "group": "Radius", "min": 0},
 						{"field": "Radius Max", "group": "Radius", "min": 0}
@@ -15463,6 +15471,27 @@
 				}
 			},
 			"Crawler": {
+				"Head Gun Rate of Fire": {
+					"desc": "How fast Crawlers shoot at you.",
+					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nIt fires the Boltshot and Binary Rifle PROJECTILES, so its damage is already covered by those weapons' own cards and is deliberately not repeated here -- tuning it twice would apply the operator to one shared tag. What lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\characters\\storm_pawn\\weapons\\storm_pawn_head & objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "harder_when": "increased", "min": 0},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "harder_when": "increased", "min": 0}
+					]
+				},
+				"Head Gun Accuracy": {
+					"desc": "How accurately Crawlers shoot at you.",
+					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nIt fires the Boltshot and Binary Rifle PROJECTILES, so its damage is already covered by those weapons' own cards and is deliberately not repeated here -- tuning it twice would apply the operator to one shared tag. What lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\characters\\storm_pawn\\weapons\\storm_pawn_head & objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
+					"targets": [
+						{"field": "Error Angle", "block": "Barrels", "harder_when": "decreased", "min": 0},
+						{"field": "Error Angle Max", "block": "Barrels", "harder_when": "decreased", "min": 0},
+						{"field": "Minimum Error", "block": "Barrels", "harder_when": "decreased", "min": 0}
+					]
+				},
 				"I am not scared": {
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.",
