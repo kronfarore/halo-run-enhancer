@@ -1308,6 +1308,19 @@
 				}
 			},
 			"Plasma Pistol": {
+				"Homing": {
+					"desc": "How hard a charged Plasma Pistol shot bends toward what you aimed at.",
+					"debug_desc": "Everything homing on the Plasma Pistol lives on the CHARGED bolt, and no card named that tag -- the weapon's Projectile card points at the ordinary bolt, which is why the whole set read as absent. Measured on the charged bolt: `Guided Angular Velocity` 2.0 lower and upper, At Rest 50.0, Outer Range Error Radius 0.5, identical in Halo 3, ODST, Reach and Halo 4. Halo 2 carries only the pair, at **80.0** -- forty times the later games, which is why a Halo 2 charged bolt turns so much harder.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
+					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
+						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
+						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity"},
+						{"field": {"Halo 3": "Guided Projectile (Outer Range) Error Radius", "Halo Reach": "Guided Projectile Outer Range Error Radius"}, "games": ["Halo 3", "Halo Reach", "Halo 4"]}
+					]
+				},
 				"Error Angle": {
 					"desc": "Weapon spread.",
 					"debug_desc": "The spread pair, plus `Deviation Angle`, which folds in here the same way it does on every other spread card.\\n\\n**This is the card the zero-then-live sweep was built for.** The plasma pistol has had these fields since Halo 2 and ships them at 0 in every game up to ODST, so it never got a spread card -- its only one is Dual Weapon Error, which covers Halo 2/3/ODST. Reach fills them in (0.4 / 2.0, deviation 4.0) and nothing noticed, because a diff of NEW fields cannot see a field that was always there.\\n\\nReach declares Error Angle once, so nth 0 is correct here.",
@@ -2183,10 +2196,11 @@
 				},
 				"Homing": {
 					"desc": "How hard this weapon's shots bend toward what you aimed at.",
-					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
 					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
@@ -2782,10 +2796,11 @@
 				},
 				"Homing": {
 					"desc": "How hard this weapon's shots bend toward what you aimed at.",
-					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"},
 					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
@@ -4753,10 +4768,11 @@
 				},
 				"Homing": {
 					"desc": "How hard this weapon's shots bend toward what you aimed at.",
-					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo Reach": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"},
 					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity At Rest", "games": ["Halo 3", "Halo Reach", "Halo 4"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
@@ -8121,10 +8137,11 @@
 				},
 				"Homing": {
 					"desc": "How hard this weapon's shots bend toward what you aimed at.",
-					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo Reach"],
 					"tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade",
 					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity At Rest", "games": ["Halo Reach"], "harder_when": "decreased", "group": "Guided Angular Velocity" },
@@ -10412,10 +10429,11 @@
 				},
 				"Homing": {
 					"desc": "How hard this weapon's shots bend toward what you aimed at.",
-					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
+					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
 					"game": ["Halo 4"],
 					"tag": "proj objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\projectiles\\submunition & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\projectiles\\storm_forerunner_incineration_launcher",
 					"targets": [
+						{"field": "Targeted Leading Fraction", "harder_when": "increased", "min": 0, "max": 1},
 						{"field": "Guided Angular Velocity Lower", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity Upper", "group": "Guided Angular Velocity", "harder_when": "decreased"},
 						{"field": "Guided Angular Velocity At Rest", "group": "Guided Angular Velocity", "harder_when": "decreased"},
