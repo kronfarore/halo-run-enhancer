@@ -855,6 +855,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -1145,6 +1147,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -1502,6 +1506,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -1889,6 +1895,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -2240,6 +2248,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -2256,7 +2266,9 @@
 						{ "field": "Timer" },
 						{ "field": "Timer Max" },
 						{"field": "Super Detonation Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Super Detonation Projectile Count", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 1}
+						{"field": "Super Detonation Projectile Count", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 1},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
 					]
 				},
 				"Needle Damage": {
@@ -2551,6 +2563,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -2833,6 +2847,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -3101,6 +3117,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -3370,6 +3388,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -3570,6 +3590,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -3825,6 +3847,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -4052,6 +4076,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -4294,6 +4320,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -4537,6 +4565,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -4791,6 +4821,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -5039,6 +5071,8 @@
 						{ "field": "Maximum Range", "group": "Range" },
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{ "field": "Air Damage Range", "group": "Range" },
 						{ "field": "Air Damage Range Max", "group": "Range" },
 						{ "field": "Water Damage Range", "group": "Range" },
@@ -5254,6 +5288,8 @@
 						{ "field": "Maximum Range", "group": "Range" },
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{ "field": "Air Damage Range", "group": "Range" },
 						{ "field": "Air Damage Range Max", "group": "Range" },
 						{ "field": "Water Damage Range", "group": "Range" },
@@ -5447,6 +5483,18 @@
 				}
 			},
 			"Frag Grenade": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "Timer 0.5 in Halo 1 and 2, 1.0 in ODST, 0.6-0.65 in Reach and Halo 4; Arming Time 1.5 falling to 1.3 in Halo 3, back to 1.6 in ODST and 1.4 from Reach.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "proj weapons\\frag grenade\\frag grenade", "Halo 2": "proj objects\\weapons\\grenade\\frag_grenade\\frag_grenade", "Halo 4": "proj objects\\weapons\\grenade\\storm_frag_grenade\\storm_frag_grenade"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\frag grenade\\explosion", "Halo 2": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_boarding_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_equipment_explosion & objects\\weapons\\grenade\\frag_grenade\\damage_effects\\frag_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_frag_grenade\\damage_effects\\storm_frag_grenade_impact"},
@@ -5473,6 +5521,18 @@
 				}
 			},
 			"Plasma Grenade": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "Timer 2.0 in Halo 1, 1.5 in Halo 2 and ODST, 0.9-0.95 from Halo 3 on; Arming Time 1.5 / 1.3 / 1.6 / 1.4 across the series. Halo 1 sets no Arming Time at all.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "proj weapons\\plasma grenade\\plasma grenade", "Halo 2": "proj objects\\weapons\\grenade\\plasma_grenade\\plasma_grenade", "Halo 4": "proj objects\\weapons\\grenade\\storm_plasma_grenade\\storm_plasma_grenade"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"tag": {"Halo 1": "jpt! weapons\\plasma grenade\\explosion & weapons\\plasma grenade\\attached", "Halo 2": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo 3": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion", "Halo Reach": "jpt! objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_attached_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\plasma_grenade\\damage_effects\\plasma_grenade_impact", "Halo 4": "jpt! objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_attached_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_boarding_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_equipment_explosion & objects\\weapons\\grenade\\storm_plasma_grenade\\damage_effects\\storm_plasma_grenade_impact"},
@@ -5630,6 +5690,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -5830,6 +5892,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -6245,6 +6309,18 @@
 				}
 			},
 			"Flamethrower": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "The flame stream is a projectile with a 3.5-4.0 second timer, a 0.5 Arming Time and a Minimum Velocity of 1.0 -- which is why the flame hangs in the air after it stops moving.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 3"],
+					"tag": {"Halo 3": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
@@ -6332,6 +6408,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -6527,6 +6605,8 @@
 						{ "field": "Maximum Range", "group": "Range" },
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{ "field": "Air Damage Range", "group": "Range" },
 						{ "field": "Air Damage Range Max", "group": "Range" },
 						{ "field": "Water Damage Range", "group": "Range" },
@@ -6739,6 +6819,8 @@
 						{ "field": "Maximum Range", "group": "Range" },
 						{ "field": "Initial Velocity", "group": "Velocity" },
 						{ "field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{ "field": "Air Damage Range", "group": "Range" },
 						{ "field": "Air Damage Range Max", "group": "Range" },
 						{ "field": "Water Damage Range", "group": "Range" },
@@ -6916,6 +6998,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -6966,6 +7050,18 @@
 				}
 			},
 			"Claymore Grenade": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "Timer 0.65 in Halo 3 and 1.0 in ODST, Arming Time 1.3 and 1.6. The fragments it throws carry their own 1.0 timer and a Minimum Velocity of 8.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 3"],
+					"tag": {"Halo 3": "proj objects\\weapons\\grenade\\claymore_grenade\\claymore_grenade"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound (thrown and stuck)",
 					"game": "Halo 3",
@@ -7173,6 +7269,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -7348,6 +7446,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -7387,6 +7487,18 @@
 				}
 			},
 			"Firebomb Grenade": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "Timer 0.05 -- it bursts on impact -- and a Minimum Velocity of 100, the highest in any game, which is what stops it rolling. The fire it leaves is three impact projectiles on 3.25-4.0 second timers.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 3"],
+					"tag": {"Halo 3": "proj objects\\weapons\\grenade\\firebomb_grenade\\projectiles\\firebomb_grenade"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Grenade Damage": {
 					"desc": "Impact damage",
 					"game": "Halo 3",
@@ -7582,6 +7694,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -7778,6 +7892,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -7893,7 +8009,9 @@
 						{"field": "Timer"},
 						{"field": "Timer Max"},
 						{"field": "Super Detonation Time", "min": 0},
-						{"field": "Super Detonation Projectile Count", "min": 1}
+						{"field": "Super Detonation Projectile Count", "min": 1},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
 					]
 				},
 				"Melee Seeking": {
@@ -7989,6 +8107,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -8238,6 +8358,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -8283,7 +8405,9 @@
 					],
 					"targets": [
 						{ "field": "Timer", "min": 0 },
-						{ "field": "Timer Max", "min": 0 }
+						{ "field": "Timer Max", "min": 0 },
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
 					]
 				}
 			},
@@ -8464,6 +8588,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -8626,6 +8752,8 @@
 						{"field": "Maximum Range", "group": "Range" },
 						{"field": "Initial Velocity", "group": "Velocity" },
 						{"field": "Final Velocity", "group": "Velocity" },
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -8777,6 +8905,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -8977,6 +9107,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -9077,6 +9209,27 @@
 				}
 			},
 			"Scattershot": {
+				"Super Detonation Damage": {
+					"desc": "How hard a Scattershot supercombine hits.",
+					"debug_desc": "The Scattershot supercombines like a Needler and its shards carry their own damage effects, which is why this is a separate card: `storm_spread_gun_shard_super_detonation` at 10-40 over a 0.375 radius, and `..._attached_super_detonation` at **35-250** when the shards are stuck to something first. Ordinary pellets do 0-12 and stay on the Bullet Damage card.\n\nThe window itself is `Super Detonation Time` on the Fuse/Needle timer side, 0.1 here against the Needler's 0.35.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_super_detonation & objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_attached_super_detonation",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Super Detonation Radius": {
+					"desc": "How wide a Scattershot supercombine reaches.",
+					"debug_desc": "The Scattershot supercombines like a Needler and its shards carry their own damage effects, which is why this is a separate card: `storm_spread_gun_shard_super_detonation` at 10-40 over a 0.375 radius, and `..._attached_super_detonation` at **35-250** when the shards are stuck to something first. Ordinary pellets do 0-12 and stay on the Bullet Damage card.\n\nThe window itself is `Super Detonation Time` on the Fuse/Needle timer side, 0.1 here against the Needler's 0.35.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_super_detonation & objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_attached_super_detonation",
+					"targets": [
+						{"field": "Radius", "group": "Radius"},
+						{"field": "Radius Max", "group": "Radius"}
+					]
+				},
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
@@ -9162,6 +9315,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -9173,7 +9328,7 @@
 				"Bullet Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_impact & objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_super_detonation & objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_attached_super_detonation",
+					"tag": "jpt! objects\\weapons\\rifle\\storm_spread_gun\\projectiles\\damage_effects\\storm_spread_gun_shard_impact",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -9335,6 +9490,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -9517,6 +9674,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -9701,6 +9860,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -10150,6 +10311,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -10161,7 +10324,7 @@
 				"Explosion Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_impact",
+					"tag": "jpt! objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_impact & objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_explosion_pve & objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_attached_explosion_pve",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -10171,7 +10334,7 @@
 				"Radius": {
 					"desc": "Min to Max Radius",
 					"game": ["Halo 4"],
-					"tag": "jpt! objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_impact",
+					"tag": "jpt! objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_impact & objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_explosion_pve & objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\damage_effects\\storm_sticky_detonator_grenade_attached_explosion_pve",
 					"targets": [
 						{"field": "Radius", "group": "Radius"},
 						{"field": "Radius Max", "group": "Radius"}
@@ -10263,6 +10426,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -10460,6 +10625,8 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Initial Velocity", "group": "Velocity"},
 						{"field": "Final Velocity", "group": "Velocity"},
+						{"field": "Minimum Velocity", "group": "Velocity", "min": 0},
+						{"field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
 						{"field": "Water Damage Range", "group": "Range"},
@@ -10557,6 +10724,18 @@
 				}
 			},
 			"Pulse Grenade": {
+				"Fuse Timer": {
+					"desc": "How long before it goes off, and how long before it can.",
+					"debug_desc": "Timer 0.2 -- it pops almost on contact, and the lingering field is the emitter that follows, a separate projectile with its own 7.5 timer and a 6.0 Arming Time.\n\nTHE FUSE IS THREE FIELDS, not one. `Timer` / `Timer Max` is the countdown once the round is live -- what people call the fuse. `Arming Time` is the delay BEFORE that, during which the round cannot go off at all. `Minimum Velocity` is the speed it has to drop below before it will detonate on its own, so raising it makes a rolling grenade give up and blow earlier. They are grouped together here because tuning one without the others rarely does what you expect.",
+					"game": ["Halo 4"],
+					"tag": {"Halo 4": "proj objects\\weapons\\grenade\\storm_energy_drain_grenade\\storm_energy_drain_grenade"},
+					"targets": [
+						{"field": "Timer", "min": 0, "group": "Fuse"},
+						{"field": "Timer Max", "min": 0, "group": "Fuse"},
+						{"field": "Arming Time", "harder_when": "increased", "min": 0, "group": "Fuse"},
+						{"field": "Minimum Velocity", "min": 0, "group": "Fuse"}
+					]
+				},
 				"Grenade Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo 4"],
@@ -15673,6 +15852,63 @@
 				}
 			},
 			"Watcher": {
+				"Shield": {
+					"desc": "How long the shield a Watcher throws up lasts, and how fast it comes back.",
+					"debug_desc": "The Watcher's hardlight shield is an EQUIPMENT tag it carries, not anything on its char: `General Properties/Initial Equipment` -> `shield_projector\\shield_projector_test`, present on five campaign maps. Its `Abilities/Shield Projector` block holds `Lifetime` 3.0, `Recharge Time` 2.0, `Warmup Time` 0.5 and a projection distance of 1.5 to 7.0 metres.\n\nThis is the same eqip machinery the player's own Hardlight Shield uses, one block over.",
+					"game": ["Halo 4"],
+					"tag": "eqip objects\\equipment\\shield_projector\\shield_projector_test",
+					"targets": [
+						{"field": "Lifetime", "block": "Shield Projector", "harder_when": "increased", "min": 0},
+						{"field": "Recharge Time", "block": "Shield Projector", "harder_when": "decreased", "min": 0},
+						{"field": "Warmup Time", "block": "Shield Projector", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Grenade Catch": {
+					"desc": "How often Watchers snatch your grenades and throw them back.",
+					"debug_desc": "The same equipment tag carries an `Abilities/Projectile Collector` block, which is the Watcher plucking grenades out of the air and throwing them back. `Chance To Collect` 0.5, `Maximum Collect Range` 3.0, `Attack Speed` 10.0, `Strength` 0.7, with a 1-2 second collect cooldown and a 2-4 second delay before it throws.\n\nDropping the chance or the range is the direct way to stop Watchers eating your grenades.",
+					"game": ["Halo 4"],
+					"tag": "eqip objects\\equipment\\shield_projector\\shield_projector_test",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Chance To Collect", "block": "Projectile Collector", "min": 0, "max": 1},
+						{"field": "Maximum Collect Range", "block": "Projectile Collector", "min": 0},
+						{"field": "Attack Speed", "block": "Projectile Collector", "min": 0},
+						{"field": "Strength", "block": "Projectile Collector", "min": 0}
+					]
+				},
+				"Turret Damage": {
+					"desc": "How hard the turret a Watcher summons hits.",
+					"debug_desc": "The turret a Watcher summons is a full vehicle chain, exactly like the player's Autosentry: `vehi bishop_turret` -> `weap bishop_turret` -> `proj/jpt! bishop_turret_round`. It appears on Infinity (m40) only, and its weapon is wired to `char ai\\generic`, which is what mans it.\n\nMeasured: 8 damage a round at 8 rounds/sec, 30 to 50 velocity over a 550 range, and 325 health on the turret model. That health is the ROOT `Maximum Vitality` -- `Old Damage Info` is a zero-element block here, the same as the player's Autosentry -- so the vitality row carries `nth: 1`.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\vehicles\\forerunner\\bishop_turret\\weapon\\projectiles\\bishop_turret_round",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Damage Lower Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound", "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "group": "Damage"}
+					]
+				},
+				"Turret Vitality": {
+					"desc": "How much punishment a Watcher's turret takes before it breaks.",
+					"debug_desc": "The turret a Watcher summons is a full vehicle chain, exactly like the player's Autosentry: `vehi bishop_turret` -> `weap bishop_turret` -> `proj/jpt! bishop_turret_round`. It appears on Infinity (m40) only, and its weapon is wired to `char ai\\generic`, which is what mans it.\n\nMeasured: 8 damage a round at 8 rounds/sec, 30 to 50 velocity over a 550 range, and 325 health on the turret model. That health is the ROOT `Maximum Vitality` -- `Old Damage Info` is a zero-element block here, the same as the player's Autosentry -- so the vitality row carries `nth: 1`.",
+					"game": ["Halo 4"],
+					"tag": "hlmt objects\\vehicles\\forerunner\\bishop_turret\\bishop_turret",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Maximum Vitality", "nth": 1, "min": 1}
+					]
+				},
+				"Turret Rate of Fire": {
+					"desc": "How fast a Watcher's turret shoots.",
+					"debug_desc": "The turret a Watcher summons is a full vehicle chain, exactly like the player's Autosentry: `vehi bishop_turret` -> `weap bishop_turret` -> `proj/jpt! bishop_turret_round`. It appears on Infinity (m40) only, and its weapon is wired to `char ai\\generic`, which is what mans it.\n\nMeasured: 8 damage a round at 8 rounds/sec, 30 to 50 velocity over a 550 range, and 325 health on the turret model. That health is the ROOT `Maximum Vitality` -- `Old Damage Info` is a zero-element block here, the same as the player's Autosentry -- so the vitality row carries `nth: 1`.",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\vehicles\\forerunner\\bishop_turret\\weapon\\bishop_turret",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "min": 0},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "min": 0}
+					]
+				},
 				"Maximum Firing Distance": {
 					"desc": "Increases range in witch they can use their weapon",
 					"game": ["Halo 4"],
@@ -15710,6 +15946,8 @@
 					"desc": "Beam Damage",
 					"game": ["Halo 4"],
 					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"ignore": true,
+					"debug_desc": "RETIRED, kept for the record. This names `storm_bishop_beam`, a weapon NOTHING references: traced across all eight campaign maps, its only referrers are its own Model and First Person Model, and no char, biped or equipment points at it. The Watcher's real gun is on its char at `Weapons Properties/Weapon` -- `storm_stasis_pistol_pawnhead`, the Boltshot pawnhead -- and the Boltshot's own cards already tune it.\n\nExplosion Damage was additionally an exact duplicate of Beam Damage, same tag and same three fields, and Explosion Radius read 0 on both projectiles.",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -15721,6 +15959,8 @@
 					"desc": "Explosion on death?",
 					"game": ["Halo 4"],
 					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"ignore": true,
+					"debug_desc": "RETIRED, kept for the record. This names `storm_bishop_beam`, a weapon NOTHING references: traced across all eight campaign maps, its only referrers are its own Model and First Person Model, and no char, biped or equipment points at it. The Watcher's real gun is on its char at `Weapons Properties/Weapon` -- `storm_stasis_pistol_pawnhead`, the Boltshot pawnhead -- and the Boltshot's own cards already tune it.\n\nExplosion Damage was additionally an exact duplicate of Beam Damage, same tag and same three fields, and Explosion Radius read 0 on both projectiles.",
 					"targets": [
 						{"field": "Radius", "group": "Radius"},
 						{"field": "Radius Max", "group": "Radius"}
@@ -15730,6 +15970,8 @@
 					"desc": "Explosion on death? Lower Bound, Upper Bound",
 					"game": ["Halo 4"],
 					"tag": "jpt! objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"ignore": true,
+					"debug_desc": "RETIRED, kept for the record. This names `storm_bishop_beam`, a weapon NOTHING references: traced across all eight campaign maps, its only referrers are its own Model and First Person Model, and no char, biped or equipment points at it. The Watcher's real gun is on its char at `Weapons Properties/Weapon` -- `storm_stasis_pistol_pawnhead`, the Boltshot pawnhead -- and the Boltshot's own cards already tune it.\n\nExplosion Damage was additionally an exact duplicate of Beam Damage, same tag and same three fields, and Explosion Radius read 0 on both projectiles.",
 					"targets": [
 						{"field": "Damage Lower Bound", "group": "Damage"},
 						{"field": "Damage Upper Bound", "group": "Damage"},
@@ -15759,6 +16001,8 @@
 					"desc": "How far the Watcher's beam carries.",
 					"game": ["Halo 4"],
 					"tag": "proj objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_enemy & objects\\weapons\\pistol\\storm_bishop_beam\\projectiles\\storm_bishop_beam_beam_friendly",
+					"ignore": true,
+					"debug_desc": "RETIRED, kept for the record. This names `storm_bishop_beam`, a weapon NOTHING references: traced across all eight campaign maps, its only referrers are its own Model and First Person Model, and no char, biped or equipment points at it. The Watcher's real gun is on its char at `Weapons Properties/Weapon` -- `storm_stasis_pistol_pawnhead`, the Boltshot pawnhead -- and the Boltshot's own cards already tune it.\n\nExplosion Damage was additionally an exact duplicate of Beam Damage, same tag and same three fields, and Explosion Radius read 0 on both projectiles.",
 					"targets": [
 						{"field": "Air Damage Range", "group": "Range"},
 						{"field": "Air Damage Range Max", "group": "Range"},
