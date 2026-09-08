@@ -13178,14 +13178,26 @@
 				}
 			},
 			"Jackal": {
+				"Target Tracking & Leading": {
+					"desc": "How well Jackals track and lead you when shooting.",
+					"debug_desc": "Only ten Halo 4 `char` tags define their own `Firing Pattern Properties / Firing Patterns`; the rest inherit `ai\\generic`, which the General modifiers card owns. `storm_jackal` is one of the ten (2 patterns, tracking 0.9, leading 0.5), so this card reaches values nothing else could.\n\n`Target Tracking` is how tightly they follow you, `Target Leading` how far ahead of a moving target they aim. Both are 0..1 and both make the game harder as they rise.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"},
+						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
+					]
+				},
 				"Arm Shield": {
 					"desc": "How much punishment their arm shield takes before it breaks.",
-					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.",
+					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.\n\n**Halo 4 and Reach store health TWICE on hlmt** and these tags disagree: the legacy `Old Damage Info` block says 100 vitality over a 40-point shield, while the root `Maximum Vitality` (reached with `nth: 1`) says 700. On the Master Chief the two models agree exactly -- root 70 x the body section's 0.643 Vitality Percentage = the block's 45 -- so they are two spellings of one number and one of these is stale. Which the engine honours cannot be read out of the tags, so this card scales BOTH; under a multiply that is right either way.",
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"Halo Reach": "hlmt objects\\weapons\\melee\\jackal_shield\\jackal_shield", "Halo 4": "hlmt objects\\weapons\\melee\\jackal_shield\\jackal_shield*"},
 					"targets": [
 						{"field": "Maximum Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
-						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"}
+						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
+						{"field": "Maximum Vitality", "nth": 1, "min": 0, "group": "Arm Shield"}
 					]
 				},
 				"I am not scared": {
@@ -15127,12 +15139,13 @@
 			"Skirmisher": {
 				"Arm Shield": {
 					"desc": "How much punishment their bracers take before they break.",
-					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.",
+					"debug_desc": "The shield a Jackal or Skirmisher carries is not a vitality field on the CHARACTER at all -- it is a separate object, and its toughness lives on that object's model tag: `Maximum Vitality` and `Maximum Shield Vitality` in the `hlmt` Old Damage Info block. Measured identical everywhere it exists: 100 vitality over a 40-point shield, on Reach's jackal_shield and skirmisher_bracers and on Halo 4's jackal_shield and jackal_shield_major.\n\nThis is why the ordinary Shield Vitality card reads 0 on a Halo 4 Jackal: the character genuinely has no body shield, and everything that protects it is here instead.\n\nHalo 3 ships no jackal_shield model tag, so the card starts at Reach.\n\n**Halo 4 and Reach store health TWICE on hlmt** and these tags disagree: the legacy `Old Damage Info` block says 100 vitality over a 40-point shield, while the root `Maximum Vitality` (reached with `nth: 1`) says 700. On the Master Chief the two models agree exactly -- root 70 x the body section's 0.643 Vitality Percentage = the block's 45 -- so they are two spellings of one number and one of these is stale. Which the engine honours cannot be read out of the tags, so this card scales BOTH; under a multiply that is right either way.",
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "hlmt objects\\weapons\\melee\\skirmisher_bracers\\skirmisher_bracers"},
 					"targets": [
 						{"field": "Maximum Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
-						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"}
+						{"field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": 0, "group": "Arm Shield"},
+						{"field": "Maximum Vitality", "nth": 1, "min": 0, "group": "Arm Shield"}
 					]
 				},
 				"I am not scared": {
@@ -15590,7 +15603,7 @@
 				"Target Tracking & Leading": {
 					"desc": "Where to shoot on moving targets, and how much they lead — 0..1",
 					"game": ["Halo 4"],
-					"tag": "char ai\\generic",
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
 					"targets": [
 						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"},
 						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
