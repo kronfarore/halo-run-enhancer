@@ -2241,6 +2241,7 @@
 					"targets": [
 						{ "field": "Timer" },
 						{ "field": "Timer Max" },
+						{"field": "Super Detonation Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Super Detonation Projectile Count", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 1}
 					]
 				},
@@ -7875,6 +7876,7 @@
 					"targets": [
 						{"field": "Timer"},
 						{"field": "Timer Max"},
+						{"field": "Super Detonation Time", "min": 0},
 						{"field": "Super Detonation Projectile Count", "min": 1}
 					]
 				},
@@ -15533,9 +15535,21 @@
 				}
 			},
 			"Crawler": {
+				"Head Gun Damage": {
+					"desc": "How hard a Crawler's shots hit.",
+					"debug_desc": "`jpt! storm_burst_pistol\\projectiles\\storm_burst_pistol_bullet`, reached from `storm_pawn_head`'s Barrels block. Ships at **7.75** a shot.\n\n`storm_burst_pistol` is its own weapon, distinct from the Boltshot (`storm_stasis_pistol`): its weap tag appears on a single campaign map, it is in no mission's weapon list and the player never carries it. That is why carding it here moves the Crawler and nothing else.\n\nThe sniper Crawler is deliberately NOT included -- `storm_pawnsniper_head` fires the Binary Rifle's own projectile, so that damage belongs to the Binary Rifle's cards and adding it here would apply the operator twice to one tag.",
+					"game": ["Halo 4"],
+					"tag": "jpt! objects\\weapons\\pistol\\storm_burst_pistol\\projectiles\\storm_burst_pistol_bullet",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Damage Lower Bound", "min": 0, "group": "Damage"},
+						{"field": "Damage Upper Bound", "min": 0, "group": "Damage"},
+						{"field": "Damage Upper Bound Max", "min": 0, "group": "Damage"}
+					]
+				},
 				"Head Gun Rate of Fire": {
 					"desc": "How fast Crawlers shoot at you.",
-					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nIt fires the Boltshot and Binary Rifle PROJECTILES, so its damage is already covered by those weapons' own cards and is deliberately not repeated here -- tuning it twice would apply the operator to one shared tag. What lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
+					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nThe two heads fire DIFFERENT projectiles and only one is shared. `storm_pawnsniper_head` fires the Binary Rifle's round, so its damage is already tuned by that weapon's cards and is deliberately not repeated here -- and note the converse, that buffing your own Binary Rifle also buffs Crawler snipers. `storm_pawn_head` fires `storm_burst_pistol_bullet`, whose weapon `storm_burst_pistol` is NOT the Boltshot (`storm_stasis_pistol`) and is carded by nothing, so its 7.75 damage has its own card here.\n\nWhat lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
 					"game": ["Halo 4"],
 					"tag": "weap objects\\characters\\storm_pawn\\weapons\\storm_pawn_head & objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
 					"targets": [
@@ -15545,7 +15559,7 @@
 				},
 				"Head Gun Accuracy": {
 					"desc": "How accurately Crawlers shoot at you.",
-					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nIt fires the Boltshot and Binary Rifle PROJECTILES, so its damage is already covered by those weapons' own cards and is deliberately not repeated here -- tuning it twice would apply the operator to one shared tag. What lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
+					"debug_desc": "The Crawler's head gun is a WEAPON tag of its own, `storm_pawn\\weapons\\storm_pawn_head` (and `storm_pawnsniper_head` on the sniper variant), and it is tuned separately from anything the player carries.\n\nThe two heads fire DIFFERENT projectiles and only one is shared. `storm_pawnsniper_head` fires the Binary Rifle's round, so its damage is already tuned by that weapon's cards and is deliberately not repeated here -- and note the converse, that buffing your own Binary Rifle also buffs Crawler snipers. `storm_pawn_head` fires `storm_burst_pistol_bullet`, whose weapon `storm_burst_pistol` is NOT the Boltshot (`storm_stasis_pistol`) and is carded by nothing, so its 7.75 damage has its own card here.\n\nWhat lives only on these tags is how the Crawler shoots: the head runs at 24 rounds/sec against the player Boltshot's 16, and the sniper head at 1 round/sec against the player Binary Rifle's 30.",
 					"game": ["Halo 4"],
 					"tag": "weap objects\\characters\\storm_pawn\\weapons\\storm_pawn_head & objects\\characters\\storm_pawn\\weapons\\storm_pawnsniper_head",
 					"targets": [
