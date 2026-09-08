@@ -1331,8 +1331,8 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
 					"targets": [
-						{"field": "Error Angle", "block": "Barrels", "nth": 0, "min": 0, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": "Barrels", "nth": 0, "min": 0, "group": "Error Angle" },
+						{"field": "Error Angle", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle" },
+						{"field": "Error Angle Max", "block": "Barrels", "index": "all", "nth": 0, "min": 0, "group": "Error Angle" },
 						{"field": "Deviation Angle", "min": 0, "group": "Error Angle" }
 					]
 				},
@@ -1673,7 +1673,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": "all", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
 					]
 				},
 				"Per Round (Charged)": {
@@ -1704,10 +1704,10 @@
 					},
 					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -1722,7 +1722,7 @@
 					},
 					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Fire Recovery Time", "block": "Barrels" }
+						{ "field": "Fire Recovery Time", "block": "Barrels", "index": "all" }
 					]
 				},
 				"More Shooting (Charged)": {
@@ -5149,9 +5149,9 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
 					},
 					"targets": [
-						{ "field": "Heat Generated Per Round", "block": "Barrels" },
-						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }
+						{ "field": "Heat Generated Per Round", "block": "Barrels", "index": "all" },
+						{ "field": "Age Generated Per Round", "block": "Barrels", "index": "all", "group": "Age Generated Per Round" },
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": "all", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5166,10 +5166,10 @@
 					},
 					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -5183,7 +5183,7 @@
 					},
 					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Fire Recovery Time", "block": "Barrels" }
+						{ "field": "Fire Recovery Time", "block": "Barrels", "index": "all" }
 					]
 				},
 				"Projectiles Per Shot": {
@@ -5194,7 +5194,7 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
 					},
 					"targets": [
-						{ "field": "Projectiles Per Shot", "block": "Barrels" }
+						{ "field": "Projectiles Per Shot", "block": "Barrels", "index": "all" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				}
@@ -9556,10 +9556,10 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9568,7 +9568,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Fire Recovery Time", "block": "Barrels"}
+						{"field": "Fire Recovery Time", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Projectiles Per Shot": {
@@ -9576,7 +9576,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Projectiles Per Shot", "block": "Barrels"}
+						{"field": "Projectiles Per Shot", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Error Angle": {
@@ -9584,9 +9584,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Minimum Error", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle Max", "block": "Barrels", "group": "Error Angle"}
+						{"field": "Minimum Error", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": "Barrels", "index": "all", "group": "Error Angle"}
 					]
 				},
 				"Melee Damage": {
@@ -9752,10 +9752,10 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9764,7 +9764,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{"field": "Fire Recovery Time", "block": "Barrels"}
+						{"field": "Fire Recovery Time", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Projectiles Per Shot": {
@@ -9772,7 +9772,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{"field": "Projectiles Per Shot", "block": "Barrels"}
+						{"field": "Projectiles Per Shot", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Error Angle": {
@@ -9780,9 +9780,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{"field": "Minimum Error", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle Max", "block": "Barrels", "group": "Error Angle"}
+						{"field": "Minimum Error", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": "Barrels", "index": "all", "group": "Error Angle"}
 					]
 				}
 			},
@@ -9963,10 +9963,10 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9975,7 +9975,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Fire Recovery Time", "block": "Barrels"}
+						{"field": "Fire Recovery Time", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Projectiles Per Shot": {
@@ -9983,7 +9983,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Projectiles Per Shot", "block": "Barrels"}
+						{"field": "Projectiles Per Shot", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Error Angle": {
@@ -9991,9 +9991,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Minimum Error", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle", "block": "Barrels", "group": "Error Angle"},
-						{"field": "Error Angle Max", "block": "Barrels", "group": "Error Angle"},
+						{"field": "Minimum Error", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle", "block": "Barrels", "index": "all", "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": "Barrels", "index": "all", "group": "Error Angle"},
 						{"field": "Deviation Angle", "group": "Error Angle", "min": 0}
 					]
 				}
@@ -10137,7 +10137,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
 					"targets": [
-						{"field": "Projectiles Per Shot", "block": "Barrels"}
+						{"field": "Projectiles Per Shot", "block": "Barrels", "index": "all"}
 					]
 				},
 				"Per Round": {
