@@ -25,6 +25,66 @@ CASES = [
 ]
 DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
 
+# Dead cards that have been LOOKED AT and accepted. They are suppressed by default so
+# a run that prints nothing means "nothing new broke"; `--all` lists them again with
+# the reason. Add to this only after establishing WHY a card reads empty -- an entry
+# here silences it permanently, which is the opposite of what this audit is for.
+#
+# Keyed (game, card path, tag) so a card dead in one game still reports in another,
+# and so the same card on two maps of one game collapses to a single entry.
+_S = chr(92)
+VERIFIED = {
+    # The empty-block class: from Halo 3 on, most per-enemy property blocks ship
+    # ZERO elements and the enemy inherits ai\generic. The card resolves, finds an
+    # empty block and writes nothing. See the halo3-odst-empty-char-blocks note.
+    ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Vision',
+     'char objects' + _S + 'characters' + _S + 'floodcombat*'):
+        'Flood Combat Forms ship an empty Perception block; they inherit ai\\generic',
+    ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Hearing Distance',
+     'char objects' + _S + 'characters' + _S + 'floodcombat*'):
+        'same empty Perception block',
+    ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Perception',
+     'char objects' + _S + 'characters' + _S + 'floodcombat*'):
+        'same empty Perception block',
+    ('Halo 3: ODST', 'Specific Enemy modifier / Brute / Maximum Firing Distance',
+     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S + 'brute*'):
+        'empty Weapons block on l200 Brutes',
+    ('Halo 3', 'Specific Enemy modifier / Brute / Grenades',
+     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S + 'brute*'):
+        'empty Grenades block -- the Brute Grenades finding',
+    ('Halo 3', 'Specific Enemy modifier / Brute / Grenades Chance',
+     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S + 'brute*'):
+        'empty Grenades block -- the Brute Grenades finding',
+    ('Halo 3', 'Hero enemy modifier / Brute Chieftain / Melee Behavior',
+     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S
+     + 'brute_chieftain*'): 'empty Melee block on the 030 chieftain',
+    ('Halo 3: ODST', 'Hero enemy modifier / Brute Chieftain / Grenade Chance',
+     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S
+     + 'brute_chieftain_armor'): 'empty Grenades block',
+    # The Specops Commander is not fielded on the two ODST maps sampled here; the
+    # card is fine, the sample simply cannot see it.
+    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Body Vitality',
+     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
+     + 'elite_specops_commander'): 'tag present but its blocks are empty on l200/l300',
+    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Shield Vitality',
+     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
+     + 'elite_specops_commander'): 'as above',
+    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Melee Behavior',
+     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
+     + 'elite_specops_commander'): 'as above',
+    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Grenade Chance',
+     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
+     + 'elite_specops_commander'): 'as above',
+    # Pre-existing, unrelated to any Halo 4 work: matg carries no such field there.
+    ('Halo 4', 'Player Modifiers / General Modifiers / Stun Penalty',
+     'matg globals' + _S + 'globals'): 'Halo 4 matg has no Stun Penalty field',
+    ('Halo 4', 'Player Modifiers / General Modifiers / Stun Time',
+     'matg globals' + _S + 'globals'): 'Halo 4 matg has no Stun Time field',
+}
+SHOW_ALL = '--all' in sys.argv
+_seen_verified = []
+_new = []
+
 d = json.load(open('halo.json', encoding='utf-8'))
 cards = []
 
@@ -114,4 +174,32 @@ for game, subs, mp in CASES:
             except Exception:
                 live += 1                               # can't tell; don't accuse it
         if live == 0:
-            print('  DEAD  %-38s %s' % (' / '.join(path[-3:]), tag))
+            label = ' / '.join(path[-3:])
+            why = VERIFIED.get((game, label, tag))
+            if why is not None:
+                _seen_verified.append((game, label, tag, why))
+                if SHOW_ALL:
+                    print('  ok    %-38s %s' % (label, tag))
+                    print('        verified dead: %s' % why)
+                continue
+            _new.append((game, label, tag))
+            print('  DEAD  %-38s %s' % (label, tag))
+
+print('=' * 78)
+if _new:
+    print('%d NEW dead card(s) -- these are not on the verified list:' % len(_new))
+    for game, label, tag in _new:
+        print('   %-14s %-38s %s' % (game, label, tag))
+else:
+    print('No new dead cards.')
+print('%d verified dead card(s) suppressed%s.'
+      % (len(_seen_verified), '' if SHOW_ALL else ' (--all to list them with reasons)'))
+# An entry that never fires is a card that was fixed, or a tag/label that drifted.
+# Either way the list should not keep carrying it.
+_fired = {(g, l, t) for g, l, t, _w in _seen_verified}
+_stale = [k for k in VERIFIED if k not in _fired]
+if _stale:
+    print('%d verified entr(y/ies) did NOT fire -- fixed, or the label/tag drifted:'
+          % len(_stale))
+    for g, l, t in _stale:
+        print('   %-14s %-38s %s' % (g, l, t))

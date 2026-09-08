@@ -1790,7 +1790,20 @@ def target_applies(target, game):
                   Fire Recovery Time, which ships 0 in most games; the target stays in
                   halo.json for later rather than being deleted and re-derived.
     A target may carry either; `skip_games` wins if somehow both name the game.
+
+    `ignore` is the third, game-independent form: the row is CORRECT and worth
+    keeping on the record, but must never be offered or applied. It exists because a
+    quantity can be stored twice -- the player's health is both `Old Damage Info /
+    Maximum Vitality` and the root pool times a Damage Section's `Vitality
+    Percentage` -- and writing both is double-tuning. The losing row stays here so
+    the second spelling is not re-derived from scratch later.
+
+    This is the card-level `ignore` key, one level down. Every caller that filters
+    targets goes through here, so an ignored row is invisible to the apply path, the
+    dialog, deadcards and the audits alike.
     """
+    if target.get('ignore'):
+        return False
     if game in (target.get('skip_games') or []):
         return False
     return not target.get('games') or game in target['games']

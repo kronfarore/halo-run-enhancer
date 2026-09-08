@@ -537,11 +537,11 @@
 					],
 					"Halo Reach": [
 						{ "field": "Maximum Vitality", "block": "Old Damage Info", "min": "1" },
-						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0}
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0, "ignore": true}
 					],
 					"Halo 4": [
 						{ "field": "Maximum Vitality", "block": "Old Damage Info", "min": "1" },
-						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0}
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0, "ignore": true}
 					]
 				},
 				"special": true
@@ -567,11 +567,11 @@
 					],
 					"Halo Reach": [
 						{ "field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": "1" },
-						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0}
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0, "ignore": true}
 					],
 					"Halo 4": [
 						{ "field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": "1" },
-						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0}
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0, "ignore": true}
 					]
 				},
 				"special": true
