@@ -482,7 +482,8 @@
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
-					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans"
+					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
+					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
 				"harder_when": "increased",
 				"easier_when": "decreased",
@@ -504,7 +505,13 @@
 					],
 					"Halo Reach": [
 						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 0, "min": 1 },
-						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 1, "min": 1 }
+						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 1, "min": 1 },
+						{"field": "Stun Time", "block": "Damage Sections", "nth": 1, "index": "all", "min": 1}
+					],
+					"Halo 4": [
+						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 0, "min": 1 },
+						{ "field": "Stun Time", "block": "Old Damage Info", "index": "all", "nth": 1, "min": 1 },
+						{"field": "Stun Time", "block": "Damage Sections", "nth": 1, "index": "all", "min": 1}
 					]
 				},
 				"special": true
@@ -516,7 +523,9 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
+					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
 				"easier_when": "increased",
 				"targets": {
@@ -525,6 +534,14 @@
 					],
 					"Halo 2": [
 						{ "field": "Maximum Vitality", "block": "New Damage Info", "min": "1" }
+					],
+					"Halo Reach": [
+						{ "field": "Maximum Vitality", "block": "Old Damage Info", "min": "1" },
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0}
+					],
+					"Halo 4": [
+						{ "field": "Maximum Vitality", "block": "Old Damage Info", "min": "1" },
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 0, "min": 0}
 					]
 				},
 				"special": true
@@ -536,7 +553,9 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
+					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
 				"easier_when": "increased",
 				"targets": {
@@ -545,6 +564,14 @@
 					],
 					"Halo 2": [
 						{ "field": "Maximum Shield Vitality", "block": "New Damage Info", "min": "1" }
+					],
+					"Halo Reach": [
+						{ "field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": "1" },
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0}
+					],
+					"Halo 4": [
+						{ "field": "Maximum Shield Vitality", "block": "Old Damage Info", "min": "1" },
+						{"field": "Vitality Percentage", "block": "Damage Sections", "nth": 1, "index": 2, "min": 0}
 					]
 				},
 				"special": true
@@ -556,15 +583,25 @@
 					"Halo 1": "coll characters\\cyborg\\cyborg",
 					"Halo 2": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
 					"Halo 3": "hlmt objects\\characters\\masterchief\\masterchief & objects\\characters\\dervish\\dervish",
-					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player"
+					"Halo 3: ODST": "hlmt objects\\characters\\odst_oni_op\\odst_oni_op_player",
+					"Halo Reach": "hlmt objects\\characters\\spartans\\spartans",
+					"Halo 4": "hlmt objects\\characters\\storm_masterchief\\storm_masterchief"
 				},
-				"easier_when": "decreased",
+				"easier_when": "increased",
 				"targets": {
 					"Halo 1": [
 						{ "field": "Shield Recharge Rate" }
 					],
 					"Halo 2": [
 						{ "field": "Shield Recharge Velocity", "block": "New Damage Info" }
+					],
+					"Halo Reach": [
+						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info" },
+						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2}
+					],
+					"Halo 4": [
+						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info" },
+						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2}
 					]
 				},
 				"special": true
@@ -11652,6 +11689,18 @@
 	},	
 	"Enemy modifiers": {
 		"General modifiers": {
+			"Assassination Damage": {
+				"desc": "How much damage your assassinations do.",
+				"debug_desc": "`jpt! globals\\damage_effects\\assassination` is a single shared damage effect sitting in the assassination slot (+0x49C) of every biped that has one -- 9 of them in Reach, 6 in Halo 4. Because it is shared, this one card governs every assassination in the game.\n\nIt ships at **500** in both games, against enemy health in the 30-100 range, which is why an assassination is always lethal. Halving it changes nothing; it has to come down by roughly an order of magnitude before an assassination stops killing outright, and at that point the animation still plays but the target can survive it.\n\n**Halo 3 has no `globals\\damage_effects` folder at all** -- assassinations arrive as a mechanic in Reach -- so the card starts there.",
+				"game": ["Halo Reach", "Halo 4"],
+				"tag": "jpt! globals\\damage_effects\\assassination",
+				"harder_when": "decreased",
+				"targets": [
+					{"field": "Damage Lower Bound", "min": 0, "group": "Damage"},
+					{"field": "Damage Upper Bound", "min": 0, "group": "Damage"},
+					{"field": "Damage Upper Bound Max", "min": 0, "group": "Damage"}
+				]
+			},
 			"AI Base I am not scared": {
 				"desc": "How much it takes to frighten anyone who has no threshold of their own.",
 				"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.\\n\\nReach adds `Always Defensive Scary Threshold` -- the point past which the enemy simply stays defensive rather than deciding each time -- so the two are one input there.\\n\\nThis is the shared-base copy: it edits `ai\\\\generic` and so moves every character that has NOT defined its own threshold. The per-enemy cards cover the ones that have.",
@@ -12340,8 +12389,8 @@
 						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
 					"targets": [
-						{ "field": "Target Tracking" },
-						{ "field": "Target Leading" }
+						{ "field": "Target Tracking", "min": 0, "max": 1 },
+						{ "field": "Target Leading", "min": 0, "max": 1 }
 					],
 					"game": ["Halo 1", "Halo Reach", "Halo 4"]
 				},
@@ -12661,12 +12710,12 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Target Tracking" },
-							{ "field": "Target Leading" }
+							{ "field": "Target Tracking", "min": 0, "max": 1 },
+							{ "field": "Target Leading", "min": 0, "max": 1 }
 						],
 						"Halo 2": [
-							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
-							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 }
 						]
 					}
 				},
@@ -13185,8 +13234,8 @@
 					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*",
 					"harder_when": "increased",
 					"targets": [
-						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"},
-						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
+						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1},
+						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1}
 					]
 				},
 				"Arm Shield": {
@@ -13825,8 +13874,8 @@
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
 					"tag": "actv characters\\floodcombat*",
 					"targets": [
-						{ "field": "Target Tracking" },
-						{ "field": "Target Leading" }
+						{ "field": "Target Tracking", "min": 0, "max": 1 },
+						{ "field": "Target Leading", "min": 0, "max": 1 }
 					],
 					"game": "Halo 1"
 				},
@@ -14534,12 +14583,12 @@
 					},
 					"targets": {
 						"Halo 1": [
-							{ "field": "Target Tracking" },
-							{ "field": "Target Leading" }
+							{ "field": "Target Tracking", "min": 0, "max": 1 },
+							{ "field": "Target Leading", "min": 0, "max": 1 }
 						],
 						"Halo 2": [
-							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
-							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+							{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 },
+							{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 }
 						]
 					}
 				},
@@ -15605,8 +15654,8 @@
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
 					"targets": [
-						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"},
-						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all"}
+						{"field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1},
+						{"field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1}
 					]
 				},
 				"Body Vitality": {
@@ -15725,8 +15774,8 @@
 					"tag": "char objects\\characters\\prophet\\ai\\prophet_regret",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
-						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Gravity Cannon": {
@@ -15837,8 +15886,8 @@
 					"tag": "char objects\\characters\\heretic\\ai\\heretic_leader_hologram",
 					"harder_when": "increased",
 					"targets": [
-						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" },
-						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+						{ "field": "Target Tracking", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Target Leading", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Hologram Body Vitality": {
