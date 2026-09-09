@@ -13083,6 +13083,23 @@
 						{ "field": "Shield Recharge Time", "block": "Vitality Properties" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
+				},
+				"Hopping": {
+					"desc": "How often they hop between cover.",
+					"debug_desc": "`Hopping Definition` in the char tag: `Hop Wait Timer` (a range) is the pause between hops and `Maximum Hop Distance` how far one covers. Shipped: Elite jetpack and ranger 5..10s / 8wu, Jackal Ranger the same, Grunt Ultra a flat 10s / 7wu, Grunt space-suit 15..25s / 5wu.\\n\\nA shorter wait and a longer hop is a target that will not hold still, so that is the harder direction.\\n\\n**Only the jump-capable variants define this block** -- storm_elite_jetpack_jump, storm_elite_ranger, storm_grunt_space, storm_grunt_ultra, storm_jackal_ranger -- and the `_nojump` pair ship it with an EMPTY definition, so the card moves exactly the ones that hop.\\n\\n**The plugin lists the whole set three times inside one element** and the copies are not always equal (the space Grunt is 15..25 in the first two and 6..15 in the third), so every row is written at all three.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_elite\\ai\\storm_elite*",
+					"targets": [
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
+					]
 				}
 			},
 			"Hunter": {
@@ -13808,6 +13825,23 @@
 						{ "field": "Maximum Leader Distance", "block": "General Properties" },
 						{ "field": "Absolute Maximum Leader Distance", "block": "General Properties" }
 					]
+				},
+				"Hopping": {
+					"desc": "How often they hop between cover.",
+					"debug_desc": "`Hopping Definition` in the char tag: `Hop Wait Timer` (a range) is the pause between hops and `Maximum Hop Distance` how far one covers. Shipped: Elite jetpack and ranger 5..10s / 8wu, Jackal Ranger the same, Grunt Ultra a flat 10s / 7wu, Grunt space-suit 15..25s / 5wu.\\n\\nA shorter wait and a longer hop is a target that will not hold still, so that is the harder direction.\\n\\n**Only the jump-capable variants define this block** -- storm_elite_jetpack_jump, storm_elite_ranger, storm_grunt_space, storm_grunt_ultra, storm_jackal_ranger -- and the `_nojump` pair ship it with an EMPTY definition, so the card moves exactly the ones that hop.\\n\\n**The plugin lists the whole set three times inside one element** and the copies are not always equal (the space Grunt is 15..25 in the first two and 6..15 in the third), so every row is written at all three.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*",
+					"targets": [
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
+					]
 				}
 			},
 			"Jackal": {
@@ -14295,6 +14329,23 @@
 						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+					]
+				},
+				"Hopping": {
+					"desc": "How often they hop between cover.",
+					"debug_desc": "`Hopping Definition` in the char tag: `Hop Wait Timer` (a range) is the pause between hops and `Maximum Hop Distance` how far one covers. Shipped: Elite jetpack and ranger 5..10s / 8wu, Jackal Ranger the same, Grunt Ultra a flat 10s / 7wu, Grunt space-suit 15..25s / 5wu.\\n\\nA shorter wait and a longer hop is a target that will not hold still, so that is the harder direction.\\n\\n**Only the jump-capable variants define this block** -- storm_elite_jetpack_jump, storm_elite_ranger, storm_grunt_space, storm_grunt_ultra, storm_jackal_ranger -- and the `_nojump` pair ship it with an EMPTY definition, so the card moves exactly the ones that hop.\\n\\n**The plugin lists the whole set three times inside one element** and the copies are not always equal (the space Grunt is 15..25 in the first two and 6..15 in the third), so every row is written at all three.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*",
+					"targets": [
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 0, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 1, "group": "Hopping", "harder_when": "increased", "min": 0},
+						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
 					]
 				}
 			},
@@ -16114,6 +16165,40 @@
 						{"field": "Shield Recharge Delay Time", "block": "Vitality Properties"},
 						{"field": "Shield Recharge Time", "block": "Vitality Properties"}
 					]
+				},
+				"Advance": {
+					"desc": "How often a Knight commits to closing on you.",
+					"debug_desc": "`Advance Properties`, which the whole Knight family defines -- ordinary 0.4 initiate chance on a 10s timer, Battlewagon 0.5/10, Ranger 0.6/6 and the **Commander 1.0 on a 4s timer**, which is why the Commander is always the one in your face. The `_aggressive` stimulus overrides raise it again (0.7/5) and the wildcard catches them.\\n\\n`Abort Danger Threshold` is how much incoming fire calls the advance off; the ordinary Knight ships 99, i.e. never.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Initiate Chance", "block": "Advance Properties", "group": "Advance", "harder_when": "increased", "min": 0, "max": 1.0},
+						{"field": "Delay Timer", "block": "Advance Properties", "group": "Advance", "harder_when": "decreased", "min": 0},
+						{"field": "Abort Danger Threshold", "block": "Advance Properties", "group": "Advance", "harder_when": "increased", "min": 0}
+					]
+				},
+				"Advance Range": {
+					"desc": "From how far a Knight will start its charge.",
+					"debug_desc": "`Maximum Range` is the furthest a Knight begins an advance from (10wu ordinary, 25 for the Ranger, 5 for the Commander), `Charge Range` where it breaks into a run (2..3) and `Terminator Range` how close it presses before it stops (2..5). Reaching further is harder -- there is less room to keep one at a distance.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Maximum Range", "block": "Advance Properties", "group": "Advance Range", "harder_when": "increased", "min": 0},
+						{"field": "Charge Range", "block": "Advance Properties", "group": "Advance Range", "harder_when": "increased", "min": 0},
+						{"field": "Terminator Range", "block": "Advance Properties", "group": "Advance Range", "harder_when": "increased", "min": 0},
+						{"field": "Minimum Fast Advance Range", "block": "Advance Properties", "group": "Advance Range", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Teleport": {
+					"desc": "How often a Knight can blink to a new position.",
+					"debug_desc": "The teleport half of `Advance Properties`, defined by the **Knight Ranger** (and its `_aggressive` override): `Teleport Cooldown Time` 0.2s, `Teleport Runup Time` 0.5s and `Teleport Position Time` 0.2s, with the destination 1.5wu away, 3wu forward and 0.5wu to the side.\\n\\nShorter timings mean a Knight that is somewhere else the moment you aim, so down is the harder direction. Ordinary Knights, Battlewagons and Commanders leave these at zero and are unaffected.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{"field": "Teleport Cooldown Time", "block": "Advance Properties", "group": "Teleport", "harder_when": "decreased", "min": 0},
+						{"field": "Teleport Runup Time", "block": "Advance Properties", "group": "Teleport", "harder_when": "decreased", "min": 0},
+						{"field": "Teleport Position Time", "block": "Advance Properties", "group": "Teleport", "harder_when": "decreased", "min": 0}
+					]
 				}
 			},
 			"Crawler": {
@@ -16233,6 +16318,27 @@
 					"targets": [
 						{"field": "Maximum Leader Distance", "block": "General Properties"},
 						{"field": "Absolute Maximum Leader Distance", "block": "General Properties"}
+					]
+				},
+				"Hamstring": {
+					"desc": "How often a Crawler breaks off to rush you.",
+					"debug_desc": "`Hamstring` is the Crawler's flank-and-rush block (the tag family is `storm_pawn`): `Initiate Chance` 0.2 on an ordinary Crawler, 0.4 on a Prime and 0.5 on the aggressive override, `Hamstring Delay` the wait between attempts (20s / 10s / 5s) and `Maximum Rush Time` how long one run lasts (2..2.5s).\\n\\nMore often, sooner and for longer is the harder direction. `Flank Angle` and `Outer Engage Distance` sit in the same block and are left alone -- they are the geometry of the approach, not how aggressive it is.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Initiate Chance", "block": "Hamstring", "group": "Hamstring", "harder_when": "increased", "min": 0, "max": 1.0},
+						{"field": "Hamstring Delay", "block": "Hamstring", "group": "Hamstring", "harder_when": "decreased", "min": 0},
+						{"field": "Maximum Rush Time", "block": "Hamstring", "group": "Hamstring", "harder_when": "increased", "min": 0}
+					]
+				},
+				"Hamstring Melee": {
+					"desc": "How long a rushing Crawler waits before it bites.",
+					"debug_desc": "`Melee Attack Time Minimum` and `Maximum` inside `Hamstring` -- the window a Crawler spends in your face before it attacks. An ordinary Crawler is 0.1..0.5s, a Prime 0.5..1.5s and the aggressive override 4..8s (it circles far longer before committing).\\n\\nShorter is harder: less warning between the rush and the bite.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{"field": "Melee Attack Time Minimum", "block": "Hamstring", "group": "Hamstring Melee", "harder_when": "decreased", "min": 0},
+						{"field": "Melee Attack Time Maximum", "block": "Hamstring", "group": "Hamstring Melee", "harder_when": "decreased", "min": 0}
 					]
 				}
 			},
@@ -16396,6 +16502,51 @@
 						{"field": "Maximum Range", "group": "Range"},
 						{"field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0},
 						{"field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0}
+					]
+				},
+				"Resurrection": {
+					"desc": "How fast a Watcher brings a dead Knight back.",
+					"debug_desc": "`Bishop Properties` is the Watcher's own AI block (the tag is `storm_bishop`). `Resurrection Initiation Delay Time` (1s) is the pause before it starts, `Resurrection Charge Up Time` (4s) the beam it has to hold, and `Resurrection Give Up Time` (15s) how long it keeps trying before abandoning the corpse.\\n\\nA quicker, more persistent revive is the harder direction: the Knight is back sooner and killing the Watcher first matters more.\\n\\nstorm_sentinel ships the same block with its own numbers and is deliberately NOT targeted here -- it is the Watcher that resurrects.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Resurrection Charge Up Time", "block": "Bishop Properties", "group": "Resurrection", "harder_when": "decreased", "min": 0},
+						{"field": "Resurrection Initiation Delay Time", "block": "Bishop Properties", "group": "Resurrection", "harder_when": "decreased", "min": 0},
+						{"field": "Resurrection Give Up Time", "block": "Bishop Properties", "group": "Resurrection", "harder_when": "increased", "min": 0}
+					]
+				},
+				"Shield Projection": {
+					"desc": "How far the Watcher's shield reaches, and how long it lasts.",
+					"debug_desc": "The hardlight shield a Watcher throws over another Promethean. `Shield Range Maximum` (20wu on the Watcher, 30 on the Sentinel) is how far away it will do it, `Shield Lifetime` (3..4s) how long the shield stands and `Shield Recharge Time` (1..2s) the wait before another.\\n\\nSeparate from the Watcher's existing Shield card, which tunes the `shield_projector_test` equipment the shield itself is made of; this is the Watcher deciding when and how far to use it.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Shield Range Maximum", "block": "Bishop Properties", "group": "Shield Projection", "harder_when": "increased", "min": 0},
+						{"field": "Shield Lifetime", "block": "Bishop Properties", "group": "Shield Projection", "harder_when": "increased", "min": 0},
+						{"field": "Shield Lifetime Max", "block": "Bishop Properties", "group": "Shield Projection", "harder_when": "increased", "min": 0},
+						{"field": "Shield Recharge Time", "block": "Bishop Properties", "group": "Shield Projection", "harder_when": "decreased", "min": 0},
+						{"field": "Shield Recharge Time Max", "block": "Bishop Properties", "group": "Shield Projection", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Shard Spawning": {
+					"desc": "How quickly a Watcher throws out its shards.",
+					"debug_desc": "`Shard Creation Delay` (3s) and `Spawn Delay` (1..2s) in `Bishop Properties` -- the wind-up before a Watcher produces a shard and the gap before the next. Shorter is harder.\\n\\nThe shard OBJECT itself is a tagref in the same block and is not touched; this is only the timing.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Shard Creation Delay", "block": "Bishop Properties", "group": "Shards", "harder_when": "decreased", "min": 0},
+						{"field": "Spawn Delay", "block": "Bishop Properties", "group": "Shards", "harder_when": "decreased", "min": 0},
+						{"field": "Spawn Delay Max", "block": "Bishop Properties", "group": "Shards", "harder_when": "decreased", "min": 0}
+					]
+				},
+				"Evasion": {
+					"desc": "How readily a Watcher dodges away when it is hit.",
+					"debug_desc": "`Evasion Shield Level Trigger` (0.33) and `Evasion Body Level Trigger` (1.0) are the fractions at which a Watcher breaks off and evades. Higher means it runs sooner, which is harder to kill, so that is the harder direction.\\n\\n**The body trigger already ships at 1.0**, so only the shield one has room upward; a multiply above the cap is clamped and does nothing rather than misbehaving.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{"field": "Evasion Shield Level Trigger", "block": "Bishop Properties", "group": "Evasion", "harder_when": "increased", "min": 0, "max": 1.0},
+						{"field": "Evasion Body Level Trigger", "block": "Bishop Properties", "group": "Evasion", "harder_when": "increased", "min": 0, "max": 1.0}
 					]
 				}
 			}

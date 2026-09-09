@@ -498,6 +498,18 @@
     "vitality": 1.0
    }
   },
+  "baseline|Halo 4|Impossible": {
+   "stamp": [
+    766459904,
+    "afdacc237974111ad17e5708d7e8813f226c078e1e8cdfbff77202098729cce3"
+   ],
+   "value": {
+    "damage": 1.2999999523162842,
+    "rof": 1.0,
+    "shield": 1.0,
+    "vitality": 1.0
+   }
+  },
   "baseline|Halo Reach|Impossible": {
    "stamp": [
     881459200,
