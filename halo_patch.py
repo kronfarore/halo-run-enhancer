@@ -814,6 +814,17 @@ _STARTING_SLOTS = {
     'Halo Reach': {'ref_size': 16, 'id_at': 0xC, 'equipment': 0x54,
                    'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
                    'secondary': {'ref': 0x3C, 'loaded': 0x4C, 'total': 0x4E}},
+    # Halo 4's Player Starting Profile is scnr 0x310, element 0x7C, and its SECONDARY
+    # slot MOVED: the primary ref is followed by loaded, total AND an `Age Remaining`
+    # float, which pushes the second weapon to 0x40 where every earlier game has 0x3C.
+    # Read off the Halo 4 plugin and confirmed against all 43 profiles on the eight
+    # campaign maps -- every one carries 'weap' magic at +0x28 and an ident that
+    # resolves to the weapon the level really starts you with (AR + magnum on most,
+    # BR + AR on Reclaimer, the Forerunner SMG pair on Forerunner).
+    # 'equipment' is the Starting Equipment eqip ref; no shipped map fills it in.
+    'Halo 4': {'ref_size': 16, 'id_at': 0xC, 'equipment': 0x60,
+               'primary':   {'ref': 0x28, 'loaded': 0x38, 'total': 0x3A},
+               'secondary': {'ref': 0x40, 'loaded': 0x50, 'total': 0x52}},
 }
 
 # H3 tag idents are (index + salt) << 16 | index. Sampling every tagRef in the
@@ -910,8 +921,21 @@ def _reach_profile_role(name, has_ability):
     return is_player, ('respawn' in n)
 
 
+def _h4_profile_role(name):
+    """(is_player, is_respawn) for a Halo 4 Player Starting Profile.
+
+    Halo 4 has no NPC profiles: all 43 across the eight campaign maps arm the player
+    (AR + magnum on most, the Forerunner pair on Forerunner, BR + AR on Reclaimer), and
+    the only ones that do not are five on Shutdown that are deliberately weaponless
+    because the mission continues the loadout you arrive with. Those are left alone by
+    the same guard every game uses, not by this test. So the only question left is
+    which are RESPAWN profiles, and Halo 4 says so in the name.
+    """
+    return True, ('respawn' in (name or '').strip().lower())
+
+
 def _reach_profiles(m, game, scnr_base, boff, esize, count):
-    """{index: (is_player, is_respawn)} for every Reach starting profile."""
+    """{index: (is_player, is_respawn)} for every Reach or Halo 4 starting profile."""
     lay = _STARTING_SLOTS.get(game) or {}
     eq = lay.get('equipment')
     roles = {}
@@ -920,6 +944,9 @@ def _reach_profiles(m, game, scnr_base, boff, esize, count):
         if poff is None:
             continue
         nm = bytes(m.data[poff:poff + 0x20]).split(b'\0')[0].decode('latin1', 'replace')
+        if str(game).strip() in FIFTH_GEN_GAMES:
+            roles[i] = _h4_profile_role(nm)
+            continue
         has = False
         if eq is not None:
             rid = struct.unpack_from('<I', m.data, poff + eq + lay['id_at'])[0]
@@ -1176,7 +1203,8 @@ def _h2_duplicate_squad(m, registry, squad_name, extra, spread=0.6):
 def _weap_ref_id(m, name, game=None, salt=None):
     """Full tag ident (H1/H3) / datum (H2) for a weap tag by name, or None if that
     tag isn't in this map — the safety net for a picked weapon the map lacks."""
-    if str(game).strip() in (THIRD_GEN_GAMES | FOURTH_GEN_GAMES):
+    if str(game).strip() in (THIRD_GEN_GAMES | FOURTH_GEN_GAMES
+                             | FIFTH_GEN_GAMES):
         # The tag table stores a salt PER TAG, so the ident is readable rather than
         # guessable: ident = (salt << 16) | index, parsed into every tag by
         # Halo3Map._parse_index. Checked against every weapon-palette reference on the
@@ -1374,7 +1402,7 @@ def _apply_starting_equipment(m, game, registry, starting):
         # armed squadmates.
         default = [0] if third_gen else [0, 1]
         reach_roles = None
-        if str(game).strip() == 'Halo Reach':
+        if str(game).strip() in ('Halo Reach',) or str(game).strip() in FIFTH_GEN_GAMES:
             # Reach's profiles are keyed by difficulty AND co-op AND insertion area,
             # so there is no fixed index to write. Every non-respawn player profile
             # gets the picks; the respawn ones are left to the respawn options below.

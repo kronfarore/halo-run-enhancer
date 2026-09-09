@@ -1238,8 +1238,14 @@ def has_equipment(game):
     which is what this gate decides. The PLACEMENT paths are separately gated by
     `_MAP_EQUIPMENT` in halo_patch, which has no Reach layout, so starting equipment
     and Map Presence stay inert here rather than writing with Halo 3's offsets.
+
+    Halo 4's armour abilities are that sandbox again, and its campaign PLACES them --
+    the mission lists were read off what each map really puts down (Active Camouflage
+    and Hardlight Shield on Requiem, the Auto Turret on Forerunner), so a player can
+    find and hold one. Leaving Halo 4 out of this list is why the equipment draw came
+    up EMPTY there.
     """
-    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
+    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 
 def equipment_placement_supported(game):
@@ -1533,7 +1539,7 @@ ELITE_ALLY_GAMES = ('Halo 3', 'Halo 3: ODST')
 # every floodcombat/floodcarrier/pureform/infection tag resolves there, so a Flood card
 # drafted on a Halo 2 or Halo 3 level goes on being offered and patched onto levels
 # where nothing it edits will ever spawn.
-FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach')
+FLOOD_FREE_GAMES = ('Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 # --- ODST escort buff ---------------------------------------------------------
 #

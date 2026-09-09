@@ -42,6 +42,20 @@ DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
 # and so the same card on two maps of one game collapses to a single entry.
 _S = chr(92)
 VERIFIED = {
+    # Halo 4's Hunter. The tag is right -- `storm_hunter`, fixed 2026-09-09 after it had
+    # been resolving to the Halo 3 path and reaching nothing -- but the tag itself
+    # ships EMPTY Weapons Properties and no Firing Patterns, inheriting ai\\generic. The
+    # cards are correct and the character simply defines none of it; they would need
+    # init_defaults + grow to bite, which nobody has asked for.
+    ('Halo 4', 'Specific Enemy modifier / Hunter / '
+     'Maximum Firing Distance Hunter Fuel Rod',
+     'char objects' + _S + 'characters' + _S + 'storm_hunter' + _S + 'ai' + _S
+     + 'storm_hunter*'):
+        'storm_hunter ships an empty Weapons Properties block',
+    ('Halo 4', 'Specific Enemy modifier / Hunter / Target Tracking & Leading',
+     'char objects' + _S + 'characters' + _S + 'storm_hunter' + _S + 'ai' + _S
+     + 'storm_hunter*'):
+        'storm_hunter defines no Firing Patterns; it inherits the generic base',
     # The empty-block class: from Halo 3 on, most per-enemy char property blocks ship
     # ZERO elements and the enemy inherits ai\generic. The card resolves, finds an
     # empty block and writes nothing. See the halo3-odst-empty-char-blocks note.
