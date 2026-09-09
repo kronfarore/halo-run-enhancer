@@ -37,15 +37,69 @@ MAPS = {
     'Halo 3': ('halo3/maps',
                ['005_intro', '010_jungle', '020_base', '030_outskirts', '040_voi',
                 '050_floodvoi', '070_waste', '100_citadel', '110_hc', '120_halo']),
+    # ODST, Reach and Halo 4 were never resolution-checked -- the dict simply stopped
+    # at Halo 3, so `0 problems` said nothing about half the games in the database and
+    # a Halo 4 card naming a field the engine renamed could not be caught here. Fewer
+    # maps each than the older games get: these caches are an order of magnitude larger
+    # and every one is held open at once.
+    'Halo 3: ODST': ('halo3odst/maps',
+                     ['l200', 'l300', 'sc110', 'sc120', 'sc130', 'sc140', 'h100']),
+    'Halo Reach': ('haloreach/maps',
+                   ['m10', 'm20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60', 'm70']),
+    # Shutdown, Composer and Infinity between them field every Halo 4 species and
+    # nearly every weapon; Dawn carries the sprint equipment the other three lack.
+    'Halo 4': ('halo4/maps',
+               ['m10_crash', 'm020', 'm30_cryptum', 'm40_invasion', 'm60_rescue',
+                'm70_liftoff', 'm80_delta', 'm90_sacrifice']),
 }
 SUBDIRS = {'Halo 1': ['Halo1MCC', 'Halo1'], 'Halo 2': ['Halo2MCC', 'Halo2'],
-           'Halo 3': ['Halo3MCC', 'Halo3']}
+           'Halo 3': ['Halo3MCC', 'Halo3'], 'Halo 3: ODST': ['ODSTMCC', 'ODST'],
+           'Halo Reach': ['ReachMCC', 'Reach'], 'Halo 4': ['Halo4MCC', 'Halo4']}
 
 problems = []
 
 
-def report(msg):
-    problems.append(msg)
+
+# Findings that have been LOOKED AT and accepted, keyed (game, label, field). Every one
+# is the empty-block class: the tag resolves and the field is in the plugin, but the
+# block has no elements because the tag inherits it. Suppressed by default so a clean
+# run means "nothing new broke"; --all lists them with the reason.
+#
+# ADD TO THIS ONLY after establishing WHY, and prefer fixing: a card whose block is
+# empty can often be made live with `init_defaults` + `grow`, which is how the hero
+# cards reach blocks their tags do not own. These are the ones nobody has asked for.
+ACCEPTED = {
+    ('Halo Reach', 'Gravity Hammer/Accuracy Penalties', 'Reload Penalty'):
+        'the Gravity Hammer has no Barrels values in Reach -- only seven Reach weapons '
+        'carry Reload/Switch Penalty and it is not one of them',
+    ('Halo Reach', 'Gravity Hammer/Accuracy Penalties', 'Switch Penalty'):
+        'same',
+    ('Halo 4', 'Hunter/Maximum Firing Distance Hunter Fuel Rod', 'Maximum Firing Range'):
+        'storm_hunter ships an empty Weapons Properties block and inherits ai\\generic',
+    ('Halo 4', 'Hunter/Target Tracking & Leading', 'Target Tracking'):
+        'storm_hunter defines no Firing Patterns; it inherits the generic base',
+    ('Halo 4', 'Hunter/Target Tracking & Leading', 'Target Leading'):
+        'same empty Firing Patterns',
+    ('Halo 4', 'Sentinel/Cover Properties', 'Hide Behind Cover Time'):
+        'storm_sentinel ships an empty Cover Properties block',
+    ('Halo 4', 'Sentinel/Cover Properties', 'Hide Behind Cover Time Max'):
+        'same empty Cover Properties',
+    ('Halo 4', 'Sentinel/Cover Properties', 'Cover Vitality Threshold'):
+        'same empty Cover Properties',
+    ('Halo 4', 'Sentinel/I am not scared', 'Scary Target Threshold'):
+        'storm_sentinel ships an empty Morale Properties block',
+    ('Halo 4', 'Sentinel/Maximum Firing Distance', 'Maximum Firing Range'):
+        'storm_sentinel ships an empty Weapons Properties block',
+    ('Halo 4', 'Sentinel/Rate of Fire', 'Rate Of Fire'):
+        'storm_sentinel defines no Firing Patterns; it inherits the generic base',
+}
+_seen_accepted = []
+
+inert = []
+
+
+def report(msg, quiet=False):
+    (inert if quiet else problems).append(msg)
 
 
 # ---------------------------------------------------------------- load
@@ -79,12 +133,14 @@ def declared_games(eff):
     whenever there is no explicit `game` key, so a per-game tag dict alone does not
     restrict an effect. An effect with tag keys {H1, H2} and no `game` key is still
     offered in H3, where `resolve_gamed` silently falls back to the H2 tag."""
+    skip = eff.get('skip_games')
+    skip = [skip] if isinstance(skip, str) else list(skip or [])
     g = eff.get('game')
     if isinstance(g, str):
-        return [g]
+        return [g] if g not in skip else []
     if isinstance(g, list):
-        return list(g)
-    return list(GAMES)
+        return [x for x in g if x not in skip]
+    return [x for x in GAMES if x not in skip]
 
 
 def iter_effects():
@@ -108,6 +164,11 @@ def iter_effects():
     for boss, effs in (em.get('Boss enemy modifier') or {}).items():
         for n, e in effs.items():
             yield f'Boss {boss}/{n}', e, None
+    # Heroes are a separate section and were missed entirely -- every Brute Chieftain,
+    # Elite General, Knight Commander card went unchecked.
+    for hero, effs in (em.get('Hero enemy modifier') or {}).items():
+        for n, e in effs.items():
+            yield f'{hero}/{n}', e, None
     for n, e in (DB.get('Friend modifiers') or {}).items():
         yield f'Friend/{n}', e, None
     for n, e in (DB.get('Skull modifiers') or {}).items():
@@ -165,6 +226,32 @@ def check_structure():
                     report(f'{label}: desc_overrides has unknown game key {k!r}')
 
 
+# Who each game actually fields, from its own Missions lists. A card about a weapon or
+# an enemy the game does not have CANNOT be drafted there, so its tag failing to resolve
+# is the expected result rather than a fault -- the Flood from ODST on, Reach's
+# Sentinels, Halo 4's Plasma Rifle, Brutes and Buggers. Reporting those as problems
+# buried the real findings 3 to 1. They are still listed under --all, because "inert
+# here" is worth being able to see on purpose.
+_FIELDED = {}
+for _g, _ms in DB['Missions'].items():
+    _s = set()
+    for _md in _ms.values():
+        for _k in ('weapons', 'grenades', 'equipment', 'enemies', 'bosses', 'turrets'):
+            _s |= set(_md.get(_k) or [])
+    _FIELDED[_g] = _s
+_ANY_FIELDED = set().union(*_FIELDED.values()) if _FIELDED else set()
+
+
+def is_inert(label, game):
+    """True when this card's subject is something `game` does not field."""
+    owner = label.split('/')[0]
+    if owner.startswith('Boss '):
+        owner = owner[5:]
+    if owner not in _ANY_FIELDED:
+        return False                  # Player/EnemyGen/Friend/Skull have no owner
+    return owner not in _FIELDED.get(game, ())
+
+
 # ------------------------------------------------------ resolution checks
 _plugins, _maps = {}, {}
 
@@ -182,19 +269,15 @@ def plugin(game, cls):
     return _plugins[key]
 
 
-def maps_for(game):
-    if game not in _maps:
-        out = []
-        subdir, names = MAPS[game]
-        for mn in names:
-            fn = os.path.join(MCC, *subdir.split('/'), mn + '.map')
-            if os.path.exists(fn):
-                try:
-                    out.append((mn, hp.open_map(fn, game)))
-                except Exception as ex:
-                    print(f'  (could not open {mn}: {ex})')
-        _maps[game] = out
-    return _maps[game]
+def map_paths(game):
+    """The sampled map FILES for a game, opened one at a time by the caller."""
+    subdir, names = MAPS[game]
+    out = []
+    for mn in names:
+        fn = os.path.join(MCC, *subdir.split('/'), mn + '.map')
+        if os.path.exists(fn):
+            out.append((mn, fn))
+    return out
 
 
 def flavors(field, t):
@@ -209,80 +292,87 @@ def flavors(field, t):
     return [field]
 
 
+def _targets_of(eff, game, cls, tpath):
+    """The resolvable targets of one card in one game: (field, block, nth, class, path).
+
+    Pseudo-field targets are skipped -- reload/swap animation lengths, map placement
+    percentages, the Brute equipment drop weight and the ability tuning rows are all
+    handled by dedicated ops in apply_run, not by a plugin field write, so there is no
+    field name to look up. A target may also redirect to a tag of its own class, which
+    is resolved against THAT class or every redirect reads as a missing field.
+    """
+    out = []
+    for t in resolve_gamed(eff.get('targets'), game) or []:
+        if not isinstance(t, dict) or any(
+                t.get(k) for k in ('reload_anim', 'swap_anim', 'map_swap',
+                                   'map_equip', 'equip_drop', 'sprint')):
+            continue
+        if t.get('games') and game not in t['games']:
+            continue
+        if t.get('skip_games') and game in t['skip_games']:
+            continue
+        field = resolve_gamed(t.get('field'), game)
+        if field is None:
+            continue
+        use_cls, use_path = cls, tpath
+        own = resolve_gamed(t.get('tag'), game)
+        if isinstance(own, str) and own.strip():
+            use_cls, use_path = hm.split_tag(own)
+        out.append((field, resolve_gamed(t.get('block'), game),
+                    resolve_gamed(t.get('nth'), game) or 0, use_cls, use_path, t))
+    return out
+
+
 def check_resolution():
-    for label, eff, weapon in iter_effects():
-        # Skulls are whole-map rules applied in code, not per-field tag edits. Their
-        # "tag" is nominal (just a group name, no path) and has nothing to resolve.
-        if eff.get('skull'):
+    """Per game: build the work list, then walk the maps ONE AT A TIME.
+
+    A card is only reported when every sampled map of its game agrees -- the tag is on
+    none of them, or the field's block is empty on all of them. Whether a tag is
+    resident and whether a character defines a block both vary by level, so a
+    single-map verdict is a guaranteed false positive (the Halo 2 Elites carry their
+    Grenades block on 9 of the 13 levels that field them).
+    """
+    work = {}                       # game -> [(label, cls, path, [targets])]
+    for label, eff, _weapon in iter_effects():
+        if eff.get('skull'):        # whole-map rules, applied in code; nothing to resolve
             continue
         for game in declared_games(eff):
             if game not in MAPS:
                 continue
             tag = resolve_gamed(eff.get('tag'), game)
             if not isinstance(tag, str) or not tag.strip():
-                continue                       # skulls and the like carry no real tag
-            cls = tag.split(' ', 1)[0]
+                continue
+            cls, tpath = hm.split_tag(tag)
             if cls == 'matg':
                 continue
+            init = eff.get('init_defaults')
+            # `init_defaults` is a PLAIN dict on most cards and a per-game one on a
+            # few, and resolve_gamed treats any dict as game-keyed -- so resolving
+            # unconditionally turned every plain seeder into None and the rule never
+            # fired. Only resolve when the keys really are game names.
+            if isinstance(init, dict) and any(k in GAMES for k in init):
+                init = resolve_gamed(init, game)
+            seeds = (str(init.get('block')).lower()
+                     if isinstance(init, dict) and init.get('block') else None)
+            work.setdefault(game, []).append(
+                (label, tag, cls, tpath, _targets_of(eff, game, cls, tpath), seeds))
+
+    for game, items in work.items():
+        # The plugin half needs no map at all, so it is settled first and the field is
+        # dropped from the map walk once it is known to be missing.
+        live = []
+        for label, tag, cls, tpath, targets, seeds in items:
             p = plugin(game, cls)
+            quiet = is_inert(label, game)
             if p is None:
-                report(f'{label} [{game}]: no {cls} plugin')
+                report(f'{label} [{game}]: no {cls} plugin', quiet)
                 continue
-            _, tpath = hm.split_tag(tag)
-            found_map, hits = None, []
-            for mn, m in maps_for(game):
-                h = []
-                for part in tpath.split(' & '):
-                    h += m.find_tags(cls, part.strip())
-                if h:
-                    found_map, hits = m, h
-                    break
-            if found_map is None:
-                report(f'{label} [{game}]: tag resolves on 0 maps  ({tag})')
-                continue
-            targets = resolve_gamed(eff.get('targets'), game) or []
-            # Pseudo-field targets are handled by dedicated ops in apply_run, not by
-            # a plugin field write, so there is no field name to resolve: reload
-            # animation length, map placement percentages, and the Brute equipment
-            # drop weight (whose element is picked by tagRef, not by index).
-            for t in targets:
-                if not isinstance(t, dict) or any(
-                        t.get(k) for k in ('reload_anim', 'swap_anim', 'map_swap',
-                                           'map_equip', 'equip_drop', 'sprint')):
+            keep = []
+            for field, block, nth, ucls, upath, t in targets:
+                tp = plugin(game, ucls)
+                if tp is None:
+                    report(f'{label} [{game}]: no {ucls} plugin', quiet)
                     continue
-                if t.get('games') and game not in t['games']:
-                    continue
-                field = resolve_gamed(t.get('field'), game)
-                if field is None:
-                    continue
-                # A target may redirect to a tag of its own class -- Firing Noise
-                # carries the projectile's Impact and Detonation Noise along with the
-                # weapon's. Resolve the field against THAT class, or every redirect
-                # reads as a missing field in the card's own plugin.
-                tp, tmap, thits = p, found_map, hits
-                use_cls, use_path = cls, tpath
-                if isinstance(resolve_gamed(t.get('tag'), game), str):
-                    ttag = resolve_gamed(t['tag'], game)
-                    tcls, tpath2 = hm.split_tag(ttag)
-                    use_cls, use_path = tcls, tpath2
-                    tp = plugin(game, tcls)
-                    if tp is None:
-                        report(f'{label} [{game}]: no {tcls} plugin')
-                        continue
-                    tmap, thits = None, []
-                    for _mn, m in maps_for(game):
-                        h = []
-                        for part in tpath2.split(' & '):
-                            h += m.find_tags(tcls, part.strip())
-                        if h:
-                            tmap, thits = m, h
-                            break
-                    if tmap is None:
-                        report(f'{label} [{game}]: target tag resolves on 0 maps '
-                               f'({ttag})')
-                        continue
-                block = resolve_gamed(t.get('block'), game)
-                nth = resolve_gamed(t.get('nth'), game) or 0
                 fld = None
                 for nm in flavors(field, t):
                     fld = tp.find(nm, block, nth)
@@ -290,25 +380,76 @@ def check_resolution():
                         break
                 if not fld:
                     report(f'{label} [{game}]: FIELD not in plugin: {field!r} '
-                           f'(block {block!r})')
+                           f'(block {block!r})', quiet)
                     continue
-                # EVERY sampled map, not just the first one carrying the tag. Whether a
-                # character defines a block varies BY LEVEL -- the Halo 2 Elites carry
-                # their Grenades block on 9 of the 13 levels that field them -- so
-                # checking one map reports a working card as empty whenever that map
-                # happens to be one of the others. A card is only dead if no sampled
-                # level populates it anywhere.
-                got = False
-                for _mn, m2 in maps_for(game):
-                    h2 = []
-                    for part in use_path.split(' & '):
-                        h2 += m2.find_tags(use_cls, part.strip())
-                    if any(m2.follow_all(b, fld['block_offsets'],
-                                         fld.get('block_sizes'), 'all') for _, b in h2):
-                        got = True
-                        break
-                if not got:
-                    report(f'{label} [{game}]: field EMPTY on every sampled map: {field!r}')
+                # A card that SEEDS the block it edits is not broken when that block
+                # reads empty -- being empty is the whole reason it seeds, and the
+                # patcher grows or copies it before writing. Same comparison
+                # halo_enhancer makes at _seeded_default and deadcards at its own loop;
+                # without it every hero card with init_defaults reads as a fault, which
+                # is exactly what the newly-walked Hero section produced.
+                keep.append((field, ucls, upath, fld,
+                             bool(seeds and block and str(block).lower() == seeds)))
+            live.append((label, tag, cls, tpath, keep))
+
+        found = {}                  # label -> tag resolved on some map
+        tfound = {}                 # (cls, path) -> a TARGET's own tag resolved
+        filled = {}                 # (label, field, path) -> block non-empty somewhere
+        for mn, fn in map_paths(game):
+            try:
+                m = hp.open_map(fn, game)
+            except Exception as ex:
+                print(f'  (could not open {mn}: {ex})')
+                continue
+            hits = {}
+
+            def tags_for(cls, path):
+                key = (cls, path)
+                if key not in hits:
+                    h = []
+                    for part in path.split(' & '):
+                        h += m.find_tags(cls, part.strip())
+                    hits[key] = h
+                return hits[key]
+
+            for label, tag, cls, tpath, keep in live:
+                if tags_for(cls, tpath):
+                    found[label] = True
+                for field, ucls, upath, fld, _seeded in keep:
+                    key = (label, field, upath)
+                    if tags_for(ucls, upath):
+                        tfound[(ucls, upath)] = True
+                    if filled.get(key):
+                        continue
+                    for _tp, b in tags_for(ucls, upath):
+                        if m.follow_all(b, fld['block_offsets'],
+                                        fld.get('block_sizes'), 'all'):
+                            filled[key] = True
+                            break
+            del m                   # one map at a time: Halo 4's eight are 5.5 GB
+
+        for label, tag, cls, tpath, keep in live:
+            quiet = is_inert(label, game)
+            if not found.get(label):
+                report(f'{label} [{game}]: tag resolves on 0 maps  ({tag})', quiet)
+                continue
+            for field, ucls, upath, _fld, seeded in keep:
+                if seeded or filled.get((label, field, upath)):
+                    continue
+                # A target may name a tag of its own -- the Firing Noise cards carry
+                # the projectile's Impact and Detonation Noise alongside the weapon's.
+                # When THAT tag is the thing missing, saying the field is empty points
+                # at the wrong half of the card.
+                if not tfound.get((ucls, upath)):
+                    report(f'{label} [{game}]: TARGET tag resolves on 0 maps '
+                           f'({ucls} {upath})', quiet)
+                else:
+                    why = ACCEPTED.get((game, label, field))
+                    if why is not None:
+                        _seen_accepted.append((game, label, field, why))
+                        continue
+                    report(f'{label} [{game}]: field EMPTY on every sampled map: '
+                           f'{field!r}', quiet)
 
 
 if __name__ == '__main__':
@@ -322,4 +463,30 @@ if __name__ == '__main__':
     print(f'\n===== {len(problems)} problem(s) =====')
     for pr in problems:
         print(' ', pr)
+    if _seen_accepted:
+        if '--all' in sys.argv:
+            print(f'\n----- {len(_seen_accepted)} accepted finding(s) -----')
+            for g, lab, f, why in _seen_accepted:
+                print(f'  {lab} [{g}]: {f!r}')
+                print(f'        accepted: {why}')
+        else:
+            print(f'({len(_seen_accepted)} accepted finding(s) suppressed -- known '
+                  f'empty blocks; --all lists them with reasons)')
+    # An entry that never fires is a card that was fixed, or a label that drifted.
+    _fired = {(g, lab, f) for g, lab, f, _w in _seen_accepted}
+    _stale = [k for k in ACCEPTED if k not in _fired]
+    if _stale:
+        print(f'{len(_stale)} accepted entr(y/ies) did NOT fire -- fixed, or the label '
+              f'drifted:')
+        for g, lab, f in _stale:
+            print(f'   {lab} [{g}]: {f!r}')
+    if inert:
+        if '--all' in sys.argv:
+            print(f'\n----- {len(inert)} inert card(s): the game does not field this '
+                  f'weapon or enemy, so the card cannot be drafted there -----')
+            for pr in inert:
+                print(' ', pr)
+        else:
+            print(f'({len(inert)} inert card(s) suppressed -- a weapon or enemy the '
+                  f'game does not field; --all lists them)')
     sys.exit(1 if problems else 0)

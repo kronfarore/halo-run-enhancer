@@ -664,7 +664,7 @@
 			},
 			"Fall Damage": {
 				"desc": "Change fall damage",
-				"tag": "jpt! globals\\falling",
+				"tag": {"default": "jpt! globals\\falling", "Halo Reach": "jpt! globals\\damage_effects\\falling", "Halo 4": "jpt! globals\\damage_effects\\falling"},
 				"easier_when": "decreased",
 				"targets": [
 					{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -2244,8 +2244,8 @@
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Homing": {
@@ -2610,8 +2610,8 @@
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -2907,8 +2907,8 @@
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
-						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
+						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
+						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
 				},
 				"Projectile": {
@@ -7381,8 +7381,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"targets": [
 						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
-						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "follows_choice": true},
-						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "follows_choice": true}
+						{"field": "Impact Noise", "tag": {"default": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "Halo 4": "proj objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\storm_concussion_rifle_grenade"}, "follows_choice": true},
+						{"field": "Detonation Noise", "tag": {"default": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "Halo 4": "proj objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\storm_concussion_rifle_grenade"}, "follows_choice": true}
 					]
 				},
 				"Magazine": {
@@ -7576,8 +7576,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"targets": [
 						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
-						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "follows_choice": true},
-						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "follows_choice": true}
+						{"field": "Impact Noise", "tag": {"default": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_dmr\\projectiles\\storm_dmr_bullet"}, "follows_choice": true},
+						{"field": "Detonation Noise", "tag": {"default": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_dmr\\projectiles\\storm_dmr_bullet"}, "follows_choice": true}
 					]
 				},
 				"Zoom": {
@@ -10563,8 +10563,8 @@
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"targets": [
 						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
-						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true},
-						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true}
+						{"field": "Impact Noise", "tag": "proj objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\storm_sticky_detonator_grenade_pve", "follows_choice": true},
+						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\storm_sticky_detonator_grenade_pve", "follows_choice": true}
 					]
 				},
 				"Magazine": {
@@ -13251,7 +13251,7 @@
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"targets": [
 						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
@@ -13284,7 +13284,7 @@
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"harder_when": {
 						"Halo 1": "decreased",
@@ -13307,7 +13307,7 @@
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"targets": {
 						"Halo 1": [
@@ -13335,7 +13335,7 @@
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*",
 						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"targets": {
@@ -13355,7 +13355,7 @@
 					"tag": {
 						"Halo 1": "actr characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*",
 						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"debug_desc": "Melee Chance was allow-listed to Halo 2 until 2026-08-31, though the hunter tags define it in ODST too (0.75).",
@@ -13415,7 +13415,7 @@
 					"harder_when": "increased",
 					"tag": {
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
-						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
 					},
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
@@ -13770,6 +13770,7 @@
 					}
 				},
 				"Grunt Damage": {
+					"skip_games": ["Halo 4"],
 					"desc": "Damage of Grunt Obstacle Smash and their Backpack Explosion",
 					"tag": {
 						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
@@ -13783,6 +13784,7 @@
 					]
 				},
 				"Grunt Radius": {
+					"skip_games": ["Halo 4"],
 					"desc": "Radius of Grunt Obstacle Smash and their Backpack Explosion",
 					"tag": {
 						"Halo 3": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_backpack_explosion & objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\grunt\\damage_effects\\grunt_tank_detonation",
