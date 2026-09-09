@@ -588,8 +588,12 @@ def find_slack(m, size, prefer=None):
     Interior runs are used only when far larger than the request (_SLACK_INTERIOR_MIN
     and a margin at BOTH ends), because a short run of zeroes is as likely to be a
     live zeroed structure as it is to be padding, whereas a multi-kilobyte one inside
-    a packed cache is inter-tag slack. This is the one judgement in here that map data
-    alone cannot settle -- it wants an in-game check.
+    a packed cache is inter-tag slack. Map data alone could not settle that, so it was
+    CONFIRMED IN GAME on 2026-09-09: `storm_pawn_sniper` owns no Vitality Properties,
+    so it was grown into interior slack on Shutdown, set to 1 body, and every Crawler
+    on the level then died to a single shot while storm_pawn_prime (which owns its own
+    vitality) did not. Both pass 1 (Reach m10, tail) and pass 2 (Halo 4 m70, interior)
+    are now verified in the engine, not just in the file.
 
     `prefer` (the partition holding the tag) wins outright within a pass, so the new
     element lands beside the tag it belongs to.
