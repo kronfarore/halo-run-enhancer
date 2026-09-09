@@ -944,25 +944,29 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -1235,31 +1239,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -1673,7 +1682,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "index": "all", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
 					]
 				},
 				"Per Round (Charged)": {
@@ -1704,10 +1713,11 @@
 					},
 					"easier_when": "increased",
 					"targets": [
-						{ "field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
-						{ "field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
+						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -1722,7 +1732,7 @@
 					},
 					"easier_when": "decreased",
 					"targets": [
-						{ "field": "Fire Recovery Time", "block": "Barrels", "index": "all" }
+						{ "field": "Fire Recovery Time", "block": "Barrels" }
 					]
 				},
 				"More Shooting (Charged)": {
@@ -1740,7 +1750,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "index": 1 , "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time (Charged)": {
@@ -1994,31 +2005,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3: ODST": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -2363,31 +2379,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -2646,31 +2667,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -2938,31 +2964,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -3202,31 +3233,36 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second" },
-							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" }
+							{ "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second" },
+							{ "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 2": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 4": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo Reach": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						],
 						"Halo 3": [
 							{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 							{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+							{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+							{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 						]
 					}
 				},
@@ -3435,7 +3471,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -3649,7 +3686,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -3921,7 +3959,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -4174,7 +4213,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -4417,7 +4457,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -4639,7 +4680,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -4920,7 +4962,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -5169,7 +5212,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -5358,7 +5402,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -5660,7 +5705,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -5941,7 +5987,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -6253,7 +6300,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "index": 1 , "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -6428,7 +6476,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -6627,7 +6676,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -6841,7 +6891,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -7016,7 +7067,8 @@
 						{ "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30 },
 						{ "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
-						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 }
+						{ "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1 },
+						{ "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1 }
 					]
 				},
 				"Fire Recovery Time": {
@@ -7230,7 +7282,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -7463,7 +7516,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -7645,7 +7699,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -7852,7 +7907,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -8124,7 +8180,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -8298,7 +8355,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -8529,7 +8587,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -8723,7 +8782,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": "all"},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": "all"},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": "all"},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": "all"}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": "all"},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -8971,7 +9031,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9177,7 +9238,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9385,7 +9447,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9559,7 +9622,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9755,7 +9819,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9966,7 +10031,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -10120,7 +10186,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "index": 1},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "index": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": 1, "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -10307,7 +10374,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -10530,7 +10598,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -10738,7 +10807,8 @@
 						{"field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30},
 						{"field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1}
+						{"field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
