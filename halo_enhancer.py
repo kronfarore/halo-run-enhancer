@@ -981,12 +981,13 @@ CONFIG = {
     #   off      vanilla; no sprint card can appear at all
     #   holder   only the player who drafted Sprint in an earlier game is offered them
     #   all      both players, regardless of what was picked elsewhere
-    #   restore  innate sprint switched OFF and the sprint equipment given the HUD it
+    #   restore  innate sprint switched OFF, the sprint equipment given the HUD it
     #            never shipped with (its HUD Screen Reference, charge effect and
     #            no-energy sound are all null where every other ability points at
-    #            ui\hud\equipment\shared\equipment_template), which also unlocks the
-    #            energy-meter cards. It does NOT place the pickup -- that is level work
-    #            in Sapien -- so until then a restore run has no sprint at all.
+    #            ui\hud\equipment\shared\equipment_template), and Chief handed it
+    #            through the campaign's OWN slot for this -- the biped's `Hero Assist
+    #            Equipment` tagRef, which every map points at hero_assist. No placement
+    #            is involved. Also unlocks the energy-meter cards.
     "h4_sprint_mode": "off",
     "sprint_feature": False,
     "sprint_start_with": True,
@@ -8482,13 +8483,14 @@ class OptionsDialog(QDialog):
             "• Whoever drafted Sprint earlier — only the player carrying Sprint from "
             "Reach (or the Halo 1 ability).\n"
             "• Both players — regardless of what was picked in other games.\n"
-            "• Restore the equipment — EXPERIMENTAL and unfinished. Innate sprint is "
-            "switched off and the sprint equipment is given the HUD it never shipped "
-            "with (its HUD Screen Reference, charge effect and no-energy sound are all "
-            "null in the cache, where every other ability points at "
-            "equipment_template). It does NOT place the pickup: that is level work in "
-            "Sapien, and the tag is only resident on Dawn, Reclaimer and Composer. "
-            "Until then this leaves you with no sprint at all.")
+            "• Restore the equipment — EXPERIMENTAL. Innate sprint is switched off, the "
+            "sprint equipment is given the HUD it never shipped with (its HUD Screen "
+            "Reference, charge effect and no-energy sound are all null in the cache, "
+            "where every other ability points at equipment_template), and Chief's "
+            "biped is pointed at it through the campaign's own Hero Assist Equipment "
+            "field — the same slot that normally hands him hero_assist. No placement "
+            "needed. Only Dawn, Reclaimer and Composer carry the sprint tag; other "
+            "maps get the innate switch alone, which leaves them without sprint.")
         h4form.addRow("Sprint:", self.h4_sprint_combo)
 
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -10239,6 +10241,28 @@ class HaloGUI(QMainWindow):
                     pool.append(e)
         return pool
 
+    def _manual_empty_reason(self, player, mode):
+        """Why this player can be offered nothing, in one clause.
+
+        Four different situations read identically as an empty pool -- the game has no
+        equipment sandbox at all, this level lists none, everything is already held or
+        blacklisted, or the options have denied it -- and only the first two are worth
+        a shrug rather than a look at the settings."""
+        game = self._current_game()
+        if mode == 'equipment':
+            if not has_equipment(game):
+                return "%s has no equipment to draft" % (game or "this game")
+            listed = list(self.db.level_equipment(self.run_state.mission_id) or [])
+            if not listed:
+                return "this level places none"
+            owned = set(self.run_state.weapons_for('player1'))                 | set(self.run_state.weapons_for('player2'))
+            if all(e in owned for e in listed):
+                return "both players already hold all of it"
+            if not strip_denied_equipment(self.db, listed):
+                return "the Options deny every piece this level has"
+            return "what is left is blacklisted or taken by the other player"
+        return "everything this level offers is already held or blacklisted"
+
     def on_new_anything_button(self):
         """Same flow, drawing from EVERYTHING — guns, duals, upgrades, equipment,
         abilities. What NEW WEAPON used to do before it was narrowed to guns."""
@@ -10248,6 +10272,7 @@ class HaloGUI(QMainWindow):
         self._manual_mode = 'anything'
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
+        self._manual_empty = {}
         self._next_manual_weapon()
 
     def on_new_equipment_button(self):
@@ -10258,6 +10283,7 @@ class HaloGUI(QMainWindow):
         self._manual_mode = 'equipment'
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
+        self._manual_empty = {}
         self._next_manual_weapon()
 
     def _grant_weapon(self, player, weapon):
@@ -10275,6 +10301,7 @@ class HaloGUI(QMainWindow):
         self._manual_mode = 'weapon'
         self._manual_queue = ['player1', 'player2']
         self._manual_results = {}
+        self._manual_empty = {}
         self._next_manual_weapon()
 
     def _next_manual_weapon(self):
@@ -10300,8 +10327,17 @@ class HaloGUI(QMainWindow):
         pool = self._manual_pool(player)
         if not pool:
             who = "Player 1" if player == 'player1' else "Player 2"
-            self.update_status("No %s left to offer %s on this level"
-                               % (self._MANUAL_LABEL[mode][1], who))
+            why = self._manual_empty_reason(player, mode)
+            # Remembered as well as shown: the next player's line overwrites this one,
+            # and if NEITHER player can be offered anything the finish step reports all
+            # of it at once rather than leaving a status bar nobody was watching.
+            # Initialised here too, since a draw started from anywhere but the three
+            # buttons still has to reach the finish step without an AttributeError.
+            if not hasattr(self, '_manual_empty'):
+                self._manual_empty = {}
+            self._manual_empty[player] = why
+            self.update_status("No %s left to offer %s -- %s"
+                               % (self._MANUAL_LABEL[mode][1], who, why))
             return False
         # New Weapon cards carry a tied negative unless disabled in CONFIG.
         with_enemy = self._weapon_choice_negatives()
@@ -10364,7 +10400,28 @@ class HaloGUI(QMainWindow):
             self.generate_btn.setEnabled(True)
         self.clear_pairs()
         self.update_history()
-        self.update_status("New weapons added (with negatives) — save or generate new pairs")
+        if not (res1 or res2):
+            # Nothing was drafted, so saying "added" would be a lie -- and the status
+            # bar alone is not feedback anyone reliably sees. The reasons are per player
+            # because one may be full while the other is not.
+            mode = getattr(self, '_manual_mode', 'weapon')
+            kind = self._MANUAL_LABEL.get(mode, self._MANUAL_LABEL['weapon'])[1]
+            lines = []
+            for p, label in (('player1', 'Player 1'), ('player2', 'Player 2')):
+                why = (getattr(self, '_manual_empty', None) or {}).get(p)
+                if why:
+                    lines.append("%s: %s" % (label, why))
+            self.update_status("No %s to offer -- nothing was added" % kind)
+            QMessageBox.information(
+                self, "Nothing to offer",
+                "There is no %s left to offer on this level, so nothing was added.\n\n%s"
+                % (kind, "\n".join(lines)
+                   or "Both players' pools are empty."))
+            return
+        self.update_status("New %s added (with negatives) — save or generate new pairs"
+                           % self._MANUAL_LABEL.get(getattr(self, '_manual_mode',
+                                                            'weapon'),
+                                                    self._MANUAL_LABEL['weapon'])[1])
 
     def add_weapon_to_blacklist(self, weapon, pair_id=None, mod_type=None):
         """Blacklist a weapon offered inside a generated pair (#1), then reroll it."""

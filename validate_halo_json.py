@@ -67,31 +67,16 @@ problems = []
 #
 # ADD TO THIS ONLY after establishing WHY, and prefer fixing: a card whose block is
 # empty can often be made live with `init_defaults` + `grow`, which is how the hero
-# cards reach blocks their tags do not own. These are the ones nobody has asked for.
+# cards reach blocks their tags do not own -- or GATED OUT of that game, which is what
+# happened to the nine Halo 4 Hunter and Sentinel rows that used to sit here. Accepting
+# a finding only keeps it quiet; the card goes on being offered and patched, and the
+# write goes on landing nowhere. Prefer the gate.
 ACCEPTED = {
     ('Halo Reach', 'Gravity Hammer/Accuracy Penalties', 'Reload Penalty'):
         'the Gravity Hammer has no Barrels values in Reach -- only seven Reach weapons '
         'carry Reload/Switch Penalty and it is not one of them',
     ('Halo Reach', 'Gravity Hammer/Accuracy Penalties', 'Switch Penalty'):
         'same',
-    ('Halo 4', 'Hunter/Maximum Firing Distance Hunter Fuel Rod', 'Maximum Firing Range'):
-        'storm_hunter ships an empty Weapons Properties block and inherits ai\\generic',
-    ('Halo 4', 'Hunter/Target Tracking & Leading', 'Target Tracking'):
-        'storm_hunter defines no Firing Patterns; it inherits the generic base',
-    ('Halo 4', 'Hunter/Target Tracking & Leading', 'Target Leading'):
-        'same empty Firing Patterns',
-    ('Halo 4', 'Sentinel/Cover Properties', 'Hide Behind Cover Time'):
-        'storm_sentinel ships an empty Cover Properties block',
-    ('Halo 4', 'Sentinel/Cover Properties', 'Hide Behind Cover Time Max'):
-        'same empty Cover Properties',
-    ('Halo 4', 'Sentinel/Cover Properties', 'Cover Vitality Threshold'):
-        'same empty Cover Properties',
-    ('Halo 4', 'Sentinel/I am not scared', 'Scary Target Threshold'):
-        'storm_sentinel ships an empty Morale Properties block',
-    ('Halo 4', 'Sentinel/Maximum Firing Distance', 'Maximum Firing Range'):
-        'storm_sentinel ships an empty Weapons Properties block',
-    ('Halo 4', 'Sentinel/Rate of Fire', 'Rate Of Fire'):
-        'storm_sentinel defines no Firing Patterns; it inherits the generic base',
 }
 _seen_accepted = []
 

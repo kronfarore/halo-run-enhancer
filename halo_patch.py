@@ -4586,6 +4586,16 @@ _H4_HUD_DONORS = ('storm_thruster_pack_pve', 'storm_active_camo', 'storm_jet_pac
 _H4_HUD_FIELDS = ('HUD Screen Reference', 'Energy Charged Effect',
                   'Unable To Activate Sound')
 _H4_REF_FILL = 0xCD                         # what Halo 4 leaves in a tagRef's middle 8
+# HOW THE CAMPAIGN ACTUALLY HANDS CHIEF AN ABILITY, and it is not a placement or a
+# starting profile: `bipd objects\characters\storm_masterchief\storm_masterchief` has a
+# named **`Hero Assist Equipment`** tagRef, and every campaign map points it at
+# `hero_assist` -- the one shipped eqip besides `sprint` that populates the `Sprint`
+# sub-block. So sprint can be given back with a single reference swap on the maps that
+# carry the sprint tag, with no level work at all.
+_H4_CHIEF_BIPD = ('objects' + chr(92) + 'characters' + chr(92) + 'storm_masterchief'
+                  + chr(92) + 'storm_masterchief')
+_H4_HERO_ASSIST_FIELD = 'Hero Assist Equipment'
+_EQIP_MAGIC = 0x65716970                    # 'eqip', stored reversed like _WEAP_MAGIC
 
 
 def _h4_tag_ident(m, cls, name):
@@ -4696,7 +4706,42 @@ def _apply_h4_sprint(m, game, registry, cfg):
                     'reason': None if copied is not None
                               else '%s has no %s either'
                                    % (donor[0].rsplit(chr(92), 1)[-1], fname)})
+    out.extend(_h4_give_chief_sprint(m, registry, sprint[0][1], ref))
     return out
+
+
+def _h4_give_chief_sprint(m, registry, sprint_base, ref):
+    """Point Chief's `Hero Assist Equipment` at the sprint tag.
+
+    This is the campaign's OWN way of handing the player an ability -- every map already
+    points that field at `hero_assist` -- so it needs no placement, no starting profile
+    and no level work. It replaces hero_assist for the run, which is the trade: that tag
+    is the only other one populating the `Sprint` sub-block, so what is lost is a second
+    sprint source, not a distinct ability.
+    """
+    tag = 'bipd ' + _H4_CHIEF_BIPD
+    hits = m.find_tags('bipd', _H4_CHIEF_BIPD)
+    offs = _h4_ref_offsets(registry, 'bipd', (_H4_HERO_ASSIST_FIELD,))
+    off = offs.get(_H4_HERO_ASSIST_FIELD)
+    if not hits or off is None:
+        return [{**ref, 'tag': tag, 'field': _H4_HERO_ASSIST_FIELD, 'ok': True,
+                 'skip': True,
+                 'reason': ('no Master Chief biped on this map' if not hits
+                            else 'the bipd plugin has no %s' % _H4_HERO_ASSIST_FIELD)}]
+    base = hits[0][1]
+    old = struct.unpack_from('<I', m.data, base + off + 0xC)[0]
+    was = next((t.get('name') for t in getattr(m, 'tags', [])
+                if t.get('ident') == old), None)
+    ident = _h4_tag_ident(m, 'eqip', _H4_SPRINT_EQIP)
+    if ident is None:
+        return [{**ref, 'tag': tag, 'field': _H4_HERO_ASSIST_FIELD, 'ok': False,
+                 'reason': 'the sprint eqip has no ident in this map'}]
+    struct.pack_into('<I', m.data, base + off, _EQIP_MAGIC)
+    for b in range(4, 12):
+        m.data[base + off + b] = _H4_REF_FILL
+    struct.pack_into('<I', m.data, base + off + 0xC, ident & 0xFFFFFFFF)
+    return [{**ref, 'tag': tag, 'field': _H4_HERO_ASSIST_FIELD, 'ok': True,
+             'old': (was or 'none').rsplit(chr(92), 1)[-1], 'new': 'sprint'}]
 
 
 def _apply_sprint(m, game, registry, cfg):

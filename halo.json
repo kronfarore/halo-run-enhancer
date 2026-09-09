@@ -13248,7 +13248,7 @@
 				},
 				"Maximum Firing Distance Hunter Fuel Rod": {
 					"desc": "Increases range in witch they can use their weapon, as well as their effective weapon range",
-					"skip_games": ["Halo Reach"],
+					"skip_games": ["Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -13304,7 +13304,7 @@
 				},
 				"Target Tracking & Leading": {
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",
-					"skip_games": ["Halo Reach"],
+					"skip_games": ["Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\hunter\\*",
 						"Halo 2": "char objects\\characters\\hunter\\ai\\hunter*",
@@ -15125,6 +15125,7 @@
 			},
 			"Sentinel": {
 				"I am not scared": {
+					"skip_games": ["Halo 4"],
 					"desc": "How much it takes to frighten them.",
 					"debug_desc": "`Scary Target Threshold` is the menace a target has to carry before this enemy treats it as frightening -- the number their own Scariness is measured against. Raise it and they stop being impressed by you; drop it and they spook at anything.\\n\\nThe threshold is inherited from `ai\\\\generic` (6.0) unless the enemy sets its own, which is why this card exists per enemy AND as a shared-base card: the per-enemy card only reaches the ones that define it.",
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
@@ -15166,6 +15167,7 @@
 					]
 				},
 				"Cover Properties": {
+					"skip_games": ["Halo 4"],
 					"desc": "Cover-seeking time; vitality threshold to trigger cover (Halo 2 scales all Cover Properties entries)",
 					"tag": {
 						"Halo 1": "actr characters\\sentinel\\*",
@@ -15201,6 +15203,7 @@
 					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
+					"skip_games": ["Halo 4"],
 					"desc": "Increases range in witch they can use their weapon",
 					"game": ["Halo 1", "Halo 2", "Halo 4"],
 					"tag": {
@@ -15329,6 +15332,7 @@
 					]
 				},
 				"Rate of Fire": {
+					"skip_games": ["Halo 4"],
 					"desc": "How fast they fire.",
 					"debug_desc": "Halo 2 only: the Sentinels define their own firing pattern on all 4 levels that field them there, and on none in Halo 3 or ODST, where the general **Firing Patterns** card still reaches them.",
 					"game": ["Halo 2", "Halo 4"],

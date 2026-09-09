@@ -101,6 +101,14 @@ def map_check(apply_map):
                 t = idx.get(rid & 0xFFFF) if rid not in (0, 0xFFFFFFFF) else None
                 got.append('%s=%s' % (fname.split()[0],
                                       (t or {}).get('name', 'null').rsplit(S, 1)[-1]))
+        chief = m2.find_tags('bipd', hp._H4_CHIEF_BIPD)
+        boff = hp._h4_ref_offsets(reg, 'bipd', (hp._H4_HERO_ASSIST_FIELD,)).get(
+            hp._H4_HERO_ASSIST_FIELD)
+        if chief and boff is not None:
+            rid = struct.unpack_from('<I', m2.data, chief[0][1] + boff + 0xC)[0]
+            t = idx.get(rid & 0xFFFF) if rid not in (0, 0xFFFFFFFF) else None
+            print('    chief:  Hero Assist Equipment = %s'
+                  % ((t or {}).get('name', 'null').rsplit(S, 1)[-1]))
         print('    after:  Sprint Usage=%s ; sprint eqip %s'
               % (m2.read_tag_field(b2, 'Sprint Usage', matg_plug, 'Movement Traits', 0),
                  ', '.join(got) or '(not resident on this map)'))
