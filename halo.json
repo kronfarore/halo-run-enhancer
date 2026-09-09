@@ -9480,6 +9480,19 @@
 				}
 			},
 			"LightRifle": {
+				"More Shooting (Scoped)": {
+					"desc": "How the scoped LightRifle shot fires, and what it costs.",
+					"debug_desc": "Barrel 1, the scoped shot. Scoped, the LightRifle fires ONE round at 2.5 a second that costs **3 rounds**; unscoped it fires a **3-round burst** at 30 a second costing 1 each. So the burst length lives on the other card as Shots Per Fire, and the scoped ammo cost lives here as Rounds Per Shot.\n\nThe two fire modes are two BARRELS on one weapon, so each has its own card: this one writes barrel 1 and its sibling writes the other. Fire Recovery Time, Projectiles Per Shot and Error Angle stay shared across both barrels, because nothing else claims them.",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": 1, "harder_when": "increased", "min": 0, "zero_is": 1}
+					]
+				},
 				"Scoped Damage": {
 					"desc": "How hard a scoped LightRifle shot hits.",
 					"debug_desc": "The LightRifle hits harder scoped, and that is a separate damage effect rather than a multiplier: `storm_forerunner_rifle` does **5.33** a shot from the hip and `storm_forerunner_rifle_combined` does **23.5** scoped, a bit over four times as much.\n\nBoth were on one Bullet Damage card, so the scoped shot could not be tuned on its own. The two PROJECTILES are identical -- 250 m at 3000 velocity either way -- which is why only the damage splits and the Projectile card still names both.",
@@ -9615,15 +9628,15 @@
 				},
 				"More Shooting": {
 					"desc": "How many rounds each burst fires, and how fast they leave the barrel.",
-					"debug_desc": "Shots Per Fire is the burst length, Rounds Per Second the cadence inside it. Raise the burst without raising the rate and the extra rounds all fire at the same instant. The gap BETWEEN bursts is Fire Recovery Time, on its own card.",
+					"debug_desc": "Barrel 0, unscoped: a **3-round burst** at 30 a second costing 1 round each. Shots Per Fire is the burst length, Rounds Per Second the cadence inside it. The scoped shot is a separate barrel with its own card.\n\nThe two fire modes are two BARRELS on one weapon, so each has its own card: this one writes barrel 0 and its sibling writes the other. Fire Recovery Time, Projectiles Per Shot and Error Angle stay shared across both barrels, because nothing else claims them.",
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "index": 0, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": 0, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": 0, "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
@@ -9852,6 +9865,19 @@
 				}
 			},
 			"Boltshot": {
+				"More Shooting (Charged)": {
+					"desc": "How much a charged Boltshot blast costs you, and how it fires.",
+					"debug_desc": "Barrel 1, the charged blast. It fires ONE shot that costs **5 rounds** -- the whole cost is Rounds Per Shot, not Shots Per Fire, which is 1 like the tap. Rounds Per Second is 30 on both barrels and does nothing here until Shots Per Fire goes above 1.\n\nThe two fire modes are two BARRELS on one weapon, so each has its own card: this one writes barrel 1 and its sibling writes the other. Fire Recovery Time, Projectiles Per Shot and Error Angle stay shared across both barrels, because nothing else claims them.",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+					"targets": [
+						{"field": "Rounds Per Second", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": 1, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": 1, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": 1, "harder_when": "increased", "min": 0, "zero_is": 1}
+					]
+				},
 				"Charged Shot Damage": {
 					"desc": "How hard a charged Boltshot blast hits.",
 					"debug_desc": "The Boltshot is two weapons in one trigger and they are tuned separately. The tap fires `storm_stasis_pistol_bolt`, 7.5 flat damage, 40 m of range at 2700 velocity and no blast at all. Holding it fires `storm_stasis_pistol_charged_blast`, which is a shotgun: **5.5 m of range at 480 velocity with a 2.5-4.0 metre damage radius**, and `storm_stasis_pistol_charged_shot` doing 6-10 a pellet.\n\nThey had been flattened into one Bullet Damage and one Projectile card, so the charged blast could not be tuned without dragging the tap along with it. Note the AI copy `storm_stasis_pistol_bolt_npc` follows the tap, not the charge -- Crawlers and Watchers carry the pawnhead variant of this weapon.",
@@ -10024,15 +10050,15 @@
 				},
 				"More Shooting": {
 					"desc": "Turns one shot per pull into a burst. Raise Shots Per Fire for more rounds, Rounds Per Second to space them out.",
-					"debug_desc": "This weapon sends one round per trigger pull, so Rounds Per Second does nothing until Shots Per Fire is above 1 — it is what spaces the rounds inside a single pull. How fast you can pull the trigger is Fire Recovery Time, on its own card.",
+					"debug_desc": "Barrel 0, the tap. One shot, one round, at 30 a second. The charged blast is a separate barrel with its own card -- it costs 5 rounds a shot.\n\nThe two fire modes are two BARRELS on one weapon, so each has its own card: this one writes barrel 0 and its sibling writes the other. Fire Recovery Time, Projectiles Per Shot and Error Angle stay shared across both barrels, because nothing else claims them.",
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Rounds Per Second", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Rounds Per Second Max", "block": "Barrels", "index": "all", "group": "Rounds Per Second", "zero_is": 30},
-						{"field": "Shots Per Fire", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Shots Per Fire Max", "block": "Barrels", "index": "all", "group": "Shots Per Fire", "zero_is": 1},
-						{"field": "Rounds Per Shot", "block": "Barrels", "index": "all", "harder_when": "increased", "min": 0, "zero_is": 1}
+						{"field": "Rounds Per Second", "block": "Barrels", "index": 0, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Rounds Per Second Max", "block": "Barrels", "index": 0, "group": "Rounds Per Second", "zero_is": 30},
+						{"field": "Shots Per Fire", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Shots Per Fire Max", "block": "Barrels", "index": 0, "group": "Shots Per Fire", "zero_is": 1},
+						{"field": "Rounds Per Shot", "block": "Barrels", "index": 0, "harder_when": "increased", "min": 0, "zero_is": 1}
 					]
 				},
 				"Fire Recovery Time": {
