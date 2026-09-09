@@ -18,10 +18,18 @@ CASES = [
     ('Halo 3: ODST', ['ODSTMCC', 'ODST'], R + r'\halo3odst\maps\l200.map'),
     ('Halo 3',       ['Halo3MCC', 'Halo3'], R + r'\halo3\maps\030_outskirts.map'),
     ('Halo 2',       ['Halo2MCC', 'Halo2'], R + r'\halo2\h2_maps_win64_dx11\08b_deltacontrol.map'),
-    # Halo 4 ships no .map.bak either, so this reads the live map -- fine for the
+    # Halo 4 ships no .map.bak either, so these read the live maps -- fine for the
     # question asked, which is whether a tag carries the field at all. Shutdown is the
-    # pick because it fields both factions and the widest weapon set.
+    # first pick because it fields both factions and a wide weapon set, but ONE map is
+    # not enough here and has produced two false positives already: the Rocket
+    # Launcher's Target Tracking (no rocket launcher on Shutdown) and the Jackal's
+    # Hopping (no Jackal Ranger, the only Jackal that hops). Composer and Infinity
+    # cover between them every rarer thing Shutdown lacks -- Jackal Ranger, space
+    # Grunt, Crawler Prime, Watcher, rocket launcher, shotgun, DMR, Spartan laser and
+    # the Scattershot.
     ('Halo 4',       ['Halo4MCC', 'Halo4'], R + r'\halo4\maps\m70_liftoff.map'),
+    ('Halo 4',       ['Halo4MCC', 'Halo4'], R + r'\halo4\maps\m80_delta.map'),
+    ('Halo 4',       ['Halo4MCC', 'Halo4'], R + r'\halo4\maps\m60_rescue.map'),
 ]
 DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
 
@@ -53,9 +61,6 @@ VERIFIED = {
     ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Perception',
      'char objects' + _S + 'characters' + _S + 'floodcombat*'):
         'same empty Perception block',
-    ('Halo 3: ODST', 'Specific Enemy modifier / Brute / Maximum Firing Distance',
-     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S + 'brute*'):
-        'empty Weapons block on l200 Brutes',
     ('Halo 3', 'Specific Enemy modifier / Brute / Grenades',
      'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S + 'brute*'):
         'empty Grenades block -- the Brute Grenades finding',
@@ -74,6 +79,7 @@ VERIFIED = {
 SHOW_ALL = '--all' in sys.argv
 _seen_verified = []
 _new = []
+_status = {}
 
 d = json.load(open('halo.json', encoding='utf-8'))
 cards = []
@@ -182,18 +188,32 @@ for game, subs, mp in CASES:
                     live += 1
             except Exception:
                 live += 1                               # can't tell; don't accuse it
-        if live == 0:
-            label = ' / '.join(path[-3:])
-            why = VERIFIED.get((game, label, tag))
-            if why is not None:
-                _seen_verified.append((game, label, tag, why))
-                if SHOW_ALL:
-                    print('  ok    %-38s %s' % (label, tag))
-                    print('        verified dead: %s' % why)
-                continue
-            _new.append((game, label, tag))
-            print('  DEAD  %-38s %s' % (label, tag))
+        # A verdict is per GAME, not per map. Halo 4 samples three levels, and one
+        # map can only under-report: the Jackal's Hopping block is filled in by the
+        # Ranger alone and Shutdown fields no Ranger, exactly as Shutdown carries no
+        # rocket launcher. Both read as dead there and are perfectly alive elsewhere,
+        # so a card counts as dead only when EVERY sampled map of its game says so.
+        label = ' / '.join(path[-3:])
+        st = _status.setdefault((game, label, tag), {'live': [], 'dead': []})
+        st['live' if live else 'dead'].append(os.path.basename(mp))
 
+print('=' * 78)
+for (game, label, tag), st in _status.items():
+    if st['live']:
+        if SHOW_ALL and st['dead']:
+            print('  ok    %-38s %s' % (label, tag))
+            print('        empty on %s, live on %s -- that map does not field it'
+                  % (', '.join(st['dead']), ', '.join(st['live'])))
+        continue
+    why = VERIFIED.get((game, label, tag))
+    if why is not None:
+        _seen_verified.append((game, label, tag, why))
+        if SHOW_ALL:
+            print('  ok    %-38s %s' % (label, tag))
+            print('        verified dead: %s' % why)
+        continue
+    _new.append((game, label, tag))
+    print('  DEAD  %-14s %-38s %s' % (game, label, tag))
 print('=' * 78)
 if _new:
     print('%d NEW dead card(s) -- these are not on the verified list:' % len(_new))
