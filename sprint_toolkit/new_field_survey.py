@@ -12,6 +12,8 @@ Verdicts, which are the triage:
   CONSTANT  every tag that sets it agrees; there is one number, so a card would move
             the whole game at once rather than one weapon
   VARIES    tags disagree -- the shape a per-weapon / per-enemy card wants
+  DUPE!     the newer game declares this value TWICE, in the new place AND the old one,
+            and the two can hold different numbers -- a card naming one is half a card
 and each row says whether halo.json already names the field, so an existing card is not
 proposed twice.
 
@@ -96,13 +98,49 @@ def main():
     _ob, ofields, _obs, _od = pd.load(a.older, a.group)
     _nb, nfields, _nbs, _nd = pd.load(a.newer, a.group)
     added = {p: t for p, t in nfields.items() if p not in ofields}
+    # An added path whose LEAF name the older game already had is one of two very
+    # different things, and the difference is whether the old path survives:
+    #
+    #   MOVED      the old path is gone -- the field was relocated, is already carded
+    #              under its old name, and is not new material. Halo 4's eqip forced
+    #              this: it moved 150 fields off the tag root into `Abilities`.
+    #   DUPLICATE  the old path is STILL THERE, so the newer game declares the value
+    #              TWICE. That is not noise, it is the most valuable thing this audit
+    #              finds -- Halo 4's `Aim Assist Modes` repeats the root autoaim fields
+    #              and disagrees with them on 20 of 37 weapons, exactly as hlmt declares
+    #              Maximum Vitality twice. A card that names only one of the two is half
+    #              a card, so these are called out rather than filtered.
+    #
+    # Same leaf-name test plugin_diff uses on the removed side, common labels and all.
+    COMMON_LEAF = 6
+    o_leaves, n_leaves = {}, {}
+    for f in ofields:
+        o_leaves.setdefault(f.rpartition('/')[2], []).append(f)
+    for f in nfields:
+        n_leaves.setdefault(f.rpartition('/')[2], []).append(f)
+    moved, dupes = {}, {}
+    for path in list(added):
+        leaf = path.rpartition('/')[2]
+        old_homes = o_leaves.get(leaf) or []
+        if not (0 < len(old_homes) <= COMMON_LEAF):
+            continue
+        survivors = [h for h in old_homes if h in nfields]
+        if len(survivors) > 1:
+            # More than one surviving home means the leaf is a common label -- `Type`,
+            # `Radius`, `Attachment Index` -- and the match is a coincidence, not a
+            # second declaration of one value. Leave it in the ordinary verdicts.
+            continue
+        (dupes if survivors else moved)[path] = survivors or old_homes
+    added = {p: t for p, t in added.items() if p not in moved}
     folder, names = MAPS[a.newer]
     plug = hp.PluginRegistry(pd.PLUGINS, pd.SUBDIRS[a.newer]).get(a.group)
     if plug is None:
         raise SystemExit('no %s plugin for %s' % (a.group, a.newer))
-    print('%s -> %s, %s: %d field(s) added by the plugin, %d readable as a number'
-          % (a.older, a.newer, a.group, len(added),
-             sum(1 for t in added.values() if t in NUMERIC)))
+    print('%s -> %s, %s: %d field(s) added by the plugin (%d more only MOVED block and '
+          'are not new), %d readable as a number; %d of the added ones DUPLICATE a '
+          'field the older game already had'
+          % (a.older, a.newer, a.group, len(added), len(moved),
+             sum(1 for t in added.values() if t in NUMERIC), len(dupes)))
     known = cards_naming({p.rsplit('/', 1)[-1] for p in added})
 
     vals = collections.defaultdict(collections.Counter)
@@ -133,6 +171,12 @@ def main():
                 vals[fp][key] += 1
                 examples[fp].setdefault(key, tp.rsplit(S, 1)[-1])
     print('read %d %s tag(s) over %d map(s)' % (len(seen_tags), a.group, len(names)))
+    if len(seen_tags) < 2:
+        # matg and scnr are one tag per map, so "every setter agrees" is a tautology
+        # and CONSTANT means nothing here. Say so rather than letting the verdict
+        # column imply a judgement it cannot make.
+        print('   NOTE: this group has ONE tag per map, so CONSTANT vs VARIES cannot '
+              'be judged -- only set vs unset. Use h4_matg_scnr_audit.py for those.')
     print()
     print('%-9s %-52s %-7s %s' % ('verdict', 'field', 'setters', 'values'))
     print('-' * 110)
@@ -145,7 +189,9 @@ def main():
         if setters < a.min_setters and setters:
             continue
         verdict = 'DEAD' if not c else ('CONSTANT' if len(c) == 1 else 'VARIES')
-        rows.append((0 if verdict == 'VARIES' else 1 if verdict == 'CONSTANT' else 2,
+        rows.append((-1 if (fp in dupes and verdict != 'DEAD')
+                     else 0 if verdict == 'VARIES'
+                     else 1 if verdict == 'CONSTANT' else 2,
                      fp, verdict, c, setters))
     for _o, fp, verdict, c, setters in sorted(rows):
         show = ''
@@ -155,7 +201,12 @@ def main():
             if len(c) > 5:
                 show += ', ... %d distinct' % len(c)
         name = fp.rsplit('/', 1)[-1]
+        if fp in dupes:
+            verdict = 'DUPE!' if verdict != 'DEAD' else 'DEAD'
         print('%-9s %-52s %-7s %s' % (verdict, fp[1:], setters or '-', show))
+        if fp in dupes and verdict != 'DEAD':
+            print('%-9s %-52s   ALSO declared at: %s'
+                  % ('', '', ', '.join(dupes[fp])))
         if known.get(name):
             print('%-9s %-52s   already carded: %s'
                   % ('', '', ', '.join(sorted(set(known[name])))[:80]))
