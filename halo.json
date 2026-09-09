@@ -16782,13 +16782,103 @@
 					]
 				}
 			},
+			"Jackal Ranger": {
+				"Body Vitality": {
+					"desc": "How much punishment Jackal Rangers take before dying.",
+					"debug_desc": "Halo 4 declares BOTH the ranger and its shielded variant Class 2 = Hero at 45 points, the same tier as the Jackal Sniper, so they are carded as one unit. They are fielded on **Dawn (m10) and Composer (m80)** only.\n\n`storm_jackal_ranger_shield` owns no property blocks at all and inherits from `storm_jackal_ranger`, which is exactly why NO seeding is needed: a tag that inherits reads its parent's block at runtime, so editing the ranger is what the shield variant sees. Giving it its own copy would decouple the pair. The ranger ships 50 body on Normal and 90 on Legendary, against an ordinary Jackal's 40 and 80.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger & objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger_shield",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true}
+					]
+				},
+				"Shield Vitality": {
+					"desc": "How much shielding Jackal Rangers carry.",
+					"debug_desc": "Halo 4 declares BOTH the ranger and its shielded variant Class 2 = Hero at 45 points, the same tier as the Jackal Sniper, so they are carded as one unit. They are fielded on **Dawn (m10) and Composer (m80)** only.\n\n`storm_jackal_ranger_shield` owns no property blocks at all and inherits from `storm_jackal_ranger`, which is exactly why NO seeding is needed: a tag that inherits reads its parent's block at runtime, so editing the ranger is what the shield variant sees. Giving it its own copy would decouple the pair. The ranger ships 50 body on Normal and 90 on Legendary, against an ordinary Jackal's 40 and 80.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger & objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger_shield",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true}
+					]
+				},
+				"Body Recharge": {
+					"desc": "How much health Jackal Rangers regain between fights.",
+					"debug_desc": "Halo 4 declares BOTH the ranger and its shielded variant Class 2 = Hero at 45 points, the same tier as the Jackal Sniper, so they are carded as one unit. They are fielded on **Dawn (m10) and Composer (m80)** only.\n\n`storm_jackal_ranger_shield` owns no property blocks at all and inherits from `storm_jackal_ranger`, which is exactly why NO seeding is needed: a tag that inherits reads its parent's block at runtime, so editing the ranger is what the shield variant sees. Giving it its own copy would decouple the pair. The ranger ships 50 body on Normal and 90 on Legendary, against an ordinary Jackal's 40 and 80.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger & objects\\characters\\storm_jackal\\ai\\storm_jackal_ranger_shield",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1}
+					]
+				}
+			},
+			"Knight Commander": {
+				"Body Vitality": {
+					"desc": "How much punishment a Knight Commander takes.",
+					"debug_desc": "The Knight Commander is Halo 4's toughest declared Hero at **160 metagame points** -- more than the Elite General's 150 -- and the only new hero the game adds that has no counterpart in an earlier title. It ships 90 body / 110 shield on Normal and **150 / 250 on Legendary**, against an ordinary Knight's 70/80 and 120/200. Fielded on Midnight (m90) and Shutdown (m70).\n\nIt owns ONLY its Vitality Properties. Melee and grenades are inherited from `storm_knight`, so those two cards carry a source-less `grow` and seed from the parent -- melee chance 0.3 with a 1.0 second delay and a 3.0 leap range, grenade chance 0.2. Its shield takes **8 seconds** to start recharging against the base Knight's 4, which is its own value and needs no seeding.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true}
+					]
+				},
+				"Shield Vitality": {
+					"desc": "How much shielding a Knight Commander carries.",
+					"debug_desc": "The Knight Commander is Halo 4's toughest declared Hero at **160 metagame points** -- more than the Elite General's 150 -- and the only new hero the game adds that has no counterpart in an earlier title. It ships 90 body / 110 shield on Normal and **150 / 250 on Legendary**, against an ordinary Knight's 70/80 and 120/200. Fielded on Midnight (m90) and Shutdown (m70).\n\nIt owns ONLY its Vitality Properties. Melee and grenades are inherited from `storm_knight`, so those two cards carry a source-less `grow` and seed from the parent -- melee chance 0.3 with a 1.0 second delay and a 3.0 leap range, grenade chance 0.2. Its shield takes **8 seconds** to start recharging against the base Knight's 4, which is its own value and needs no seeding.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander",
+					"harder_when": "increased",
+					"targets": [
+						{"field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true}
+					]
+				},
+				"Shield Recharge": {
+					"desc": "How long before a Knight Commander's shield comes back.",
+					"debug_desc": "The Knight Commander is Halo 4's toughest declared Hero at **160 metagame points** -- more than the Elite General's 150 -- and the only new hero the game adds that has no counterpart in an earlier title. It ships 90 body / 110 shield on Normal and **150 / 250 on Legendary**, against an ordinary Knight's 70/80 and 120/200. Fielded on Midnight (m90) and Shutdown (m70).\n\nIt owns ONLY its Vitality Properties. Melee and grenades are inherited from `storm_knight`, so those two cards carry a source-less `grow` and seed from the parent -- melee chance 0.3 with a 1.0 second delay and a 3.0 leap range, grenade chance 0.2. Its shield takes **8 seconds** to start recharging against the base Knight's 4, which is its own value and needs no seeding.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander",
+					"harder_when": "decreased",
+					"targets": [
+						{"field": "Shield Recharge Delay Time", "block": "Vitality Properties", "index": "all", "min": 0},
+						{"field": "Shield Recharge Time", "block": "Vitality Properties", "index": "all", "min": 0}
+					]
+				},
+				"Melee Behavior": {
+					"desc": "How readily a Knight Commander goes for melee.",
+					"debug_desc": "The Knight Commander is Halo 4's toughest declared Hero at **160 metagame points** -- more than the Elite General's 150 -- and the only new hero the game adds that has no counterpart in an earlier title. It ships 90 body / 110 shield on Normal and **150 / 250 on Legendary**, against an ordinary Knight's 70/80 and 120/200. Fielded on Midnight (m90) and Shutdown (m70).\n\nIt owns ONLY its Vitality Properties. Melee and grenades are inherited from `storm_knight`, so those two cards carry a source-less `grow` and seed from the parent -- melee chance 0.3 with a 1.0 second delay and a 3.0 leap range, grenade chance 0.2. Its shield takes **8 seconds** to start recharging against the base Knight's 4, which is its own value and needs no seeding.\n\n**PARKED: this needs block growth, which Halo 4 cannot do yet.** The Commander owns only its Vitality Properties; melee and grenades are inherited from `storm_knight`, so moving them for the Commander ALONE means giving it its own copy of those blocks first. Measured: every Halo 4 tag partition ends with a trailing zero run of 0-3 bytes where Reach has 17k-43k, so the slack strategy finds nowhere to put the element, and the append strategy is implemented only on Halo2Map. The card is kept, with its `grow` declared, so it works the day either route reaches Halo 4 -- until then it is `ignore` rather than a silent no-op. Editing `storm_knight` instead would move every Knight, which is the species card's job, not a hero card's.",
+					"game": ["Halo 4"],
+					"ignore": true,
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander",
+					"init_defaults": {"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander", "block": "Charge Properties", "grow": true},
+					"targets": [
+						{"field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0},
+						{"field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0},
+						{"field": "Melee Chance", "block": "Charge Properties", "index": "all", "min": 0, "max": 1},
+						{"field": "Melee Leap Range", "block": "Charge Properties", "index": "all", "min": 0}
+					]
+				},
+				"Grenade Chance": {
+					"desc": "How often a Knight Commander throws a grenade.",
+					"debug_desc": "The Knight Commander is Halo 4's toughest declared Hero at **160 metagame points** -- more than the Elite General's 150 -- and the only new hero the game adds that has no counterpart in an earlier title. It ships 90 body / 110 shield on Normal and **150 / 250 on Legendary**, against an ordinary Knight's 70/80 and 120/200. Fielded on Midnight (m90) and Shutdown (m70).\n\nIt owns ONLY its Vitality Properties. Melee and grenades are inherited from `storm_knight`, so those two cards carry a source-less `grow` and seed from the parent -- melee chance 0.3 with a 1.0 second delay and a 3.0 leap range, grenade chance 0.2. Its shield takes **8 seconds** to start recharging against the base Knight's 4, which is its own value and needs no seeding.\n\n**PARKED: this needs block growth, which Halo 4 cannot do yet.** The Commander owns only its Vitality Properties; melee and grenades are inherited from `storm_knight`, so moving them for the Commander ALONE means giving it its own copy of those blocks first. Measured: every Halo 4 tag partition ends with a trailing zero run of 0-3 bytes where Reach has 17k-43k, so the slack strategy finds nowhere to put the element, and the append strategy is implemented only on Halo2Map. The card is kept, with its `grow` declared, so it works the day either route reaches Halo 4 -- until then it is `ignore` rather than a silent no-op. Editing `storm_knight` instead would move every Knight, which is the species card's job, not a hero card's.",
+					"game": ["Halo 4"],
+					"ignore": true,
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander",
+					"init_defaults": {"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander", "block": "Grenades Properties", "grow": true},
+					"targets": [
+						{"field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1}
+					]
+				}
+			},
 			"Elite General": {
 				"Melee Behavior": {
 					"desc": "How often the General swings at you, and from how far.",
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_general",
-					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Charge Properties", "grow": true },
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\elite\\ai\\elite_general", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite_general"},
+					"init_defaults": {"Halo Reach": {"tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Charge Properties", "grow": true}, "Halo 4": {"tag": "char objects\\characters\\storm_elite\\ai\\storm_elite_general", "block": "Charge Properties", "grow": true}},
 					"targets": [
 						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "index": "all", "min": 0 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "index": "all", "min": 0 },
@@ -16799,17 +16889,17 @@
 				"Grenade Chance": {
 					"desc": "How often the General throws grenades at you.",
 					"debug_desc": "This variant inherits the block from its parent rather than carrying its own copy, so it has nothing of its own to edit until the block is inserted. `init_defaults` with `grow` does exactly that, and runs FIRST: it copies the element from the nearest populated ancestor into this character, and the card's operators then scale that fresh copy.\n\nMeasured working -- on Reach's Elite General the melee timers move 3.0 to 6.0 and grenade chance 0.25 to 0.5. A General card on the shared base in the same run does NOT compound with it: with both drafted, in either order, this character lands on the same value as the hero card alone.\n\nOn a level that does not field this character the row reads 'not present in this map', which is expected rather than a failure.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_general",
-					"init_defaults": { "tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Grenades Properties", "grow": true },
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\elite\\ai\\elite_general", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite_general"},
+					"init_defaults": {"Halo Reach": {"tag": "char objects\\characters\\elite\\ai\\elite_general", "block": "Grenades Properties", "grow": true}, "Halo 4": {"tag": "char objects\\characters\\storm_elite\\ai\\storm_elite_general", "block": "Grenades Properties", "grow": true}},
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Body Vitality": {
 					"desc": "The General's health (stock: 90 Normal, 130 Legendary).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\elite\\ai\\elite_general", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite_general"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16817,8 +16907,8 @@
 				},
 				"Shield Vitality": {
 					"desc": "The General's shield (stock: 175 Normal, 245 Legendary — the toughest shield any ordinary Reach Covenant carries).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\elite\\ai\\elite_general", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite_general"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16826,8 +16916,8 @@
 				},
 				"Shield Recharge": {
 					"desc": "How long the General's shield waits before recharging, and how long it takes.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\elite\\ai\\elite_general",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\elite\\ai\\elite_general", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite_general"},
 					"harder_when": "decreased",
 					"targets": [
 						{ "field": "Shield Recharge Delay Time", "block": "Vitality Properties", "index": "all", "min": 0 },
@@ -16882,8 +16972,8 @@
 			"Grunt Ultra": {
 				"Body Vitality": {
 					"desc": "The Ultra's health (stock: 60 Normal, 90 Legendary — double an ordinary Grunt).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16891,8 +16981,8 @@
 				},
 				"Shield Vitality": {
 					"desc": "The Ultra's shield (stock: 50 at every difficulty — Reach's only shielded Grunt).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16900,8 +16990,8 @@
 				},
 				"Grenade Chance": {
 					"desc": "How readily the Ultra throws grenades (stock: 0.1).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\grunt\\ai\\grunt_ultra",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra"},
 					"targets": [
 						{ "field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1 }
 					]
@@ -16910,8 +17000,8 @@
 			"Jackal Sniper": {
 				"Body Vitality": {
 					"desc": "The sniper Jackal's health (stock: 60 Normal, 90 Legendary — triple an ordinary Jackal, and it carries no shield gauntlet).",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal_sniper", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_sniper"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16919,8 +17009,8 @@
 				},
 				"Shield Vitality": {
 					"desc": "The sniper Jackal's shield.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal_sniper", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_sniper"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Shield Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true }
@@ -16928,8 +17018,8 @@
 				},
 				"Body Recharge": {
 					"desc": "How fast the sniper Jackal heals between shots.",
-					"game": "Halo Reach",
-					"tag": "char objects\\characters\\jackal\\ai\\jackal_sniper",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal_sniper", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal_sniper"},
 					"harder_when": "increased",
 					"targets": [
 						{ "field": "Body Recharge Fraction", "block": "Vitality Properties", "index": "all", "min": 0, "max": 1 }

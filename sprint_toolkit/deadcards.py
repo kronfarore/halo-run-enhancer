@@ -115,6 +115,12 @@ for game, subs, mp in CASES:
     for path, c in cards:
         if not he._game_ok_static(c, game) if hasattr(he, '_game_ok_static') else False:
             continue
+        # A card held out of the pools is never offered, so it cannot be a silent
+        # no-op for the player -- which is the only thing this audit looks for. The
+        # enhancer drops these at halo_enhancer:1776 and every other audit skips them;
+        # this one did not, and so reported deliberately parked cards as new.
+        if c.get('ignore'):
+            continue
         # `skip_games` is a DENY list and wins over the allow list, exactly as
         # _game_ok has it. Without this the audit reports cards that were
         # deliberately gated out of a game -- which is the opposite of dead.
