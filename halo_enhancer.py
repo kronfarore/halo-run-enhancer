@@ -400,6 +400,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'upgrade_inherits_base',
                'hide_tags', 'hide_fields',
+               'h4_sprint_mode',
                'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
                'sprint_cooldown_s',
@@ -960,6 +961,18 @@ CONFIG = {
     # sprint mod; on a plain map these are inert. sprint_feature is the master
     # switch; start-with vs card is how it enters a run; speed% scales the sprint
     # boost, duration/cooldown are in seconds (converted to 30-tick script globals).
+    # Halo 4 sprint. A separate setting from the ability mod above, because Halo 4 is
+    # the one game that already HAS sprint: it is innate, granted to everyone by matg
+    # `Default Player Traits / Movement Traits / Sprint Usage`, and the equipment tag
+    # that survives in the cache reads the same matg numbers rather than its own. So a
+    # Halo 4 sprint card is shared by both players whatever this is set to -- what the
+    # setting picks is WHO may be offered one, and whether the equipment comes back:
+    #   off      vanilla; no sprint card can appear at all
+    #   holder   only the player who drafted Sprint in an earlier game is offered them
+    #   all      both players, regardless of what was picked elsewhere
+    #   restore  innate sprint switched OFF and the equipment granted back, which also
+    #            unlocks the energy-meter cards (drain / recharge / activation)
+    "h4_sprint_mode": "off",
     "sprint_feature": False,
     "sprint_start_with": True,
     "sprint_as_card": False,
@@ -1113,6 +1126,18 @@ def ability_cards_for():
     if v is None:
         return ['sprint'] if CONFIG.get('sprint_mod_cards', True) else []
     return list(v)
+
+
+#: The four Halo 4 sprint paths, in the order the Options combo lists them. See the
+#: `h4_sprint_mode` note in CONFIG for what each one means.
+H4_SPRINT_MODES = ('off', 'holder', 'all', 'restore')
+
+
+def h4_sprint_mode():
+    """The configured Halo 4 sprint path, normalised. Anything unrecognised (an older
+    settings file, a hand-edited value) reads as 'off', which is vanilla."""
+    m = str(CONFIG.get('h4_sprint_mode', 'off') or 'off').strip().lower()
+    return m if m in H4_SPRINT_MODES else 'off'
 
 
 def is_ability_item(name):
@@ -2088,6 +2113,14 @@ class ModifierDatabase:
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
             'easier_when': mod_data.get('easier_when'),  # ...and its opposite (all 4 uses are mod-level)
             'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
+            # An Options gate. `requires_config` names a CONFIG key (and may be
+            # per-game, resolved like `tag`); `requires_config_in` optionally lists the
+            # values that count as on, for a setting that is a choice rather than a
+            # checkbox. A card whose gate is unmet is simply not offered -- unlike
+            # `ignore` it stays a live card, it is just off right now. Used by the
+            # Halo 4 sprint set, which must not appear at all in a vanilla run.
+            'requires_config': mod_data.get('requires_config'),
+            'requires_config_in': mod_data.get('requires_config_in'),
             'targets': mod_data.get('targets') if isinstance(mod_data.get('targets'), dict)
                        else list(mod_data.get('targets', []) or []),  # map-patch targets
         }
@@ -2840,12 +2873,31 @@ class ModifierDatabase:
     SUPERSEDED_VITALITY_CARDS = ('Starting Health Modifier', 'Starting Shield Modifier',
                                  'Enemy Damage Reduction')
 
+    def _config_ok(self, mod, game=None):
+        """The `requires_config` gate: is the Options setting this card needs on?
+
+        The key may be per-game (`{"Halo 4": "h4_sprint_mode"}`), resolved the same way
+        a tag is -- so a card shared with an earlier game is ungated there and gated
+        here. With `requires_config_in` the setting must read one of those values;
+        without it, plain truthiness decides."""
+        key = mod.get('requires_config')
+        if isinstance(key, dict):
+            key = resolve_gamed(key, game, self.games)
+        if not key:
+            return True
+        val = CONFIG.get(key)
+        allowed = mod.get('requires_config_in')
+        if allowed:
+            return str(val).strip().lower() in [str(a).strip().lower() for a in allowed]
+        return bool(val)
+
     def filter_blacklisted(self, mods, blacklist, game=None):
         drop = (set(self.SUPERSEDED_VITALITY_CARDS)
                 if CONFIG.get('remove_superseded_vitality_cards') else ())
         return [m for m in mods
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                 and self._cross_game_ok(m) and not mod_ignored(m)
+                and self._config_ok(m, game)
                 # Every offer path funnels through here, so one test covers the
                 # initial selection, the New Weapon draw and every reroll — the
                 # recurring bug class of fixing only one of them.
@@ -2912,6 +2964,28 @@ class ModifierDatabase:
                 elif base:
                     continue
                 weapon_mods.extend(self.get_weapon_modifiers_filtered(w, blacklist, game))
+        # Halo 4 sprint. Nobody can DRAFT Sprint here -- it is innate, and even under
+        # "restore" the patcher grants it rather than offering it as a pick -- so the
+        # normal "you carry it, you get its cards" route only fires for a player who
+        # still holds the Sprint item from Reach (or the Halo 1 ability). That is
+        # exactly the 'holder' mode and needs no help. 'all' and 'restore' mean both
+        # players may see the cards, so the set is folded in for whoever is asking.
+        # `filter_blacklisted` still applies the requires_config gate underneath, so
+        # 'off' cannot leak through this path.
+        #
+        # 'holder' still needs one addition: a Halo 1 run drafts sprint as an ABILITY
+        # item, not as equipment, so that player would otherwise be the one person the
+        # holder rule was written for and miss out.
+        if str(game).strip() == 'Halo 4':
+            mode = h4_sprint_mode()
+            held = [w for w in (weapons or []) if w]
+            has_eq = any(self.resolve_equipment(w) == 'Sprint' for w in held)
+            has_ability = any(ability_of_item(w) == 'sprint' for w in held)
+            want = (mode in ('all', 'restore')
+                    or (mode == 'holder' and has_ability))
+            if want and not has_eq:
+                weapon_mods.extend(
+                    self.get_equipment_modifiers_filtered('Sprint', blacklist, game))
         # Ability tuning cards are gated by the New Features options: nothing unless the
         # feature is on, then only the cards for an ability this player actually has,
         # and only for abilities enabled in "Offer cards for". (The ability unlocks
@@ -6437,8 +6511,12 @@ class MagnitudeEditorDialog(QDialog):
         active_abilities = sorted({a for a in (sprint or {}).get(
             'player_abilities', {}).values() if a and a != 'none'})
         sprint_on = bool(active_abilities)
+        # Restoring Halo 4's sprint equipment is a map edit in its own right, so it can
+        # carry a patch on its own the way enabling an ability does.
+        h4_restore = self.game == 'Halo 4' and h4_sprint_mode() == 'restore'
         if (not plan and not starting and not weapon_swaps and not remove_cutscenes
-                and not skulls and not equip_swaps and not spawn_equipment and not sprint_on):
+                and not skulls and not equip_swaps and not spawn_equipment
+                and not sprint_on and not h4_restore):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter at least one operator, or set starting / map weapons.")
             return
@@ -6451,6 +6529,8 @@ class MagnitudeEditorDialog(QDialog):
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
+                  + (["restore Halo 4's sprint equipment (innate sprint off)"]
+                     if h4_restore else [])
                   + (["rescale metagame scores (needs an MCC restart)"]
                      if CONFIG.get('score_scaling') else [])
                   + (["retune the Red Plasma Rifle to the Brute Plasma Rifle"]
@@ -6480,6 +6560,8 @@ class MagnitudeEditorDialog(QDialog):
                 spawn_equipment=spawn_equipment,
                 spawn_weapons=spawn_weapons,
                 sprint=sprint,
+                h4_sprint=({'mode': h4_sprint_mode()}
+                           if self.game == 'Halo 4' else None),
                 difficulty_baseline=self._baseline_spec(),
                 red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                             if (CONFIG.get('odst_red_plasma_as_brute')
@@ -7646,6 +7728,35 @@ class OptionsDialog(QDialog):
         xform = QFormLayout(exp_g)
         xform.setLabelAlignment(Qt.AlignRight)
 
+        # Halo 4 already has sprint, so it gets its own row rather than riding the
+        # ability mod below. The three live settings are the three paths that are
+        # actually available (see CONFIG's h4_sprint_mode note); "Off" is vanilla and
+        # is the only one under which no sprint card can appear in a Halo 4 run.
+        self.h4_sprint_combo = QComboBox()
+        for _m, _label in (('off', 'Off — vanilla, no sprint cards'),
+                           ('holder', 'Cards for whoever drafted Sprint earlier'),
+                           ('all', 'Cards for both players'),
+                           ('restore', 'Restore the equipment (innate sprint off)')):
+            self.h4_sprint_combo.addItem(_label, _m)
+        self.h4_sprint_combo.setCurrentIndex(
+            max(0, self.h4_sprint_combo.findData(h4_sprint_mode())))
+        tune_combo(self.h4_sprint_combo)
+        self.h4_sprint_combo.setToolTip(
+            "Halo 4 is the one game that already sprints. It is innate — matg grants it "
+            "to every player — and the sprint equipment tag that survives in the cache "
+            "reads the same numbers, so a Halo 4 sprint card always moves BOTH players "
+            "whichever setting is chosen. What this picks is who may be offered one:\n\n"
+            "• Off — vanilla. No Halo 4 sprint card is ever offered.\n"
+            "• Whoever drafted Sprint earlier — only the player carrying Sprint from "
+            "Reach (or the Halo 1 ability) sees the cards.\n"
+            "• Both players — regardless of what was picked in other games.\n"
+            "• Restore the equipment — innate sprint is switched off and the sprint "
+            "ability is written back into the starting profile, which also unlocks its "
+            "energy-meter cards. EXPERIMENTAL and not yet game-tested; the tag is only "
+            "resident on Dawn, Reclaimer and Composer, and other maps fall back to "
+            "hero_assist, the shipped ability that also grants sprint.")
+        xform.addRow("Halo 4 Sprint:", self.h4_sprint_combo)
+
         self.sprint_cb = QCheckBox("Enable Abilities")
         self.sprint_cb.setChecked(bool(CONFIG.get('sprint_feature')))
         self.sprint_cb.setToolTip("Flashlight-key abilities — Sprint, Overshield, Regeneration and "
@@ -8774,6 +8885,7 @@ class OptionsDialog(QDialog):
             'card_row_margin': self.card_row_margin.value(),
             'hide_tags': self.hide_tags_cb.isChecked(),
             'hide_fields': self.hide_fields_cb.isChecked(),
+            'h4_sprint_mode': self.h4_sprint_combo.currentData(),
             'sprint_feature': self.sprint_cb.isChecked(),
             # Legacy mirror of the per-ability card list, so older settings files (and
             # anything still reading the flag) stay consistent with the checkboxes.

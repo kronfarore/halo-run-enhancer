@@ -4523,6 +4523,97 @@ def _sprint_null_ref(m, base, roff):
     struct.pack_into('<I', m.data, base + roff + 12, 0xFFFFFFFF)
 
 
+# --- Halo 4 sprint restore -----------------------------------------------------
+# Halo 4 sprints without an ability. matg `Default Player Traits / Movement Traits /
+# Sprint Usage` ships as 2 (True), and that one enum is what gives every player sprint
+# from the first frame; the sprint EQUIPMENT tag survives in the cache and still
+# declares a real Sprint ability, but it grants the same trait and reads the same matg
+# numbers, so it owns nothing of its own except the energy meter.
+#
+# Restoring it is therefore two writes: turn the trait off, and hand the ability back
+# through the scenario's `Starting Equipment` tagRef.
+#
+# WHAT IS NOT KNOWN, and cannot be settled from the tags: NO shipped Halo 4 campaign
+# map fills Starting Equipment in -- it is null in all 96 profiles across the ten maps
+# -- so whether the engine still honours it is a game test, not a read. If it does not,
+# the run has no sprint at all rather than a per-player one, which is why this sits
+# behind its own Options choice and why the result below says so out loud.
+_H4_TRAIT_ON, _H4_TRAIT_OFF = 2, 1          # the enum is 0 Unchanged / 1 False / 2 True
+_H4_SPRINT_EQIP = 'objects' + chr(92) + 'equipment' + chr(92) + 'sprint' + chr(92) + 'sprint'
+# hero_assist is the fallback because it is the only OTHER Halo 4 eqip that populates
+# the `Sprint` sub-block, and unlike the sprint tag it is resident on every campaign
+# map. Its meter is tuned faster (0.375 refill / 0.5s pause against sprint's 5.0 / 4.0).
+_H4_SPRINT_FALLBACK = 'objects' + chr(92) + 'equipment' + chr(92) + 'hero_assist' + chr(92) + 'hero_assist'
+_EQIP_MAGIC = 0x65716970                    # 'eqip', stored reversed like _WEAP_MAGIC
+_H4_PROFILE_EQUIPMENT = 0x60                # Starting Equipment tagRef in the profile
+_H4_REF_FILL = 0xCD                         # what Halo 4 leaves in a tagRef's middle 8
+
+
+def _h4_tag_ident(m, cls, name):
+    """The ident Halo 4 refers to a tag by. Halo 3's (index + salt) formula does NOT
+    hold here -- the salt differs per tag -- but the map's own tag table carries the
+    ident outright, so ask it rather than minting one."""
+    for t in getattr(m, 'tags', []):
+        if t.get('class') == cls and t.get('name') == name:
+            return t.get('ident')
+    return None
+
+
+def _apply_h4_sprint(m, game, registry, cfg):
+    """Halo 4's sprint paths. Only 'restore' writes anything: the card-only modes are
+    an offer-side rule and never touch the map."""
+    ref = {'effect': 'Halo 4 Sprint', 'tag': 'matg globals' + chr(92) + 'globals'}
+    if str(game).strip() != 'Halo 4':
+        return []
+    mode = str((cfg or {}).get('mode', 'off')).strip().lower()
+    if mode != 'restore':
+        return []
+    out = []
+    matg_plug = registry.get('matg')
+    hits = m.find_tags('matg', 'globals' + chr(92) + 'globals')
+    if matg_plug is None or not hits:
+        return [{**ref, 'field': 'Sprint Usage', 'ok': False,
+                 'reason': 'matg plugin/tag unavailable'}]
+    base = hits[0][1]
+    old = m.read_tag_field(base, 'Sprint Usage', matg_plug, 'Movement Traits', 0)
+    if m.write_tag_field(base, 'Sprint Usage', _H4_TRAIT_OFF, matg_plug,
+                         'Movement Traits', 0) is None:
+        out.append({**ref, 'field': 'Sprint Usage', 'ok': False,
+                    'reason': 'Default Player Traits / Movement Traits not writable'})
+    else:
+        out.append({**ref, 'field': 'innate sprint', 'ok': True,
+                    'old': 'on' if old == _H4_TRAIT_ON else str(old), 'new': 'off'})
+    # ...and give the ability back through the starting profiles.
+    tag = _H4_SPRINT_EQIP if _h4_tag_ident(m, 'eqip', _H4_SPRINT_EQIP) else _H4_SPRINT_FALLBACK
+    ident = _h4_tag_ident(m, 'eqip', tag)
+    scnr_plug = registry.get('scnr')
+    scnr_base = _scnr_base(m)
+    bf = scnr_plug.find('Starting Health Damage', 'Player Starting Profile') \
+        if scnr_plug else None
+    if ident is None or bf is None or scnr_base is None:
+        out.append({**ref, 'tag': 'scnr', 'field': 'Starting Equipment', 'ok': False,
+                    'reason': ('no sprint-capable eqip on this map'
+                               if ident is None else 'starting-profile layout unavailable')})
+        return out
+    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
+    count = m.i32(scnr_base + boff)
+    written = 0
+    for i in range(count):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        ro = poff + _H4_PROFILE_EQUIPMENT
+        struct.pack_into('<I', m.data, ro, _EQIP_MAGIC)
+        for b in range(4, 12):
+            m.data[ro + b] = _H4_REF_FILL
+        struct.pack_into('<I', m.data, ro + 0xC, ident & 0xFFFFFFFF)
+        written += 1
+    out.append({**ref, 'tag': 'scnr', 'field': 'Starting Equipment', 'ok': True,
+                'old': 'none', 'new': '%s on %d profile(s)'
+                % (tag.rsplit(chr(92), 1)[-1], written)})
+    return out
+
+
 def _apply_sprint(m, game, registry, cfg):
     """Tune the pre-built ability mod (flashlight-key abilities, one per player).
 
@@ -4769,7 +4860,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
-              sprint=None,
+              sprint=None, h4_sprint=None,
               difficulty_baseline=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
@@ -5083,6 +5174,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Sprint tuning (speed + duration/cooldown/enable). Whole-map, value-only,
         # so order among the structural passes doesn't matter — do it last.
         results.extend(_apply_sprint(m, game, registry, sprint))
+    if h4_sprint:
+        # Halo 4's own sprint. Independent of the ability mod above: it is a scenario
+        # + matg edit, and only the 'restore' mode writes at all.
+        results.extend(_apply_h4_sprint(m, game, registry, h4_sprint))
     if odst_downgrade is not None:
         # Placement rewrite, so it belongs with the structural passes rather than the
         # value ops. `keep` is the variants a player actually drafted.

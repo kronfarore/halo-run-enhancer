@@ -10902,17 +10902,49 @@
 		"Sprint": {
 			"Sprint Speed": {
 				"desc": "How much faster sprinting actually moves you.",
-				"debug_desc": "matg `Player Information / Full Speed Multiplier` -- what Reach multiplies your run speed by while sprinting. Shipped 1.623.\\n\\n**Reach's Player Information block has TWO elements**, where Halo 3 and ODST have one: index 0 (Run Forward 2.2, multiplier 1.623) and index 1 (2.6, multiplier 1.4). Three Player Representations point into them -- two at index 0, one at index 1 -- i.e. the Spartan and the Elite. This card writes `index: \\\"all\\\"` so both move together rather than leaving one representation on stock values. Note the older Run Speed and Sneak Speed cards do NOT do this: they take the default index 0, so in Reach they only touch the first.\\n\\nThe sprint ability's own eqip tag holds no speed field at all -- only the energy meter -- which is why this card lives on matg while the rest of Sprint's cards sit on the ability.",
-				"game": "Halo Reach",
+				"debug_desc": "matg `Full Speed Multiplier` -- what the game multiplies your run speed by while sprinting. Reach ships 1.623 in a flat `Player Information`; Halo 4 ships 1.65 inside `Momentum and Sprinting`.\\n\\n**Reach's Player Information block has TWO elements**, where Halo 3 and ODST have one: index 0 (Run Forward 2.2, multiplier 1.623) and index 1 (2.6, multiplier 1.4). Three Player Representations point into them -- two at index 0, one at index 1 -- i.e. the Spartan and the Elite. The Reach row writes `index: \\\"all\\\"` so both move together rather than leaving one representation on stock values. Note the older Run Speed and Sneak Speed cards do NOT do this: they take the default index 0, so in Reach they only touch the first.\\n\\nHalo 4 sprints without an ability: matg `Default Player Traits / Movement Traits / Sprint Usage` ships as True, so every player has it from the first frame, and the numbers moved out of Reach's flat `Player Information` into a nested `Momentum and Sprinting` block -- Full Speed Multiplier 1.65, Seconds to Full Speed 1.0, Decay Rate 2.0, Sprint Turn Multiplier 1.0.\\n\\n**The equipment tag reads these same numbers**, which is why the card is shared rather than per-player: `objects\\equipment\\sprint\\sprint` carries the energy meter and a `Sprint Usage` trait switch, and no speed of its own. Whichever way sprint reaches the player, this is the field that moves.\\n\\nHalo 4 ships TWO Player Information elements as Reach does, but only the first fills in `Momentum and Sprinting`, so unlike the Reach row this one needs no `index: all` -- there is one block to write.",
+				"game": ["Halo Reach", "Halo 4"],
+				"requires_config": {"Halo 4": "h4_sprint_mode"},
+				"requires_config_in": ["holder", "all", "restore"],
+				"tag": "matg globals\\globals",
+				"targets": {
+					"default": [
+						{"field": "Full Speed Multiplier", "block": "Player Information", "index": "all", "harder_when": "decreased", "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Full Speed Multiplier", "block": "Momentum and Sprinting", "harder_when": "decreased", "min": 0}
+					]
+				}
+			},
+			"Sprint Wind-Up": {
+				"desc": "How long it takes to build up to full sprint speed.",
+				"debug_desc": "`Seconds to Full Speed` (1.0) is the ramp from the moment you start sprinting to full pace, so a longer ramp is worse in a fight -- harder when INCREASED. `Decay Rate` (2.0) is how quickly that momentum bleeds back off; the faster it decays the less a sprint carries you, so that is harder when increased too. Reach keeps both flat in `Player Information` at 1.0/1.0 and no card has ever touched them; this one is Halo 4 only, because that is where sprint is a standing feature rather than one drafted ability among six.\\n\\nHalo 4 sprints without an ability: matg `Default Player Traits / Movement Traits / Sprint Usage` ships as True, so every player has it from the first frame, and the numbers moved out of Reach's flat `Player Information` into a nested `Momentum and Sprinting` block -- Full Speed Multiplier 1.65, Seconds to Full Speed 1.0, Decay Rate 2.0, Sprint Turn Multiplier 1.0.\\n\\n**The equipment tag reads these same numbers**, which is why the card is shared rather than per-player: `objects\\equipment\\sprint\\sprint` carries the energy meter and a `Sprint Usage` trait switch, and no speed of its own. Whichever way sprint reaches the player, this is the field that moves.\\n\\nHalo 4 ships TWO Player Information elements as Reach does, but only the first fills in `Momentum and Sprinting`, so unlike the Reach row this one needs no `index: all` -- there is one block to write.",
+				"game": ["Halo 4"],
+				"requires_config": "h4_sprint_mode",
+				"requires_config_in": ["holder", "all", "restore"],
 				"tag": "matg globals\\globals",
 				"targets": [
-					{"field": "Full Speed Multiplier", "block": "Player Information", "index": "all", "harder_when": "decreased", "min": 0}
+					{"field": "Seconds to Full Speed", "block": "Momentum and Sprinting", "harder_when": "increased", "min": 0},
+					{"field": "Decay Rate", "block": "Momentum and Sprinting", "harder_when": "increased", "min": 0}
+				]
+			},
+			"Sprint Turning": {
+				"desc": "How sharply you can steer while sprinting.",
+				"debug_desc": "`Sprint Turn Multiplier` scales look speed while sprinting. **Halo 4 ships 1.0 -- no penalty at all -- where Reach ships 0.45**, which is the clearest single number behind sprint feeling free here and committal there. Lower is harder: it makes a sprint something you have to aim before you commit to.\\n\\nHalo 4 sprints without an ability: matg `Default Player Traits / Movement Traits / Sprint Usage` ships as True, so every player has it from the first frame, and the numbers moved out of Reach's flat `Player Information` into a nested `Momentum and Sprinting` block -- Full Speed Multiplier 1.65, Seconds to Full Speed 1.0, Decay Rate 2.0, Sprint Turn Multiplier 1.0.\\n\\n**The equipment tag reads these same numbers**, which is why the card is shared rather than per-player: `objects\\equipment\\sprint\\sprint` carries the energy meter and a `Sprint Usage` trait switch, and no speed of its own. Whichever way sprint reaches the player, this is the field that moves.\\n\\nHalo 4 ships TWO Player Information elements as Reach does, but only the first fills in `Momentum and Sprinting`, so unlike the Reach row this one needs no `index: all` -- there is one block to write.",
+				"game": ["Halo 4"],
+				"requires_config": "h4_sprint_mode",
+				"requires_config_in": ["holder", "all", "restore"],
+				"tag": "matg globals\\globals",
+				"targets": [
+					{"field": "Sprint Turn Multiplier", "block": "Momentum and Sprinting", "harder_when": "decreased", "min": 0}
 				]
 			},
 			"Energy Drain": {
 				"desc": "How fast sprinting burns the ability meter.",
-				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
+				"debug_desc": "The armour-ability energy meter: `Energy Recovery Time` is the pause before it refills, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button. Reach spells the refill rate `Recharge Rate`; Halo 4 calls the same field `Inactive Energy Rate` and keeps it at the tag root -- sprint reads 5.0 with a 4s pause in BOTH games, the tag having been carried over untouched.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\n**Halo 4 only offers these under `Restore the equipment`.** With innate sprint left on nothing reads this tag, and the card would be a silent no-op.",
+				"game": ["Halo Reach", "Halo 4"],
+				"requires_config": {"Halo 4": "h4_sprint_mode"},
+				"requires_config_in": ["restore"],
 				"tag": "eqip objects\\equipment\\sprint\\sprint",
 				"targets": [
 					{"field": "Active Energy Rate", "harder_when": "decreased"}
@@ -10920,18 +10952,28 @@
 			},
 			"Recharge": {
 				"desc": "How quickly the ability meter comes back after sprinting.",
-				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
+				"debug_desc": "The armour-ability energy meter: `Energy Recovery Time` is the pause before it refills, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button. Reach spells the refill rate `Recharge Rate`; Halo 4 calls the same field `Inactive Energy Rate` and keeps it at the tag root -- sprint reads 5.0 with a 4s pause in BOTH games, the tag having been carried over untouched.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\n**Halo 4 only offers these under `Restore the equipment`.** With innate sprint left on nothing reads this tag, and the card would be a silent no-op.",
+				"game": ["Halo Reach", "Halo 4"],
+				"requires_config": {"Halo 4": "h4_sprint_mode"},
+				"requires_config_in": ["restore"],
 				"tag": "eqip objects\\equipment\\sprint\\sprint",
-				"targets": [
-					{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
-					{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
-				]
+				"targets": {
+					"default": [
+						{"field": "Recharge Rate", "harder_when": "decreased", "min": 0},
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					],
+					"Halo 4": [
+						{"field": "Inactive Energy Rate", "harder_when": "decreased", "min": 0},
+						{"field": "Energy Recovery Time", "harder_when": "increased", "min": 0}
+					]
+				}
 			},
 			"Activation Energy": {
 				"desc": "How much meter you need banked before you can sprint.",
-				"debug_desc": "The armour-ability energy meter, shared by all six: `Recharge Rate` refills it, `Energy Recovery Time` is the pause before refilling starts, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\nShipped rates differ per ability -- Sprint refills at 5.0 with a 4s pause, Armor Lock at 0.09 with 3s, the Drop Shield at 0.054 with 2s -- so the same multiplier is a different real change on each.",
-				"game": "Halo Reach",
+				"debug_desc": "The armour-ability energy meter: `Energy Recovery Time` is the pause before it refills, `Active Energy Rate` drains it while the ability runs, and `Minimum Activation Energy` is how much you need banked to trigger it at all. `Activation Energy Cost` is charged up front, the moment you press the button. Reach spells the refill rate `Recharge Rate`; Halo 4 calls the same field `Inactive Energy Rate` and keeps it at the tag root -- sprint reads 5.0 with a 4s pause in BOTH games, the tag having been carried over untouched.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher, not gentler: -0.25 * 2 is -0.5, i.e. twice the drain. That is why the harder direction on those rows is DOWN.\\n\\n**Halo 4 only offers these under `Restore the equipment`.** With innate sprint left on nothing reads this tag, and the card would be a silent no-op.",
+				"game": ["Halo Reach", "Halo 4"],
+				"requires_config": {"Halo 4": "h4_sprint_mode"},
+				"requires_config_in": ["restore"],
 				"tag": "eqip objects\\equipment\\sprint\\sprint",
 				"targets": [
 					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
