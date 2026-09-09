@@ -513,6 +513,11 @@ _PARENT_REF = 0x4
 # end of the partition, so a short run that is really data is never touched.
 _SLACK_MARGIN = 0x40
 _SLACK_MIN_RUN = 0x400
+# An interior run must be MUCH larger than the request before it is believable as
+# padding rather than a live zeroed structure. 0x1000 is comfortably above any
+# element these cards seed (the largest is 184 bytes) and still leaves thousands of
+# candidates on every Halo 4 map.
+_SLACK_INTERIOR_MIN = 0x1000
 
 
 def _tagref_datum(m):
@@ -552,10 +557,43 @@ def _partition_of(m, off):
     return None
 
 
+def _addressable(m, off, size, lo, hi):
+    """16-align `off` and confirm the result still round-trips through the pointer
+    model and stays inside [lo, hi). A pointer that does not survive
+    off2data -> data2off would be written into the reflexive as a plausible-looking
+    address that resolves somewhere else entirely."""
+    cand = (off + 0xF) & ~0xF
+    if cand < lo or cand + size > hi:
+        return None
+    d = m.off2data(cand)
+    if d is None or m.data2off(d) != cand:
+        return None
+    return cand
+
+
 def find_slack(m, size, prefer=None):
-    """Carve `size` bytes from the tail of a zero run in a tag partition. `prefer`
-    (the partition holding the tag) wins outright -- on Halo 3 and Reach alike every
-    char tag lives in the last partition, so the new element belongs beside them."""
+    """Carve `size` bytes out of a zero run in a tag partition.
+
+    TWO passes, deliberately ordered.
+
+    1. The TAIL of each partition, which is what this only ever looked at. It is the
+       conservative choice -- trailing zeroes are padding by construction -- and is
+       the variant confirmed in game on Reach m10.
+    2. Failing that, the longest zero run INSIDE a partition. Halo 4 needs this: its
+       partitions end with 0-3 zero bytes where Reach's carry 17k-43k, so pass 1
+       finds nothing at all and block growth was impossible there. Measured on
+       m70_liftoff, the interior holds 7375 addressable runs of at least 184 bytes,
+       the longest 41560.
+
+    Interior runs are used only when far larger than the request (_SLACK_INTERIOR_MIN
+    and a margin at BOTH ends), because a short run of zeroes is as likely to be a
+    live zeroed structure as it is to be padding, whereas a multi-kilobyte one inside
+    a packed cache is inter-tag slack. This is the one judgement in here that map data
+    alone cannot settle -- it wants an in-game check.
+
+    `prefer` (the partition holding the tag) wins outright within a pass, so the new
+    element lands beside the tag it belongs to.
+    """
     best = None
     for i, (la, sz, fb) in enumerate(m.partitions):
         if not sz or fb is None:
@@ -576,6 +614,38 @@ def find_slack(m, size, prefer=None):
             return cand
         if best is None or run > best[1]:
             best = cand
+    if best is not None:
+        return best
+    return _find_interior_slack(m, size, prefer)
+
+
+def _find_interior_slack(m, size, prefer=None):
+    """Longest zero run strictly inside a partition, with margin at both ends."""
+    need = max(size + 2 * _SLACK_MARGIN, _SLACK_INTERIOR_MIN)
+    best = None
+    for i, (la, sz, fb) in enumerate(m.partitions):
+        if not sz or fb is None:
+            continue
+        lo, hi = fb, fb + sz
+        data = m.data
+        j = lo
+        while j < hi:
+            if data[j]:
+                j += 1
+                continue
+            k = j
+            while k < hi and not data[k]:
+                k += 1
+            if k - j >= need:
+                off = _addressable(m, j + _SLACK_MARGIN, size, lo, hi)
+                if off is not None and (off + size + _SLACK_MARGIN) <= k:
+                    cand = (off, k - j, i)
+                    if i == prefer and (best is None or best[2] != prefer
+                                        or cand[1] > best[1]):
+                        best = cand
+                    elif best is None or (best[2] != prefer and cand[1] > best[1]):
+                        best = cand
+            j = k
     return best
 
 

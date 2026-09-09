@@ -34,12 +34,19 @@ DIFF = he.CONFIG.get('target_difficulty', 'Impossible')
 # and so the same card on two maps of one game collapses to a single entry.
 _S = chr(92)
 VERIFIED = {
-    # The empty-block class: from Halo 3 on, most per-enemy property blocks ship
+    # The empty-block class: from Halo 3 on, most per-enemy char property blocks ship
     # ZERO elements and the enemy inherits ai\generic. The card resolves, finds an
     # empty block and writes nothing. See the halo3-odst-empty-char-blocks note.
+    #
+    # NOTE these are the cards with NO seeder. A card carrying init_defaults {grow}
+    # also reads empty here and is NOT dead -- it grows the block before writing --
+    # and is skipped in the loop below rather than listed here. Five entries that used
+    # to sit in this table (the ODST Brute Chieftain and the four Elite Specops
+    # Commander cards) were exactly that case and were removed 2026-09-09; the
+    # stale-entry report at the end of a run is what surfaced them.
     ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Vision',
      'char objects' + _S + 'characters' + _S + 'floodcombat*'):
-        'Flood Combat Forms ship an empty Perception block; they inherit ai\\generic',
+        'Flood Combat Forms ship an empty Perception block; they inherit ai' + _S + 'generic',
     ('Halo 3: ODST', 'Specific Enemy modifier / Flood Combat Form / Hearing Distance',
      'char objects' + _S + 'characters' + _S + 'floodcombat*'):
         'same empty Perception block',
@@ -58,23 +65,6 @@ VERIFIED = {
     ('Halo 3', 'Hero enemy modifier / Brute Chieftain / Melee Behavior',
      'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S
      + 'brute_chieftain*'): 'empty Melee block on the 030 chieftain',
-    ('Halo 3: ODST', 'Hero enemy modifier / Brute Chieftain / Grenade Chance',
-     'char objects' + _S + 'characters' + _S + 'brute' + _S + 'ai' + _S
-     + 'brute_chieftain_armor'): 'empty Grenades block',
-    # The Specops Commander is not fielded on the two ODST maps sampled here; the
-    # card is fine, the sample simply cannot see it.
-    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Body Vitality',
-     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
-     + 'elite_specops_commander'): 'tag present but its blocks are empty on l200/l300',
-    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Shield Vitality',
-     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
-     + 'elite_specops_commander'): 'as above',
-    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Melee Behavior',
-     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
-     + 'elite_specops_commander'): 'as above',
-    ('Halo 3: ODST', 'Hero enemy modifier / Elite Specops Commander / Grenade Chance',
-     'char objects' + _S + 'characters' + _S + 'elite' + _S + 'ai' + _S
-     + 'elite_specops_commander'): 'as above',
     # Pre-existing, unrelated to any Halo 4 work: matg carries no such field there.
     ('Halo 4', 'Player Modifiers / General Modifiers / Stun Penalty',
      'matg globals' + _S + 'globals'): 'Halo 4 matg has no Stun Penalty field',
@@ -165,6 +155,19 @@ for game, subs, mp in CASES:
             f = hp.apply_difficulty(f, t, DIFF)
             blk = t.get('block')
             blk = he.resolve_gamed(blk, game, games) if isinstance(blk, dict) else blk
+            # A card that SEEDS the block it edits is not dead when that block reads
+            # empty -- being empty is the whole reason it seeds. `init_defaults` with
+            # `grow` gives the tag its own copy, populated from the nearest ancestor,
+            # before any value is written. halo_enhancer makes the same block-name
+            # comparison at _seeded_default. Without this every grow card looks dead
+            # here, which is why four of them sat on the VERIFIED list.
+            _init = c.get('init_defaults')
+            _init = he.resolve_gamed(_init, game, games) \
+                if isinstance(_init, dict) and game in _init else _init
+            if isinstance(_init, dict) and _init.get('grow') and _init.get('block') \
+                    and blk and str(_init['block']).lower() == str(blk).lower():
+                live += 1
+                continue
             idx = t.get('index', 0)
             # `nth` picks WHICH declaration of a repeated field name to read, and
             # ignoring it reads the wrong one. Halo 4 declares `Maximum Vitality`
