@@ -11,6 +11,7 @@ import os
 import re
 import shutil
 import struct
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 import halo_map as hm
@@ -4530,22 +4531,32 @@ def _sprint_null_ref(m, base, roff):
 # declares a real Sprint ability, but it grants the same trait and reads the same matg
 # numbers, so it owns nothing of its own except the energy meter.
 #
-# Restoring it is therefore two writes: turn the trait off, and hand the ability back
-# through the scenario's `Starting Equipment` tagRef.
+# WHAT THIS DOES AND DELIBERATELY DOES NOT DO. Restoring sprint as an ability is partly
+# level work -- placing the pickup, which is Sapien's job, not a byte patch's -- and the
+# toolkit is moving off starting-profile writes towards SPAWNING equipment and weapons
+# (Reach is already there). So this pass does the two things that are tag-side and
+# would otherwise block that work:
 #
-# WHAT IS NOT KNOWN, and cannot be settled from the tags: NO shipped Halo 4 campaign
-# map fills Starting Equipment in -- it is null in all 96 profiles across the ten maps
-# -- so whether the engine still honours it is a game test, not a read. If it does not,
-# the run has no sprint at all rather than a per-player one, which is why this sits
-# behind its own Options choice and why the result below says so out loud.
+#   1. turn innate sprint off, so an ability has something to give back;
+#   2. give the sprint equipment its HUD, which it ships WITHOUT. Every Halo 4 ability
+#      that displays a meter points `HUD Screen Reference` at
+#      `ui\hud\equipment\shared\equipment_template`; sprint's is NULL, and so are
+#      its `Energy Charged Effect` and `Unable To Activate Sound`. Nothing has to be
+#      imported -- the template is already resident on all three maps that carry the
+#      sprint tag, referenced by the Thruster Pack and Active Camo -- so the fix is to
+#      copy those references off whichever ability on this map already has them.
 _H4_TRAIT_ON, _H4_TRAIT_OFF = 2, 1          # the enum is 0 Unchanged / 1 False / 2 True
-_H4_SPRINT_EQIP = 'objects' + chr(92) + 'equipment' + chr(92) + 'sprint' + chr(92) + 'sprint'
-# hero_assist is the fallback because it is the only OTHER Halo 4 eqip that populates
-# the `Sprint` sub-block, and unlike the sprint tag it is resident on every campaign
-# map. Its meter is tuned faster (0.375 refill / 0.5s pause against sprint's 5.0 / 4.0).
-_H4_SPRINT_FALLBACK = 'objects' + chr(92) + 'equipment' + chr(92) + 'hero_assist' + chr(92) + 'hero_assist'
-_EQIP_MAGIC = 0x65716970                    # 'eqip', stored reversed like _WEAP_MAGIC
-_H4_PROFILE_EQUIPMENT = 0x60                # Starting Equipment tagRef in the profile
+_H4_SPRINT_EQIP = ('objects' + chr(92) + 'equipment' + chr(92) + 'sprint' + chr(92)
+                   + 'sprint')
+# Donors for the HUD references, in preference order -- abilities that are known to
+# display correctly. The DONOR is asked rather than a path being hardcoded, so a map
+# that ships a different template still gets a consistent one.
+_H4_HUD_DONORS = ('storm_thruster_pack_pve', 'storm_active_camo', 'storm_jet_pack',
+                  'storm_forerunner_vision_pve')
+# eqip root tagRefs that carry an ability's presentation. Offsets come from the plugin,
+# not from here; these are the field names.
+_H4_HUD_FIELDS = ('HUD Screen Reference', 'Energy Charged Effect',
+                  'Unable To Activate Sound')
 _H4_REF_FILL = 0xCD                         # what Halo 4 leaves in a tagRef's middle 8
 
 
@@ -4559,10 +4570,50 @@ def _h4_tag_ident(m, cls, name):
     return None
 
 
+def _h4_ref_offsets(registry, group, names):
+    """{field name: root offset} for tagRef fields.
+
+    Read from the plugin XML rather than through `Plugin.find`: a tagRef has no scalar
+    type, so it never lands in the flattened field list and find() returns None for
+    every one of these. The plugin object still knows where its file is.
+    """
+    plug = registry.get(group)
+    path = getattr(plug, 'path', None)
+    if not path:
+        return {}
+    try:
+        root = ET.parse(path).getroot()
+    except Exception:
+        return {}
+    want = {n.lower() for n in names}
+    out = {}
+    for ch in root:                       # ROOT-level fields only, which is where the
+        nm = ch.get('name')               # presentation refs live
+        if (ch.tag.lower() in ('tagref', 'tagreference') and nm
+                and nm.lower() in want and ch.get('offset')):
+            out[nm] = int(ch.get('offset'), 16)
+    return out
+
+
+def _h4_copy_ref(m, src_base, dst_base, off):
+    """Copy one 16-byte tagRef between two tags of the same group. Returns the tag name
+    copied, or None when the donor's own reference is null."""
+    rid = struct.unpack_from('<I', m.data, src_base + off + 0xC)[0]
+    if rid in (0, 0xFFFFFFFF):
+        return None
+    m.data[dst_base + off:dst_base + off + 16] = \
+        m.data[src_base + off:src_base + off + 16]
+    idx = rid & 0xFFFF
+    for t in getattr(m, 'tags', []):
+        if t.get('index') == idx:
+            return t.get('name')
+    return '0x%08X' % rid
+
+
 def _apply_h4_sprint(m, game, registry, cfg):
     """Halo 4's sprint paths. Only 'restore' writes anything: the card-only modes are
     an offer-side rule and never touch the map."""
-    ref = {'effect': 'Halo 4 Sprint', 'tag': 'matg globals' + chr(92) + 'globals'}
+    ref = {'effect': 'Halo 4 Sprint'}
     if str(game).strip() != 'Halo 4':
         return []
     mode = str((cfg or {}).get('mode', 'off')).strip().lower()
@@ -4572,45 +4623,51 @@ def _apply_h4_sprint(m, game, registry, cfg):
     matg_plug = registry.get('matg')
     hits = m.find_tags('matg', 'globals' + chr(92) + 'globals')
     if matg_plug is None or not hits:
-        return [{**ref, 'field': 'Sprint Usage', 'ok': False,
+        return [{**ref, 'tag': 'matg globals' + chr(92) + 'globals',
+                 'field': 'Sprint Usage', 'ok': False,
                  'reason': 'matg plugin/tag unavailable'}]
     base = hits[0][1]
     old = m.read_tag_field(base, 'Sprint Usage', matg_plug, 'Movement Traits', 0)
     if m.write_tag_field(base, 'Sprint Usage', _H4_TRAIT_OFF, matg_plug,
                          'Movement Traits', 0) is None:
-        out.append({**ref, 'field': 'Sprint Usage', 'ok': False,
+        out.append({**ref, 'tag': 'matg globals' + chr(92) + 'globals',
+                    'field': 'Sprint Usage', 'ok': False,
                     'reason': 'Default Player Traits / Movement Traits not writable'})
     else:
-        out.append({**ref, 'field': 'innate sprint', 'ok': True,
+        out.append({**ref, 'tag': 'matg globals' + chr(92) + 'globals',
+                    'field': 'innate sprint', 'ok': True,
                     'old': 'on' if old == _H4_TRAIT_ON else str(old), 'new': 'off'})
-    # ...and give the ability back through the starting profiles.
-    tag = _H4_SPRINT_EQIP if _h4_tag_ident(m, 'eqip', _H4_SPRINT_EQIP) else _H4_SPRINT_FALLBACK
-    ident = _h4_tag_ident(m, 'eqip', tag)
-    scnr_plug = registry.get('scnr')
-    scnr_base = _scnr_base(m)
-    bf = scnr_plug.find('Starting Health Damage', 'Player Starting Profile') \
-        if scnr_plug else None
-    if ident is None or bf is None or scnr_base is None:
-        out.append({**ref, 'tag': 'scnr', 'field': 'Starting Equipment', 'ok': False,
-                    'reason': ('no sprint-capable eqip on this map'
-                               if ident is None else 'starting-profile layout unavailable')})
+
+    # ...and give the sprint ability the HUD it never shipped with.
+    eq = 'eqip ' + _H4_SPRINT_EQIP
+    sprint = m.find_tags('eqip', _H4_SPRINT_EQIP)
+    if not sprint:
+        out.append({**ref, 'tag': eq, 'field': 'HUD Screen Reference', 'ok': True,
+                    'skip': True,
+                    'reason': 'the sprint tag is not resident on this map '
+                              '(only Dawn, Reclaimer and Composer carry it)'})
         return out
-    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
-    count = m.i32(scnr_base + boff)
-    written = 0
-    for i in range(count):
-        poff = m.follow(scnr_base, [boff], [esize], i)
-        if poff is None:
-            continue
-        ro = poff + _H4_PROFILE_EQUIPMENT
-        struct.pack_into('<I', m.data, ro, _EQIP_MAGIC)
-        for b in range(4, 12):
-            m.data[ro + b] = _H4_REF_FILL
-        struct.pack_into('<I', m.data, ro + 0xC, ident & 0xFFFFFFFF)
-        written += 1
-    out.append({**ref, 'tag': 'scnr', 'field': 'Starting Equipment', 'ok': True,
-                'old': 'none', 'new': '%s on %d profile(s)'
-                % (tag.rsplit(chr(92), 1)[-1], written)})
+    donor = None
+    for leaf in _H4_HUD_DONORS:
+        found = [h for h in m.find_tags('eqip', '*' + leaf) if h[0].endswith(leaf)]
+        if found:
+            donor = found[0]
+            break
+    offs = _h4_ref_offsets(registry, 'eqip', _H4_HUD_FIELDS)
+    if donor is None or not offs:
+        out.append({**ref, 'tag': eq, 'field': 'HUD Screen Reference', 'ok': False,
+                    'reason': 'no ability on this map to copy a HUD reference from'
+                              if donor is None else 'eqip plugin lacks the HUD fields'})
+        return out
+    for fname, off in offs.items():
+        copied = _h4_copy_ref(m, donor[1], sprint[0][1], off)
+        out.append({**ref, 'tag': eq, 'field': fname,
+                    'ok': copied is not None,
+                    'old': 'none',
+                    'new': (copied or '').rsplit(chr(92), 1)[-1],
+                    'reason': None if copied is not None
+                              else '%s has no %s either'
+                                   % (donor[0].rsplit(chr(92), 1)[-1], fname)})
     return out
 
 

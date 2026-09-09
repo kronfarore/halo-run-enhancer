@@ -11,14 +11,15 @@ the equipment comes back.
     off      vanilla -- no sprint card can appear
     holder   only a player carrying Sprint from Reach (or the Halo 1 ability)
     all      both players
-    restore  innate sprint off, the ability written back into the starting profiles,
-             which also unlocks the three energy-meter cards
+    restore  innate sprint off and the sprint equipment given the HUD it never
+             shipped with, which also unlocks the three energy-meter cards. PLACING
+             the pickup is level work (Sapien) and is deliberately not done here.
 
 This checks both halves:
   OFFER  the card set each mode produces, for a player who holds Sprint and one who
          does not, in Halo 4 AND in Reach (Reach must be untouched by all of this).
   MAP    --apply-map copies a map, runs the restore, reopens it and reads back the
-         trait and every profile's Starting Equipment ref.
+         trait plus the HUD references the sprint equipment ships without.
 
     python sprint_toolkit/h4_sprint_check.py
     python sprint_toolkit/h4_sprint_check.py --apply-map
@@ -42,8 +43,8 @@ import h4_census as hc                                            # noqa: E402
 
 S = chr(92)
 SPRINT_ITEM = 'Sprint'
-# Dawn has the sprint tag resident; Shutdown does not and must fall back to
-# hero_assist, the other Halo 4 ability that populates the `Sprint` sub-block.
+# Dawn carries the sprint tag; Shutdown does not, and is here to prove the pass still
+# does the matg half and reports the equipment half as skipped rather than failing.
 MAPS = ('m10_crash', 'm70_liftoff')
 
 
@@ -67,9 +68,7 @@ def map_check(apply_map):
     print()
     print('=== MAP SIDE (restore)')
     reg = hp.PluginRegistry(assembly_plugins.plugins_dir(), ['Halo4MCC', 'Halo4'])
-    matg_plug, scnr_plug = reg.get('matg'), reg.get('scnr')
-    bf = scnr_plug.find('Starting Health Damage', 'Player Starting Profile')
-    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
+    matg_plug = reg.get('matg')
     for name in MAPS:
         src = os.path.join(hc.MAPS, name + '.map')
         if not os.path.exists(src):
@@ -93,21 +92,21 @@ def map_check(apply_map):
                      '' if r.get('ok') else '  FAILED: %s' % r.get('reason')))
         m2 = hp.open_map(tmp, 'Halo 4')
         b2 = m2.find_tags('matg', 'globals' + S + 'globals')[0][1]
-        sb = hp._scnr_base(m2)
-        n = m2.i32(sb + boff)
-        idx = {t['ident']: t for t in m2.tags}
+        idx = {t['index']: t for t in m2.tags}
+        offs = hp._h4_ref_offsets(reg, 'eqip', hp._H4_HUD_FIELDS)
         got = []
-        for i in range(n):
-            poff = m2.follow(sb, [boff], [esize], i)
-            rid = struct.unpack_from('<I', m2.data, poff + hp._H4_PROFILE_EQUIPMENT
-                                     + 0xC)[0]
-            t = idx.get(rid)
-            got.append((t or {}).get('name', '0x%08X' % rid).rsplit(S, 1)[-1])
-        print('    after:  Sprint Usage=%s ; %d profile(s) -> %s'
+        for tp, base in m2.find_tags('eqip', hp._H4_SPRINT_EQIP):
+            for fname, off in offs.items():
+                rid = struct.unpack_from('<I', m2.data, base + off + 0xC)[0]
+                t = idx.get(rid & 0xFFFF) if rid not in (0, 0xFFFFFFFF) else None
+                got.append('%s=%s' % (fname.split()[0],
+                                      (t or {}).get('name', 'null').rsplit(S, 1)[-1]))
+        print('    after:  Sprint Usage=%s ; sprint eqip %s'
               % (m2.read_tag_field(b2, 'Sprint Usage', matg_plug, 'Movement Traits', 0),
-                 n, ', '.join(sorted(set(got)))))
+                 ', '.join(got) or '(not resident on this map)'))
         print('    tags=%d ; checksum reproduces: %s'
               % (len(m2.tags), m2.u32(m2.CHECKSUM_OFF) == m2.update_checksum()))
+        del m2
         os.remove(tmp)
 
 

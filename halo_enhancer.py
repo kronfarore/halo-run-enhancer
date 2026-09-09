@@ -401,6 +401,9 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'upgrade_inherits_base',
                'hide_tags', 'hide_fields',
                'h4_sprint_mode',
+               'h4_elite_general_bosses', 'h4_grunt_ultra_bosses',
+               'h4_jackal_sniper_bosses', 'h4_jackal_ranger_bosses',
+               'h4_knight_commander_bosses',
                'sprint_feature', 'sprint_start_with', 'sprint_as_card', 'sprint_mod_cards',
                'sprint_need_weapon', 'sprint_speed_pct', 'sprint_duration_s',
                'sprint_cooldown_s',
@@ -744,6 +747,14 @@ CONFIG = {
     "reach_elite_bosses": False,       # Elite Generals + the Zealots count as bosses
     "reach_grunt_ultra_bosses": False,  # Grunt Ultras count as bosses
     "reach_jackal_sniper_bosses": False,   # Reach sniper Jackals count as bosses
+    # Halo 4's five heroes, each declared Hero by the game itself (Campaign Metagame
+    # Bucket / Class = 2). Off by default like every hero switch added after the first
+    # two, so a run only meets them when they are asked for.
+    "h4_elite_general_bosses": False,
+    "h4_grunt_ultra_bosses": False,
+    "h4_jackal_sniper_bosses": False,
+    "h4_jackal_ranger_bosses": False,      # the Ranger and its shielded variant
+    "h4_knight_commander_bosses": False,
     "h2_honor_guard_bosses": False,        # Halo 2 Honor Guard Elites count as bosses
     "odst_specops_bosses": False,          # ODST spec-ops commanders count as bosses
     "h3_specops_bosses": False,            # Halo 3's ALLIED spec-ops commander
@@ -970,8 +981,12 @@ CONFIG = {
     #   off      vanilla; no sprint card can appear at all
     #   holder   only the player who drafted Sprint in an earlier game is offered them
     #   all      both players, regardless of what was picked elsewhere
-    #   restore  innate sprint switched OFF and the equipment granted back, which also
-    #            unlocks the energy-meter cards (drain / recharge / activation)
+    #   restore  innate sprint switched OFF and the sprint equipment given the HUD it
+    #            never shipped with (its HUD Screen Reference, charge effect and
+    #            no-energy sound are all null where every other ability points at
+    #            ui\hud\equipment\shared\equipment_template), which also unlocks the
+    #            energy-meter cards. It does NOT place the pickup -- that is level work
+    #            in Sapien -- so until then a restore run has no sprint at all.
     "h4_sprint_mode": "off",
     "sprint_feature": False,
     "sprint_start_with": True,
@@ -1463,6 +1478,24 @@ REACH_GRUNT_ULTRA_MISSIONS = ('m10', 'm35', 'm45')
 # carries its OWN vitality (60 body Normal / 90 Legendary, triple a plain Jackal).
 REACH_JACKAL_SNIPER_MISSIONS = ('m20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60',
                                 'm70', 'm70_bonus')
+
+# Halo 4 missions that actually FIELD each hero -- `sprint_toolkit/h4_hero_fielded.py`,
+# which crosses the character palette with the squads that name it (Spawn Points at
+# +0x2E and the nested character sub-block of each Designer / Templated Cell). Palette
+# presence alone would over-report here exactly as it did in Reach.
+#
+# All five are Hero by Halo 4's own `Campaign Metagame Bucket / Class` = 2. The Elite
+# Zealot is fielded on three missions and is NOT one -- the game files it as Elite --
+# so it keeps its Reach-only switch.
+H4_GENERAL_MISSIONS = ('m020', 'm10_crash', 'm70_liftoff', 'm80_delta')
+H4_GRUNT_ULTRA_MISSIONS = ('m020', 'm60_rescue', 'm70_liftoff', 'm80_delta')
+H4_JACKAL_SNIPER_MISSIONS = ('m020', 'm30_cryptum', 'm40_invasion', 'm60_rescue',
+                             'm70_liftoff', 'm80_delta')
+# The Ranger and its shielded variant are ONE unit for card purposes: the shield
+# variant owns nothing and inherits the Ranger's blocks, so editing the Ranger is what
+# it sees. Both are fielded on the same two missions anyway.
+H4_JACKAL_RANGER_MISSIONS = ('m10_crash', 'm80_delta')
+H4_KNIGHT_COMMANDER_MISSIONS = ('m70_liftoff', 'm90_sacrifice')
 H2_HONOR_GUARD_MISSIONS = ('05a', '05b', '06a', '07a')
 ODST_SPECOPS_MISSIONS = ('h100', 'l200', 'l300', 'sc100', 'sc110', 'sc120',
                          'sc130', 'sc140')
@@ -1485,6 +1518,11 @@ H3_SPECOPS_MISSIONS = ('050',)
 HERO_NAMES = frozenset({
     'Brute Chieftain', 'Sentinel Enforcer', 'Elite General', 'Elite Zealot',
     'Grunt Ultra', 'Jackal Sniper', 'Elite Honor Guard', 'Elite Specops Commander',
+    # Halo 4's two new ones. Every Halo 4 hero here is Hero by the game's OWN
+    # declaration -- `char / Campaign Metagame Bucket / Class` = 2 -- which is the
+    # user's rule and is what keeps the Elite Zealot out: Halo 4 fields Zealots on
+    # three missions and files them as Elite, not Hero.
+    'Jackal Ranger', 'Knight Commander',
 })
 
 # Games where the Elites are on your side (Halo 3) or absent entirely (ODST, which
@@ -1582,6 +1620,11 @@ HERO_OPTIONS = (
     ('reach_elite_bosses', 'Elite Zealot', REACH_ZEALOT_MISSIONS),
     ('reach_grunt_ultra_bosses', 'Grunt Ultra', REACH_GRUNT_ULTRA_MISSIONS),
     ('reach_jackal_sniper_bosses', 'Jackal Sniper', REACH_JACKAL_SNIPER_MISSIONS),
+    ('h4_elite_general_bosses', 'Elite General', H4_GENERAL_MISSIONS),
+    ('h4_grunt_ultra_bosses', 'Grunt Ultra', H4_GRUNT_ULTRA_MISSIONS),
+    ('h4_jackal_sniper_bosses', 'Jackal Sniper', H4_JACKAL_SNIPER_MISSIONS),
+    ('h4_jackal_ranger_bosses', 'Jackal Ranger', H4_JACKAL_RANGER_MISSIONS),
+    ('h4_knight_commander_bosses', 'Knight Commander', H4_KNIGHT_COMMANDER_MISSIONS),
 )
 
 # Equipment the player can be denied, grouped as the two options present them.
@@ -7453,6 +7496,36 @@ class OptionsDialog(QDialog):
             "Hero in Reach only.)")
         bform.addRow("    \u21b3 Reach sniper Jackals:", self.reach_jackal_boss_cb)
 
+        self.h4_elite_general_cb = QCheckBox("Elite Generals count as heroes (Halo 4)")
+        self.h4_elite_general_cb.setChecked(bool(CONFIG.get('h4_elite_general_bosses')))
+        self.h4_elite_general_cb.setToolTip(
+            "Halo 4 only. Hero by the game's own Campaign Metagame Bucket class, worth 150 points, and it carries its own vitality (50 body / 105 shield) so its cards bite rather than buffing every Elite.\nFour missions: Requiem, Dawn, Shutdown and Composer.\n(Halo 4 also fields Elite Zealots, on three missions, but classes them Elite rather than Hero -- so they stay a Reach-only switch.)")
+        bform.addRow("    ↳ H4 Elite Generals:", self.h4_elite_general_cb)
+
+        self.h4_grunt_ultra_cb = QCheckBox("Grunt Ultras count as heroes (Halo 4)")
+        self.h4_grunt_ultra_cb.setChecked(bool(CONFIG.get('h4_grunt_ultra_bosses')))
+        self.h4_grunt_ultra_cb.setToolTip(
+            "Halo 4 only. Hero-class, 80 body and no shield -- twice a plain Grunt -- and it defines that vitality itself.\nFour missions: Requiem, Infinity, Shutdown and Composer, and Shutdown alone fields 38 of them.")
+        bform.addRow("    ↳ H4 Grunt Ultras:", self.h4_grunt_ultra_cb)
+
+        self.h4_jackal_sniper_cb = QCheckBox("Sniper Jackals count as heroes (Halo 4)")
+        self.h4_jackal_sniper_cb.setChecked(bool(CONFIG.get('h4_jackal_sniper_bosses')))
+        self.h4_jackal_sniper_cb.setToolTip(
+            "Halo 4 only. Hero-class at 45 points with its own 50 body and no shield.\nSix missions -- everything except Dawn and Midnight -- and 85 spawns between them, so this is the Halo 4 hero a run meets most often.")
+        bform.addRow("    ↳ H4 sniper Jackals:", self.h4_jackal_sniper_cb)
+
+        self.h4_jackal_ranger_cb = QCheckBox("Jackal Rangers count as heroes (Halo 4)")
+        self.h4_jackal_ranger_cb.setChecked(bool(CONFIG.get('h4_jackal_ranger_bosses')))
+        self.h4_jackal_ranger_cb.setToolTip(
+            "Halo 4 only. The space-suited Jackal, Hero-class at 45 points.\nTwo missions: Dawn and Composer.\nThe shielded variant is the SAME unit for cards: it owns no blocks of its own and inherits the Ranger's, so tuning the Ranger is what it sees.")
+        bform.addRow("    ↳ H4 Jackal Rangers:", self.h4_jackal_ranger_cb)
+
+        self.h4_knight_commander_cb = QCheckBox("Knight Commanders count as heroes (Halo 4)")
+        self.h4_knight_commander_cb.setChecked(bool(CONFIG.get('h4_knight_commander_bosses')))
+        self.h4_knight_commander_cb.setToolTip(
+            "Halo 4 only. The heaviest hero in the game -- 160 points, 90 body / 110 shield -- and the Promethean that presses hardest: it advances on a 1.0 chance every 4 seconds where an ordinary Knight is 0.4 every 10.\nTwo missions: Shutdown and Midnight.\nIts Melee Behavior and Grenades cards write into blocks the tag does not own; the patcher grows them, which is confirmed in game.")
+        bform.addRow("    ↳ H4 Knight Commanders:", self.h4_knight_commander_cb)
+
         # Boss cards ON is the prerequisite for the other boss options; with them off
         # there is nothing to shape, so grey the children out. single_game forces boss
         # cards off (and locks the switch), which must also disable the children — so
@@ -7727,35 +7800,6 @@ class OptionsDialog(QDialog):
         exp_g = QGroupBox("New Features (Experimental)")
         xform = QFormLayout(exp_g)
         xform.setLabelAlignment(Qt.AlignRight)
-
-        # Halo 4 already has sprint, so it gets its own row rather than riding the
-        # ability mod below. The three live settings are the three paths that are
-        # actually available (see CONFIG's h4_sprint_mode note); "Off" is vanilla and
-        # is the only one under which no sprint card can appear in a Halo 4 run.
-        self.h4_sprint_combo = QComboBox()
-        for _m, _label in (('off', 'Off — vanilla, no sprint cards'),
-                           ('holder', 'Cards for whoever drafted Sprint earlier'),
-                           ('all', 'Cards for both players'),
-                           ('restore', 'Restore the equipment (innate sprint off)')):
-            self.h4_sprint_combo.addItem(_label, _m)
-        self.h4_sprint_combo.setCurrentIndex(
-            max(0, self.h4_sprint_combo.findData(h4_sprint_mode())))
-        tune_combo(self.h4_sprint_combo)
-        self.h4_sprint_combo.setToolTip(
-            "Halo 4 is the one game that already sprints. It is innate — matg grants it "
-            "to every player — and the sprint equipment tag that survives in the cache "
-            "reads the same numbers, so a Halo 4 sprint card always moves BOTH players "
-            "whichever setting is chosen. What this picks is who may be offered one:\n\n"
-            "• Off — vanilla. No Halo 4 sprint card is ever offered.\n"
-            "• Whoever drafted Sprint earlier — only the player carrying Sprint from "
-            "Reach (or the Halo 1 ability) sees the cards.\n"
-            "• Both players — regardless of what was picked in other games.\n"
-            "• Restore the equipment — innate sprint is switched off and the sprint "
-            "ability is written back into the starting profile, which also unlocks its "
-            "energy-meter cards. EXPERIMENTAL and not yet game-tested; the tag is only "
-            "resident on Dawn, Reclaimer and Composer, and other maps fall back to "
-            "hero_assist, the shipped ability that also grants sprint.")
-        xform.addRow("Halo 4 Sprint:", self.h4_sprint_combo)
 
         self.sprint_cb = QCheckBox("Enable Abilities")
         self.sprint_cb.setChecked(bool(CONFIG.get('sprint_feature')))
@@ -8131,6 +8175,9 @@ class OptionsDialog(QDialog):
         patch_reach_g = QGroupBox("Map patching — Halo Reach")
         rcform = QFormLayout(patch_reach_g)
         rcform.setLabelAlignment(Qt.AlignRight)
+        patch_h4_g = QGroupBox("Map patching — Halo 4")
+        h4form = QFormLayout(patch_h4_g)
+        h4form.setLabelAlignment(Qt.AlignRight)
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
 
@@ -8407,9 +8454,41 @@ class OptionsDialog(QDialog):
         self._reach_radius_row.setVisible(bool(CONFIG.get('debug_mode')))
         rcform.addRow("", self._reach_radius_row)
 
+        # ---- Halo 4 ----
+        # Halo 4 is the one game that already sprints. It is innate -- matg's Default
+        # Player Traits grant it to every player -- and the sprint equipment tag that
+        # survives in the cache reads the same numbers, so a Halo 4 sprint card always
+        # moves BOTH players whichever setting is chosen. What this picks is who may be
+        # offered one, and whether the equipment is put back on its feet.
+        self.h4_sprint_combo = QComboBox()
+        for _m, _label in (('off', 'Off — vanilla, no sprint cards'),
+                           ('holder', 'Cards for whoever drafted Sprint earlier'),
+                           ('all', 'Cards for both players'),
+                           ('restore', 'Restore the equipment (innate sprint off)')):
+            self.h4_sprint_combo.addItem(_label, _m)
+        self.h4_sprint_combo.setCurrentIndex(
+            max(0, self.h4_sprint_combo.findData(h4_sprint_mode())))
+        tune_combo(self.h4_sprint_combo)
+        self.h4_sprint_combo.setToolTip(
+            "Halo 4 sprints without an ability, so a sprint card here always moves both "
+            "players. This picks who may be offered one:\n\n"
+            "• Off — vanilla. No Halo 4 sprint card is ever offered.\n"
+            "• Whoever drafted Sprint earlier — only the player carrying Sprint from "
+            "Reach (or the Halo 1 ability).\n"
+            "• Both players — regardless of what was picked in other games.\n"
+            "• Restore the equipment — EXPERIMENTAL and unfinished. Innate sprint is "
+            "switched off and the sprint equipment is given the HUD it never shipped "
+            "with (its HUD Screen Reference, charge effect and no-energy sound are all "
+            "null in the cache, where every other ability points at "
+            "equipment_template). It does NOT place the pickup: that is level work in "
+            "Sapien, and the tag is only resident on Dawn, Reclaimer and Composer. "
+            "Until then this leaves you with no sprint at all.")
+        h4form.addRow("Sprint:", self.h4_sprint_combo)
+
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
+        self._opt_page("Patching").addWidget(patch_h4_g, 90)
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -8823,6 +8902,11 @@ class OptionsDialog(QDialog):
             'reach_elite_bosses': self.reach_elite_boss_cb.isChecked(),
             'reach_grunt_ultra_bosses': self.reach_grunt_boss_cb.isChecked(),
             'reach_jackal_sniper_bosses': self.reach_jackal_boss_cb.isChecked(),
+            'h4_elite_general_bosses': self.h4_elite_general_cb.isChecked(),
+            'h4_grunt_ultra_bosses': self.h4_grunt_ultra_cb.isChecked(),
+            'h4_jackal_sniper_bosses': self.h4_jackal_sniper_cb.isChecked(),
+            'h4_jackal_ranger_bosses': self.h4_jackal_ranger_cb.isChecked(),
+            'h4_knight_commander_bosses': self.h4_knight_commander_cb.isChecked(),
             'h2_honor_guard_bosses': self.h2_honor_boss_cb.isChecked(),
             'odst_specops_bosses': self.odst_specops_boss_cb.isChecked(),
             'h3_specops_bosses': self.h3_specops_boss_cb.isChecked(),
