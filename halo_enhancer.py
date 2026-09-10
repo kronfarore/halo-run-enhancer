@@ -981,13 +981,11 @@ CONFIG = {
     #   off      vanilla; no sprint card can appear at all
     #   holder   only the player who drafted Sprint in an earlier game is offered them
     #   all      both players, regardless of what was picked elsewhere
-    #   restore  innate sprint switched OFF, the sprint equipment given the HUD it
-    #            never shipped with (its HUD Screen Reference, charge effect and
-    #            no-energy sound are all null where every other ability points at
-    #            ui\hud\equipment\shared\equipment_template), and Chief handed it
-    #            through the campaign's OWN slot for this -- the biped's `Hero Assist
-    #            Equipment` tagRef, which every map points at hero_assist. No placement
-    #            is involved. Also unlocks the energy-meter cards.
+    #   restore  innate sprint switched OFF and the sprint equipment given the HUD
+    #            it never shipped with (its HUD Screen Reference, charge effect and
+    #            no-energy sound are null where every other ability points at
+    #            ui\hud\equipment\shared\equipment_template), which also unlocks the
+    #            energy-meter cards. The pickup itself is PLACED in the level.
     "h4_sprint_mode": "off",
     "sprint_feature": False,
     "sprint_start_with": True,
@@ -8483,14 +8481,12 @@ class OptionsDialog(QDialog):
             "• Whoever drafted Sprint earlier — only the player carrying Sprint from "
             "Reach (or the Halo 1 ability).\n"
             "• Both players — regardless of what was picked in other games.\n"
-            "• Restore the equipment — EXPERIMENTAL. Innate sprint is switched off, the "
-            "sprint equipment is given the HUD it never shipped with (its HUD Screen "
-            "Reference, charge effect and no-energy sound are all null in the cache, "
-            "where every other ability points at equipment_template), and Chief's "
-            "biped is pointed at it through the campaign's own Hero Assist Equipment "
-            "field — the same slot that normally hands him hero_assist. No placement "
-            "needed. Only Dawn, Reclaimer and Composer carry the sprint tag; other "
-            "maps get the innate switch alone, which leaves them without sprint.")
+            "• Restore the equipment — EXPERIMENTAL and unfinished. Innate sprint is "
+            "switched off and the sprint equipment is given the HUD it never shipped "
+            "with (its HUD Screen Reference, charge effect and no-energy sound are all "
+            "null in the cache, where every other ability points at "
+            "equipment_template). The pickup itself has to be PLACED in the level; "
+            "only Dawn, Reclaimer and Composer carry the sprint tag.")
         h4form.addRow("Sprint:", self.h4_sprint_combo)
 
         self._opt_page("Patching").addWidget(patchg, 60)

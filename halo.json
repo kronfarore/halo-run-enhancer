@@ -394,7 +394,7 @@
 			},
 			"m020": {
 				"name": "Requiem",
-				"enemies": ["Elite", "Grunt", "Hunter", "Jackal", "Sentinel"],
+				"enemies": ["Elite", "Grunt", "Hunter", "Jackal"],
 				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "SAW", "Sentinel Beam", "Shotgun", "Sniper Rifle", "Storm Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Hardlight Shield"],
@@ -417,7 +417,7 @@
 			},
 			"m40_invasion": {
 				"name": "Reclaimer",
-				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight", "Sentinel"],
+				"enemies": ["Crawler", "Elite", "Grunt", "Jackal", "Knight"],
 				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Boltshot", "Covenant Carbine", "DMR", "Flak Cannon", "LightRifle", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "Sniper Rifle", "Storm Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
 				"equipment": ["Hardlight Shield", "Jet Pack"]
@@ -440,7 +440,7 @@
 			},
 			"m90_sacrifice": {
 				"name": "Midnight",
-				"enemies": ["Crawler", "Knight", "Sentinel", "Watcher"],
+				"enemies": ["Crawler", "Knight", "Watcher"],
 				"weapons": ["Battle Rifle", "Binary Rifle", "Boltshot", "Covenant Carbine", "Gravity Hammer", "Incineration Cannon", "LightRifle", "Scattershot", "Suppressor"],
 				"grenades": ["Frag Grenade", "Plasma Grenade", "Pulse Grenade"],
 				"equipment": ["Auto Turret", "Hardlight Shield", "Promethean Vision"]
@@ -744,6 +744,26 @@
 				"targets": [
 					{ "field": "Camo cooldown", "sprint": "camo_cooldown" }
 				]
+			},
+			"Dropped Ammo": {
+				"desc": "How much ammunition the weapons enemies drop still hold.",
+				"debug_desc": "`Drop Weapon Loaded` (a range, clamped 0..1) is the fraction of a magazine left in a dropped weapon and works for any weapon; `Drop Weapon Ammo` (a range) is the reserve that comes with it, for weapons that use ammunition. More of either is easier, so the harder direction is down.\\n\\nOn ai\\generic: Halo 2 36..72 rounds / 0.7..0.9 loaded, Halo 3 and ODST 0..0 / 0.6..0.9, Reach and Halo 4 192..256 / 0.5..0.9. Halo 3 and ODST ship the reserve at 0 -- the weapon's own default -- so there only the loaded fraction moves.\\n\\nAimed at the shared `ai\\generic` base, so it applies to every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Drop Weapon Loaded", "group": "Loaded", "min": 0, "max": 1, "harder_when": "decreased"},
+						{"field": "Drop Weapon Loaded Max", "group": "Loaded", "min": 0, "max": 1, "harder_when": "decreased"},
+						{"field": "Drop Weapon Ammo", "group": "Ammo", "min": 0, "harder_when": "decreased"},
+						{"field": "Drop Weapon Ammo Max", "group": "Ammo", "min": 0, "harder_when": "decreased"}
+					],
+					"default": [
+						{"field": "Drop Weapon Loaded", "block": "Weapons Properties", "index": "all", "group": "Loaded", "min": 0, "max": 1, "harder_when": "decreased"},
+						{"field": "Drop Weapon Loaded Max", "block": "Weapons Properties", "index": "all", "group": "Loaded", "min": 0, "max": 1, "harder_when": "decreased"},
+						{"field": "Drop Weapon Ammo", "block": "Weapons Properties", "index": "all", "group": "Ammo", "min": 0, "harder_when": "decreased"},
+						{"field": "Drop Weapon Ammo Max", "block": "Weapons Properties", "index": "all", "group": "Ammo", "min": 0, "harder_when": "decreased"}
+					]
+				}
 			}
 		},
 		"Specific Weapon Modifier": {
@@ -12299,7 +12319,7 @@
 			"AI Base Accuracy": {
 				"desc": "How accurate every enemy is, across the board.",
 				"debug_desc": "`Accuracy Bounds` and its Max are the range an enemy's accuracy drifts between, `Accuracy Time` how long it takes to settle there. Difficulty-prefixed, so the row follows the difficulty being patched.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: **all 33 tags inherit accuracy, not one defines it.**",
-				"game": ["Halo Reach"],
+				"game": ["Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{"field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "increased", "group": "Accuracy Bounds"},
@@ -12320,7 +12340,7 @@
 			"AI Base Firing Range": {
 				"desc": "How far away every enemy will start shooting at you.",
 				"debug_desc": "`Maximum Firing Range`, 12.0 on the shared base.\\n\\nThis edits `ai\\\\generic`, the shared AI base, so it moves every character that inherits the field -- which in Reach is nearly all of them. It exists because the per-enemy cards for this field write nothing here: the enemies they name do not define the block, so the edit lands on nobody. Measured over Reach's fielded cast: 30 of 33 tags inherit it.",
-				"game": ["Halo Reach"],
+				"game": ["Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{"field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all", "min": 0}
@@ -12349,7 +12369,7 @@
 			"Player Preference": {
 				"desc": "How much enemies focus you instead of your allies.",
 				"debug_desc": "Set on the shared `ai\\generic` parent that every character inherits, so it moves the whole campaign at once. Stock 0.25.",
-				"game": "Halo Reach",
+				"game": ["Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"harder_when": "increased",
 				"targets": [
@@ -12542,7 +12562,7 @@
 			},
 			"Hearing Distance": {
 				"desc": "General enemy hearing range via the shared generic AI base. Exception: the Flood Combat forms.",
-				"game": ["Halo 2", "Halo 3"],
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Hearing Distance", "block": "Perception Properties", "index": "all", "min": "0" }
@@ -12551,7 +12571,7 @@
 			"Perception": {
 				"desc": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Exception: the Flood Combat forms.",
 				"desc_overrides": { "Halo 3": "General enemy perception \u2014 notice chances and perception times via the shared generic AI base. Halo 3 merged three fields into one. Exception: the Flood Combat forms." },
-				"game": ["Halo 2", "Halo 3"],
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Notice Projectile Chance", "block": "Perception Properties", "index": "all", "min": 0  },
@@ -12563,7 +12583,7 @@
 			},
 			"Retreat": {
 				"desc": "General cower time and flee chance when a leader or peers die via the shared generic AI base. Exceptions: Grunts and Jackals.",
-				"game": ["Halo 2", "Halo 3"],
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
@@ -12575,7 +12595,7 @@
 			},
 			"Placement Properties": {
 				"desc": "General chance of spawning as an upgraded variant. Exceptions: most Elite and Grunt variants.",
-				"game": ["Halo 2", "Halo 3"],
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Few Upgrade Chance", "block": "Placement Properties", "diff_suffix": true, "min": 0, "max": 1 },
@@ -12610,7 +12630,7 @@
 			"Accuracy": {
 				"desc": "How often enemy shots hit you, across the whole campaign.",
 				"debug_desc": "Goes through the shared generic AI base. Grunts, Jackals, Hunters and the Flood forms define their own accuracy and are unaffected.",
-				"game": "Halo 3",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Accuracy Bounds", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "group": "Accuracy Bounds" },
@@ -12620,7 +12640,7 @@
 			},
 			"Maximum Firing Distance": {
 				"desc": "General enemy engagement range via the shared generic AI base. Exceptions: Grunts, Jackals and the Flood forms, which define their own.",
-				"game": "Halo 3",
+				"game": ["Halo 2", "Halo 3"],
 				"tag": "char ai\\generic",
 				"targets": [
 					{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": "all" }
@@ -12639,6 +12659,110 @@
 					{"field": "AI Normal Guided Angular Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach", "Halo 4"], "min": "0"},
 					{"field": "AI Legendary Guided Angular Velocity Scale", "group": "AI Velocity Scale", "games": ["Halo Reach", "Halo 4"], "min": "0"}
 				]
+			},
+			"Surprise Behavior": {
+				"desc": "How quickly enemies open fire once they spot you.",
+				"debug_desc": "`First Burst Delay Time` (a range) is the pause before an enemy's first burst at a new target, `Surprise Delay Time` how long a surprised enemy hesitates, and `Surprise Fire-Wildly Time` how long it then sprays without aiming. Shorter hesitation is harder; so is less wild spraying, since wild fire is fire that is not aimed at you.\\n\\nOn ai\\generic: Halo 2 0..0.5 / 0 / 0, Halo 3 and ODST 0.2..1.2 / 1.0 / 0.5, Reach and Halo 4 0.75..1.0 / 1.0 / 0. A zero row is a multiply on nothing and stays a zero.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "First Burst Delay Time", "group": "First Burst Delay", "min": 0, "harder_when": "decreased"},
+						{"field": "First Burst Delay Time Max", "group": "First Burst Delay", "min": 0, "harder_when": "decreased"},
+						{"field": "Surprise Delay Time", "min": 0, "harder_when": "decreased"},
+						{"field": "Surprise Fire-Wildly Time", "min": 0, "harder_when": "decreased"}
+					],
+					"default": [
+						{"field": "First Burst Delay Time", "block": "Weapons Properties", "index": "all", "group": "First Burst Delay", "min": 0, "harder_when": "decreased"},
+						{"field": "First Burst Delay Time Max", "block": "Weapons Properties", "index": "all", "group": "First Burst Delay", "min": 0, "harder_when": "decreased"},
+						{"field": "Surprise Delay Time", "block": "Weapons Properties", "index": "all", "min": 0, "harder_when": "decreased"},
+						{"field": "Surprise Fire-Wildly Time", "block": "Weapons Properties", "index": "all", "min": 0, "harder_when": "decreased"}
+					]
+				}
+			},
+			"Wildfire": {
+				"desc": "How likely a dying enemy is to spray its weapon as it goes down.",
+				"debug_desc": "`Death Fire-Wildly Chance` is the chance an enemy fires wildly as it dies, and `Death Fire-Wildly Time` how long it keeps the trigger down. More of either is harder. The chance is clamped to 0..1.\\n\\nOn ai\\generic the chance is 0.2 in every game; the time is 0.5 in Halo 2, Reach and Halo 4 and 0.8 in Halo 3 and ODST. Halo 1's actors range 0..0.25 and 0..3s.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Death Fire-Wildly Chance", "min": 0, "max": 1, "harder_when": "increased"},
+						{"field": "Death Fire-Wildly Time", "min": 0, "harder_when": "increased"}
+					],
+					"default": [
+						{"field": "Death Fire-Wildly Chance", "block": "Weapons Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"},
+						{"field": "Death Fire-Wildly Time", "block": "Weapons Properties", "index": "all", "min": 0, "harder_when": "increased"}
+					]
+				}
+			},
+			"Cover Properties": {
+				"desc": "How long enemies stay in cover, and how hurt they have to be to seek it.",
+				"debug_desc": "The species Cover Properties cards, aimed at the shared base instead: `Hide Behind Cover Time` (a range, 3..5s on ai\\generic from Halo 2 on, 1s in ODST) and `Cover Vitality Threshold` (1.0; 0 in ODST), clamped to 0..1. It reaches every character that has no cover block of its own -- in Halo 4 that is the Hunter, the Sentinel and the rest of the inheriting cast, whose species cards were gated out because their own block is empty.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 keeps the hide time on each `actr` (1.5..4s), so its row targets every actor, and it has no vitality threshold.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actr *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Hide Behind Cover Time", "group": "Hide Behind Cover Time"},
+						{"field": "Hide Behind Cover Time Max", "group": "Hide Behind Cover Time"}
+					],
+					"default": [
+						{"field": "Hide Behind Cover Time", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time"},
+						{"field": "Hide Behind Cover Time Max", "block": "Cover Properties", "index": "all", "group": "Hide Behind Cover Time"},
+						{"field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1}
+					]
+				}
+			},
+			"Melee Reach": {
+				"desc": "How far away enemies decide to come and hit you.",
+				"debug_desc": "`Melee Consider Range` is how close you have to be before an enemy thinks about a melee, `Melee Attack Range` where it swings, and `Melee Abort Range` how far you can get before it gives up the chase. The three are one decision and share an input; longer is harder. `Melee Delay Timer` (4s everywhere) is the wait between attempts -- shorter is harder.\\n\\nOn ai\\generic: attack 1.5, consider 1.5 (2.5 in Reach and Halo 4), abort 2.5. Halo 1 has only the abort range, per actor variant (0..4).\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Melee Abort Range", "min": 0, "harder_when": "increased"}
+					],
+					"default": [
+						{"field": "Melee Consider Range", "block": "Charge Properties", "index": "all", "group": "Melee Range", "min": 0, "harder_when": "increased"},
+						{"field": "Melee Attack Range", "block": "Charge Properties", "index": "all", "group": "Melee Range", "min": 0, "harder_when": "increased"},
+						{"field": "Melee Abort Range", "block": "Charge Properties", "index": "all", "group": "Melee Range", "min": 0, "harder_when": "increased"},
+						{"field": "Melee Delay Timer", "block": "Charge Properties", "index": "all", "min": 0, "harder_when": "decreased"}
+					]
+				}
+			},
+			"Weapon Damage Modifier": {
+				"desc": "How hard enemy weapons hit you.",
+				"debug_desc": "`Weapon Damage Modifier` scales the damage an AI deals with its gun. It was carded per species in Halo 1 and then thought removed; it moved. From Halo 2 on it lives in `Firing Pattern Properties / Firing Patterns`, and the plugin ALSO declares it under `Weapons Properties / Firing Patterns`, which is empty on every map -- a first-match read of that one is what made it look gone.\\n\\nEvery firing pattern moves (`index: all`). ai\\generic's first pattern reads 0.0 in Halo 2, Halo 3 and ODST while its others carry 0.75 / 0.57 / 0.5 (the Flood 0.25), so 0 means UNSET there -- AI obviously deal damage -- and `zero_is: 1` scales it from the neutral 1.0 rather than leaving it at 0. Reach and Halo 4 ship 0.75; Halo 1's actors 0.4..0.6.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Weapon Damage Modifier", "zero_is": 1.0, "min": 0, "harder_when": "increased"}
+					],
+					"default": [
+						{"field": "Weapon Damage Modifier", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "zero_is": 1.0, "min": 0, "harder_when": "increased"}
+					]
+				}
+			},
+			"Bursting": {
+				"desc": "How long enemies hold the trigger, and how long they pause between bursts.",
+				"debug_desc": "`Burst Duration` (a range) is how long a burst lasts and `Burst Separation` (a range) the pause before the next. Longer bursts are harder; longer pauses are easier. Each pair shares one input.\\n\\nOn ai\\generic: Halo 2 0.2 / 0.6..0.8, Halo 3 and ODST 0.8..1.6 / 2.0..3.6, Reach and Halo 4 0.56..0.75 / 0.75..2.25. Like Weapon Damage Modifier the pair is declared twice from Halo 2 to ODST and lives in `Firing Pattern Properties`. The matg Burst Separation card is the per-difficulty ladder; this is the character's own pattern, and the two stack.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 has no shared AI base: these fields sit flat on each actor variant, so the Halo 1 row targets every `actv` tag.",
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"tag": {"Halo 1": "actv *", "default": "char ai\\generic"},
+				"targets": {
+					"Halo 1": [
+						{"field": "Burst Duration", "group": "Burst Duration", "min": 0, "harder_when": "increased"},
+						{"field": "Burst Duration Max", "group": "Burst Duration", "min": 0, "harder_when": "increased"},
+						{"field": "Burst Separation", "group": "Burst Separation", "min": 0, "harder_when": "decreased"},
+						{"field": "Burst Separation Max", "group": "Burst Separation", "min": 0, "harder_when": "decreased"}
+					],
+					"default": [
+						{"field": "Burst Duration", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Burst Duration", "min": 0, "harder_when": "increased"},
+						{"field": "Burst Duration Max", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Burst Duration", "min": 0, "harder_when": "increased"},
+						{"field": "Burst Separation", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Burst Separation", "min": 0, "harder_when": "decreased"},
+						{"field": "Burst Separation Max", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Burst Separation", "min": 0, "harder_when": "decreased"}
+					]
+				}
 			}
 		},
 		"Specific Enemy modifier": {
