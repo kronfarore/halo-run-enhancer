@@ -12275,7 +12275,7 @@
 		"General modifiers": {
 			"Assassination Damage": {
 				"ignore": true,
-					"desc": "How much damage your assassinations do.",
+				"desc": "How much damage your assassinations do.",
 				"debug_desc": "PARKED (measured in game 2026-09-09): the assassination jpt was set to 5 damage against a vanilla 500 and the animation still killed outright, so the kill is scripted and this tag is not what decides it. The card resolves and writes perfectly well -- it simply has no effect, which no audit here can see.\n\n`jpt! globals\\damage_effects\\assassination` is a single shared damage effect sitting in the assassination slot (+0x49C) of every biped that has one -- 9 of them in Reach, 6 in Halo 4. Because it is shared, this one card governs every assassination in the game.\n\nIt ships at **500** in both games, against enemy health in the 30-100 range, which is why an assassination is always lethal. Halving it changes nothing; it has to come down by roughly an order of magnitude before an assassination stops killing outright, and at that point the animation still plays but the target can survive it.\n\n**Halo 3 has no `globals\\damage_effects` folder at all** -- assassinations arrive as a mechanic in Reach -- so the card starts there.",
 				"game": ["Halo Reach", "Halo 4"],
 				"tag": "jpt! globals\\damage_effects\\assassination",
