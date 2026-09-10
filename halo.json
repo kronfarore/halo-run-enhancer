@@ -5674,6 +5674,24 @@
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
 					]
+				},
+				"Grenade Supply": {
+					"desc": "How many frag grenades enemies carry, and how often they drop them.",
+					"debug_desc": "Two fields on the characters that carry this grenade: `Grenade Count` (a range, how many each one spawns with -- and so how many there are to drop) and `Don't Drop Grenades Chance` (clamped 0..1). Enemies carrying more also throw more, so the count has no fixed harder direction; a higher don't-drop chance is harder.\\n\\nCarriers are read off every campaign map: the characters whose own Grenade Type is this grenade and that carry at least one. In Halo 3, Halo 3: ODST, Halo Reach, Halo 4 that includes the shared `ai\\generic` base, whose count every character with no grenade block of its own inherits -- so the card also moves those characters' count.\\n\\nA squad can override which grenade a character throws (Halo 2 does so heavily); the count stays on the character, which is why the card follows the tag's own type.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\captain\\captain & characters\\captain_ingame\\captain_ingame & characters\\floodcombat_human\\floodcombat_human assault rifle & characters\\floodcombat_human\\floodcombat_human flame thrower & characters\\floodcombat_human\\floodcombat_human needler & characters\\floodcombat_human\\floodcombat_human pistol & characters\\floodcombat_human\\floodcombat_human plasma pistol & characters\\floodcombat_human\\floodcombat_human plasma rifle & characters\\floodcombat_human\\floodcombat_human rocket launcher & characters\\floodcombat_human\\floodcombat_human shotgun & characters\\floodcombat_human\\floodcombat_human unarmed & characters\\marine\\marine assault rifle & characters\\marine\\marine assault rifle major & characters\\marine\\marine needler & characters\\marine\\marine plasma rifle & characters\\marine\\marine shotgun & characters\\marine_armored\\marine_armored assault rifle & characters\\marine_armored\\marine_armored assault rifle major & characters\\marine_armored\\marine_armored needler & characters\\marine_armored\\marine_armored plasma rifle & characters\\marine_armored\\marine_armored plasma rifle major & characters\\marine_armored\\marine_armored shotgun major & characters\\marine_armored\\marine_armored sniper rifle & characters\\marine_armored\\marine_armored sniper rifle major & characters\\marine_suicidal\\marine_suicidal & characters\\marine_wounded\\sitting_1\\marine_wounded_sitting_1 assault rifle", "Halo 2": "char objects\\characters\\marine\\ai\\marine", "Halo 3": "char ai\\generic & objects\\characters\\floodcombat_human\\ai\\flood_combat_human & objects\\characters\\marine\\ai\\naval_officer", "Halo 3: ODST": "char ai\\generic & objects\\characters\\floodcombat_human\\ai\\flood_combat_human", "Halo Reach": "char ai\\generic & ai\\stimuli\\generic_playfight & objects\\characters\\marine\\ai\\trooper & objects\\characters\\spartans_ai\\ai\\spartan_generic & objects\\characters\\spartans_ai\\ai\\stimuli\\spartan_playfight", "Halo 4": "char ai\\generic & objects\\characters\\storm_cortana\\storm_cortana & objects\\characters\\storm_didact\\storm_didact & objects\\characters\\storm_marine\\ai\\storm_fleet_officer & objects\\characters\\storm_marine\\ai\\storm_marine & objects\\characters\\storm_marine\\ai\\storm_marine_m60 & objects\\characters\\storm_spartans_ai\\ai\\storm_spartan_ai"},
+					"targets": {
+						"Halo 1": [
+							{"field": "Grenade Count", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "group": "Grenade Count", "min": 0},
+							{"field": "Dont Drop Grenades Chance", "min": 0, "max": 1, "harder_when": "increased"}
+						],
+						"default": [
+							{"field": "Grenade Count", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Don't Drop Grenades Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
+						]
+					}
 				}
 			},
 			"Plasma Grenade": {
@@ -5712,6 +5730,24 @@
 						{ "field": "Radius", "group": "Radius" },
 						{ "field": "Radius Max", "group": "Radius" }
 					]
+				},
+				"Grenade Supply": {
+					"desc": "How many plasma grenades enemies carry, and how often they drop them.",
+					"debug_desc": "Two fields on the characters that carry this grenade: `Grenade Count` (a range, how many each one spawns with -- and so how many there are to drop) and `Don't Drop Grenades Chance` (clamped 0..1). Enemies carrying more also throw more, so the count has no fixed harder direction; a higher don't-drop chance is harder.\\n\\nCarriers are read off every campaign map: the characters whose own Grenade Type is this grenade and that carry at least one. In Halo 2 that includes the shared `ai\\generic` base, whose count every character with no grenade block of its own inherits -- so the card also moves those characters' count.\\n\\nA squad can override which grenade a character throws (Halo 2 does so heavily); the count stays on the character, which is why the card follows the tag's own type.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\elite\\elite commander\\elite commander plasma rifle & characters\\elite\\elite major\\elite major needler & characters\\elite\\elite major\\elite major plasma rifle & characters\\elite\\elite minor\\elite minor needler & characters\\elite\\elite minor\\elite minor plasma rifle & characters\\elite\\elite minor\\elite minor plasma rifle ranged & characters\\elite\\elite specops\\elite specops needler & characters\\elite\\elite specops\\elite specops plasma rifle & characters\\engineer\\engineer major plasma pistol & characters\\floodcombat elite\\floodcombat elite assault rifle & characters\\floodcombat elite\\floodcombat elite flame thrower & characters\\floodcombat elite\\floodcombat elite needler & characters\\floodcombat elite\\floodcombat elite pistol & characters\\floodcombat elite\\floodcombat elite plasma pistol & characters\\floodcombat elite\\floodcombat elite plasma rifle & characters\\floodcombat elite\\floodcombat elite rocket launcher & characters\\floodcombat elite\\floodcombat elite shotgun & characters\\floodcombat elite\\floodcombat elite sniper rifle & characters\\floodcombat elite\\floodcombat elite stealth unarmed & characters\\floodcombat elite\\floodcombat elite unarmed & characters\\grunt\\grunt flee major needler & characters\\grunt\\grunt flee major plasma pistol & characters\\grunt\\grunt flee minor needler & characters\\grunt\\grunt flee minor plasma pistol & characters\\grunt\\grunt major needler & characters\\grunt\\grunt major plasma pistol & characters\\grunt\\grunt minor needler & characters\\grunt\\grunt minor plasma pistol & characters\\grunt\\grunt specops fuel rod & characters\\grunt\\grunt specops fuel rod airdef & characters\\grunt\\grunt specops needler & vehicles\\banshee\\banshee pilot & vehicles\\ghost\\ghost pilot", "Halo 2": "char ai\\generic & objects\\characters\\brute\\ai\\brute & objects\\characters\\elite\\ai\\elite_specops & objects\\characters\\floodcombat_elite\\ai\\floodcombat_elite & objects\\characters\\grunt\\ai\\grunt & objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 3": "char objects\\characters\\elite\\ai\\elite_specops & objects\\characters\\floodcombat_base\\ai\\floodcombat_base & objects\\characters\\floodcombat_elite\\ai\\floodcombat_elite & objects\\characters\\grunt\\ai\\grunt & objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite_specops & objects\\characters\\floodcombat_base\\ai\\floodcombat_base & objects\\characters\\floodcombat_elite\\ai\\floodcombat_elite & objects\\characters\\grunt\\ai\\grunt & objects\\characters\\grunt\\ai\\grunt_ultra", "Halo Reach": "char objects\\characters\\brute\\ai\\brute & objects\\characters\\brute\\ai\\brute_chieftain_armor & objects\\characters\\bugger\\ai\\bugger & objects\\characters\\elite\\ai\\elite & objects\\characters\\elite\\ai\\elite_jetpack & objects\\characters\\elite\\ai\\elite_ultra & objects\\characters\\grunt\\ai\\grunt & objects\\characters\\grunt\\ai\\grunt_specops & objects\\characters\\grunt\\ai\\grunt_ultra", "Halo 4": "char objects\\characters\\storm_elite\\ai\\stimuli\\storm_elite_aggressive & objects\\characters\\storm_elite\\ai\\storm_elite & objects\\characters\\storm_elite\\ai\\storm_elite_general & objects\\characters\\storm_grunt\\ai\\storm_grunt & objects\\characters\\storm_grunt\\ai\\storm_grunt_ultra"},
+					"targets": {
+						"Halo 1": [
+							{"field": "Grenade Count", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "group": "Grenade Count", "min": 0},
+							{"field": "Dont Drop Grenades Chance", "min": 0, "max": 1, "harder_when": "increased"}
+						],
+						"default": [
+							{"field": "Grenade Count", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Don't Drop Grenades Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
+						]
+					}
 				}
 			},
 			"Mauler": {
@@ -7287,6 +7323,19 @@
 					"targets": [
 						{ "field": "Maximum Count", "block": "Grenades", "index": 2 }
 					]
+				},
+				"Grenade Supply": {
+					"desc": "How many claymore grenades enemies carry, and how often they drop them.",
+					"debug_desc": "Two fields on the characters that carry this grenade: `Grenade Count` (a range, how many each one spawns with -- and so how many there are to drop) and `Don't Drop Grenades Chance` (clamped 0..1). Enemies carrying more also throw more, so the count has no fixed harder direction; a higher don't-drop chance is harder.\\n\\nCarriers are read off every campaign map: the characters whose own Grenade Type is this grenade and that carry at least one.\\n\\nA squad can override which grenade a character throws (Halo 2 does so heavily); the count stays on the character, which is why the card follows the tag's own type.",
+					"game": ["Halo 3"],
+					"tag": {"Halo 3": "char objects\\characters\\floodcombat_brute\\ai\\floodcombat_brute"},
+					"targets": {
+						"default": [
+							{"field": "Grenade Count", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Don't Drop Grenades Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
+						]
+					}
 				}
 			},
 			"Concussion Rifle": {
@@ -11118,6 +11167,19 @@
 						{"field": "Radius", "group": "Radius"},
 						{"field": "Radius Max", "group": "Radius"}
 					]
+				},
+				"Grenade Supply": {
+					"desc": "How many pulse grenades enemies carry, and how often they drop them.",
+					"debug_desc": "Two fields on the characters that carry this grenade: `Grenade Count` (a range, how many each one spawns with -- and so how many there are to drop) and `Don't Drop Grenades Chance` (clamped 0..1). Enemies carrying more also throw more, so the count has no fixed harder direction; a higher don't-drop chance is harder.\\n\\nCarriers are read off every campaign map: the characters whose own Grenade Type is this grenade and that carry at least one.\\n\\nA squad can override which grenade a character throws (Halo 2 does so heavily); the count stays on the character, which is why the card follows the tag's own type.",
+					"game": ["Halo 4"],
+					"tag": {"Halo 4": "char objects\\characters\\storm_knight\\ai\\storm_knight"},
+					"targets": {
+						"default": [
+							{"field": "Grenade Count", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Grenade Count Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Count", "min": 0},
+							{"field": "Don't Drop Grenades Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
+						]
+					}
 				}
 			}
 		}
