@@ -4,6 +4,7 @@
 # No GUI dependency; safe to unit-test headless.
 
 import base64
+import fnmatch
 import hashlib
 import json
 import math
@@ -1860,6 +1861,12 @@ _MAP_EQUIPMENT = {
     # abilities need in order to be PLACED rather than only tuned.
     'Halo Reach': {'items': (0x144, 0xB4), 'palette': (0x150, 0x10), 'pal_id_at': 0xC,
                    'palette_index': 0x0},
+    # Halo 4: Equipment 0x198 (entry 0x154), palette 0x1A4. Off Halo4MCC/scnr.xml and
+    # checked on all eight campaign maps: every palette entry resolves to an eqip tag
+    # and every placement's Type byte reads 3 (equipment). Without this row Map
+    # Presence and starting equipment reported "scnr/layout unavailable" on Halo 4.
+    'Halo 4': {'items': (0x198, 0x154), 'palette': (0x1A4, 0x10), 'pal_id_at': 0xC,
+               'palette_index': 0x0},
 }
 
 
@@ -1936,6 +1943,7 @@ def _apply_equipment_swaps(m, game, swaps):
         if not rate or rate <= 0:
             continue
         _, name = hm.split_tag(tag)
+        name = _concrete_tag(m, 'eqip', name, pal.values()) or name
         if any(n == name for n in pal.values()):
             continue
         datum = _h3_tag_datum(m, 'eqip', name)
@@ -1958,6 +1966,7 @@ def _apply_equipment_swaps(m, game, swaps):
         if not rate or rate <= 0:
             continue
         _, name = hm.split_tag(tag)
+        name = _concrete_tag(m, 'eqip', name, pal.values()) or name
         short = name.rsplit(chr(92), 1)[-1]
         pi = next((i for i, n in pal.items() if n == name), None)
         if pi is None:                       # SAFETY NET: still not resolvable
@@ -2094,6 +2103,11 @@ _MAP_WEAPONS = {
     # palette. Without this row, map weapon replacement silently did nothing in Reach.
     'Halo Reach': {'weapons': (0x15C, 0xD0), 'palette': (0x168, 0x10), 'pal_id_at': 0xC,
                    'palette_index': 0x0, 'rounds_left': 0x70, 'rounds_loaded': 0x72},
+    # Halo 4 grows the entry again, to 0x170, and the rounds follow it to 0xB4/0xB6.
+    # Every Type byte on the eight campaign maps reads 2 (weapon), and every palette
+    # entry resolves to a weap tag.
+    'Halo 4': {'weapons': (0x1B0, 0x170), 'palette': (0x1BC, 0x10), 'pal_id_at': 0xC,
+               'palette_index': 0x0, 'rounds_left': 0xB4, 'rounds_loaded': 0xB6},
 }
 
 # ODST's Auto Magnum / Silenced SMG / red Plasma Rifle and the base weapons they
@@ -2326,6 +2340,23 @@ _EQ_OFFSETS = {
     # entry, written 0 = unrestricted.
     'Halo Reach': {'uid': 0x3C, 'folder': 0x44, 'attach': 0x54, 'gameflags': None,
                    'never_bit': 6, 'type': 0x42, 'zone': 0x34},
+    # Halo 4 moves everything again (entry 0x154 equipment / 0x170 weapons, shared
+    # object part identical in both) and WIDENS the two masks to 32 bits. That is not
+    # academic: a level has 17-30 BSPs, and on m80_delta every one of the 97 weapon
+    # and equipment placements attaches to a BSP above 15. A 16-bit write there would
+    # silently drop the high half of the mask, and an object that cannot attach to
+    # the BSP it stands in never spawns.
+    #
+    # Type is an enum8 with `Source` beside it at 0x73 (1 on every placement), so the
+    # 16-bit read Reach gets away with would see 0x0103 -- `type_fmt` reads the byte.
+    # The shared object part also carries blocks earlier games do not: script
+    # enable/disable lists, a References block and Command Links. An appended copy
+    # must not inherit its template's, so those are emptied (`clear_blocks`), and so
+    # is any parent the template was attached to.
+    'Halo 4': {'uid': 0x6C, 'folder': 0x78, 'attach': 0x88, 'gameflags': None,
+               'never_bit': 6, 'type': 0x72, 'zone': 0x5C,
+               'mask_fmt': '<I', 'type_fmt': '<b', 'parent': 0x7E,
+               'clear_blocks': (0x38, 0x44, 0x50, 0x90)},
 }
 _EQ_DEFAULT_OFFSETS = {'uid': _EQ_UID, 'folder': _EQ_FOLDER, 'attach': _EQ_ATTACH,
                        'gameflags': _EQ_GAMEFLAGS, 'never_bit': 3, 'type': 0x3E,
@@ -2334,6 +2365,37 @@ _EQ_DEFAULT_OFFSETS = {'uid': _EQ_UID, 'folder': _EQ_FOLDER, 'attach': _EQ_ATTAC
 
 def _eq_offsets(game):
     return _EQ_OFFSETS.get(str(game).strip(), _EQ_DEFAULT_OFFSETS)
+
+
+def _mask_get(m, e, game, which='attach'):
+    """A placement's BSP-attach (or zone-set) mask, read at its real width."""
+    eqo = _eq_offsets(game)
+    return struct.unpack_from(eqo.get('mask_fmt', '<H'), m.data, e + eqo[which])[0]
+
+
+def _mask_put(m, e, game, value, which='attach'):
+    eqo = _eq_offsets(game)
+    fmt = eqo.get('mask_fmt', '<H')
+    struct.pack_into(fmt, m.data, e + eqo[which],
+                     value & (0xFFFFFFFF if fmt == '<I' else 0xFFFF))
+
+
+def _placement_type(m, e, game):
+    """A placement's object Type, or None where the game's offset is unknown."""
+    eqo = _eq_offsets(game)
+    if eqo.get('type') is None:
+        return None
+    return struct.unpack_from(eqo.get('type_fmt', '<h'), m.data, e + eqo['type'])[0]
+
+
+def _scrub_appended(m, e, game):
+    """Empty what an appended placement must not inherit from its template (Halo 4:
+    script lists, References, Command Links, parent). A no-op in the earlier games."""
+    eqo = _eq_offsets(game)
+    for b in eqo.get('clear_blocks', ()):
+        struct.pack_into('<iI', m.data, e + b, 0, 0)
+    if eqo.get('parent') is not None:
+        struct.pack_into('<h', m.data, e + eqo['parent'], -1)
 
 
 # ODST's Player Starting Locations block moved and grew, and it has NO BSP Index --
@@ -2352,6 +2414,9 @@ _SPAWNS_BY_GAME = {
     # Index, so 'bsp' is None here for the same reason it is for ODST -- reading that
     # field as a BSP would build a nonsense visibility mask.
     'Halo Reach': {'block': (0x274, 0x1C), 'bsp': None, 'insertion': 0x14},
+    # Halo 4: scnr 0x31C, entry 0x24 -- two nav-mesh ints and a Facing sit before the
+    # Insertion Point Index, which lands at 0x1C. No BSP index, as in ODST and Reach.
+    'Halo 4': {'block': (0x31C, 0x24), 'bsp': None, 'insertion': 0x1C},
 }
 
 
@@ -2570,6 +2635,27 @@ def _h3_tag_datum(m, cls, path):
     return None
 
 
+def _concrete_tag(m, cls, name, prefer=()):
+    """One real tag path for a halo.json tag that may be a GLOB.
+
+    Halo 4 names its abilities by pattern -- `storm_active_camo*` covers Requiem's
+    `storm_active_camo` and `storm_active_camo_m20` -- so a card patches every variant.
+    A placement is ONE object, and the placement code compared the literal pattern
+    against palette paths, so every Halo 4 ability swap and drop reported "not in this
+    level" on maps that plainly place it. The palette's own entry wins (in palette
+    order), so a swap reuses what the level already stocks; otherwise the first tag the
+    map carries. Returns None when nothing matches; a plain path comes back as is.
+    """
+    if name is None or ('*' not in name and '?' not in name):
+        return name
+    pat = str(name).replace('/', '\\').lower()
+    for p in prefer:
+        if isinstance(p, str) and fnmatch.fnmatchcase(p.replace('/', '\\').lower(), pat):
+            return p
+    hits = sorted(t for t, _b in m.find_tags(cls, name))
+    return hits[0] if hits else None
+
+
 # Hand-picked drop points (world pos) for maps where the Player Starting Location is
 # unusable — a cinematic/vehicle spot, or spawn-protected. Confirmed reachable in-game.
 # Maps not listed drop on the player spawn. See the project memory on BSP/streaming.
@@ -2647,6 +2733,9 @@ _PLACEMENT_BLOCKS = {
     'Halo Reach': {'scenery': (0xFC, 0xDC), 'bipeds': (0x114, 0x78),
                    'vehicles': (0x12C, 0xD0), 'equipment': (0x144, 0xB4),
                    'weapons': (0x15C, 0xD0), 'crates': (0x600, 0xD8)},
+    'Halo 4': {'scenery': (0x150, 0x17C), 'bipeds': (0x168, 0x170),
+               'vehicles': (0x180, 0x180), 'equipment': (0x198, 0x154),
+               'weapons': (0x1B0, 0x170), 'crates': (0x638, 0x178)},
 }
 _PLACE_POS, _PLACE_ATTACH = 0x8, 0x50
 
@@ -2663,10 +2752,9 @@ def _nearest_placement_mask(m, pos, game):
         base = _block_base(m, scnr + off)
         if not base or n <= 0:
             continue
-        att_at = _eq_offsets(game)['attach']
         for i in range(n):
             e = base + i * esize
-            att = struct.unpack_from('<H', m.data, e + att_at)[0]
+            att = _mask_get(m, e, game)
             if not att:
                 continue
             p = struct.unpack_from('<fff', m.data, e + _PLACE_POS)
@@ -2727,11 +2815,10 @@ def _live_equipment_spot(m, game, near=None):
         return None
     off, esize = lay['items']
     n, base = m.i32(scnr + off), _block_base(m, scnr + off)
-    att_at = _eq_offsets(game)['attach']
     best = None
     for i in range(max(0, n)):
         e = base + i * esize
-        att = struct.unpack_from('<H', m.data, e + att_at)[0]
+        att = _mask_get(m, e, game)
         if not att:
             continue
         p = struct.unpack_from('<fff', m.data, e + _EQ_POS)
@@ -2761,7 +2848,7 @@ def _h3_mask_at(m, pos, game='Halo 3'):
     # not in -- and a wrong Can Attach To BSP Flags means the object silently never
     # spawns. Halo 3 is left on the weapons scan deliberately: its equipment is
     # shipped and confirmed in game, and its spawns are not isolated (only 040 is).
-    if str(game).strip() in ('Halo 3: ODST', 'Halo Reach'):
+    if str(game).strip() in ('Halo 3: ODST', 'Halo Reach', 'Halo 4'):
         got = _nearest_placement_mask(m, pos, game)
         if got:
             return got
@@ -2774,10 +2861,9 @@ def _h3_mask_at(m, pos, game='Halo 3'):
     # blocks share the field layout within a game, so the equipment offset serves the
     # weapons block too. Reading 0x50 on a Reach element returned a Connection Marker
     # stringid as if it were a BSP mask.
-    att_at = _eq_offsets(game)['attach']
     for i in range(wN) if wb else []:
         e = wb + i * we
-        att = struct.unpack_from('<H', m.data, e + att_at)[0]
+        att = _mask_get(m, e, game)
         if not att:
             continue
         wp = struct.unpack_from('<fff', m.data, e + _EQ_POS)
@@ -2942,6 +3028,9 @@ def _no_equipment_reason(game):
         return ('not in this level -- Reach needs the map REBUILT in the editing kit '
                 'with this ability placed (weapon_availability.py --equipment says '
                 'which maps are ready)')
+    if str(game).strip() == 'Halo 4':
+        return ('not in this level -- the ability has to be placed in the map in Sapien '
+                'first (weapon_availability.py --game "Halo 4" --equipment)')
     return 'equipment not present in this level'
 
 
@@ -2951,7 +3040,14 @@ _OBJECT_NAMES = {
     'Halo 3':       (0xA8, 0x24, 'ascii'),
     'Halo 3: ODST': (0xC4, 0x24, 'ascii'),
     'Halo Reach':   (0xF0, 0x08, 'sid'),
+    # Halo 4 keeps Reach's 8-byte stringID entry. The per-map calibration carries over
+    # unchanged: on Dawn it lands `enhancer_marker1`/`2` on equipment placements 0 and
+    # 1, the two the user placed in Sapien.
+    'Halo 4':       (0x144, 0x08, 'sid'),
 }
+#: Games whose prepared maps carry NAMED enhancer markers, and so hand the player's
+#: picks over by placement at that marker.
+MARKER_GAMES = ('Halo Reach', 'Halo 4')
 #: What the user names a marker in Sapien. `enhancer_marker1` is player 1's position,
 #: `enhancer_marker2` player 2's.
 REACH_MARKER_PREFIX = 'enhancer_marker'
@@ -3181,7 +3277,7 @@ def reach_protected_slots(m, game, block='equipment'):
     starting-equipment pass just set, and the player would arrive to find something
     else there. Only Reach has markers, so this is empty everywhere else.
     """
-    if str(game).strip() != 'Halo Reach':
+    if str(game).strip() not in MARKER_GAMES:
         return set()
     named = reach_named_markers(m, game, block=block)
     return set(named.values())
@@ -3238,7 +3334,7 @@ def reach_enable_marker(m, game, index):
 
 def reach_spawn_ready(m, game):
     """Can this map actually take placed weapons? True only if it carries markers."""
-    return str(game).strip() == 'Halo Reach' and bool(reach_named_markers(m, game))
+    return str(game).strip() in MARKER_GAMES and bool(reach_named_markers(m, game))
 
 
 def _apply_spawn_weapons(m, game, spec, registry=None):
@@ -3269,9 +3365,10 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     copying the template's counts is what makes that work -- the ops run before this.
     """
     out = []
-    if str(game).strip() != 'Halo Reach':
+    game = str(game).strip()
+    if game not in MARKER_GAMES:
         return out
-    lay = _MAP_WEAPONS.get('Halo Reach')
+    lay = _MAP_WEAPONS.get(game)
     scnr = _scnr_base(m)
     groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
     if not lay or scnr is None or not any(groups):
@@ -3281,14 +3378,14 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     if not named:
         return [{'effect': 'spawned weapons', 'ok': False,
                  'reason': 'this map carries no enhancer markers'}]
-    E = _MAP_EQUIPMENT['Halo Reach']
+    E = _MAP_EQUIPMENT[game]
     eoff, ees = E['items']
     ebase = _block_base(m, scnr + eoff)
     anchors = {}
     for nm, idx in named.items():
         e = ebase + idx * ees
         anchors[nm] = (struct.unpack_from('<fff', m.data, e + _EQ_POS),
-                       struct.unpack_from('<H', m.data, e + 0x54)[0])
+                       _mask_get(m, e, game))
 
     woff, wes = lay['weapons']
     poff, pes = lay['palette']
@@ -3298,11 +3395,13 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     if not N or not base or not pbase:
         return [{'effect': 'spawned weapons', 'ok': False,
                  'reason': 'level has no weapon placements to extend'}]
-    pal = {}
+    pal, pal_names = {}, []
     for i in range(max(0, m.i32(scnr + poff))):
         nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
         if isinstance(nm, str):
             pal[nm.replace('/', chr(92)).lower()] = i
+            pal_names.append(nm)
+    groups = [[_concrete_tag(m, 'weap', t, pal_names) or t for t in g] for g in groups]
 
     LIFT = 0.30
     radius = spec.get('radius')
@@ -3358,12 +3457,9 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     # A template with a VALID Type, so appended elements inherit real Type / Source /
     # BSP Policy rather than guessed ones. Auto is only a tie-break -- the copy clears
     # NOT_AUTO/NEVER anyway, and a map can ship an all-zero placement whose Type is -1.
-    tyoff = _eq_offsets(game).get('type')
-
     def _type_ok(i):
-        if tyoff is None:
-            return True
-        return struct.unpack_from('<h', m.data, base + i * wes + tyoff)[0] >= 0
+        ty = _placement_type(m, base + i * wes, game)
+        return ty is None or ty >= 0
 
     def _is_auto(i):
         return not (struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0]
@@ -3393,8 +3489,9 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
         struct.pack_into('<h', m.data, e + 0x2, -1)          # unnamed
         struct.pack_into('<I', m.data, e + _EQ_FLAGS, _PLACE_AT_REST)
         struct.pack_into('<fff', m.data, e + _EQ_POS, *pos)
-        struct.pack_into('<H', m.data, e + eqo['zone'], 0)   # every zone set
-        struct.pack_into('<H', m.data, e + 0x54, mask)       # the marker's own BSPs
+        _mask_put(m, e, game, 0, 'zone')                     # every zone set
+        _mask_put(m, e, game, mask)                          # the marker's own BSPs
+        _scrub_appended(m, e, game)
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)
         struct.pack_into('<I', m.data, e + eqo['uid'],
                          ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
@@ -3432,16 +3529,23 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # Reach joins once its Equipment layout exists: same placement shape, same 16-byte
     # palette tagRef, and the ident it needs is now READ from the tag table rather than
     # minted, which is what made a Reach ref unwritable before.
-    if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
+    # Halo 4 takes the Reach route below: named markers first, then the append path.
+    if (str(game).strip() not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
             or not lay or scnr_base is None or not any(groups)):
         return out
+    # Halo 4 names its abilities by glob (see _concrete_tag); pin each to one real tag
+    # before anything compares paths, preferring what the palette already holds.
+    _pb = _block_base(m, scnr_base + lay['palette'][0])
+    _pn = [_tag_name_by_id(m, m.u32(_pb + i * lay['palette'][1] + lay['pal_id_at']))
+           for i in range(max(0, m.i32(scnr_base + lay['palette'][0])))] if _pb else []
+    groups = [[_concrete_tag(m, 'eqip', t, _pn) or t for t in g] for g in groups]
     # REACH: prefer flipping a marker the map already carries over inventing a spot.
     # A rebuilt Reach map ships one inert placement per ability, put where the designer
     # wants it; enabling that is both more reliable than a derived position and the
     # only route that works at all for an ability the vanilla cache cannot spawn (see
     # reach_equipment_markers). Anything with no marker falls through to the append
     # path below, which is what still serves Halo 3 and ODST.
-    if str(game).strip() == 'Halo Reach':
+    if str(game).strip() in MARKER_GAMES:
         # A prepared Reach map ships one inert equipment placement per ability, put
         # where the designer wants it, and two of them are NAMED as the players'
         # positions. Three passes, most specific first, and each remembers what it
@@ -3570,7 +3674,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # in Halo 3 and one in ODST. Reach starts most missions from a cinematic or a
     # vehicle, so the scenario's Player Starting Location is frequently not where the
     # player is put down -- which is why equipment dropped there was never found.
-    if (not anchor and str(game).strip() in ('Halo 3: ODST', 'Halo Reach')
+    if (not anchor and str(game).strip() in ('Halo 3: ODST', 'Halo Reach', 'Halo 4')
             and _spawn_is_dead(m, spawns[0][0], game)):
         # anchored on the starting location, not on block order
         spot = _live_equipment_spot(m, game, near=spawns[0][0])
@@ -3733,7 +3837,9 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     # and the rest could not be found at all. 2.0 clears that scenery.
                     # Halo 3 and ODST keep 0.8, where the drops are shipped and
                     # confirmed in game and a wider ring is an untested change.
-                    rad = 2.0 if str(game).strip() == 'Halo Reach' else 0.8
+                    # Halo 4 takes Reach's spacing: same scale of level and the same
+                    # habit of putting pickups inside weapon racks and cases.
+                    rad = 2.0 if str(game).strip() in MARKER_GAMES else 0.8
                     p = (base_pos[0] + rad * math.cos(ang),
                          base_pos[1] + rad * math.sin(ang), base_pos[2])
                     plan.append((pi, p, base_mask, label, bkey, added, 'start'))
@@ -3749,10 +3855,8 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # Type -1 and never spawned. Auto is still preferred among valid candidates, but
     # only as a tie-break: the copy clears NOT_AUTO/NEVER on the new element anyway.
     def _type_ok(i):
-        off = eqo.get('type')
-        if off is None:
-            return True
-        return struct.unpack_from('<h', m.data, base + i * ies + off)[0] >= 0
+        ty = _placement_type(m, base + i * ies, game)
+        return ty is None or ty >= 0
 
     def _is_auto(i):
         return not (struct.unpack_from('<I', m.data, base + i * ies + _EQ_FLAGS)[0]
@@ -3811,13 +3915,14 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
         struct.pack_into('<I', m.data, e + eqo['uid'],
                          ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
         struct.pack_into('<h', m.data, e + eqo['folder'], -1)    # immune to object_destroy_folder
-        struct.pack_into('<H', m.data, e + eqo['attach'], mask)
+        _mask_put(m, e, game, mask)
+        _scrub_appended(m, e, game)
         if eqo.get('zone') is not None:
             # Reach's zone-set mask is a SEPARATE field from the BSP-attach one, and
             # 0 means unrestricted -- which is what Reach's own placements use
             # (22/22 on m10, 47/55 on m30). The template's mask could restrict the
             # drop to zone sets the player never enters, so it is cleared outright.
-            struct.pack_into('<H', m.data, e + eqo['zone'], 0)
+            _mask_put(m, e, game, 0, 'zone')
         if eqo['gameflags'] is not None:
             # Reach has no Multiplayer Flags on a placement at all, so there is
             # nothing to clear -- writing anyway would corrupt whatever it does keep.
@@ -3833,6 +3938,10 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                      else 'on spawn %s' % bkey)
         row = {'effect': 'starting equipment', 'field': label, 'ok': True,
                'old': 'not present', 'new': where + (' (+palette)' if added else '')}
+        if str(game).strip() == 'Halo 4':
+            row['note'] = ('appended, not a marker -- no enhancer_marker on this map, so '
+                           'it lies at the level start; place the markers in Sapien to '
+                           'put it where you want it')
         if str(game).strip() == 'Halo Reach':
             # An APPENDED Reach placement is a guess in two ways: this map ships no
             # marker for the piece, and if the vanilla cache never uses that ability
@@ -3913,6 +4022,7 @@ def _apply_weapon_swaps(m, game, registry, swaps):
         if not rate or rate <= 0:
             continue
         _, name = hm.split_tag(tag)
+        name = _concrete_tag(m, 'weap', name, pal.values()) or name
         short = name.rsplit(chr(92), 1)[-1]
         pi = next((i for i, n in pal.items() if n == name), None)
         if pi is None:                          # SAFETY NET: not in the map's palette
@@ -4288,6 +4398,15 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     z = _ZOOM_UI.get(game)
     out = []
     if not z:
+        if str(game).strip() == 'Halo 4':
+            # Said out loud rather than returning nothing: the Zoom card still writes
+            # its magnification, only the overlay is missing. Halo 4 weapons carry no
+            # chud -- their `HUD Screen Reference` points at a `cusc` screen, and there
+            # is no cusc plugin to copy a scope out of.
+            return [{'effect': 'zoom UI', 'field': str(t).rsplit(chr(92), 1)[-1],
+                     'ok': True, 'skip': True,
+                     'reason': 'Halo 4 HUDs are cusc screens; no scope overlay to copy'}
+                    for t in targets]
         return out
     grown = set()
     # A Zoom effect's tag may name SEVERAL weapons ("weap a & b") -- ODST's plasma

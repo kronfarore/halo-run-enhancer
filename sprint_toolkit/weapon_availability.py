@@ -49,6 +49,8 @@ leaving Falcons and forklifts out.
                                                          # the map cannot supply
     python weapon_availability.py --game "Halo Reach" --both     # weapons AND abilities
     python weapon_availability.py --equipment --map m30          # abilities only
+    python weapon_availability.py --game "Halo 4" --gaps         # the Sapien worklist
+    python weapon_availability.py --game "Halo 4" --equipment    # abilities + markers
 
 MARKER, in the equipment output, is a placement the map CONTAINS but has flagged Not
 Automatically: it sits at the coordinates a designer chose and does nothing until the
@@ -61,6 +63,7 @@ Reads only; MCC may be running.
 """
 import argparse
 import collections
+import fnmatch
 import json
 import os
 import struct
@@ -97,6 +100,8 @@ _EXTRA = {
                                       pal_id_at=0xC, palette_index=0x0)},
     'Halo Reach': {'Vehicles': dict(block=(0x12C, 0xD0), palette=(0x138, 0x10),
                                     pal_id_at=0xC, palette_index=0x0)},
+    'Halo 4': {'Vehicles': dict(block=(0x180, 0x180), palette=(0x18C, 0x10),
+                                pal_id_at=0xC, palette_index=0x0)},
 }
 def _weapon_layout(game):
     # Reach used to be carried here as a local copy, because _MAP_WEAPONS had no row
@@ -145,6 +150,9 @@ _PLACE_EXTRA = {
                      'origin_bsp': 0x3C},
     'Halo Reach':   {'flags': 0x4, 'pos': 0x8, 'zone_flags': 0x34, 'bsp_policy': 0x33,
                      'origin_bsp': 0x40},
+    # Halo 4 widens Zone Set Flags to 32 bits (a level has up to 30 zone sets).
+    'Halo 4':       {'flags': 0x4, 'pos': 0x8, 'zone_flags': 0x5C, 'zone_fmt': '<I',
+                     'bsp_policy': 0x36, 'origin_bsp': 0x70},
 }
 # Placement Flags bits that decide whether a row in the block becomes an object the
 # player can walk up to. MEASURED on Reach's campaign, which is what corrected an
@@ -167,21 +175,26 @@ _PLACE_EXTRA = {
 # explains far less than the flags do.
 NOT_AUTOMATICALLY_BIT = 0
 NEVER_PLACED_BIT = 6
-# Zone Sets block: scnr 0xAC, 0x13C elements, with the name as a plain ascii string at
-# +0x4 (there is a stringid at +0x0 as well, but the ascii needs no string table).
-_ZONE_SETS = (0xAC, 0x13C)
+# Zone Sets block: Reach scnr 0xAC (0x13C elements), Halo 4 scnr 0x100 (0x1A0), with
+# the name as a plain ascii string at +0x4 in both (there is a stringid at +0x0 as
+# well, but the ascii needs no string table). The width is how many bits the
+# placement's Zone Set Flags can address.
+_ZONE_SETS = {'Halo Reach': (0xAC, 0x13C, 16), 'Halo 4': (0x100, 0x1A0, 32)}
 _ZONE_NAME_AT = 0x4
 
 
-def zone_set_names(m, scnr):
+def zone_set_names(m, scnr, game='Halo Reach'):
     """['set name', ...] in bit order, so a Zone Set Flags mask can be read out loud."""
-    off, elem = _ZONE_SETS
+    spec = _ZONE_SETS.get(str(game).strip())
+    if not spec:
+        return []
+    off, elem, width = spec
     try:
         n = m.i32(scnr + off)
     except Exception:
         return []
     names = []
-    for i in range(max(0, min(n, 16))):
+    for i in range(max(0, min(n, width))):
         e = m.follow(scnr, [off], [elem], i)
         if e is None:
             names.append('?')
@@ -254,7 +267,7 @@ def survey(m, game, weap_names=None):
                             near[pi] = d
             if extra.get('zone_flags') is not None:
                 zmask[pi] |= struct.unpack_from(
-                    '<H', m.data, el + extra['zone_flags'])[0]
+                    extra.get('zone_fmt', '<H'), m.data, el + extra['zone_flags'])[0]
         for i, nm, cls in pal:
             # Keep weapons, and keep a VEHICLE only when a weapon of the same name
             # is also in the map -- that is a mounted turret whose gun the player can
@@ -409,7 +422,7 @@ def _verdict(name, pal, res, zones=None, start_zone=0):
         if rec.get('has_zones') and rec.get('zones'):
             note = ' -- restricted to %s' % ', '.join(
                 zones[i] if zones and i < len(zones) else 'set %d' % i
-                for i in range(16) if rec['zones'] & (1 << i))
+                for i in range(32) if rec['zones'] & (1 << i))
         if not auto:
             return 'SCRIPTED ONLY', ('%s, every placement needs a script '
                                      '(Not Automatically / Never Placed)%s'
@@ -476,6 +489,13 @@ def start_resident(m, game):
 #: the user has ruled it out repeatedly and it has no eqip tag in halo.json.
 _REACH_ABILITIES = ['Armor Lock', 'Active Camouflage', 'Drop Shield', 'Hologram',
                     'Jet Pack', 'Sprint']
+#: Per game. Halo 4's are the seven its campaign places (the union of the halo.json
+#: mission lists); its sprint is innate, so it is not an ability to check here.
+_ABILITIES = {
+    'Halo Reach': _REACH_ABILITIES,
+    'Halo 4': ['Active Camouflage', 'Auto Turret', 'Hardlight Shield', 'Hologram',
+               'Jet Pack', 'Promethean Vision', 'Thruster Pack'],
+}
 
 
 def _equipment_rows(m, game, indent='      '):
@@ -484,6 +504,15 @@ def _equipment_rows(m, game, indent='      '):
     lay = HP._MAP_EQUIPMENT.get(game)
     if not lay:
         return 0
+    if game in HP.MARKER_GAMES:
+        # Which positions the patcher hands a player's picks to. Without them the
+        # abilities land on the level's starting location, and spawned weapons have
+        # nowhere to go at all.
+        named = HP.reach_named_markers(m, game)
+        print('%s%-26s %s' % (indent, 'enhancer markers',
+                              ', '.join('%s = equipment #%d' % kv
+                                        for kv in sorted(named.items()))
+                              or 'NONE -- place enhancer_marker1/2 in Sapien'))
     extra = _PLACE_EXTRA.get(game) or {}
     fl_at = extra.get('flags', 0x4)
     scnr = HP._scnr_base(m)
@@ -495,7 +524,9 @@ def _equipment_rows(m, game, indent='      '):
     for i in range(max(0, m.i32(scnr + poff))):
         e = HP._block_base(m, scnr + poff) + i * pes
         nm = HP._tag_name_by_id(m, m.u32(e + lay['pal_id_at']))
-        names[i] = str(nm).rsplit(S, 1)[-1] if nm else '?'
+        # FULL paths, not basenames: Thruster Pack's tag is `storm_thruster_pack\*`,
+        # whose basename is a bare `*` that matched every placement in the level.
+        names[i] = str(nm).replace('/', S).lower() if nm else '?'
     auto, marker = {}, {}
     for i in range(max(0, n)) if base else []:
         e = base + i * ies
@@ -506,24 +537,32 @@ def _equipment_rows(m, game, indent='      '):
         d = marker if fl & ((1 << NOT_AUTOMATICALLY_BIT)
                             | (1 << NEVER_PLACED_BIT)) else auto
         d[nm] = d.get(nm, 0) + 1
-    res = {str(t).rsplit(S, 1)[-1] for t, _b in m.find_tags('eqip', '*')}
+    res = {str(t).replace('/', S).lower() for t, _b in m.find_tags('eqip', '*')}
     ready = 0
-    for disp in _REACH_ABILITIES:
+    for disp in _ABILITIES.get(game, []):
         tag = _db().eqip_tag_for(disp, game)
         if not tag:
             print('%s%-26s %-12s %s' % (indent, disp, 'NO TAG', 'none in halo.json'))
             continue
-        bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(S, 1)[-1]
-        if auto.get(bn):
-            v, why = 'PLACED', '%d spawn automatically' % auto[bn]
+        bn = tag.split(' ', 1)[1].split('&')[0].strip().replace('/', S).lower()
+        # Halo 4's ability tags are GLOBS (storm_active_camo* covers _m20 and _pve),
+        # so every test is a pattern match; a plain name matches only itself.
+
+        def _n(d):
+            return sum(c for k, c in d.items() if fnmatch.fnmatchcase(k, bn))
+
+        def _any(xs):
+            return any(fnmatch.fnmatchcase(x, bn) for x in xs)
+        if _n(auto):
+            v, why = 'PLACED', '%d spawn automatically' % _n(auto)
             ready += 1
-        elif marker.get(bn):
+        elif _n(marker):
             v, why = 'MARKER', ('%d inert placement(s) -- the patcher flips '
-                                'Not Automatically' % marker[bn])
+                                'Not Automatically' % _n(marker))
             ready += 1
-        elif bn in names.values():
+        elif _any(names.values()):
             v, why = 'PALETTE', 'in the palette, never placed -- REBUILD NEEDED'
-        elif bn in res:
+        elif _any(res):
             v, why = 'RESIDENT', 'tag present, not in a palette -- REBUILD NEEDED'
         else:
             v, why = 'ABSENT', 'not in this map -- REBUILD NEEDED'
@@ -578,7 +617,7 @@ def _equipment_main(a):
         print('   %s (%s)' % (mid, doc['Missions'][game][mid].get('name', '')))
         ready = _equipment_rows(m, game)
         print('      %d of %d ready without a rebuild'
-              % (ready, len(_REACH_ABILITIES)))
+              % (ready, len(_ABILITIES.get(game, []))))
     return 0
 
 
@@ -680,7 +719,7 @@ def main(argv=None):
             pal = survey(m, game, res)
             live = start_resident(m, game)
             _t = m.find_tags('scnr', '*')
-            zones = zone_set_names(m, _t[0][1]) if _t else []
+            zones = zone_set_names(m, _t[0][1], game) if _t else []
             if a.weapon:
                 hits = sorted(n for n in set(pal) | res if a.weapon.lower() in n.lower())
                 if not hits:
@@ -765,7 +804,7 @@ def main(argv=None):
                 print('      -- equipment --')
                 ready = _equipment_rows(m, game)
                 print('      %d of %d abilit(ies) ready without a rebuild'
-                      % (ready, len(_REACH_ABILITIES)))
+                      % (ready, len(_ABILITIES.get(game, []))))
     return 0
 
 

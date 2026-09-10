@@ -368,6 +368,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
+               'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -727,6 +728,8 @@ CONFIG = {
     "reach_spawn_starting_weapons": False,
     "reach_spawn_all_weapons": False,
     "reach_placement_radius": 0.25,
+    "h4_spawn_starting_weapons": False,
+    "h4_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -1255,8 +1258,11 @@ def equipment_placement_supported(game):
     (scnr 0x144, entry 0xB4, palette 0x150) was read off its plugin and verified on the
     campaign maps, so all three games place equipment now. Halo 1 and Halo 2 have the
     layout but not the rest of the loadout machinery, which is why they stay out.
+
+    Halo 4 joined with its own Equipment row (scnr 0x198, entry 0x154, palette 0x1A4)
+    and 32-bit BSP masks; like Reach it prefers the map's named enhancer markers.
     """
-    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
+    return str(game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 
 def weapon_upgrades():
@@ -6163,10 +6169,15 @@ class MagnitudeEditorDialog(QDialog):
         }
 
     def _reach_spawns_weapons(self):
-        """Is this run handing weapons over by PLACING them rather than by profile?"""
-        return (self.game == 'Halo Reach'
+        """Is this run handing weapons over by PLACING them rather than by profile?
+
+        Reach and Halo 4 each have their own switch: a user preparing one game's maps
+        in Sapien should not flip the other game's loadout over with it."""
+        key = {'Halo Reach': 'reach_spawn_starting_weapons',
+               'Halo 4': 'h4_spawn_starting_weapons'}.get(self.game)
+        return (key is not None
                 and bool(CONFIG.get('set_starting_weapons'))
-                and bool(CONFIG.get('reach_spawn_starting_weapons')))
+                and bool(CONFIG.get(key)))
 
     def _spawn_weapons_spec(self):
         """Reach: the weapons to place at each player's marker.
@@ -6185,7 +6196,8 @@ class MagnitudeEditorDialog(QDialog):
         db = getattr(self.parent_gui, 'db', None)
         if rs is None or db is None:
             return None
-        first_only = not CONFIG.get('reach_spawn_all_weapons')
+        first_only = not CONFIG.get('h4_spawn_all_weapons' if self.game == 'Halo 4'
+                                    else 'reach_spawn_all_weapons')
 
         def paths(names):
             out, seen = [], set()
@@ -8489,6 +8501,38 @@ class OptionsDialog(QDialog):
             "only Dawn, Reclaimer and Composer carry the sprint tag.")
         h4form.addRow("Sprint:", self.h4_sprint_combo)
 
+        # The same marker hand-over Reach has. Its own switch, because the markers are
+        # placed per game in Sapien -- turning it on for Reach says nothing about
+        # whether the Halo 4 maps have been prepared yet.
+        self.h4_spawn_weapons_cb = QCheckBox(
+            "Halo 4: place the starting weapons at the markers instead")
+        self.h4_spawn_weapons_cb.setChecked(
+            bool(CONFIG.get('h4_spawn_starting_weapons')))
+        self.h4_spawn_weapons_cb.setToolTip(
+            "Off: the run writes its weapon picks into the Player Starting Profile, so "
+            "the player begins the level holding them. "
+            "On: the profile weapon slots are CLEARED and the picks are placed on the "
+            "floor at the enhancer markers instead -- player 1's at enhancer_marker1, "
+            "player 2's at enhancer_marker2 -- to be picked up. A map without the "
+            "markers falls back to the starting profile, and the run says so.")
+        h4form.addRow("Starting weapons:", self.h4_spawn_weapons_cb)
+        self.h4_spawn_all_cb = QCheckBox(
+            "↳ place every selected weapon, not just the first")
+        self.h4_spawn_all_cb.setChecked(bool(CONFIG.get('h4_spawn_all_weapons')))
+        self.h4_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed. "
+            "On: every weapon that player holds is placed in a ring around their "
+            "marker.")
+
+        def _sync_h4_spawn(on=None):
+            on = self.h4_spawn_weapons_cb.isChecked()
+            self.h4_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.h4_spawn_all_cb.setChecked(False)
+        self.h4_spawn_weapons_cb.toggled.connect(_sync_h4_spawn)
+        _sync_h4_spawn()
+        h4form.addRow("", self.h4_spawn_all_cb)
+
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
@@ -8887,6 +8931,8 @@ class OptionsDialog(QDialog):
             'reach_spawn_starting_weapons': self.reach_spawn_weapons_cb.isChecked(),
             'reach_spawn_all_weapons': self.reach_spawn_all_cb.isChecked(),
             'reach_placement_radius': float(self.reach_radius.value()),
+            'h4_spawn_starting_weapons': self.h4_spawn_weapons_cb.isChecked(),
+            'h4_spawn_all_weapons': self.h4_spawn_all_cb.isChecked(),
             'odst_all_starting_profiles': self.odst_all_profiles_cb.isChecked(),
             'odst_ai_equipment_drops': self.odst_ai_drops_cb.isChecked(),
             'odst_escort_buff': self.odst_escort_cb.isChecked(),
