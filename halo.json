@@ -12654,7 +12654,6 @@
 					]
 				},
 				"Flanking": {
-					"skip_games": ["Halo 4"],
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
 					"game": ["Halo Reach", "Halo 4"],
@@ -12848,7 +12847,6 @@
 					]
 				},
 				"Rate of Fire": {
-					"skip_games": ["Halo 4"],
 					"desc": "Increases enemy Rate of Fire (shots per second).",
 					"game": [
 						"Halo 1",
@@ -13045,7 +13043,6 @@
 					]
 				},
 				"Melee Radius": {
-					"skip_games": ["Halo 4"],
 					"desc": "Melee Radius from Elite",
 					"tag": {
 						"Halo 2": "jpt! objects\\characters\\elite\\damage_effects\\elite_melee & objects\\characters\\elite\\damage_effects\\elite_boarding_melee & objects\\characters\\elite\\damage_effects\\elite_obstacle_smash & objects\\characters\\heretic\\damage_effects\\heretic_melee & objects\\characters\\heretic\\damage_effects\\heretic_boarding_melee & objects\\characters\\heretic\\damage_effects\\heretic_obstacle_smash",
@@ -13115,7 +13112,6 @@
 					]
 				},
 				"Flanking": {
-					"skip_games": ["Halo 4"],
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
 					"game": ["Halo Reach", "Halo 4"],
@@ -13423,7 +13419,6 @@
 					]
 				},
 				"Distribution Function": {
-					"skip_games": ["Halo 4"],
 					"desc": "Fans this weapon's shots out in a line instead of firing them all from one point.",
 					"debug_desc": "Sets `Distribution Function` to `horizontal fan` and gives you `Distribution Angle` to tune. Both live per barrel (per trigger in Halo 1).\n\nThe angle is the whole effect: the function alone changes nothing you can see, so the set rides along with the angle row and only applies when you actually enter a value. Distribution Angle ships at 0 on every weapon in every game (81 of 81 read), hence zero_is 0.1 -- an operator works on 0.1 rather than multiplying 0 by something and still getting 0.\n\nDespite the name the fan is NOT reliably horizontal -- tested in-game on the assault rifle, the line it spreads the shots along varies. What it does consistently is spread them along a line rather than from a point.\n\nOnly offered where the weapon already has a Projectiles Per Shot card: fanning a single projectile fans nothing, so the two belong together. `point` and `horizontal fan` are the only options every game shares; Reach adds `custom vectors` and `custom positions`, which need companion data to mean anything and are not offered.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
@@ -13453,7 +13448,6 @@
 					]
 				},
 				"Flanking": {
-					"skip_games": ["Halo 4"],
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
 					"game": ["Halo Reach", "Halo 4"],
@@ -13892,7 +13886,6 @@
 					]
 				},
 				"Flanking": {
-					"skip_games": ["Halo 4"],
 					"desc": "How often they break off and come at you from the side.",
 					"debug_desc": "`Fight Flank Chance` -- how willing the enemy is to break off and come at you from the side instead of trading fire head-on.\\n\\n**The field is Reach-only.** Halo 2, Halo 3 and ODST do not declare it at all, and in Reach exactly one tag ships a value: `elite_specops` at 1.0. Every other character, `ai\\\\generic` included, ships 0.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. The base here is **1.0**, the elite_specops value -- the only flanking chance the game actually ships.",
 					"game": ["Halo Reach", "Halo 4"],
