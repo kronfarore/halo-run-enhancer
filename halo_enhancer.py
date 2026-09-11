@@ -505,6 +505,12 @@ ZOOM_DONOR_WEAPONS = {
     # above 0 are the sniper rifle, DMR, needle rifle, magnum and rocket launcher.
     # The magnum's 1x is the subtlest donor, as ODST's automag is there.
     'Halo Reach': ['Sniper Rifle', 'DMR', 'Needle Rifle', 'Pistol', 'Rocket Launcher'],
+    # Halo 4 grafts a scope TEMPLATE out of the donor's cusc screen rather than copying
+    # chud widgets (halo_patch._apply_h4_scope). Every weapon whose screen carries one,
+    # measured on Dawn; rifle scopes first, the magnum's 1x last as the subtle one.
+    'Halo 4': ['Battle Rifle', 'DMR', 'Covenant Carbine', 'LightRifle', 'Sniper Rifle',
+               'Beam Rifle', 'Binary Rifle', 'Rocket Launcher', 'Spartan Laser',
+               'Incineration Cannon', 'Pistol'],
 }
 
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).

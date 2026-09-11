@@ -2594,19 +2594,42 @@ def _h3_reserve(m, sizes):
     total = 0
     for sz in sizes:
         total = ((total + 15) & ~15) + sz
+    # Regions handed out earlier on this map. A block written by an earlier call can
+    # END in zero bytes (a trailing 0 flag or index), and those merge with the free run
+    # behind it -- so without this a later call could start inside the earlier block
+    # and overwrite its tail. The Halo 4 scope graft grows up to eight blocks per HUD
+    # across several HUDs in one run, which is what made it likely.
+    taken = getattr(m, '_h3_reserved', None)
+    if taken is None:
+        taken = []
+        try:
+            m._h3_reserved = taken
+        except AttributeError:
+            pass
+
+    def _clear(cur, sz):
+        moved = True
+        while moved:
+            moved = False
+            for a, b in taken:
+                if cur < b and a < cur + sz:
+                    cur, moved = (b + 15) & ~15, True
+        return cur
+
     for la, psz, fb in m.partitions:
         if fb is None or not psz or fb + psz > len(m.data):
             continue
         for mo in re.finditer(rb'\x00{%d,}' % (total + 16), bytes(m.data[fb:fb + psz])):
             offs, cur, ok = [], fb + mo.start(), True
             for sz in sizes:
-                cur = (cur + 15) & ~15
+                cur = _clear((cur + 15) & ~15, sz)
                 if cur + sz > fb + mo.end() or m.off2data(cur) is None:
                     ok = False
                     break
                 offs.append(cur)
                 cur += sz
             if ok:
+                taken.extend((o, o + s) for o, s in zip(offs, sizes))
                 return offs
     return None
 
@@ -4389,24 +4412,263 @@ def _zoom_donor(m, game, exclude_hud, prefer=None):
     return hud, name.rsplit(chr(92), 1)[-1]
 
 
+# --- Halo 4: graft a scope into a scopeless weapon's HUD -------------------------
+# Halo 4 draws a weapon HUD as a CUI screen (`cusc`), and a scope is not a block of
+# widgets the way it is up to Reach. EVERY weapon screen carries an empty
+# `scope_container`; a scoped weapon's screen also instantiates a scope TEMPLATE
+# screen (battle_rifle_scope, dmr_scope, magnum_scope...) under an
+# `animation_container_*` component, and wires the zoom state to it:
+#
+#   binding  <weapon zoom level> --(long comparison, op 5 against 0)--> zoom_decision
+#   binding  zoom_decision -> zoom_on_off, which plays overlay 0's sniper_zoom_in /
+#            _out / _initial animations on the container
+#
+# Measured identical on the BR, DMR and magnum screens on Dawn. A template compiles
+# INLINE: its components are copied into the host's Components list tagged with the
+# instantiation's index. So the graft copies exactly what the compiler produced for
+# the donor -- one Template Instantiation, the container, the expanded template, the
+# two decision components, their overlay entries and animations, the bindings and the
+# comparison that drive them -- and rebuilds Component Indices, which is sorted by raw
+# name stringID. The donor is on the SAME map, so every stringID and tag datum stays
+# valid without resolving a single name.
+_H4_HUD_REF = 0x4E0
+_H4_CUSC = {'templates': (0x1C, 0x10), 'components': (0x28, 0x10),
+            'indices': (0x34, 0x8), 'overlays': (0x40, 0x20),
+            'bindings': (0x58, 0x14), 'longcmp': (0x64, 0x10)}
+_H4_OV_COMPS, _H4_OV_ANIMS, _H4_ANIM_COMPS = (0x8, 0x58), (0x14, 0x1C), (0x10, 0x20)
+#: Donor HUD screens, rifle-like first; the first one resident on the map is used.
+#: magnum_scope is on all eight campaign maps, so the magnum is the reliable fallback.
+_H4_SCOPE_DONORS = ('battle_rifle', 'dmr', 'carbine', 'forerunner_rifle', 'magnum',
+                    'sniper_rifle', 'beam_rifle', 'rocket_launcher', 'fuel_rod')
+_H4_SCOPE_NAMES = ('scope_container', 'zoom_decision', 'zoom_on_off')
+_H4_COMP = struct.Struct('<IIIHh')          # type, name, parent, flags, template index
+
+
+def _h4_rows(m, base, off, esz):
+    """The raw elements of the tagblock at base+off, as bytes."""
+    n = m.i32(base + off)
+    a = m.data2off(m.u32(base + off + 4)) if n > 0 else None
+    if not a:
+        return []
+    return [bytes(m.data[a + i * esz:a + (i + 1) * esz]) for i in range(n)]
+
+
+def _h4_row_block(m, row, off, esz):
+    """Elements of a tagblock embedded in an element we hold as bytes."""
+    n = struct.unpack_from('<i', row, off)[0]
+    a = m.data2off(struct.unpack_from('<I', row, off + 4)[0]) if n > 0 else None
+    if not a:
+        return []
+    return [bytes(m.data[a + i * esz:a + (i + 1) * esz]) for i in range(n)]
+
+
+def _h4_tag_at(m, ref_off):
+    """(name, base) of the tag a Halo 4 tagRef at `ref_off` points at, or None."""
+    d = m.u32(ref_off + 0xC)
+    if d in (0, 0xFFFFFFFF):
+        return None
+    rows = getattr(m, '_h4_rows_by_index', None)
+    if rows is None:
+        rows = m._h4_rows_by_index = {t['index']: t for t in m.tags}
+    t = rows.get(d & 0xFFFF)
+    return (t['name'], t['base']) if t and t.get('base') is not None else None
+
+
+def _h4_scope_sids(m, names):
+    """{name: stringID} for _H4_SCOPE_NAMES, calibrated on a donor's component names.
+
+    A namespace-0 stringID maps to the string table by a per-map offset (6841 on
+    Dawn; the Reach lookup ignores it and returns nonsense). Rather than trust one
+    measured value, take the offset that lands ALL three names on components the donor
+    actually has -- the same calibrate-don't-assume approach as the marker names."""
+    tbl = getattr(m, '_h4_string_rows', None)
+    if tbl is None:
+        tbl = {}
+        if m._locate_stringids():
+            for i in range(m.str_tbl_count):
+                s = m._string_at(i)
+                if s and s not in tbl:
+                    tbl[s] = i
+        m._h4_string_rows = tbl
+    want = [tbl.get(n) for n in _H4_SCOPE_NAMES]
+    if None in want:
+        return None
+    for s in names:
+        d = want[0] - s
+        if all((w - d) in names for w in want[1:]):
+            return {n: w - d for n, w in zip(_H4_SCOPE_NAMES, want)}
+    return None
+
+
+def _h4_scope_plan(m, tgt, don):
+    """What grafting the donor screen's scope into `tgt` appends, or a reason string.
+    Reads only; _h4_scope_commit writes."""
+    C, U = _H4_CUSC, _H4_COMP.unpack
+    dcomp = _h4_rows(m, don, *C['components'])
+    tcomp = _h4_rows(m, tgt, *C['components'])
+    sid = _h4_scope_sids(m, {U(r)[1] for r in dcomp if not U(r)[1] >> 17})
+    if not sid:
+        return 'the donor HUD carries no zoom wiring'
+    tnames = {U(r)[1] for r in tcomp}
+    if sid['zoom_decision'] in tnames:
+        return 'already scoped'
+    if sid['scope_container'] not in tnames:
+        return 'this HUD has no scope container'
+    cont = [r for r in dcomp if U(r)[2] == sid['scope_container']]
+    if len(cont) != 1:
+        return 'the donor scope container holds %d components, not 1' % len(cont)
+    kids = {U(r)[4] for r in dcomp if U(r)[2] == U(cont[0])[1]}
+    dtemp = _h4_rows(m, don, *C['templates'])
+    if len(kids) != 1 or not 0 <= min(kids) < len(dtemp):
+        return 'the donor scope is not a template instance'
+    td = kids.pop()
+    tt = len(_h4_rows(m, tgt, *C['templates']))
+    new = [cont[0]]
+    for r in dcomp:
+        t, n, p, f, ti = U(r)
+        if ti == td:
+            new.append(_H4_COMP.pack(t, n, p, f, tt))
+    drive = {sid['zoom_decision'], sid['zoom_on_off']}
+    new += [r for r in dcomp if U(r)[1] in drive]
+    moved = {U(r)[1] for r in new}
+    if moved & tnames:
+        return 'a scope component name is already used in this HUD'
+    binds = [r for r in _h4_rows(m, don, *C['bindings'])
+             if struct.unpack_from('<I', r, 0xC)[0] in drive]
+    for r in binds:
+        if struct.unpack_from('<I', r, 4)[0] not in (tnames | moved):
+            return 'a zoom binding reads a component this HUD lacks'
+    cmps = [r for r in _h4_rows(m, don, *C['longcmp'])
+            if struct.unpack_from('<I', r, 0)[0] in drive]
+    tgt_ov = _h4_rows(m, tgt, *C['overlays'])
+    tkey = {r[:8]: i for i, r in enumerate(tgt_ov)}     # (resolution, theme)
+    ov = []
+    for r in _h4_rows(m, don, *C['overlays']):
+        oc = [x for x in _h4_row_block(m, r, *_H4_OV_COMPS)
+              if struct.unpack_from('<I', x, 0)[0] in moved]
+        an = [x for x in _h4_row_block(m, r, *_H4_OV_ANIMS)
+              if any(struct.unpack_from('<I', c, 0)[0] in moved
+                     for c in _h4_row_block(m, x, *_H4_ANIM_COMPS))]
+        if not (oc or an):
+            continue
+        ti = tkey.get(r[:8])
+        if ti is None:
+            return 'the HUD has no overlay matching the donor scope'
+        have = {x[:4] for x in _h4_row_block(m, tgt_ov[ti], *_H4_OV_ANIMS)}
+        ov.append((ti, oc, [x for x in an if x[:4] not in have]))
+    return {'template': dtemp[td], 'comps': tcomp + new, 'added': len(new),
+            'binds': binds, 'cmps': cmps, 'ov': ov}
+
+
+def _h4_scope_commit(m, tgt, plan):
+    """Write a _h4_scope_plan into the target screen. False if there is no room."""
+    C = _H4_CUSC
+    comps = plan['comps']
+    order = sorted((_H4_COMP.unpack(r)[1], i) for i, r in enumerate(comps))
+    grows = [(C['templates'][0], _h4_rows(m, tgt, *C['templates']) + [plan['template']]),
+             (C['components'][0], comps),
+             (C['indices'][0], [struct.pack('<Ihh', n, i, 0) for n, i in order]),
+             (C['bindings'][0], _h4_rows(m, tgt, *C['bindings']) + plan['binds'])]
+    if plan['cmps']:
+        grows.append((C['longcmp'][0], _h4_rows(m, tgt, *C['longcmp']) + plan['cmps']))
+    grows = [(tgt + off, rows) for off, rows in grows]
+    ovb = m.data2off(m.u32(tgt + C['overlays'][0] + 4))
+    for ti, oc, an in plan['ov']:
+        e = ovb + ti * C['overlays'][1]
+        if oc:
+            grows.append((e + _H4_OV_COMPS[0], _h4_rows(m, e, *_H4_OV_COMPS) + oc))
+        if an:
+            grows.append((e + _H4_OV_ANIMS[0], _h4_rows(m, e, *_H4_OV_ANIMS) + an))
+    blobs = [b''.join(rows) for _at, rows in grows]
+    got = _h3_reserve(m, [len(b) for b in blobs])
+    if got is None:
+        return False
+    for (at, rows), blob, dest in zip(grows, blobs, got):
+        m.data[dest:dest + len(blob)] = blob
+        struct.pack_into('<iI', m.data, at, len(rows), m.off2data(dest))
+    return True
+
+
+def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
+    """Halo 4 zoom UI: give each target weapon's HUD a scope grafted from a scoped
+    weapon's HUD on the same map. Rows mirror _apply_zoom_ui's."""
+    out = []
+    hud_of = {}
+    for name, b in m.find_tags('weap', '*'):
+        r = _h4_tag_at(m, b + _H4_HUD_REF)
+        if r:
+            hud_of[name] = r
+    by_leaf = {}
+    for n, b in hud_of.values():
+        by_leaf.setdefault(str(n).rsplit(chr(92), 1)[-1], (n, b))
+    donors = []
+    if prefer_donor:
+        pd = str(prefer_donor).split(' ', 1)[-1] if str(prefer_donor).startswith(
+            'weap ') else str(prefer_donor)
+        pd = pd.split('&')[0].strip()           # a joined tag names its variants
+        if pd in hud_of:
+            donors.append(hud_of[pd])
+    donors += [by_leaf[d] for d in (donor_huds or _H4_SCOPE_DONORS) if d in by_leaf]
+    names = []
+    for tag in targets:
+        _, joined = hm.split_tag(tag)
+        for part in str(joined).split(' & '):
+            part = part.strip()
+            if part and part not in names:
+                names.append(part)
+    done = {}
+    for name in names:
+        short = name.rsplit(chr(92), 1)[-1]
+        row = {'effect': 'zoom UI', 'field': short}
+        hud = hud_of.get(name)
+        if hud is None:
+            out.append(dict(row, ok=True, skip=True,
+                            reason='not in this map' if not m.find_tags('weap', name)
+                            else 'weapon has no HUD screen'))
+            continue
+        if hud[0] in done:
+            out.append(dict(row, ok=True, skip=True,
+                            reason='shares %s, already given a scope'
+                                   % str(hud[0]).rsplit(chr(92), 1)[-1]))
+            continue
+        reason = 'no scoped weapon HUD on this map to copy from'
+        for dn, db in donors:
+            if db == hud[1]:
+                continue
+            plan = _h4_scope_plan(m, hud[1], db)
+            if isinstance(plan, str):
+                reason = plan
+                if plan in ('already scoped', 'this HUD has no scope container'):
+                    break
+                continue
+            if not _h4_scope_commit(m, hud[1], plan):
+                reason = 'no free space to grow the HUD screen'
+                break
+            done[hud[0]] = dn
+            reason = None
+            out.append(dict(row, ok=True, tag='cusc ' + str(hud[0]),
+                            old='no scope',
+                            new='scope from %s (+%d components)'
+                                % (str(dn).rsplit(chr(92), 1)[-1], plan['added'])))
+            break
+        if reason:
+            out.append(dict(row, ok=True, skip=True, reason=reason))
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
     (a weap tag path) is used when present + scoped, else an auto donor. Idempotent:
     a HUD already scoped (vanilla, or shared with a weapon patched earlier this run)
     is left alone."""
+    if str(game).strip() == 'Halo 4':
+        # No chud in Halo 4: the HUD is a cusc screen and the scope a template
+        # instance inside it, so it has its own grafter (see _apply_h4_scope).
+        return _apply_h4_scope(m, targets, prefer_donor=prefer_donor)
     z = _ZOOM_UI.get(game)
     out = []
     if not z:
-        if str(game).strip() == 'Halo 4':
-            # Said out loud rather than returning nothing: the Zoom card still writes
-            # its magnification, only the overlay is missing. Halo 4 weapons carry no
-            # chud -- their `HUD Screen Reference` points at a `cusc` screen, and there
-            # is no cusc plugin to copy a scope out of.
-            return [{'effect': 'zoom UI', 'field': str(t).rsplit(chr(92), 1)[-1],
-                     'ok': True, 'skip': True,
-                     'reason': 'Halo 4 HUDs are cusc screens; no scope overlay to copy'}
-                    for t in targets]
         return out
     grown = set()
     # A Zoom effect's tag may name SEVERAL weapons ("weap a & b") -- ODST's plasma
