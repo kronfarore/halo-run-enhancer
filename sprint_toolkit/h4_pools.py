@@ -106,11 +106,18 @@ def zone_sets(m, zb):
 
 
 def start_sets(m):
-    """Labels of the zone sets live when the mission starts."""
+    """Labels of the zone sets live when the mission starts.
+
+    Reads the 64-bit RUNTIME Designer Zone Flags as well as the authored 32-bit ones:
+    Dawn has 45 designer zones, and zone set 0's runtime mask also switches on 24-26,
+    which the 32-bit field cannot even address."""
     s = HP._scnr_base(m)
     zs = HP._block_base(m, s + SCNR_ZONE_SETS)
-    flags = m.u32(zs + SCNR_DESIGNER_FLAGS) if zs else 0
-    return {'Scenario[0]', 'Global[0]'} | {'Designer[%d]' % k for k in range(32)
+    flags = 0
+    if zs:
+        flags = m.u32(zs + SCNR_DESIGNER_FLAGS) | struct.unpack_from(
+            '<Q', m.data, zs + SCNR_DESIGNER_FLAGS + 4)[0]
+    return {'Scenario[0]', 'Global[0]'} | {'Designer[%d]' % k for k in range(64)
                                            if flags & (1 << k)}
 
 
