@@ -151,8 +151,12 @@ _PLACE_EXTRA = {
     'Halo Reach':   {'flags': 0x4, 'pos': 0x8, 'zone_flags': 0x34, 'bsp_policy': 0x33,
                      'origin_bsp': 0x40},
     # Halo 4 widens Zone Set Flags to 32 bits (a level has up to 30 zone sets).
+    # `inert` is the placement-flag mask that really keeps a placement from spawning.
+    # Halo 4's plugin names bit 0 Not Automatically, but every weapon placed in Sapien
+    # on the rebuilt Dawn carries 0x0101 and the DMR, shotgun, LightRifle... all spawn
+    # in game (2026-09-11) -- so only Never Placed (bit 6) counts here.
     'Halo 4':       {'flags': 0x4, 'pos': 0x8, 'zone_flags': 0x5C, 'zone_fmt': '<I',
-                     'bsp_policy': 0x36, 'origin_bsp': 0x70},
+                     'bsp_policy': 0x36, 'origin_bsp': 0x70, 'inert': 1 << 6},
 }
 # Placement Flags bits that decide whether a row in the block becomes an object the
 # player can walk up to. MEASURED on Reach's campaign, which is what corrected an
@@ -248,8 +252,8 @@ def survey(m, game, weap_names=None):
             auto = True
             if extra.get('flags') is not None:
                 fl = struct.unpack_from('<I', m.data, el + extra['flags'])[0]
-                auto = not (fl & ((1 << NEVER_PLACED_BIT)
-                                  | (1 << NOT_AUTOMATICALLY_BIT)))
+                auto = not (fl & extra.get('inert', (1 << NEVER_PLACED_BIT)
+                                           | (1 << NOT_AUTOMATICALLY_BIT)))
             if auto:
                 live[pi] += 1
                 # Distance from the mission start to the nearest AUTOMATIC placement.
@@ -453,7 +457,7 @@ def verdict(name, pal, res, zones=None, start_zone=0, live=None):
     v, why = _verdict(name, pal, res, zones, start_zone)
     if live is not None and v != 'ABSENT' and name not in live:
         why = (why + ' -- ') if why else ''
-        why += 'NOT RESIDENT at start, run reach_pools --fix'
+        why += 'NOT RESIDENT at start, run reach_pools / h4_pools --fix'
     return v, why
 
 
@@ -463,6 +467,20 @@ def start_resident(m, game):
     Returns None where the question does not apply, so a caller can tell "not asked"
     from "not resident".
     """
+    if str(game).strip() == 'Halo 4':
+        # Halo 4 adds designer zones: resident at start = in Scenario[0], Global[0]
+        # or a designer zone that zone set 0 switches on (h4_pools.start_sets).
+        try:
+            import h4_pools as P4
+            zb = P4.zone_base(m)
+        except (Exception, SystemExit):
+            return None
+        sets, live, out = P4.zone_sets(m, zb), P4.start_sets(m), set()
+        for t in m.tags:
+            if t.get('class') in ('weap', 'eqip') and t.get('index') is not None:
+                if {lab for lab, _o in P4.tag_sets(m, sets, t['index'])} & live:
+                    out.add(str(t.get('name')).rsplit(S, 1)[-1])
+        return out
     if str(game).strip() != 'Halo Reach':
         return None
     try:
@@ -534,8 +552,8 @@ def _equipment_rows(m, game, indent='      '):
         if not nm:
             continue
         fl = struct.unpack_from('<I', m.data, e + fl_at)[0]
-        d = marker if fl & ((1 << NOT_AUTOMATICALLY_BIT)
-                            | (1 << NEVER_PLACED_BIT)) else auto
+        d = marker if fl & extra.get('inert', (1 << NOT_AUTOMATICALLY_BIT)
+                                     | (1 << NEVER_PLACED_BIT)) else auto
         d[nm] = d.get(nm, 0) + 1
     res = {str(t).replace('/', S).lower() for t, _b in m.find_tags('eqip', '*')}
     ready = 0

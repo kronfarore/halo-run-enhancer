@@ -32,3 +32,7 @@ build.bat
 *.ods
 test_gui.py
 skull_bg.png
+
+# Side backups of live maps made by the H4 test tools (1 GB each)
+sprint_toolkit/_scope_test_backup/
+sprint_toolkit/_pools_backup/

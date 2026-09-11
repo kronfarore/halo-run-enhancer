@@ -395,7 +395,7 @@
 			"m020": {
 				"name": "Requiem",
 				"enemies": ["Elite", "Grunt", "Hunter", "Jackal"],
-				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "SAW", "Sentinel Beam", "Shotgun", "Sniper Rifle", "Storm Rifle"],
+				"weapons": ["Assault Rifle", "Battle Rifle", "Beam Rifle", "Concussion Rifle", "Covenant Carbine", "Energy Blade", "Flak Cannon", "Magnum", "Needler", "Plasma Pistol", "Rocket Launcher", "SAW", "Shotgun", "Sniper Rifle", "Storm Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Hardlight Shield"],
 				"turrets": ["Plasma Cannon"]
