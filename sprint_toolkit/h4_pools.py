@@ -105,20 +105,41 @@ def zone_sets(m, zb):
     return out
 
 
-def start_sets(m):
-    """Labels of the zone sets live when the mission starts.
+def start_sets(m, zone_set=0):
+    """Labels of the pools live in scenario zone set `zone_set` (0 = mission start).
 
-    Reads the 64-bit RUNTIME Designer Zone Flags as well as the authored 32-bit ones:
-    Dawn has 45 designer zones, and zone set 0's runtime mask also switches on 24-26,
-    which the 32-bit field cannot even address."""
+    Reads the 64-bit RUNTIME Designer Zone Flags as well as the authored 32-bit ones.
+    Dawn authors 24 designer zones (dz_00_cryo_room .. cin_opening) and the build adds
+    21 more per BSP (bsp_00 .. bsp_23); a zone set's runtime mask switches those on,
+    and the 32-bit authored field cannot even address them."""
     s = HP._scnr_base(m)
     zs = HP._block_base(m, s + SCNR_ZONE_SETS)
     flags = 0
     if zs:
-        flags = m.u32(zs + SCNR_DESIGNER_FLAGS) | struct.unpack_from(
-            '<Q', m.data, zs + SCNR_DESIGNER_FLAGS + 4)[0]
-    return {'Scenario[0]', 'Global[0]'} | {'Designer[%d]' % k for k in range(64)
-                                           if flags & (1 << k)}
+        e = zs + zone_set * SCNR_ZS_ELEM
+        flags = m.u32(e + SCNR_DESIGNER_FLAGS) | struct.unpack_from(
+            '<Q', m.data, e + SCNR_DESIGNER_FLAGS + 4)[0]
+    return {'Scenario[%d]' % zone_set, 'Global[0]'} | {
+        'Designer[%d]' % k for k in range(64) if flags & (1 << k)}
+
+
+def every_set(m, zb, sets):
+    """[(zone set index, name, [palette names NOT resident there])] for every scenario
+    zone set -- the check for "does a carried weapon survive each zone switch"."""
+    s = HP._scnr_base(m)
+    zs, zn = HP._block_base(m, s + SCNR_ZONE_SETS), max(0, m.i32(s + SCNR_ZONE_SETS))
+    by_ident = {t['ident']: t for t in m.tags if t.get('ident') is not None}
+    pal = [(nm, by_ident.get(ident)) for kind in KINDS for nm, ident in palette(m, kind)]
+    where = {t['index']: {lab for lab, _o in tag_sets(m, sets, t['index'])}
+             for _nm, t in pal if t}
+    out = []
+    for k in range(zn) if zs else []:
+        name = bytes(m.data[zs + k * SCNR_ZS_ELEM + 4:zs + k * SCNR_ZS_ELEM + 0x40]
+                     ).split(b'\0')[0].decode('latin1')
+        live = start_sets(m, k)
+        out.append((k, name, sorted({nm for nm, t in pal
+                                     if t and not (where[t['index']] & live)})))
+    return out
 
 
 def _pool(m, elem, off):
@@ -343,6 +364,9 @@ def main(argv=None):
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('map', nargs='?', help='campaign map basename, e.g. m10_crash')
     ap.add_argument('--audit', action='store_true', help='every campaign mission')
+    ap.add_argument('--every-set', action='store_true',
+                    help='for EACH zone set, the palette weapons/equipment not loaded '
+                         'there -- what a player carrying them would lose at that switch')
     ap.add_argument('--fix', action='append', default=[], help='palette entry name')
     ap.add_argument('--fix-all', action='store_true')
     ap.add_argument('--fix-placed', action='store_true',
@@ -386,6 +410,12 @@ def main(argv=None):
     m = HP.open_map(live, GAME)
     zb = zone_base(m)
     sets = zone_sets(m, zb)
+    if a.every_set:
+        for k, name, missing in every_set(m, zb, sets):
+            print('zone set %2d %-50s %s' % (
+                k, name, ('%d NOT loaded: %s' % (len(missing), ', '.join(missing)))
+                if missing else 'everything loaded'))
+        return 0
     clo = Closure(m, zb)
     rows = survey(m, zb, sets, clo)
     print('start sets: %s' % ', '.join(sorted(start_sets(m))))
