@@ -19,7 +19,21 @@ Measured on the rebuilt Dawn (2026-09-11), matching the in-game result exactly:
   * storm_sentinel_beam has NO model at all (world and first-person refs null on every
     map) -- it is the Sentinels' built-in beam and can never be a pickup.
 
-THE FIX copies a DONOR's residency onto the target, as on Reach: for every zone set and
+!! WRITING POOL BITS CRASHES HALO 4 (in game, 2026-09-11) -- the audit is sound, the
+!! fix is not. With the full fix on Dawn, spawning the Storm Rifle or the Beam Rifle --
+!! placed or as a starting weapon -- crashed the game. Unlike Reach, every Halo 4 zone
+!! set carries a precomputed MEMORY BUDGET: its Resource Types entries (+0x34, 0x1C
+!! each) hold a byte size per resource type, and the set total at +0x1C is their exact
+!! sum (Scenario[0]: 391,745,536). The fix added ~136 sound banks, ~6000 sounds, bitmaps
+!! and models to 60 sets and left every budget as it was, so the resource cache runs out
+!! the moment the weapon is built. Reach survived because its fix added 88 tag bits and
+!! NO pages. So --write now needs --experimental.
+!!
+!! THE WORKING ROUTE is the Editing Kit: add the weapon to a designer zone that zone set 0
+!! switches on (Dawn: designer zones 0-3) and rebuild -- the tool then computes the pools
+!! AND the budgets together.
+
+THE (experimental) FIX copies a DONOR's residency onto the target, as on Reach: for every zone set and
 pool where the donor's weap tag bit is set, set the bits of the target's whole declared
 tagRef closure (weap, model chain, first person, HUD screen, projectiles, effects...),
 and its raw pages wherever the donor has pages. The default donor is the palette weapon
@@ -332,6 +346,9 @@ def main(argv=None):
                     help='only the pools live at mission start: the smallest fix, but a '
                          'weapon carried past a zone switch may unload')
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--experimental', action='store_true',
+                    help='required with --write: writing pool bits crashed Halo 4 on spawn '
+                         '(zone-set memory budgets are not updated) -- see the docstring')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args(argv)
     if a.audit:
@@ -351,6 +368,10 @@ def main(argv=None):
         os.remove(bak)
         print('restored %s from the side backup (backup removed)' % a.map)
         return 0
+    if a.write and not a.experimental:
+        raise SystemExit('refused: writing Halo 4 pool bits crashed the game on spawn '
+                         '(2026-09-11). Add the weapon to a designer zone zone set 0 loads '
+                         'and rebuild instead; --experimental overrides.')
     if a.write and not os.path.exists(bak):
         os.makedirs(BACKUP, exist_ok=True)
         shutil.copyfile(live, bak)

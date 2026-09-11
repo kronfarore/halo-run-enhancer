@@ -457,7 +457,8 @@ def verdict(name, pal, res, zones=None, start_zone=0, live=None):
     v, why = _verdict(name, pal, res, zones, start_zone)
     if live is not None and v != 'ABSENT' and name not in live:
         why = (why + ' -- ') if why else ''
-        why += 'NOT RESIDENT at start, run reach_pools / h4_pools --fix'
+        why += ('NOT RESIDENT at start (Reach: reach_pools --fix; Halo 4: add it to a '
+                'designer zone zone set 0 loads and rebuild -- h4_pools lists them)')
     return v, why
 
 
