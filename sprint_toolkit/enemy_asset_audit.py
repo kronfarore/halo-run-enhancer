@@ -257,7 +257,12 @@ def main():
         for mp in maps:
             try:
                 m = hp.open_map(mp, game)
-            except Exception:
+            except Exception as ex:
+                # Say so. A map that drops out silently thins the worklist, and a short
+                # worklist reads exactly like good coverage -- the same trap that made
+                # validate_halo_json print "0 problem(s)" after checking nothing.
+                print('  %s: %s could not be read (%s) -- skipped'
+                      % (game, os.path.basename(mp), ex))
                 continue
             for cls, name in _iter_tags(m):
                 if cls not in want:
