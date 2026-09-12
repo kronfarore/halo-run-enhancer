@@ -222,28 +222,33 @@ def push_from_xml(path=None, pid=None):
     if not h:
         return {'ok': False, 'reason': 'OpenProcess failed (%d)'
                 % ctypes.get_last_error()}
-    rows = cached_rows(h, pid)
-    cached = rows is not None
-    if not cached:
-        rows = find_table(h)
-        if not rows:
-            return {'ok': False,
-                    'reason': 'score table not found in the running process'}
-        save_addrs(pid, rows)
-    save_snapshot(rows)
-    done = missing = failed = 0
-    for addr, key, _sc, _sk in rows:
-        if key not in want:
-            missing += 1
-            continue
-        sc, sk = want[key]
-        if write(h, addr + N_SCORE, struct.pack('<ff', sc, sk)):
-            done += 1
-        else:
-            failed += 1
-    return {'ok': failed == 0 and done > 0, 'written': done, 'records': len(rows),
-            'unmatched': missing, 'failed': failed, 'cached': cached,
-            'reason': ('%d write(s) failed' % failed) if failed else None}
+    # The handle carries VM_WRITE on MCC and was never closed: one leaked per push,
+    # and the push runs on every patch. death_penalty closes every handle it opens.
+    try:
+        rows = cached_rows(h, pid)
+        cached = rows is not None
+        if not cached:
+            rows = find_table(h)
+            if not rows:
+                return {'ok': False,
+                        'reason': 'score table not found in the running process'}
+            save_addrs(pid, rows)
+        save_snapshot(rows)
+        done = missing = failed = 0
+        for addr, key, _sc, _sk in rows:
+            if key not in want:
+                missing += 1
+                continue
+            sc, sk = want[key]
+            if write(h, addr + N_SCORE, struct.pack('<ff', sc, sk)):
+                done += 1
+            else:
+                failed += 1
+        return {'ok': failed == 0 and done > 0, 'written': done, 'records': len(rows),
+                'unmatched': missing, 'failed': failed, 'cached': cached,
+                'reason': ('%d write(s) failed' % failed) if failed else None}
+    finally:
+        k32.CloseHandle(h)
 
 
 def find_table(h):

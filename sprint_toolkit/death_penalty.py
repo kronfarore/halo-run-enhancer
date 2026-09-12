@@ -253,6 +253,23 @@ def apply(h, base, value):
 
 
 def restore(h, base):
+    """Point the death site back at the stock literal -- verified first, as apply() is.
+
+    Both writers in this module patch EXECUTABLE memory at fixed RVAs, and after an MCC
+    update those RVAs land on different code. apply() has always refused in that case.
+    restore() used to write the stock displacement blind, so the one call that is meant
+    to make things safe again would corrupt whatever instruction now sat at DEATH_DISP,
+    in a running process, with nothing said. The GUI and `metagame_test --restore` both
+    call it.
+    """
+    insn = read(h, base + DEATH_SITE, 4)
+    if insn != DEATH_INSN_BYTES:
+        return False, ('the death site does not look like the expected '
+                       '`movss xmm1,[rip+d32]` (found %s) -- this MCC build differs, '
+                       'refusing to write' % (insn.hex() if insn else '?'))
+    _, _, disp = state(h, base)
+    if disp == STOCK_DISP:
+        return True, 'already stock'
     ok, err = write(h, base + DEATH_DISP, struct.pack('<i', STOCK_DISP))
     return (True, None) if ok else (False, err)
 
@@ -279,6 +296,20 @@ def betrayal_open(h, base):
 
 
 def betrayal_restore(h, base):
+    """Put the stock jbe back -- but only over bytes this module recognises.
+
+    Same reasoning as restore(): betrayal_open() checks for the stock jbe before it
+    writes its NOPs, and this has to be as careful coming back, or an MCC update turns
+    "restore" into a blind two-byte write into whatever code now lives at the guard.
+    """
+    what, raw = betrayal_state(h, base)
+    if what == 'stock':
+        return True, 'already stock'
+    if what != 'open':
+        return False, ('the guard at rva 0x%08X reads %s, neither the stock %s nor our '
+                       '%s -- this MCC build differs, refusing to write'
+                       % (BETRAY_GUARD, raw.hex() if raw else '?',
+                          BETRAY_STOCK.hex(), BETRAY_OPEN.hex()))
     ok, err = write(h, base + BETRAY_GUARD, BETRAY_STOCK)
     return (True, None) if ok else (False, err)
 
