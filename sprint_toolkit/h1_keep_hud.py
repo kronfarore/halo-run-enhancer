@@ -55,9 +55,12 @@ rebuilt. Per map, from the HCEEK folder:
     tool.exe build-cache-file levels\<map>\<map> remastered <resources> 1
 
 `sprint_build.py <map> --build-only` already wraps exactly that and is the easier route.
-Then copy `HCEEK\maps\<map>.map` into `halo1\maps\`, refresh `<map>.map.bak` (the Run
-Enhancer patches FROM that baseline and would otherwise restore the pre-rebuild map),
-and re-run `--status` before playing.
+Then copy `HCEEK\maps\<map>.map` into `halo1\maps\`, then DELETE the
+patcher's baseline for that map -- `map_vault.baseline_for('Halo 1', path)` names it:
+the Baselines-folder copy when one is set, else `<map>.map.bak`. The next patch re-takes
+it from the new build; a stale one would restore the pre-rebuild map. (`sprint_build.py
+<map>` without --build-only does the deploy and this step itself.) Then re-run
+`--status` before playing.
 """
 import argparse
 import glob

@@ -55,9 +55,12 @@ next time it is built:
 
     cd H3EK && tool.exe build-cache-file levels\solo\<lvl>\<lvl> pc
 
-then copy `H3EK\maps\<lvl>.map` into `halo3\maps\` and refresh `<lvl>.map.bak` (the Run
-Enhancer patches FROM that baseline). If you are already rebuilding for the weapon
-imports, apply this first and it comes along for free.
+then copy `H3EK\maps\<lvl>.map` into `halo3\maps\` and delete the patcher's
+baseline for that level -- `map_vault.baseline_for('Halo 3', path)` names it: the
+Baselines-folder copy when one is set, else `<lvl>.map.bak`. The next patch re-takes it
+from the new build; a stale one would restore the pre-rebuild level. If you are
+already rebuilding for the weapon imports, apply this first and it comes along for
+free.
 """
 import argparse
 import os
