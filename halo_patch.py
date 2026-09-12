@@ -2623,7 +2623,15 @@ def _h3_reserve(m, sizes):
             offs, cur, ok = [], fb + mo.start(), True
             for sz in sizes:
                 cur = _clear((cur + 15) & ~15, sz)
-                if cur + sz > fb + mo.end() or m.off2data(cur) is None:
+                # The same round trip find_slack and _addressable demand, not just "is
+                # there a pointer": nearly every block-growing writer reserves through
+                # here, and each writes m.off2data(offset) straight into a reflexive.
+                # A pointer that does not map back to `cur` would be stored as a
+                # plausible address that resolves somewhere else. ReachMap.off2data used
+                # to return exactly that -- a wrapped u32 rather than None -- for any
+                # address below its bias, and a None-only check let it through.
+                d = None if cur + sz > fb + mo.end() else m.off2data(cur)
+                if d is None or m.data2off(d) != cur:
                     ok = False
                     break
                 offs.append(cur)
