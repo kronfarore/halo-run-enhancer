@@ -9126,8 +9126,20 @@ class OptionsDialog(QDialog):
                     try:
                         # h2 can say what is applied; odst cannot, so it is asked to
                         # revert everything and reports "already reverted" for the rest.
-                        if lister == 'stateful' and mod.state_of(name) != 'APPLIED':
-                            continue
+                        if lister == 'stateful':
+                            st = mod.state_of(name)
+                            if st in ('UNRECOGNISED', 'PARTIAL'):
+                                # Skipping these silently used to end in "already
+                                # stock" -- after an MCC update rewrites the dll, that
+                                # is exactly what every patch reads as, and exactly
+                                # when the user needs to hear it.
+                                lines.append("%s: %s %s (bytes match neither form -- "
+                                             "an MCC update?); left alone"
+                                             % (label, name, st))
+                                failed += 1
+                                continue
+                            if st != 'APPLIED':
+                                continue
                         buf = io.StringIO()
                         with contextlib.redirect_stdout(buf):
                             mod.apply(name, revert=True)
@@ -9137,7 +9149,9 @@ class OptionsDialog(QDialog):
                             failed += 1
                         elif 'already' not in buf.getvalue():
                             undone.append(name)
-                    except Exception as e:
+                    # SystemExit too: h2_dll_patch refuses by raising it, and it is not an
+                    # Exception -- uncaught, it would escape this Qt slot.
+                    except (Exception, SystemExit) as e:
                         lines.append("%s: %s failed (%s)" % (label, name, e))
                         failed += 1
                 lines.append("%s: %s" % (label, ", ".join(undone) if undone
