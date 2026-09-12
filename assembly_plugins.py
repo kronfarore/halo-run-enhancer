@@ -5,10 +5,11 @@ Assembly repoints it once and the Enhancer follows. The standalone CLI tools had
 such luck: each hardcoded the install path it was written against, and when Assembly
 moved off the Steam drive they all pointed at nothing.
 
-Mostly that fails loudly. `validate_halo_json.py` is the exception and the reason this
-module exists -- it skips its resolution checks when the directory is missing and
-still prints "0 problem(s)", so a stale path turns its most valuable pass into a
-silent no-op that reads like a clean bill of health.
+Mostly that fails loudly. `validate_halo_json.py` was the exception and the reason this
+module exists -- it skipped its resolution checks when the directory was missing and
+still printed "0 problem(s)", so a stale path turned its most valuable pass into a
+silent no-op that read like a clean bill of health. It now says so and exits 2 when
+it could not run that pass; this module is still what keeps it from happening.
 
 Resolution order, first hit wins:
     1. $ASSEMBLY_PLUGINS

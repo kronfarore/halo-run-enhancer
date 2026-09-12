@@ -441,7 +441,8 @@ if __name__ == '__main__':
     check_structure()
     n_struct = len(problems)
     print(f'structure checks: {n_struct} problem(s)')
-    if os.path.isdir(PLUGINS):
+    skipped = not os.path.isdir(PLUGINS)
+    if not skipped:
         check_resolution()
     else:
         print(f'  (skipping resolution checks — plugins not found at {PLUGINS})')
@@ -474,4 +475,11 @@ if __name__ == '__main__':
         else:
             print(f'({len(inert)} inert card(s) suppressed -- a weapon or enemy the '
                   f'game does not field; --all lists them)')
-    sys.exit(1 if problems else 0)
+    if skipped:
+        # The notice above is enough for a person reading the output, but not for
+        # anything that chains on the exit code: "0 problem(s)" with exit 0 after
+        # skipping the resolution pass was exactly the silent clean bill of health
+        # assembly_plugins was written to prevent. A distinct code says "not checked".
+        print('RESOLUTION NOT CHECKED: plugins not found at %s -- a structure-only '
+              'result, not a clean one (exit 2).' % PLUGINS)
+    sys.exit(1 if problems else (2 if skipped else 0))
