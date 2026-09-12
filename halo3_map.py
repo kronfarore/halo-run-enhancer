@@ -506,6 +506,7 @@ class Halo3Map:
             off = base + fld['offset']
             old = hm.raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
             value = float(value) if (ftype in hm.FLOAT_TYPES or ftype in hm.ANGLE_TYPES) else int(round(value))
+            value, _ = hm.clamp_to_type(ftype, value)
             struct.pack_into(fmt, self.data, off, hm.display_to_raw(ftype, value))
             return old
         except Exception:
@@ -542,6 +543,7 @@ class Halo3Map:
             ftype = fld['type']
             is_float = ftype in hm.FLOAT_TYPES or ftype in hm.ANGLE_TYPES
             first_old = first_new = None
+            n_clamped = 0
             for base in leaves:
                 off = base + fld['offset']
                 old = hm.raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
@@ -559,12 +561,16 @@ class Halo3Map:
                     meaning = min(meaning, clamp_max)
                 new = (meaning - offset) / scale
                 new = float(new) if is_float else int(round(new))
+                new, was = hm.clamp_to_type(ftype, new)
+                n_clamped += was
                 struct.pack_into(fmt, self.data, off, hm.display_to_raw(ftype, new))
                 if first_old is None:
                     first_old, first_new = old, new
             r = {**base_r, 'ok': True, 'old': first_old, 'new': first_new}
             if len(leaves) > 1:
                 r['elements'] = len(leaves)
+            if n_clamped:
+                r['clamped'] = n_clamped
             return r
         except Exception as e:
             return {**base_r, 'ok': False, 'reason': str(e)}

@@ -6803,6 +6803,11 @@ class MagnitudeEditorDialog(QDialog):
                     else "   (auto-computed)" if r.get('derived') else "")
             if r.get('inherited_from'):
                 hint += f"   (inherited from {r['inherited_from'].rsplit(chr(92), 1)[-1]})"
+            if r.get('clamped'):
+                # The value asked for was past what the field can store (a Magazine
+                # reserve under *100, say), so it was held at the limit instead of the
+                # edit raising part-way through. Say so, or "old -> 32767" reads odd.
+                hint += "   (held at the field's limit)"
             tag = f"   [{r['tag']}]" if r.get('tag') else ""
             lines.append(f"  OK    {r['effect']}: {r.get('field', '')}  "
                          f"{_val(r, 'old')} -> {_val(r, 'new')}{tag}{hint}")

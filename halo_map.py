@@ -43,6 +43,32 @@ def display_to_raw(field_type, v):
     """UI value -> on-disk value (degrees -> radians for angles)."""
     return math.radians(v) if field_type in ANGLE_TYPES else v
 
+
+# The range each integer struct format can actually hold.
+_INT_RANGE = {'b': (-128, 127), 'B': (0, 255), 'h': (-32768, 32767), 'H': (0, 65535),
+              'i': (-2 ** 31, 2 ** 31 - 1), 'I': (0, 2 ** 32 - 1)}
+
+
+def clamp_to_type(field_type, value):
+    """(value, clamped?) -- an integer held inside what its field can store.
+
+    Without this, a result past the type's range made struct.pack_into raise. In
+    apply_field that raised PART-WAY through a multi-element edit: earlier elements
+    written, later ones already marked as written, the edit reported failed. In
+    write_tag_field it raised into an `except: return None`, so an out-of-range value
+    silently did nothing and read as an unresolved field. The reachable case is a
+    Magazine reserve field (hundreds of rounds, int16) under a typed `*100` or
+    `=40000`, and the answer chosen for it is to give as much as the field can hold
+    and say so -- the same "clamp, then report what was written" rule clamp_min and
+    clamp_max already follow. Floats are returned untouched.
+    """
+    fmt = TYPE_FMT.get(field_type, ('<f', 4))[0][-1]
+    rng = _INT_RANGE.get(fmt)
+    if rng is None or not isinstance(value, int):
+        return value, False
+    v = min(max(value, rng[0]), rng[1])
+    return v, v != value
+
 # Assembly range types -> (sub-field struct type, byte width of each half).
 # rangef/range/ranged are two float32s; range16 is two int16s.
 # Two-component fields, flattened into a pair of leaves so either half can be
@@ -385,6 +411,7 @@ class HaloMap:
                 written.update(b + fld['offset'] for b in fresh)
                 leaves = fresh
                 first_old = first_new = None
+                n_clamped = 0
                 for base in leaves:                 # patch every selected element
                     off = base + fld['offset']
                     old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
@@ -408,6 +435,8 @@ class HaloMap:
                         meaning = min(meaning, clamp_max)
                     new = (meaning - offset) / scale
                     new = float(new) if is_float else int(round(new))
+                    new, was = clamp_to_type(ftype, new)
+                    n_clamped += was
                     struct.pack_into(fmt, self.data, off, display_to_raw(ftype, new))
                     if first_old is None:
                         first_old, first_new = old, new
@@ -415,6 +444,8 @@ class HaloMap:
                      'old': first_old, 'new': first_new}
                 if len(leaves) > 1:
                     r['elements'] = len(leaves)
+                if n_clamped:
+                    r['clamped'] = n_clamped
                 results.append(r)
             except Exception as e:
                 results.append({'tag': f"{cls} {tpath}", 'field': field,
@@ -574,6 +605,7 @@ class HaloMap:
             off = base + fld['offset']
             old = raw_to_display(ftype, struct.unpack_from(fmt, self.data, off)[0])
             value = float(value) if (ftype in FLOAT_TYPES or ftype in ANGLE_TYPES) else int(round(value))
+            value, _ = clamp_to_type(ftype, value)
             struct.pack_into(fmt, self.data, off, display_to_raw(ftype, value))
             return old
         except Exception:
