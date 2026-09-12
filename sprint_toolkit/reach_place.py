@@ -218,6 +218,11 @@ def transplant(m, scnr, donor_path, bak, mask, lift, keep_not_auto=False):
     if not plan:
         return 0
     tmpl = _template(m, base, N, ies)
+    if tmpl is None:
+        # place() has always had this guard; transplant() was written from it and lost
+        # it, so a map with no equipment placements died on uids[None] instead.
+        print('   no template placement in the equipment block')
+        return 0
     uids = [m.u32(base + i * ies + OFF['uid']) for i in range(N)]
     salt, nxt = uids[tmpl] >> 16, max(u & 0xFFFF for u in uids) + 1
     sizes = [(N + len(plan)) * ies] + ([(pc + len(new_pal)) * pes] if new_pal else [])
