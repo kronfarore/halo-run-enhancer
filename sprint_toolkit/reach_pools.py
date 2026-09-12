@@ -233,6 +233,48 @@ def map_names():
         return list(json.load(f)['Missions'][GAME])
 
 
+def _fix_one(name, label, path, m, rows, zb, sets, res, a):
+    """Apply --fix / --fix-all to ONE file and save it under --write. Returns the bits set.
+
+    Each file decides for itself what is missing: a baseline that reach_ek_build has
+    already fixed reports "nothing to fix" even while the live map still needs it.
+    """
+    wanted = ([nm for _k, nm, _i, tags, hits, _p in rows
+               if tags and START_SET not in hits] if a.fix_all else list(a.fix))
+    if not wanted:
+        print('%s %s: nothing to fix' % (name, label))
+        return 0
+    total = 0
+    for nm in wanted:
+        row = next((r for r in rows if r[1] == nm), None)
+        if row is None:
+            print('  %-24s no palette entry' % nm)
+            continue
+        kind, _nm, ident, tags, _hits, _pages = row
+        if tags is None:
+            print('  %-24s tag not in this map' % nm)
+            continue
+        if a.donor:
+            d = next((r for r in rows if r[1] == a.donor), None)
+            dnm, dtags, dpages = (a.donor, d[3], d[5]) if d else (None, None, None)
+        else:
+            dnm, dtags, dpages = pick_donor(rows, kind)
+        if not dtags:
+            print('  %-24s no donor resident at start' % nm)
+            continue
+        n = apply_fix(m, zb, sets, res, ident, dtags, dpages)
+        total += n
+        print('  %-24s <- %-20s %4d bit(s)' % (nm, dnm, n))
+    if a.write and total:
+        m.save(path)
+        print('%s: wrote %d bit(s)' % (path, total))
+    elif total:
+        print('%s %s: dry run; pass --write to save (%d bit(s))' % (name, label, total))
+    else:
+        print('%s %s: nothing to write' % (name, label))
+    return total
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -298,39 +340,38 @@ def main(argv=None):
                       % (k, nm, 'YES' if START_SET in hits else 'no', len(hits)))
             continue
 
-        wanted = ([nm for _k, nm, _i, tags, hits, _p in rows
-                   if tags and START_SET not in hits] if a.fix_all else list(a.fix))
-        if not wanted:
-            print('%s: nothing to fix' % name)
+        # A residency fix has to land in BOTH the live map and the patcher's baseline.
+        # apply_run rebuilds every patch from the baseline, and nothing in the patcher
+        # sets pool bits, so a fix written only to the live map was silently undone by
+        # the very next patch -- the same failure reach_ek_build's publish-last ordering
+        # exists to prevent, in the tool the residency notes point people to.
+        #
+        # The baseline gets its OWN pass rather than a copy of the live map: the live
+        # map usually carries the current run's patch, and that must never reach the
+        # pristine copy. reach_set_at_rest handles its edit the same way.
+        _fix_one(name, 'live', path, m, rows, zb, sets, res, a)
+        base = V.baseline_for(GAME, path)
+        if (not base or not os.path.exists(base)
+                or os.path.normcase(os.path.abspath(base))
+                == os.path.normcase(os.path.abspath(path))):
+            print('%s baseline: none to update' % name)
             continue
-        total = 0
-        for nm in wanted:
-            row = next((r for r in rows if r[1] == nm), None)
-            if row is None:
-                print('  %-24s no palette entry' % nm)
+        try:
+            bm = HP.open_map(base, GAME)
+            bscnr = HP._scnr_base(bm)
+            if bscnr is None:
+                print('%s baseline: no scenario tag' % name)
                 continue
-            kind, _nm, ident, tags, _hits, _pages = row
-            if tags is None:
-                print('  %-24s tag not in this map' % nm)
-                continue
-            if a.donor:
-                d = next((r for r in rows if r[1] == a.donor), None)
-                dnm, dtags, dpages = (a.donor, d[3], d[5]) if d else (None, None, None)
-            else:
-                dnm, dtags, dpages = pick_donor(rows, kind)
-            if not dtags:
-                print('  %-24s no donor resident at start' % nm)
-                continue
-            n = apply_fix(m, zb, sets, res, ident, dtags, dpages)
-            total += n
-            print('  %-24s <- %-20s %4d bit(s)' % (nm, dnm, n))
-        if a.write and total:
-            m.save(path)
-            print('%s: wrote %d bit(s)' % (path, total))
-        elif total:
-            print('dry run; pass --write to save (%d bit(s))' % total)
-        else:
-            print('nothing to write')
+            bzb = zone_base(bm)
+            bsets = zone_sets(bm, bzb)
+            bres = tag_resources(bm, bzb)
+            brows = survey(bm, bscnr, bzb, bsets, kinds, bres)
+        except (Exception, SystemExit) as ex:
+            # zone_base raises SystemExit on a map with no zone tag; a bad baseline must
+            # not take the live fix, already saved above, down with it.
+            print('%s baseline: unreadable (%s)' % (name, ex))
+            continue
+        _fix_one(name, 'baseline', base, bm, brows, bzb, bsets, bres, a)
 
 
 if __name__ == '__main__':
