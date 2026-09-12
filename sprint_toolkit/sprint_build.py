@@ -220,6 +220,18 @@ def main():
     for line in (r.stdout or '').splitlines():
         if 'ability' in line or 'enabled' in line or 'wrote' in line or '!!' in line:
             print(' ', line.strip())
+    if r.returncode != 0:
+        # sprint_tune reports its hard failures through sys.exit(msg), which lands on
+        # stderr -- and this used to print only the filtered stdout above and then DONE.
+        # The build is already deployed and the stale baseline deleted by this point, so
+        # a silent failure left an untuned map in halo1\maps under a success message.
+        err = (r.stderr or '').strip().splitlines()
+        print('TUNE FAILED (exit %d):' % r.returncode)
+        for line in err[-3:] or ['(no message)']:
+            print('   ', line)
+        print('  %s IS deployed, but its ability was NOT enabled or tuned. Fix the '
+              'cause and re-run.' % a.map)
+        sys.exit(1)
     how = 'vanilla (no ability)' if a.ability == 'none' else \
         ('sprint %d%% — hold movement + flashlight key' % a.speed if a.ability == 'sprint'
          else '%s — press the flashlight key to use it' % a.ability)
