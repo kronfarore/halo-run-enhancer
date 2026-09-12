@@ -385,6 +385,14 @@ class Halo3Map:
         index = sid & 0xFFFF
         if namespace != 0:
             return None
+        # Index 0 is the null stringID -- what every unset stringID field holds. The
+        # mapping below is 1-based into the rebuilt tail, so 0 would land on
+        # _sid_strip - 1, the LAST real dynamic string: on 010_jungle, 030_outskirts
+        # and sc110 alike it came back as 'cache_file_resource_gestalt'. That is a
+        # plausible name, so every caller's "or hex(sid)" fallback was bypassed and
+        # an unnamed zone set or animation label was reported under that string.
+        if index == 0:
+            return None
         return self._string_at(self._sid_strip + index - 1)
 
     # --- tag lookups ---

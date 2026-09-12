@@ -5,13 +5,16 @@
 # empirically against all 10 shipped campaign maps (m05_prologue .. m95_epilogue).
 # LITTLE-endian, header version 13, 'daeh' magic — all shared with Halo 3 and Reach.
 #
-# The FOUR divergences from Reach, and nothing else:
+# The FIVE divergences from Reach, and nothing else:
 #
 #   1. THE HEADER TAIL IS SHIFTED 8 BYTES EARLIER. Halo 3 and Reach put the virtual
 #      base at 0x2E0, the index-header VA at 0x2E8, the six-entry partition table at
 #      0x300 and the checksum at 0x360. Halo 4 puts them at 0x2D8 / 0x2E0 / 0x2F8 /
-#      0x358. Everything from 0x00..0x100 (magic, version, build, internal name,
-#      scenario name, the four string-table descriptors) is unmoved.
+#      0x358. The shift reaches back into 0x00..0x100 too: the build stamp, internal
+#      name and scenario name each sit 8 bytes earlier (0x98 / 0xB8 / 0xD8 against
+#      0xA0 / 0xC0 / 0xE0). Only the magic, version and the four string-table
+#      descriptors at 0x20..0x3C are unmoved -- see _parse_header for why the
+#      scenario name is the one that matters.
 #
 #   2. PARTITION SIZE IS 32-BIT. Reach's entry is [load u64][size u64]; Halo 4 keeps
 #      the 0x10 stride but stores [load u64][size u32][u32]. That trailing word is
@@ -55,7 +58,7 @@ from reach_map import ReachMap
 
 
 class Halo4Map(ReachMap):
-    """Parsed Halo 4 MCC cache. See the module docstring for the four ways it
+    """Parsed Halo 4 MCC cache. See the module docstring for the five ways it
     differs from ReachMap; every other behaviour is inherited unchanged."""
 
     HEADER_SIZE = 0x1E000       # 'foot' at 0x1DFFC; Reach 0xA000, Halo 3 0x4000
