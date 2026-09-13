@@ -2488,6 +2488,19 @@ class ModifierDatabase:
         # though halo.json carries the correct `weap weapons\plasma pistol\...` on
         # other cards of the same weapon. Per-game dicts are checked first; the old
         # first-match behaviour is the fallback, so nothing that worked changes.
+        #
+        # "Names this game" means a KEY for it -- or for a game it inherits from, so
+        # ODST still takes Halo 3's entry. A dict that only answers through its
+        # 'default' key does not name anything: Melee Seeking is keyed {default: Halo 3
+        # path, Halo 4: ...}, is not even a Halo 1 card, and being the first dict among
+        # the Plasma Pistol's cards it answered for Halo 1 with the Halo 3 path -- the
+        # very bug described above, back through a different door, on all ten Halo 1
+        # missions. Such a dict now joins the first-match fallback instead.
+        lineage = [game]
+        parent = CONFIG.get('game_inherits', {}).get(game)
+        while parent and parent not in lineage:
+            lineage.append(parent)
+            parent = CONFIG.get('game_inherits', {}).get(parent)
         fallback = None
         for mod in self.weapon_mods.get(self.resolve_weapon(weapon_name), []):
             raw = mod.get('tag')
@@ -2496,7 +2509,7 @@ class ModifierDatabase:
                 continue
             # first of a multi-tag effect; they are variants of one weapon
             one = tag.split(' & ')[0].strip()
-            if isinstance(raw, dict):
+            if isinstance(raw, dict) and any(g in raw for g in lineage):
                 return one
             if fallback is None:
                 fallback = one
