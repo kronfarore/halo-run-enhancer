@@ -623,19 +623,40 @@ def load_settings():
             CONFIG[k] = data[k]
 
 
+def write_json_atomic(path, data):
+    """Write JSON so that no reader ever sees half a file and no crash leaves one.
+
+    The temp file sits BESIDE the target, because os.replace is only atomic within one
+    filesystem, and is named <file>.tmp -- which neither the shared-session loader
+    (glob '*.run') nor the patch-log lookup ('patch_*.json') picks up, so a co-op
+    partner's "Load Latest Shared Session", or a sync client watching that folder,
+    cannot grab it mid-write. A failure part-way removes the temp file and re-raises,
+    leaving the previous file exactly as it was.
+    """
+    path = str(path)
+    tmp = path + '.tmp'
+    try:
+        with open(tmp, 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=2, ensure_ascii=False)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.remove(tmp)
+        except OSError:
+            pass
+        raise
+
+
 def save_settings():
-    """Write settings.json atomically, as _save_hash_memo does.
+    """Write settings.json atomically (write_json_atomic).
 
     Writing the file in place meant a save cut short -- a crash, a full disk, a kill --
     left it truncated, and the next launch could not read it (see load_settings for
     what that cost). Returns False, with the reason printed, when the save failed.
     """
     try:
-        payload = {k: CONFIG.get(k) for k in SETTINGS_KEYS}
-        tmp = app_data_dir() / (SETTINGS_FILE + '.tmp')
-        with open(tmp, 'w', encoding='utf-8') as f:
-            json.dump(payload, f, indent=2, ensure_ascii=False)
-        os.replace(tmp, app_data_dir() / SETTINGS_FILE)
+        write_json_atomic(app_data_dir() / SETTINGS_FILE,
+                          {k: CONFIG.get(k) for k in SETTINGS_KEYS})
         return True
     except Exception as e:
         print('!! settings.json could not be saved: %s' % e)
@@ -7142,8 +7163,7 @@ class MagnitudeEditorDialog(QDialog):
                                                            self.target_difficulty),
                     "timestamp": ts, "groups": grouped, "results": results}
             out = patch_dir / f"patch_{mission}_{ts}.json"
-            with open(out, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2, ensure_ascii=False)
+            write_json_atomic(out, data)
             self._last_patch_file = str(out)     # what "open patch log" reaches for
         except Exception:
             pass  # patch-log failure shouldn't block the actual patch
@@ -11882,8 +11902,8 @@ class HaloGUI(QMainWindow):
             d = Path(folder)
             d.mkdir(parents=True, exist_ok=True)
             path = self._shared_run_path() or (d / self._default_shared_name())
-            with open(path, 'w', encoding='utf-8') as f:
-                json.dump(self._run_bundle(), f, indent=2, ensure_ascii=False)
+            # Atomic: a partner, or a sync client, reads this folder while we write.
+            write_json_atomic(path, self._run_bundle())
             self.shared_run_path = str(path)
             self.update_status(f"Shared session written: {path.name}")
             return path
@@ -11936,8 +11956,7 @@ class HaloGUI(QMainWindow):
             return None
         try:
             target.parent.mkdir(parents=True, exist_ok=True)
-            with open(target, 'w', encoding='utf-8') as f:
-                json.dump(self._run_bundle(), f, indent=2, ensure_ascii=False)
+            write_json_atomic(target, self._run_bundle())
         except Exception as e:
             QMessageBox.warning(self, "Shared folder", f"Couldn't write it:\n{e}")
             return None
@@ -11974,8 +11993,9 @@ class HaloGUI(QMainWindow):
             self, "Save Run", default_path, "Halo Run (*.run)"
         )
         if file_path:
-            with open(file_path, 'w', encoding='utf-8') as f:
-                json.dump(save_data, f, indent=2, ensure_ascii=False)
+            # Atomic: this is usually the only copy of the run, and a save cut short
+            # used to leave a truncated file that "Failed to load run" on next open.
+            write_json_atomic(file_path, save_data)
             # Subsequent saves follow the file the user actually chose.
             self.loaded_run_path = file_path
             self.update_status(f"✅ Selection saved to {file_path}")
