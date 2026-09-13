@@ -356,6 +356,41 @@ def baseline_path(map_path, baseline_root=None, map_subdir=None):
     return sibling if same else str(cand)
 
 
+class BaselineUnreachable(OSError):
+    """The configured baselines folder is on a drive that is not there right now."""
+
+
+def existing_baseline(map_path, baseline_root=None, map_subdir=None):
+    """The pristine copy to READ for `map_path`: the path that exists, or None.
+
+    `baseline_path` answers where the baseline BELONGS, and must stay that literal --
+    `map_vault.move_baselines` computes its destination with it, and a fallback there
+    would hand back the source as its own destination, find the two "identical" and
+    delete the only copy. Reading is a different question. With a root configured, a
+    map whose baseline never moved (a game left out of --games, a conflict left alone)
+    still has its pristine sibling `.bak`, and ignoring it meant patching the LIVE map
+    -- possibly already patched -- as if it were pristine, then copying it into the root
+    as the baseline. Silent, and permanent: every later patch rebuilt from it.
+
+    Raises BaselineUnreachable when nothing exists here AND the root sits on a drive
+    that is not mounted -- an unplugged external drive. Answering "no baseline" there
+    would make the caller treat the live map as pristine.
+    """
+    cand = baseline_path(map_path, baseline_root, map_subdir)
+    if os.path.exists(cand):
+        return cand
+    sibling = str(map_path) + '.bak'
+    if baseline_root and os.path.exists(sibling):
+        return sibling
+    if baseline_root:
+        drive = Path(baseline_root).anchor
+        if drive and not os.path.exists(drive):
+            raise BaselineUnreachable(
+                'the baselines folder %s is not reachable (is its drive connected?) -- '
+                'refusing to treat the live map as pristine' % baseline_root)
+    return None
+
+
 # Some H2 char fields (e.g. Placement Properties' Upgrade Chance family) are
 # difficulty-variant by SUFFIX ("<field> (Legendary)") using different tier
 # names than the matg/weap-style difficulty PREFIX ("Impossible <field>"),
@@ -5448,8 +5483,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     `baseline_root`/`map_subdir` move that pristine copy off the game folder entirely;
     see `baseline_path`. Unset, the baseline stays the sibling `.bak` it has always
     been, so every existing caller keeps its behaviour."""
-    bak = Path(baseline_path(map_path, baseline_root, map_subdir))
-    baseline = str(bak) if (from_baseline and backup and bak.exists()) else map_path
+    # Resolved ONCE: the copy read here and the copy the seed step below checks must be
+    # the same file, or a sibling .bak could be read while the root got seeded from the
+    # live map anyway.
+    found = existing_baseline(map_path, baseline_root, map_subdir) if backup else None
+    bak = Path(found or baseline_path(map_path, baseline_root, map_subdir))
+    baseline = str(bak) if (from_baseline and found) else map_path
     m = open_map(baseline, game)
     results = []
     if difficulty_baseline:
@@ -5760,10 +5799,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):
         if backup:
-            bp = Path(baseline_path(map_path, baseline_root, map_subdir))
-            if not bp.exists():                     # keep the pristine original
-                bp.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(map_path, bp)
-            backup_path = str(bp)
+            if not bak.exists():                    # keep the pristine original
+                bak.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy2(map_path, bak)
+            backup_path = str(bak)
         m.save(map_path)
     return results, backup_path

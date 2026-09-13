@@ -577,9 +577,42 @@ def baseline_source(map_path, game):
     """
     import halo_patch                  # imported lazily, as everywhere else here
     args = baseline_args(game)
-    cand = halo_patch.baseline_path(str(map_path), args['baseline_root'],
-                                    args['map_subdir'])
-    return cand if os.path.exists(cand) else str(map_path)
+    # existing_baseline, as apply_run reads: a map whose baseline never moved into the
+    # folder still has its sibling .bak, and that is the vanilla it must show. With the
+    # folder's drive unplugged this is DISPLAY only, so it falls back to the live map as
+    # before -- the patch itself refuses in that case (BaselineUnreachable).
+    try:
+        found = halo_patch.existing_baseline(str(map_path), args['baseline_root'],
+                                             args['map_subdir'])
+    except halo_patch.BaselineUnreachable:
+        found = None
+    return found or str(map_path)
+
+
+def baseline_root_problem(root):
+    """Why this Baselines folder would hurt, in words -- or None when it looks right.
+
+    Changing the folder was never checked. Point it at an empty or mistyped one and
+    every map whose baseline is not there (and has no sibling .bak) gets its CURRENT
+    live file copied in as "pristine" on its next patch -- and that file may already be
+    patched, so every later patch rebuilds from a modified map. A warning at the moment
+    of the change is the one place the mistake is still free to undo.
+    """
+    root = (root or '').strip()
+    if not root:
+        return None
+    drive = Path(root).anchor
+    if drive and not os.path.exists(drive):
+        return ("is on a drive that is not connected (%s). Patching refuses until it is "
+                "back, rather than treating the live maps as pristine." % drive)
+    folders = [f for f in (CONFIG.get('map_game_folder') or {}).values() if f]
+    if any(Path(root, f).is_dir() and any(Path(root, f).glob('*.map')) for f in folders):
+        return None
+    return ("holds no baselines yet -- no <game folder>\\*.map under it. A map with no "
+            "copy there and no .bak beside it will have its CURRENT live file copied in "
+            "as the pristine original on its next patch; if that map is already patched, "
+            "the copy is not pristine. Move the existing baselines in first:\n\n"
+            "  python sprint_toolkit\\map_vault.py --move-baselines \"%s\" --yes" % root)
 
 
 def baseline_phrase(plural=False):
@@ -4274,6 +4307,10 @@ class MagnitudeEditorDialog(QDialog):
         save_settings()
         self._srcmap = None
         _SRC_PRELOAD.clear()
+        problem = baseline_root_problem(new)
+        if problem:
+            QMessageBox.warning(self, "Baselines folder",
+                                "%s\n\n%s" % (new, problem))
 
     def _browse_baseline_root(self):
         start = self.baseline_edit.text().strip() or mcc_root() or str(app_data_dir())
@@ -7449,9 +7486,10 @@ class OptionsDialog(QDialog):
             "the patcher has always done. Point it at another drive and the game "
             "folders hold only what MCC loads, and the originals sit out of reach of a "
             "Steam update (which deletes modded maps in place). The per-game subfolder "
-            "is kept under this root, so all five games can share it. Use "
-            "‘Move baselines…’ to populate it from the .bak files you "
-            "already have.")
+            "is kept under this root, so all five games can share it. To populate it "
+            "from the .bak files you already have, run "
+            "sprint_toolkit\\map_vault.py --move-baselines <folder> (add --yes to do "
+            "it; it verifies every copy before deleting a source).")
         self.plugins_dir_edit = _folder_row(
             "Assembly plugins:", 'assembly_plugins_dir',
             "Select Assembly plugins folder",
@@ -11907,9 +11945,15 @@ class HaloGUI(QMainWindow):
         onto the current run so they travel with its save."""
         dlg = OptionsDialog(self)
         if dlg.exec() == QDialog.Accepted:
+            old_root = (CONFIG.get('baseline_root') or '').strip()
             for k, v in dlg.values().items():
                 CONFIG[k] = v
             save_settings()
+            new_root = (CONFIG.get('baseline_root') or '').strip()
+            problem = baseline_root_problem(new_root) if new_root != old_root else None
+            if problem:
+                QMessageBox.warning(self, "Baselines folder",
+                                    "%s\n\n%s" % (new_root, problem))
             self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
             if hasattr(self, 'add_mod_btn'):        # debug tools show/hide live
                 self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
