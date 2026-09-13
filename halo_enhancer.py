@@ -5176,7 +5176,14 @@ class MagnitudeEditorDialog(QDialog):
         on = self._betrayal_drawn(skulls)
         path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
         if not os.path.exists(path):
-            return []
+            # Say so, as the score rescale does. An empty list here printed nothing at
+            # all, so a drawn Betrayal skull that changed nothing read exactly like one
+            # where no Marine happened to die. Only a failure when the skull is on;
+            # with it off there is simply nothing to revert.
+            return [{'tag': scoredb_patch.SCOREDB_REL, 'effect': 'Betrayal scoring',
+                     'field': 'Marine rows', 'ok': not on, 'skip': not on,
+                     'reason': 'scoredb.xml not found under the MCC folder -- set the '
+                               'MCC root in Options'}]
         rows = []
         try:
             changed = scoredb_patch.set_marine_sign(path, positive=on)
