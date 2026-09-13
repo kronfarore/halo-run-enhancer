@@ -9219,7 +9219,11 @@ class OptionsDialog(QDialog):
                 cb.setChecked(st == {'APPLIED'})
                 states[label] = ('applied' if st == {'APPLIED'} else
                                  'not applied' if st == {'not applied'} else
-                                 'PARTIAL/UNRECOGNISED — re-apply to fix')
+                                 'UNRECOGNISED — not this tool\'s bytes; left alone'
+                                 if 'UNRECOGNISED' in st else
+                                 'superseded by a newer patch' if st == {'superseded'} else
+                                 'PARTIAL — tick to finish it, or untick and Apply '
+                                 'to undo it')
             # The Arbiter fix reports beside Camo on the Abilities page, where the
             # person deciding whether they need it actually is, so it is left out of
             # the Patching summary rather than stated twice.
@@ -9251,9 +9255,25 @@ class OptionsDialog(QDialog):
             want = cb.isChecked()
             for k in keys:
                 try:
-                    if (hp2.state_of(k) == 'APPLIED') != want:
-                        hp2.apply(k, revert=not want)
-                        done.append('%s %s' % ('applied' if want else 'reverted', k))
+                    # Act on the state the box ASKS for, not on "is it APPLIED". The old
+                    # test only compared against APPLIED, so a PARTIAL patch (some sites
+                    # written, some not) shows unticked and was left half-on when the box
+                    # stayed unticked -- the one state that most needs cleaning up.
+                    # h2_dll_patch.apply already handles PARTIAL both ways: it skips the
+                    # sites already in the target form and verifies the rest first.
+                    # 'superseded' is left alone when unticked: those bytes belong to the
+                    # patch that replaced it, and reverting would clobber that one.
+                    st = hp2.state_of(k)
+                    if want and st != 'APPLIED':
+                        hp2.apply(k)
+                        done.append('applied %s' % k)
+                    elif not want and st == 'UNRECOGNISED':
+                        failed.append('%s: the bytes match neither form -- left alone '
+                                      '(a different halo2.dll?)' % k)
+                    elif not want and st in ('APPLIED', 'PARTIAL'):
+                        hp2.apply(k, revert=True)
+                        done.append('reverted %s%s' % (k, ' (was partial)'
+                                                       if st == 'PARTIAL' else ''))
                 except SystemExit as e:          # refused: bytes did not match
                     failed.append('%s: %s' % (k, e))
                 except PermissionError:
