@@ -582,6 +582,22 @@ def baseline_source(map_path, game):
     return cand if os.path.exists(cand) else str(map_path)
 
 
+def baseline_phrase(plural=False):
+    """Where the pristine copies live, in words, for a confirmation or a report.
+
+    The dialogs used to say ".bak" -- "a one-time .bak is made", "the .bak files beside
+    the maps" -- which stopped being true the moment the baselines moved to their own
+    folder. A prompt that names the wrong place is how a user ends up checking, or
+    deleting, the wrong files.
+    """
+    root = (CONFIG.get('baseline_root') or '').strip()
+    if root:
+        return ('the pristine baselines in %s' if plural
+                else 'its pristine baseline in %s') % root
+    return ('the .bak files beside the maps' if plural
+            else 'its pristine .bak beside the map')
+
+
 # Set by load_settings() when settings.json EXISTS but could not be read. main() puts it
 # in front of the user once the QApplication exists; toolkit scripts see it printed.
 SETTINGS_LOAD_ERROR = None
@@ -4869,9 +4885,10 @@ class MagnitudeEditorDialog(QDialog):
         btns = QHBoxLayout()
         apply_btn = QPushButton("💾 Patch Map")
         apply_btn.setToolTip("Back up and apply to the map \u2014 writes every magnitude typed here "
-                             "into the level's .map. The level's pristine .bak is made on the "
-                             "first patch and every later patch rebuilds FROM it, so patching "
-                             "is repeatable and never compounds.")
+                             "into the level's .map. The level's pristine copy (its baseline: a "
+                             ".bak beside the map, or in the Baselines folder set in Options) "
+                             "is kept on the first patch and every later patch rebuilds FROM "
+                             "it, so patching is repeatable and never compounds.")
         apply_btn.setStyleSheet("background-color: #5a3a2a; color: white; font-weight: bold; padding: 8px 16px; border-radius: 5px;")
         apply_btn.clicked.connect(self._apply)
         live_btn = QPushButton(self.LIVE_ONLY_LABEL)
@@ -6892,7 +6909,8 @@ class MagnitudeEditorDialog(QDialog):
             self, "Apply to map?",
             f"Write {sum(len(i['ops']) for i in plan)} edit(s)"
             + (" + " + " + ".join(extras) if extras else "")
-            + f" into:\n{map_path}\n\nA one-time backup (.bak) of the original will be made first.")
+            + f" into:\n{map_path}\n\nThe original is preserved once, as "
+            + f"{baseline_phrase()}, and every patch rebuilds from it.")
         if confirm != QMessageBox.Yes:
             return
 
@@ -9688,8 +9706,10 @@ class OptionsDialog(QDialog):
         msg = "Restored %d map(s) from the archive." % done
         if failed:
             msg += "\n\nFailed:\n" + "\n".join(failed[:10])
-        msg += ("\n\nThe .bak files beside the maps were NOT touched, so the next patch "
-                "still rebuilds from whatever they hold.")
+        # Upper-case only the first letter: str.capitalize() would lower-case the path.
+        bl = baseline_phrase(plural=True)
+        msg += ("\n\n%s were NOT touched, so the next patch still rebuilds from "
+                "whatever they hold." % (bl[:1].upper() + bl[1:]))
         QMessageBox.information(self, "Restore from archive", msg)
 
     def _refresh_baseline_vanilla(self):
@@ -9912,12 +9932,22 @@ class OptionsDialog(QDialog):
                                   f"{self.regen_duration.value():g}s",
                   'camo': f"{self.camo_duration.value():g}s / "
                           f"{self.camo_cooldown.value():g}s cd"}.get(which, '')
+        # Each map is REBUILT from its baseline -- it has to be: switching from sprint
+        # to another ability writes no speed edits at all, so patching the live map in
+        # place would leave the old sprint speed and weapon penalties behind. But this
+        # button holds no run, so whatever run effects a map carried are gone after it,
+        # with nothing to say so. It said "a one-time .bak is made", which was both the
+        # wrong place and the wrong worry. Say it, and default to No.
         if QMessageBox.question(
                 self, "Apply abilities to maps?",
                 f"Turn on {which} ({detail}) for both players "
                 f"in up to {len(present)} Halo 1 map(s) under:\n{Path(root) / folder}\n\n"
-                "Maps not built with the ability mod are skipped. A one-time .bak is made "
-                "for each map changed.") != QMessageBox.Yes:
+                "Maps not built with the ability mod are skipped.\n\n"
+                f"Each map is REBUILT from {baseline_phrase()}, with only these "
+                "ability settings: any run effects already patched into it are REMOVED. "
+                "Patch the current level from the patcher again afterwards to put them "
+                "back.",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No) != QMessageBox.Yes:
             return
 
         subdirs = CONFIG.get('plugin_subdirs_by_game', {}).get('Halo 1', ['Halo1MCC', 'Halo1'])
