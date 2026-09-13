@@ -3187,31 +3187,31 @@ class ModifierDatabase:
             return None
         # Filter first, then pick, so a blacklisted roll doesn't suppress
         # the wildcard entirely when other choices remain.
-        available = [m for m in self.wildcard_pool
-                     if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
-                     and self._cross_game_ok(m) and not mod_ignored(m)]
+        #
+        # Through filter_blacklisted, like every other pool. These three draws used to
+        # carry their own copy of its first four tests and none of the rest -- the
+        # requires_config gate, the superseded-vitality drop and the absent-Flood /
+        # allied-Elite exclusions -- so a wildcard-flagged Elite card, or an ally card
+        # behind an Options gate, would have reached the Other slot while every other
+        # slot refused it. Nothing slips through today (measured over all six games);
+        # this keeps it that way when such a card is added.
+        available = self.filter_blacklisted(self.wildcard_pool, blacklist, game)
         return random.choice(available) if available else None
 
     def get_skull_modifier_filtered(self, active_names, blacklist, game=None):
         """#7: draw a Skull to stand in for a normal negative. A skull is a whole-map
         rule, so the same one twice does nothing extra — already-active skulls are
         excluded. Whether skulls are offered at all is the Other slot's own switch."""
-        available = [m for m in self.skull_pool
-                     if m.get('name') not in active_names
-                     and self.get_mod_label(m) not in blacklist
-                     and self._game_ok(m, game) and self._cross_game_ok(m)
-                     and not mod_ignored(m)]
+        available = [m for m in self.filter_blacklisted(self.skull_pool, blacklist, game)
+                     if m.get('name') not in active_names]
         return random.choice(available) if available else None
 
     def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
         """#5: draw a one-map Exhaust from the general negative pool, excluding
         negatives already active this run (so there's never an overlap to
         unwind) and anything blacklisted / off-game. None if nothing is left."""
-        available = [m for m in self.negative_pool
-                     if m.get('name') not in active_names
-                     and self.get_mod_label(m) not in blacklist
-                     and self._game_ok(m, game) and self._cross_game_ok(m)
-                     and not mod_ignored(m)]
+        available = [m for m in self.filter_blacklisted(self.negative_pool, blacklist, game)
+                     if m.get('name') not in active_names]
         return random.choice(available) if available else None
 
     def special_names(self):
