@@ -11642,14 +11642,18 @@ class HaloGUI(QMainWindow):
         bl = self.run_state.blacklist
         if mod_type in ('player1', 'player2'):
             if pair.get('new_weapon'):
-                # Reroll the offered weapon (level pool minus owned, other offers, blacklist).
-                level = self.db.get_level_weapons(self.run_state.mission_id)
-                owned = set(self.run_state.weapons_for(mod_type))
+                # Reroll the offered weapon from the SAME pool that dealt it:
+                # RunEnhancer._new_weapon_pool, which carries every offer rule -- upgrades
+                # only behind their option and an owned base, duals, equipment, denied
+                # equipment, the other player's picks, one ability per player. This used
+                # to rebuild a pool from the raw level list, so a reroll could hand out
+                # what the roll itself never would: the Brute Plasma Rifle on the nine
+                # Halo 2 levels that stock it, with upgrades off, or player 2's own gun.
+                # The recurring two-offer-paths bug, in a third path.
+                pool = self.enhancer._new_weapon_pool(mod_type)
                 used = {p['new_weapon'] for p in self.run_state.pairs
                         if p is not pair and p.get('new_weapon')}
-                pool = [w for w in level
-                        if w not in owned and w not in used and not self._blacklisted_weapon(w)] \
-                    or [w for w in level if w not in owned and not self._blacklisted_weapon(w)]
+                pool = [w for w in pool if w not in used] or pool
                 if pool:
                     pair['new_weapon'] = random.choice(pool)
             else:
