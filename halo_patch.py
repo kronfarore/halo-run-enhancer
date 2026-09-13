@@ -123,6 +123,9 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          'easier_when': mod.get('easier_when'),
                          'init_defaults': mod.get('init_defaults'),
                          'constraints': mod.get('constraints'),
+                         # writes into the running MCC, not the map: the patcher warns
+                         # before patching with MCC closed (true, or a short reason)
+                         'requires_mcc': mod.get('requires_mcc'),
                          '_missing_in_db': mod.get('_missing_in_db'),
                          # source identity, so the patcher can remove it from the run
                          'weapon': mod.get('weapon'), 'enemy': mod.get('enemy'),

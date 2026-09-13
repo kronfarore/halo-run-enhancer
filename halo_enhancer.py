@@ -6423,10 +6423,69 @@ class MagnitudeEditorDialog(QDialog):
     def _run_busy(self, fn, title="Patching", label="Working"):
         return run_busy(self, fn, title, label)
 
+    @staticmethod
+    def _mcc_running():
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import death_penalty
+            return bool(death_penalty.find_pid())
+        except Exception:
+            return True       # cannot tell -- do not nag
+
+    def _mcc_required(self, skulls):
+        """[(what, why)] for everything this patch is about to write into the RUNNING
+        MCC rather than into a file -- the "Requires MCC running" flag. With MCC closed
+        these fail, and even when they land an MCC restart discards them.
+
+        Two sources: a card carrying `"requires_mcc"` in halo.json (true, or a short
+        reason), and the patcher's own live steps, each listed only when it would
+        actually run. The score rescale is NOT one: it writes scoredb.xml, which MCC
+        reads at its next start, so it does not fail with MCC closed."""
+        out = []
+        for e in self.effects:
+            r = e.get('requires_mcc')
+            if r:
+                out.append((e.get('name') or '?',
+                            r if isinstance(r, str) else 'written into the running game'))
+        if CONFIG.get('death_penalty_scaling'):
+            out.append(('Death penalty',
+                        'scaled in the running game (Options → Patching)'))
+        if CONFIG.get('betrayal_marines_score') and (
+                self._betrayal_drawn(skulls) or self._betrayal_left_on()):
+            out.append(('Betrayal scoring',
+                        'the sign guard lives in the running game; the Marine rows in '
+                        'ScoreDB.XML are still written and apply at the next MCC start'))
+        return out
+
+    def _confirm_mcc_closed(self, skulls):
+        """False when the user backs out of patching with MCC closed. Asks only when
+        something flagged "Requires MCC running" is actually part of this patch."""
+        need = self._mcc_required(skulls)
+        if not need or self._mcc_running():
+            return True
+        lines = '\n'.join('  • %s — %s' % (w, why) for w, why in need)
+        box = QMessageBox(QMessageBox.Warning, "MCC is not running",
+                          "MCC is not running, and part of this patch has to be written "
+                          "into the running game rather than into the map. With MCC "
+                          "closed these will FAIL:\n\n%s\n\n"
+                          "Even once applied they only last until MCC closes — a "
+                          "restart of MCC discards them, so patch again after starting it."
+                          "\n\nThe map patch itself is unaffected." % lines,
+                          parent=self)
+        go = box.addButton("Patch anyway", QMessageBox.AcceptRole)
+        box.addButton(QMessageBox.Cancel)
+        box.setDefaultButton(QMessageBox.Cancel)
+        box.exec()
+        return box.clickedButton() is go
+
     def _apply(self):
         map_path = self.map_edit.text().strip()
         if not Path(map_path).is_file():
             QMessageBox.warning(self, "Map not found", f"Not a file:\n{map_path}")
+            return
+        # Before anything is written: live steps fail with MCC closed, and that is the
+        # user's call to make, not a surprise in the results.
+        if not self._confirm_mcc_closed([e['skull'] for e in self.effects if e.get('skull')]):
             return
 
         # #7: canonicalize every entry BEFORE it is read, so the magnitudes stored in
