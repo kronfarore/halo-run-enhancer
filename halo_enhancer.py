@@ -1016,6 +1016,15 @@ CONFIG = {
             "Silenced SMG": "weap objects\\weapons\\rifle\\smg_silenced\\smg_silenced",
             "Plasma Rifle": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red",
             "Brute Plasma Rifle": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
+        },
+        # Halo 1's c20 and d20 list the Flamethrower (the Flood combat Elite's), and
+        # both maps carry it as `weap weapons\flamethrower\flamethrower`. It has no
+        # Halo 1 cards yet -- deferred -- so weap_tag_for fell back to the first
+        # plain-string tag among its cards: Halo 3's turret path, which no Halo 1 map
+        # has. Picking it as a starting weapon or for Map Presence there pointed the
+        # patch at a missing tag.
+        "Halo 1": {
+            "Flamethrower": "weap weapons\\flamethrower\\flamethrower"
         }
     },
     "odst_shield_into_health_pair": {"from": "Starting Shield Modifier",
