@@ -6662,6 +6662,7 @@
 					]
 				},
 				"Zoom": {
+					"requires_config": "turret_zoom_first_person",
 					"desc": "Magnification Levels, Magnification Range",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
@@ -6879,6 +6880,7 @@
 					]
 				},
 				"Zoom": {
+					"requires_config": "turret_zoom_first_person",
 					"desc": "Magnification Levels, Magnification Range",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
@@ -7100,6 +7102,7 @@
 					]
 				},
 				"Zoom": {
+					"requires_config": "turret_zoom_first_person",
 					"desc": "Magnification Levels, Magnification Range",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
@@ -7264,6 +7267,7 @@
 					]
 				},
 				"Zoom": {
+					"requires_config": "turret_zoom_first_person",
 					"desc": "Magnification Levels, Magnification Range",
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
