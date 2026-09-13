@@ -368,7 +368,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'zoom_ui_on_scopeless', 'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
-               'reach_pools_from_map',
+               'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
@@ -844,6 +844,11 @@ CONFIG = {
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
     "reach_pools_from_map": False,
+    # Halo 4's counterpart: a rebuilt Halo 4 map carries one designer zone, dz_enhancer,
+    # holding everything that mission should offer (built in the Editing Kit and switched
+    # on in zone set 0), and with this on that zone IS the level's pool. A map without it
+    # keeps its own halo.json list.
+    "h4_pools_from_map": False,
     "reach_spawn_starting_weapons": False,
     "reach_spawn_all_weapons": False,
     "reach_placement_radius": 0.25,
@@ -2223,7 +2228,8 @@ class ModifierDatabase:
         self.mission_boss = {}      # mission_id -> list of boss names (#4)
         self._odst_pool_cache = {}  # mission_id -> offer names derived from the map
         self._reach_pool_cache = {}  # (mission, kind) -> names the Reach map can grant
-        self._reach_name_table = {}  # kind -> {tag basename: offer name}
+        self._reach_name_table = {}  # (game, kind) -> {tag basename: offer name}
+        self._h4_pool_cache = {}     # (mission, kind) -> what dz_enhancer offers
         try:
             self.load_data()
         except Exception as e:
@@ -2648,6 +2654,8 @@ class ModifierDatabase:
             return game, ('weapons', 'equipment')
         if game == 'Halo 3: ODST' and CONFIG.get('odst_pools_from_map'):
             return game, ('weapons',)
+        if game == 'Halo 4' and CONFIG.get('h4_pools_from_map'):
+            return game, ('weapons', 'equipment')
         return game, ()
 
     def map_pools_ready(self, mission_id):
@@ -2665,6 +2673,9 @@ class ModifierDatabase:
         for kind in kinds:
             if game == 'Halo Reach':
                 if (mission_id, kind) in self._reach_pool_cache:
+                    continue
+            elif game == 'Halo 4':
+                if (mission_id, kind) in self._h4_pool_cache:
                     continue
             elif mission_id in self._odst_pool_cache:
                 continue
@@ -2688,6 +2699,9 @@ class ModifierDatabase:
         if (CONFIG.get('reach_pools_from_map')
                 and self.mission_games.get(mission_id) == 'Halo Reach'):
             return self.reach_map_pool(mission_id, 'equipment') or declared
+        if (CONFIG.get('h4_pools_from_map')
+                and self.mission_games.get(mission_id) == 'Halo 4'):
+            return self.h4_map_pool(mission_id, 'equipment') or declared
         return declared
 
     def warm_map_pools(self, mission_id):
@@ -2697,6 +2711,8 @@ class ModifierDatabase:
         for kind in kinds:
             if game == 'Halo Reach':
                 self.reach_map_pool(mission_id, kind)
+            elif game == 'Halo 4':
+                self.h4_map_pool(mission_id, kind)
             else:
                 self.odst_map_pool(mission_id)
 
@@ -2732,26 +2748,55 @@ class ModifierDatabase:
         self._odst_pool_cache[mission_id] = names
         return names
 
-    def _reach_offer_names(self, kind):
+    def _reach_offer_names(self, kind, game='Halo Reach'):
         """{tag basename: offer name} for everything the enhancer has cards for.
 
         Built from the mod tables rather than a hand-kept list, so a weapon can only
-        be offered if it actually has modifiers to draw.
+        be offered if it actually has modifiers to draw. Per game: Halo 4 reuses it for
+        its dz_enhancer pool, and its tags are not Reach's.
         """
-        table = self._reach_name_table.get(kind)
+        table = self._reach_name_table.get((game, kind))
         if table is not None:
             return table
         table = {}
         mods = self.weapon_mods if kind == 'weapons' else self.equipment_mods
         for disp in sorted(mods):
-            tag = (self.weap_tag_for(disp, 'Halo Reach') if kind == 'weapons'
-                   else self.eqip_tag_for(disp, 'Halo Reach'))
+            tag = (self.weap_tag_for(disp, game) if kind == 'weapons'
+                   else self.eqip_tag_for(disp, game))
             if not tag or ' ' not in tag:
                 continue
             bn = tag.split(' ', 1)[1].split('&')[0].strip().rsplit(chr(92), 1)[-1]
             table.setdefault(bn, disp)
-        self._reach_name_table[kind] = table
+        self._reach_name_table[(game, kind)] = table
         return table
+
+    def _order_like_declared(self, declared, offered, kind):
+        """The map's offer names, in the level's halo.json order first, then the rest.
+
+        A level may declare an ALIAS -- eight Reach missions say "Magnum" where the
+        card is "Pistol". Matching on the raw string drops the declared entry and
+        re-adds the same weapon under its canonical name, which reads as a loss and
+        moves it to the end. Compare canonically, keep the level's own spelling and
+        position.
+        """
+        offered = set(offered)
+
+        def _canon(n):
+            return (self.resolve_weapon(n) if kind == 'weapons'
+                    else self.resolve_equipment(n)) or n
+        by_canon = {}
+        for disp in offered:
+            by_canon.setdefault(_canon(disp), disp)
+        names = []
+        for disp in declared:                      # halo.json order first
+            hit = by_canon.get(_canon(disp))
+            if hit and disp not in names:
+                names.append(disp)
+                offered.discard(hit)
+        for disp in sorted(offered):               # then what the map adds
+            if disp not in names:
+                names.append(disp)
+        return names
 
     def reach_map_pool(self, mission_id, kind='weapons'):
         """Everything the level's MAP can actually grant -- which may EXCEED its list.
@@ -2798,31 +2843,60 @@ class ModifierDatabase:
             have = halo_patch.reach_map_items(m, 'Halo Reach', kind)
             table = self._reach_offer_names(kind)
             offered = {table[bn] for bn in have if bn in table}
-
-            def _canon(n):
-                return (self.resolve_weapon(n) if kind == 'weapons'
-                        else self.resolve_equipment(n)) or n
-            # A level may declare an ALIAS -- eight missions say "Magnum" where the
-            # card is "Pistol". Matching on the raw string drops the declared entry
-            # and re-adds the same weapon under its canonical name, which reads as a
-            # loss and moves it to the end. Compare canonically, keep the level's own
-            # spelling and position.
-            by_canon = {}
-            for disp in offered:
-                by_canon.setdefault(_canon(disp), disp)
-            for disp in declared:                      # halo.json order first
-                hit = by_canon.get(_canon(disp))
-                if hit and disp not in names:
-                    names.append(disp)
-                    offered.discard(hit)
-            for disp in sorted(offered):               # then what the map adds
-                if disp not in names:
-                    names.append(disp)
+            names = self._order_like_declared(declared, offered, kind)
             pool_cache_put(ck, src, names)
         except Exception as e:
             print(f"Reach {kind} pool from map failed for {mission_id}: {e}")
             names = []
         self._reach_pool_cache[key] = names
+        return names
+
+    def h4_map_pool(self, mission_id, kind='weapons'):
+        """What the level's dz_enhancer designer zone offers -- the Halo 4 pool.
+
+        On a rebuilt Halo 4 map the user builds one designer zone, dz_enhancer, holding
+        everything that mission should offer, and switches it on in zone set 0 so all
+        of it is resident at the start. That zone IS the pool: it replaces the level's
+        halo.json list, widening or narrowing it, in halo.json order where the two
+        agree. Items with no cards (jackal shields, the Sentinels' built-in beam) drop
+        out through the name table, as on Reach.
+
+        Returns [] -- the caller then keeps the halo.json list -- for a map without a
+        live dz_enhancer, i.e. one not rebuilt yet. There is no residency fix to fall
+        back on: writing Halo 4 pool bits crashes the game (sprint_toolkit/h4_pools).
+        The answer is stamped against the baseline like every other pool, so a rebuild
+        changes the stamp and is read afresh.
+        """
+        key = (mission_id, kind)
+        if key in self._h4_pool_cache:
+            return self._h4_pool_cache[key]
+        declared = list((self.mission_weapons if kind == 'weapons'
+                         else self.mission_equipment).get(mission_id) or [])
+        names = []
+        try:
+            import halo_patch
+            src = self._pool_src('Halo 4', mission_id)
+            ck = 'Halo 4|%s|%s' % (mission_id, kind)
+            remembered = pool_cache_get(ck, src)
+            if remembered is not None:
+                self._h4_pool_cache[key] = remembered
+                return remembered
+            m = halo_patch.open_map(src, 'Halo 4')
+            have, why = halo_patch.h4_enhancer_items(m, 'Halo 4', kind)
+            if have is None:
+                print(f"Halo 4 {kind} pool for {mission_id}: {why} -- keeping the "
+                      f"level's own list")
+                pool_cache_put(ck, src, [])
+                self._h4_pool_cache[key] = []
+                return []
+            table = self._reach_offer_names(kind, 'Halo 4')
+            offered = {table[bn] for bn in have if bn in table}
+            names = self._order_like_declared(declared, offered, kind)
+            pool_cache_put(ck, src, names)
+        except Exception as e:
+            print(f"Halo 4 {kind} pool from map failed for {mission_id}: {e}")
+            names = []
+        self._h4_pool_cache[key] = names
         return names
 
     def get_level_weapons(self, mission_id):
@@ -2836,6 +2910,9 @@ class ModifierDatabase:
         if (CONFIG.get('reach_pools_from_map')
                 and self.mission_games.get(mission_id) == 'Halo Reach'):
             wl = self.reach_map_pool(mission_id, 'weapons') or wl
+        if (CONFIG.get('h4_pools_from_map')
+                and self.mission_games.get(mission_id) == 'Halo 4'):
+            wl = self.h4_map_pool(mission_id, 'weapons') or wl
         # ODST's Auto Magnum / Silenced SMG. Treated as the base weapon, the level
         # offers the ordinary card (the variant is what the player actually gets, in
         # the map); treated as upgrades, the base card is what the level offers and
@@ -6556,6 +6633,8 @@ class MagnitudeEditorDialog(QDialog):
         # Reach reads the same way for the same reason, now that its pool widens too.
         if CONFIG.get('reach_pools_from_map') and db.mission_games.get(mid) == 'Halo Reach':
             onmap |= set(db.reach_map_pool(mid, 'weapons') or ())
+        if CONFIG.get('h4_pools_from_map') and db.mission_games.get(mid) == 'Halo 4':
+            onmap |= set(db.h4_map_pool(mid, 'weapons') or ())
         return [w for w in ZOOM_DONOR_WEAPONS.get(self.game, []) if w in onmap]
 
     def _build_zoom_source_row(self):
@@ -8859,6 +8938,21 @@ class OptionsDialog(QDialog):
             "only Dawn, Reclaimer and Composer carry the sprint tag.")
         h4form.addRow("Sprint:", self.h4_sprint_combo)
 
+        self.h4_pools_cb = QCheckBox(
+            "Halo 4: offer what each map's dz_enhancer zone holds")
+        self.h4_pools_cb.setChecked(bool(CONFIG.get('h4_pools_from_map')))
+        self.h4_pools_cb.setToolTip(
+            "Off: each Halo 4 level offers its own weapon and ability list."
+            "\n\n"
+            "On: the pool is what the rebuilt map's dz_enhancer designer zone holds -- "
+            "the zone built in the Editing Kit to carry everything that mission should "
+            "offer, switched on in zone set 0 so all of it is loaded at the start."
+            "\n\n"
+            "A level without that zone -- not rebuilt yet, or with the zone left out of "
+            "zone set 0 -- keeps its own list, so nothing is offered that would not "
+            "spawn.")
+        h4form.addRow("Halo 4 pools:", self.h4_pools_cb)
+
         # The same marker hand-over Reach has. Its own switch, because the markers are
         # placed per game in Sapien -- turning it on for Reach says nothing about
         # whether the Halo 4 maps have been prepared yet.
@@ -9306,6 +9400,7 @@ class OptionsDialog(QDialog):
             'odst_patch_hub': self.odst_hub_cb.isChecked(),
             'odst_pools_from_map': self.odst_pools_cb.isChecked(),
             'reach_pools_from_map': self.reach_pools_cb.isChecked(),
+            'h4_pools_from_map': self.h4_pools_cb.isChecked(),
             'reach_spawn_starting_weapons': self.reach_spawn_weapons_cb.isChecked(),
             'reach_spawn_all_weapons': self.reach_spawn_all_cb.isChecked(),
             'reach_placement_radius': float(self.reach_radius.value()),

@@ -3379,6 +3379,114 @@ def reach_map_items(m, game, kind='weapons'):
     return out
 
 
+#: The designer zone a rebuilt Halo 4 map carries for the enhancer: the user builds it
+#: in the Editing Kit to hold everything that mission should offer, and switches it on in
+#: zone set 0 so all of it is resident when the mission starts.
+H4_ENHANCER_ZONE = 'dz_enhancer'
+_H4_DESIGNER_ZONESETS = (0x778, 0xF4)          # scnr "Designer Zonesets" (Halo4MCC scnr.xml)
+_H4_DZS_PALETTE_BLOCK = {'weapons': 0x28, 'equipment': 0x34}   # int16 palette indices
+_H4_ZONE_SETS = (0x100, 0x1A0)                 # scnr zone sets, element size
+_H4_DESIGNER_FLAGS = 0x11C                     # authored 32-bit; 64-bit runtime flags at +4
+_H4_ZONE_PREFIXES = ('dz', 'cin', 'bsp', 'zone')
+
+
+def _h4_string_rows(m):
+    """{string: table row} for a Halo 4 map, built once and kept on the map."""
+    tbl = getattr(m, '_h4_string_rows', None)
+    if tbl is None:
+        tbl = {}
+        if m._locate_stringids():
+            for i in range(m.str_tbl_count):
+                s = m._string_at(i)
+                if s and s not in tbl:
+                    tbl[s] = i
+        m._h4_string_rows = tbl
+    return tbl
+
+
+def h4_designer_zone(m, name=H4_ENHANCER_ZONE):
+    """Index of the scenario designer zoneset called `name`, or None.
+
+    Zoneset names are namespace-0 stringIDs, which map to the string table through a
+    per-map offset (6841 on Dawn -- see _h4_scope_sids); resolve_stringid ignores it and
+    reads "campaign_film" where the map says "dz_00_cryo_room". So calibrate rather than
+    assume: of the offsets that put some zoneset on `name`, take the one that lands the
+    most zonesets on zone-looking names (dz_/cin_/bsp_...), and refuse unless at least
+    half of them do. On Dawn that is 49 of 49.
+    """
+    rows = _h4_string_rows(m)
+    target = rows.get(name)
+    scnr = _scnr_base(m)
+    if target is None or scnr is None:
+        return None
+    off, es = _H4_DESIGNER_ZONESETS
+    b, n = _block_base(m, scnr + off), max(0, m.i32(scnr + off))
+    if not b or not n:
+        return None
+    sids = [m.u32(b + k * es) for k in range(n)]
+    name_at = {i: s for s, i in rows.items()}
+
+    def zoneish(i):
+        s = name_at.get(i)
+        return bool(s) and s.split('_')[0] in _H4_ZONE_PREFIXES
+    best, score = None, -1
+    for sid in sids:
+        if sid >> 17:
+            continue
+        d = target - sid
+        sc = sum(zoneish(x + d) for x in sids if not x >> 17)
+        if sc > score:
+            best, score = d, sc
+    if best is None or score < max(1, n // 2):
+        return None
+    return next((k for k, sid in enumerate(sids)
+                 if not sid >> 17 and sid + best == target), None)
+
+
+def h4_enhancer_items(m, game, kind='weapons'):
+    """(basenames, reason): what this Halo 4 map's dz_enhancer zone holds.
+
+    basenames is None -- with the reason -- when the map cannot answer: no dz_enhancer
+    (a map not rebuilt yet), or one that zone set 0 does not switch on, so nothing in it
+    is loaded when the mission starts and an offer from it would not spawn. There is no
+    residency fix to fall back on here: writing Halo 4 pool bits crashes the game (see
+    sprint_toolkit/h4_pools.py), so the Editing Kit zone is the whole mechanism.
+    """
+    if str(game).strip() != 'Halo 4':
+        return None, 'not a Halo 4 map'
+    k = h4_designer_zone(m)
+    if k is None:
+        return None, 'no %s designer zone (map not rebuilt with it yet)' % H4_ENHANCER_ZONE
+    scnr = _scnr_base(m)
+    zoff, _zes = _H4_ZONE_SETS
+    zs = _block_base(m, scnr + zoff)
+    flags = 0
+    if zs and m.i32(scnr + zoff) > 0:
+        flags = m.u32(zs + _H4_DESIGNER_FLAGS) | struct.unpack_from(
+            '<Q', m.data, zs + _H4_DESIGNER_FLAGS + 4)[0]
+    if not flags & (1 << k):
+        return None, ('%s is not switched on by zone set 0, so nothing in it is loaded '
+                      'at the mission start' % H4_ENHANCER_ZONE)
+    lay = (_MAP_WEAPONS if kind == 'weapons' else _MAP_EQUIPMENT)['Halo 4']
+    poff, pes = lay['palette']
+    pbase, pn = _block_base(m, scnr + poff), max(0, m.i32(scnr + poff))
+    names = {}
+    for i in range(pn) if pbase else []:
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if nm:
+            names[i] = str(nm).rsplit(chr(92), 1)[-1]
+    off, es = _H4_DESIGNER_ZONESETS
+    dz = _block_base(m, scnr + off) + k * es
+    boff = _H4_DZS_PALETTE_BLOCK[kind]
+    ib, cnt = _block_base(m, dz + boff), max(0, m.i32(dz + boff))
+    out = set()
+    for i in range(cnt) if ib else []:
+        nm = names.get(struct.unpack_from('<h', m.data, ib + i * 2)[0])
+        if nm:
+            out.add(nm)
+    return out, ''
+
+
 def reach_protected_slots(m, game, block='equipment'):
     """Placement indices a swap must LEAVE ALONE.
 
