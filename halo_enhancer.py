@@ -365,7 +365,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
-               'zoom_ui_on_scopeless', 'turrets_are_weapons',
+               'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
                'reach_pools_from_map', 'h4_pools_from_map',
@@ -804,6 +804,11 @@ CONFIG = {
     # map into its HUD so the zoom actually shows a scope. Structurally grows the
     # HUD tag — verify a patched map still loads in-game.
     "zoom_ui_on_scopeless": True,
+    # A carried turret (machinegun turret, plasma cannon, missile pod...) puts the
+    # player in a third-person view, where a Zoom card's magnification does nothing.
+    # With this on, a turret given a Zoom plays in first person instead so the zoom
+    # works -- with no gun model, since no turret ships a first-person one.
+    "turret_zoom_first_person": True,
     # Detached turrets -- the machinegun turret, plasma cannon, missile pod and
     # flamethrower -- are placed as VEHICLES, not weapon pickups, so they never
     # appeared in a level's `weapons` list and could never be drawn. With this on,
@@ -6670,6 +6675,17 @@ class MagnitudeEditorDialog(QDialog):
                 if item.get('name') == 'Zoom' and str(item.get('tag', '')).startswith('weap ')]
         return tags or None
 
+    def _turret_zoom_spec(self, plan):
+        """weap tag paths of the Zoom effects in this plan, for dropping a carried
+        turret's third-person view. Independent of the scope option: the view is what
+        blocks the zoom, scope or no scope. The patcher only touches weapons that set
+        the third-person bit, so passing every Zoom is safe."""
+        if not CONFIG.get('turret_zoom_first_person', True):
+            return None
+        tags = [item['tag'] for item in plan
+                if item.get('name') == 'Zoom' and str(item.get('tag', '')).startswith('weap ')]
+        return tags or None
+
     def _zoom_donor_candidates(self):
         """Scope-source weapons offered to the user: real scoped weapons that are
         guaranteed present on this mission's map (its level weapon pool)."""
@@ -7039,7 +7055,8 @@ class MagnitudeEditorDialog(QDialog):
         spawn_equipment = self._spawn_equipment_spec()
         spawn_weapons = self._spawn_weapons_spec()
         zoom_ui = self._zoom_ui_spec(plan)
-        remove_cutscenes = bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
+        turret_fp = self._turret_zoom_spec(plan)
+        remove_cutscenes =bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
         # them straight off the effects list.
         skulls = [e['skull'] for e in self.effects if e.get('skull')]
@@ -7064,6 +7081,7 @@ class MagnitudeEditorDialog(QDialog):
                       f"starting equipment"] if spawn_equipment else [])
                   + (["scatter map weapons"] if weapon_swaps else [])
                   + (["add scope UI where missing"] if zoom_ui else [])
+                  + (["first-person view for zoomed turrets"] if turret_fp else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
@@ -7092,6 +7110,7 @@ class MagnitudeEditorDialog(QDialog):
                 **baseline_args(self.game),
                 starting=starting, weapon_swaps=weapon_swaps,
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
+                turret_first_person=turret_fp,
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -7810,6 +7829,15 @@ class OptionsDialog(QDialog):
                                    "(e.g. Brute Shot, Sentinel Beam), copy a scope overlay from a scoped weapon "
                                    "on the map so the zoom shows a scope. Structurally grows the HUD tag.")
         wform.addRow("Scope UI:", self.zoom_ui_cb)
+
+        self.turret_zoom_cb = QCheckBox("Turrets given a Zoom switch to first person")
+        self.turret_zoom_cb.setChecked(bool(CONFIG.get('turret_zoom_first_person', True)))
+        self.turret_zoom_cb.setToolTip(
+            "A carried turret puts you in a third-person view, and there a Zoom does "
+            "nothing. With this on, a turret whose Zoom is patched plays in first person "
+            "so the zoom works. No turret ships a first-person model, so you see only the "
+            "crosshair. Off keeps the third-person view (and the zoom stays dead).")
+        wform.addRow("Turret zoom:", self.turret_zoom_cb)
 
         self.turret_weapons_cb = QCheckBox("Turrets are weapons")
         self.turret_weapons_cb.setChecked(bool(CONFIG.get('turrets_are_weapons')))
@@ -9536,6 +9564,7 @@ class OptionsDialog(QDialog):
             'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
+            'turret_zoom_first_person': self.turret_zoom_cb.isChecked(),
             'turrets_are_weapons': self.turret_weapons_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
             'remove_flood_from_odst': self.remove_flood_cb.isChecked(),

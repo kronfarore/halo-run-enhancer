@@ -4890,6 +4890,47 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
     return out
 
 
+# "Uses 3rd Person Camera" in the weapon's main Flags, per game (offset, bit), read off
+# each MCC plugin. Every CARRIED turret from Halo 3 on sets it and ships no First
+# Person block at all; mounted turrets and vehicle guns never set it -- their camera
+# comes from the seat. With it set the player's view goes over the shoulder and a
+# Zoom card's magnification does nothing, so turret zoom has to drop the bit.
+_THIRD_PERSON_BIT = {'Halo 3': (0x18C, 15), 'Halo 3: ODST': (0x19C, 15),
+                     'Halo Reach': (0x204, 15), 'Halo 4': (0x2A0, 16)}
+
+
+def _turret_first_person(m, game, targets):
+    """Clear "Uses 3rd Person Camera" on every target weapon (weap tag paths, `&`
+    joined variants included) that sets it, so a turret given a Zoom plays in first
+    person where the zoom works. Weapons without the bit -- every ordinary gun, and
+    mounted turrets -- are left alone and not reported."""
+    at = _THIRD_PERSON_BIT.get(str(game).strip())
+    if not at:
+        return []
+    off, bit = at
+    names = []
+    for tag in targets:
+        _, joined = hm.split_tag(tag)
+        for part in str(joined).split(' & '):
+            part = part.strip()
+            if part and part not in names:
+                names.append(part)
+    out = []
+    for name in names:
+        wb = _weap_base(m, name)
+        if wb is None:
+            continue
+        v = m.u32(wb + off)
+        if not (v >> bit) & 1:
+            continue
+        struct.pack_into('<I', m.data, wb + off, v & ~(1 << bit) & 0xFFFFFFFF)
+        out.append({'effect': 'turret zoom', 'field': name.rsplit(chr(92), 1)[-1],
+                    'ok': True, 'old': 'third-person view',
+                    'new': 'first-person view, so the Zoom works (the turret has no '
+                           'first-person model: only the crosshair shows)'})
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
@@ -5572,6 +5613,7 @@ def _apply_sprint(m, game, registry, cfg):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
+              turret_first_person=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
@@ -5845,6 +5887,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # them in everywhere), so wherever it can turn up, this can correct it.
     if _run_grants_autoturret(spawn_equipment, equipment_swaps):
         results.extend(_fix_autoturret_team(m, game, registry))
+
+    if turret_first_person:
+        # A carried turret's third-person camera ignores magnification: drop it for
+        # the turrets this patch gives a Zoom. One flag bit, no growth.
+        results.extend(_turret_first_person(m, game, turret_first_person))
 
     if zoom_ui:
         # Structural growth LAST: copy a donor scope overlay into each scopeless
