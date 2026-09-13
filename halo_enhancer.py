@@ -5111,6 +5111,38 @@ class MagnitudeEditorDialog(QDialog):
                          'reason': pushed.get('reason')})
         return rows
 
+    @staticmethod
+    def _betrayal_drawn(skulls):
+        return any(str(s).strip().lower() == 'betrayal' for s in (skulls or ()))
+
+    def _betrayal_left_on(self):
+        """True when an earlier Betrayal run is still in effect: a positive Marine row
+        in scoredb.xml, or the wrapper's sign guard still open in a running MCC. That
+        is the only case a run WITHOUT the skull has anything to patch -- the revert.
+        Cheap (a file read and a two-byte process read, no table scan); never raises."""
+        try:
+            import scoredb_patch
+            path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
+            if os.path.exists(path):
+                with open(path, encoding='utf-8') as f:
+                    text = f.read()
+                if any(float(m.group(2)) > 0 for m in scoredb_patch.MARINE_ROW.finditer(text)):
+                    return True
+        except Exception:
+            pass
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import death_penalty
+            h, base, _pid, err = death_penalty.attach()
+            if err:
+                return False
+            try:
+                return death_penalty.betrayal_state(h, base)[0] == 'open'
+            finally:
+                death_penalty.k32.CloseHandle(h)
+        except Exception:
+            return False
+
     def _apply_betrayal_scoring(self, skulls):
         r"""Make Marines score like enemies while the Betrayal skull is active.
 
@@ -5133,7 +5165,7 @@ class MagnitudeEditorDialog(QDialog):
         """
         import scoredb_patch
         sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
-        on = any(str(s).strip().lower() == 'betrayal' for s in (skulls or ()))
+        on = self._betrayal_drawn(skulls)
         path = os.path.join(mcc_root(), scoredb_patch.SCOREDB_REL)
         if not os.path.exists(path):
             return []
@@ -6724,11 +6756,17 @@ class MagnitudeEditorDialog(QDialog):
 
         # AFTER the rescale: that regenerates scoredb.xml from the pristine baseline,
         # so a sign flip applied before it would simply be overwritten.
+        # Only when the Betrayal skull was DRAWN -- or when an earlier Betrayal run left
+        # Marines paying out and that has to be undone. Otherwise there is nothing to
+        # patch, and it stays out of the patch entirely: no dialog, no row.
         if CONFIG.get('betrayal_marines_score'):
-            results.extend(self._run_busy(
-                lambda: self._apply_betrayal_scoring(skulls),
-                title="Betrayal scoring",
-                label="Setting how Marines score"))
+            drawn = self._betrayal_drawn(skulls)
+            if drawn or self._betrayal_left_on():
+                results.extend(self._run_busy(
+                    lambda: self._apply_betrayal_scoring(skulls),
+                    title="Betrayal scoring",
+                    label=("Setting how Marines score" if drawn
+                           else "Putting Marine scoring back")))
 
         # Same footing: a live write to another process, never fatal to the map patch.
         if CONFIG.get('death_penalty_scaling'):
