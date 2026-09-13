@@ -45,6 +45,7 @@ sys.path.insert(0, os.path.dirname(HERE))
 sys.path.insert(0, HERE)
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 import halo_patch as HP                                          # noqa: E402
+import map_vault as V                                            # noqa: E402
 import reach_pools as RP                                         # noqa: E402
 
 EK = r"F:\SteamLibrary\steamapps\common\HREK"
@@ -57,15 +58,13 @@ MAP_SUBDIR = 'haloreach/maps'
 def baseline_root():
     """The enhancer's configured Baselines folder, or '' for the sibling .bak.
 
-    Read straight out of settings.json rather than by importing halo_enhancer, which
-    would drag in Qt for one string.
+    Read through map_vault, which reads settings.json directly rather than importing
+    halo_enhancer (and Qt) for one string.
     """
-    try:
-        with io.open(os.path.join(os.path.dirname(HERE), 'settings.json'),
-                     encoding='utf-8') as f:
-            return json.load(f).get('baseline_root') or ''
-    except Exception:
-        return ''
+    # One reader for the whole toolkit. This used to be a private copy that returned ''
+    # on an unreadable settings.json -- writing baselines beside the maps while the
+    # patcher read them from the Baselines folder. map_vault's refuses to guess.
+    return V.baseline_root()
 
 
 def campaign_maps():

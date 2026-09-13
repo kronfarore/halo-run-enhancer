@@ -33,6 +33,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+sys.path.insert(0, HERE)
+import map_vault as V                                            # noqa: E402
 import halo_patch as HP                                          # noqa: E402
 
 EK = r"F:\SteamLibrary\steamapps\common\H3ODSTEK"
@@ -44,12 +46,10 @@ MAP_SUBDIR = 'halo3odst/maps'
 
 def baseline_root():
     """The enhancer's configured Baselines folder, or '' for the sibling .bak."""
-    try:
-        with io.open(os.path.join(os.path.dirname(HERE), 'settings.json'),
-                     encoding='utf-8') as f:
-            return json.load(f).get('baseline_root') or ''
-    except Exception:
-        return ''
+    # One reader for the whole toolkit. This used to be a private copy that returned ''
+    # on an unreadable settings.json -- writing baselines beside the maps while the
+    # patcher read them from the Baselines folder. map_vault's refuses to guess.
+    return V.baseline_root()
 
 
 def baseline_of(dst):

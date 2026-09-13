@@ -89,11 +89,22 @@ def baseline_root():
     would drag in Qt for one string. Every toolkit tool that needs a pristine map
     should come through here, so there is exactly one answer per install.
     """
-    try:
-        with io.open(os.path.join(TOOL, 'settings.json'), encoding='utf-8') as f:
-            return json.load(f).get('baseline_root') or ''
-    except Exception:
+    p = os.path.join(TOOL, 'settings.json')
+    if not os.path.exists(p):
         return ''
+    try:
+        with io.open(p, encoding='utf-8') as f:
+            doc = json.load(f)
+    except Exception as ex:
+        # A missing file means "never configured"; an UNREADABLE one means we do not
+        # know. Returning '' here made every toolkit writer put its baseline beside the
+        # map while the patcher, once the file was repaired, read it from the Baselines
+        # folder -- two stores disagreeing, silently. A CLI tool can stop and say so;
+        # nothing in the GUI or halo_patch calls this.
+        raise SystemExit('settings.json could not be read (%s) -- refusing to guess '
+                         'where the baselines live. Fix it, or restore '
+                         'settings.json.unreadable if the enhancer kept one.' % ex)
+    return (doc.get('baseline_root') if isinstance(doc, dict) else None) or ''
 
 
 def baseline_for(game, map_path):

@@ -579,24 +579,62 @@ def baseline_source(map_path, game):
     return cand if os.path.exists(cand) else str(map_path)
 
 
+# Set by load_settings() when settings.json EXISTS but could not be read. main() puts it
+# in front of the user once the QApplication exists; toolkit scripts see it printed.
+SETTINGS_LOAD_ERROR = None
+
+
 def load_settings():
+    """Merge settings.json into CONFIG.
+
+    A MISSING file is the first run and stays silent. An UNREADABLE one used to be
+    treated the same way, and that was not harmless: every path in it fell back to its
+    default without a word -- the Baselines folder above all. With the pristine maps
+    moved off the game folder, the patcher then looked for the sibling .bak, found
+    nothing, patched the already-patched live map as if it were pristine, and SEEDED a
+    new baseline from it, so every later patch built on the damage. The unreadable
+    file is now kept as settings.json.unreadable and the reason recorded.
+    """
+    global SETTINGS_LOAD_ERROR
+    path = app_data_dir() / SETTINGS_FILE
+    if not path.exists():
+        return
     try:
-        with open(app_data_dir() / SETTINGS_FILE, encoding='utf-8') as f:
+        with open(path, encoding='utf-8') as f:
             data = json.load(f)
-        for k in SETTINGS_KEYS:
-            if k in data:
-                CONFIG[k] = data[k]
-    except Exception:
-        pass
+        if not isinstance(data, dict):
+            raise ValueError('the top level is a %s, not an object' % type(data).__name__)
+    except Exception as e:
+        SETTINGS_LOAD_ERROR = '%s: %s' % (type(e).__name__, e)
+        try:
+            shutil.copy2(str(path), str(path) + '.unreadable')
+        except Exception:
+            pass
+        print('!! settings.json could not be read (%s); every setting is at its default'
+              % SETTINGS_LOAD_ERROR)
+        return
+    for k in SETTINGS_KEYS:
+        if k in data:
+            CONFIG[k] = data[k]
 
 
 def save_settings():
+    """Write settings.json atomically, as _save_hash_memo does.
+
+    Writing the file in place meant a save cut short -- a crash, a full disk, a kill --
+    left it truncated, and the next launch could not read it (see load_settings for
+    what that cost). Returns False, with the reason printed, when the save failed.
+    """
     try:
         payload = {k: CONFIG.get(k) for k in SETTINGS_KEYS}
-        with open(app_data_dir() / SETTINGS_FILE, 'w', encoding='utf-8') as f:
+        tmp = app_data_dir() / (SETTINGS_FILE + '.tmp')
+        with open(tmp, 'w', encoding='utf-8') as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
-    except Exception:
-        pass
+        os.replace(tmp, app_data_dir() / SETTINGS_FILE)
+        return True
+    except Exception as e:
+        print('!! settings.json could not be saved: %s' % e)
+        return False
 
 
 # Configuration
@@ -12477,6 +12515,17 @@ def main():
             + "\n\nThe app will still open — affected features (mainly map "
               "patching) won't work until this is resolved. See the README's "
               "Requirements section.")
+
+    if SETTINGS_LOAD_ERROR:
+        QMessageBox.warning(
+            None, "Settings could not be read",
+            "settings.json exists but could not be read, so every setting is back to its "
+            "default for this session:\n\n    %s\n\nThat includes the MCC folder and "
+            "the Baselines folder. Patching now would take the pristine maps from the "
+            "game folder instead of your Baselines folder -- and with the pristine maps "
+            "moved away, it would treat the live, already-patched maps as pristine.\n\n"
+            "The unreadable file was kept as settings.json.unreadable. Fix it or copy it "
+            "back, then restart before patching." % SETTINGS_LOAD_ERROR)
 
     try:
         window = HaloGUI()
