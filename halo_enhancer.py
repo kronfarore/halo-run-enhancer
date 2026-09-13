@@ -4756,6 +4756,13 @@ class MagnitudeEditorDialog(QDialog):
                              "is repeatable and never compounds.")
         apply_btn.setStyleSheet("background-color: #5a3a2a; color: white; font-weight: bold; padding: 8px 16px; border-radius: 5px;")
         apply_btn.clicked.connect(self._apply)
+        live_btn = QPushButton(self.LIVE_ONLY_LABEL)
+        live_btn.setToolTip("Apply ONLY what has to be written into the running game — the "
+                            "death penalty and Betrayal scoring — without touching the map. "
+                            "Those are lost every time MCC closes, so press this after "
+                            "starting MCC instead of patching the map again. Needs MCC running.")
+        live_btn.setStyleSheet("background-color: #4a2a5a; color: white; padding: 8px 14px; border-radius: 5px;")
+        live_btn.clicked.connect(self._apply_live_only)
         next_empty_btn = QPushButton("⤓ Next empty entry")
         next_empty_btn.setToolTip("Jump to the next blank operator field")
         next_empty_btn.setStyleSheet("background-color: #2a3a5a; color: white; padding: 8px 14px; border-radius: 5px;")
@@ -4789,6 +4796,7 @@ class MagnitudeEditorDialog(QDialog):
         close_btn = QPushButton("Close")
         close_btn.clicked.connect(self.reject)
         btns.addWidget(apply_btn)
+        btns.addWidget(live_btn)
         btns.addWidget(top_btn)
         btns.addWidget(next_round_btn)
         btns.addWidget(next_empty_btn)
@@ -6423,6 +6431,41 @@ class MagnitudeEditorDialog(QDialog):
     def _run_busy(self, fn, title="Patching", label="Working"):
         return run_busy(self, fn, title, label)
 
+    # One string, so the MCC-closed warning always names the button as it is labelled.
+    LIVE_ONLY_LABEL = "⚡ Only MCC live patch"
+
+    def _apply_live_only(self):
+        """Run ONLY the steps flagged "Requires MCC running" -- no map, no plan, no
+        patch log, no patch code. For after an MCC start, when those steps have been
+        discarded but the map patch still stands, so re-patching the map is not needed.
+        Covers exactly what `_mcc_required` lists; the warning reads the same list."""
+        skulls = [e['skull'] for e in self.effects if e.get('skull')]
+        need = self._mcc_required(skulls)
+        if not need:
+            QMessageBox.information(
+                self, "Only MCC live patch",
+                "Nothing in this patch needs MCC running — no death penalty scaling, and "
+                "no Betrayal scoring to set or undo. Patch Map covers everything.")
+            return
+        if not self._mcc_running():
+            QMessageBox.warning(
+                self, "MCC is not running",
+                "These are written into the running game, so MCC has to be running:\n\n"
+                + '\n'.join('  • %s' % w for w, _why, _run in need)
+                + "\n\nStart MCC, then press this again.")
+            return
+        results = []
+        for what, _why, run in need:
+            if run is None:
+                results.append({'effect': what, 'field': '', 'ok': True, 'skip': True,
+                                'reason': 'a card, no live-only path -- Patch Map applies it'})
+                continue
+            try:
+                results.extend(run() or [])
+            except Exception as e:
+                results.append({'effect': what, 'field': '', 'ok': False, 'reason': str(e)})
+        self._show_results(results, None, map_patch=False)
+
     @staticmethod
     def _mcc_running():
         try:
@@ -6433,28 +6476,38 @@ class MagnitudeEditorDialog(QDialog):
             return True       # cannot tell -- do not nag
 
     def _mcc_required(self, skulls):
-        """[(what, why)] for everything this patch is about to write into the RUNNING
-        MCC rather than into a file -- the "Requires MCC running" flag. With MCC closed
+        """[(what, why, run)] for everything this patch writes into the RUNNING MCC
+        rather than into a file -- the "Requires MCC running" flag. With MCC closed
         these fail, and even when they land an MCC restart discards them.
 
-        Two sources: a card carrying `"requires_mcc"` in halo.json (true, or a short
-        reason), and the patcher's own live steps, each listed only when it would
-        actually run. The score rescale is NOT one: it writes scoredb.xml, which MCC
-        reads at its next start, so it does not fail with MCC closed."""
+        `run` is the step itself (returns result rows), which is what the "Only MCC
+        live patch" button executes, so the warning and the button can never disagree
+        about what counts. It is None for a halo.json card flagged `"requires_mcc"`
+        (true, or a short reason): a card has no live path of its own, Patch Map
+        applies it.
+
+        The patcher's own live steps are listed only when they would actually run. The
+        score rescale is NOT one: it writes scoredb.xml, which MCC reads at its next
+        start, so it does not fail with MCC closed."""
         out = []
         for e in self.effects:
             r = e.get('requires_mcc')
             if r:
                 out.append((e.get('name') or '?',
-                            r if isinstance(r, str) else 'written into the running game'))
+                            r if isinstance(r, str) else 'written into the running game',
+                            None))
         if CONFIG.get('death_penalty_scaling'):
             out.append(('Death penalty',
-                        'scaled in the running game (Options → Patching)'))
+                        'scaled in the running game (Options → Patching)',
+                        self._apply_death_penalty))
         if CONFIG.get('betrayal_marines_score') and (
                 self._betrayal_drawn(skulls) or self._betrayal_left_on()):
             out.append(('Betrayal scoring',
                         'the sign guard lives in the running game; the Marine rows in '
-                        'ScoreDB.XML are still written and apply at the next MCC start'))
+                        'ScoreDB.XML are still written and apply at the next MCC start',
+                        lambda: self._run_busy(lambda: self._apply_betrayal_scoring(skulls),
+                                               title="Betrayal scoring",
+                                               label="Setting how Marines score")))
         return out
 
     def _confirm_mcc_closed(self, skulls):
@@ -6463,14 +6516,16 @@ class MagnitudeEditorDialog(QDialog):
         need = self._mcc_required(skulls)
         if not need or self._mcc_running():
             return True
-        lines = '\n'.join('  • %s — %s' % (w, why) for w, why in need)
+        lines = '\n'.join('  • %s — %s' % (w, why) for w, why, _run in need)
         box = QMessageBox(QMessageBox.Warning, "MCC is not running",
                           "MCC is not running, and part of this patch has to be written "
                           "into the running game rather than into the map. With MCC "
                           "closed these will FAIL:\n\n%s\n\n"
                           "Even once applied they only last until MCC closes — a "
-                          "restart of MCC discards them, so patch again after starting it."
-                          "\n\nThe map patch itself is unaffected." % lines,
+                          "restart of MCC discards them.\n\n"
+                          "The map patch itself is unaffected. To apply just these "
+                          "later, start MCC and press “%s” in this window — it does not "
+                          "touch the map." % (lines, self.LIVE_ONLY_LABEL),
                           parent=self)
         go = box.addButton("Patch anyway", QMessageBox.AcceptRole)
         box.addButton(QMessageBox.Cancel)
@@ -6870,7 +6925,7 @@ class MagnitudeEditorDialog(QDialog):
         save_settings()
         super().done(r)
 
-    def _show_results(self, results, backup):
+    def _show_results(self, results, backup, map_patch=True):
         # #4: three buckets — Applied (a real write), Skipped (a deliberate no-op:
         # already-scoped scope, weapon that rounds/trims to 0, an H2-only field on
         # an H1 map), and Failed (an edit that should have landed but didn't).
@@ -6880,8 +6935,10 @@ class MagnitudeEditorDialog(QDialog):
         lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
         # #10: a short code standing for what was written, so two players can check
         # they ended up with the same patch instead of comparing lists by eye.
-        code = self._hp.patch_signature(results, self.map_edit.text().strip(),
-                                        self.target_difficulty)
+        # Not for a live-only run (map_patch=False): it wrote nothing to the map, and
+        # its code would overwrite the map's real one in the main window.
+        code = (self._hp.patch_signature(results, self.map_edit.text().strip(),
+                                         self.target_difficulty) if map_patch else None)
         if code:
             lines.append(f"Patch code: {code}   (same code = same patch; compare with "
                          f"your co-op partner)")
