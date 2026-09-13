@@ -4179,7 +4179,13 @@ _H3_CHUD_TEXTS = (0x44, 0x48)
 _CHUD_BLOCKS = {
     'Halo 3': {'widgets': (0x0, 0x50), 'bitmaps': (0x38, 0x54), 'texts': (0x44, 0x48)},
     'Halo 3: ODST': {'widgets': (0x0, 0x50), 'bitmaps': (0x38, 0x54), 'texts': (0x44, 0x48)},
-    'Halo Reach': {'widgets': (0x0, 0xDC), 'bitmaps': (0x98, 0x9C), 'texts': (0xA4, 0x84)},
+    # Reach adds a ROOT block, Compiled Widget Data: one 0x5C entry per bitmap/text
+    # child, in widget order (each widget's bitmaps, then its texts), carrying that
+    # child's inputs and its compiled state triggers. It is what the engine reads to
+    # draw -- a child without an entry never renders. Measured on all 49 HUDs on m10:
+    # entries == bitmap + text children, every time.
+    'Halo Reach': {'widgets': (0x0, 0xDC), 'bitmaps': (0x98, 0x9C), 'texts': (0xA4, 0x84),
+                   'compiled': (0x1C, 0x5C)},
 }
 # Reach's zoom test: a widget whose 'Yes' State Data carries trigger code 0x55 only
 # renders while zoomed. States (0x1C, 0x38) -> 'Yes' States (0x0, 0xC) ->
@@ -4283,9 +4289,30 @@ def _h3_copy_scope(m, dst_hud, src_hud, game='Halo 3: ODST'):
     dst_base = _block_base(m, dst_hud + woff)
     if dst_base is None:
         return 0
+    # Reach: every copied child needs its Compiled Widget Data entry too, appended in
+    # the same order the children land (after all existing ones), or it never draws.
+    comp_new, comp_dst = [], None
+    if B.get('compiled'):
+        coff, cesz = B['compiled']
+
+        def leaves(hud):
+            return [k for w in _h3_chud_elems(m, hud, B['widgets'])
+                    for blk in ('bitmaps', 'texts') for k in _h3_chud_elems(m, w, B[blk])]
+        src_leaves, src_comp = leaves(src_hud), _h3_chud_elems(m, src_hud, B['compiled'])
+        comp_dst = _h3_chud_elems(m, dst_hud, B['compiled'])
+        if len(src_comp) != len(src_leaves) or len(comp_dst) != len(leaves(dst_hud)):
+            raise ValueError('compiled widget data does not line up with its widgets '
+                             '(donor %d/%d, target %d/%d) -- refusing to guess'
+                             % (len(src_comp), len(src_leaves),
+                                len(comp_dst), len(leaves(dst_hud))))
+        at = {k: i for i, k in enumerate(src_leaves)}
+        for _, bms, txt in parts:
+            comp_new += [src_comp[at[k]] for k in bms + txt]
     sizes = [(dst_n + len(parts)) * wesz]
     for _, bms, txt in parts:
         sizes += [len(bms) * B['bitmaps'][1], len(txt) * B['texts'][1]]
+    if comp_new:
+        sizes.append((len(comp_dst) + len(comp_new)) * B['compiled'][1])   # reserved LAST
     offs = _h3_reserve(m, [s for s in sizes if s])
     if offs is None:
         return None                       # no slack: caller reports it, nothing written
@@ -4305,6 +4332,13 @@ def _h3_copy_scope(m, dst_hud, src_hud, game='Halo 3: ODST'):
                 m.data[arr + j * besz:arr + (j + 1) * besz] = m.data[k:k + besz]
             struct.pack_into('<iI', m.data, e + boff, len(kids), m.off2data(arr))
             copied += len(kids)
+    if comp_new:
+        carr = next(it)
+        coff, cesz = B['compiled']
+        for i, c in enumerate(comp_dst + comp_new):
+            m.data[carr + i * cesz:carr + (i + 1) * cesz] = m.data[c:c + cesz]
+        struct.pack_into('<iI', m.data, dst_hud + coff,
+                         len(comp_dst) + len(comp_new), m.off2data(carr))
     # repoint last, so a failure above leaves the HUD untouched
     struct.pack_into('<iI', m.data, dst_hud + woff, dst_n + len(parts), m.off2data(warr))
     return copied
@@ -4715,7 +4749,12 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
                         'reason': 'no scoped donor weapon in this map'})
             continue
         if z.get('nested'):
-            copied = _h3_copy_scope(m, hud, donor_hud, game)
+            try:
+                copied = _h3_copy_scope(m, hud, donor_hud, game)
+            except ValueError as e:
+                out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
+                            'reason': str(e)})
+                continue
             if copied is None:
                 out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
                             'reason': 'no free space in the map to grow the HUD'})
