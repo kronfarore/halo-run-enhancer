@@ -1350,6 +1350,21 @@ def weapon_upgrades():
     return ups
 
 
+def strip_upgrades(pool):
+    """A fresh-pick pool without its upgrade weapons (#3).
+
+    An upgrade is only ever offered through unlocked_offer_items, which checks that the
+    player owns its base. A level that simply STOCKS one -- Halo 2 places the Brute
+    Plasma Rifle on nine missions -- must not hand it out as an ordinary pick. Both
+    fresh-pick pools come through here: the button's _game_weapon_pool and the automatic
+    rolls' RunEnhancer._new_weapon_pool. Only the first used to strip them, so the
+    automatic rolls offered the Brute Plasma Rifle outright on those nine missions, with
+    auto_new_weapon_upgrades off and no Plasma Rifle owned -- the two-offer-paths bug.
+    """
+    ups = weapon_upgrades()
+    return [w for w in pool if w not in ups]
+
+
 def upgrade_allowed_here(game, weapon):
     """False if `weapon` is restricted to games other than `game`. Covers weapons
     that simply don't exist in a later game (the Brute Plasma Rifle) or stopped
@@ -10343,9 +10358,8 @@ class HaloGUI(QMainWindow):
         change): the game's weapon pool minus blacklisted weapons AND minus
         upgrade weapons (#3), which must only be reachable via the New Weapon
         button's explicit "base already owned" check in `_weapon_offer_pool`."""
-        upgrades = weapon_upgrades()
-        pool = [w for w in self.db.get_game_weapons(self._current_game())
-                if not self._blacklisted_weapon(w) and w not in upgrades]
+        pool = [w for w in strip_upgrades(self.db.get_game_weapons(self._current_game()))
+                if not self._blacklisted_weapon(w)]
         pool = strip_denied_equipment(self.db, pool)
         pool = gate_offer_pool(self.db, pool, self.run_state, player)
         pool = pool + self._ability_offer_pool(player)
@@ -12223,7 +12237,10 @@ class RunEnhancer:
     def _new_weapon_pool(self, player):
         owned = set(self.run_state.weapons_for(player))
         bl = self.run_state.blacklist
-        pool = list(self.db.get_level_weapons(self.run_state.mission_id))
+        # Upgrades out of the base pool, exactly as the button's pool does (see
+        # strip_upgrades). They come back below only through unlocked_offer_items --
+        # behind auto_new_weapon_upgrades and the base-owned check.
+        pool = strip_upgrades(self.db.get_level_weapons(self.run_state.mission_id))
         # New option: H3 equipment can turn up in a New Weapon draw too. Equipment
         # has no weapon mods of its own (get_weapon_modifiers degrades to []), so a
         # picked piece just grants the item, same as a weapon with no mods would.
