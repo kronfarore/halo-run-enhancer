@@ -1,5 +1,266 @@
 {
  "entries": {
+  "Halo 3: ODST|h100|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    732319744,
+    "ed52b73868e4c79ff5b143a2e2e31738e31eaf37888ed0fc2cb4c49979545652"
+   ]
+  },
+  "Halo 3: ODST|l200|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    712413184,
+    "eca5b3704ef3bb683eaebda987d149338cdc44324ad2fbe5bb7c77dcf293edc3"
+   ]
+  },
+  "Halo 3: ODST|l300|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    632741888,
+    "e91b8270c43fe0ef18ec6677d02920802ae9a4bceed6fbad0a049fc8aa81cbb8"
+   ]
+  },
+  "Halo 3: ODST|sc100|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    521719808,
+    "5223d21bcb89a03409a04dfc4d58c55063fb5c5e9d20fa39d6f13114edddbabf"
+   ]
+  },
+  "Halo 3: ODST|sc110|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    550227968,
+    "888f912283b53f07745ebe1deb4d1f459a6272b0b734497ec59eebdcd4bd5532"
+   ]
+  },
+  "Halo 3: ODST|sc120|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    495529984,
+    "1d2abb7cd63c3b5171806bcf78ef953463179a25306ec4b363d0790302ad6b2f"
+   ]
+  },
+  "Halo 3: ODST|sc130|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    514473984,
+    "39e7d35f84d3e576aeff86989f2a45086677075c561b0f8f303f32627f7a3461"
+   ]
+  },
+  "Halo 3: ODST|sc140|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    491876352,
+    "59e11a16be9169e0a2a311e576e28a5815d0005b2c061100abb0b6d9184d29e0"
+   ]
+  },
+  "Halo 3: ODST|sc150|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Auto Magnum",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Brute Shot",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Mauler",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "SMG",
+    "Silenced SMG",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    434155520,
+    "03425d82c82b6143d2d2112da06a4fcfecec18733ec1ad8a66540b7eab0a5abc"
+   ]
+  },
   "Halo Reach|m10|equipment": {
    "names": [
     "Armor Lock",
