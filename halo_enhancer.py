@@ -4703,7 +4703,7 @@ class MagnitudeEditorDialog(QDialog):
         srow.setContentsMargins(0, 0, 0, 0)
         srow.addWidget(QLabel("🔍 Find:"))
         self.search_edit = QLineEdit()
-        self.search_edit.setPlaceholderText("effect name… (Enter / F3 cycles matches, Shift+Enter goes back)")
+        self.search_edit.setPlaceholderText("card, effect or field name… (Enter / F3 cycles matches, Shift+Enter goes back)")
         self.search_edit.textChanged.connect(lambda s: self._search_effect(s, advance=False))
         self.search_edit.returnPressed.connect(
             lambda: self._search_effect(self.search_edit.text(), advance=True))
@@ -5348,7 +5348,7 @@ class MagnitudeEditorDialog(QDialog):
             self.form.addWidget(hdr)
             for eff in effs:
                 box = self._effect_box(eff)
-                self._effect_boxes.append((eff.get('name', ''), box))
+                self._effect_boxes.append((self._search_text(eff, grp), box))
                 if self._is_this_round(eff):
                     self._marked_boxes.append(box)
                 if self._is_new(eff):
@@ -5377,6 +5377,19 @@ class MagnitudeEditorDialog(QDialog):
         CONFIG['show_new_at_top'] = bool(on)
         save_settings()
         self._populate()
+
+    @staticmethod
+    def _search_text(eff, header=''):
+        """What the search box matches for one effect box: the effect's own name, the
+        CARD it came from (weapon / enemy / equipment -- shown only as the group header
+        above the box, so it used to be unsearchable) and every field row's label.
+        Newline-joined so a query cannot match across two of them."""
+        parts = [eff.get('name'), header, eff.get('group'),
+                 eff.get('weapon'), eff.get('enemy'), eff.get('equipment')]
+        for t in eff.get('targets') or []:
+            if isinstance(t, dict):
+                parts += [t.get('group'), t.get('label'), t.get('field')]
+        return '\n'.join(p for p in parts if isinstance(p, str) and p)
 
     def _search_effect(self, text, advance=False, back=False):
         """Jump to a matching effect box; Enter/F3 walks the matches, Shift+ walks back.
