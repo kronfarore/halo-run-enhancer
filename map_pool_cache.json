@@ -261,6 +261,308 @@
     "03425d82c82b6143d2d2112da06a4fcfecec18733ec1ad8a66540b7eab0a5abc"
    ]
   },
+  "Halo 4|m020|equipment": {
+   "names": [
+    "Active Camouflage",
+    "Hardlight Shield",
+    "Auto Turret",
+    "Hologram",
+    "Jet Pack",
+    "Promethean Vision",
+    "Thruster Pack"
+   ],
+   "stamp": [
+    1306279936,
+    "74e6a6866ba8db824f07be608f0a024c591229234669f3c7493661b5d2bede34"
+   ]
+  },
+  "Halo 4|m020|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Concussion Rifle",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Flak Cannon",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Rocket Launcher",
+    "SAW",
+    "Shotgun",
+    "Sniper Rifle",
+    "Storm Rifle",
+    "Binary Rifle",
+    "Boltshot",
+    "DMR",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "LightRifle",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Railgun",
+    "Scattershot",
+    "Sentinel Beam",
+    "Spartan Laser",
+    "Sticky Detonator",
+    "Suppressor"
+   ],
+   "stamp": [
+    1306279936,
+    "74e6a6866ba8db824f07be608f0a024c591229234669f3c7493661b5d2bede34"
+   ]
+  },
+  "Halo 4|m10_crash|equipment": {
+   "names": [
+    "Active Camouflage",
+    "Auto Turret",
+    "Hardlight Shield",
+    "Hologram",
+    "Jet Pack",
+    "Promethean Vision",
+    "Sprint",
+    "Thruster Pack"
+   ],
+   "stamp": [
+    1069129728,
+    "801fcd3080dd658cddff2cdde18833ffccfe2a83a8e47250e2f057495973d4ce"
+   ]
+  },
+  "Halo 4|m10_crash|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Concussion Rifle",
+    "Covenant Carbine",
+    "Energy Blade",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Storm Rifle",
+    "Binary Rifle",
+    "Boltshot",
+    "DMR",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "LightRifle",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Railgun",
+    "Rocket Launcher",
+    "SAW",
+    "Scattershot",
+    "Sentinel Beam",
+    "Shotgun",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Sticky Detonator",
+    "Suppressor",
+    "Target Locator"
+   ],
+   "stamp": [
+    1069129728,
+    "801fcd3080dd658cddff2cdde18833ffccfe2a83a8e47250e2f057495973d4ce"
+   ]
+  },
+  "Halo 4|m30_cryptum|equipment": {
+   "names": [],
+   "stamp": [
+    1265684480,
+    "f1b5c91849c9141d40f3ebc4abeb27ec29123e671886dcd9752fb1e15f343258"
+   ]
+  },
+  "Halo 4|m30_cryptum|weapons": {
+   "names": [],
+   "stamp": [
+    1265684480,
+    "f1b5c91849c9141d40f3ebc4abeb27ec29123e671886dcd9752fb1e15f343258"
+   ]
+  },
+  "Halo 4|m40_invasion|equipment": {
+   "names": [
+    "Hardlight Shield",
+    "Jet Pack",
+    "Active Camouflage",
+    "Auto Turret",
+    "Hologram",
+    "Promethean Vision",
+    "Thruster Pack"
+   ],
+   "stamp": [
+    1319800832,
+    "52508c040f26dff4d84296ca0856cbec4365139a13a6a643650956af22fdfee5"
+   ]
+  },
+  "Halo 4|m40_invasion|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Boltshot",
+    "Covenant Carbine",
+    "DMR",
+    "Flak Cannon",
+    "LightRifle",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Rocket Launcher",
+    "Sniper Rifle",
+    "Storm Rifle",
+    "Binary Rifle",
+    "Concussion Rifle",
+    "Energy Blade",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Railgun",
+    "SAW",
+    "Scattershot",
+    "Shotgun",
+    "Spartan Laser",
+    "Sticky Detonator",
+    "Suppressor",
+    "Target Locator"
+   ],
+   "stamp": [
+    1319800832,
+    "52508c040f26dff4d84296ca0856cbec4365139a13a6a643650956af22fdfee5"
+   ]
+  },
+  "Halo 4|m60_rescue|equipment": {
+   "names": [
+    "Hologram",
+    "Promethean Vision",
+    "Active Camouflage",
+    "Auto Turret",
+    "Hardlight Shield",
+    "Jet Pack",
+    "Thruster Pack"
+   ],
+   "stamp": [
+    1596772352,
+    "c4dd62a0f69650a3b04437e741f82d930c312917edd0fce61edf2daf468ef4a9"
+   ]
+  },
+  "Halo 4|m60_rescue|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Boltshot",
+    "Covenant Carbine",
+    "DMR",
+    "Flak Cannon",
+    "LightRifle",
+    "Magnum",
+    "Needler",
+    "Plasma Pistol",
+    "Railgun",
+    "Rocket Launcher",
+    "Scattershot",
+    "Shotgun",
+    "Storm Rifle",
+    "Suppressor",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Binary Rifle",
+    "Concussion Rifle",
+    "Energy Blade",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "Machine Gun",
+    "Plasma Cannon",
+    "SAW",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Sticky Detonator"
+   ],
+   "stamp": [
+    1596772352,
+    "c4dd62a0f69650a3b04437e741f82d930c312917edd0fce61edf2daf468ef4a9"
+   ]
+  },
+  "Halo 4|m70_liftoff|equipment": {
+   "names": [
+    "Active Camouflage",
+    "Thruster Pack",
+    "Auto Turret",
+    "Hardlight Shield",
+    "Hologram",
+    "Jet Pack",
+    "Promethean Vision"
+   ],
+   "stamp": [
+    1112117248,
+    "18ed3e1093a53ce9f156c7064ae008024f6e67aaff5fdd10ee4f2a9f253ed868"
+   ]
+  },
+  "Halo 4|m70_liftoff|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Beam Rifle",
+    "Concussion Rifle",
+    "Covenant Carbine",
+    "DMR",
+    "Flak Cannon",
+    "Gravity Hammer",
+    "LightRifle",
+    "Needler",
+    "Plasma Pistol",
+    "Railgun",
+    "SAW",
+    "Scattershot",
+    "Shotgun",
+    "Storm Rifle",
+    "Suppressor",
+    "Battle Rifle",
+    "Binary Rifle",
+    "Boltshot",
+    "Energy Blade",
+    "Incineration Cannon",
+    "Machine Gun",
+    "Pistol",
+    "Plasma Cannon",
+    "Rocket Launcher",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Sticky Detonator"
+   ],
+   "stamp": [
+    1112117248,
+    "18ed3e1093a53ce9f156c7064ae008024f6e67aaff5fdd10ee4f2a9f253ed868"
+   ]
+  },
+  "Halo 4|m80_delta|equipment": {
+   "names": [],
+   "stamp": [
+    737103872,
+    "cc722c427b1042ce0542f28965a76d34684968909da6464c9fbd604c15edb9aa"
+   ]
+  },
+  "Halo 4|m80_delta|weapons": {
+   "names": [],
+   "stamp": [
+    737103872,
+    "cc722c427b1042ce0542f28965a76d34684968909da6464c9fbd604c15edb9aa"
+   ]
+  },
+  "Halo 4|m90_sacrifice|equipment": {
+   "names": [],
+   "stamp": [
+    671219712,
+    "c629aa7aec3f8aa004c94f769f8a7bf27996d8af96b54a8ab2b5d76f28944e59"
+   ]
+  },
+  "Halo 4|m90_sacrifice|weapons": {
+   "names": [],
+   "stamp": [
+    671219712,
+    "c629aa7aec3f8aa004c94f769f8a7bf27996d8af96b54a8ab2b5d76f28944e59"
+   ]
+  },
   "Halo Reach|m10|equipment": {
    "names": [
     "Armor Lock",
