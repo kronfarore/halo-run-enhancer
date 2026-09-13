@@ -12170,10 +12170,21 @@ class HaloGUI(QMainWindow):
                 fresh = find_by_name(renamed_to)
         if fresh:
             mod.pop('_missing_in_db', None)
+            # The GATES as well as the tags. on_patch_map decides whether a card may
+            # patch this game with _game_ok right after this overlay, and _game_ok reads
+            # `skip_games` -- which was not refreshed, so a card drafted before halo.json
+            # gave it a deny list kept its empty one and patched the game anyway. Measured
+            # on this machine's nine saved runs: Stun Time would still patch Reach (three
+            # runs), and Hunter/Grunt Accuracy, Maximum Firing Distance and Stun Behavior
+            # Reach or Halo 4 -- the very fields those deny lists exist because the games
+            # dropped. The Options gate and the ignore flag are carried for the same
+            # reason: a snapshot must never answer a gate question with stale data.
             for key in ('name', 'tag', 'field', 'targets', 'special', 'dual_only', 'desc',
                         'desc_overrides', 'debug_desc', 'skull',
                         'harder_when', 'easier_when',
-                        'init_defaults', 'games'):
+                        'init_defaults', 'games', 'skip_games',
+                        'requires_config', 'requires_config_in', 'ignore',
+                        'affected_by_skull'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         else:
