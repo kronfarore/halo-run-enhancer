@@ -365,7 +365,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
-               'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'turrets_are_weapons',
+               'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'keep_reticle_zoomed',
+               'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
                'reach_pools_from_map', 'h4_pools_from_map',
@@ -809,6 +810,10 @@ CONFIG = {
     # With this on, a turret given a Zoom plays in first person instead so the zoom
     # works -- with no gun model, since no turret ships a first-person one.
     "turret_zoom_first_person": True,
+    # Keep each weapon's reticle on screen while zoomed, alongside the scope overlay.
+    # Only weapons that cannot zoom in vanilla hide it -- so in practice this is every
+    # weapon the patcher gives a Zoom. Map-wide; Halo 4 not supported yet.
+    "keep_reticle_zoomed": True,
     # Detached turrets -- the machinegun turret, plasma cannon, missile pod and
     # flamethrower -- are placed as VEHICLES, not weapon pickups, so they never
     # appeared in a level's `weapons` list and could never be drawn. With this on,
@@ -7082,6 +7087,7 @@ class MagnitudeEditorDialog(QDialog):
                   + (["scatter map weapons"] if weapon_swaps else [])
                   + (["add scope UI where missing"] if zoom_ui else [])
                   + (["first-person view for zoomed turrets"] if turret_fp else [])
+                  + (["keep the reticle while zoomed"] if CONFIG.get('keep_reticle_zoomed', True) else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
                   + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
@@ -7111,6 +7117,7 @@ class MagnitudeEditorDialog(QDialog):
                 starting=starting, weapon_swaps=weapon_swaps,
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                 turret_first_person=turret_fp,
+                keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -7838,6 +7845,15 @@ class OptionsDialog(QDialog):
             "so the zoom works. No turret ships a first-person model, so you see only the "
             "crosshair. Off keeps the third-person view (and the zoom stays dead).")
         wform.addRow("Turret zoom:", self.turret_zoom_cb)
+
+        self.keep_reticle_cb = QCheckBox("Keep the reticle while zoomed")
+        self.keep_reticle_cb.setChecked(bool(CONFIG.get('keep_reticle_zoomed', True)))
+        self.keep_reticle_cb.setToolTip(
+            "On patch: every weapon keeps its reticle on screen while zoomed, alongside the "
+            "scope overlay. Weapons that zoom in the base game already do; the ones that "
+            "lose it are the weapons given a Zoom by a card. Halo 1 to Reach; Halo 4 is "
+            "not supported yet.")
+        wform.addRow("Reticle:", self.keep_reticle_cb)
 
         self.turret_weapons_cb = QCheckBox("Turrets are weapons")
         self.turret_weapons_cb.setChecked(bool(CONFIG.get('turrets_are_weapons')))
@@ -9565,6 +9581,7 @@ class OptionsDialog(QDialog):
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'turret_zoom_first_person': self.turret_zoom_cb.isChecked(),
+            'keep_reticle_zoomed': self.keep_reticle_cb.isChecked(),
             'turrets_are_weapons': self.turret_weapons_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),
             'remove_flood_from_odst': self.remove_flood_cb.isChecked(),
