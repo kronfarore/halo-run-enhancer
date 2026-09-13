@@ -3444,9 +3444,13 @@ def h4_designer_zone(m, name=H4_ENHANCER_ZONE):
 
 
 def h4_enhancer_items(m, game, kind='weapons'):
-    """(basenames, reason): what this Halo 4 map's dz_enhancer zone holds.
+    """(tag paths, reason): what this Halo 4 map's dz_enhancer zone holds.
 
-    basenames is None -- with the reason -- when the map cannot answer: no dz_enhancer
+    FULL paths, not basenames: Halo 4's cards name their tags as patterns matched
+    against the whole path -- Thruster Pack is `objects\\equipment\\storm_thruster_pack\\*`
+    -- so a basename alone cannot say which card an item belongs to.
+
+    The paths are None -- with the reason -- when the map cannot answer: no dz_enhancer
     (a map not rebuilt yet), or one that zone set 0 does not switch on, so nothing in it
     is loaded when the mission starts and an offer from it would not spawn. There is no
     residency fix to fall back on here: writing Halo 4 pool bits crashes the game (see
@@ -3474,7 +3478,7 @@ def h4_enhancer_items(m, game, kind='weapons'):
     for i in range(pn) if pbase else []:
         nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
         if nm:
-            names[i] = str(nm).rsplit(chr(92), 1)[-1]
+            names[i] = str(nm)
     off, es = _H4_DESIGNER_ZONESETS
     dz = _block_base(m, scnr + off) + k * es
     boff = _H4_DZS_PALETTE_BLOCK[kind]

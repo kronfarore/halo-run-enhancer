@@ -2230,6 +2230,7 @@ class ModifierDatabase:
         self._reach_pool_cache = {}  # (mission, kind) -> names the Reach map can grant
         self._reach_name_table = {}  # (game, kind) -> {tag basename: offer name}
         self._h4_pool_cache = {}     # (mission, kind) -> what dz_enhancer offers
+        self._offer_patterns = {}    # (game, kind) -> ({path: name}, [(pattern, name)])
         try:
             self.load_data()
         except Exception as e:
@@ -2573,12 +2574,32 @@ class ModifierDatabase:
     def eqip_tag_for(self, name, game):
         """The `eqip ...` tag for a piece of equipment, taken from any of its effects.
         The counterpart of weap_tag_for, used to grant Halo 3 starting equipment by
-        placing it on the player spawn. None if unknown."""
+        placing it on the player spawn. None if unknown.
+
+        The same rules as weap_tag_for, plus one it can afford because equipment cards
+        are few: a card that does not exist in `game` names no tag there. Auto Turret's
+        Halo 3 cards carry a plain-string `autoturret_equipment` tag, which resolves in
+        every game, so Halo 4 was handed Halo 3's turret while its own card names
+        `storm_auto_turret*`. Then a dict keyed for this game (or one it inherits from)
+        wins over a plain string or a 'default'."""
+        lineage = [game]
+        parent = CONFIG.get('game_inherits', {}).get(game)
+        while parent and parent not in lineage:
+            lineage.append(parent)
+            parent = CONFIG.get('game_inherits', {}).get(parent)
+        fallback = None
         for mod in self.equipment_mods.get(self.resolve_equipment(name), []):
-            tag = resolve_gamed(mod.get('tag'), game, self.get_games())
-            if isinstance(tag, str) and tag.startswith('eqip '):
+            if game is not None and not self._game_ok(mod, game):
+                continue
+            raw = mod.get('tag')
+            tag = resolve_gamed(raw, game, self.get_games())
+            if not (isinstance(tag, str) and tag.startswith('eqip ')):
+                continue
+            if isinstance(raw, dict) and any(g in raw for g in lineage):
                 return tag
-        return None
+            if fallback is None:
+                fallback = tag
+        return fallback
 
     def get_weapon_modifiers(self, weapon_name):
         """Mods for a weapon slot. `dual_only` effects are offered only when
@@ -2770,6 +2791,40 @@ class ModifierDatabase:
         self._reach_name_table[(game, kind)] = table
         return table
 
+    def _offer_name_for(self, path, kind, game):
+        """The offer name whose card tag matches this FULL tag path, or None.
+
+        Halo 4's cards name their tags as patterns over the whole path, the way
+        find_tags matches them -- `storm_active_camo*` covers the zone's
+        `storm_active_camo` and `storm_active_camo_m20`, and Thruster Pack's
+        `storm_thruster_pack\\*` a folder. Matching basenames exactly missed every one
+        of those, so Requiem's pool dropped Active Camouflage and Hardlight Shield, which
+        its own list declares. An exact path wins over a pattern; patterns are tried in
+        card order, and matching is case-insensitive like the patcher's name lookups.
+        """
+        import fnmatch
+        key = (game, kind)
+        if key not in self._offer_patterns:
+            exact, pats = {}, []
+            mods = self.weapon_mods if kind == 'weapons' else self.equipment_mods
+            for disp in sorted(mods):
+                tag = (self.weap_tag_for(disp, game) if kind == 'weapons'
+                       else self.eqip_tag_for(disp, game))
+                if not tag or ' ' not in tag:
+                    continue
+                for part in tag.split(' ', 1)[1].split(' & '):
+                    part = part.strip().lower()
+                    if '*' in part:
+                        pats.append((part, disp))
+                    else:
+                        exact.setdefault(part, disp)
+            self._offer_patterns[key] = (exact, pats)
+        exact, pats = self._offer_patterns[key]
+        p = str(path).replace('/', chr(92)).lower()
+        if p in exact:
+            return exact[p]
+        return next((d for pat, d in pats if fnmatch.fnmatchcase(p, pat)), None)
+
     def _order_like_declared(self, declared, offered, kind):
         """The map's offer names, in the level's halo.json order first, then the rest.
 
@@ -2889,8 +2944,8 @@ class ModifierDatabase:
                 pool_cache_put(ck, src, [])
                 self._h4_pool_cache[key] = []
                 return []
-            table = self._reach_offer_names(kind, 'Halo 4')
-            offered = {table[bn] for bn in have if bn in table}
+            offered = {n for n in (self._offer_name_for(p, kind, 'Halo 4')
+                                   for p in have) if n}
             names = self._order_like_declared(declared, offered, kind)
             pool_cache_put(ck, src, names)
         except Exception as e:
