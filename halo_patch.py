@@ -259,17 +259,59 @@ def preset_key(tag, name, field, game=None):
     return f"{base}||{game}" if game else base
 
 
+# Set by load_presets() when the presets file EXISTS but could not be read; the patcher
+# dialog reports it once and clears it.
+PRESETS_LOAD_ERROR = None
+
+
+def keep_unreadable(path):
+    """Copy an unreadable file aside as <path>.unreadable -- never over an earlier copy.
+
+    The FIRST unreadable file is the one holding the user's real data; any later one is
+    a rewrite of the empty fallback, and copying it over the first would destroy exactly
+    what this exists to keep. Returns the copy's path, or None if it could not be made.
+    """
+    kept = str(path) + '.unreadable'
+    if os.path.exists(kept):
+        return kept
+    try:
+        shutil.copy2(str(path), kept)
+        return kept
+    except Exception:
+        return None
+
+
 def load_presets(path):
+    """The remembered magnitudes, {preset key: operator text}.
+
+    A MISSING file is simply empty. An UNREADABLE one used to be treated the same way,
+    and that was destructive: the patcher dialog saves its presets on every close, so a
+    truncated file was replaced by whatever was typed that session and every other
+    magnitude ever entered was gone, silently. The unreadable file is now kept (see
+    keep_unreadable) and the reason recorded in PRESETS_LOAD_ERROR.
+    """
+    global PRESETS_LOAD_ERROR
+    if not os.path.exists(path):
+        return {}
     try:
         with open(path, encoding='utf-8') as f:
-            return json.load(f)
-    except Exception:
+            data = json.load(f)
+        if not isinstance(data, dict):
+            raise ValueError('the top level is a %s, not an object' % type(data).__name__)
+        return data
+    except Exception as e:
+        PRESETS_LOAD_ERROR = '%s: %s' % (type(e).__name__, e)
+        keep_unreadable(path)
         return {}
 
 
 def save_presets(path, presets):
-    with open(path, 'w', encoding='utf-8') as f:
+    """Write the presets atomically: a write cut short used to leave the truncated file
+    that load_presets then could not read."""
+    tmp = str(path) + '.tmp'
+    with open(tmp, 'w', encoding='utf-8') as f:
         json.dump(presets, f, indent=2, ensure_ascii=False)
+    os.replace(tmp, str(path))
 
 
 def default_map_path(mcc_root, map_subdir, mission_id):

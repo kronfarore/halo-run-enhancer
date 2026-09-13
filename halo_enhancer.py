@@ -51,12 +51,11 @@ def presets_path():
 
 
 def load_presets():
-    try:
-        with open(presets_path(), encoding='utf-8') as f:
-            data = json.load(f)
-        return data if isinstance(data, dict) else {}
-    except Exception:
-        return {}
+    """This machine's remembered magnitudes. One reader for the whole app --
+    halo_patch.load_presets, which keeps an unreadable file instead of treating it as
+    empty. This used to be a second copy with its own silent fallback."""
+    import halo_patch          # imported lazily, as everywhere else in this module
+    return halo_patch.load_presets(presets_path())
 
 
 def run_magnitudes(rounds, mission_id, presets=None):
@@ -94,7 +93,8 @@ def run_magnitudes(rounds, mission_id, presets=None):
 
 def merge_presets(incoming):
     """Merge shared magnitudes into the local presets, keeping every local entry the
-    bundle doesn't mention. Returns how many keys were written."""
+    bundle doesn't mention. Returns how many keys were written, or None if the write
+    failed."""
     if not incoming:
         return 0
     local = load_presets()
@@ -102,11 +102,14 @@ def merge_presets(incoming):
     if not changed:
         return 0
     local.update(changed)
+    import halo_patch
     try:
-        with open(presets_path(), 'w', encoding='utf-8') as f:
-            json.dump(local, f, indent=2, ensure_ascii=False)
-    except Exception:
-        return 0
+        halo_patch.save_presets(presets_path(), local)
+    except Exception as e:
+        # None, not 0: 0 means "nothing to merge", and a failed write used to read
+        # exactly like that -- the sharer's numbers silently not reproduced.
+        print('!! shared magnitudes could not be saved: %s' % e)
+        return None
     return len(changed)
 
 
@@ -606,10 +609,12 @@ def load_settings():
             raise ValueError('the top level is a %s, not an object' % type(data).__name__)
     except Exception as e:
         SETTINGS_LOAD_ERROR = '%s: %s' % (type(e).__name__, e)
-        try:
-            shutil.copy2(str(path), str(path) + '.unreadable')
-        except Exception:
-            pass
+        kept = str(path) + '.unreadable'
+        if not os.path.exists(kept):    # the FIRST unreadable copy holds the real data
+            try:
+                shutil.copy2(str(path), kept)
+            except Exception:
+                pass
         print('!! settings.json could not be read (%s); every setting is at its default'
               % SETTINGS_LOAD_ERROR)
         return
@@ -4022,7 +4027,12 @@ class StartDialog(QDialog):
         # Merge any magnitudes the run carries, so the patch reproduces the sharer's
         # numbers without touching this machine's other remembered values.
         n = merge_presets(data.get('magnitudes') or {})
-        if n:
+        if n is None:
+            QMessageBox.warning(self, "Run loaded",
+                                f"Loaded {Path(file_path).name}, but its shared magnitudes "
+                                "could not be saved to magnitude_presets.json -- patching "
+                                "this run will use this machine's own values instead.")
+        elif n:
             QMessageBox.information(self, "Run loaded",
                                     f"Loaded {Path(file_path).name}\n\n"
                                     f"{n} shared magnitude(s) merged — patching this run "
@@ -4125,6 +4135,18 @@ class MagnitudeEditorDialog(QDialog):
         self._round_keys = None     # lazily built by _this_round_keys()
         self.presets_path = presets_path
         self.presets = halo_patch.load_presets(presets_path)
+        if halo_patch.PRESETS_LOAD_ERROR:
+            # Said once. Closing this dialog saves the presets (see done()), so before the
+            # unreadable file was kept aside, this was the moment every typed magnitude
+            # was overwritten by the empty fallback -- silently.
+            QMessageBox.warning(
+                parent, "Magnitudes could not be loaded",
+                "magnitude_presets.json exists but could not be read:\n\n    %s\n\n"
+                "None of your remembered magnitudes are loaded. The unreadable file was "
+                "kept as magnitude_presets.json.unreadable -- fix it or copy it back and "
+                "reopen this window to get them back. Anything saved before then starts a "
+                "fresh presets file." % halo_patch.PRESETS_LOAD_ERROR)
+            halo_patch.PRESETS_LOAD_ERROR = None
         self.target_difficulty = target_difficulty
         self.effects = effects
         self.rows = []          # (effect, target, QLineEdit)

@@ -9,6 +9,7 @@ selections/
 patches/
 sprint_toolkit/out/
 magnitude_presets.json
+magnitude_presets.json.*
 settings.json 
 settings.json.*
 map_pool_hashes.json
