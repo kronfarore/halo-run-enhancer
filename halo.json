@@ -8888,12 +8888,12 @@
 					"game": ["Halo Reach"],
 					"tag": "airs objects\\weapons\\pistol\\target_laser\\projectiles\\default",
 					"targets": [
-						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Strikes", "harder_when": "decreased", "min": 1},
+						{"field": "Default Launch Count", "ignore": true, "block": "Batteries", "index": "all", "group": "Strikes", "harder_when": "decreased", "min": 1},
 						{"field": "Shots Per Launch", "block": "Batteries", "index": "all", "group": "Shots Per Strike", "harder_when": "decreased", "min": 1},
-						{"field": "Launch Cooldown", "block": "Batteries", "index": "all", "group": "Cooldown", "harder_when": "increased", "min": 0},
+						{"field": "Launch Cooldown", "ignore": true, "block": "Batteries", "index": "all", "group": "Cooldown", "harder_when": "increased", "min": 0},
 						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "harder_when": "increased", "min": 0},
 						{"field": "Launch Duration", "block": "Batteries", "index": "all", "group": "Duration", "harder_when": "increased", "min": 0},
-						{"field": "Launch Arrival", "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
+						{"field": "Launch Arrival", "ignore": true, "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
 						{"field": "Launch Radius", "block": "Batteries", "index": "all", "group": "Scatter", "harder_when": "increased", "min": 0},
 						{"field": "Offset x", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"},
 						{"field": "Offset y", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"}

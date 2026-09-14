@@ -374,7 +374,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius', 'reach_airstrike_height',
                'reach_equipment_drop', 'h4_equipment_drop',
-               'reach_keep_loadout', 'reach_skip_space',
+               'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -884,6 +884,10 @@ CONFIG = {
     # profile resets on m10/m35, and skip Long Night of Solace's space section.
     "reach_keep_loadout": False,
     "reach_skip_space": False,
+    # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
+    # careerdb.xml times (read at MCC start) and, from Halo 3 on, the map's own
+    # Time Bonuses thresholds.
+    "par_time_scale": 1.0,
     "h4_spawn_starting_weapons": False,
     "h4_spawn_all_weapons": False,
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
@@ -5453,6 +5457,37 @@ class MagnitudeEditorDialog(QDialog):
         spec = {k: float(v) for k, v in cfg.items() if v}
         return spec or None
 
+    def _apply_par_time(self):
+        """Scale this mission's par time in <mcc_root>\\data\\careerdb\\careerdb.xml.
+
+        Rows, never raises -- like the score rescale it writes a side file, and a map
+        patch that succeeded must not be reported as failed because of it."""
+        import careerdb_patch
+        tag = careerdb_patch.CAREERDB_REL
+        path = os.path.join(mcc_root(), tag)
+        if not os.path.exists(path):
+            return [{'tag': tag, 'effect': 'Par time', 'ok': False, 'field': 'par time',
+                     'reason': 'not found under the MCC folder -- set the MCC root in '
+                               'Options'}]
+        factor = float(CONFIG.get('par_time_scale') or 1.0)
+        data = getattr(getattr(self.parent_gui, 'db', None), 'data', None) or {}
+        name = (((data.get('Missions') or {}).get(self.game) or {})
+                .get(self.mission_id) or {}).get('name')
+        try:
+            rep = careerdb_patch.apply(path, self.game, name, factor)
+        except Exception as e:
+            return [{'tag': tag, 'effect': 'Par time', 'ok': False, 'field': 'par time',
+                     'reason': str(e)}]
+        if rep is None:
+            return [{'tag': tag, 'effect': 'Par time', 'ok': True, 'skip': True,
+                     'reason': '%s has no par time in careerdb' % (name or self.mission_id)}]
+        fmt = lambda d: ' / '.join('%d:%02d' % divmod(d[k], 60)
+                                   for k in careerdb_patch.TIME_ATTRS if k in d)
+        return [{'tag': tag, 'effect': 'Par time', 'ok': True,
+                 'field': 'par / average / max',
+                 'old': fmt(rep['old']),
+                 'new': fmt(rep['new']) + ' -- RESTART MCC to apply'}]
+
     def _apply_score_scaling(self):
         """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
 
@@ -7234,6 +7269,7 @@ class MagnitudeEditorDialog(QDialog):
                 equipment_drop=bool(CONFIG.get(
                     {'Halo Reach': 'reach_equipment_drop',
                      'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
+                par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 remove_cutscenes=remove_cutscenes,
@@ -7326,6 +7362,14 @@ class MagnitudeEditorDialog(QDialog):
                      if CONFIG.get('score_live_push') else "Rescaling metagame scores")
             results.extend(self._run_busy(self._apply_score_scaling,
                                           title="Metagame scores", label=label))
+
+        # Par time, careerdb.xml half (every game). Also when the scale is back at 1 but
+        # an earlier patch changed the file, so turning it off really puts it back.
+        import careerdb_patch
+        _cdb = os.path.join(mcc_root(), careerdb_patch.CAREERDB_REL)
+        if (float(CONFIG.get('par_time_scale') or 1.0) != 1.0
+                or os.path.exists(careerdb_patch.backup_path(_cdb))):
+            results.extend(self._apply_par_time())
 
         # AFTER the rescale: that regenerates scoredb.xml from the pristine baseline,
         # so a sign flip applied before it would simply be overwritten.
@@ -8890,6 +8934,21 @@ class OptionsDialog(QDialog):
             "script container (where f_hud_chapter fades the HUD) and the level's own.")
         allform.addRow("Chapter titles:", self.keep_title_hud_cb)
 
+        self.par_time_scale = QDoubleSpinBox()
+        self.par_time_scale.setRange(0.1, 10.0)
+        self.par_time_scale.setSingleStep(0.1)
+        self.par_time_scale.setDecimals(2)
+        self.par_time_scale.setSuffix(" x")
+        self.par_time_scale.setValue(float(CONFIG.get('par_time_scale') or 1.0))
+        self.par_time_scale.setToolTip(
+            "Scales the par time of the mission being patched: 2.0 gives twice as long, "
+            "0.5 half. 1.0 is the shipped time.\n\n"
+            "Every game: MCC's careerdb.xml (par, average and max time). MCC reads that "
+            "file only when it starts, so restart MCC after patching.\n"
+            "Halo 3, ODST, Reach, Halo 4: also the map's own time-bonus thresholds, "
+            "which take effect with the patch.")
+        allform.addRow("Par time:", self.par_time_scale)
+
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
         self.red_plasma_cb = QCheckBox("ODST: treat the Red Plasma Rifle as the Brute Plasma Rifle")
         self.red_plasma_cb.setChecked(bool(CONFIG.get('odst_red_plasma_as_brute')))
@@ -9713,6 +9772,7 @@ class OptionsDialog(QDialog):
             'reach_airstrike_height': self.reach_airstrike_height.value(),
             'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
+            'par_time_scale': self.par_time_scale.value(),
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),

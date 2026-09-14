@@ -5514,6 +5514,39 @@ _H4_EQIP_FLAGS, _H4_DROPPED_BY_PLAYER = 0x2AC, 1 << 9
 _H4_NOT_ABILITIES = ('grenade', 'ammo_box')
 
 
+# Campaign par time, map side: scnr `Campaign Metagame` -> `Time Bonuses` (Time in
+# minutes + Score Multiplier). Halo 1 and 2 have no such block, and Halo 4 declares it
+# but ships it EMPTY on all ten maps -- for those three the par time is only MCC's
+# careerdb.xml (careerdb_patch). (block offset, element), bonuses offset.
+_CAMPAIGN_METAGAME = {
+    'Halo 3': ((0x72C, 0x10), 0x0),
+    'Halo 3: ODST': ((0x76C, 0x1C), 0x0),
+    'Halo Reach': ((0x7A0, 0x10), 0x4),
+    'Halo 4': ((0x7E4, 0x10), 0x4),
+}
+
+
+def _scale_par_time(m, game, factor):
+    """Scale every Time Bonuses threshold of the scenario by `factor`."""
+    spec = _CAMPAIGN_METAGAME.get(str(game).strip())
+    if not spec or not factor or factor == 1:
+        return []
+    (blk, es), bon = spec
+    scnr = _scnr_base(m)
+    old, new = [], []
+    for e in _h3_chud_elems(m, scnr, (blk, es)) if scnr is not None else []:
+        for b in _h3_chud_elems(m, e, (bon, 0x8)):
+            t = struct.unpack_from('<f', m.data, b)[0]
+            struct.pack_into('<f', m.data, b, t * factor)
+            old.append('%g' % t)
+            new.append('%g' % round(t * factor, 3))
+    if not old:
+        return [{'effect': 'par time', 'field': 'Time Bonuses', 'ok': True, 'skip': True,
+                 'reason': 'this scenario has no time bonuses'}]
+    return [{'effect': 'par time', 'tag': 'scnr', 'field': 'Time Bonuses (minutes)',
+             'ok': True, 'old': ', '.join(old), 'new': ', '.join(new)}]
+
+
 def _equipment_drop(m, game):
     """Make players drop their armour ability on death (Reach, Halo 4)."""
     game = str(game).strip()
@@ -6237,7 +6270,7 @@ def _apply_sprint(m, game, registry, cfg):
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False, airstrike_height=None,
-              equipment_drop=False, from_baseline=True, remove_cutscenes=False, skulls=(),
+              equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
               difficulty_baseline=None,
@@ -6530,6 +6563,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if equipment_drop:
         # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
         results.extend(_equipment_drop(m, game))
+
+    if par_time_scale and par_time_scale != 1:
+        # Halo 3 on: the scenario's own par-time thresholds (see _scale_par_time). The
+        # careerdb.xml half, which covers every game, is written by the enhancer.
+        results.extend(_scale_par_time(m, game, float(par_time_scale)))
 
     if keep_reticle:
         # After the scope graft, so it sees the final HUDs; it never touches scope
