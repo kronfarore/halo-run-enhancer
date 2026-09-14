@@ -349,11 +349,15 @@ def residency_pass(db, args):
     information only.
     """
     import reach_pools as RP
+    import h4_pools as P4
     total = 0
     for game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
         print('=' * 84)
         print(game)
         total += RP.print_audit(game)
+    print('=' * 84)
+    print('Halo 4')
+    total += P4.print_half_audit()
     print()
     print('%d residency finding(s) total' % total)
     return total
@@ -377,13 +381,19 @@ def main():
                          "and that are not just some vehicle's gun, 'offers' = names "
                          "a mission list offers that resolve to no cards, "
                          "'residency' = palette weapons/abilities not fully loaded "
-                         "at mission start (H3/ODST/Reach). Default runs all.")
+                         "at mission start (H3/ODST/Reach/H4). Default runs all.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
     ap.add_argument('--no-useful', action='store_true',
                     help='asset pass: skip the cross-reference against fields cards '
                          'already tune (it opens maps, so it is the slow half)')
     args = ap.parse_args()
+
+    # Residency reads maps, not cards: run it before the card database loads, so a
+    # halo.json mid-edit cannot block the check.
+    if args.only == 'residency':
+        print()
+        return 0 if residency_pass(None, args) == 0 else 1
 
     with contextlib.redirect_stdout(io.StringIO()):
         db = he.ModifierDatabase()
@@ -404,9 +414,6 @@ def main():
     if args.only == 'offers':
         print()
         return 0 if offer_pass(db, args) == 0 else 1
-    if args.only == 'residency':
-        print()
-        return 0 if residency_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}

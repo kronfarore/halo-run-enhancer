@@ -373,7 +373,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius', 'reach_airstrike_height',
-               'equipment_drop_on_death',
+               'reach_equipment_drop', 'h4_equipment_drop',
+               'reach_keep_loadout', 'reach_skip_space',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -875,9 +876,14 @@ CONFIG = {
     # (100). Test knob for using the locator indoors, where a roof blocks a strike
     # coming down from 100 units. Only maps that carry an airstrike are affected.
     "reach_airstrike_height": 0.0,
-    # Reach / Halo 4: a dying player drops the armour ability they carry. Vanilla
-    # campaign ships the player trait Disabled, so it never happens there.
-    "equipment_drop_on_death": False,
+    # A dying player drops the armour ability they carry. Vanilla campaign ships the
+    # player trait Disabled, so it never happens there. One switch per game.
+    "reach_equipment_drop": False,
+    "h4_equipment_drop": False,
+    # Reach script edits (reach_scripts.py): keep the loadout through the mid-mission
+    # profile resets on m10/m35, and skip Long Night of Solace's space section.
+    "reach_keep_loadout": False,
+    "reach_skip_space": False,
     "h4_spawn_starting_weapons": False,
     "h4_spawn_all_weapons": False,
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
@@ -7225,7 +7231,11 @@ class MagnitudeEditorDialog(QDialog):
                 turret_first_person=turret_fp,
                 keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
                 airstrike_height=float(CONFIG.get('reach_airstrike_height') or 0.0) or None,
-                equipment_drop=bool(CONFIG.get('equipment_drop_on_death')),
+                equipment_drop=bool(CONFIG.get(
+                    {'Halo Reach': 'reach_equipment_drop',
+                     'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
+                keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
+                skip_space=bool(CONFIG.get('reach_skip_space')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -9171,16 +9181,38 @@ class OptionsDialog(QDialog):
             "Long Night of Solace, until the others are rebuilt with one).")
         rcform.addRow("Airstrike height:", self.reach_airstrike_height)
 
-        self.equipment_drop_cb = QCheckBox(
-            "Reach & Halo 4: players drop their armor ability on death")
-        self.equipment_drop_cb.setChecked(bool(CONFIG.get('equipment_drop_on_death')))
-        self.equipment_drop_cb.setToolTip(
+        self.reach_equipment_drop_cb = QCheckBox(
+            "Reach: players drop their armor ability on death")
+        self.reach_equipment_drop_cb.setChecked(bool(CONFIG.get('reach_equipment_drop')))
+        self.reach_equipment_drop_cb.setToolTip(
             "Off: vanilla -- a dying player's armor ability vanishes with them. "
             "On: it falls to the ground like a weapon, for a partner to pick up. "
             "It is a player trait (Equipment Drop) that every campaign map ships "
-            "Disabled; Halo 4 also needs each ability's own 'dropped by player' flag, "
-            "which is set with it.")
-        rcform.addRow("Ability drop:", self.equipment_drop_cb)
+            "Disabled. Not yet seen in co-op.")
+        rcform.addRow("Ability drop:", self.reach_equipment_drop_cb)
+
+        self.reach_keep_loadout_cb = QCheckBox(
+            "Reach: keep your weapons through the travel sections")
+        self.reach_keep_loadout_cb.setChecked(bool(CONFIG.get('reach_keep_loadout')))
+        self.reach_keep_loadout_cb.setToolTip(
+            "Off: vanilla -- Winter Contingency resets every player's weapons on arrival "
+            "at the outpost, and Tip of the Spear does the same after the Falcon ride "
+            "to the spire. "
+            "On: those resets are taken out of the level script, so players arrive with "
+            "whatever they were carrying (armor ability included). The mission-start "
+            "loadout is untouched.")
+        rcform.addRow("Travel sections:", self.reach_keep_loadout_cb)
+
+        self.reach_skip_space_cb = QCheckBox(
+            "Long Night of Solace: skip the space section")
+        self.reach_skip_space_cb.setChecked(bool(CONFIG.get('reach_skip_space')))
+        self.reach_skip_space_cb.setToolTip(
+            "On: boarding the Sabre in the launch silo takes the players straight into "
+            "the corvette on foot -- the Sabre flight, the space battle and the landing "
+            "are skipped. It does exactly what the level's own 'Corvette' insertion "
+            "point does, just at the moment you would have launched, so you keep your "
+            "weapons. EXPERIMENTAL: not yet seen in game.")
+        rcform.addRow("Space section:", self.reach_skip_space_cb)
 
         # ---- Halo 4 ----
         # Halo 4 is the one game that already sprints. It is innate -- matg's Default
@@ -9258,6 +9290,17 @@ class OptionsDialog(QDialog):
         self.h4_spawn_weapons_cb.toggled.connect(_sync_h4_spawn)
         _sync_h4_spawn()
         h4form.addRow("", self.h4_spawn_all_cb)
+
+        self.h4_equipment_drop_cb = QCheckBox(
+            "Halo 4: players drop their armor ability on death")
+        self.h4_equipment_drop_cb.setChecked(bool(CONFIG.get('h4_equipment_drop')))
+        self.h4_equipment_drop_cb.setToolTip(
+            "Off: vanilla -- a dying player's armor ability vanishes with them. "
+            "On: it falls to the ground like a weapon, for a partner to pick up. "
+            "Two switches make that happen and both are set: the Equipment Drop "
+            "player trait (shipped False) and each ability's own 'Is Dropped By "
+            "Player' flag (shipped off on every one). Not yet seen in co-op.")
+        h4form.addRow("Ability drop:", self.h4_equipment_drop_cb)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -9668,7 +9711,10 @@ class OptionsDialog(QDialog):
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'reach_airstrike_height': self.reach_airstrike_height.value(),
-            'equipment_drop_on_death': self.equipment_drop_cb.isChecked(),
+            'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
+            'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
+            'reach_skip_space': self.reach_skip_space_cb.isChecked(),
+            'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),

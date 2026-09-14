@@ -49,8 +49,9 @@ START_SET = 'Scenario[0]'
 # Halo 3 and ODST keep the same zone-set blocks at the same offsets, in a narrower
 # 0x78 element with the tag pools at 0x54/0x60 (ODSTMCC/zone.xml). They are here for
 # the READ side only: the full-closure audit found no half-loaded weapon on either
-# (2026-09-14), and writing ODST pools is a proven dead lead -- two in-game attempts
-# on sc150 black-screened and fatal-errored (h3_zone_pools.py). So --write is Reach's.
+# (2026-09-14), so nothing there needs a write yet. Writing them is not ruled out --
+# the user means to try it -- but the two blunt attempts on sc150 black-screened and
+# fatal-errored (h3_zone_pools.py), so it stays behind a deliberate code change.
 LAYOUTS = {
     'Halo Reach': {'zs_elem': ZS_ELEM, 'tag_pools': TAG_POOLS,
                    'plugins': ('ReachMCC', 'Reach'), 'writable': True},
@@ -472,9 +473,9 @@ def main(argv=None):
     a = ap.parse_args(argv)
     game = a.game
     if a.write and not LAYOUTS[game]['writable']:
-        raise SystemExit('%s zone pools are read-only here: writing them is a proven '
-                         'dead lead (h3_zone_pools.py -- sc150 black-screened and '
-                         'fatal-errored)' % game)
+        raise SystemExit('%s zone pools are read-only here: nothing there is half-loaded, '
+                         'and the earlier blunt writes on sc150 black-screened and '
+                         'fatal-errored (h3_zone_pools.py)' % game)
     if a.audit:
         return print_audit(game)
 

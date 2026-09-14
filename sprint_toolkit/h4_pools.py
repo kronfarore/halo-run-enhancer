@@ -359,6 +359,38 @@ def _live(mid):
     return os.path.join(hc.MAPS, mid + '.map')
 
 
+def print_half_audit():
+    """The standing residency check for Halo 4 (coverage_audit --only residency).
+
+    Returns the HALF count: a palette entry whose weap tag is live at mission start
+    while part of its closure is not, so it spawns and then does nothing -- the Reach
+    m60 sniper. Plain late entries are information only here: the pool-bit fix that
+    would make them live crashes Halo 4 (see the docstring); the rebuild route is the
+    one that works. 2026-09-14: 0 HALF on all 8 missions.
+    """
+    findings = 0
+    for mid, _t in hc.CAMPAIGN:
+        path = _live(mid)
+        if not os.path.exists(path):
+            print('%-14s skipped (not installed)' % mid)
+            continue
+        m = HP.open_map(path, GAME)
+        zb = zone_base(m)
+        rows = survey(m, zb, zone_sets(m, zb), Closure(m, zb))
+        half = [r for r in rows if r[4] and r[5]]
+        late = [r for r in rows if not r[4]]
+        print('%-14s %2d palette entries, %d HALF-loaded, %d not resident at start'
+              % (mid, len(rows), len(half), len(late)))
+        for kind, nm, _id, _ti, _start, lt, _n in half:
+            print('        %-10s %-34s HALF -- late: %s'
+                  % (kind, nm, ', '.join(sorted({c['class'] for c in lt}))))
+        findings += len(half)
+        del m
+    print('(Halo 4 late entries need a designer-zone rebuild, not pool bits; only HALF '
+          'is a finding here)')
+    return findings
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)

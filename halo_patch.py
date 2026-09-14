@@ -6243,7 +6243,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               difficulty_baseline=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
-              keep_title_hud=False, baseline_root=None, map_subdir=None):
+              keep_title_hud=False, keep_loadout=False, skip_space=False,
+              baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
     weapons. Returns (results, backup_path). The map is only saved (and a one-time
@@ -6553,6 +6554,29 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         else:
             row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
         results.append(row)
+
+    if (keep_loadout or skip_space) and str(game).strip() == 'Halo Reach':
+        # Reach story-flow script edits (reach_scripts.py): the mid-mission loadout
+        # resets on m10/m35, and Long Night of Solace's space section.
+        import reach_scripts
+        mission = os.path.splitext(os.path.basename(map_path))[0].lower()
+        for on, fn, label in ((keep_loadout, reach_scripts.keep_loadout,
+                               'Keep loadout through travel'),
+                              (skip_space, reach_scripts.skip_space,
+                               'Skip the space section')):
+            if not on:
+                continue
+            rep = fn(m, mission, _block_base, _scnr_base(m))
+            row = {'tag': 'scnr', 'field': 'level script', 'effect': label}
+            if rep.get('skip'):
+                row.update(ok=True, skip=True, reason=rep.get('reason'))
+            elif rep.get('ok'):
+                row.update(ok=True, old='vanilla',
+                           new=rep.get('reason') or '%d of %d reset call(s) removed (%s)'
+                           % (rep['removed'], rep['found'], ', '.join(rep['profiles'])))
+            else:
+                row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+            results.append(row)
 
     if remove_cutscenes and str(game).strip() in THIRD_GEN_GAMES:
         # Halo 3 opt-in: neutralise the Cortana/Gravemind vision cutscenes on the map
