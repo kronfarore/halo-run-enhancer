@@ -26,8 +26,10 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+import assembly_plugins                                          # noqa: E402
 import halo_patch as HP                                          # noqa: E402
 import map_vault as V                                            # noqa: E402
+import tagrefs                                                   # noqa: E402
 
 GAME = 'Halo Reach'
 SEP = chr(92)
@@ -146,7 +148,73 @@ def chain_of(m, zb, ident, res):
                     for x in (p, s):
                         if x > 0:
                             pages.add(x)
+    # The model chain alone was never enough. m60 (user, 2026-09-14): the placed sniper
+    # rifle's weap/hlmt/mode/jmad were live at start -- so it spawned -- while its
+    # projectile, damage effect, firing/impact effects and first-person animations were
+    # live only in the zone sets where Jun's rifle appears. It fired, and nothing was
+    # ever hit. The whole declared closure's TAG bits travel now; pages still come from
+    # the model chain only, the part proven safe (Halo 4 crashed when a fix added pages
+    # wholesale -- see h4_pools).
+    for ti in _closure(m, ident):
+        if ti not in tags:
+            tags.append(ti)
     return tags, pages
+
+
+# What the closure keeps, and what it walks further into. The raw declared closure of
+# one rifle is ~710 tags -- shaders, particles, bitmaps, sounds reached through its
+# effects -- and residency written wholesale is exactly what crashed Halo 4. What
+# decides whether a weapon WORKS is narrower: its own tag and model chain, its
+# projectile and damage, its effect tags, first-person animations and HUD. m60's
+# sniper was late in exactly those (proj, jpt!, effe, jmad, chdt ...); m52's only
+# "late" tag in the raw walk was a shared default shader bitmap, i.e. noise.
+CLOSURE_WALK = {'weap', 'eqip', 'proj', 'hlmt'}
+CLOSURE_KEEP = CLOSURE_WALK | {'jpt!', 'effe', 'jmad', 'chdt', 'mode', 'coll', 'phmo',
+                               'foot', 'drdf'}
+
+
+def _closure(m, root_ident, max_tags=4000):
+    """Tag indices a weapon/ability needs to WORK: every CLOSURE_KEEP tag reachable
+    through CLOSURE_WALK tags' declared tagRefs (the Reach plugins say where each class
+    keeps them). Effects are kept but not walked into. Cached per map."""
+    cache = getattr(m, '_rp_closure', None)
+    if cache is None:
+        cache = m._rp_closure = {
+            'by_ident': {t['ident']: t for t in m.tags if t.get('ident') is not None},
+            'specs': {}, 'pd': assembly_plugins.plugins_dir()}
+    by_ident, specs = cache['by_ident'], cache['specs']
+    root = by_ident.get(root_ident)
+    if not root or root.get('base') is None:
+        return []
+    seen, order, todo = {root['index']}, [root['index']], [root]
+    while todo and len(order) < max_tags:
+        t = todo.pop()
+        cls = t['class']
+        if cls not in specs:
+            specs[cls] = (tagrefs._spec(cache['pd'], 'ReachMCC', cls)
+                          or tagrefs._spec(cache['pd'], 'Reach', cls))
+        if not specs[cls]:
+            continue
+        for _path, d in tagrefs.refs_of(m, t['base'], specs[cls]):
+            c = by_ident.get(d)
+            if (not c or c['index'] in seen or c.get('base') is None
+                    or c['class'] not in CLOSURE_KEEP):
+                continue
+            seen.add(c['index'])
+            order.append(c['index'])
+            if c['class'] in CLOSURE_WALK:
+                todo.append(c)
+    return order
+
+
+def _late(m, sets, tags):
+    """Tags of a closure that sit in some pool but NOT in the start set."""
+    out = []
+    for ti in tags:
+        hits = resident_in(m, sets, ti)
+        if hits and START_SET not in hits:
+            out.append(ti)
+    return out
 
 
 def palette(m, scnr, kind):
@@ -182,7 +250,12 @@ def survey(m, scnr, zb, sets, kinds, res):
                 rows.append((kind, nm, ident, None, [], set()))
                 continue
             tags, pages = ch
-            rows.append((kind, nm, ident, tags, resident_in(m, sets, tags[0]), pages))
+            hits = resident_in(m, sets, tags[0])
+            # "At start" means the WHOLE closure is live at start, not just the object
+            # tag -- a half-loaded weapon spawns and then fires nothing (m60's sniper).
+            if START_SET in hits and _late(m, sets, tags):
+                hits = [h for h in hits if h != START_SET]
+            rows.append((kind, nm, ident, tags, hits, pages))
     return rows
 
 
@@ -192,6 +265,9 @@ def apply_fix(m, zb, sets, res, target_ident, donor_tags, donor_pages):
     if ch is None:
         return 0
     ttags, tpages = ch
+    # Only tags that ARE pooled somewhere: one in no pool at all is loaded another way,
+    # and giving it pool bits would only grow the zone sets for nothing (as h4_pools).
+    ttags = [ti for ti in ttags if resident_in(m, sets, ti)]
     n = 0
     for _label, elem in sets:
         for _, off in TAG_POOLS:
