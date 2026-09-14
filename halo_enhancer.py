@@ -810,9 +810,9 @@ CONFIG = {
     # With this on, a turret given a Zoom plays in first person instead so the zoom
     # works -- with no gun model, since no turret ships a first-person one.
     "turret_zoom_first_person": True,
-    # Keep each weapon's reticle on screen while zoomed, alongside the scope overlay.
-    # Only weapons that cannot zoom in vanilla hide it -- so in practice this is every
-    # weapon the patcher gives a Zoom. Map-wide; Halo 4 not supported yet.
+    # Keep the reticle on screen while zoomed, alongside the scope overlay -- on weapons
+    # that really zoom (vanilla or via a Zoom card). Weapons without their own zoom are
+    # left alone: their zoom button is the binoculars. Halo 4 not supported yet.
     "keep_reticle_zoomed": True,
     # Detached turrets -- the machinegun turret, plasma cannon, missile pod and
     # flamethrower -- are placed as VEHICLES, not weapon pickups, so they never
@@ -7849,10 +7849,10 @@ class OptionsDialog(QDialog):
         self.keep_reticle_cb = QCheckBox("Keep the reticle while zoomed")
         self.keep_reticle_cb.setChecked(bool(CONFIG.get('keep_reticle_zoomed', True)))
         self.keep_reticle_cb.setToolTip(
-            "On patch: every weapon keeps its reticle on screen while zoomed, alongside the "
-            "scope overlay. Weapons that zoom in the base game already do; the ones that "
-            "lose it are the weapons given a Zoom by a card. Halo 1 to Reach; Halo 4 is "
-            "not supported yet.")
+            "On patch: weapons that zoom -- in the base game or through a Zoom card -- keep "
+            "their reticle on screen while zoomed, alongside the scope overlay. Weapons "
+            "without a zoom of their own are left alone, so the binoculars stay clean. "
+            "Halo 1 to Reach; Halo 4 is not supported yet.")
         wform.addRow("Reticle:", self.keep_reticle_cb)
 
         self.turret_weapons_cb = QCheckBox("Turrets are weapons")

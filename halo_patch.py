@@ -5017,9 +5017,148 @@ def _reticle_edits(m, game, hud):
     return ed
 
 
-def _keep_reticle(m, game):
-    """Keep every weapon's reticle on screen while zoomed, alongside any scope overlay.
-    Map-wide and idempotent; one summary row."""
+def _weap_zooms(m, wb, plugin):
+    """Magnification Levels > 0 -- read AFTER the patch's value edits, so a Zoom card
+    counts. None when it cannot be read."""
+    if plugin is None:
+        return None
+    try:
+        v = m.read_tag_field(wb, 'Magnification Levels', plugin)
+    except Exception:
+        return None
+    return None if v is None else v > 0
+
+
+def _reach_yes_triggers(m, w):
+    z = _REACH_ZOOM
+    return [tr for sd in _h3_chud_elems(m, w, z['states'])
+            for y in _h3_chud_elems(m, sd, z['yes'])
+            for tr in _h3_chud_elems(m, y, z['trig'])]
+
+
+def _reticle_widgets(m, game, hud):
+    """H3/ODST/Reach: this HUD's crosshair widgets that hide while zoomed, judged from
+    the current bytes (so callers judge every HUD before writing any)."""
+    B = _chud_blocks(game)
+    lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
+    out = []
+    for w in _h3_chud_elems(m, hud, B['widgets']):
+        if game == 'Halo Reach':
+            if m.data[w + 4] != 2:
+                continue
+            codes = [m.u32(tr + 4) for tr in _reach_yes_triggers(m, w)]
+            if _RETICLE_REACH_UNZOOMED in codes and _REACH_ZOOM['code'] not in codes:
+                out.append(w)
+            continue
+        if struct.unpack_from('<H', m.data, w + 4)[0] != 2:           # Scripting Class
+            continue
+        zs = [m.u32(sd + lay['zoom_at']) & 0xFFFF for sd in _h3_chud_elems(m, w, lay['states'])]
+        if zs and all((z & _H3_UNZOOMED) and not (z & _H3_ZOOM_LEVELS) for z in zs):
+            out.append(w)
+    return out
+
+
+def _chud_chain_ptrs(m, game, w):
+    """Array pointers under widget `w` that the reticle edit writes into: its state
+    array (H3/ODST), or its state -> 'Yes' -> Triggers chain (Reach)."""
+    if game == 'Halo Reach':
+        z = _REACH_ZOOM
+        ptrs = [m.u32(w + z['states'][0] + 4)]
+        for sd in _h3_chud_elems(m, w, z['states']):
+            ptrs.append(m.u32(sd + z['yes'][0] + 4))
+            for y in _h3_chud_elems(m, sd, z['yes']):
+                ptrs.append(m.u32(y + z['trig'][0] + 4))
+        return [p for p in ptrs if p]
+    lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
+    p = m.u32(w + lay['states'][0] + 4)
+    return [p] if p else []
+
+
+def _unshare_chain(m, game, w):
+    """Give widget `w` private copies of the arrays the reticle edit writes, so editing
+    them cannot reach a HUD that shares them. True, or None when the map has no slack.
+    Only the written branch is copied (Reach's 'Unknown'/'No' states keep pointing at
+    the shared data, which nothing here changes)."""
+    def arr(field):
+        n = max(0, m.i32(field))
+        return n, (_block_base(m, field) if n else None)
+    if game != 'Halo Reach':
+        lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
+        off, esz = lay['states']
+        n, src = arr(w + off)
+        if not src:
+            return True
+        got = _h3_reserve(m, [n * esz])
+        if got is None:
+            return None
+        m.data[got[0]:got[0] + n * esz] = m.data[src:src + n * esz]
+        struct.pack_into('<I', m.data, w + off + 4, m.off2data(got[0]))
+        return True
+    z = _REACH_ZOOM
+    (soff, sesz), (yoff, yesz), (toff, tesz) = z['states'], z['yes'], z['trig']
+    ns, ssrc = arr(w + soff)
+    if not ssrc:
+        return True
+    plan, sizes = [], [ns * sesz]
+    for i in range(ns):
+        ny, ysrc = arr(ssrc + i * sesz + yoff)
+        trigs = []
+        if ysrc:
+            sizes.append(ny * yesz)
+            for j in range(ny):
+                nt, tsrc = arr(ysrc + j * yesz + toff)
+                trigs.append((nt, tsrc))
+                if tsrc:
+                    sizes.append(nt * tesz)
+        plan.append((ny, ysrc, trigs))
+    got = _h3_reserve(m, sizes)
+    if got is None:
+        return None
+    it = iter(got)
+    snew = next(it)                                   # same order as `sizes`
+    m.data[snew:snew + ns * sesz] = m.data[ssrc:ssrc + ns * sesz]
+    for i, (ny, ysrc, trigs) in enumerate(plan):
+        if not ysrc:
+            continue
+        ynew = next(it)
+        m.data[ynew:ynew + ny * yesz] = m.data[ysrc:ysrc + ny * yesz]
+        struct.pack_into('<I', m.data, snew + i * sesz + yoff + 4, m.off2data(ynew))
+        for j, (nt, tsrc) in enumerate(trigs):
+            if not tsrc:
+                continue
+            tnew = next(it)
+            m.data[tnew:tnew + nt * tesz] = m.data[tsrc:tsrc + nt * tesz]
+            struct.pack_into('<I', m.data, ynew + j * yesz + toff + 4, m.off2data(tnew))
+    struct.pack_into('<I', m.data, w + soff + 4, m.off2data(snew))   # repoint last
+    return True
+
+
+def _reticle_widget_write(m, game, w):
+    """Lift the zoom restriction on one (already judged) widget. Idempotent."""
+    if game == 'Halo Reach':
+        for tr in _reach_yes_triggers(m, w):
+            if m.u32(tr + 4) == _RETICLE_REACH_UNZOOMED:
+                struct.pack_into('<I', m.data, tr + 4, _RETICLE_REACH_ALWAYS)
+        for o in range(0xC2, 0xDC, 2):
+            if struct.unpack_from('<H', m.data, w + o)[0] == _RETICLE_REACH_UNZOOMED:
+                struct.pack_into('<H', m.data, w + o, _RETICLE_REACH_ALWAYS)
+        return
+    lay = _H3_CHUD_STATE_LAYOUT.get(game) or _H3_CHUD_STATE_LAYOUT['Halo 3: ODST']
+    for sd in _h3_chud_elems(m, w, lay['states']):
+        z = m.u32(sd + lay['zoom_at']) & 0xFFFF
+        struct.pack_into('<H', m.data, sd + lay['zoom_at'], z | _H3_ZOOM_LEVELS)
+
+
+def _keep_reticle(m, game, weap_plugin=None):
+    """Keep the reticle on screen while zoomed, alongside any scope overlay -- on the
+    weapons that ACTUALLY zoom (Magnification Levels > 0, vanilla or given by a card).
+    A weapon without its own zoom is left alone: in Halo 2 and Halo 3 its zoom button
+    is the binoculars, and a reticle there is wrong.
+
+    HUD state data is SHARED between HUD tags (H3's AR with the magnum, Reach's with the
+    Falcon gun), so a zooming HUD whose data is also used by a non-zooming one gets its
+    own copy before the edit; data shared only between zooming HUDs is edited in place.
+    Every widget is judged before anything is written. Idempotent; one summary row."""
     g = str(game).strip()
     if g == 'Halo 4':
         return [{'effect': 'keep reticle', 'field': 'all weapons', 'ok': True, 'skip': True,
@@ -5031,26 +5170,73 @@ def _keep_reticle(m, game):
     else:
         weaps = [(t['name'], t['base']) for t in m.tags
                  if t.get('class') == 'weap' and t.get('base') and t.get('name')]
-    huds = {}                                      # hud -> every weapon that uses it
+    huds, zoomers, unread = {}, {}, 0          # hud -> weapon names / zooming names
     for name, wb in weaps:
         try:
             hud = _hud_base(m, g, wb)
         except Exception:
             hud = None
-        if hud is not None:
-            huds.setdefault(hud, set()).add(str(name).rsplit(chr(92), 1)[-1])
-    # Plan every HUD first, THEN write: shared state data must not hide a sharer.
-    plan = {hud: _reticle_edits(m, g, hud) for hud in huds}
-    for ed in plan.values():
-        for off, fmt, val in ed:
-            struct.pack_into(fmt, m.data, off, val)
-    changed = sorted(set().union(*[huds[h] for h, ed in plan.items() if ed] or [set()]))
-    if not changed:
-        return [{'effect': 'keep reticle', 'field': 'all weapons', 'ok': True, 'skip': True,
-                 'reason': 'no reticle on this map hides while zoomed'}]
-    return [{'effect': 'keep reticle', 'field': '%d HUD(s)' % len(changed), 'ok': True,
-             'old': 'reticle hidden while zoomed',
-             'new': 'kept while zoomed: ' + ', '.join(changed)}]
+        if hud is None:
+            continue
+        short = str(name).rsplit(chr(92), 1)[-1]
+        huds.setdefault(hud, set()).add(short)
+        z = _weap_zooms(m, wb, weap_plugin)
+        if z is None:
+            unread += 1
+        elif z:
+            zoomers.setdefault(hud, set()).add(short)
+    if not zoomers:
+        why = ('could not read Magnification Levels' if unread
+               else 'no weapon on this map zooms')
+        return [{'effect': 'keep reticle', 'field': 'zooming weapons', 'ok': True,
+                 'skip': True, 'reason': why}]
+    allowed = set(zoomers)
+    kept, unshared, no_room = set(), 0, []
+    if g in ('Halo 1', 'Halo 2'):
+        # Nothing here is shared (H2: 0 of 14 widget arrays shared on 01b), so plan and
+        # write per HUD.
+        plan = {h: _reticle_edits(m, g, h) for h in allowed}
+        for h, ed in plan.items():
+            for off, fmt, val in ed:
+                struct.pack_into(fmt, m.data, off, val)
+            if ed:
+                kept.add(h)
+    else:
+        targets = {h: _reticle_widgets(m, g, h) for h in allowed}   # judged first
+        B = _chud_blocks(g)
+        users = {}                                  # array pointer -> chud bases using it
+        for t in m.tags:
+            if t.get('class') != 'chdt' or not t.get('base'):
+                continue
+            for w in _h3_chud_elems(m, t['base'], B['widgets']):
+                for p in _chud_chain_ptrs(m, g, w):
+                    users.setdefault(p, set()).add(t['base'])
+        for h, ws in targets.items():
+            for w in ws:
+                if any(users.get(p, set()) - allowed for p in _chud_chain_ptrs(m, g, w)):
+                    if _unshare_chain(m, g, w) is None:
+                        no_room.append(', '.join(sorted(zoomers[h])))
+                        continue
+                    unshared += 1
+                _reticle_widget_write(m, g, w)
+                kept.add(h)
+    rows = []
+    if no_room:
+        rows.append({'effect': 'keep reticle', 'field': 'shared HUD data', 'ok': False,
+                     'reason': 'no free space in the map to give %s its own copy -- '
+                               'left unchanged' % '; '.join(no_room)})
+    if not kept:
+        if not no_room:
+            rows.append({'effect': 'keep reticle', 'field': 'zooming weapons', 'ok': True,
+                         'skip': True,
+                         'reason': 'no zooming weapon here hides its reticle while zoomed'})
+        return rows
+    names = sorted(set().union(*[zoomers[h] for h in kept]))
+    tail = ' (own copy of shared HUD data for %d widget(s))' % unshared if unshared else ''
+    rows.insert(0, {'effect': 'keep reticle', 'field': '%d HUD(s)' % len(kept), 'ok': True,
+                    'old': 'reticle hidden while zoomed',
+                    'new': 'kept while zoomed: ' + ', '.join(names) + tail})
+    return rows
 
 
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
@@ -6024,7 +6210,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if keep_reticle:
         # After the scope graft, so it sees the final HUDs; it never touches scope
         # widgets (they are zoom-ONLY, not hidden-on-zoom). Map-wide, idempotent.
-        results.extend(_keep_reticle(m, game))
+        results.extend(_keep_reticle(m, game, registry.get('weap') if registry else None))
 
     if keep_title_hud:
         # Keep the HUD up through chapter/cinematic titles. An in-map script edit, so
