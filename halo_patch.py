@@ -4604,15 +4604,30 @@ def _h3_zoom_only(m, widget, game='Halo 3: ODST'):
     return True
 
 
+# Reach HUD inputs that read the WEAPON's own ammo/energy state (chdt Import Input
+# enum: Clip/Total Ammo, Heat, Airstrike Charge, Battery, Airstrike Ammo, Charge). The
+# sniper scope carries an ammo meter bound to Clip Ammo Fraction; grafted onto a
+# battery weapon (Reach Plasma Rifle, user 2026-09-14) it changed how ammo showed
+# while zoomed. A donor's ammo readout is the donor's -- only the overlay is copied.
+_REACH_AMMO_INPUTS = frozenset({0x2F, 0x30, 0x32, 0x33, 0x34, 0x3D, 0x42})
+
+
+def _reach_ammo_child(m, child):
+    """Does this Reach bitmap/text widget read ammo? Import Input +0x8, Range +0xA."""
+    return any(struct.unpack_from('<H', m.data, child + o)[0] in _REACH_AMMO_INPUTS
+               for o in (0x8, 0xA))
+
+
 def _h3_scope_parts(m, hud_base, game='Halo 3: ODST'):
     """[(widget, [scope bitmaps], [scope texts])] for every widget owning scope."""
     out = []
     B = _chud_blocks(game)
+    reach = str(game).strip() == 'Halo Reach'
     for w in _h3_chud_elems(m, hud_base, B['widgets']):
         bms = [b for b in _h3_chud_elems(m, w, B['bitmaps'])
-               if _h3_zoom_only(m, b, game)]
+               if _h3_zoom_only(m, b, game) and not (reach and _reach_ammo_child(m, b))]
         txt = [t for t in _h3_chud_elems(m, w, B['texts'])
-               if _h3_zoom_only(m, t, game)]
+               if _h3_zoom_only(m, t, game) and not (reach and _reach_ammo_child(m, t))]
         # Reach also marks the OWNING widget, not just its children; Halo 3 never
         # does, so this only ever adds parts where the game really uses them.
         if not bms and not txt and _h3_zoom_only(m, w, game):
