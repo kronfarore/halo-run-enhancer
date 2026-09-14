@@ -175,19 +175,54 @@ class Tree:
                          val)
 
 
+# HALO 4 hides the HUD for a chapter title with a HUD ANIMATION, not a fade verb:
+# f_chapter_title opens with  if(<param>, hud_play_global_animtion('screen_fade_out'))
+# and, after the title, plays 'screen_fade_in'. Both are removed, as a pair -- playing
+# the fade-in on a HUD that never faded out would blink it away and back -- and both
+# occur only in f_chapter_title. Each call is the lone branch of an `if`, so the IF is
+# the statement skipped (cutting the branch out would leave an if with no body).
+HIDE_STRINGS = {'hud_play_global_animtion': ('screen_fade_out', 'screen_fade_in')}
+
+
+def _lift_if(t, group, pred, child_of):
+    """If `group` is the lone THEN branch of an `if`, the if statement; else `group`."""
+    cond = pred.get(group)
+    head = pred.get(cond) if cond is not None else None
+    if head is None:
+        return group
+    h = t.at(head)
+    if h['vtype'] != T_FUNCNAME or h['string'] != 'if' or t.at(group)['next'] != TERMINATOR:
+        return group
+    owners = [p for p in child_of.get(head, []) if p != head and t.at(p)['child'] == head]
+    return owners[0] if owners else group
+
+
 def survey(t):
     """[(verb, name index, group index, first arg, is_hide)] for every call site."""
-    child_of = {}
+    child_of, pred = {}, {}
     for i in range(t.n):
-        child_of.setdefault(t.at(i)['child'], []).append(i)
+        r = t.at(i)
+        child_of.setdefault(r['child'], []).append(i)
+        if r['next'] != TERMINATOR:
+            pred.setdefault(r['next'] & 0xFFFF, i)
     out = []
     for i in range(t.n):
         r = t.at(i)
-        if r['vtype'] != T_FUNCNAME or r['string'] not in HIDERS:
+        if r['vtype'] != T_FUNCNAME or (r['string'] not in HIDERS
+                                        and r['string'] not in HIDE_STRINGS):
             continue
         parents = [p for p in child_of.get(i, []) if p != i and t.at(p)['child'] == i]
-        arg = t.number(t.at(r['next'] & 0xFFFF)) if r['next'] != TERMINATOR else None
-        out.append((r['string'], i, parents[0] if parents else None, arg,
+        group = parents[0] if parents else None
+        a = t.at(r['next'] & 0xFFFF) if r['next'] != TERMINATOR else None
+        if r['string'] in HIDE_STRINGS:
+            arg = a['string'] if a else None
+            hide = arg in HIDE_STRINGS[r['string']]
+            if hide and group is not None:
+                group = _lift_if(t, group, pred, child_of)
+            out.append((r['string'], i, group, arg, hide))
+            continue
+        arg = t.number(a)
+        out.append((r['string'], i, group, arg,
                     arg is not None and HIDERS[r['string']](arg)))
     return out
 
