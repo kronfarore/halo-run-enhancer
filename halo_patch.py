@@ -4928,6 +4928,53 @@ def _turret_first_person(m, game, targets):
                     'ok': True, 'old': 'third-person view',
                     'new': 'first-person view, so the Zoom works (the turret has no '
                            'first-person model: only the crosshair shows)'})
+    out += _gunner_seats_first_person(m, str(game).strip(), set(names))
+    return out
+
+
+# A MOUNTED gun takes its camera from the vehicle SEAT, not the weapon: the Warthog's
+# gun is a child turret vehicle whose seat is flagged Gunner + Third Person Camera, and
+# so is the deployed machinegun turret (H3/ODST) and the mounted one (Reach/H4). Per
+# game: vehi Weapons block (offset, element size; tagRef datum at +0xC) and Seats block
+# (offset, element size; Flags at +0x0, bit 3 Gunner, bit 4 Third Person Camera), all
+# read off each MCC plugin. Only GUNNER seats are touched, so drivers and passengers
+# keep their view.
+_VEHI_WEAPONS = {'Halo 3': (0x24C, 0x10), 'Halo 3: ODST': (0x26C, 0x10),
+                 'Halo Reach': (0x42C, 0x14), 'Halo 4': (0x4F8, 0xA8)}
+_VEHI_SEATS = {'Halo 3': (0x258, 0xD4), 'Halo 3: ODST': (0x278, 0xD4),
+               'Halo Reach': (0x444, 0x12C), 'Halo 4': (0x510, 0x16C)}
+_SEAT_GUNNER, _SEAT_THIRD_PERSON = 1 << 3, 1 << 4
+
+
+def _gunner_seats_first_person(m, game, weapon_names):
+    """Clear Third Person Camera on the gunner seat of every vehicle that mounts one
+    of `weapon_names` (full weap paths) -- the seat half of turret zoom."""
+    wb, sb = _VEHI_WEAPONS.get(game), _VEHI_SEATS.get(game)
+    if not (wb and sb and weapon_names):
+        return []
+    by_index = {t['index']: t.get('name') for t in m.tags
+                if isinstance(t, dict) and 'index' in t}
+    out = []
+    for t in m.tags:
+        if not isinstance(t, dict) or t.get('class') != 'vehi' or not t.get('base'):
+            continue
+        vb = t['base']
+        guns = {by_index.get(m.u32(e + 0xC) & 0xFFFF) for e in _h3_chud_elems(m, vb, wb)}
+        hit = sorted(n.rsplit(chr(92), 1)[-1] for n in guns if n in weapon_names)
+        if not hit:
+            continue
+        flipped = 0
+        for s in _h3_chud_elems(m, vb, sb):
+            f = m.u32(s)
+            if f & _SEAT_GUNNER and f & _SEAT_THIRD_PERSON:
+                struct.pack_into('<I', m.data, s, f & ~_SEAT_THIRD_PERSON)
+                flipped += 1
+        if flipped:
+            out.append({'effect': 'turret zoom',
+                        'field': str(t.get('name')).rsplit(chr(92), 1)[-1],
+                        'ok': True, 'old': 'third-person gunner seat',
+                        'new': 'first-person gunner seat (%d), so the Zoom on %s works'
+                               % (flipped, ', '.join(hit))})
     return out
 
 

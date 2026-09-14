@@ -6679,9 +6679,9 @@
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
@@ -6698,9 +6698,9 @@
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
@@ -6717,7 +6717,7 @@
 					"debug_desc": "The three `Rider ... Damage Scale` fields on the weapon's damage tag, moved together because they are one question split by how the damage arrives: `Direct` when the shot hits the rider, `Maximum`/`Minimum Transfer` when it hits the vehicle and passes through.\n\nThe split is visible in the shipped values from Halo 3 on: bullet weapons run Direct 1 and explosives Direct 0 -- a rocket does not hit the rider, it transfers (the Halo 3 and ODST rocket carries Minimum Transfer 3). Halo 2 is the odd one out and sets Direct 1 on rockets and needler too, plus fractional 0.75 on both plasma weapons.\n\n**Not offered in Reach.** The fields still exist there but do nothing -- tested in-game on Tip of the Spear, and Assembly documents them as deprecated in Reach. Halo 2 is confirmed working; Halo 3 and ODST use the same names at the same offsets (0x44/0x48/0x4C). Halo 1 has no rider fields at all.\n\nApplied to every damage tag the weapon owns, not one hand-picked tag: the Needler also supercombines, the plasma pistol also fires an overcharged bolt, and the flak round has an impact as well as an explosion. Feedback tags -- trigger kick, overheat, misfire, detach -- are left out, since nothing rides them.\n\nRaising these makes the weapon better at killing drivers and gunners, so the harder direction is DOWN.",
 					"game": ["Halo 3"],
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet"
+						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet & objects\\vehicles\\warthog\\damage_effects\\warthog_chaingun_bullet"
 					},
 					"targets": [
 						{ "field": "Rider Direct Damage Scale", "harder_when": "decreased", "min": 0, "max": 1 },
@@ -6730,9 +6730,9 @@
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Acceleration Time", "block": "Barrels", "index": "all" },
@@ -6759,7 +6759,7 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
 						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
 					},
 					"targets": [
@@ -6772,7 +6772,7 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
 						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
 					},
 					"targets": [
@@ -6785,9 +6785,9 @@
 					"debug_desc": "The `Firing Noise` enum: a noise event raised for AI hearing, whose reach is bounded by the listener's own `Hearing Distance` (char; actr in Halo 1). The same enum drives biped/vehicle Constant Sound Volume and projectile Impact/Detonation Noise — one shared AI sense of hearing.\n\nThis card sets the weapon AND its projectile's Impact and Detonation Noise to the same level, because the two are heard in different places: the firing noise goes off at you, the impact noise goes off wherever the round lands. Silencing only the weapon still announced every shot at the far end.\n\nCensused over 232 weapons in all five games, the names are not a ladder: Shout is the top tier (rockets, snipers, flak and AA cannons, Spartan Laser); Loud is the ordinary tier nearly everything ships with; Medium is the suppressed tier — ODST's automag and silenced SMG are the only two weapons anywhere that use it, plus Halo 1's sniper rifle; Silent is horns and cameras. Quiet is used by no shipped weapon in any game.\n\nApplied by NAME because the codes moved: Halo 1 through ODST store Silent, Medium, Loud, Shout, Quiet; Reach stores Silent, Quiet, Medium, Shout, Loud. Halo 1 keeps the field per Trigger, every later game per Barrel. Reach also simply hears further — 100 to 200 world units against 40 to 50 in the older games.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
@@ -6799,9 +6799,9 @@
 					"desc": "Damage per bullet (mounted and detached)",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet",
-						"Halo Reach": "jpt! objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\damage_effects\\machinegun_turret_bullet",
-						"Halo 4": "jpt! objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\damage_effects\\storm_machinegun_turret_bullet"
+						"Halo 3": "jpt! objects\\weapons\\turret\\machinegun_turret\\damage_effects\\machinegun_turret_bullet & objects\\vehicles\\warthog\\damage_effects\\warthog_chaingun_bullet",
+						"Halo Reach": "jpt! objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\damage_effects\\machinegun_turret_bullet & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\projectiles\\damage_effects\\warthog_chaingun_bullet",
+						"Halo 4": "jpt! objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\damage_effects\\storm_machinegun_turret_bullet & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\projectiles\\damage_effects\\warthog_chaingun_bullet"
 					},
 					"targets": [
 						{ "field": "Damage Lower Bound", "group": "Damage" },
@@ -6814,9 +6814,9 @@
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
-						"Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet",
-						"Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet"
+						"Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\bullet",
+						"Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\projectiles\\warthog_chaingun_bullet",
+						"Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\projectiles\\warthog_chaingun_bullet"
 					},
 					"targets": [
 						{ "field": "Maximum Range", "group": "Range" },
@@ -6835,9 +6835,9 @@
 					"debug_desc": "Automatic, so Rounds Per Second is the real rate, ramping to Rounds Per Second Max while the trigger is held. Shots Per Fire is how many rounds one fire event sends; it ships at 1.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"easier_when": "increased",
 					"targets": [
@@ -6853,9 +6853,9 @@
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"easier_when": "decreased",
 					"targets": [
@@ -6867,9 +6867,9 @@
 					"ignore": "yes",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Rounds Total Initial", "block": "Magazines" },
@@ -6884,9 +6884,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated",
-						"Halo Reach": "weap objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted",
-						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted"
+						"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret",
+						"Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun",
+						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
 						{ "field": "Magnification Levels" },
