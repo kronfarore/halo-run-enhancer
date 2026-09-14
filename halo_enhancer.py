@@ -5478,15 +5478,39 @@ class MagnitudeEditorDialog(QDialog):
         except Exception as e:
             return [{'tag': tag, 'effect': 'Par time', 'ok': False, 'field': 'par time',
                      'reason': str(e)}]
+        # Pushed whatever the mission: the file was just regenerated from the pristine
+        # baseline, so an earlier mission's scaled time has to come back out of memory
+        # too, even when this mission has no par time of its own.
+        pushed = self._push_par_time_live(path)
+        rows = []
         if rep is None:
-            return [{'tag': tag, 'effect': 'Par time', 'ok': True, 'skip': True,
-                     'reason': '%s has no par time in careerdb' % (name or self.mission_id)}]
-        fmt = lambda d: ' / '.join('%d:%02d' % divmod(d[k], 60)
-                                   for k in careerdb_patch.TIME_ATTRS if k in d)
-        return [{'tag': tag, 'effect': 'Par time', 'ok': True,
-                 'field': 'par / average / max',
-                 'old': fmt(rep['old']),
-                 'new': fmt(rep['new']) + ' -- RESTART MCC to apply'}]
+            rows.append({'tag': tag, 'effect': 'Par time', 'ok': True, 'skip': True,
+                         'reason': '%s has no par time in careerdb'
+                                   % (name or self.mission_id)})
+        else:
+            fmt = lambda d: ' / '.join('%d:%02d' % divmod(d[k], 60)
+                                       for k in careerdb_patch.TIME_ATTRS if k in d)
+            tail = ' -- RESTART MCC to apply'
+            if pushed.get('ok'):
+                tail = ' -- pushed live to MCC (%d chapters, no restart)' % pushed['chapters']
+            rows.append({'tag': tag, 'effect': 'Par time', 'ok': True,
+                         'field': 'par / average / max',
+                         'old': fmt(rep['old']), 'new': fmt(rep['new']) + tail})
+        if not pushed.get('ok') and pushed.get('reason') != 'MCC is not running':
+            # Not a failed patch: the file is written and applies at the next MCC start.
+            rows.append({'tag': tag, 'effect': 'Par time (live push)', 'ok': True,
+                         'skip': True, 'reason': pushed.get('reason')})
+        return rows
+
+    def _push_par_time_live(self, path):
+        """Mirror careerdb.xml's par times into the running MCC (careerdb_live). Never
+        raises: a convenience on top of a file edit that already succeeded."""
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import careerdb_live
+            return careerdb_live.push_from_xml(path)
+        except Exception as e:
+            return {'ok': False, 'reason': str(e)}
 
     def _apply_score_scaling(self):
         """Rescale <mcc_root>\\Data\\UI\\scoredb.xml from this run's enemy effects.
@@ -7369,7 +7393,10 @@ class MagnitudeEditorDialog(QDialog):
         _cdb = os.path.join(mcc_root(), careerdb_patch.CAREERDB_REL)
         if (float(CONFIG.get('par_time_scale') or 1.0) != 1.0
                 or os.path.exists(careerdb_patch.backup_path(_cdb))):
-            results.extend(self._apply_par_time())
+            # Its own busy dialog: the first live push of an MCC launch scans the heap
+            # for the chapter records (~55 s measured) before it can cache them.
+            results.extend(self._run_busy(self._apply_par_time, title="Par time",
+                                          label="Scaling par time and pushing it to MCC"))
 
         # AFTER the rescale: that regenerates scoredb.xml from the pristine baseline,
         # so a sign flip applied before it would simply be overwritten.

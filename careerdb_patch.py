@@ -37,6 +37,57 @@ def read_baseline(path):
         return f.read()
 
 
+def history_path(path):
+    """Every chapter state this module has written -- sprint_toolkit/careerdb_live needs
+    them all, because MCC holds whatever the file said when it last STARTED."""
+    return path + '.history.json'
+
+
+def chapter_times(text):
+    """{title: (par, average, max)} for every chapter carrying all three times."""
+    out = {}
+    for tag in re.finditer(r'<Chapter\b([^>]*)>', text, re.S):
+        a = dict(re.findall(r'(\w+)="([^"]*)"', tag.group(1)))
+        if a.get('title') and all(a.get(k) for k in TIME_ATTRS) \
+                and float(a['par_time']) > 0:
+            out[a['title']] = tuple(float(a[k]) for k in TIME_ATTRS)
+    return out
+
+
+def _remember(path, title, times):
+    import json
+    hp = history_path(path)
+    try:
+        with open(hp, encoding='utf-8') as f:
+            hist = json.load(f)
+    except Exception:
+        hist = {}
+    rows = hist.setdefault(title, [])
+    if list(times) not in rows:
+        rows.append(list(times))
+        with open(hp, 'w', encoding='utf-8') as f:
+            json.dump(hist, f)
+
+
+def known_triplets(path):
+    """{title: {(par, avg, max)}} -- every value MCC could be holding right now: the
+    pristine file, the current file, and each state written since."""
+    import json
+    out = {}
+    for src in (backup_path(path), path):
+        if os.path.exists(src):
+            with open(src, encoding='utf-8') as f:
+                for title, t in chapter_times(f.read()).items():
+                    out.setdefault(title, set()).add(t)
+    try:
+        with open(history_path(path), encoding='utf-8') as f:
+            for title, rows in json.load(f).items():
+                out.setdefault(title, set()).update(tuple(r) for r in rows)
+    except Exception:
+        pass
+    return out
+
+
 def _norm(s):
     s = re.sub(r'[^a-z0-9]', '', (s or '').lower())
     return s[3:] if s.startswith('the') else s
@@ -97,6 +148,9 @@ def apply(path, game, mission_name, factor, dry_run=False):
     if not dry_run:
         with open(path, 'w', encoding='utf-8', newline='') as f:
             f.write(base[:span[0]] + chunk + base[span[1]:])
+        title = re.search(r'\btitle="([^"]+)"', chunk)
+        if title and all(k in new for k in TIME_ATTRS):
+            _remember(path, title.group(1), tuple(float(new[k]) for k in TIME_ATTRS))
     return {'old': old, 'new': new}
 
 
