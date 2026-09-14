@@ -5497,6 +5497,63 @@ def _set_airstrike_height(m, game, height):
     return out
 
 
+# Whether a dying player drops the armour ability they carry is a PLAYER TRAIT: matg
+# Default Player Traits -> Weapon Traits -> Equipment Drop. Every Reach and Halo 4
+# campaign map ships it 1 (Disabled / False), which is why nothing falls on death;
+# 2 is Enabled / True. (block offset, element), (child block, element), enum byte.
+_EQUIPMENT_DROP = {
+    'Halo Reach': ((0x420, 0x3C), (0xC, 0x18), 0x7),
+    'Halo 4': ((0x5B0, 0x3C), (0xC, 0x80), 0x61),
+}
+_EQUIPMENT_DROP_NAMES = {'Halo Reach': ('Unchanged', 'Disabled', 'Enabled'),
+                         'Halo 4': ('Unchanged', 'False', 'True')}
+# Halo 4 also gates it per ability: eqip Flags (0x2AC) bit 9 "Is Dropped By Player",
+# clear on every campaign ability. Grenades and ammo boxes are eqip too and are left
+# alone. Reach's eqip has no such bit.
+_H4_EQIP_FLAGS, _H4_DROPPED_BY_PLAYER = 0x2AC, 1 << 9
+_H4_NOT_ABILITIES = ('grenade', 'ammo_box')
+
+
+def _equipment_drop(m, game):
+    """Make players drop their armour ability on death (Reach, Halo 4)."""
+    game = str(game).strip()
+    spec = _EQUIPMENT_DROP.get(game)
+    if not spec:
+        return []
+    (pt, pt_es), (wt, wt_es), at = spec
+    names = _EQUIPMENT_DROP_NAMES[game]
+    out = []
+    for t in m.tags:
+        if not isinstance(t, dict) or t.get('class') != 'matg' or not t.get('base'):
+            continue
+        for i, e in enumerate(_h3_chud_elems(m, t['base'], (pt, pt_es))):
+            for j, w in enumerate(_h3_chud_elems(m, e, (wt, wt_es))):
+                old = m.data[w + at]
+                m.data[w + at] = 2
+                out.append({'effect': 'equipment drop', 'tag': 'matg ' + str(t['name']),
+                            'field': 'Default Player Traits[%d] Equipment Drop' % i,
+                            'ok': True, 'old': names[old] if old < 3 else old,
+                            'new': names[2]})
+    if game == 'Halo 4':
+        n = 0
+        for t in m.tags:
+            if not isinstance(t, dict) or t.get('class') != 'eqip' or not t.get('base'):
+                continue
+            if any(s in str(t['name']).lower() for s in _H4_NOT_ABILITIES):
+                continue
+            f = struct.unpack_from('<I', m.data, t['base'] + _H4_EQIP_FLAGS)[0]
+            if not f & _H4_DROPPED_BY_PLAYER:
+                struct.pack_into('<I', m.data, t['base'] + _H4_EQIP_FLAGS,
+                                 f | _H4_DROPPED_BY_PLAYER)
+                n += 1
+        out.append({'effect': 'equipment drop', 'field': 'eqip Is Dropped By Player',
+                    'ok': True, 'old': 'clear', 'new': 'set on %d abilities' % n})
+    if not out:
+        return [{'effect': 'equipment drop', 'field': 'Equipment Drop', 'ok': True,
+                 'skip': True, 'reason': 'no player traits in this map\'s globals'}]
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
@@ -6180,7 +6237,7 @@ def _apply_sprint(m, game, registry, cfg):
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False, airstrike_height=None,
-              from_baseline=True, remove_cutscenes=False, skulls=(),
+              equipment_drop=False, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
               difficulty_baseline=None,
@@ -6468,6 +6525,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if airstrike_height:
         # Reach Target Locator: where the strike is launched from (see _set_airstrike_height).
         results.extend(_set_airstrike_height(m, game, airstrike_height))
+
+    if equipment_drop:
+        # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
+        results.extend(_equipment_drop(m, game))
 
     if keep_reticle:
         # After the scope graft, so it sees the final HUDs; it never touches scope

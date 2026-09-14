@@ -373,6 +373,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius', 'reach_airstrike_height',
+               'equipment_drop_on_death',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -874,6 +875,9 @@ CONFIG = {
     # (100). Test knob for using the locator indoors, where a roof blocks a strike
     # coming down from 100 units. Only maps that carry an airstrike are affected.
     "reach_airstrike_height": 0.0,
+    # Reach / Halo 4: a dying player drops the armour ability they carry. Vanilla
+    # campaign ships the player trait Disabled, so it never happens there.
+    "equipment_drop_on_death": False,
     "h4_spawn_starting_weapons": False,
     "h4_spawn_all_weapons": False,
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
@@ -7221,6 +7225,7 @@ class MagnitudeEditorDialog(QDialog):
                 turret_first_person=turret_fp,
                 keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
                 airstrike_height=float(CONFIG.get('reach_airstrike_height') or 0.0) or None,
+                equipment_drop=bool(CONFIG.get('equipment_drop_on_death')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -9166,6 +9171,17 @@ class OptionsDialog(QDialog):
             "Long Night of Solace, until the others are rebuilt with one).")
         rcform.addRow("Airstrike height:", self.reach_airstrike_height)
 
+        self.equipment_drop_cb = QCheckBox(
+            "Reach & Halo 4: players drop their armor ability on death")
+        self.equipment_drop_cb.setChecked(bool(CONFIG.get('equipment_drop_on_death')))
+        self.equipment_drop_cb.setToolTip(
+            "Off: vanilla -- a dying player's armor ability vanishes with them. "
+            "On: it falls to the ground like a weapon, for a partner to pick up. "
+            "It is a player trait (Equipment Drop) that every campaign map ships "
+            "Disabled; Halo 4 also needs each ability's own 'dropped by player' flag, "
+            "which is set with it.")
+        rcform.addRow("Ability drop:", self.equipment_drop_cb)
+
         # ---- Halo 4 ----
         # Halo 4 is the one game that already sprints. It is innate -- matg's Default
         # Player Traits grant it to every player -- and the sprint equipment tag that
@@ -9652,6 +9668,7 @@ class OptionsDialog(QDialog):
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'reach_airstrike_height': self.reach_airstrike_height.value(),
+            'equipment_drop_on_death': self.equipment_drop_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
