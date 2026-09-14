@@ -12335,10 +12335,34 @@ class HaloGUI(QMainWindow):
         no separate magnitude_presets.json to copy (and clobber)."""
         data = self.run_state.to_dict()
         data['format'] = RUN_FILE_MARKER    # tag it so loading can validate the file
-        mags = run_magnitudes(self.run_state.rounds, self.run_state.mission_id)
+        rounds = self.run_state.rounds or []
+        mags = run_magnitudes(rounds, self.run_state.mission_id)
+        # The patcher keys what is typed by each card's REFRESHED definition (current
+        # halo.json -- on_patch_map runs _refresh_mod_definition first), while the run
+        # holds the tag as it was at roll time. Wherever those differ the magnitude
+        # never travelled, and the partner patched blank or with their own old value --
+        # the co-op desync of 2026-09-12 (Elite melee, Elite Cover Chance Time, Hunter
+        # fuel rod, Jackal cover). Collect under both.
+        fresh = copy.deepcopy(rounds)
+        for rd in fresh:
+            for mod in self._round_mods(rd):
+                try:
+                    self._refresh_mod_definition(mod)
+                except Exception:
+                    pass
+        mags.update(run_magnitudes(fresh, self.run_state.mission_id))
         if mags:
             data['magnitudes'] = mags
         return data
+
+    @staticmethod
+    def _round_mods(rd):
+        """Every card dict one round holds -- the slots on_patch_map refreshes."""
+        slots = [(rd.get('player1') or {}).get('mod'), (rd.get('player2') or {}).get('mod'),
+                 rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'), rd.get('wildcard2'),
+                 rd.get('boss1'), rd.get('boss2'), rd.get('hero1'), rd.get('hero2'),
+                 rd.get('skull1'), rd.get('skull2'), rd.get('exhaust1'), rd.get('exhaust2')]
+        return [m for m in slots if isinstance(m, dict)]
 
     def _shared_run_path(self):
         """The file in the shared folder that IS this run, if we know it — either one
