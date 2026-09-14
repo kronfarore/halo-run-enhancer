@@ -855,9 +855,9 @@ CONFIG = {
     # applied fresh from the pristine baseline each patch, so toggling it off and
     # re-patching restores the cutscenes. Reproduces "Halo 3 Cortana Begone".
     "remove_h3_cutscenes": True,   # #4: on by default — skip the vision cutscenes
-    # Off by default: it changes how every chapter break LOOKS, which is a taste
-    # call, not a fix.
-    "keep_title_hud": False,
+    # On by default (the user's call, 2026-09-14): the HUD stays up through chapter
+    # titles; the titles themselves still appear.
+    "keep_title_hud": True,
     # Off by default so a user on STOCK maps keeps the full halo.json list. On, the
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
@@ -4510,7 +4510,7 @@ class MagnitudeEditorDialog(QDialog):
         v = m.read_first(cls, path, field, plugin, target.get('block'),
                          target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
         if v is None:
-            return "field?"
+            return self._why_unreadable(m, cls, path, field, plugin, target)
         v = self._shown_value(target, v)        # stored -> the units shown/typed
         return f"{round(v, 4)}" if isinstance(v, float) else str(v)
 
@@ -4566,6 +4566,45 @@ class MagnitudeEditorDialog(QDialog):
         if scale == 1.0 and offset == 0.0:
             return v
         return scale * v + offset
+
+    def _why_unreadable(self, m, cls, path, field, plugin, target):
+        """What to show when the FIRST matching tag has no value, instead of "field?".
+
+        Usually the field name is fine and the tag simply ships the block EMPTY. Halo 4's
+        Hopping Definition is the case that surfaced it: a card's pattern such as
+        storm_elite* matches plain Elites (no hop data at all) as well as the Rangers
+        that do hop, and the display read only the first. So look at EVERY matching
+        variant: show the first real value and say it is only on some; or say that no
+        variant on this level has the block filled -- which also means the card changes
+        nothing here."""
+        block = target.get('block')
+        index = target.get('index', 0) or 0
+        nth = target.get('nth', 0) or 0
+        fld = plugin.find(field, block, nth)
+        if fld is None:
+            return "field?"
+        try:
+            tags = m.find_tags(cls, path) or []
+        except Exception:
+            tags = []
+        filled = []
+        for name, base in tags:
+            try:
+                v = m.read_tag_field(base, field, plugin, block, index, nth=nth)
+            except Exception:
+                v = None
+            if v is not None:
+                filled.append((str(name).rsplit(chr(92), 1)[-1], v))
+        if filled:
+            short, v = filled[0]
+            v = self._shown_value(target, v)
+            shown = f"{round(v, 4)}" if isinstance(v, float) else str(v)
+            return (f"{shown}   (only on {short}"
+                    + (f" +{len(filled) - 1} more" if len(filled) > 1 else "")
+                    + f"; {len(filled)} of {len(tags)} variants have it)")
+        if fld.get('block_offsets') and tags:
+            return "— block empty on every variant here (the card changes nothing on this level)"
+        return "field?"
 
     def _difficulty_values_str(self, tag, target):
         """Every difficulty's value for a per-difficulty field, e.g.
@@ -4694,7 +4733,7 @@ class MagnitudeEditorDialog(QDialog):
             if default_line:
                 return default_line
             if m.find_tags(cls, path):
-                return "field?"
+                return self._why_unreadable(m, cls, path, field, plugin, target)
             # Distinguish "this game doesn't have this weapon/equipment at all" from
             # "it exists in this game but isn't placed on this particular level".
             return ("— not in the selected game" if self._absent_from_game(eff)
@@ -9169,7 +9208,7 @@ class OptionsDialog(QDialog):
         _sync_h4_spawn()
         h4form.addRow("", self.h4_spawn_all_cb)
 
-        self._opt_page("Patching").addWidget(patch_all_g, 55)
+        self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
