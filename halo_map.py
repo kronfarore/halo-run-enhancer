@@ -85,6 +85,9 @@ RANGE_TYPES = {
     'ranged': ('degree', 4, ('', ' Max')),   # range of DEGREES; halves get angle conversion
     'range16': ('int16', 2, ('', ' Max')),
     'degree2': ('degree', 4, (' y', ' p')),
+    # A 2D position (Reach airstrike Fire Offsets). Same trap as degree2 before it:
+    # unflattened, the field never appears and a card naming it finds nothing.
+    'point2': ('float32', 4, (' x', ' y')),
 }
 
 # XML node tags that introduce a nested reflexive (block) in Halo 1 plugins.

@@ -322,6 +322,7 @@
 			"m30": {
 				"name": "Nightfall",
 				"enemies": ["Elite", "Engineer", "Grunt", "Hunter", "Jackal", "Skirmisher"],
+				"boss": "Mule",
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
 				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Health Pack", "Hologram", "Jet Pack", "Sprint"],
@@ -8881,6 +8882,23 @@
 				}
 			},
 			"Target Locator": {
+				"Airstrike": {
+					"desc": "The Target Locator's airstrike: how many you get, how often they come, and how they land.",
+					"debug_desc": "Every tunable of the airstrike definition (`airs` objects\\weapons\\pistol\\target_laser\\projectiles\\default, Batteries block) except Launch z Height (its own option, Patching > Reach > Airstrike height), the Fire Effect and the Affected Weapon. One row per quantity:\n\n- `Default Launch Count` -- strikes available. Ships 3 on both maps that carry an airstrike (ONI Sword Base, Long Night of Solace), yet the locator plays as 2 in game, so this row is also the test of whether this field IS the charge count.\n- `Shots Per Launch` 7, `Launch Duration` 4.5 s (how long the 7 take), `Launch Warmup` 3 s (lase-to-launch delay), `Launch Cooldown` 9.5 s (until the next strike is ready), `Launch Arrival` 1 s (how long the marker lingers).\n- `Launch Radius` 1.5 -- random scatter of each shot around the aim point.\n- `Fire Offsets` -- five fixed points the shots cycle through (centre and 3 units N/S/E/W); scaling them spreads or tightens the pattern.\n\nThe weapon's own Functions only IMPORT the engine's `airstrike_state` to drive the model's lights and screen; none of them holds a count.",
+					"game": ["Halo Reach"],
+					"tag": "airs objects\\weapons\\pistol\\target_laser\\projectiles\\default",
+					"targets": [
+						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Strikes", "harder_when": "decreased", "min": 1},
+						{"field": "Shots Per Launch", "block": "Batteries", "index": "all", "group": "Shots Per Strike", "harder_when": "decreased", "min": 1},
+						{"field": "Launch Cooldown", "block": "Batteries", "index": "all", "group": "Cooldown", "harder_when": "increased", "min": 0},
+						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "harder_when": "increased", "min": 0},
+						{"field": "Launch Duration", "block": "Batteries", "index": "all", "group": "Duration", "harder_when": "increased", "min": 0},
+						{"field": "Launch Arrival", "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
+						{"field": "Launch Radius", "block": "Batteries", "index": "all", "group": "Scatter", "harder_when": "increased", "min": 0},
+						{"field": "Offset x", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"},
+						{"field": "Offset y", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"}
+					]
+				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
 					"game": ["Halo Reach"],
@@ -16742,6 +16760,55 @@
 			}
 		},
 		"Boss enemy modifier": {
+			"Mule": {
+				"Body Vitality": {
+					"desc": "The Mule's health.",
+					"debug_desc": "`Normal Body Vitality` and `Legendary Body Vitality` on char objects\\characters\\mule\\ai\\mule (Vitality Properties): 400 and 700. Its shield is 0 in both, so no shield card -- an operator on a stored 0 does nothing. The Mule is unique to Nightfall.",
+					"game": "Halo Reach",
+					"tag": "char objects\\characters\\mule\\ai\\mule",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Normal Body Vitality", "block": "Vitality Properties", "index": "all", "min": 1, "group": "Body Vitality" },
+						{ "field": "Legendary Body Vitality", "block": "Vitality Properties", "index": "all", "min": 1, "group": "Body Vitality" }
+					]
+				},
+				"Melee Damage": {
+					"desc": "How hard the Mule hits.",
+					"debug_desc": "Damage Lower Bound / Upper Bound (+ Max) on jpt! objects\\characters\\mule\\damage_effects\\melee -- its swipe.",
+					"game": "Halo Reach",
+					"tag": "jpt! objects\\characters\\mule\\damage_effects\\melee",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Ground Smash Damage": {
+					"desc": "How hard the Mule's ground smash hits.",
+					"debug_desc": "Damage Lower Bound / Upper Bound (+ Max) on jpt! objects\\characters\\mule\\damage_effects\\mule_smash_rock.",
+					"game": "Halo Reach",
+					"tag": "jpt! objects\\characters\\mule\\damage_effects\\mule_smash_rock",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Roar Damage": {
+					"desc": "How much the Mule's roar hurts.",
+					"debug_desc": "Damage Lower Bound / Upper Bound (+ Max) on jpt! objects\\characters\\mule\\damage_effects\\mule_roar.",
+					"game": "Halo Reach",
+					"tag": "jpt! objects\\characters\\mule\\damage_effects\\mule_roar",
+					"harder_when": "increased",
+					"targets": [
+						{ "field": "Damage Lower Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound", "group": "Damage" },
+						{ "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				}
+			},
 			"Prophet Regret": {
 				"Body Vitality": {
 					"desc": "Prophet Regret's health.",
