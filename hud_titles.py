@@ -67,19 +67,65 @@ HIDERS = {
 }
 
 
-class Tree:
-    """The compiled script tree of one scenario."""
+# HALO 4 moved compiled scripts out of the scenario into `hsdt` tags (hs_script_data,
+# described by the plain Halo4 plugin set, not Halo4MCC): Expressions at +0x48, String
+# Constants dataRef at +0x54. There is one for the global script container and one per
+# scenario and object script, so a title beat can live in either -- Dawn keeps its 8
+# chud_cinematic_fade and 6 letterbox calls in globals\global_script_container and 2
+# more letterbox calls in m10_crash_scenario. Its record is 0x1C and REARRANGED:
+#     0x00 u16 salt    0x02 u16 opcode   0x04 u32 next    0x08 u32 value
+#     0x0C u32 string  0x10 u32 value type                0x14 u16 flags ...
+# The plugin labels the value bytes MSB-first, but it is a plain little-endian u32:
+# read that way all 14 call groups on Dawn point at their function name (2 do BE).
+H4_BLOCKS = (0x48, 0x54)
+LAYOUTS = {
+    'gen3': {'size': EXPR_SIZE, 'next': F_NEXT, 'str': F_STR, 'value': F_VALUE,
+             'vtype': (0x4, '<H')},
+    'h4':   {'size': 0x1C, 'next': 0x4, 'str': 0xC, 'value': 0x8,
+             'vtype': (0x10, '<I')},
+}
 
-    def __init__(self, m, game, block_base, scnr_base):
+
+class Tree:
+    """The compiled script tree of one scenario -- or, in Halo 4, of one hsdt tag
+    (pass its base as `container`)."""
+
+    def __init__(self, m, game, block_base, scnr_base, container=None):
         self.m = m
         self.game = str(game).strip()
-        eoff, soff = SCRIPT_BLOCKS[self.game]
-        self.n = max(0, m.i32(scnr_base + eoff))
-        self.base = block_base(m, scnr_base + eoff)
-        ptr = m.u32(scnr_base + soff + 0xC)
+        if container is not None:
+            eoff, soff = H4_BLOCKS
+            owner, self.lay = container, LAYOUTS['h4']
+        else:
+            eoff, soff = SCRIPT_BLOCKS[self.game]
+            owner, self.lay = scnr_base, LAYOUTS['gen3']
+        self.size = self.lay['size']
+        self.n = max(0, m.i32(owner + eoff))
+        self.base = block_base(m, owner + eoff)
+        ptr = m.u32(owner + soff + 0xC)
         sb = m.data2off(ptr) if ptr else None
-        ss = max(0, m.i32(scnr_base + soff))
+        ss = max(0, m.i32(owner + soff))
         self.blob = bytes(m.data[sb:sb + ss]) if sb else b''
+        # Halo 4: a script's FIRST statement is entered from its Scripts element (root
+        # expression datum at +0xC of the 0x20 element, block at hsdt+0xC), not from any
+        # expression. That is exactly where the chapter-title fade lives: Dawn's
+        # f_hud_chapter opens with chud_cinematic_fade 0 and f_chapter_title with the
+        # letterbox. The third-gen scenarios measured have no hide entered that way.
+        self.roots = []
+        if container is not None:
+            ns = max(0, m.i32(owner + 0xC))
+            rb = block_base(m, owner + 0xC) if ns else None
+            self.roots = [rb + s * 0x20 + 0xC for s in range(ns)] if rb else []
+
+    def entered(self, group):
+        """Is statement `group` on a live chain -- reached from a sibling's `next`, or
+        (Halo 4) from a script's root?"""
+        for i in range(self.n):
+            r = self.at(i)
+            if r['next'] != TERMINATOR and (r['next'] & 0xFFFF) == group and i != group:
+                return True
+        return any(self.m.u32(o) != TERMINATOR and (self.m.u32(o) & 0xFFFF) == group
+                   for o in self.roots)
 
     def ok(self):
         return bool(self.base) and self.n > 0 and bool(self.blob)
@@ -93,12 +139,15 @@ class Tree:
     def at(self, i):
         if not self.base or not (0 <= i < self.n):
             return None
-        e = self.base + i * EXPR_SIZE
+        L = self.lay
+        e = self.base + i * self.size
         d = self.m.data
-        salt, opcode, vtype, flags = struct.unpack_from('<HHHH', d, e)
-        nxt, soff = struct.unpack_from('<II', d, e + F_NEXT)
-        val = struct.unpack_from('<I', d, e + F_VALUE)[0]
-        return dict(i=i, salt=salt, opcode=opcode, vtype=vtype, flags=flags,
+        salt, opcode = struct.unpack_from('<HH', d, e)
+        vtype = struct.unpack_from(L['vtype'][1], d, e + L['vtype'][0])[0]
+        nxt = struct.unpack_from('<I', d, e + L['next'])[0]
+        soff = struct.unpack_from('<I', d, e + L['str'])[0]
+        val = struct.unpack_from('<I', d, e + L['value'])[0]
+        return dict(i=i, salt=salt, opcode=opcode, vtype=vtype,
                     next=nxt, string=self.string(soff), value=val,
                     child=val & 0xFFFF)
 
@@ -118,10 +167,12 @@ class Tree:
         return None
 
     def set_next(self, i, datum):
-        struct.pack_into('<I', self.m.data, self.base + i * EXPR_SIZE + F_NEXT, datum)
+        struct.pack_into('<I', self.m.data, self.base + i * self.size + self.lay['next'],
+                         datum)
 
     def set_value(self, i, val):
-        struct.pack_into('<I', self.m.data, self.base + i * EXPR_SIZE + F_VALUE, val)
+        struct.pack_into('<I', self.m.data, self.base + i * self.size + self.lay['value'],
+                         val)
 
 
 def survey(t):
@@ -149,6 +200,14 @@ def _skip(t, group):
         if r['next'] != TERMINATOR and (r['next'] & 0xFFFF) == group and i != group:
             t.set_next(i, g['next'])
             return 'expr %d -> past %d' % (i, group)
+    # first statement of a SCRIPT (Halo 4): the script's root moves on instead
+    for o in getattr(t, 'roots', ()):
+        v = t.m.u32(o)
+        if v != TERMINATOR and (v & 0xFFFF) == group:
+            if g['next'] == TERMINATOR:
+                return None              # the script's only statement; leave it
+            struct.pack_into('<I', t.m.data, o, g['next'])
+            return 'script root -> %d' % (g['next'] & 0xFFFF)
     # first statement of its block: the PARENT's child pointer moves on instead
     for i in range(t.n):
         r = t.at(i)
@@ -226,9 +285,60 @@ def build_time_state(game):
     return None
 
 
+def _strip_tree(t):
+    """Orphan every live hide call in one tree. (removed, kept, failed, sites, passes)."""
+    rows = survey(t)
+    kept = sum(1 for r in rows if not r[4])
+    # ITERATE TO A FIXED POINT. Two hide statements can be adjacent siblings: skipping
+    # the first repoints its predecessor onto the second, which puts the second back on
+    # the live chain after it was already dealt with. One pass left exactly one call
+    # still reachable on every Halo 3 and ODST map; re-surveying and repeating clears
+    # it. The loop is bounded because each pass either unlinks something or stops.
+    removed, failed, passes = 0, 0, 0
+    while passes < 8:
+        passes += 1
+        live = []
+        for _verb, _name, group, _arg, is_hide in survey(t):
+            if not is_hide or group is None:
+                continue
+            if t.entered(group):
+                live.append(group)
+        if not live:
+            break
+        moved = 0
+        for group in live:
+            if _skip(t, group):
+                removed += 1
+                moved += 1
+        if not moved:
+            failed = len(live)
+            break
+    return removed, kept, failed, len(rows), passes
+
+
 def remove_title_hud_hiding(m, game, block_base, scnr_base):
     """Orphan every call that hides the HUD for a title. Returns a result dict."""
     g = str(game).strip()
+    if g == 'Halo 4':
+        tot = {'removed': 0, 'kept': 0, 'failed': 0, 'sites': 0, 'passes': 0, 'tags': 0}
+        for tag in m.tags:
+            if not isinstance(tag, dict) or tag.get('class') != 'hsdt' or not tag.get('base'):
+                continue
+            t = Tree(m, g, block_base, None, container=tag['base'])
+            if not t.ok():
+                continue
+            removed, kept, failed, sites, passes = _strip_tree(t)
+            if not sites:
+                continue
+            tot['tags'] += 1
+            for k, v in (('removed', removed), ('kept', kept), ('failed', failed),
+                         ('sites', sites)):
+                tot[k] += v
+            tot['passes'] = max(tot['passes'], passes)
+        if not tot['tags']:
+            return {'ok': True, 'skip': True,
+                    'reason': 'no chapter-title HUD calls in any script tag'}
+        return {'ok': True, **tot}
     if g not in SCRIPT_BLOCKS:
         state = build_time_state(g)
         if state:
@@ -262,9 +372,7 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
         for _verb, _name, group, _arg, is_hide in survey(t):
             if not is_hide or group is None:
                 continue
-            if any(t.at(i)['next'] != TERMINATOR
-                   and (t.at(i)['next'] & 0xFFFF) == group and i != group
-                   for i in range(t.n)):
+            if t.entered(group):
                 live.append(group)
         if not live:
             break
