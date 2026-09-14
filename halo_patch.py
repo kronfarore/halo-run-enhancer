@@ -5468,6 +5468,35 @@ def _keep_reticle(m, game, weap_plugin=None):
     return rows
 
 
+# Reach airstrike definition (`airs`, plain Reach plugin): Batteries block at +0x0,
+# element 0x4C; Launch z Height at +0x4 -- "strike will be launched at this plane height
+# above the target location". The Target Locator's default.airstrike ships 100 (m20,
+# m45; the other missions carry no airstrike at all). A strike that has to come down
+# 100 units is what a roof blocks, so this is the knob for the indoor test.
+_AIRS_BATTERIES, _AIRS_Z_HEIGHT = (0x0, 0x4C), 0x4
+
+
+def _set_airstrike_height(m, game, height):
+    """Set Launch z Height on every airstrike battery in a Reach map."""
+    if str(game).strip() != 'Halo Reach' or not height:
+        return []
+    out = []
+    for t in m.tags:
+        if not isinstance(t, dict) or t.get('class') != 'airs' or not t.get('base'):
+            continue
+        for i, e in enumerate(_h3_chud_elems(m, t['base'], _AIRS_BATTERIES)):
+            old = struct.unpack_from('<f', m.data, e + _AIRS_Z_HEIGHT)[0]
+            struct.pack_into('<f', m.data, e + _AIRS_Z_HEIGHT, float(height))
+            out.append({'effect': 'airstrike height', 'tag': 'airs ' + str(t['name']),
+                        'field': 'Launch z Height [%d]' % i, 'ok': True,
+                        'old': round(old, 3), 'new': float(height)})
+    if not out:
+        return [{'effect': 'airstrike height', 'field': 'Launch z Height', 'ok': True,
+                 'skip': True,
+                 'reason': 'no airstrike on this map -- the Target Locator does nothing here'}]
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
@@ -6150,7 +6179,7 @@ def _apply_sprint(m, game, registry, cfg):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
-              turret_first_person=None, keep_reticle=False,
+              turret_first_person=None, keep_reticle=False, airstrike_height=None,
               from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
@@ -6435,6 +6464,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # target weapon's HUD tag. Done after every value op so the relocated HUD
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
+
+    if airstrike_height:
+        # Reach Target Locator: where the strike is launched from (see _set_airstrike_height).
+        results.extend(_set_airstrike_height(m, game, airstrike_height))
 
     if keep_reticle:
         # After the scope graft, so it sees the final HUDs; it never touches scope

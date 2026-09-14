@@ -372,7 +372,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'keep_title_hud',
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
-               'reach_placement_radius',
+               'reach_placement_radius', 'reach_airstrike_height',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -870,6 +870,10 @@ CONFIG = {
     "reach_spawn_starting_weapons": False,
     "reach_spawn_all_weapons": False,
     "reach_placement_radius": 0.25,
+    # Target Locator airstrike launch height in world units; 0 leaves the map's own
+    # (100). Test knob for using the locator indoors, where a roof blocks a strike
+    # coming down from 100 units. Only maps that carry an airstrike are affected.
+    "reach_airstrike_height": 0.0,
     "h4_spawn_starting_weapons": False,
     "h4_spawn_all_weapons": False,
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
@@ -7216,6 +7220,7 @@ class MagnitudeEditorDialog(QDialog):
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                 turret_first_person=turret_fp,
                 keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
+                airstrike_height=float(CONFIG.get('reach_airstrike_height') or 0.0) or None,
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -9147,6 +9152,20 @@ class OptionsDialog(QDialog):
         self._reach_radius_row.setVisible(bool(CONFIG.get('debug_mode')))
         rcform.addRow("", self._reach_radius_row)
 
+        self.reach_airstrike_height = QDoubleSpinBox()
+        self.reach_airstrike_height.setRange(0.0, 200.0)
+        self.reach_airstrike_height.setSingleStep(0.5)
+        self.reach_airstrike_height.setDecimals(1)
+        self.reach_airstrike_height.setSpecialValueText("map default (100)")
+        self.reach_airstrike_height.setValue(float(CONFIG.get('reach_airstrike_height') or 0.0))
+        self.reach_airstrike_height.setToolTip(
+            "Target Locator: how high above the target the airstrike is launched. The "
+            "map ships 100; a roof between that height and the target is the likely "
+            "reason the locator stops working indoors, so a low value (about 3) tests "
+            "that. Only maps that carry an airstrike are affected (ONI Sword Base and "
+            "Long Night of Solace, until the others are rebuilt with one).")
+        rcform.addRow("Airstrike height:", self.reach_airstrike_height)
+
         # ---- Halo 4 ----
         # Halo 4 is the one game that already sprints. It is innate -- matg's Default
         # Player Traits grant it to every player -- and the sprint equipment tag that
@@ -9632,6 +9651,7 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
+            'reach_airstrike_height': self.reach_airstrike_height.value(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
