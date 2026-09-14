@@ -16,8 +16,10 @@ indices. Reading them as indices makes every object look absent, working ones in
     python reach_pools.py --audit                   # every map, everything not resident
     python reach_pools.py m10 --fix energy_sword --fix plasma_repeater --write
     python reach_pools.py m10 --fix-all --write     # every palette entry, both kinds
+    python reach_pools.py --audit --game "Halo 3: ODST"   # read-only; HALF is the finding
 """
 import argparse
+import collections
 import io
 import os
 import struct
@@ -44,6 +46,34 @@ TAG_POOLS = (('tagReq', 0x6C), ('tagOpt', 0x78))
 # the set a mission is in when it starts; membership here is what decides spawning
 START_SET = 'Scenario[0]'
 
+# Halo 3 and ODST keep the same zone-set blocks at the same offsets, in a narrower
+# 0x78 element with the tag pools at 0x54/0x60 (ODSTMCC/zone.xml). They are here for
+# the READ side only: the full-closure audit found no half-loaded weapon on either
+# (2026-09-14), and writing ODST pools is a proven dead lead -- two in-game attempts
+# on sc150 black-screened and fatal-errored (h3_zone_pools.py). So --write is Reach's.
+LAYOUTS = {
+    'Halo Reach': {'zs_elem': ZS_ELEM, 'tag_pools': TAG_POOLS,
+                   'plugins': ('ReachMCC', 'Reach'), 'writable': True},
+    'Halo 3: ODST': {'zs_elem': 0x78, 'tag_pools': (('tagReq', 0x54), ('tagOpt', 0x60)),
+                     'plugins': ('ODSTMCC', 'Halo3MCC'), 'writable': False},
+    'Halo 3': {'zs_elem': 0x78, 'tag_pools': (('tagReq', 0x54), ('tagOpt', 0x60)),
+               'plugins': ('Halo3MCC', 'Halo3'), 'writable': False},
+}
+
+
+def bind(m, game):
+    """Tell every reader here which game's layout this map uses (unbound = Reach)."""
+    m._rp_game = str(game).strip()
+    return m
+
+
+def _game(m):
+    return getattr(m, '_rp_game', GAME)
+
+
+def _lay(m):
+    return LAYOUTS[_game(m)]
+
 ZONE_TAG_RESOURCES = 0x64
 ZTR_ELEM = 0x40
 ZTR_SEGMENT = 0x22
@@ -63,11 +93,11 @@ def zone_base(m):
 
 
 def zone_sets(m, zb):
-    out = []
+    out, es = [], _lay(m)['zs_elem']
     for label, off in ZS_BLOCKS:
         b, n = HP._block_base(m, zb + off), max(0, m.i32(zb + off))
         for k in range(n) if b else []:
-            out.append(('%s[%d]' % (label, k), b + k * ZS_ELEM))
+            out.append(('%s[%d]' % (label, k), b + k * es))
     return out
 
 
@@ -175,7 +205,7 @@ CLOSURE_KEEP = CLOSURE_WALK | {'jpt!', 'effe', 'jmad', 'chdt', 'mode', 'coll', '
 
 def _closure(m, root_ident, max_tags=4000):
     """Tag indices a weapon/ability needs to WORK: every CLOSURE_KEEP tag reachable
-    through CLOSURE_WALK tags' declared tagRefs (the Reach plugins say where each class
+    through CLOSURE_WALK tags' declared tagRefs (the game's plugins say where each class
     keeps them). Effects are kept but not walked into. Cached per map."""
     cache = getattr(m, '_rp_closure', None)
     if cache is None:
@@ -191,8 +221,9 @@ def _closure(m, root_ident, max_tags=4000):
         t = todo.pop()
         cls = t['class']
         if cls not in specs:
-            specs[cls] = (tagrefs._spec(cache['pd'], 'ReachMCC', cls)
-                          or tagrefs._spec(cache['pd'], 'Reach', cls))
+            sub, fallback = _lay(m)['plugins']
+            specs[cls] = (tagrefs._spec(cache['pd'], sub, cls)
+                          or tagrefs._spec(cache['pd'], fallback, cls))
         if not specs[cls]:
             continue
         for _path, d in tagrefs.refs_of(m, t['base'], specs[cls]):
@@ -217,8 +248,22 @@ def _late(m, sets, tags):
     return out
 
 
+def status(m, sets, tags):
+    """('ok' | 'half' | 'late', [late closure tag indices]) for one object's chain.
+
+    late: the object tag itself is not live at mission start, so a placement of it is
+    inert until its zone set streams in (Reach m10's energy sword).
+    half: the object tag IS live but part of what makes it work is not -- it spawns and
+    then does nothing (Reach m60's sniper fired and hit nothing). The quieter, worse one.
+    """
+    if START_SET not in resident_in(m, sets, tags[0]):
+        return 'late', []
+    late = _late(m, sets, tags)
+    return ('half' if late else 'ok'), late
+
+
 def palette(m, scnr, kind):
-    lay = (HP._MAP_WEAPONS if kind == 'weapons' else HP._MAP_EQUIPMENT)[GAME]
+    lay = (HP._MAP_WEAPONS if kind == 'weapons' else HP._MAP_EQUIPMENT)[_game(m)]
     off, es = lay['palette']
     b, n = HP._block_base(m, scnr + off), max(0, m.i32(scnr + off))
     out = []
@@ -231,9 +276,9 @@ def palette(m, scnr, kind):
 
 
 def resident_in(m, sets, tag_index):
-    hits = []
+    hits, pools = [], _lay(m)['tag_pools']
     for label, elem in sets:
-        for _, off in TAG_POOLS:
+        for _, off in pools:
             b, size = _pool(m, elem, off)
             if b and getbit(m, b, size, tag_index):
                 hits.append(label)
@@ -270,7 +315,7 @@ def apply_fix(m, zb, sets, res, target_ident, donor_tags, donor_pages):
     ttags = [ti for ti in ttags if resident_in(m, sets, ti)]
     n = 0
     for _label, elem in sets:
-        for _, off in TAG_POOLS:
+        for _, off in _lay(m)['tag_pools']:
             b, size = _pool(m, elem, off)
             if not b or not getbit(m, b, size, donor_tags[0]):
                 continue                       # donor not resident here either
@@ -295,7 +340,7 @@ def pick_donor(rows, kind):
     return None, None, None
 
 
-def map_names():
+def map_names(game=GAME):
     """The missions halo.json lists, in its own order.
 
     Globbing the map folder for m<digits> both invented work and skipped a mission:
@@ -306,7 +351,65 @@ def map_names():
     import json
     tool = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     with io.open(os.path.join(tool, 'halo.json'), encoding='utf-8') as f:
-        return list(json.load(f)['Missions'][GAME])
+        return list(json.load(f)['Missions'][game])
+
+
+def audit(game=GAME, names=None):
+    """Yield (map, kind, name, status, late classes) for every palette entry of every
+    mission. A map that cannot be read yields (map, None, None, reason, None)."""
+    for name in names or map_names(game):
+        path = V.resolve(game, name)
+        if not path:
+            yield name, None, None, 'not installed', None
+            continue
+        try:
+            m = bind(HP.open_map(path, game), game)
+            scnr = HP._scnr_base(m)
+            zb = zone_base(m) if scnr is not None else None
+        except (Exception, SystemExit) as ex:
+            yield name, None, None, 'unreadable (%s)' % ex, None
+            continue
+        if scnr is None:
+            yield name, None, None, 'no scenario tag', None
+            continue
+        sets = zone_sets(m, zb)
+        rows = survey(m, scnr, zb, sets, ['weapons', 'equipment'], tag_resources(m, zb))
+        for kind, nm, _ident, tags, _hits, _pages in rows:
+            if tags is None:
+                yield name, kind, nm, 'missing', []
+                continue
+            st, late = status(m, sets, tags)
+            yield name, kind, nm, st, sorted({m.tags[i]['class'] for i in late})
+
+
+def print_audit(game=GAME):
+    """The standing residency check, printed. Returns the number of findings: HALF
+    anywhere, plus plain late entries where they are fixable (Reach)."""
+    writable = LAYOUTS[game]['writable']
+    by_map = collections.OrderedDict()
+    for mp, kind, nm, st, late in audit(game):
+        by_map.setdefault(mp, []).append((kind, nm, st, late))
+    findings = 0
+    for mp, rows in by_map.items():
+        if rows[0][0] is None:
+            print('%-9s skipped (%s)' % (mp, rows[0][2]))
+            continue
+        half = [r for r in rows if r[2] == 'half']
+        late = [r for r in rows if r[2] == 'late']
+        miss = [r for r in rows if r[2] == 'missing']
+        print('%-9s %2d palette entries, %d HALF-loaded, %d not resident at start%s'
+              % (mp, len(rows), len(half), len(late),
+                 (', %d tag missing' % len(miss)) if miss else ''))
+        for kind, nm, _st, cls in half:
+            print('        %-10s %-24s HALF -- late: %s' % (kind, nm, ', '.join(cls)))
+        if writable:
+            for kind, nm, _st, _cls in late:
+                print('        %-10s %s' % (kind, nm))
+        findings += len(half) + (len(late) if writable else 0)
+    if not writable:
+        print('(%s streams its late entries in with a later zone set, so only HALF is '
+              'a finding here; its pools are read-only)' % game)
+    return findings
 
 
 def _fix_one(name, label, path, m, rows, zb, sets, res, a):
@@ -364,24 +467,32 @@ def main(argv=None):
                     help='every palette entry not resident at mission start')
     ap.add_argument('--donor', help='borrow residency from this palette entry')
     ap.add_argument('--write', action='store_true', help='save; otherwise a dry run')
+    ap.add_argument('--game', default=GAME, choices=sorted(LAYOUTS),
+                    help='Halo 3 and ODST are read-only (see LAYOUTS)')
     a = ap.parse_args(argv)
+    game = a.game
+    if a.write and not LAYOUTS[game]['writable']:
+        raise SystemExit('%s zone pools are read-only here: writing them is a proven '
+                         'dead lead (h3_zone_pools.py -- sc150 black-screened and '
+                         'fatal-errored)' % game)
+    if a.audit:
+        return print_audit(game)
 
-    kinds = ['weapons', 'equipment'] if (a.both or a.audit) else (
+    kinds = ['weapons', 'equipment'] if a.both else (
         ['equipment'] if a.equipment else ['weapons'])
-    names = map_names() if a.audit else [a.map]
 
-    for name in names:
+    for name in [a.map]:
         # Everything up to the scenario base is per-map and can fail per-map: --audit
         # walks every mission, so one unreadable map must not take the sweep down.
         # V.resolve returns None for a map that is not installed, and _scnr_base
         # RETURNS None for a map with no scnr tag rather than raising -- neither is an
         # exception, so neither is caught by an except alone.
-        path = V.resolve(GAME, name)
+        path = V.resolve(game, name)
         if not path:
             print('%-5s skipped (not installed)' % name)
             continue
         try:
-            m = HP.open_map(path, GAME)
+            m = bind(HP.open_map(path, game), game)
             scnr = HP._scnr_base(m)
         except Exception as ex:
             print('%-5s skipped (%s)' % (name, ex))
@@ -393,17 +504,6 @@ def main(argv=None):
         sets = zone_sets(m, zb)
         res = tag_resources(m, zb)
         rows = survey(m, scnr, zb, sets, kinds, res)
-
-        if a.audit:
-            bad = [(k, nm) for k, nm, _i, tags, hits, _p in rows
-                   if tags and START_SET not in hits]
-            miss = [nm for _k, nm, _i, tags, _h, _p in rows if tags is None]
-            print('%-5s %2d palette entries, %d NOT resident at start%s'
-                  % (name, len(rows), len(bad),
-                     (', %d tag missing' % len(miss)) if miss else ''))
-            for k, nm in bad:
-                print('        %-10s %s' % (k, nm))
-            continue
 
         if not (a.fix or a.fix_all):
             print('%s: %d zone sets, %d tags' % (name, len(sets), len(m.tags)))
@@ -426,14 +526,14 @@ def main(argv=None):
         # map usually carries the current run's patch, and that must never reach the
         # pristine copy. reach_set_at_rest handles its edit the same way.
         _fix_one(name, 'live', path, m, rows, zb, sets, res, a)
-        base = V.baseline_for(GAME, path)
+        base = V.baseline_for(game, path)
         if (not base or not os.path.exists(base)
                 or os.path.normcase(os.path.abspath(base))
                 == os.path.normcase(os.path.abspath(path))):
             print('%s baseline: none to update' % name)
             continue
         try:
-            bm = HP.open_map(base, GAME)
+            bm = bind(HP.open_map(base, game), game)
             bscnr = HP._scnr_base(bm)
             if bscnr is None:
                 print('%s baseline: no scenario tag' % name)

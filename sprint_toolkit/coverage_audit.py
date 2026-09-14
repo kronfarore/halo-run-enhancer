@@ -40,6 +40,11 @@ Usage:
     python sprint_toolkit/coverage_audit.py --only fields   # sections 1-3 (char only)
     python sprint_toolkit/coverage_audit.py --only assets   # section 4
     python sprint_toolkit/coverage_audit.py --only turrets  # section 5
+    python sprint_toolkit/coverage_audit.py --only residency  # weapons not fully loaded
+
+The residency section leaves cards behind altogether: a weapon can be carded, offered
+and placed and still do nothing, because part of what it needs (projectile, damage,
+effects, first-person animations, HUD) is not loaded when the mission starts.
 
 The five sections group into three --only choices: the first three all read `char`
 through a plugin and share one sweep, so they are selected together as 'fields'.
@@ -333,6 +338,27 @@ def offer_pass(db, args):
     return gaps
 
 
+def residency_pass(db, args):
+    """Every palette weapon/ability whose working parts are not all loaded at mission
+    start (reach_pools.audit).
+
+    HALF is the finding that matters: the object is live and part of its closure is
+    not, so it spawns and then does nothing -- Reach m60's sniper fired and hit nothing
+    (2026-09-14). Reach also counts plain late entries, since reach_pools --fix-all
+    makes them live; Halo 3 and ODST stream theirs in with the level, so there that is
+    information only.
+    """
+    import reach_pools as RP
+    total = 0
+    for game in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
+        print('=' * 84)
+        print(game)
+        total += RP.print_audit(game)
+    print()
+    print('%d residency finding(s) total' % total)
+    return total
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -343,14 +369,15 @@ def main():
     ap.add_argument('--enemy', help='restrict to one enemy')
     ap.add_argument('--only',
                     choices=('fields', 'assets', 'turrets', 'placed', 'offers',
-                             'all'),
+                             'residency', 'all'),
                     default='all',
                     help="'fields' = the char-field passes, 'assets' = the "
                          "enemy-owned tag pass, 'turrets' = every uncarded turret "
                          "tag, 'placed' = only the turrets a level actually places "
                          "and that are not just some vehicle's gun, 'offers' = names "
-                         "a mission list offers that resolve to no cards. Default "
-                         "runs all.")
+                         "a mission list offers that resolve to no cards, "
+                         "'residency' = palette weapons/abilities not fully loaded "
+                         "at mission start (H3/ODST/Reach). Default runs all.")
     ap.add_argument('--with-noise', action='store_true',
                     help='asset pass: include gibs, props and cinematic doubles')
     ap.add_argument('--no-useful', action='store_true',
@@ -377,6 +404,9 @@ def main():
     if args.only == 'offers':
         print()
         return 0 if offer_pass(db, args) == 0 else 1
+    if args.only == 'residency':
+        print()
+        return 0 if residency_pass(db, args) == 0 else 1
 
     # game -> enemy -> {live fields}, and game -> enemy -> {carded fields}
     live, carded, viageneric, general = {}, {}, {}, {}
@@ -483,6 +513,8 @@ def main():
         placed_turret_pass(db, args)
         print()
         offer_pass(db, args)
+        print()
+        residency_pass(db, args)
 
 
 def _carded_fields_by_class(db, game):
