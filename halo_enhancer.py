@@ -8731,6 +8731,11 @@ class OptionsDialog(QDialog):
         patch_h4_g = QGroupBox("Map patching — Halo 4")
         h4form = QFormLayout(patch_h4_g)
         h4form.setLabelAlignment(Qt.AlignRight)
+        # Options that act on more than one game live here, not in whichever game's
+        # box they happened to be written for first.
+        patch_all_g = QGroupBox("Map patching — every game")
+        allform = QFormLayout(patch_all_g)
+        allform.setLabelAlignment(Qt.AlignRight)
         form = QFormLayout(patchg)
         form.setLabelAlignment(Qt.AlignRight)
 
@@ -8741,19 +8746,21 @@ class OptionsDialog(QDialog):
                                      "and re-patch to restore.")
         form.addRow("Halo 3 cutscenes:", self.cutscenes_cb)
 
-        self.keep_title_hud_cb = QCheckBox(
-            "Keep the HUD up through chapter titles (Halo 3 / ODST / Reach)")
+        self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")
         self.keep_title_hud_cb.setChecked(bool(CONFIG.get('keep_title_hud')))
         self.keep_title_hud_cb.setToolTip(
             "Chapter and cinematic titles fade the HUD out and draw black bars. This "
             "removes the HIDING half of each pair and keeps every restore, so the "
             "title still appears but the HUD stays up and the bars do not.\n\n"
-            "An in-map script edit -- no editing kit and no rebuild -- and reversible "
-            "like everything else: turn it off and re-patch.\n\nHalo 1 and Halo 2 "
-            "already have this and are skipped: h1_keep_hud.py and h2_keep_hud.py "
-            "apply it to the editing-kit sources and the rebuilt maps carry it. "
-            "Run either with --status to check.")
-        form.addRow("Chapter titles:", self.keep_title_hud_cb)
+            "Per game:\n"
+            "  Halo 1, Halo 2 -- applied at BUILD time by h1_keep_hud.py / "
+            "h2_keep_hud.py; the rebuilt maps carry it, and the patch log says whether "
+            "they are current (run either with --status).\n"
+            "  Halo 3, ODST, Reach -- an in-map script edit on patch, no editing kit, "
+            "reversible: turn it off and re-patch.\n"
+            "  Halo 4 -- not yet: its compiled scripts live in hsdt tags that no plugin "
+            "describes, so the patch reports a skip.")
+        allform.addRow("Chapter titles:", self.keep_title_hud_cb)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
         self.red_plasma_cb = QCheckBox("ODST: treat the Red Plasma Rifle as the Brute Plasma Rifle")
@@ -9084,6 +9091,7 @@ class OptionsDialog(QDialog):
         _sync_h4_spawn()
         h4form.addRow("", self.h4_spawn_all_cb)
 
+        self._opt_page("Patching").addWidget(patch_all_g, 55)
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
