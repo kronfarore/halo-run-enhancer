@@ -1760,6 +1760,10 @@ ESCORT_BUFF_TAGS = (
 FLOOD_ENEMIES = frozenset({
     'Flood Combat Form', 'Flood Carrier Form', 'Flood Infection Form', 'Flood Pure Form',
 })
+# General (not enemy-specific) cards that only mean anything where the Flood are fielded.
+# "Infection Forms" edits the matg difficulty dial for them; with no `enemy` key it
+# slipped past the rule below and was offered in ODST, Reach and Halo 4.
+FLOOD_GENERAL_CARDS = frozenset({'Infection Forms'})
 
 
 def _is_absent_flood_mod(mod, game):
@@ -1768,6 +1772,8 @@ def _is_absent_flood_mod(mod, game):
         return False
     if str(game).strip() not in FLOOD_FREE_GAMES:
         return False
+    if mod.get('name') in FLOOD_GENERAL_CARDS:
+        return True
     who = mod.get('enemy') or mod.get('boss') or ''
     return isinstance(who, str) and who in FLOOD_ENEMIES
 
@@ -3507,6 +3513,10 @@ class RunState:
         return {
             "tool_version": VERSION,
             "options": {k: CONFIG.get(k) for k in OPTION_KEYS},
+            # The patcher's scope source per game. It changes what is written to the map,
+            # so a partner loading this run must patch with the SAME donor -- a local
+            # default differing here desynced a co-op session.
+            "zoom_donor": dict(CONFIG.get('zoom_donor') or {}),
             "mission": {"id": self.mission_id, "name": self.mission_name},
             "players": {
                 "player1": {
@@ -3543,6 +3553,12 @@ class RunState:
         state.options = {k: opts[k] for k in OPTION_KEYS if k in opts}
         for k, v in state.options.items():
             CONFIG[k] = v
+        # The run's scope donors win over this machine's, game by game (see to_dict).
+        zd = data.get('zoom_donor')
+        if isinstance(zd, dict) and zd:
+            merged = dict(CONFIG.get('zoom_donor') or {})
+            merged.update({g: w for g, w in zd.items() if isinstance(w, str) and w})
+            CONFIG['zoom_donor'] = merged
         state.mission_id = data.get('mission', {}).get('id', 'a10')
         state.mission_name = data.get('mission', {}).get('name', 'The Pillar of Autumn')
         p1data = data.get('players', {}).get('player1', {})
