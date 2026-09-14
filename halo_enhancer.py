@@ -365,7 +365,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'new_weapon_chance', 'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
-               'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'keep_reticle_zoomed',
+               'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'vehicle_turret_zoom',
+               'keep_reticle_zoomed',
                'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud',
@@ -373,6 +374,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
+               'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -810,6 +812,12 @@ CONFIG = {
     # With this on, a turret given a Zoom plays in first person instead so the zoom
     # works -- with no gun model, since no turret ships a first-person one.
     "turret_zoom_first_person": True,
+    # The Warthog's gun is in the Machine Gun card family, but a ZOOM on it is its own
+    # choice: a first-person zoom from a moving vehicle is disorienting (motion
+    # sickness, per the user). Off, the Machine Gun Zoom skips vehicle guns -- no
+    # magnification, no first-person seat, no scope. Static mounted turrets are
+    # unaffected; every other Machine Gun card still reaches the Warthog gun.
+    "vehicle_turret_zoom": False,
     # Keep the reticle on screen while zoomed, alongside the scope overlay -- on weapons
     # that really zoom (vanilla or via a Zoom card). Weapons without their own zoom are
     # left alone: their zoom button is the binoculars. Halo 4 not supported yet.
@@ -864,6 +872,10 @@ CONFIG = {
     "reach_placement_radius": 0.25,
     "h4_spawn_starting_weapons": False,
     "h4_spawn_all_weapons": False,
+    # Halo 3's counterpart, placing at the player spawn (no markers needed). The
+    # profile cannot give every weapon -- a turret written into it never arrives.
+    "h3_spawn_starting_weapons": False,
+    "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
     # Flood are gone from ODST onward while their tags are not, so their cards would
@@ -6554,7 +6566,8 @@ class MagnitudeEditorDialog(QDialog):
         Reach and Halo 4 each have their own switch: a user preparing one game's maps
         in Sapien should not flip the other game's loadout over with it."""
         key = {'Halo Reach': 'reach_spawn_starting_weapons',
-               'Halo 4': 'h4_spawn_starting_weapons'}.get(self.game)
+               'Halo 4': 'h4_spawn_starting_weapons',
+               'Halo 3': 'h3_spawn_starting_weapons'}.get(self.game)
         return (key is not None
                 and bool(CONFIG.get('set_starting_weapons'))
                 and bool(CONFIG.get(key)))
@@ -6576,8 +6589,9 @@ class MagnitudeEditorDialog(QDialog):
         db = getattr(self.parent_gui, 'db', None)
         if rs is None or db is None:
             return None
-        first_only = not CONFIG.get('h4_spawn_all_weapons' if self.game == 'Halo 4'
-                                    else 'reach_spawn_all_weapons')
+        first_only = not CONFIG.get({'Halo 4': 'h4_spawn_all_weapons',
+                                     'Halo 3': 'h3_spawn_all_weapons'}.get(
+                                         self.game, 'reach_spawn_all_weapons'))
 
         def paths(names):
             out, seen = [], set()
@@ -6679,6 +6693,34 @@ class MagnitudeEditorDialog(QDialog):
         tags = [item['tag'] for item in plan
                 if item.get('name') == 'Zoom' and str(item.get('tag', '')).startswith('weap ')]
         return tags or None
+
+    # Weapon paths of guns mounted on a MOVING vehicle -- the Warthog family in every
+    # game. Their Zoom is gated separately (vehicle_turret_zoom).
+    VEHICLE_GUN_MARKERS = ('\\warthog\\', '\\storm_warthog\\')
+
+    def _strip_vehicle_zoom(self, plan):
+        """Unless vehicle guns may zoom, take them out of every Zoom item's tag, so the
+        Machine Gun Zoom leaves the Warthog gun alone -- no magnification, and hence no
+        first-person seat and no scope graft either (both read the plan's Zoom tags).
+        The rest of the card family is untouched. A narrowed item keeps `orig_tag`, so
+        the patch still counts its card as planned."""
+        if CONFIG.get('vehicle_turret_zoom', False):
+            return plan
+        out = []
+        for item in plan:
+            tag = str(item.get('tag', ''))
+            if item.get('name') != 'Zoom' or not tag.startswith('weap '):
+                out.append(item)
+                continue
+            parts = [p.strip() for p in tag[5:].split('&') if p.strip()]
+            keep = [p for p in parts
+                    if not any(k in p.lower() for k in self.VEHICLE_GUN_MARKERS)]
+            if len(keep) == len(parts):
+                out.append(item)
+            elif keep:
+                out.append({**item, 'tag': 'weap ' + ' & '.join(keep), 'orig_tag': tag})
+            # nothing left: a Zoom that only named vehicle guns is dropped entirely
+        return out
 
     def _turret_zoom_spec(self, plan):
         """weap tag paths of the Zoom effects in this plan, for dropping a carried
@@ -7011,6 +7053,7 @@ class MagnitudeEditorDialog(QDialog):
                                              **_diff_flavor(t), 'set': t['set']})
         plan = list(plan_map.values())
         plan = self._odst_shield_into_health(plan)
+        plan = self._strip_vehicle_zoom(plan)
         # An upgrade weapon is a variant of its base, so the base's cards patch the
         # upgrade's tag as well — one card, both weapons. The upgrade's OWN tag for
         # that effect is read from its halo.json entry rather than guessed, since it
@@ -7181,7 +7224,8 @@ class MagnitudeEditorDialog(QDialog):
         # patcher never saw them and they'd otherwise stay "new" forever. Report them
         # as a deliberate skip so the summary accounts for every effect in the run.
         # Added before the patch log is written so it records them too.
-        planned = {(i.get('tag'), i.get('name')) for i in plan}
+        # orig_tag: an item _strip_vehicle_zoom narrowed still stands for its card
+        planned = {(i.get('orig_tag') or i.get('tag'), i.get('name')) for i in plan}
         for eff in self.effects:
             if (eff.get('tag'), eff.get('name')) in planned or eff.get('skull'):
                 continue
@@ -7845,6 +7889,15 @@ class OptionsDialog(QDialog):
             "so the zoom works. No turret ships a first-person model, so you see only the "
             "crosshair. Off keeps the third-person view (and the zoom stays dead).")
         wform.addRow("Turret zoom:", self.turret_zoom_cb)
+
+        self.vehicle_zoom_cb = QCheckBox("↳ vehicle guns too (Warthog)")
+        self.vehicle_zoom_cb.setChecked(bool(CONFIG.get('vehicle_turret_zoom', False)))
+        self.vehicle_zoom_cb.setToolTip(
+            "Off by default. The Warthog's gun takes every Machine Gun card, but its Zoom "
+            "only with this on: then the gunner plays in first person and can zoom. "
+            "Zooming from a moving vehicle is very disorienting. Static mounted turrets "
+            "are not affected by this switch. Vehicle guns zoom one stage only.")
+        wform.addRow("", self.vehicle_zoom_cb)
 
         self.keep_reticle_cb = QCheckBox("Keep the reticle while zoomed")
         self.keep_reticle_cb.setChecked(bool(CONFIG.get('keep_reticle_zoomed', True)))
@@ -8758,8 +8811,8 @@ class OptionsDialog(QDialog):
             "they are current (run either with --status).\n"
             "  Halo 3, ODST, Reach -- an in-map script edit on patch, no editing kit, "
             "reversible: turn it off and re-patch.\n"
-            "  Halo 4 -- not yet: its compiled scripts live in hsdt tags that no plugin "
-            "describes, so the patch reports a skip.")
+            "  Halo 4 -- the same edit on patch, in its hsdt script tags: the global "
+            "script container (where f_hud_chapter fades the HUD) and the level's own.")
         allform.addRow("Chapter titles:", self.keep_title_hud_cb)
 
         self.ignore_elite_h3_cb = QCheckBox("Ignore Elite enemy effects in Halo 3 (they're allies)")
@@ -8939,6 +8992,31 @@ class OptionsDialog(QDialog):
             "are still skipped.")
         form.addRow("Halo 3 profiles:", self.h3_all_chief_cb)
         form.addRow("Halo 3 Elites:", self.ignore_elite_h3_cb)
+
+        self.h3_spawn_weapons_cb = QCheckBox(
+            "Place starting weapons at the spawn instead of the profile")
+        self.h3_spawn_weapons_cb.setChecked(bool(CONFIG.get('h3_spawn_starting_weapons')))
+        self.h3_spawn_weapons_cb.setToolTip(
+            "The starting profile cannot hand out every weapon: a turret written into it "
+            "never reaches your hands. With this on, each player's starting weapon is "
+            "PLACED at their spawn (or the level's start anchor) to be picked up, and the "
+            "profile's weapon slots are emptied so you do not get it twice. Needs "
+            "'Set starting weapons'.")
+        form.addRow("Starting weapons:", self.h3_spawn_weapons_cb)
+        self.h3_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
+        self.h3_spawn_all_cb.setChecked(bool(CONFIG.get('h3_spawn_all_weapons')))
+        self.h3_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, as a profile would give it. "
+            "On: every weapon that player holds is placed, ringed round their spawn.")
+
+        def _sync_h3_spawn(on=None):
+            on = self.h3_spawn_weapons_cb.isChecked()
+            self.h3_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.h3_spawn_all_cb.setChecked(False)
+        self.h3_spawn_weapons_cb.toggled.connect(_sync_h3_spawn)
+        _sync_h3_spawn()
+        form.addRow("", self.h3_spawn_all_cb)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -9499,6 +9577,8 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
+            'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
+            'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
@@ -9589,6 +9669,7 @@ class OptionsDialog(QDialog):
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'turret_zoom_first_person': self.turret_zoom_cb.isChecked(),
+            'vehicle_turret_zoom': self.vehicle_zoom_cb.isChecked(),
             'keep_reticle_zoomed': self.keep_reticle_cb.isChecked(),
             'turrets_are_weapons': self.turret_weapons_cb.isChecked(),
             'debug_mode': self.debug_mode_cb.isChecked(),

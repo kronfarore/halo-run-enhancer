@@ -3560,6 +3560,171 @@ def reach_spawn_ready(m, game):
     return str(game).strip() in MARKER_GAMES and bool(reach_named_markers(m, game))
 
 
+def spawn_weapons_ready(m, game):
+    """Can this map take PLACED starting weapons? Reach and Halo 4 only with enhancer
+    markers; Halo 3 at its own player spawns (or curated start anchor), which every
+    level has."""
+    if str(game).strip() == 'Halo 3':
+        return bool(h3_player_spawns(m, game))
+    return reach_spawn_ready(m, game)
+
+
+def _apply_spawn_weapons_h3(m, game, spec, registry=None):
+    """Halo 3: hand the players their weapons by PLACING them at their spawn.
+
+    The Starting Profile cannot give every weapon. Measured on 030 (2026-09-14): a
+    machinegun_turret written into the Dervish profile, 400/400 rounds and an ok row,
+    never reached the player's hands. A placed weapon works for anything the level can
+    load, so this is Reach's marker mode with Halo 3's own drop points: the curated
+    start anchor where the level has one, else each player's Player Starting Location
+    and its BSP (player 2 falls back to the last one). A weapon the level's palette
+    lacks gets a palette entry, exactly as starting equipment does; a tag the map does
+    not ship at all is reported, not guessed.
+    """
+    out = []
+    lay = _MAP_WEAPONS.get(game)
+    scnr = _scnr_base(m)
+    groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
+    if not lay or scnr is None or not any(groups):
+        return out
+    spawns = h3_player_spawns(m, game)
+    if not spawns:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'no player starting locations'}]
+    anchor = _H3_LOADOUT_ANCHOR.get(str(getattr(m, 'internal_name', '') or ''))
+    anchor_mask = _h3_mask_at(m, anchor, game) if anchor else None
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    N = max(0, m.i32(scnr + woff))
+    base = _block_base(m, scnr + woff)
+    pc = max(0, m.i32(scnr + poff))
+    pbase = _block_base(m, scnr + poff)
+    if not N or not base or not pbase:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'level has no weapon placements to extend'}]
+    pal, pal_by_datum = {}, {}
+    for i in range(pc):
+        datum = m.u32(pbase + i * pes + lay['pal_id_at'])
+        pal_by_datum.setdefault(datum, i)
+        nm = _tag_name_by_id(m, datum)
+        if isinstance(nm, str):
+            pal[nm.replace('/', chr(92)).lower()] = i
+
+    LIFT = 0.30
+    radius = spec.get('radius')
+    radius = 0.25 if radius is None else max(0.0, float(radius))
+    weap_plug = registry.get('weap') if registry is not None else None
+    new_pal, new_idx, plan, ring = [], {}, [], {}
+    for gi, g in enumerate(groups):
+        if anchor:
+            (ax, ay, az), mask, where = anchor, anchor_mask, 'start anchor'
+        else:
+            si = min(gi, len(spawns) - 1)
+            (ax, ay, az), bsp = spawns[si]
+            mask = ((1 << bsp) if bsp is not None and bsp >= 0
+                    else _h3_mask_at(m, (ax, ay, az), game))
+            where = 'spawn %d' % si
+        for t in g:
+            short = str(t).rsplit(chr(92), 1)[-1]
+            key = str(t).replace('/', chr(92)).lower()
+            pi, added = pal.get(key, new_idx.get(key)), False
+            if pi is None:
+                datum = _h3_tag_datum(m, 'weap', t)
+                if datum is None:
+                    out.append({'effect': 'spawned weapons', 'field': short, 'ok': False,
+                                'reason': 'weapon not in this map: %s' % short})
+                    continue
+                if datum in pal_by_datum:
+                    pi = pal_by_datum[datum]
+                else:
+                    pi, added = pc + len(new_pal), True
+                    new_pal.append(datum)
+                new_idx[key] = pi
+            # the first weapon on the drop point, the rest ringed round it -- keyed by
+            # the POSITION so two players sharing an anchor do not stack
+            rkey = (round(ax, 2), round(ay, 2), round(az, 2))
+            k = ring.get(rkey, 0)
+            ring[rkey] = k + 1
+            if k and radius > 0:
+                ang = k * 1.9
+                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang), az + LIFT)
+            else:
+                pos = (ax, ay, az + LIFT)
+            loaded = total = None
+            wb = _weap_base(m, str(t))
+            if wb is not None and weap_plug is not None:
+                loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug,
+                                          block='Magazines', index=0)
+                total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug,
+                                         block='Magazines', index=0)
+            plan.append((pi, pos, mask, short, where, added,
+                         0 if loaded is None else int(loaded),
+                         0 if total is None else int(total)))
+    if not plan:
+        return out
+
+    eqo = _eq_offsets(game)
+
+    def _type_ok(i):
+        ty = _placement_type(m, base + i * wes, game)
+        return ty is None or ty >= 0
+
+    def _is_auto(i):
+        return not (struct.unpack_from('<I', m.data, base + i * wes + _EQ_FLAGS)[0]
+                    & (_PLACE_NOT_AUTO | (1 << eqo['never_bit'])))
+
+    tmpl = next((i for i in range(N) if _type_ok(i) and _is_auto(i)), None)
+    if tmpl is None:
+        tmpl = next((i for i in range(N) if _type_ok(i)), None)
+    if tmpl is None:
+        return out + [{'effect': 'spawned weapons', 'ok': False,
+                       'reason': 'no weapon placement to use as a template'}]
+    sizes = [(N + len(plan)) * wes] + ([(pc + len(new_pal)) * pes] if new_pal else [])
+    got = _h3_reserve(m, sizes)
+    if got is None:
+        return out + [{'effect': 'spawned weapons', 'ok': False,
+                       'reason': 'no free space to grow the weapon blocks'}]
+    dest = got[0]
+    if new_pal:                          # palette first: placements reference it
+        pdest = got[1]
+        m.data[pdest:pdest + pc * pes] = m.data[pbase:pbase + pc * pes]
+        for j, datum in enumerate(new_pal):
+            pe = pdest + (pc + j) * pes
+            m.data[pe:pe + pes] = m.data[pbase:pbase + pes]   # a weap tagRef template
+            struct.pack_into('<I', m.data, pe + lay['pal_id_at'], datum)
+        struct.pack_into('<i', m.data, scnr + poff, pc + len(new_pal))
+        struct.pack_into('<I', m.data, scnr + poff + 4, m.off2data(pdest))
+    m.data[dest:dest + N * wes] = m.data[base:base + N * wes]
+    uids = [m.u32(base + i * wes + eqo['uid']) for i in range(N)]
+    salt = (uids[tmpl] >> 16) if uids else 0
+    nxt = (max(u & 0xFFFF for u in uids) + 1) if uids else 1
+    for k, (pi, pos, mask, short, where, added, loaded, total) in enumerate(plan):
+        e = dest + (N + k) * wes
+        m.data[e:e + wes] = m.data[base + tmpl * wes: base + (tmpl + 1) * wes]
+        struct.pack_into('<h', m.data, e, pi)
+        struct.pack_into('<h', m.data, e + 0x2, -1)          # unnamed
+        struct.pack_into('<I', m.data, e + _EQ_FLAGS, _PLACE_AT_REST)
+        struct.pack_into('<fff', m.data, e + _EQ_POS, *pos)
+        _mask_put(m, e, game, mask)
+        _scrub_appended(m, e, game)
+        struct.pack_into('<h', m.data, e + eqo['folder'], -1)   # immune to folder deletes
+        struct.pack_into('<I', m.data, e + eqo['uid'],
+                         ((salt << 16) | (nxt + k)) & 0xFFFFFFFF)
+        if eqo.get('gameflags') is not None:
+            struct.pack_into('<H', m.data, e + eqo['gameflags'], 0)   # campaign
+        struct.pack_into('<h', m.data, e + lay['rounds_left'],
+                         max(-32768, min(32767, total)))
+        struct.pack_into('<h', m.data, e + lay['rounds_loaded'],
+                         max(-32768, min(32767, loaded)))
+        out.append({'effect': 'spawned weapons', 'field': short, 'ok': True,
+                    'old': where,
+                    'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds%s'
+                           % (pos + (loaded, total, ' (+palette)' if added else ''))})
+    struct.pack_into('<i', m.data, scnr + woff, N + len(plan))
+    struct.pack_into('<I', m.data, scnr + woff + 4, m.off2data(dest))
+    return out
+
+
 def _apply_spawn_weapons(m, game, spec, registry=None):
     """Reach: hand a player their weapons by PLACING them at the marker.
 
@@ -3589,6 +3754,8 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     """
     out = []
     game = str(game).strip()
+    if game == 'Halo 3':
+        return _apply_spawn_weapons_h3(m, game, spec, registry)
     if game not in MARKER_GAMES:
         return out
     lay = _MAP_WEAPONS.get(game)
@@ -6211,7 +6378,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if starting:
         # After the ops (so any Magazine effect is already in the weap tags),
         # set the player Starting Profile weapons + rounds from the run's picks.
-        if starting.get('spawn_instead') and not reach_spawn_ready(m, game):
+        if starting.get('spawn_instead') and not spawn_weapons_ready(m, game):
             # Clearing the profile is only half of placing the weapons, and doing
             # half leaves the player with nothing at all -- worse than either mode
             # on its own. With no markers there is nowhere to place them, so write
