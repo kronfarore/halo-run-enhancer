@@ -5570,8 +5570,10 @@ def _scale_par_time(m, game, factor):
             old.append('%g' % t)
             new.append('%g' % round(t * factor, 3))
     if not old:
-        return [{'effect': 'par time', 'field': 'Time Bonuses', 'ok': True, 'skip': True,
-                 'reason': 'this scenario has no time bonuses'}]
+        # Silent, not a SKIP row: Halo 4 ships this block empty on every map, and the
+        # row read as "the par time was not scaled" while the careerdb row (the one
+        # that carries Halo 4's par time) had scaled it.
+        return []
     return [{'effect': 'par time', 'tag': 'scnr', 'field': 'Time Bonuses (minutes)',
              'ok': True, 'old': ', '.join(old), 'new': ', '.join(new)}]
 

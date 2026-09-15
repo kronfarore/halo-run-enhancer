@@ -11412,17 +11412,15 @@ class HaloGUI(QMainWindow):
         if self.run_state.phase in ('player1_turn', 'player2_turn'):
             self.run_state.weapon_selection_made = True
             # A run's pairs are not saved, so a mid-round file has nothing to show and
-            # the cards have to be re-rolled. For a LOCAL save that is the convenience
-            # it was written to be. For a run picked up out of the SHARED folder it is
-            # actively wrong: the draw is random, so rolling on load hands the partner
-            # a different set from the one the other machine is looking at, and it does
-            # it silently, before anyone can react. Let them press Generate instead.
-            if self.shared_run_path:
-                self.update_status("Run loaded from the shared folder — press Generate "
-                                   "when you're ready to draw this round's cards.")
-                self.generate_btn.setEnabled(True)
-            else:
-                self.on_generate()
+            # the cards have to be drawn again. That draw waits for Generate on EVERY
+            # load. It used to fire by itself for a local save (the shared folder already
+            # waited, because a random draw on load hands the partner a different set);
+            # the user asked for the same wait there too (2026-09-15): loading a run is
+            # not asking for a round.
+            where = "the shared folder" if self.shared_run_path else "file"
+            self.update_status("Run loaded from %s — press Generate when you're ready "
+                               "to draw this round's cards." % where)
+            self.generate_btn.setEnabled(True)
         elif self.run_state.phase == 'complete':
             self.run_state.weapon_selection_made = True
             self.update_history()
