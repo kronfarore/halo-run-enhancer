@@ -101,6 +101,50 @@ def plan(m, to_leaf, from_leaves=None):
     return target, enemies, hits
 
 
+# Squad Team (scnr Squads +0x24) and biped Default Team (Halo4MCC bipd 0x1DC) share one
+# enum: 0 Default, 1 Player, 2 Human, 3 Covenant, ... 8 Forerunner. A squad on Default
+# takes its biped's team -- and the Sentinel's biped ships as Player, which is why the
+# vanilla Halo 4 Sentinels fight on your side.
+SQUAD_TEAM, BIPD_DEFAULT_TEAM = 0x24, 0x1DC
+TEAM_DEFAULT, TEAM_PLAYER, TEAM_FORERUNNER = 0, 1, 8
+
+
+def _squad_entries(m, sq):
+    """Every character-index entry of one squad (spawn points and both cell blocks)."""
+    out = []
+    sp, spn = _at(m, sq, hc.SPAWN_POINTS[0])
+    out += [sp + j * hc.SPAWN_POINTS[1] + hc.SPAWN_FIELDS['character'] for j in range(spn)]
+    for co, csize in hc.CELL_BLOCKS:
+        ca, cn = _at(m, sq, co)
+        for j in range(cn):
+            bo, bsize = hc.CELL_SUB['character']
+            ba, bn = _at(m, ca + j * csize, bo)
+            out += [ba + k * bsize + hc.CELL_SUB_INDEX for k in range(bn)]
+    return out
+
+
+def make_hostile(m, to_leaf, swapped):
+    """Move swapped squads off Default/Player onto Forerunner, and the target's biped
+    Default Team to Forerunner. Returns (squads moved, the biped's old team)."""
+    SQO, SQS, _CPO, _CPS = _layout()
+    sb = m.find_tags('scnr', '*')[0][1]
+    se, nsq = _at(m, sb, SQO)
+    moved = 0
+    for s in range(nsq):
+        q = se + s * SQS
+        if (struct.unpack_from('<H', m.data, q + SQUAD_TEAM)[0] in (TEAM_DEFAULT, TEAM_PLAYER)
+                and any(e in swapped for e in _squad_entries(m, q))):
+            struct.pack_into('<H', m.data, q + SQUAD_TEAM, TEAM_FORERUNNER)
+            moved += 1
+    old = None
+    for t in m.tags:
+        if (t.get('class') == 'bipd' and t.get('base')
+                and (t.get('name') or '').rsplit(S, 1)[-1] == to_leaf):
+            old = struct.unpack_from('<H', m.data, t['base'] + BIPD_DEFAULT_TEAM)[0]
+            struct.pack_into('<H', m.data, t['base'] + BIPD_DEFAULT_TEAM, TEAM_FORERUNNER)
+    return moved, old
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -110,6 +154,10 @@ def main():
     ap.add_argument('--from', dest='from_leaves', action='append',
                     help='swap only this character (leaf name, repeatable), e.g. '
                          'storm_bishop -- one species at a time keeps a test to one variable')
+    ap.add_argument('--hostile', action='store_true',
+                    help='also make the target fight the player: its biped Default Team '
+                         'becomes Forerunner, and every swapped squad on team Default or '
+                         'Player is moved to Forerunner (Covenant squads keep their team)')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args()
@@ -145,6 +193,10 @@ def main():
         target, enemies, hits = plan(m, a.to, a.from_leaves)
     for e, _v in hits:
         struct.pack_into('<h', m.data, e, target)
+    if a.hostile:
+        moved, bteam = make_hostile(m, a.to, {e for e, _v in hits})
+        print('hostile: %d squad(s) moved to Forerunner ; biped Default Team %s -> %d'
+              % (moved, bteam, TEAM_FORERUNNER))
     m.save()
     del m
     m2 = hp.open_map(live, 'Halo 4')
