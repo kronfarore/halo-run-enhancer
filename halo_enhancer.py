@@ -372,7 +372,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'keep_title_hud',
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
-               'reach_placement_radius', 'reach_airstrike_height',
+               'reach_placement_radius',
                'reach_equipment_drop', 'h4_equipment_drop',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
@@ -872,10 +872,6 @@ CONFIG = {
     "reach_spawn_starting_weapons": False,
     "reach_spawn_all_weapons": False,
     "reach_placement_radius": 0.25,
-    # Target Locator airstrike launch height in world units; 0 leaves the map's own
-    # (100). Test knob for using the locator indoors, where a roof blocks a strike
-    # coming down from 100 units. Only maps that carry an airstrike are affected.
-    "reach_airstrike_height": 0.0,
     # A dying player drops the armour ability they carry. Vanilla campaign ships the
     # player trait Disabled, so it never happens there. One switch per game.
     "reach_equipment_drop": False,
@@ -7289,7 +7285,6 @@ class MagnitudeEditorDialog(QDialog):
                 zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
                 turret_first_person=turret_fp,
                 keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
-                airstrike_height=float(CONFIG.get('reach_airstrike_height') or 0.0) or None,
                 equipment_drop=bool(CONFIG.get(
                     {'Halo Reach': 'reach_equipment_drop',
                      'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
@@ -9253,20 +9248,6 @@ class OptionsDialog(QDialog):
         self._reach_radius_row.setVisible(bool(CONFIG.get('debug_mode')))
         rcform.addRow("", self._reach_radius_row)
 
-        self.reach_airstrike_height = QDoubleSpinBox()
-        self.reach_airstrike_height.setRange(0.0, 200.0)
-        self.reach_airstrike_height.setSingleStep(0.5)
-        self.reach_airstrike_height.setDecimals(1)
-        self.reach_airstrike_height.setSpecialValueText("map default (100)")
-        self.reach_airstrike_height.setValue(float(CONFIG.get('reach_airstrike_height') or 0.0))
-        self.reach_airstrike_height.setToolTip(
-            "Target Locator: how high above the target the airstrike is launched. The "
-            "map ships 100; a roof between that height and the target is the likely "
-            "reason the locator stops working indoors, so a low value (about 3) tests "
-            "that. Only maps that carry an airstrike are affected (ONI Sword Base and "
-            "Long Night of Solace, until the others are rebuilt with one).")
-        rcform.addRow("Airstrike height:", self.reach_airstrike_height)
-
         self.reach_equipment_drop_cb = QCheckBox(
             "Reach: players drop their armor ability on death")
         self.reach_equipment_drop_cb.setChecked(bool(CONFIG.get('reach_equipment_drop')))
@@ -9796,7 +9777,6 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
-            'reach_airstrike_height': self.reach_airstrike_height.value(),
             'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
             'par_time_scale': self.par_time_scale.value(),

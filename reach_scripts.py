@@ -78,7 +78,8 @@ def keep_loadout(m, mission, block_base, scnr_base):
     """Skip the mid-mission profile resets listed in LOADOUT_RESETS."""
     profiles = LOADOUT_RESETS.get(mission)
     if not profiles:
-        return {'skip': True, 'reason': 'no mid-mission loadout reset on this mission'}
+        return {'skip': True, 'quiet': True,
+                'reason': 'no mid-mission loadout reset on this mission'}
     t = _tree(m, block_base, scnr_base)
     if t is None:
         return {'skip': True, 'reason': 'no compiled scripts'}
@@ -105,7 +106,8 @@ def keep_loadout(m, mission, block_base, scnr_base):
 def skip_space(m, mission, block_base, scnr_base):
     """m45: boarding the Sabre goes straight to the corvette interior (see above)."""
     if mission != 'm45':
-        return {'skip': True, 'reason': 'only Long Night of Solace has a space section'}
+        return {'skip': True, 'quiet': True,
+                'reason': 'only Long Night of Solace has a space section'}
     t = _tree(m, block_base, scnr_base)
     if t is None:
         return {'skip': True, 'reason': 'no compiled scripts'}

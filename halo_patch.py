@@ -5468,35 +5468,6 @@ def _keep_reticle(m, game, weap_plugin=None):
     return rows
 
 
-# Reach airstrike definition (`airs`, plain Reach plugin): Batteries block at +0x0,
-# element 0x4C; Launch z Height at +0x4 -- "strike will be launched at this plane height
-# above the target location". The Target Locator's default.airstrike ships 100 (m20,
-# m45; the other missions carry no airstrike at all). A strike that has to come down
-# 100 units is what a roof blocks, so this is the knob for the indoor test.
-_AIRS_BATTERIES, _AIRS_Z_HEIGHT = (0x0, 0x4C), 0x4
-
-
-def _set_airstrike_height(m, game, height):
-    """Set Launch z Height on every airstrike battery in a Reach map."""
-    if str(game).strip() != 'Halo Reach' or not height:
-        return []
-    out = []
-    for t in m.tags:
-        if not isinstance(t, dict) or t.get('class') != 'airs' or not t.get('base'):
-            continue
-        for i, e in enumerate(_h3_chud_elems(m, t['base'], _AIRS_BATTERIES)):
-            old = struct.unpack_from('<f', m.data, e + _AIRS_Z_HEIGHT)[0]
-            struct.pack_into('<f', m.data, e + _AIRS_Z_HEIGHT, float(height))
-            out.append({'effect': 'airstrike height', 'tag': 'airs ' + str(t['name']),
-                        'field': 'Launch z Height [%d]' % i, 'ok': True,
-                        'old': round(old, 3), 'new': float(height)})
-    if not out:
-        return [{'effect': 'airstrike height', 'field': 'Launch z Height', 'ok': True,
-                 'skip': True,
-                 'reason': 'no airstrike on this map -- the Target Locator does nothing here'}]
-    return out
-
-
 # Whether a dying player drops the armour ability they carry is a PLAYER TRAIT: matg
 # Default Player Traits -> Weapon Traits -> Equipment Drop. Every Reach and Halo 4
 # campaign map ships it 1 (Disabled / False), which is why nothing falls on death;
@@ -5512,6 +5483,55 @@ _EQUIPMENT_DROP_NAMES = {'Halo Reach': ('Unchanged', 'Disabled', 'Enabled'),
 # alone. Reach's eqip has no such bit.
 _H4_EQIP_FLAGS, _H4_DROPPED_BY_PLAYER = 0x2AC, 1 << 9
 _H4_NOT_ABILITIES = ('grenade', 'ammo_box')
+
+
+# Reach airstrike definition (`airs`, plain Reach plugin): Batteries block at +0x0,
+# element 0x4C; Default Launch Count (Foundation: "Initial Launches") int32 at +0x1C.
+_AIRS_BATTERIES, _AIRS_LAUNCH_COUNT = (0x0, 0x4C), 0x1C
+
+
+def _airs_launch_count(m):
+    """Default Launch Count of the map's first airstrike battery, or None."""
+    for t in m.tags:
+        if isinstance(t, dict) and t.get('class') == 'airs' and t.get('base'):
+            for e in _h3_chud_elems(m, t['base'], _AIRS_BATTERIES):
+                return struct.unpack_from('<i', m.data, e + _AIRS_LAUNCH_COUNT)[0]
+    return None
+
+
+def _sync_airstrike_launches(m, before):
+    """Keep ONI Sword Base's level-script strike count in step with the Airstrike card.
+
+    m20 ships Default Launch Count 3 but plays with 2: its script calls
+    `(airstrike_set_launches 2)` four times, and the script wins -- which is why the
+    card's Strikes row did nothing there in the user's test while Nightfall (no such
+    call) plays with the tag's 3. When the card changed the tag, every one of those
+    literals is scaled by the same factor. No other mission calls it."""
+    after = _airs_launch_count(m)
+    if not before or after is None or after == before:
+        return []
+    import hud_titles as ht
+    import reach_scripts as RS
+    t = RS._tree(m, _block_base, _scnr_base(m))
+    if t is None:
+        return []
+    parent, _pred = RS._index(t)
+    olds, news = [], []
+    for _g, args in RS._calls(t, 'airstrike_set_launches', parent):
+        a = args[0] if args else None
+        if a is None or a['vtype'] not in (ht.T_SHORT, ht.T_LONG):
+            continue
+        old = int(t.number(a))
+        new = max(1, int(round(old * after / float(before))))
+        t.set_value(a['i'], new if a['vtype'] == ht.T_LONG
+                    else (a['value'] & 0xFFFF0000) | (new & 0xFFFF))
+        olds.append(old)
+        news.append(new)
+    if not olds:
+        return []
+    return [{'effect': 'airstrike launches', 'tag': 'scnr',
+             'field': 'airstrike_set_launches (level script, %d calls)' % len(olds),
+             'ok': True, 'old': olds[0], 'new': news[0]}]
 
 
 # Campaign par time, map side: scnr `Campaign Metagame` -> `Time Bonuses` (Time in
@@ -6269,7 +6289,7 @@ def _apply_sprint(m, game, registry, cfg):
 
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
-              turret_first_person=None, keep_reticle=False, airstrike_height=None,
+              turret_first_person=None, keep_reticle=False,
               equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
@@ -6338,6 +6358,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             if op.get('tag'):
                 absent_ok.add((item.get('name'), op['tag']))
     plan_start = len(results)
+    # The Target Locator's strike count as the map shipped it, so the level-script
+    # override can follow whatever the Airstrike card does to it (_sync_airstrike_launches).
+    airs_launches_before = _airs_launch_count(m) if str(game).strip() == 'Halo Reach' else None
     for item in plan:
         if item.get('missing_in_db'):
             # The effect was removed or renamed out of halo.json since this run was
@@ -6556,13 +6579,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # block can't disturb them.
         results.extend(_apply_zoom_ui(m, game, zoom_ui, prefer_donor=zoom_donor))
 
-    if airstrike_height:
-        # Reach Target Locator: where the strike is launched from (see _set_airstrike_height).
-        results.extend(_set_airstrike_height(m, game, airstrike_height))
-
     if equipment_drop:
         # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
         results.extend(_equipment_drop(m, game))
+
+    if airs_launches_before:
+        results.extend(_sync_airstrike_launches(m, airs_launches_before))
 
     if par_time_scale and par_time_scale != 1:
         # Halo 3 on: the scenario's own par-time thresholds (see _scale_par_time). The
@@ -6605,6 +6627,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             if not on:
                 continue
             rep = fn(m, mission, _block_base, _scnr_base(m))
+            if rep.get('quiet'):
+                continue          # a level-specific edit says nothing on other levels
             row = {'tag': 'scnr', 'field': 'level script', 'effect': label}
             if rep.get('skip'):
                 row.update(ok=True, skip=True, reason=rep.get('reason'))
