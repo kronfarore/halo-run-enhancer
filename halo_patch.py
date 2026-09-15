@@ -5677,6 +5677,127 @@ def _equipment_drop(m, game):
     return out
 
 
+# --- Halo 4: neutral Sentinels become enemies (h4_hostile_sentinels) ---------------
+#: Vanilla Halo 4 builds storm_sentinel as the player's ALLY (biped Default Team Player,
+#: its squads on team Player) and as a FLYER: a flying sphere body, plus AI flags that
+#: only let it stand on firing positions inside nav volumes. The Covenant and ground
+#: areas it would fight in have none, so a hostile Sentinel shoots from where it spawns
+#: and never moves. Measured in game on Requiem (2026-09-15), the recipe that makes it
+#: hunt the player is a GROUND body (biped physics Flying off) with the flying AI flags
+#: off. Keep Moving must stay OFF -- it overrides combat and they only wander. The char
+#: and biped are shared by every Sentinel on the map, scripted ones included.
+_H4_SENTINEL_CHAR = r'objects\characters\storm_sentinel\ai\storm_sentinel'
+_H4_SENTINEL_BIPD = r'objects\characters\storm_sentinel\storm_sentinel'
+_H4_TEAM_FORERUNNER = 8                  # squad Team and biped Default Team share the enum
+_H4_BIPD_DEFAULT_TEAM = 0x1DC            # enum16
+_H4_BIPD_PHYSICS_FLAGS, _H4_BIPD_PHYS_FLYING = 0x6D4, 4
+_H4_CHAR_GENERAL, _H4_CHAR_GEN_FLYING = 0x6C, 1       # block; General Flags (u32) at +0
+_H4_CHAR_MOVEMENT = 0xE4                               # block; Movement Flags (u32) at +0
+#: Has Flying Mode, Only Use Aerial Firing Positions, No Override When Firing.
+_H4_SENTINEL_MOVE_CLEAR = (7, 15, 19)
+_H4_SQUADS, _H4_CHAR_PALETTE = (0x3F0, 0x6C), (0x444, 0x10)
+_H4_SPAWN_POINTS, _H4_SPAWN_CHAR, _H4_SPAWN_WEAPONS = (0x3C, 0x7C), 0x2E, (0x30, 0x32)
+_H4_CELLS = ((0x54, 0x64), (0x60, 0x64))               # Designer, Templated
+_H4_CELL_CHAR, _H4_CELL_WEAPONS = 0xC, (0x18, 0x24)    # 8-byte elements, index at +4
+
+
+def _h4_hostile_sentinels(m, game):
+    """Halo 4: the map's Sentinels become enemies that move and hunt the player."""
+    if str(game).strip() != 'Halo 4':
+        return []
+
+    def tag(cls, name):
+        return next((t for t in m.tags if isinstance(t, dict) and t.get('class') == cls
+                     and t.get('name') == name and t.get('base')), None)
+    ch, bp = tag('char', _H4_SENTINEL_CHAR), tag('bipd', _H4_SENTINEL_BIPD)
+    if not ch or not bp:
+        return [{'effect': 'hostile sentinels', 'field': 'storm_sentinel', 'ok': True,
+                 'skip': True, 'reason': 'this map carries no Sentinel'}]
+    out = []
+
+    def clear_bits(addr, bits, tagname, label):
+        old = struct.unpack_from('<I', m.data, addr)[0]
+        new = old
+        for bit in bits:
+            new &= ~(1 << bit)
+        struct.pack_into('<I', m.data, addr, new)
+        out.append({'effect': 'hostile sentinels', 'tag': tagname, 'field': label,
+                    'ok': True, 'old': hex(old), 'new': hex(new)})
+
+    b = bp['base']
+    clear_bits(b + _H4_BIPD_PHYSICS_FLAGS, (_H4_BIPD_PHYS_FLYING,), 'bipd storm_sentinel',
+               'Physics Flags (Flying off: a ground body)')
+    old = struct.unpack_from('<H', m.data, b + _H4_BIPD_DEFAULT_TEAM)[0]
+    struct.pack_into('<H', m.data, b + _H4_BIPD_DEFAULT_TEAM, _H4_TEAM_FORERUNNER)
+    out.append({'effect': 'hostile sentinels', 'tag': 'bipd storm_sentinel',
+                'field': 'Default Team', 'ok': True, 'old': old, 'new': _H4_TEAM_FORERUNNER})
+    c = ch['base']
+    for blk, bits, label in (
+            (_H4_CHAR_GENERAL, (_H4_CHAR_GEN_FLYING,), 'General Flags (Flying off)'),
+            (_H4_CHAR_MOVEMENT, _H4_SENTINEL_MOVE_CLEAR,
+             'Movement Flags (flying mode, aerial-only, firing priority off)')):
+        if m.i32(c + blk) > 0:
+            clear_bits(_block_base(m, c + blk), bits, 'char storm_sentinel', label)
+
+    # Squads: every squad that fields ONLY Sentinels goes hostile, and its Sentinel
+    # entries lose their squad weapon so they carry their own beam. A squad mixing a
+    # Sentinel with anyone else is left alone -- flipping it would turn its others too.
+    scnr = _scnr_base(m)
+    if not scnr:
+        return out
+    po, pes = _H4_CHAR_PALETTE
+    slots = set()
+    if m.i32(scnr + po) > 0:
+        pb = _block_base(m, scnr + po)
+        slots = {i for i in range(m.i32(scnr + po))
+                 if m.u32(pb + i * pes + 0xC) & 0xFFFF == ch['index']}
+    so, ses = _H4_SQUADS
+    moved = mixed = weapons = 0
+    nsq = max(0, m.i32(scnr + so)) if slots else 0
+    sqb = _block_base(m, scnr + so) if nsq else 0
+    for s in range(nsq):
+        q = sqb + s * ses
+        used, sentinel_weapons = [], []
+        spo, spes = _H4_SPAWN_POINTS
+        for j in range(max(0, m.i32(q + spo))):
+            e = _block_base(m, q + spo) + j * spes
+            ci = m.i16(e + _H4_SPAWN_CHAR)
+            if ci >= 0:
+                used.append(ci)
+                if ci in slots:
+                    sentinel_weapons += [e + o for o in _H4_SPAWN_WEAPONS]
+        for co, ces in _H4_CELLS:
+            for j in range(max(0, m.i32(q + co))):
+                cell = _block_base(m, q + co) + j * ces
+                n = max(0, m.i32(cell + _H4_CELL_CHAR))
+                cb0 = _block_base(m, cell + _H4_CELL_CHAR) if n else 0
+                chars = [x for x in (m.i16(cb0 + k * 8 + 4) for k in range(n)) if x >= 0]
+                used += chars
+                if chars and all(x in slots for x in chars):
+                    for wo in _H4_CELL_WEAPONS:
+                        wn = max(0, m.i32(cell + wo))
+                        wb = _block_base(m, cell + wo) if wn else 0
+                        sentinel_weapons += [wb + k * 8 + 4 for k in range(wn)]
+        if not any(x in slots for x in used):
+            continue
+        if not all(x in slots for x in used):
+            mixed += 1
+            continue
+        if struct.unpack_from('<H', m.data, q + 0x24)[0] != _H4_TEAM_FORERUNNER:
+            struct.pack_into('<H', m.data, q + 0x24, _H4_TEAM_FORERUNNER)
+            moved += 1
+        for w in sentinel_weapons:
+            if m.i16(w) != -1:
+                struct.pack_into('<h', m.data, w, -1)
+                weapons += 1
+    out.append({'effect': 'hostile sentinels', 'tag': 'scnr', 'field': 'Sentinel squads',
+                'ok': True, 'old': 'ally / neutral',
+                'new': '%d moved to the hostile team, %d squad weapons cleared%s'
+                       % (moved, weapons, ', %d mixed squad(s) left alone' % mixed
+                          if mixed else '')})
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
@@ -6367,7 +6488,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
-              skip_flight=False,
+              skip_flight=False, hostile_sentinels=False,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -6650,6 +6771,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if equipment_drop:
         # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
         results.extend(_equipment_drop(m, game))
+
+    if hostile_sentinels:
+        # Halo 4: the map's Sentinels fight the player (see _h4_hostile_sentinels).
+        results.extend(_h4_hostile_sentinels(m, game))
 
     if str(game).strip() == 'Halo Reach':
         # m20's level script overrides the Target Locator's strike count; drop it so

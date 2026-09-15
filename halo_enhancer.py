@@ -373,7 +373,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
-               'reach_equipment_drop', 'h4_equipment_drop',
+               'reach_equipment_drop', 'h4_equipment_drop', 'h4_hostile_sentinels',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
                'h4_skip_flight',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
@@ -877,6 +877,11 @@ CONFIG = {
     # player trait Disabled, so it never happens there. One switch per game.
     "reach_equipment_drop": False,
     "h4_equipment_drop": False,
+    # Halo 4: the vanilla Sentinels (allies and props) become enemies that hunt the
+    # player (halo_patch._h4_hostile_sentinels). Their cards join the draw on the
+    # missions whose maps field them.
+    "h4_hostile_sentinels": False,
+    "h4_sentinel_missions": ["m020", "m40_invasion", "m90_sacrifice"],
     # Reach script edits (reach_scripts.py): keep the loadout through the mid-mission
     # profile resets on m10/m35, and skip Long Night of Solace's space section.
     "reach_keep_loadout": False,
@@ -2701,7 +2706,13 @@ class ModifierDatabase:
     def get_enemy_modifiers(self, mission_id):
         if mission_id not in self.mission_enemies:
             return list(self.negative_pool)
-        enemy_names = self.mission_enemies[mission_id]['enemies']
+        enemy_names = list(self.mission_enemies[mission_id]['enemies'])
+        if (CONFIG.get('h4_hostile_sentinels')
+                and mission_id in (CONFIG.get('h4_sentinel_missions') or ())
+                and 'Sentinel' not in enemy_names):
+            # Vanilla Halo 4 fields its Sentinels as allies and props, so the mission
+            # lists leave them out; with the option on they fight, and their cards count.
+            enemy_names.append('Sentinel')
         specific_mods = []
         for enemy in enemy_names:
             if enemy in self.enemy_mods:
@@ -7320,6 +7331,7 @@ class MagnitudeEditorDialog(QDialog):
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
+                hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -9398,6 +9410,18 @@ class OptionsDialog(QDialog):
             "Player' flag (shipped off on every one). Not yet seen in co-op.")
         h4form.addRow("Ability drop:", self.h4_equipment_drop_cb)
 
+        self.h4_hostile_sentinels_cb = QCheckBox("Halo 4: the neutral Sentinels fight you")
+        self.h4_hostile_sentinels_cb.setChecked(bool(CONFIG.get('h4_hostile_sentinels')))
+        self.h4_hostile_sentinels_cb.setToolTip(
+            "Off: vanilla -- Halo 4's Sentinels are allies and scenery. "
+            "On: every Sentinel on Requiem, Reclaimer and Midnight is on the enemy team, "
+            "and they move and hunt you instead of hovering in place: their body becomes "
+            "a ground body (vanilla Sentinels can only fly between mid-air firing "
+            "positions, which their fights do not have), so they run rather than fly. "
+            "Their squads carry their own beam, and the Sentinel cards join the draw on "
+            "those missions. EXPERIMENTAL: scripted Sentinel moments are untested.")
+        h4form.addRow("Sentinels:", self.h4_hostile_sentinels_cb)
+
         self.h4_skip_flight_cb = QCheckBox("Midnight: skip the opening flight")
         self.h4_skip_flight_cb.setChecked(bool(CONFIG.get('h4_skip_flight')))
         self.h4_skip_flight_cb.setToolTip(
@@ -9822,6 +9846,7 @@ class OptionsDialog(QDialog):
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
+            'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
