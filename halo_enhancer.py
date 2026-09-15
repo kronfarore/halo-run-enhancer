@@ -375,6 +375,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_placement_radius',
                'reach_equipment_drop', 'h4_equipment_drop',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
+               'h4_skip_flight',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -880,6 +881,8 @@ CONFIG = {
     # profile resets on m10/m35, and skip Long Night of Solace's space section.
     "reach_keep_loadout": False,
     "reach_skip_space": False,
+    # Halo 4 script edit (h4_scripts.py): Midnight starts on foot at the crash site.
+    "h4_skip_flight": False,
     # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
     # careerdb.xml times (read at MCC start) and, from Halo 3 on, the map's own
     # Time Bonuses thresholds.
@@ -7291,6 +7294,7 @@ class MagnitudeEditorDialog(QDialog):
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
+                skip_flight=bool(CONFIG.get('h4_skip_flight')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
@@ -9369,6 +9373,16 @@ class OptionsDialog(QDialog):
             "Player' flag (shipped off on every one). Not yet seen in co-op.")
         h4form.addRow("Ability drop:", self.h4_equipment_drop_cb)
 
+        self.h4_skip_flight_cb = QCheckBox("Midnight: skip the opening flight")
+        self.h4_skip_flight_cb.setChecked(bool(CONFIG.get('h4_skip_flight')))
+        self.h4_skip_flight_cb.setToolTip(
+            "On: Midnight starts on foot at the crash site instead of with the "
+            "Broadsword flight. It runs the level's own crash insertion (zone set, "
+            "loadout and the teleport to its start points) at the moment the flight "
+            "would have begun -- the same result as starting from that insertion. "
+            "EXPERIMENTAL: not yet seen in game.")
+        h4form.addRow("Opening flight:", self.h4_skip_flight_cb)
+
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
@@ -9781,6 +9795,7 @@ class OptionsDialog(QDialog):
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
             'par_time_scale': self.par_time_scale.value(),
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
+            'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),

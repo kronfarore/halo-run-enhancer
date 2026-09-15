@@ -6297,6 +6297,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
+              skip_flight=False,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -6636,6 +6637,22 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 row.update(ok=True, old='vanilla',
                            new=rep.get('reason') or '%d of %d reset call(s) removed (%s)'
                            % (rep['removed'], rep['found'], ', '.join(rep['profiles'])))
+            else:
+                row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+            results.append(row)
+
+    if skip_flight and str(game).strip() == 'Halo 4':
+        # Halo 4 story-flow script edit (h4_scripts.py): Midnight starts at the crash.
+        import h4_scripts
+        mission = os.path.splitext(os.path.basename(map_path))[0].lower()
+        rep = h4_scripts.skip_flight(m, mission, _block_base)
+        if not rep.get('quiet'):
+            row = {'tag': 'hsdt', 'field': 'level script',
+                   'effect': 'Skip the opening flight'}
+            if rep.get('skip'):
+                row.update(ok=True, skip=True, reason=rep.get('reason'))
+            elif rep.get('ok'):
+                row.update(ok=True, old='vanilla', new=rep.get('reason'))
             else:
                 row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
             results.append(row)
