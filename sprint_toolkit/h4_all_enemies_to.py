@@ -62,8 +62,9 @@ def _at(m, b, o):
     return (m.data2off(m.u32(b + o + 4)), c) if c > 0 else (0, 0)
 
 
-def plan(m, to_leaf):
-    """(target slot, {slot: leaf} of the enemy slots, [(entry offset, slot)])."""
+def plan(m, to_leaf, from_leaves=None):
+    """(target slot, {slot: leaf} of the enemy slots, [(entry offset, slot)]).
+    `from_leaves` narrows the swap to those characters only (exact leaf names)."""
     SQO, SQS, CPO, CPS = _layout()
     idx = {t['index']: t for t in m.tags}
     sb = m.find_tags('scnr', '*')[0][1]
@@ -75,7 +76,8 @@ def plan(m, to_leaf):
         leaf[i] = ((tt or {}).get('name') or '').rsplit(S, 1)[-1]
     target = next((i for i, n in leaf.items() if n == to_leaf), None)
     enemies = {i: n for i, n in leaf.items()
-               if n and n != to_leaf and not any(a in n for a in ALLY)}
+               if n and n != to_leaf and not any(a in n for a in ALLY)
+               and (not from_leaves or n in from_leaves)}
     hits = []
     se, nsq = _at(m, sb, SQO)
     for s in range(nsq):
@@ -105,6 +107,9 @@ def main():
     ap.add_argument('--map', required=True, help='campaign map basename, e.g. m020')
     ap.add_argument('--to', default='storm_sentinel',
                     help='character leaf name to put everywhere (default storm_sentinel)')
+    ap.add_argument('--from', dest='from_leaves', action='append',
+                    help='swap only this character (leaf name, repeatable), e.g. '
+                         'storm_bishop -- one species at a time keeps a test to one variable')
     ap.add_argument('--apply', action='store_true')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args()
@@ -119,7 +124,7 @@ def main():
         print('restored %s from the baseline' % a.map)
         return
     m = hp.open_map(live, 'Halo 4')
-    target, enemies, hits = plan(m, a.to)
+    target, enemies, hits = plan(m, a.to, a.from_leaves)
     if target is None:
         raise SystemExit('%s is not in %s\'s character palette -- a swap can only use '
                          'a character the map already carries' % (a.to, a.map))
@@ -137,13 +142,13 @@ def main():
         shutil.copyfile(live, base)
         print('baseline CREATED first')
         m = hp.open_map(live, 'Halo 4')
-        target, enemies, hits = plan(m, a.to)
+        target, enemies, hits = plan(m, a.to, a.from_leaves)
     for e, _v in hits:
         struct.pack_into('<h', m.data, e, target)
     m.save()
     del m
     m2 = hp.open_map(live, 'Halo 4')
-    _t, _en, left = plan(m2, a.to)
+    _t, _en, left = plan(m2, a.to, a.from_leaves)
     print('after save: %d enemy entr(ies) left un-swapped ; tags=%d ; checksum '
           'reproduces: %s' % (len(left), len(m2.tags),
                               m2.u32(m2.CHECKSUM_OFF) == m2.update_checksum()))
