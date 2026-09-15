@@ -5499,39 +5499,48 @@ def _airs_launch_count(m):
     return None
 
 
-def _sync_airstrike_launches(m, before):
-    """Keep ONI Sword Base's level-script strike count in step with the Airstrike card.
+def _drop_airstrike_override(m):
+    """Take ONI Sword Base's strike-count override out of its level script.
 
     m20 ships Default Launch Count 3 but plays with 2: its script calls
-    `(airstrike_set_launches 2)` four times, and the script wins -- which is why the
-    card's Strikes row did nothing there in the user's test while Nightfall (no such
-    call) plays with the tag's 3. When the card changed the tag, every one of those
-    literals is scaled by the same factor. No other mission calls it."""
-    after = _airs_launch_count(m)
-    if not before or after is None or after == before:
-        return []
+    `(airstrike_set_launches 2)` four times and the script wins. Scaling those literals
+    with the Airstrike card was tried first and measured wrong (user, 2026-09-15:
+    Strikes 30 gave 20 on m20, the full 30 on Nightfall, which has no such call). So
+    the calls are skipped instead and the airs tag governs m20 like every other map.
+    A call that is the only statement of its block cannot be skipped; that one gets the
+    tag's own count written in, which comes to the same thing. No other shipped
+    mission calls it, so everywhere else this finds nothing and says nothing."""
     import hud_titles as ht
     import reach_scripts as RS
     t = RS._tree(m, _block_base, _scnr_base(m))
     if t is None:
         return []
     parent, _pred = RS._index(t)
-    olds, news = [], []
-    for _g, args in RS._calls(t, 'airstrike_set_launches', parent):
-        a = args[0] if args else None
-        if a is None or a['vtype'] not in (ht.T_SHORT, ht.T_LONG):
-            continue
-        old = int(t.number(a))
-        new = max(1, int(round(old * after / float(before))))
-        t.set_value(a['i'], new if a['vtype'] == ht.T_LONG
-                    else (a['value'] & 0xFFFF0000) | (new & 0xFFFF))
-        olds.append(old)
-        news.append(new)
-    if not olds:
+    found = RS._calls(t, 'airstrike_set_launches', parent)
+    if not found:
         return []
+    count = _airs_launch_count(m)
+    skipped = written = 0
+    for _pass in range(8):                      # adjacent siblings: to a fixed point
+        live = [(g, a) for g, a in found if t.entered(g)]
+        if not live:
+            break
+        for g, _a in live:
+            ht._skip(t, g)
+    for g, args in found:
+        if not t.entered(g):
+            skipped += 1
+            continue
+        a = args[0] if args else None
+        if count is not None and a is not None and a['vtype'] in (ht.T_SHORT, ht.T_LONG):
+            t.set_value(a['i'], count if a['vtype'] == ht.T_LONG
+                        else (a['value'] & 0xFFFF0000) | (count & 0xFFFF))
+            written += 1
     return [{'effect': 'airstrike launches', 'tag': 'scnr',
-             'field': 'airstrike_set_launches (level script, %d calls)' % len(olds),
-             'ok': True, 'old': olds[0], 'new': news[0]}]
+             'field': 'airstrike_set_launches (level script)', 'ok': True,
+             'old': '%d override call(s)' % len(found),
+             'new': '%d removed%s -- the airstrike tag decides'
+                    % (skipped, (', %d set to the tag count' % written) if written else '')}]
 
 
 # Campaign par time, map side: scnr `Campaign Metagame` -> `Time Bonuses` (Time in
@@ -6359,9 +6368,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             if op.get('tag'):
                 absent_ok.add((item.get('name'), op['tag']))
     plan_start = len(results)
-    # The Target Locator's strike count as the map shipped it, so the level-script
-    # override can follow whatever the Airstrike card does to it (_sync_airstrike_launches).
-    airs_launches_before = _airs_launch_count(m) if str(game).strip() == 'Halo Reach' else None
     for item in plan:
         if item.get('missing_in_db'):
             # The effect was removed or renamed out of halo.json since this run was
@@ -6584,8 +6590,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Reach / Halo 4: a dying player drops the armour ability (see _equipment_drop).
         results.extend(_equipment_drop(m, game))
 
-    if airs_launches_before:
-        results.extend(_sync_airstrike_launches(m, airs_launches_before))
+    if str(game).strip() == 'Halo Reach':
+        # m20's level script overrides the Target Locator's strike count; drop it so
+        # the airstrike tag (and the Airstrike card) decides (_drop_airstrike_override).
+        results.extend(_drop_airstrike_override(m))
 
     if par_time_scale and par_time_scale != 1:
         # Halo 3 on: the scenario's own par-time thresholds (see _scale_par_time). The

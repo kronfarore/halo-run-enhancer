@@ -4,25 +4,30 @@
 # deleted and no expression is added. Halo 4's record is 0x1C with Next at +0x4
 # (hud_titles.LAYOUTS['h4']); a datum is (salt << 16) | index.
 #
-# SKIP MIDNIGHT'S OPENING FLIGHT (m90_sacrifice). The level's start script calls
-# f_insertion_index_load (game_insertion_point_get), which dispatches on the index:
-#     (if (= s_insertion insertion_index_start)
-#         (begin (set_silently b_started true) (ins_trench)))       <- the flight
-#     ...
-#     (if (= s_insertion insertion_index_crash)
-#         (begin (set_silently b_started true) (ins_crash_on_foot)))  <- after it
+# SKIP MIDNIGHT'S OPENING FLIGHT (m90_sacrifice). The start script calls
+# f_insertion_index_load (game_insertion_point_get). A NORMAL start passes index 0,
+# which is insertion_index_cine_cav -- NOT insertion_index_start, which is 3 (the same
+# value as trench_a). Index 0 runs ins_opening_cin, which plays the opening and then
+# hands over with
+#     (thread (ins_trench))            <- the Broadsword flight
 # ins_crash_on_foot is the level's own insertion for the crash site: it loads the zone
 # set, sets the profiles and teleports the players to ps_crash_start_ins (player 1 at
-# -826.50, -11.77, -74.43). The edit points the START branch's set_silently at that
-# existing (ins_crash_on_foot) call node -- its Next is the terminator, so the branch
-# ends there -- and ins_trench never runs. A normal start then begins on foot at the
-# crash, which is what choosing that insertion would do.
+# -826.50, -11.77, -74.43). The edit points that `thread` name record's Next at the
+# existing crash-branch (ins_crash_on_foot) call node -- its Next is the terminator, so
+# the argument list ends there -- so the opening still plays and then the players start
+# on foot at the crash.
 #
-# Both verbs are called from more than one place (ins_trench three times, the crash
-# insertion twice), so a call is identified by the dispatcher BRANCH it sits in:
+# FIRST ATTEMPT (2026-09-15, did nothing in game): the splice sat on the
+# insertion_index_start branch of the dispatcher, which a normal start never takes.
+#
+# ins_trench is called three times: from the dispatcher's start and trench_a branches
+# (after a set_silently) and from ins_opening_cin (as the argument of `thread`). The
+# thread one is the only call whose predecessor is a `thread` NAME record. The crash
+# insertion is called twice; the one used is identified by its dispatcher BRANCH:
 #     call -> the statement before it (set_silently) -> that statement's predecessor is
 #     the `begin` NAME record -> the begin CALL group -> its predecessor is the `if`
-#     condition group -> the `=` call's arguments name the insertion index.
+#     condition group -> the `=` call's arguments name insertion_index_crash.
+# H4 script calls carry the called script's index in the name record's OPCODE.
 
 import hud_titles as ht
 
@@ -132,17 +137,19 @@ def skip_flight(m, mission, block_base):
         return {'ok': False, 'reason': 'expected one crash-branch ins_crash_on_foot call '
                                        'ending its block, found %d' % len(crash)}
     datum = (tr.at(crash[0])['salt'] << 16) | crash[0]
-    # Already applied: some start-branch statement now leads straight to the crash call.
-    for p in pred.get(crash[0], []):
-        if (tr.at(p)['vtype'] != ht.T_FUNCNAME and tr.at(p)['next'] == datum
-                and _in_branch(tr, p, parent, pred, 'insertion_index_start')):
-            return {'ok': True, 'reason': 'already applied'}
-    starts = [g for g in _call_groups(tr, 'ins_trench', parent)
-              if _in_branch(tr, g, parent, pred, 'insertion_index_start')]
-    if len(starts) != 1:
-        return {'ok': False, 'reason': 'found %d start-branch ins_trench calls' % len(starts)}
-    prev = _stmt_pred(tr, starts[0], pred)
-    if prev is None:
-        return {'ok': False, 'reason': 'no single statement before the start ins_trench'}
-    tr.set_next(prev, datum)
-    return {'ok': True, 'reason': 'a normal start now runs ins_crash_on_foot'}
+
+    def thread_name(i):
+        r = tr.at(i)
+        return r is not None and r['vtype'] == ht.T_FUNCNAME and r['string'] == 'thread'
+    # Already applied: a `thread` name record now leads straight to the crash call.
+    if any(thread_name(p) for p in pred.get(crash[0], [])):
+        return {'ok': True, 'reason': 'already applied'}
+    handoff = [(g, p) for g in _call_groups(tr, 'ins_trench', parent)
+               for p in pred.get(g, []) if thread_name(p)]
+    if len(handoff) != 1:
+        return {'ok': False, 'reason': 'expected one (thread (ins_trench)) handoff, '
+                                       'found %d' % len(handoff)}
+    _g, name = handoff[0]
+    tr.set_next(name, datum)
+    return {'ok': True, 'reason': 'after the opening, (thread (ins_trench)) now runs '
+                                  'ins_crash_on_foot'}

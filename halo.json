@@ -8884,19 +8884,19 @@
 			"Target Locator": {
 				"Airstrike": {
 					"desc": "The Target Locator's airstrike: how many you get, how often they come, and how they land.",
-					"debug_desc": "Every tunable of the airstrike definition (`airs` objects\\weapons\\pistol\\target_laser\\projectiles\\default, Batteries block) except Launch z Height (its own option, Patching > Reach > Airstrike height), the Fire Effect and the Affected Weapon. One row per quantity:\n\n- `Default Launch Count` -- strikes available. Ships 3 on both maps that carry an airstrike (ONI Sword Base, Long Night of Solace), but ONI Sword Base plays with 2 because its level script calls `airstrike_set_launches 2` (four times) and the script wins; the patch scales those calls by the same factor, so this row works there too. Nightfall has no such call and plays with the tag's 3.\n- `Shots Per Launch` 7, `Launch Duration` 4.5 s (how long the 7 take), `Launch Warmup` 3 s (lase-to-launch delay), `Launch Cooldown` 9.5 s (until the next strike is ready), `Launch Arrival` 1 s (how long the marker lingers).\n- `Launch Radius` 1.5 -- random scatter of each shot around the aim point.\n- `Fire Offsets` -- five fixed points the shots cycle through (centre and 3 units N/S/E/W); scaling them spreads or tightens the pattern.\n\nThe weapon's own Functions only IMPORT the engine's `airstrike_state` to drive the model's lights and screen; none of them holds a count.",
+					"debug_desc": "Every tunable of the airstrike definition (`airs` objects\\weapons\\pistol\\target_laser\\projectiles\\default, Batteries block) except Launch z Height (its own option, Patching > Reach > Airstrike height), the Fire Effect and the Affected Weapon. One row per quantity:\n\n- `Default Launch Count` -- strikes available. Ships 3 on both maps that carry an airstrike (ONI Sword Base, Long Night of Solace), ONI Sword Base's level script used to override it to 2 (`airstrike_set_launches 2`, four calls); the patch now removes those calls, so the tag governs there as everywhere else.\n- `Shots Per Launch` 7, `Launch Duration` 4.5 s (how long the 7 take), `Launch Warmup` 3 s (lase-to-launch delay), `Launch Cooldown` 9.5 s (until the next strike is ready), `Launch Arrival` 1 s (how long the marker lingers).\n- `Launch Radius` 1.5 -- random scatter of each shot around the aim point.\n- `Fire Offsets` -- five fixed points the shots cycle through (centre and 3 units N/S/E/W); scaling them spreads or tightens the pattern.\n\nThe weapon's own Functions only IMPORT the engine's `airstrike_state` to drive the model's lights and screen; none of them holds a count.",
 					"game": ["Halo Reach"],
 					"tag": "airs objects\\weapons\\pistol\\target_laser\\projectiles\\default",
 					"targets": [
-						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Strikes", "harder_when": "decreased", "min": 1},
-						{"field": "Shots Per Launch", "block": "Batteries", "index": "all", "group": "Shots Per Strike", "harder_when": "decreased", "min": 1},
-						{"field": "Launch Cooldown", "ignore": true, "block": "Batteries", "index": "all", "group": "Cooldown", "harder_when": "increased", "min": 0},
-						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "harder_when": "increased", "min": 0},
-						{"field": "Launch Duration", "block": "Batteries", "index": "all", "group": "Duration", "harder_when": "increased", "min": 0},
-						{"field": "Launch Arrival", "ignore": true, "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
-						{"field": "Launch Radius", "block": "Batteries", "index": "all", "group": "Scatter", "harder_when": "increased", "min": 0},
-						{"field": "Offset x", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"},
-						{"field": "Offset y", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern", "harder_when": "increased"}
+						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Strikes", "min": 1},
+						{"field": "Shots Per Launch", "block": "Batteries", "index": "all", "group": "Shots Per Strike", "min": 1},
+						{"field": "Launch Cooldown", "block": "Batteries", "index": "all", "group": "Cooldown", "min": 0},
+						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "min": 0},
+						{"field": "Launch Duration", "block": "Batteries", "index": "all", "group": "Duration", "min": 0},
+						{"field": "Launch Arrival", "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
+						{"field": "Launch Radius", "block": "Batteries", "index": "all", "group": "Scatter", "min": 0},
+						{"field": "Offset x", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern x"},
+						{"field": "Offset y", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern y"}
 					]
 				},
 				"Melee Damage": {
