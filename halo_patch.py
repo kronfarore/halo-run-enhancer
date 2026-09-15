@@ -3443,7 +3443,25 @@ def h4_designer_zone(m, name=H4_ENHANCER_ZONE):
                  if not sid >> 17 and sid + best == target), None)
 
 
-def h4_enhancer_items(m, game, kind='weapons'):
+#: Levels whose flight-skip option starts the players in a later zone set. With
+#: h4_skip_flight on, Midnight begins at its crash insertion -- zone set "crash", not
+#: zone set 0 -- so that is where dz_enhancer has to be switched on.
+H4_SKIP_START_ZONE_SET = {'m90_sacrifice': 'crash'}
+
+
+def _h4_zone_set_index(m, name):
+    """Index of the scenario zone set called `name` (its ascii Name String), or None."""
+    scnr = _scnr_base(m)
+    zoff, zes = _H4_ZONE_SETS
+    zs = _block_base(m, scnr + zoff) if scnr is not None else None
+    for j in range(max(0, m.i32(scnr + zoff))) if zs else []:
+        e = zs + j * zes
+        if bytes(m.data[e + 4:e + 0x104]).split(b'\0')[0].decode('latin1') == name:
+            return j
+    return None
+
+
+def h4_enhancer_items(m, game, kind='weapons', start_zone_set=None):
     """(tag paths, reason): what this Halo 4 map's dz_enhancer zone holds.
 
     FULL paths, not basenames: Halo 4's cards name their tags as patterns matched
@@ -3462,15 +3480,24 @@ def h4_enhancer_items(m, game, kind='weapons'):
     if k is None:
         return None, 'no %s designer zone (map not rebuilt with it yet)' % H4_ENHANCER_ZONE
     scnr = _scnr_base(m)
-    zoff, _zes = _H4_ZONE_SETS
+    zoff, zes = _H4_ZONE_SETS
     zs = _block_base(m, scnr + zoff)
+    # The zone set the players actually start in: 0, or the one a start option moves
+    # them to (H4_SKIP_START_ZONE_SET).
+    zi, label = 0, 'zone set 0'
+    if start_zone_set:
+        j = _h4_zone_set_index(m, start_zone_set)
+        if j is None:
+            return None, 'no zone set called %r on this map' % start_zone_set
+        zi, label = j, 'zone set %d "%s"' % (j, start_zone_set)
     flags = 0
-    if zs and m.i32(scnr + zoff) > 0:
-        flags = m.u32(zs + _H4_DESIGNER_FLAGS) | struct.unpack_from(
-            '<Q', m.data, zs + _H4_DESIGNER_FLAGS + 4)[0]
+    if zs and m.i32(scnr + zoff) > zi:
+        e = zs + zi * zes
+        flags = m.u32(e + _H4_DESIGNER_FLAGS) | struct.unpack_from(
+            '<Q', m.data, e + _H4_DESIGNER_FLAGS + 4)[0]
     if not flags & (1 << k):
-        return None, ('%s is not switched on by zone set 0, so nothing in it is loaded '
-                      'at the mission start' % H4_ENHANCER_ZONE)
+        return None, ('%s is not switched on by %s, so nothing in it is loaded where the '
+                      'players start' % (H4_ENHANCER_ZONE, label))
     lay = (_MAP_WEAPONS if kind == 'weapons' else _MAP_EQUIPMENT)['Halo 4']
     poff, pes = lay['palette']
     pbase, pn = _block_base(m, scnr + poff), max(0, m.i32(scnr + poff))

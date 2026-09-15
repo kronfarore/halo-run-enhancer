@@ -883,6 +883,8 @@ CONFIG = {
     "reach_skip_space": False,
     # Halo 4 script edit (h4_scripts.py): Midnight starts on foot at the crash site.
     "h4_skip_flight": False,
+    # Weapon names never offered in Halo 4 (see get_level_weapons).
+    "h4_never_offer": ["Sentinel Beam", "Sentinel Eliminator Beam", "Target Locator"],
     # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
     # careerdb.xml times (read at MCC start) and, from Halo 3 on, the map's own
     # Time Bonuses thresholds.
@@ -2967,22 +2969,28 @@ class ModifierDatabase:
         The answer is stamped against the baseline like every other pool, so a rebuild
         changes the stamp and is read afresh.
         """
-        key = (mission_id, kind)
+        import halo_patch
+        # With the flight skip on, Midnight starts in its "crash" zone set, so that is
+        # where dz_enhancer must be live. Part of every cache key: toggling the option
+        # has to re-read the map, since the baseline stamp does not change.
+        start = (halo_patch.H4_SKIP_START_ZONE_SET.get(mission_id)
+                 if CONFIG.get('h4_skip_flight') else None)
+        key = (mission_id, kind, start)
         if key in self._h4_pool_cache:
             return self._h4_pool_cache[key]
         declared = list((self.mission_weapons if kind == 'weapons'
                          else self.mission_equipment).get(mission_id) or [])
         names = []
         try:
-            import halo_patch
             src = self._pool_src('Halo 4', mission_id)
-            ck = 'Halo 4|%s|%s' % (mission_id, kind)
+            ck = 'Halo 4|%s|%s' % (mission_id, kind) + ('|%s' % start if start else '')
             remembered = pool_cache_get(ck, src)
             if remembered is not None:
                 self._h4_pool_cache[key] = remembered
                 return remembered
             m = halo_patch.open_map(src, 'Halo 4')
-            have, why = halo_patch.h4_enhancer_items(m, 'Halo 4', kind)
+            have, why = halo_patch.h4_enhancer_items(m, 'Halo 4', kind,
+                                                     start_zone_set=start)
             if have is None:
                 print(f"Halo 4 {kind} pool for {mission_id}: {why} -- keeping the "
                       f"level's own list")
@@ -3013,6 +3021,14 @@ class ModifierDatabase:
         if (CONFIG.get('h4_pools_from_map')
                 and self.mission_games.get(mission_id) == 'Halo 4'):
             wl = self.h4_map_pool(mission_id, 'weapons') or wl
+        if self.mission_games.get(mission_id) == 'Halo 4':
+            # Held out of Halo 4 offers for now (user, 2026-09-15): the Sentinel Beam
+            # (the Sentinels' built-in gun, no world model) and the Target Locator
+            # (Halo 4's scripted Target Designator) reach the pool through the
+            # dz_enhancer zone and the level lists. Here, not in h4_map_pool, so the
+            # initial selection and the automatic rolls both lose them.
+            never = set(CONFIG.get('h4_never_offer') or ())
+            wl = [w for w in wl if w not in never]
         # ODST's Auto Magnum / Silenced SMG. Treated as the base weapon, the level
         # offers the ordinary card (the variant is what the player actually gets, in
         # the map); treated as upgrades, the base card is what the level offers and
