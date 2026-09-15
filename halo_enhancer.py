@@ -2610,8 +2610,13 @@ class ModifierDatabase:
             tag = resolve_gamed(raw, game, self.get_games())
             if not (isinstance(tag, str) and tag.startswith('weap ')):
                 continue
-            # first of a multi-tag effect; they are variants of one weapon
-            one = tag.split(' & ')[0].strip()
+            # first of a multi-tag effect; they are variants of one weapon. Halo 4
+            # prefers the campaign `_pve` variant (user, 2026-09-15) -- Midnight
+            # stocks only storm_plasma_pistol_pve, and the plain tag is not on it.
+            parts = [p.strip() for p in tag.split(' & ') if p.strip()]
+            one = parts[0]
+            if str(game).strip() == 'Halo 4':
+                one = next((p for p in parts if p.endswith('_pve')), one)
             if isinstance(raw, dict) and any(g in raw for g in lineage):
                 return one
             if fallback is None:
@@ -6802,7 +6807,11 @@ class MagnitudeEditorDialog(QDialog):
                 # back ok=True having placed nothing. The first path is the canonical
                 # one.
                 if p and '&' in p:
-                    p = p.split('&')[0].strip()
+                    alts = [x.strip() for x in p.split('&') if x.strip()]
+                    p = alts[0]
+                    # Halo 4: the campaign `_pve` variant, the user's preference.
+                    if self.game == 'Halo 4':
+                        p = next((x for x in alts if x.endswith('_pve')), p)
                 if p and p not in seen:
                     seen.add(p)
                     out.append(p)

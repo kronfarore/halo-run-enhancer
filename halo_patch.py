@@ -3752,6 +3752,32 @@ def _apply_spawn_weapons_h3(m, game, spec, registry=None):
     return out
 
 
+def _palette_variant(tag, pal, pal_names):
+    """`tag` itself when the palette stocks it, else a palette VARIANT of the same
+    weapon: same folder, name starting with the requested one.
+
+    A card names every variant of a weapon ("storm_plasma_pistol &
+    storm_plasma_pistol_pve") and weap_tag_for hands over the first, but a level may
+    stock only another -- Midnight carries storm_plasma_pistol_pve alone, and its
+    Railgun and Sticky Detonator are _pve too -- so the placement reported "not in this
+    level weapon palette" for a weapon standing right there."""
+    key = str(tag).replace('/', chr(92)).lower()
+    folder, _sep, base = key.rpartition(chr(92))
+    if base.endswith('_pve'):
+        base = base[:-4]
+    family = [nm for nm in pal_names
+              if nm.replace('/', chr(92)).lower().rpartition(chr(92))[0] == folder
+              and nm.replace('/', chr(92)).lower().rpartition(chr(92))[2].startswith(base)]
+    # The _pve variant is the campaign one and the user's preference (2026-09-15):
+    # take it whenever the level stocks it, then the exact tag, then any variant.
+    pve = [nm for nm in family if nm.lower().endswith('_pve')]
+    if pve:
+        return pve[0]
+    if key in pal:
+        return tag
+    return family[0] if family else tag
+
+
 def _apply_spawn_weapons(m, game, spec, registry=None):
     """Reach: hand a player their weapons by PLACING them at the marker.
 
@@ -3819,6 +3845,7 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
             pal[nm.replace('/', chr(92)).lower()] = i
             pal_names.append(nm)
     groups = [[_concrete_tag(m, 'weap', t, pal_names) or t for t in g] for g in groups]
+    groups = [[_palette_variant(t, pal, pal_names) for t in g] for g in groups]
 
     LIFT = 0.30
     radius = spec.get('radius')
@@ -4015,7 +4042,12 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                 key = str(t).replace('/', chr(92)).lower()
                 # 2. An inert placement OF THIS PIECE, if the map still has one --
                 #    then it spawns exactly where the designer put that ability.
-                mine = [i for i in by_tag.get(key, []) if i not in used]
+                # Only one NEAR the markers: a rebuilt map can keep inert placements of
+                # a piece anywhere, and on Midnight the ones for thruster, vision, jet
+                # pack and hologram sit at the trench start, ~4400 units from the crash
+                # markers -- enabled there, the pickups were simply out of reach.
+                mine = [i for i in by_tag.get(key, [])
+                        if i not in used and (not anchors or _near_cluster(i))]
                 if mine:
                     i = mine[0]
                     used.add(i)
