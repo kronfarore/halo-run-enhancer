@@ -9414,12 +9414,16 @@ class OptionsDialog(QDialog):
         self.h4_hostile_sentinels_cb.setChecked(bool(CONFIG.get('h4_hostile_sentinels')))
         self.h4_hostile_sentinels_cb.setToolTip(
             "Off: vanilla -- Halo 4's Sentinels are allies and scenery. "
-            "On: every Sentinel on Requiem, Reclaimer and Midnight is on the enemy team, "
-            "and they move and hunt you instead of hovering in place: their body becomes "
-            "a ground body (vanilla Sentinels can only fly between mid-air firing "
-            "positions, which their fights do not have), so they run rather than fly. "
-            "Their squads carry their own beam, and the Sentinel cards join the draw on "
-            "those missions. EXPERIMENTAL: scripted Sentinel moments are untested.")
+            "On: every Sentinel on Requiem, Reclaimer and Midnight joins the side that "
+            "map's own enemies fight on, and they move and hunt you instead of hovering "
+            "in place: their body becomes a ground body (vanilla Sentinels can only fly "
+            "between mid-air firing positions, which their fights do not have), so they "
+            "run rather than fly, and hold off at 6-14m to use the beam. Their squads "
+            "carry that beam, and the Sentinel cards join the draw on those missions.\n\n"
+            "A SCRIPTED Sentinel keeps doing what its level script tells it to -- flying "
+            "its set route, holding a post, playing its scene -- and will not break off "
+            "to fight you, so on Requiem most of them still ignore you even though they "
+            "are now enemies. The ones the script leaves alone do engage.")
         h4form.addRow("Sentinels:", self.h4_hostile_sentinels_cb)
 
         self.h4_skip_flight_cb = QCheckBox("Midnight: skip the opening flight")
