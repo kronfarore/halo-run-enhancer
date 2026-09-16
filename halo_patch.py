@@ -6663,7 +6663,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r['effect'] = item['name']
                     results.append(r)
                 continue
-            if op.get('reload_anim') or op.get('swap_anim'):
+            if op.get('reload_anim') or op.get('swap_anim') or op.get('berserk_anim'):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
                 # (these weapons carry no tag-side Reload Time). item['tag'] is the
                 # jmad fp-graph pattern; the operator supplies the multiplier.
@@ -6674,13 +6674,17 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 oper, val = parsed
                 mult = hm.OP_FUNCS[oper](1.0, val)   # *0.5 or =0.5 -> 0.5
                 import halo3_reload
-                # Same machinery, different actions: the swap is `ready` + `put_away`.
-                match = (('ready', 'put_away') if op.get('swap_anim') else ('reload',))
+                # Same machinery, different actions: the swap is `ready` + `put_away`,
+                # and an enemy's berserk is its third-person `berserk` action (a straight
+                # downside for the Elite, who roars in place for ~1.5s).
+                match = (('ready', 'put_away') if op.get('swap_anim') else
+                         ('berserk',) if op.get('berserk_anim') else ('reload',))
                 rep = halo3_reload.scale_reload(m, path, mult, game=game, match=match)
                 r = {**base}
                 if rep.get('ok'):
                     r.update(ok=True, skip=bool(rep.get('skip')),
-                             old=('swap anim' if op.get('swap_anim') else 'reload anim'),
+                             old=('swap anim' if op.get('swap_anim') else
+                                  'berserk anim' if op.get('berserk_anim') else 'reload anim'),
                              new=(rep.get('reason') if rep.get('skip')
                                   else f"x{mult:g} ({rep['animations']} anim, {rep['graphs']} graph)"))
                 else:
@@ -6730,6 +6734,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
                 continue
             oper, val = parsed
+            if op.get('inverse'):
+                # Grouped with a field it moves AGAINST (hm.invert_operator): the row's
+                # one magnitude raises the other field and lowers this one.
+                oper, val = hm.invert_operator(oper, val)
             # `negate`/`offset` describe how this game STORES the setting relative to
             # what the magnitude means: meaning = scale * stored + offset. H1 keeps a
             # modifier that is 1 when normal and rises; H2 keeps a damage that is 0
@@ -6762,6 +6770,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r['inherited_from'] = op['redirected_from']
                 if negate or offset:
                     r['negated'] = True     # summary marks the remapped write
+                if op.get('inverse'):
+                    r['inverted'] = True    # moved against the row's magnitude
                 if ((cmin is not None or cmax is not None)
                         and isinstance(r.get('new'), (int, float))
                         and r.get('ok')):

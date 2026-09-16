@@ -476,7 +476,7 @@ def h4_tag_for(weapon, inherited, have, patterns, melee):
     return tag, None
 
 
-NON_PLUGIN_KEYS = ('reload_anim', 'swap_anim', 'map_swap', 'map_equip',
+NON_PLUGIN_KEYS = ('reload_anim', 'swap_anim', 'berserk_anim', 'map_swap', 'map_equip',
                    'equip_drop', 'choice', 'derived')
 
 

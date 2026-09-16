@@ -114,7 +114,7 @@ def _matches(name, match):
 FPS = 30.0     # jmad/antr animations play at 30 fps (NTSC); reload seconds = frames / FPS
 
 
-def reload_frames(m, tag_pattern, game='Halo 3'):
+def reload_frames(m, tag_pattern, game='Halo 3', match=('reload',)):
     """Reference read for the patcher: reload-animation frame counts per graph, as
     [(who, [frames...]), ...]. Abstracts the H1 antr vs H2/H3 jmad layouts. `who` is a
     friendly label (Master Chief / Arbiter / tag basename). Returns [] if none found."""
@@ -134,7 +134,7 @@ def reload_frames(m, tag_pattern, game='Halo 3'):
             fcs = []
             for el in m.follow_all(base, [H1_ANIM_BLK], [H1_ANIM_EL], 'all'):
                 nm = m.data[el:m.data.index(b'\x00', el)].decode('latin1', 'replace')
-                if _matches(nm, ('reload',)):
+                if _matches(nm, match):
                     fcs.append(struct.unpack_from('<h', m.data, el + H1_FC)[0])
             if fcs:
                 out.append((who_of(name), sorted(set(fcs))))
@@ -144,10 +144,21 @@ def reload_frames(m, tag_pattern, game='Halo 3'):
         return out
     for name, base in m.find_tags('jmad', tag_pattern):
         anims = m.follow_all(base, [L['anim_blk']], [L['anim_el']], 'all')
-        fcs = sorted({struct.unpack_from('<h', m.data, anims[i] + L['fc_off'])[0]
-                      for i in _reload_anim_indices(m, base, L)})
+        fcs = set()
+        for i in _reload_anim_indices(m, base, L, match):
+            if not (0 <= i < len(anims)):
+                continue
+            el = anims[i]
+            if L.get('shared_blk') is not None:
+                # Reach keeps Frame Count in the Shared Animation Data, as scale_reload
+                # already knew; reading it off the header showed a wrong length there.
+                shared = m.follow_all(el, [L['shared_blk']], [L['shared_el']], 'all')
+                if not shared:
+                    continue
+                el = shared[0]
+            fcs.add(struct.unpack_from('<h', m.data, el + L['fc_off'])[0])
         if fcs:
-            out.append((who_of(name), fcs))
+            out.append((who_of(name), sorted(fcs)))
     return out
 
 

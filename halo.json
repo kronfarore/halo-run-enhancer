@@ -13022,16 +13022,36 @@
 				},
 				"Elite Berserk": {
 					"desc": "How easily Elites go berserk and charge you. Less berserking is worse for you, not better.",
-					"debug_desc": "Three triggers: damage taken in a short window, how low health has to be, and a grenade landing nearby.",
+					"debug_desc": "Three triggers: damage taken in a short window, how low health has to be, and a grenade landing nearby. Reach and Halo 4 bring the berserk back as the shield-down berserk the Elite's style allows (with stuck-with-grenade and surprise berserks, which have no numbers): the chance and range once shields drop, the cooldown between berserks and the per-difficulty maximum count. Halo 3 ships those fields on the Elite too, but its style does not allow the shield-down berserk, so they are inert there and left out.",
+					"game": ["Halo 1", "Halo Reach", "Halo 4"],
 					"tag": {
-						"Halo 1": "actr characters\\elite\\*"
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
 					},
-					"targets": [
-						{ "field": "Berserk Damage Amount", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 },
-						{ "field": "Berserk Damage Threshold", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 },
-						{ "field": "Berserk Grenade Chance", "games": ["Halo 1"], "harder_when": "decreased", "min": 0, "max": 1 }
-					],
-					"game": "Halo 1"
+					"targets": {
+						"Halo 1": [
+							{ "field": "Berserk Damage Amount", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Berserk Damage Threshold", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Berserk Grenade Chance", "harder_when": "decreased", "min": 0, "max": 1 }
+						],
+						"Halo Reach": [
+							{ "field": "Beserk Cooldown", "block": "Charge Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Shield-Down Berserk Ranges", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "decreased", "min": 0 },
+							{ "field": "Shield-Down Berserk Ranges Max", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "decreased", "min": 0 },
+							{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Beserk Cooldown", "block": "Charge Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "decreased", "min": 0, "max": 1 },
+							{ "field": "Shield-Down Berserk Ranges", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "decreased", "min": 0 },
+							{ "field": "Shield-Down Berserk Ranges Max", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "decreased", "min": 0 },
+							{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "harder_when": "decreased", "min": 0 }
+						]
+					}
 				},
 				"Firing Positions": {
 					"desc": "Guard Position Time, Combat Position Time, Old Position Avoid Distance, Friend Avoid Distance",
@@ -13306,6 +13326,130 @@
 						{"field": "Hop Wait Timer", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
 						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
 						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
+					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Attacking Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Defending Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Seek-Cover Chance", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Time", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\elite\\*",
+						"Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major",
+						"Halo 3": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Search Time", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Target Search Time Max", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\elite\\ai\\elite*",
+						"Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
+				},
+				"Berserk Animation": {
+					"desc": "How long their berserk roar takes. *0.5 is twice as fast.",
+					"debug_desc": "Scales the third-person `berserk` ANIMATIONS in the enemy's graph -- the same machinery as Reload Time and Weapon Swap Speed, matching the `berserk` action instead. Measured at 30fps: Halo 3 Elite 45 frames (1.5s, five weapon classes), Reach Elite 47-48, ODST Brute 43-46. For an Elite the roar is pure downtime, so a SHORTER roar is harder. Halo 4 has no animation-graph layout in the machinery yet.",
+					"harder_when": "decreased",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jmad objects\\characters\\elite\\elite",
+						"Halo Reach": "jmad objects\\characters\\elite_ai\\elite_ai"
+					},
+					"targets": [
+						{ "field": "Berserk Animation", "berserk_anim": true }
 					]
 				}
 			},
@@ -13643,6 +13787,69 @@
 						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan" },
 						{ "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0 }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
+					"targets": {
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 3": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo Reach": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
+					},
+					"targets": {
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\hunter\\ai\\hunter*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Grunt": {
@@ -13721,7 +13928,7 @@
 					}
 				},
 				"Dive From Grenade Chance": {
-					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"desc": "Chance of diving away from a grenade. Where the enemy can also brace (Reach, Halo 4), raising the dive chance lowers the brace chance.",
 					"harder_when": "increased",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
@@ -13730,7 +13937,8 @@
 						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
+						{ "field": {"Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance"}, "block": {"Halo 1": null, "Halo 2": "Movement Properties"}, "min": 0, "max": 1, "group": "Grenade Reaction" },
+						{ "field": "Brace Grenade Chance", "block": "Movement Properties", "games": ["Halo Reach", "Halo 4"], "inverse": true, "group": "Grenade Reaction", "min": 0, "max": 1 }
 					]
 				},
 				"Cover Properties": {
@@ -14048,6 +14256,119 @@
 						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
 						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Attacking Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Defending Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Seek-Cover Chance", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Time", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo Reach": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\grunt\\*",
+						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
+						"Halo 3": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Search Time", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Target Search Time Max", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*",
+						"Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Jackal": {
@@ -14215,7 +14536,7 @@
 					}
 				},
 				"Dive From Grenade Chance": {
-					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"desc": "Chance of diving away from a grenade. Where the enemy can also brace (Reach, Halo 4), raising the dive chance lowers the brace chance.",
 					"harder_when": "increased",
 					"tag": {
 						"Halo 1": "actr characters\\jackal\\*",
@@ -14224,7 +14545,8 @@
 						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
 					},
 					"targets": [
-						{ "field": { "Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance" }, "block": { "Halo 1": null, "Halo 2": "Movement Properties" }, "min": 0, "max": 1 }
+						{ "field": {"Halo 1": "Dive From Grenade Chance", "Halo 2": "Dive Grenade Chance"}, "block": {"Halo 1": null, "Halo 2": "Movement Properties"}, "min": 0, "max": 1, "group": "Grenade Reaction" },
+						{ "field": "Brace Grenade Chance", "block": "Movement Properties", "games": ["Halo Reach", "Halo 4"], "inverse": true, "group": "Grenade Reaction", "min": 0, "max": 1 }
 					]
 				},
 				"Panic": {
@@ -14552,6 +14874,103 @@
 						{"field": "Hop Wait Timer Max", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "decreased", "min": 0},
 						{"field": "Maximum Hop Distance", "block": "Hopping Definition", "nth": 2, "group": "Hopping", "harder_when": "increased", "min": 0}
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Attacking Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Defending Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Seek-Cover Chance", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Time", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\jackal\\*",
+						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 3": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Search Time", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Target Search Time Max", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach", "Halo 4"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*",
+						"Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Flood Combat Form": {
@@ -14816,6 +15235,55 @@
 						{ "field": "Grenade Ranges Max", "block": "Grenades Properties", "index": "all", "group": "Grenade Ranges" },
 						{ "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\floodcombat*",
+						"Halo 3": "char objects\\characters\\floodcombat*",
+						"Halo 3: ODST": "char objects\\characters\\floodcombat*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 3: ODST": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
 				}
 			},
 			"Flood Infection Form": {
@@ -15135,6 +15603,30 @@
 							{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 						]
 					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {
+						"Halo 1": "actr characters\\floodcarrier\\*",
+						"Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*",
+						"Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Search Time", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Target Search Time Max", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						]
+					}
 				}
 			},
 			"Flood Pure Form": {
@@ -15323,6 +15815,40 @@
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"
+					},
+					"targets": {
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 3"],
+					"tag": {
+						"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"
+					},
+					"targets": {
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
 				}
 			},
 			"Sentinel": {
@@ -15596,6 +16122,80 @@
 						{ "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0 },
 						{ "field": "Water Gravity Scale", "group": "Gravity Scale", "min": 0 }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Attacking Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Defending Evasion Threshold", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Seek-Cover Chance", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Delay Time", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 4"],
+					"tag": {
+						"Halo 1": "actr characters\\sentinel\\*",
+						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 3": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
+						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
+					},
+					"targets": {
+						"Halo 1": [
+							{ "field": "Target Search Time", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Target Search Time Max", "group": "Search Time", "harder_when": "increased", "min": 0 }
+						],
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
 				}
 			},
 			"Bugger": {
@@ -15747,6 +16347,86 @@
 						{ "field": "Accuracy Time", "block": "Weapons Properties", "index": "all", "diff_prefix": true, "harder_when": "decreased" },
 						{ "field": "Projectile Error", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "harder_when": "decreased" }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo Reach": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo Reach": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo 3": "char objects\\characters\\bugger\\ai\\bugger*",
+						"Halo Reach": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\bugger\\ai\\bugger*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Brute": {
@@ -15905,7 +16585,7 @@
 					]
 				},
 				"Dive From Grenade Chance": {
-					"desc": "Chance of diving away from a grenade.",
+					"desc": "Chance of diving away from a grenade. Where the enemy can also brace (Reach, Halo 4), raising the dive chance lowers the brace chance.",
 					"harder_when": "increased",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
@@ -15913,7 +16593,8 @@
 						"Halo 3": "char objects\\characters\\brute\\ai\\brute*"
 					},
 					"targets": [
-						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 }
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1, "group": "Grenade Reaction" },
+						{ "field": "Brace Grenade Chance", "block": "Movement Properties", "games": ["Halo Reach"], "inverse": true, "group": "Grenade Reaction", "min": 0, "max": 1 }
 					]
 				},
 				"Accuracy": {
@@ -16034,6 +16715,118 @@
 					},
 					"targets": [
 						{ "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all" }
+					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo Reach": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {
+						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo Reach": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": {
+						"Halo 2": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo 3": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
+				},
+				"Vengeful Berserk": {
+					"desc": "How readily Brutes berserk when their leader or pack falls.",
+					"debug_desc": "Halo 3: the chance a Brute berserks when its leader abandons it. Reach replaced that with killed-ally triggers: the chance when its leader or a peer dies, and how close the death must be. ODST ships none of it on the Brute, so ODST is skipped.",
+					"game": ["Halo 3", "Halo Reach"],
+					"skip_games": ["Halo 3: ODST"],
+					"tag": {
+						"Halo 3": "char objects\\characters\\brute\\ai\\brute*",
+						"Halo Reach": "char objects\\characters\\brute\\ai\\brute*"
+					},
+					"targets": {
+						"Halo 3": [
+							{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						],
+						"Halo Reach": [
+							{ "field": "Leader Killed Berserk Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Peer Killed Berserk Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Friendly Killed Maximum Berserk Distance", "block": "Charge Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Berserk Animation": {
+					"desc": "How long their berserk roar takes. *0.5 is twice as fast.",
+					"debug_desc": "Scales the third-person `berserk` ANIMATIONS in the enemy's graph -- the same machinery as Reload Time and Weapon Swap Speed, matching the `berserk` action instead. Measured at 30fps: Halo 3 Elite 45 frames (1.5s, five weapon classes), Reach Elite 47-48, ODST Brute 43-46. For an Elite the roar is pure downtime, so a SHORTER roar is harder. Halo 4 has no animation-graph layout in the machinery yet.",
+					"harder_when": "decreased",
+					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3": "jmad objects\\characters\\brute\\brute",
+						"Halo 3: ODST": "jmad objects\\characters\\brute\\brute",
+						"Halo Reach": "jmad objects\\characters\\brute\\brute"
+					},
+					"targets": [
+						{ "field": "Berserk Animation", "berserk_anim": true }
 					]
 				}
 			},
@@ -16168,6 +16961,54 @@
 					"constraints": [
 						{ "field": "Hologram Cover Wait Time Max", "of": "Hologram Cover Wait Time", "not_below": true, "block": "Cover Properties" }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\skirmisher*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Proximity Threshold", "block": "Evasion Properties", "harder_when": "increased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\skirmisher*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\jackal\\ai\\skirmisher*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Engineer": {
@@ -16250,6 +17091,66 @@
 						{ "field": "Shield Boost Period", "block": "Engineer Properties", "index": "all" },
 						{ "field": "Shield Boost Strength", "block": "Engineer Properties", "index": "all", "games": ["Halo 3: ODST"] }
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3: ODST": "char objects\\characters\\engineer\\ai\\engineer*",
+						"Halo Reach": "char objects\\characters\\engineer\\ai\\engineer*"
+					},
+					"targets": {
+						"Halo 3: ODST": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 3: ODST", "Halo Reach"],
+					"tag": {
+						"Halo 3: ODST": "char objects\\characters\\engineer\\ai\\engineer*",
+						"Halo Reach": "char objects\\characters\\engineer\\ai\\engineer*"
+					},
+					"targets": {
+						"Halo 3: ODST": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Minimum Presearch Time", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Minimum Presearch Time Max", "block": "Pre-Search Properties", "group": "Minimum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						],
+						"Halo Reach": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo Reach"],
+					"tag": {
+						"Halo Reach": "char objects\\characters\\engineer\\ai\\engineer*"
+					},
+					"targets": {
+						"Halo Reach": [
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Knight": {
@@ -16416,6 +17317,68 @@
 						{"field": "Teleport Runup Time", "block": "Advance Properties", "group": "Teleport", "harder_when": "decreased", "min": 0},
 						{"field": "Teleport Position Time", "block": "Advance Properties", "group": "Teleport", "harder_when": "decreased", "min": 0}
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_knight\\ai\\storm_knight*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_knight\\ai\\storm_knight*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_knight\\ai\\storm_knight*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
+				},
+				"Berserk": {
+					"desc": "How readily Knights berserk and rush you.",
+					"debug_desc": "Halo 4 Charge Properties the Knight really ships: the shield-down berserk (chance and range once its shield drops), the cooldown between berserks, the per-difficulty maximum count, and the chance to play the berserk animation when it is stuck. Its style allows the shield-down and stuck-with-grenade berserks. For a Knight berserking is a charge at you, so more of it is harder.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{ "field": "Beserk Cooldown", "block": "Charge Properties", "harder_when": "decreased", "min": 0 },
+						{ "field": "Shield-Down Berserk Chance", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Shield-Down Berserk Chance Max", "block": "Charge Properties", "group": "Shield-Down Berserk Chance", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Shield-Down Berserk Ranges", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Shield-Down Berserk Ranges Max", "block": "Charge Properties", "group": "Shield-Down Berserk Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "harder_when": "increased", "min": 0 },
+						{ "field": "Play Berserk Animation Chance When Stuck", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1 }
+					]
 				}
 			},
 			"Crawler": {
@@ -16472,11 +17435,12 @@
 					]
 				},
 				"Dive From Grenade Chance": {
-					"desc": "Chance of running a dive animation from avoiding a grenade",
+					"desc": "Chance of diving away from a grenade. Where the enemy can also brace (Reach, Halo 4), raising the dive chance lowers the brace chance.",
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
 					"targets": [
-						{"field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1}
+						{ "field": "Dive Grenade Chance", "block": "Movement Properties", "min": 0, "max": 1, "group": "Grenade Reaction" },
+						{ "field": "Brace Grenade Chance", "block": "Movement Properties", "games": ["Halo 4"], "inverse": true, "group": "Grenade Reaction", "min": 0, "max": 1 }
 					]
 				},
 				"Cover Properties": {
@@ -16557,6 +17521,54 @@
 						{"field": "Melee Attack Time Minimum", "block": "Hamstring", "group": "Hamstring Melee", "harder_when": "decreased", "min": 0},
 						{"field": "Melee Attack Time Maximum", "block": "Hamstring", "group": "Hamstring Melee", "harder_when": "decreased", "min": 0}
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Dive Retreat Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
+				},
+				"Defensive Cover": {
+					"desc": "When they stop pressing you and play it safe.",
+					"debug_desc": "Reach and Halo 4 Cover Properties: an enemy turns defensive when its target is closer than Minimum Defensive Distance From Target, when cover is further than Minimum Defensive Distance From Cover allows, or always once the target's scariness passes Always Defensive Scary Threshold. Raising the distances makes them go defensive more often.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Minimum Defensive Distance From Target", "block": "Cover Properties", "min": 0 },
+							{ "field": "Minimum Defensive Distance From Cover", "block": "Cover Properties", "min": 0 },
+							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
+						]
+					}
 				}
 			},
 			"Watcher": {
@@ -16765,6 +17777,38 @@
 						{"field": "Evasion Shield Level Trigger", "block": "Bishop Properties", "group": "Evasion", "harder_when": "increased", "min": 0, "max": 1.0},
 						{"field": "Evasion Body Level Trigger", "block": "Bishop Properties", "group": "Evasion", "harder_when": "increased", "min": 0, "max": 1.0}
 					]
+				},
+				"Evasion Properties": {
+					"desc": "How readily they dodge -- chance, how much danger sets it off, and how soon they try again.",
+					"debug_desc": "Evasion Properties, only the fields this enemy really ships per game (measured on every map by sprint_toolkit/behaviour_census.py; 99/999 are disabled placeholders and were left out). Halo 1 keeps its own actr set: attacking/defending evasion thresholds, the chance to seek cover when evading, and the delay between evasions. No card drove any of this before -- the coverage audit only reports fields some other game already cards, and none did.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Evasion Chance", "block": "Evasion Properties", "harder_when": "increased", "min": 0, "max": 1 },
+							{ "field": "Evasion Danger Threshold", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 },
+							{ "field": "Evasion Delay Timer", "block": "Evasion Properties", "harder_when": "decreased", "min": 0 }
+						]
+					}
+				},
+				"Search": {
+					"desc": "How long and how far they hunt for you once they lose track of you.",
+					"debug_desc": "Search Properties (Search Time range; Search Distance from Halo 3 on) and Pre-Search Properties (the suppress/uncover phase before the hunt: Minimum Presearch Time in Halo 2/3/ODST, Maximum Presearch Time in every game from Halo 2). Halo 1's equivalent is the actr Target Search Time. Only fields this enemy really ships are offered, per game.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 4": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*"
+					},
+					"targets": {
+						"Halo 4": [
+							{ "field": "Search Time", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 },
+							{ "field": "Search Distance", "block": "Search Properties", "harder_when": "increased", "min": 0 },
+							{ "field": "Maximum Presearch Time", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 },
+							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
+						]
+					}
 				}
 			}
 		},

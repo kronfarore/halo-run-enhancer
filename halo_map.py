@@ -145,6 +145,25 @@ OP_FUNCS = {
 _OP_SIGNS = {'=': 'set', '+': 'add', '-': 'sub', '*': 'mul', 'x': 'mul', 'X': 'mul'}
 
 
+def invert_operator(op, val):
+    """The opposite edit, for a target marked `inverse` in halo.json: grouped with a
+    field it has to move AGAINST (raising Dive Grenade Chance lowers Brace Grenade Chance).
+
+    mul v -> mul 1/v, add <-> sub, and set v -> set 1-v: a set is the complement, which is
+    the meaningful opposite for the 0..1 chances this was built for. A multiply by zero or
+    less has no inverse, so it leaves this field alone (mul 1) rather than zeroing it too;
+    the target's min/max still clamp the result afterwards."""
+    if op == 'mul':
+        return ('mul', 1.0 / val) if val > 0 else ('mul', 1.0)
+    if op == 'add':
+        return ('sub', val)
+    if op == 'sub':
+        return ('add', val)
+    if op == 'set':
+        return ('set', 1.0 - val)
+    return (op, val)
+
+
 def parse_operator(text):
     """Parse a compact edit like '+5', '-0.3', '*1.2' / 'x1.2', '=1' into
     (op, value). A bare number means 'set'. Both '.' and ',' work as the decimal

@@ -4744,21 +4744,25 @@ class MagnitudeEditorDialog(QDialog):
                 return f'{n} weapon placements on this level  (enter e.g. =25 for 25%)'
             except Exception:
                 return 'percentage of the level\'s weapon placements'
-        if target.get('reload_anim') or target.get('swap_anim'):
-            # Reload animation: show the current reload length in seconds (frames / 30fps)
-            # per graph (Master Chief / Arbiter), instead of a plugin field value.
+        if target.get('reload_anim') or target.get('swap_anim') or target.get('berserk_anim'):
+            # An animation target: show the current length in seconds (frames / 30fps)
+            # per graph, instead of a plugin field value. Each kind matches its own
+            # actions -- a swap card used to show the RELOAD length here.
+            kind, match = (('swap', ('ready', 'put_away')) if target.get('swap_anim') else
+                           ('berserk', ('berserk',)) if target.get('berserk_anim') else
+                           ('reload', ('reload',)))
             try:
                 import halo3_reload
-                rows = halo3_reload.reload_frames(m, path, self.game)
+                rows = halo3_reload.reload_frames(m, path, self.game, match=match)
                 if not rows:
-                    return "— no reload animation on this map"
+                    return "— no %s animation on this map" % kind
                 labels = []
                 for who, fcs in rows:
                     secs = ", ".join("%.2fs" % (f / halo3_reload.FPS) for f in fcs)
                     labels.append("%s  (%s)" % (secs, who))
                 return "\n".join(labels)
             except Exception:
-                return "reload animation"
+                return "%s animation" % kind
         if target.get('sprint'):
             # Not a tag field — routes into the ability config. Show the Options base
             # this card nudges (and stacks onto), or that the enabler unlocks sprint.
@@ -7152,8 +7156,10 @@ class MagnitudeEditorDialog(QDialog):
                                          'index': t.get('index', 0), 'op_str': txt,
                                          'negate': t.get('negate'),
                                          'offset': t.get('offset'),
+                                         'inverse': t.get('inverse'),
                                          'reload_anim': t.get('reload_anim'),
                                          'swap_anim': t.get('swap_anim'),
+                                         'berserk_anim': t.get('berserk_anim'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a
                                          # probability is 0..1 whatever was typed)
