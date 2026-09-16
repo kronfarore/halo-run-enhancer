@@ -13441,12 +13441,13 @@
 				},
 				"Berserk Animation": {
 					"desc": "How long their berserk roar takes. *0.5 is twice as fast.",
-					"debug_desc": "Scales the third-person `berserk` ANIMATIONS in the enemy's graph -- the same machinery as Reload Time and Weapon Swap Speed, matching the `berserk` action instead. Measured at 30fps: Halo 3 Elite 45 frames (1.5s, five weapon classes), Reach Elite 47-48, ODST Brute 43-46. For an Elite the roar is pure downtime, so a SHORTER roar is harder. Halo 4 has no animation-graph layout in the machinery yet.",
+					"debug_desc": "Scales the third-person `berserk` ANIMATIONS in the enemy's graph -- the same machinery as Reload Time and Weapon Swap Speed, matching the `berserk` action instead. Measured at 30fps: Halo 3 Elite 45 frames (1.5s, five weapon classes), Reach Elite 47-48, ODST Brute 43-46. For an Elite the roar is pure downtime, so a SHORTER roar is harder. Halo 4: storm_elite_ai's five `go_berserk` animations run 36-58 frames (the Halo 4 layout was added for this). The Knight's graphs ship no berserk animation at all, and the Crawler's 40-frame one is never played -- its style allows no berserk -- so neither gets this card.",
 					"harder_when": "decreased",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 3": "jmad objects\\characters\\elite\\elite",
-						"Halo Reach": "jmad objects\\characters\\elite_ai\\elite_ai"
+						"Halo Reach": "jmad objects\\characters\\elite_ai\\elite_ai",
+						"Halo 4": "jmad objects\\characters\\storm_elite_ai\\storm_elite_ai"
 					},
 					"targets": [
 						{ "field": "Berserk Animation", "berserk_anim": true }

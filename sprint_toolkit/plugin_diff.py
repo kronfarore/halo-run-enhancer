@@ -12,6 +12,16 @@ affected" are very different headlines.
     python sprint_toolkit/plugin_diff.py --group weap
     python sprint_toolkit/plugin_diff.py --group char --from "Halo 2" --to "Halo 3"
     python sprint_toolkit/plugin_diff.py --group weap --removed-only
+
+AUDIT MODE (--chain): walk every consecutive pair of games that has the group and print
+only what needs a decision -- fields a later game ADDED that no card offered in that game
+names, and fields it REMOVED that a card offered there still names. This is the
+between-games card audit; it is what would have raised Brace Grenade Chance and the
+defensive-cover trio (ODST -> Reach) and Search Distance (Halo 2 -> Halo 3) long before
+they were noticed by hand. Halo 1 keeps characters in actr/actv, so `char` starts at
+Halo 2.
+
+    python sprint_toolkit/plugin_diff.py --chain --group char --group weap --group proj
 """
 
 import argparse
@@ -77,6 +87,26 @@ def load(game, group):
     return blocks, fields, root.get('baseSize'), os.path.basename(os.path.dirname(path))
 
 
+def _field_names_for(f, game):
+    """The field name(s) a target resolves to in `game`, by the enhancer's own rules:
+    exact game, ODST falls back to Halo 3, then `default`, then the nearest EARLIER game."""
+    if isinstance(f, str):
+        return [f]
+    if not isinstance(f, dict):
+        return []
+    for g in [game] + (['Halo 3'] if game == 'Halo 3: ODST' else []):
+        if g in f:
+            return [f[g]] if f[g] else []
+    if 'default' in f:
+        return [f['default']] if f['default'] else []
+    order = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4']
+    if game in order:
+        for g in reversed(order[:order.index(game)]):
+            if g in f:
+                return [f[g]] if f[g] else []
+    return []
+
+
 def cards_using(group, field_names, game):
     """{field: [card names]} for halo.json cards that target this tag group.
 
@@ -85,7 +115,7 @@ def cards_using(group, field_names, game):
     data = json.load(open(HALO_JSON, encoding='utf-8'))
     out = {}
 
-    def offered_in(node):
+    def offered_in(node, literal=False):
         """Is this card offered in `game`? Mirrors halo_enhancer's own gating: an
         explicit game list, MINUS skip_games, with ODST inheriting Halo 3.
 
@@ -97,8 +127,11 @@ def cards_using(group, field_names, game):
         skip = node.get('skip_games')
         skip = [skip] if isinstance(skip, str) else list(skip or [])
         want = {game}
-        if game == 'Halo 3: ODST':
-            want.add('Halo 3')           # ODST inherits Halo 3 cards
+        if game == 'Halo 3: ODST' and not literal:
+            # ODST inherits Halo 3 CARDS -- but a TARGET's games list is matched
+            # literally by the enhancer (target_applies), which is exactly how the ODST
+            # fixes are pinned; inheriting there reported them as still broken.
+            want.add('Halo 3')
         if any(s in want for s in skip):
             return False
         if g is None:
@@ -133,11 +166,13 @@ def cards_using(group, field_names, game):
                         # `Shield Boost Strength` are both already pinned to ODST while
                         # the card itself stays offered in Reach. Reading only the card
                         # reported all three as broken when none were.
-                        if not offered_in(t):
+                        if not offered_in(t, literal=True):
                             continue
-                        f = t.get('field')
-                        names = [f] if isinstance(f, str) else (
-                            list(f.values()) if isinstance(f, dict) else [])
+                        # A per-game field dict names DIFFERENT fields in different
+                        # games; only the one this game resolves to counts. Taking every
+                        # value reported renamed fields (ODST's homing error radius,
+                        # Invisible Time -> Cooldown Time) as still in use.
+                        names = _field_names_for(t.get('field'), game)
                         for n in names:
                             if n in field_names:
                                 out.setdefault(n, set()).add(owner)
@@ -155,6 +190,61 @@ def cards_using(group, field_names, game):
     return out
 
 
+NUMERIC_KINDS = ('float', 'int', 'uint', 'range', 'degree', 'real', 'short')
+ORDER = ['Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4']
+
+
+def _has(game, group):
+    return any(os.path.isfile(os.path.join(PLUGINS, sub, group + '.xml'))
+               for sub in SUBDIRS[game])
+
+
+def chain_audit(groups):
+    """Consecutive-game diff per group: uncarded ADDED fields, carded REMOVED fields."""
+    total_added = total_broken = 0
+    for group in groups:
+        games = [g for g in ORDER if _has(g, group)]
+        print()
+        print('##### %s: %s' % (group, ' -> '.join(games)))
+        for a, b in zip(games, games[1:]):
+            _ab, af, _asz, _ = load(a, group)
+            _bb, bf, _bsz, _ = load(b, group)
+            # Only values a card can drive: a new tagRef, stringid or flags word is a
+            # rename or a hookup, not a field to author a card for.
+            added_leaves = {f.rpartition('/')[2]: f for f, kind in bf.items()
+                            if f not in af and kind.startswith(NUMERIC_KINDS)}
+            gone = [f for f in af if f not in bf]
+            b_leaves = {f.rpartition('/')[2] for f in bf}
+            really_gone = {f.rpartition('/')[2]: f for f in gone
+                           if f.rpartition('/')[2] not in b_leaves}
+            carded_new = cards_using(group, set(added_leaves), b)
+            uncarded = {leaf: f for leaf, f in added_leaves.items()
+                        if leaf not in carded_new and leaf not in _a_leaves(af)}
+            broken = cards_using(group, set(really_gone), b)
+            if group in ADDED_SIDE_IGNORED:
+                uncarded = {}
+            print()
+            print('  %s -> %s: %d field(s) added, %d uncarded; %d removed, %d still carded'
+                  % (a, b, len(added_leaves), len(uncarded), len(really_gone), len(broken)))
+            byblk = {}
+            for leaf, f in uncarded.items():
+                byblk.setdefault(f.rpartition('/')[0] or '(root)', []).append(leaf)
+            for blk in sorted(byblk):
+                print('     + %-44s %s' % (blk[:44], ', '.join(sorted(byblk[blk]))))
+            for leaf, who in sorted(broken.items()):
+                print('     - %-44s USED BY: %s' % (really_gone[leaf][:44], ', '.join(sorted(who))))
+            total_added += len(uncarded)
+            total_broken += len(broken)
+    print()
+    print('%d uncarded added field(s), %d removed field(s) still named by a card'
+          % (total_added, total_broken))
+
+
+def _a_leaves(af):
+    """Leaf names the earlier game already had anywhere -- a MOVED field is not new."""
+    return {f.rpartition('/')[2] for f in af}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -163,7 +253,14 @@ def main():
     ap.add_argument('--to', dest='b', default='Halo Reach', choices=sorted(SUBDIRS))
     ap.add_argument('--removed-only', action='store_true')
     ap.add_argument('--added-only', action='store_true')
+    ap.add_argument('--chain', action='store_true',
+                    help='audit every consecutive game pair (see the module docstring)')
+    ap.add_argument('--groups', nargs='*',
+                    help='with --chain: the tag groups to walk (default: char weap proj eqip)')
     o = ap.parse_args()
+    if o.chain:
+        chain_audit(o.groups or ['char', 'weap', 'proj', 'eqip'])
+        return
 
     ab, af, asz, asub = load(o.a, o.group)
     bb, bf, bsz, bsub = load(o.b, o.group)

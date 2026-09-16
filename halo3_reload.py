@@ -66,6 +66,28 @@ LAYOUTS = {
                        wclass_blk=0x0C, wclass_el=0x38, wtype_blk=0x08, wtype_el=0x14,
                        sets_blk=0x08, sets_el=0x48,
                        actions_blk=0x0C, actions_el=0x0C, act_anim_off=0xA),
+    # Halo 4 (Halo4 jmad plugin; there is no Halo4MCC one). Reach's tree with three
+    # differences, all read off the plugin and checked on storm_elite_ai (Requiem):
+    #   * Frame Count is at +0x0 of the Shared Animation Data, not Reach's +0x2.
+    #   * Script Events keep their frame at +0x4, so an event block may name its own
+    #     frame offset as a third tuple member.
+    #   * An action carries a Graph Index (+0x8) beside its Animation Index (+0xA). -1 is
+    #     this graph; anything else points into another graph, and scaling this graph's
+    #     animation at that index would hit an unrelated animation -- such actions are
+    #     skipped (none of the berserk actions measured so far use one).
+    # The Elite's `go_berserk` actions (the label differs from Halo 3's `berserk`, the
+    # substring match takes both) resolve to animations of 36-58 frames.
+    # Halo 4 animation data lives in resources; only the header frame counts and event
+    # frames are scaled here, exactly as for Reach -- untested in game.
+    'Halo 4': dict(anim_blk=0x9C, anim_el=0x40,
+                   shared_blk=0x34, shared_el=0xDC, fc_off=0x0,
+                   events=((0x34, 0x04), (0x40, 0x08), (0x4C, 0x0C), (0x58, 0x04),
+                           (0x64, 0x08, 0x4)),
+                   frame_off=0x2, modes_blk=0x13C, modes_el=0x30,
+                   wclass_blk=0x0C, wclass_el=0x38, wtype_blk=0x08, wtype_el=0x14,
+                   sets_blk=0x08, sets_el=0x48,
+                   actions_blk=0x0C, actions_el=0x0C, act_anim_off=0xA,
+                   act_graph_off=0x8),
 }
 
 
@@ -92,6 +114,9 @@ def _reload_anim_indices(m, base, L, match=('reload',)):
                     name = m.resolve_stringid(label)
                     if not _matches(name, match):
                         continue
+                    if L.get('act_graph_off') is not None and struct.unpack_from(
+                            '<h', m.data, a + L['act_graph_off'])[0] >= 0:
+                        continue           # animation lives in another graph
                     ai = struct.unpack_from('<h', m.data, a + L['act_anim_off'])[0]
                     if ai >= 0 and ai not in seen:
                         seen.add(ai)
@@ -259,13 +284,15 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
             anims_scaled += 1
             edits += 1
             cap = new_fc - 1
-            for blk_off, elem_sz in L['events']:
+            for ev in L['events']:
+                blk_off, elem_sz = ev[0], ev[1]
+                efo = ev[2] if len(ev) > 2 else fo      # Halo 4 Script Events: +0x4
                 for e in m.follow_all(el, [blk_off], [elem_sz], 'all'):
-                    key = e + fo
+                    key = e + efo
                     if key in seen_events:
                         continue
                     seen_events.add(key)
-                    _scale_frame(m, e + fo, mult, cap)
+                    _scale_frame(m, e + efo, mult, cap)
                     edits += 1
     if anims_scaled == 0:
         return {'ok': True, 'skip': True, 'reason': 'no reload animations found',
