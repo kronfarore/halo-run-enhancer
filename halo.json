@@ -13746,17 +13746,19 @@
 				},
 				"Berserk": {
 					"desc": "How long Hunters rampage once they charge, and how far they push it.",
-					"debug_desc": "UNVERIFIED. Hunters have the Don't Use Berserk Mode flag set in Charge Properties, so these fields may do nothing at all until that is confirmed in-game. Covers charge rampage cooldown, perimeter and limits.",
-					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"debug_desc": "MEASURED 2026-09-16 on every map: every Hunter with a Charge Properties block ships the `Don't Use Berserk Mode` flag set -- Halo 3, ODST, Reach and Halo 4 alike (ODST's hunter_classic and hunter_shielded have no charge block at all). Only Halo 3's Hunter style allows a berserk (last_man_berserk); Reach and Halo 4 allow only the wander impulse. So Beserk Cooldown (10) and the Maximum / Minimum Berserk Count (1 / 1) are very likely inert. Perimeter Range / Close are charge distances rather than berserk mode: 8 / 15 m in Halo 3 and ODST, but 0.1 / 0.1 in Reach and Halo 4, where they are effectively off. Maximum Kamikaze Count was removed: no Hunter style in any game allows a kamikaze.",
 					"harder_when": "increased",
-					"tag": {"default": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"},
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"default": "char objects\\characters\\hunter\\ai\\hunter*",
+						"Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"
+					},
 					"targets": [
 						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all", "harder_when": "decreased" },
 						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
 						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" },
 						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
-						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 },
-						{ "field": "Maximum Kamikaze Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "min": 0 }
 					]
 				},
 				"Rate of Fire": {

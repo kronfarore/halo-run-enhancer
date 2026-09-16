@@ -21,7 +21,9 @@ defensive-cover trio (ODST -> Reach) and Search Distance (Halo 2 -> Halo 3) long
 they were noticed by hand. Halo 1 keeps characters in actr/actv, so `char` starts at
 Halo 2.
 
-    python sprint_toolkit/plugin_diff.py --chain --group char --group weap --group proj
+    python sprint_toolkit/plugin_diff.py --chain              # char weap proj eqip jpt! scnr matg
+    python sprint_toolkit/plugin_diff.py --chain --live       # only fields some tag fills
+    python sprint_toolkit/plugin_diff.py --chain --groups char --live
 """
 
 import argparse
@@ -141,9 +143,10 @@ def cards_using(group, field_names, game):
 
     def visit(node, owner):
         if isinstance(node, dict):
-            tag = node.get('tag')
-            tags = [tag] if isinstance(tag, str) else (
-                list(tag.values()) if isinstance(tag, dict) else [])
+            # The tag this card resolves to IN THIS GAME. Checking every game's tag
+            # reported Halo 4's grenade Maximum Count cards as reading matg, when their
+            # Halo 4 row was retargeted to gggl long ago.
+            tags = _field_names_for(node.get('tag'), game)
             if tags and any(str(t).startswith(group + ' ') for t in tags):
                 if offered_in(node):
                     # `targets` is a list, or a dict keyed by game -- the game-keyed
@@ -199,45 +202,124 @@ def _has(game, group):
                for sub in SUBDIRS[game])
 
 
-def chain_audit(groups):
-    """Consecutive-game diff per group: uncarded ADDED fields, carded REMOVED fields."""
-    total_added = total_broken = 0
+DEFAULT_CHAIN = ['char', 'weap', 'proj', 'eqip', 'jpt!', 'scnr', 'matg']
+MAP_FOLDERS = {'Halo 1': ('halo1', 'maps'), 'Halo 2': ('halo2', 'h2_maps_win64_dx11'),
+               'Halo 3': ('halo3', 'maps'), 'Halo 3: ODST': ('halo3odst', 'maps'),
+               'Halo Reach': ('haloreach', 'maps'), 'Halo 4': ('halo4', 'maps')}
+
+
+def live_values(game, needs):
+    """{group: {field path: (tags with a value, example tag, example value)}} for the
+    candidate fields in `needs` ({group: {field path: leaf}}), read on EVERY map of the
+    game. A value is live when it is a number other than 0 and -1 -- the engine's two
+    "unset" spellings; a field no tag fills is not worth a card whatever the plugin says."""
+    import contextlib
+    import io as _io
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    with contextlib.redirect_stdout(_io.StringIO()):
+        import halo_patch as hp
+        import coverage_audit as ca
+    reg = hp.PluginRegistry(PLUGINS, SUBDIRS[game])
+    plugs = {g: reg.get(g) for g in needs}
+    out = {g: {} for g in needs}
+    seen = set()
+    folder = os.path.join(os.path.dirname(TOOL), *MAP_FOLDERS[game])
+    for mp in ca.game_maps(folder, game):
+        try:
+            with contextlib.redirect_stdout(_io.StringIO()):
+                m = hp.open_map(mp, game)
+        except Exception:
+            continue
+        for group, fields in needs.items():
+            plug = plugs.get(group)
+            if plug is None:
+                continue
+            for tp, base in m.find_tags(group, '*'):
+                if (group, tp) in seen:
+                    continue
+                seen.add((group, tp))
+                for fpath in fields:
+                    blk, _sep, leaf = fpath.strip('/').rpartition('/')
+                    try:
+                        v = m.read_tag_field(base, leaf, plug, blk or None, 'all', 0)
+                    except Exception:
+                        v = None
+                    if isinstance(v, bool) or not isinstance(v, (int, float)) or v in (0, -1):
+                        continue
+                    n, ex_t, ex_v = out[group].get(fpath, (0, None, None))
+                    if ex_t is None:
+                        ex_t, ex_v = tp.rsplit(chr(92), 1)[-1], round(float(v), 3)
+                    out[group][fpath] = (n + 1, ex_t, ex_v)
+        del m
+    return out
+
+
+def chain_audit(groups, live=False):
+    """Consecutive-game diff per group: uncarded ADDED numeric fields (optionally only
+    those some tag really fills), and REMOVED fields a card offered there still names."""
+    pairs = []
     for group in groups:
         games = [g for g in ORDER if _has(g, group)]
-        print()
-        print('##### %s: %s' % (group, ' -> '.join(games)))
         for a, b in zip(games, games[1:]):
             _ab, af, _asz, _ = load(a, group)
             _bb, bf, _bsz, _ = load(b, group)
             # Only values a card can drive: a new tagRef, stringid or flags word is a
             # rename or a hookup, not a field to author a card for.
-            added_leaves = {f.rpartition('/')[2]: f for f, kind in bf.items()
-                            if f not in af and kind.startswith(NUMERIC_KINDS)}
-            gone = [f for f in af if f not in bf]
+            added = {f: f.rpartition('/')[2] for f, kind in bf.items()
+                     if f not in af and kind.startswith(NUMERIC_KINDS)}
+            a_leaves = _a_leaves(af)
             b_leaves = {f.rpartition('/')[2] for f in bf}
-            really_gone = {f.rpartition('/')[2]: f for f in gone
-                           if f.rpartition('/')[2] not in b_leaves}
-            carded_new = cards_using(group, set(added_leaves), b)
-            uncarded = {leaf: f for leaf, f in added_leaves.items()
-                        if leaf not in carded_new and leaf not in _a_leaves(af)}
-            broken = cards_using(group, set(really_gone), b)
-            if group in ADDED_SIDE_IGNORED:
-                uncarded = {}
+            carded = cards_using(group, set(added.values()), b)
+            uncarded = {f: leaf for f, leaf in added.items()
+                        if leaf not in carded and leaf not in a_leaves}
+            gone = {f.rpartition('/')[2]: f for f in af
+                    if f not in bf and f.rpartition('/')[2] not in b_leaves}
+            broken = cards_using(group, set(gone), b)
+            pairs.append((group, a, b, games, added, uncarded, gone, broken))
+    lives = {}
+    if live:
+        needs = {}
+        for group, _a, b, _g, _ad, uncarded, _go, _br in pairs:
+            needs.setdefault(b, {}).setdefault(group, {}).update(uncarded)
+        for game, need in needs.items():
+            print('reading every %s map for %d candidate field(s)...'
+                  % (game, sum(len(v) for v in need.values())), flush=True)
+            lives[game] = live_values(game, need)
+    total_added = total_broken = 0
+    last = None
+    for group, a, b, games, added, uncarded, gone, broken in pairs:
+        if group != last:
             print()
-            print('  %s -> %s: %d field(s) added, %d uncarded; %d removed, %d still carded'
-                  % (a, b, len(added_leaves), len(uncarded), len(really_gone), len(broken)))
-            byblk = {}
-            for leaf, f in uncarded.items():
-                byblk.setdefault(f.rpartition('/')[0] or '(root)', []).append(leaf)
-            for blk in sorted(byblk):
-                print('     + %-44s %s' % (blk[:44], ', '.join(sorted(byblk[blk]))))
-            for leaf, who in sorted(broken.items()):
-                print('     - %-44s USED BY: %s' % (really_gone[leaf][:44], ', '.join(sorted(who))))
-            total_added += len(uncarded)
-            total_broken += len(broken)
+            print('##### %s: %s' % (group, ' -> '.join(games)))
+            last = group
+        got = lives.get(b, {}).get(group, {}) if live else {}
+        shown = {f: leaf for f, leaf in uncarded.items() if f in got} if live else uncarded
+        print()
+        print('  %s -> %s: %d numeric field(s) added, %d uncarded%s; %d removed, %d still carded'
+              % (a, b, len(added), len(uncarded),
+                 (', %d with a live value' % len(shown)) if live else '',
+                 len(gone), len(broken)))
+        byblk = {}
+        for f in shown:
+            byblk.setdefault(f.rpartition('/')[0] or '(root)', []).append(f)
+        for blk in sorted(byblk):
+            if live:
+                items = ', '.join('%s [%d tags, e.g. %s=%s]' % (f.rpartition('/')[2], got[f][0],
+                                                               got[f][1], got[f][2])
+                                  for f in sorted(byblk[blk]))
+            else:
+                items = ', '.join(sorted(f.rpartition('/')[2] for f in byblk[blk]))
+            print('     + %-44s %s' % (blk[:44], items))
+        for leaf, who in sorted(broken.items()):
+            print('     - %-44s USED BY: %s' % (gone[leaf][:44], ', '.join(sorted(who))))
+        total_added += len(shown)
+        total_broken += len(broken)
     print()
-    print('%d uncarded added field(s), %d removed field(s) still named by a card'
-          % (total_added, total_broken))
+    print('%d uncarded added field(s)%s, %d removed field(s) still named by a card'
+          % (total_added, ' with a live value' if live else '', total_broken))
+    if 'matg' in groups:
+        print('(matg is listed on request, 2026-09-16 -- earlier the user chose not to build '
+              'from new globals fields)')
 
 
 def _a_leaves(af):
@@ -256,10 +338,14 @@ def main():
     ap.add_argument('--chain', action='store_true',
                     help='audit every consecutive game pair (see the module docstring)')
     ap.add_argument('--groups', nargs='*',
-                    help='with --chain: the tag groups to walk (default: char weap proj eqip)')
+                    help='with --chain: the tag groups to walk (default: ' +
+                         ' '.join(DEFAULT_CHAIN) + ')')
+    ap.add_argument('--live', action='store_true',
+                    help='with --chain: keep only added fields some tag really fills, read '
+                         'on every map of the game that added them (slow)')
     o = ap.parse_args()
     if o.chain:
-        chain_audit(o.groups or ['char', 'weap', 'proj', 'eqip'])
+        chain_audit(o.groups or DEFAULT_CHAIN, live=o.live)
         return
 
     ab, af, asz, asub = load(o.a, o.group)
