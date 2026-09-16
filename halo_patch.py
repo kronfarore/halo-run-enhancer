@@ -5693,8 +5693,10 @@ _H4_BIPD_DEFAULT_TEAM = 0x1DC            # enum16
 _H4_BIPD_PHYSICS_FLAGS, _H4_BIPD_PHYS_FLYING = 0x6D4, 4
 _H4_CHAR_GENERAL, _H4_CHAR_GEN_FLYING = 0x6C, 1       # block; General Flags (u32) at +0
 _H4_CHAR_MOVEMENT = 0xE4                               # block; Movement Flags (u32) at +0
-#: Has Flying Mode, Only Use Aerial Firing Positions, No Override When Firing.
-_H4_SENTINEL_MOVE_CLEAR = (7, 15, 19)
+#: Has Flying Mode and Only Use Aerial Firing Positions. No Override When Firing (19)
+#: deliberately STAYS SET: cleared, movement wins every tie and they shoot on the
+#: move erratically; set, they stop to fire and then move on (user's call, in game).
+_H4_SENTINEL_MOVE_CLEAR = (7, 15)
 _H4_SQUADS, _H4_CHAR_PALETTE = (0x3F0, 0x6C), (0x444, 0x10)
 _H4_SPAWN_POINTS, _H4_SPAWN_CHAR, _H4_SPAWN_WEAPONS = (0x3C, 0x7C), 0x2E, (0x30, 0x32)
 _H4_CELLS = ((0x54, 0x64), (0x60, 0x64))               # Designer, Templated
@@ -5735,7 +5737,7 @@ def _h4_hostile_sentinels(m, game):
     for blk, bits, label in (
             (_H4_CHAR_GENERAL, (_H4_CHAR_GEN_FLYING,), 'General Flags (Flying off)'),
             (_H4_CHAR_MOVEMENT, _H4_SENTINEL_MOVE_CLEAR,
-             'Movement Flags (flying mode, aerial-only, firing priority off)')):
+             'Movement Flags (flying mode and aerial-only off)')):
         if m.i32(c + blk) > 0:
             clear_bits(_block_base(m, c + blk), bits, 'char storm_sentinel', label)
 
