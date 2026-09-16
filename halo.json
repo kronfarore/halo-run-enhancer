@@ -15405,17 +15405,25 @@
 					"game": "Halo 1"
 				},
 				"Maximum Firing Distance": {
-					"skip_games": ["Halo 4"],
 					"desc": "Increases range in witch they can use their weapon",
+					"debug_desc": "Halo 4 reaches this through `ai\\generic`: the Sentinel's own Weapons Properties block is EMPTY there, and a weapon's AI range lives on the shared base, one row per weapon. Row 32 is the Sentinel Beam's on every Halo 4 map that carries the beam (Dawn, Requiem, Reclaimer, Midnight), and only Sentinels carry that weapon, so nothing else moves with it. Maps without the beam put another weapon at that index, but the card is only offered on the missions that field Sentinels.",
 					"game": ["Halo 1", "Halo 2", "Halo 4"],
 					"tag": {
 						"Halo 1": "actv characters\\sentinel\\*",
 						"Halo 2": "char objects\\characters\\sentinel_aggressor\\ai\\sentinel_aggressor*",
-						"Halo 4": "char objects\\characters\\storm_sentinel\\ai\\storm_sentinel*"
+						"Halo 4": "char ai\\generic"
 					},
-					"targets": [
-						{ "field": { "Halo 1": "Maximum Firing Distance", "Halo 2": "Maximum Firing Range" } }
-					]
+					"targets": {
+						"Halo 1": [
+							{ "field": "Maximum Firing Distance" }
+						],
+						"Halo 2": [
+							{ "field": "Maximum Firing Range" }
+						],
+						"Halo 4": [
+							{ "field": "Maximum Firing Range", "block": "Weapons Properties", "index": 32 }
+						]
+					}
 				},
 				"Target Tracking & Leading": {
 					"desc": "Where to shoot on moving targets, and how much they lead \u2014 0..1",

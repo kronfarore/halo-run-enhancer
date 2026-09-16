@@ -5701,6 +5701,14 @@ _H4_SQUADS, _H4_CHAR_PALETTE = (0x3F0, 0x6C), (0x444, 0x10)
 _H4_SPAWN_POINTS, _H4_SPAWN_CHAR, _H4_SPAWN_WEAPONS = (0x3C, 0x7C), 0x2E, (0x30, 0x32)
 _H4_CELLS = ((0x54, 0x64), (0x60, 0x64))               # Designer, Templated
 _H4_CELL_CHAR, _H4_CELL_WEAPONS = 0xC, (0x18, 0x24)    # 8-byte elements, index at +4
+#: The AI's own combat range for the beam lives on `ai\generic`'s Weapons Properties row
+#: for storm_sentinel_beam (only Sentinels carry it). Vanilla 3-10 m keeps them closing to
+#: melee range; 6-14 (inside the row's 15 m maximum) makes them hold off and beam the
+#: player, which reads far better in game (user, 2026-09-16).
+_H4_CHAR_WEAPONS, _H4_WEAPONS_ELEM = 0x204, 0xCC   # char Weapons Properties block
+_H4_WEAPONS_REF, _H4_WEAPONS_COMBAT_RANGE = 0x4, 0x1C   # tagRef; rangef Normal Combat Range
+_H4_SENTINEL_BEAM = r'objects\weapons\pistol\storm_sentinel_beam\storm_sentinel_beam'
+_H4_SENTINEL_COMBAT_RANGE = (6.0, 14.0)
 
 
 def _h4_hostile_sentinels(m, game):
@@ -5740,6 +5748,24 @@ def _h4_hostile_sentinels(m, game):
              'Movement Flags (flying mode and aerial-only off)')):
         if m.i32(c + blk) > 0:
             clear_bits(_block_base(m, c + blk), bits, 'char storm_sentinel', label)
+
+    # The beam's own AI combat range: the row lives on ai\generic, keyed by weapon, and
+    # only Sentinels carry the beam, so nothing else is touched.
+    gen = tag('char', r'ai' + chr(92) + 'generic')
+    beam = tag('weap', _H4_SENTINEL_BEAM)
+    if gen and beam and m.i32(gen['base'] + _H4_CHAR_WEAPONS) > 0:
+        wb = _block_base(m, gen['base'] + _H4_CHAR_WEAPONS)
+        for i in range(m.i32(gen['base'] + _H4_CHAR_WEAPONS)):
+            e = wb + i * _H4_WEAPONS_ELEM
+            if m.u32(e + _H4_WEAPONS_REF + 0xC) & 0xFFFF != beam['index']:
+                continue
+            old_r = struct.unpack_from('<ff', m.data, e + _H4_WEAPONS_COMBAT_RANGE)
+            struct.pack_into('<ff', m.data, e + _H4_WEAPONS_COMBAT_RANGE,
+                             *_H4_SENTINEL_COMBAT_RANGE)
+            out.append({'effect': 'hostile sentinels', 'tag': 'char ai' + chr(92) + 'generic',
+                        'field': 'Normal Combat Range [storm_sentinel_beam]', 'ok': True,
+                        'old': '%g-%g' % old_r, 'new': '%g-%g' % _H4_SENTINEL_COMBAT_RANGE})
+            break
 
     # Squads: every squad that fields ONLY Sentinels goes hostile, and its Sentinel
     # entries lose their squad weapon so they carry their own beam. A squad mixing a
