@@ -5689,6 +5689,12 @@ def _equipment_drop(m, game):
 _H4_SENTINEL_CHAR = r'objects\characters\storm_sentinel\ai\storm_sentinel'
 _H4_SENTINEL_BIPD = r'objects\characters\storm_sentinel\storm_sentinel'
 _H4_TEAM_FORERUNNER = 8                  # squad Team and biped Default Team share the enum
+#: Which side to put them on is NOT a fixed team: Forerunner reads as neutral on a map
+#: that fields no Prometheans (measured on Requiem -- every Sentinel squad went to team
+#: Forerunner and they still ignored the player). So copy the side the map's OWN enemies
+#: are on, by character folder.
+_H4_ENEMY_LEAVES = ('storm_grunt', 'storm_elite', 'storm_jackal', 'storm_hunter',
+                    'storm_knight', 'storm_pawn', 'storm_bishop')
 _H4_BIPD_DEFAULT_TEAM = 0x1DC            # enum16
 _H4_BIPD_PHYSICS_FLAGS, _H4_BIPD_PHYS_FLYING = 0x6D4, 4
 _H4_CHAR_GENERAL, _H4_CHAR_GEN_FLYING = 0x6C, 1       # block; General Flags (u32) at +0
@@ -5709,6 +5715,51 @@ _H4_CHAR_WEAPONS, _H4_WEAPONS_ELEM = 0x204, 0xCC   # char Weapons Properties blo
 _H4_WEAPONS_REF, _H4_WEAPONS_COMBAT_RANGE = 0x4, 0x1C   # tagRef; rangef Normal Combat Range
 _H4_SENTINEL_BEAM = r'objects\weapons\pistol\storm_sentinel_beam\storm_sentinel_beam'
 _H4_SENTINEL_COMBAT_RANGE = (6.0, 14.0)
+
+
+
+def _h4_enemy_team(m):
+    """The team the map's OWN enemies fight on: the commonest squad Team among squads
+    fielding a known enemy species. None when the map fields none."""
+    scnr = _scnr_base(m)
+    if not scnr:
+        return None
+    sep = chr(92)
+    idx = {t['index']: t for t in m.tags if isinstance(t, dict) and t.get('index') is not None}
+    po, pes = _H4_CHAR_PALETTE
+    if m.i32(scnr + po) <= 0:
+        return None
+    pb = _block_base(m, scnr + po)
+    enemy_slots = set()
+    for i in range(m.i32(scnr + po)):
+        nm = str((idx.get(m.u32(pb + i * pes + 0xC) & 0xFFFF) or {}).get('name') or '')
+        leaf = nm.rsplit(sep, 1)[-1]
+        if any(leaf.startswith(x) for x in _H4_ENEMY_LEAVES):
+            enemy_slots.add(i)
+    if not enemy_slots:
+        return None
+    so, ses = _H4_SQUADS
+    counts = {}
+    for s in range(max(0, m.i32(scnr + so))):
+        q = _block_base(m, scnr + so) + s * ses
+        used = []
+        spo, spes = _H4_SPAWN_POINTS
+        for j in range(max(0, m.i32(q + spo))):
+            e = _block_base(m, q + spo) + j * spes
+            v = m.i16(e + _H4_SPAWN_CHAR)
+            if v >= 0:
+                used.append(v)
+        for co, ces in _H4_CELLS:
+            for j in range(max(0, m.i32(q + co))):
+                cell = _block_base(m, q + co) + j * ces
+                n = max(0, m.i32(cell + _H4_CELL_CHAR))
+                cb = _block_base(m, cell + _H4_CELL_CHAR) if n else 0
+                used += [x for x in (m.i16(cb + k * 8 + 4) for k in range(n)) if x >= 0]
+        if used and all(u in enemy_slots for u in used):
+            t = struct.unpack_from('<H', m.data, q + 0x24)[0]
+            counts[t] = counts.get(t, 0) + 1
+    counts.pop(0, None)                      # Default: inherits the biped, says nothing
+    return max(counts, key=counts.get) if counts else None
 
 
 def _h4_hostile_sentinels(m, game):
@@ -5737,10 +5788,11 @@ def _h4_hostile_sentinels(m, game):
     b = bp['base']
     clear_bits(b + _H4_BIPD_PHYSICS_FLAGS, (_H4_BIPD_PHYS_FLYING,), 'bipd storm_sentinel',
                'Physics Flags (Flying off: a ground body)')
+    team = _h4_enemy_team(m) or _H4_TEAM_FORERUNNER
     old = struct.unpack_from('<H', m.data, b + _H4_BIPD_DEFAULT_TEAM)[0]
-    struct.pack_into('<H', m.data, b + _H4_BIPD_DEFAULT_TEAM, _H4_TEAM_FORERUNNER)
+    struct.pack_into('<H', m.data, b + _H4_BIPD_DEFAULT_TEAM, team)
     out.append({'effect': 'hostile sentinels', 'tag': 'bipd storm_sentinel',
-                'field': 'Default Team', 'ok': True, 'old': old, 'new': _H4_TEAM_FORERUNNER})
+                'field': 'Default Team', 'ok': True, 'old': old, 'new': team})
     c = ch['base']
     for blk, bits, label in (
             (_H4_CHAR_GENERAL, (_H4_CHAR_GEN_FLYING,), 'General Flags (Flying off)'),
@@ -5811,8 +5863,8 @@ def _h4_hostile_sentinels(m, game):
         if not all(x in slots for x in used):
             mixed += 1
             continue
-        if struct.unpack_from('<H', m.data, q + 0x24)[0] != _H4_TEAM_FORERUNNER:
-            struct.pack_into('<H', m.data, q + 0x24, _H4_TEAM_FORERUNNER)
+        if struct.unpack_from('<H', m.data, q + 0x24)[0] != team:
+            struct.pack_into('<H', m.data, q + 0x24, team)
             moved += 1
         for w in sentinel_weapons:
             if m.i16(w) != -1:
@@ -5820,9 +5872,10 @@ def _h4_hostile_sentinels(m, game):
                 weapons += 1
     out.append({'effect': 'hostile sentinels', 'tag': 'scnr', 'field': 'Sentinel squads',
                 'ok': True, 'old': 'ally / neutral',
-                'new': '%d moved to the hostile team, %d squad weapons cleared%s'
-                       % (moved, weapons, ', %d mixed squad(s) left alone' % mixed
-                          if mixed else '')})
+                'new': '%d moved to team %d (the enemy side this map uses), %d squad '
+                       'weapons cleared%s' % (moved, team, weapons,
+                                              ', %d mixed squad(s) left alone' % mixed
+                                              if mixed else '')})
     return out
 
 
