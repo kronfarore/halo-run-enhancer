@@ -4762,7 +4762,7 @@ class MagnitudeEditorDialog(QDialog):
             except Exception:
                 return '0.1 per kill (hardcoded in the game dll)'
         if (target.get('reload_anim') or target.get('swap_anim') or target.get('berserk_anim')
-                or target.get('morph_anim')):
+                or target.get('morph_anim') or target.get('infect_anim')):
             # An animation target: show the current length in seconds (frames / 30fps)
             # per graph, instead of a plugin field value. Each kind matches its own
             # actions -- a swap card used to show the RELOAD length here.
@@ -4770,6 +4770,8 @@ class MagnitudeEditorDialog(QDialog):
                            ('berserk', ('berserk',)) if target.get('berserk_anim') else
                            ('transformation', self._hp.MORPH_ANIM_MATCH)
                            if target.get('morph_anim') else
+                           ('infection', self._hp.INFECT_ANIM_MATCH)
+                           if target.get('infect_anim') else
                            ('reload', ('reload',)))
             try:
                 import halo3_reload
@@ -7235,6 +7237,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'swap_anim': t.get('swap_anim'),
                                          'berserk_anim': t.get('berserk_anim'),
                                          'morph_anim': t.get('morph_anim'),
+                                         'infect_anim': t.get('infect_anim'),
                                          'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a

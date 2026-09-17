@@ -1208,8 +1208,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
@@ -1606,8 +1606,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
@@ -1729,7 +1729,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" } },
 						{ "field": "Age Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }	
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "group": "Age Generated Per Round" }
 					]
 				},
 				"Per Round (Charged)": {
@@ -1972,8 +1972,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
@@ -2370,8 +2370,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
@@ -2667,8 +2667,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
@@ -2973,8 +2973,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
@@ -3250,8 +3250,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {"Halo 1": "jpt! weapons\\shotgun\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
@@ -3625,8 +3625,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {
@@ -4096,8 +4096,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {
@@ -4482,8 +4482,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {
@@ -4832,8 +4832,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound.",
-					"desc_overrides": { 
-						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.", 
+					"desc_overrides": {
+						"Halo 2": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons.",
 						"Halo 3": "Damage Lower Bound, Damage Upper Bound. Uses two melee damage types, that are shared with different weapons."
 					},
 					"tag": {
@@ -6733,7 +6733,7 @@
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": "Barrels" },
 						{ "field": "Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" },
-						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" }						
+						{ "field": "Campaign Age Generated Per Round", "block": "Barrels", "group": "Age Generated Per Round" }
 					]
 				},
 				"Zoom": {
@@ -11886,7 +11886,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Instant Cover": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -11931,7 +11931,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Invincibility": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -11968,7 +11968,7 @@
 					{ "field": "Cooldown Time", "games": ["Halo 3: ODST"], "group": "Duration" }
 				]
 			}
-		},	
+		},
 		"Jammer": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12025,7 +12025,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Power Drain": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12095,7 +12095,7 @@
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			}
-		},	
+		},
 		"Regenerator": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12141,7 +12141,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Superflare": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12187,7 +12187,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Grav Lift": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12223,7 +12223,7 @@
 					{ "field": "Spawn Velocity", "block": "Spawner", "index": 0 }
 				]
 			}
-		},	
+		},
 		"Trip Mine": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12281,7 +12281,7 @@
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
 			}
-		},	
+		},
 		"Auto Turret": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12370,7 +12370,7 @@
 					{ "field": "Damage Upper Bound", "group": "Damage" },
 					{ "field": "Damage Upper Bound Max", "group": "Damage" }
 				]
-			},	
+			},
 			"Energy Drain": {
 				"desc": "How fast a deployed Autosentry burns your meter.",
 				"debug_desc": "Halo 4 keeps Reach's armour-ability energy meter but moves every field of it into a single `Abilities` block, one element of which each ability fills in. `Energy Recovery Time` is the pause before the meter refills, `Active Energy Rate` drains it while the ability runs, `Minimum Activation Energy` is how much you need banked to trigger it, `Activation Energy Cost` is charged the moment you press the button and `Deactivation Energy Cost` when you let go.\\n\\n**Reach's `Recharge Rate` is called `Inactive Energy Rate` in Halo 4** and sits at the tag root rather than inside `Abilities`, which is the one rename in the set -- the shipped numbers are the same field (sprint 5.0, drop shield 0.054, jet pack 0.15 in both games), so the Recharge card tunes it alongside `Energy Recovery Time`.\\n\\nDrain and cost are stored NEGATIVE, so a multiply makes them harsher rather than gentler: -0.25 * 2 is -0.5, twice the drain. That is why the harder direction on those rows is DOWN. Active Camouflage is the exception -- its activation cost is stored POSITIVE (+0.02) -- and its row is flipped to match.\\n\\nEvery ability also ships a campaign-tuned `_pve` variant gentler than the multiplayer tag; the wildcard in the tag path catches both, so a roll moves them together.",
@@ -12441,7 +12441,7 @@
 					{"field": "Turret Halt Engage Time", "block": "Auto Turret", "harder_when": "increased", "min": 0}
 				]
 			}
-		},	
+		},
 		"Invisibility": {
 			"Map Presence": {
 				"desc": "Replace a share of the level's equipment placements with this piece. Enter the percentage to swap.",
@@ -12533,7 +12533,7 @@
 				]
 			}
 		}
-	},	
+	},
 	"Enemy modifiers": {
 		"General modifiers": {
 			"Assassination Damage": {
@@ -15575,6 +15575,16 @@
 						{ "field": "Abort Distance", "block": "Boarding Properties", "index": "all", "group": "Boarding Distance", "harder_when": "increased", "min": 0 },
 						{ "field": "Maximum Speed", "block": "Boarding Properties", "index": "all", "harder_when": "increased", "min": 0 },
 						{ "field": "Board Time", "block": "Boarding Properties", "index": "all", "harder_when": "increased", "min": 0, "games": ["Halo 3"] }
+					]
+				},
+				"Infection Conversion": {
+					"desc": "How long a body takes to become a combat form. *0.5 is twice as fast.",
+					"debug_desc": "Scales the conversion ANIMATIONS, matched by name: the body being taken plays `any:any:any:morph` and the combat form it becomes plays `any:any:any:morph_arrival` (both have :var2 variants). Measured on 110_hc at 30 fps: elite 121 frames, brute 79, marine 158-159, and the arrivals 70 (elite), 76 (brute), 114-121 (human) -- so a conversion runs roughly 5 to 9 seconds across the pair. Uses the same animation-name matching as the pure forms' Transformation Time, which needed Halo 3's dynamic stringID lookup (2026-09-17). The infection form's own `infection_morph_brute` animation is deliberately not matched. A body that stands back up sooner is harder, so shorter is harder.",
+					"harder_when": "decreased",
+					"game": ["Halo 3"],
+					"tag": "jmad objects\\characters\\elite\\elite & objects\\characters\\brute\\brute & objects\\characters\\marine\\marine & objects\\characters\\floodcombat_elite\\floodcombat_elite & objects\\characters\\floodcombat_brute\\floodcombat_brute & objects\\characters\\floodcombat_human\\floodcombat_human",
+					"targets": [
+						{ "field": "Conversion Animation", "infect_anim": true }
 					]
 				}
 			},

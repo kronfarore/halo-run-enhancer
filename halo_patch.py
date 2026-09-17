@@ -41,6 +41,11 @@ FIFTH_GEN_GAMES = {'Halo 4'}
 # The Flood pure forms' transformation: the old form plays `combat:to_<form>`, the new
 # one `combat:from_<form>` (Halo 3, 41-88 frames). Matched by animation NAME.
 MORPH_ANIM_MATCH = ('anim:combat:to_', 'anim:combat:from_')
+# The infection conversion: the HOST (marine, elite, brute) plays `any:any:any:morph`
+# and the combat form it becomes plays `any:any:any:morph_arrival` (both with :var2
+# variants). The prefix keeps `infection_morph_brute` -- the infection form's own
+# animation -- out of it.
+INFECT_ANIM_MATCH = ('anim:any:any:any:morph',)
 
 
 def open_map(map_path, game=None):
@@ -6699,7 +6704,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                                'open' if closed else res.get('reason'))})
                 continue
             if (op.get('reload_anim') or op.get('swap_anim') or op.get('berserk_anim')
-                    or op.get('morph_anim')):
+                    or op.get('morph_anim') or op.get('infect_anim')):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
                 # (these weapons carry no tag-side Reload Time). item['tag'] is the
                 # jmad fp-graph pattern; the operator supplies the multiplier.
@@ -6715,14 +6720,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 # downside for the Elite, who roars in place for ~1.5s).
                 match = (('ready', 'put_away') if op.get('swap_anim') else
                          ('berserk',) if op.get('berserk_anim') else
-                         MORPH_ANIM_MATCH if op.get('morph_anim') else ('reload',))
+                         MORPH_ANIM_MATCH if op.get('morph_anim') else
+                         INFECT_ANIM_MATCH if op.get('infect_anim') else ('reload',))
                 rep = halo3_reload.scale_reload(m, path, mult, game=game, match=match)
                 r = {**base}
                 if rep.get('ok'):
                     r.update(ok=True, skip=bool(rep.get('skip')),
                              old=('swap anim' if op.get('swap_anim') else
                                   'berserk anim' if op.get('berserk_anim') else
-                                  'morph anim' if op.get('morph_anim') else 'reload anim'),
+                                  'morph anim' if op.get('morph_anim') else
+                                  'infection anim' if op.get('infect_anim') else 'reload anim'),
                              new=(rep.get('reason') if rep.get('skip')
                                   else f"x{mult:g} ({rep['animations']} anim, {rep['graphs']} graph)"))
                 else:
