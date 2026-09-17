@@ -393,7 +393,27 @@ class Halo3Map:
         # an unnamed zone set or animation label was reported under that string.
         if index == 0:
             return None
+        # DYNAMIC stringIDs -- per-map strings such as animation names
+        # (`any:any:any:morph`) and most action labels. Solved 2026-09-17 against
+        # every Halo 3 and ODST map by matching each action's label to the name of the
+        # animation it drives: the table slot is index + STATIC - (count - strip), where
+        # STATIC is a per-game constant (Halo 3 2187, ODST 2671) and count - strip is
+        # how many static strings this map's tail carries. Static labels sit at 0x489
+        # and below on every map, dynamic names at 0x894 and above, so 0x800 separates
+        # them. Before this, everything past the rebuilt tail resolved to None.
+        static_total = self._sid_static_total()
+        if static_total and index >= self._SID_DYNAMIC_FROM:
+            return self._string_at(index + static_total - (self.str_tbl_count - self._sid_strip))
         return self._string_at(self._sid_strip + index - 1)
+
+    _SID_DYNAMIC_FROM = 0x800
+
+    def _sid_static_total(self):
+        """The engine's static stringID count (see resolve_stringid), or None where it
+        is not known -- subclasses (Reach) keep their own complete string table."""
+        if type(self) is not Halo3Map:
+            return None
+        return 2671 if '\\atlas\\' in (self.scenario_name or '') else 2187
 
     # --- tag lookups ---
     def tag(self, index):

@@ -101,6 +101,20 @@ def _reload_anim_indices(m, base, L, match=('reload',)):
     1st Person Animation Playback Scale on none at all).
     """
     out, seen = [], set()
+    # `anim:<text>` entries match the ANIMATION's own name instead of an action label.
+    # Some animations are never behind an action -- the Flood pure forms' transformation
+    # plays `combat:to_tank` / `combat:from_stalker` as mode transitions -- so they can
+    # only be found by name. Needs the dynamic stringID lookup (halo3_map, 2026-09-17).
+    names = [k[5:] for k in match if k.startswith('anim:')]
+    match = tuple(k for k in match if not k.startswith('anim:'))
+    if names:
+        for ai, el in enumerate(m.follow_all(base, [L['anim_blk']], [L['anim_el']], 'all')):
+            nm = m.resolve_stringid(struct.unpack_from('<I', m.data, el)[0]) or ''
+            if any(k in nm for k in names) and ai not in seen:
+                seen.add(ai)
+                out.append(ai)
+    if not match:
+        return out
     for mo in m.follow_all(base, [L['modes_blk']], [L['modes_el']], 'all'):
         for wc in m.follow_all(mo, [L['wclass_blk']], [L['wclass_el']], 'all'):
             for wt in m.follow_all(wc, [L['wtype_blk']], [L['wtype_el']], 'all'):
