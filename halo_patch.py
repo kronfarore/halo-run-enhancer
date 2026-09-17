@@ -6663,6 +6663,36 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r['effect'] = item['name']
                     results.append(r)
                 continue
+            if op.get('sword_drain'):
+                # Energy sword cost per kill, hardcoded in the Halo 2/3/ODST/Reach dlls:
+                # written into the RUNNING MCC (sword_energy_live), since MCC keeps every
+                # game dll locked while it runs. Stock is 0.1 per normal kill.
+                parsed = hm.parse_operator(op.get('op_str'))
+                if not parsed:
+                    results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
+                    continue
+                oper, val = parsed
+                import sys as _sys
+                _tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+                if _tk not in _sys.path:
+                    _sys.path.insert(0, _tk)
+                import sword_energy_live as sel
+                amount = hm.OP_FUNCS[oper](sel.STOCK_AMOUNT, val)
+                if op.get('min') is not None:
+                    amount = max(float(op['min']), amount)
+                if op.get('max') is not None:
+                    amount = min(float(op['max']), amount)
+                res = sel.push(str(game).strip(), amount)
+                if res.get('ok'):
+                    results.append({**base, 'ok': True, 'tag': 'MCC process',
+                                    'old': round(res['old'], 4) if res.get('old') else res.get('old'),
+                                    'new': round(res['new'], 4) if res.get('new') else res.get('new')})
+                else:
+                    closed = 'not running' in str(res.get('reason', ''))
+                    results.append({**base, 'tag': 'MCC process', 'ok': closed, 'skip': closed,
+                                    'reason': (res.get('reason') + ' -- patch again with MCC '
+                                               'open' if closed else res.get('reason'))})
+                continue
             if op.get('reload_anim') or op.get('swap_anim') or op.get('berserk_anim'):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
                 # (these weapons carry no tag-side Reload Time). item['tag'] is the

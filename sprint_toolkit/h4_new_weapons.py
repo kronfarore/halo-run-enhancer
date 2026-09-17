@@ -76,7 +76,7 @@ GRENADE_ROW = {'Frag Grenade': 0, 'Plasma Grenade': 1, 'Pulse Grenade': 2}
 # Keys copied onto a target untouched -- everything that is about the DECISION rather
 # than about which game is being patched.
 TARGET_KEEP = ('group', 'harder_when', 'min', 'max', 'scale', 'offset', 'zero_is',
-               'index', 'choice', 'follows_choice', 'reload_anim', 'swap_anim', 'berserk_anim',
+               'index', 'choice', 'follows_choice', 'reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain',
                'diff_prefix_nl', 'difficulty', 'derived', 'map_swap', 'map_equip',
                'equip_drop', 'nudge')
 CARD_KEEP = ('desc', 'debug_desc', 'ignore', 'wildcard', 'upgrade_of')

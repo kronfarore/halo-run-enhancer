@@ -4744,6 +4744,23 @@ class MagnitudeEditorDialog(QDialog):
                 return f'{n} weapon placements on this level  (enter e.g. =25 for 25%)'
             except Exception:
                 return 'percentage of the level\'s weapon placements'
+        if target.get('sword_drain'):
+            # Not a tag field: the cost per kill lives in the game dll. Show what the
+            # running MCC has now (stock 0.1), or the stock value when MCC is closed.
+            try:
+                sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+                import sword_energy_live as sel
+                h, base, site, err = sel.attach(self.game)
+                if err:
+                    return '0.1 per kill (hardcoded; %s)' % err
+                try:
+                    amt, where, _at = sel.state(h, base, site)
+                finally:
+                    sel.dp.k32.CloseHandle(h)
+                return '%s per kill in the running MCC (%s)' % (
+                    'None' if amt is None else round(amt, 4), where)
+            except Exception:
+                return '0.1 per kill (hardcoded in the game dll)'
         if target.get('reload_anim') or target.get('swap_anim') or target.get('berserk_anim'):
             # An animation target: show the current length in seconds (frames / 30fps)
             # per graph, instead of a plugin field value. Each kind matches its own
@@ -5713,6 +5730,55 @@ class MagnitudeEditorDialog(QDialog):
                             else ('cost points%s' % tail),
                      'reason': None if ok else e})
         return rows
+
+    def _apply_sword_drain_live(self):
+        """The live-only path for the Energy Use sword row: read the typed value,
+        apply it to the stock 0.1 and push it -- or restore when the row is blank."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        import sword_energy_live as sel
+        rows = []
+        for eff, t, le in self.rows:
+            if not t.get('sword_drain'):
+                continue
+            txt = row_value(le).strip()
+            parsed = self._hp.hm.parse_operator(txt) if txt else None
+            if parsed:
+                oper, val = parsed
+                amount = self._hp.hm.OP_FUNCS[oper](sel.STOCK_AMOUNT, val)
+                if t.get('min') is not None:
+                    amount = max(float(t['min']), amount)
+                if t.get('max') is not None:
+                    amount = min(float(t['max']), amount)
+            else:
+                amount = None
+            res = sel.push(self.game, amount)
+            rows.append({'tag': 'MCC process', 'effect': eff.get('name'),
+                         'field': t.get('field'), 'ok': bool(res.get('ok')),
+                         'old': res.get('old'), 'new': res.get('new'),
+                         'reason': res.get('reason')})
+        return rows
+
+    def _restore_sword_drain(self, plan):
+        """Put the hardcoded sword cost per kill back when this run no longer sets it.
+
+        The Energy Use card writes it into the running MCC during the map patch
+        (sword_energy_live). A run without that card -- or with it left blank -- must not
+        inherit the value an earlier patch wrote, so it is restored here. Only touches
+        memory we patched ourselves; never fatal to the map patch."""
+        if any(op.get('sword_drain') for item in plan for op in item.get('ops') or []):
+            return []
+        try:
+            sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+            import sword_energy_live as sel
+            if self.game not in sel.SITES or not sel.is_patched(self.game):
+                return []
+            res = sel.push(self.game, None)
+        except Exception as e:
+            return [{'tag': 'MCC process', 'effect': 'Energy Use', 'field': 'sword per kill',
+                     'ok': False, 'reason': str(e)}]
+        return [{'tag': 'MCC process', 'effect': 'Energy Use', 'field': 'sword per kill',
+                 'ok': bool(res.get('ok')), 'old': res.get('old'), 'new': res.get('new'),
+                 'reason': res.get('reason')}]
 
     def _apply_death_penalty(self):
         r"""Scale the metagame's player-death penalty with the run's round count.
@@ -7043,6 +7109,11 @@ class MagnitudeEditorDialog(QDialog):
             out.append(('Death penalty',
                         'scaled in the running game (Options → Patching)',
                         self._apply_death_penalty))
+        if any(t.get('sword_drain') for _e, t, _le in getattr(self, 'rows', ())):
+            out.append(('Energy Use (sword)',
+                        'the cost per kill is hardcoded in the game dll and set in the '
+                        'running game',
+                        self._apply_sword_drain_live))
         if CONFIG.get('betrayal_marines_score') and (
                 self._betrayal_drawn(skulls) or self._betrayal_left_on()):
             out.append(('Betrayal scoring',
@@ -7160,6 +7231,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'reload_anim': t.get('reload_anim'),
                                          'swap_anim': t.get('swap_anim'),
                                          'berserk_anim': t.get('berserk_anim'),
+                                         'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a
                                          # probability is 0..1 whatever was typed)
@@ -7457,6 +7529,7 @@ class MagnitudeEditorDialog(QDialog):
         # Same footing: a live write to another process, never fatal to the map patch.
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
+        results.extend(self._restore_sword_drain(plan))
 
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)

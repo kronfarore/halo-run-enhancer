@@ -150,7 +150,7 @@ for game, subs, mp in CASES:
             # (Reload Time / Weapon Swap Speed go through halo3_reload), the placement
             # swappers, and the equipment-drop op. Reading them always yields nothing
             # and reports a working card as dead.
-            if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'map_swap',
+            if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'map_swap',
                                       'map_equip', 'equip_drop', 'choice', 'derived')):
                 live += 1
                 continue

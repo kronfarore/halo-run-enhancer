@@ -5656,8 +5656,8 @@
 				},
 				"Energy Use": {
 					"desc": "How much energy each kill or hit costs.",
-					"debug_desc": "Halo 4 only: `Per Kill Or Hit Aging Amount` (0.1 = 10 kills), applied when the sword has 'ages with each kill' or 'ages when damage is inflicted' set (storm_energy_sword uses per hit, the elevator sword per kill). Halo 2, 3 and Reach have no field: the Halo 3 DLL hardcodes 1.0 / 10 = 0.1 per kill, or 0.25 / 10 = 0.025 in campaign when the victim's Default Team is Flood or Sentinel, and only when the killing damage reports as Energy Sword. Changing that needs a DLL patch.",
-					"game": ["Halo 4"],
+					"debug_desc": "Halo 4: `Per Kill Or Hit Aging Amount` in the tag (0.1 = 10 kills), applied under the sword's 'ages with each kill' / 'ages when damage is inflicted' flags.\n\nHalo 2, 3, ODST and Reach have no such field -- the cost is HARDCODED in each game's dll (0.1 per kill; in Halo 2/3/ODST a Flood or Sentinel kill costs a quarter of it, Halo 3/ODST only in campaign). Those rows are a live memory patch (sprint_toolkit/sword_energy_live.py): MCC keeps every game dll locked while running, so the one instruction that reads the constant is repointed at a private float in the running process. It takes effect at the next kill, needs MCC OPEN when you patch, is gone when MCC closes, and is put back by any patch of that game whose run no longer sets it. The operator applies to the stock 0.1.",
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
 						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
@@ -5665,7 +5665,8 @@
 						"Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"
 					},
 					"targets": [
-						{ "field": "Per Kill Or Hit Aging Amount", "min": 0, "max": 1 }
+						{ "field": "Per Kill Or Hit Aging Amount", "games": ["Halo 4"], "min": 0, "max": 1 },
+						{ "field": "Energy Per Kill (live)", "sword_drain": true, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "max": 1 }
 					]
 				},
 				"Energy Recharge": {

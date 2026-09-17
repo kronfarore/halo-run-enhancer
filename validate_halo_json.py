@@ -289,7 +289,7 @@ def _targets_of(eff, game, cls, tpath):
     out = []
     for t in resolve_gamed(eff.get('targets'), game) or []:
         if not isinstance(t, dict) or any(
-                t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'map_swap',
+                t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'map_swap',
                                    'map_equip', 'equip_drop', 'sprint')):
             continue
         if t.get('games') and game not in t['games']:
