@@ -14157,6 +14157,7 @@
 				},
 				"Retreat": {
 					"desc": "Cowering time and the chance to flee when a leader or nearby peers die",
+					"debug_desc": "Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured: Halo 3/ODST 2-20 s, Reach and Halo 4 4 s. Halo 1's counterpart is the actr Retreat Time range (how long they retreat from an unopposable enemy, 8-20 s on grunts).",
 					"tag": {
 						"Halo 1": "actr characters\\grunt\\*",
 						"Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt",
@@ -14166,21 +14167,25 @@
 					"targets": {
 						"Halo 1": [
 							{ "field": "Friend Killed Panic Chance" },
-							{ "field": "Leader Killed Panic Chance" }
+							{ "field": "Leader Killed Panic Chance" },
+							{ "field": "Retreat Time", "group": "Flee Time", "harder_when": "decreased", "min": 0 },
+							{ "field": "Retreat Time Max", "group": "Flee Time", "harder_when": "decreased", "min": 0 }
 						],
 						"Halo 4": [
 							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
-							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1 }
 						],
 						"Halo 2": [
 							{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 							{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 							{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 							{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
-							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+							{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+							{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"] }
 						]
 					}
 				},
@@ -14554,12 +14559,15 @@
 				},
 				"Panic": {
 					"desc": "Various mechanics that trigger panic",
+					"debug_desc": "Retreat Time is how long they retreat from an unopposable enemy (15-20 s), the Halo 1 counterpart of the later Flee Timeout; shorter is harder.",
+					"game": "Halo 1",
 					"tag": "actr characters\\jackal\\*",
 					"targets": [
 						{ "field": "Friend Killed Panic Chance", "min": 0, "max": 1 },
-						{ "field": "Leader Killed Panic Chance", "min": 0, "max": 1 }
-					],
-					"game": "Halo 1"
+						{ "field": "Leader Killed Panic Chance", "min": 0, "max": 1 },
+						{ "field": "Retreat Time", "group": "Flee Time", "harder_when": "decreased", "min": 0 },
+						{ "field": "Retreat Time Max", "group": "Flee Time", "harder_when": "decreased", "min": 0 }
+					]
 				},
 				"Cover Properties": {
 					"desc": "How long they stay in cover, and how hurt they have to be to want it.",
@@ -14846,7 +14854,7 @@
 				},
 				"Retreat": {
 					"desc": "How readily they break and cower when their squad starts dying.",
-					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31.",
+					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31. Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured 2 s in Reach and Halo 4; the Halo 3/ODST Jackals ship none.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*",
@@ -14858,7 +14866,8 @@
 						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
-						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1, "games": ["Halo Reach", "Halo 4"] }
 					]
 				},
 				"Hopping": {
@@ -15287,6 +15296,16 @@
 							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
 						]
 					}
+				},
+				"Boarding Time": {
+					"desc": "How long they keep beating on your vehicle once they board it.",
+					"debug_desc": "Boarding Properties `Board Time`, tooltip 'maximum time we will melee board for': how long the enemy stays on a vehicle it has boarded, beating on it, before it gives up. Added 2026-09-17 to hold the player in a boarding longer. Field exists from Halo 3 on; measured (every map): floodcombat_base 6 s in Halo 3. Variants without their own Boarding Properties inherit from the tag that has one.",
+					"harder_when": "increased",
+					"game": ["Halo 3"],
+					"tag": "char objects\\characters\\floodcombat*",
+					"targets": [
+						{ "field": "Board Time", "block": "Boarding Properties", "index": "all", "min": 0 }
+					]
 				}
 			},
 			"Flood Infection Form": {
@@ -16430,6 +16449,16 @@
 							{ "field": "Always Defensive Scary Threshold", "block": "Cover Properties", "min": 0 }
 						]
 					}
+				},
+				"Boarding Time": {
+					"desc": "How long they keep beating on your vehicle once they board it.",
+					"debug_desc": "Boarding Properties `Board Time`, tooltip 'maximum time we will melee board for': how long the enemy stays on a vehicle it has boarded, beating on it, before it gives up. Added 2026-09-17 to hold the player in a boarding longer. Field exists from Halo 3 on; measured (every map): 4 s in Halo 3, ODST and Reach. Variants without their own Boarding Properties inherit from the tag that has one.",
+					"harder_when": "increased",
+					"game": ["Halo 3", "Halo Reach"],
+					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
+					"targets": [
+						{ "field": "Board Time", "block": "Boarding Properties", "index": "all", "min": 0 }
+					]
 				}
 			},
 			"Brute": {
@@ -16633,7 +16662,7 @@
 				},
 				"Melee Leap": {
 					"desc": "How far and how fast they lunge when they close on you.",
-					"debug_desc": "Lunge range, velocity, chance and ballistic arc, on the Brutes' OWN Charge Properties -- nothing shared. Defined on 1 brute tag in Halo 2, 2 in Halo 3 and 5 in ODST; the rest inherit from those. Added 2026-08-31: the Brutes have carried these fields since Halo 2 and never had a card for them.",
+					"debug_desc": "Lunge range, velocity, chance and ballistic arc, on the Brutes' OWN Charge Properties -- nothing shared. Defined on 1 brute tag in Halo 2, 2 in Halo 3 and 5 in ODST; the rest inherit from those. Added 2026-08-31: the Brutes have carried these fields since Halo 2 and never had a card for them. Melee Leap Prediction Time (ODST on) is how many seconds ahead they aim the lunge at where you are going; 0 lunges at where you stand. Measured: ODST Brutes 0.75-1.0, Reach Brutes 0.75, Halo 4 Knights 1.0.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {
 						"Halo 2": "char objects\\characters\\brute\\ai\\brute*",
@@ -16644,7 +16673,8 @@
 						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
 						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
 						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "harder_when": "increased", "min": 0, "max": 1 },
-						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" }
+						{ "field": "Melee Leap Ballistic", "block": "Charge Properties", "index": "all" },
+						{ "field": "Melee Leap Prediction Time", "block": "Charge Properties", "index": "all", "min": 0, "games": ["Halo 3: ODST", "Halo Reach"] }
 					]
 				},
 				"Shield down Berserk": {
@@ -16831,6 +16861,16 @@
 					"targets": [
 						{ "field": "Berserk Animation", "berserk_anim": true }
 					]
+				},
+				"Boarding Time": {
+					"desc": "How long they keep beating on your vehicle once they board it.",
+					"debug_desc": "Boarding Properties `Board Time`, tooltip 'maximum time we will melee board for': how long the enemy stays on a vehicle it has boarded, beating on it, before it gives up. Added 2026-09-17 to hold the player in a boarding longer. Field exists from Halo 3 on; measured (every map): Halo 3 and ODST brute 4 s; Reach's Brutes ship none. Variants without their own Boarding Properties inherit from the tag that has one.",
+					"harder_when": "increased",
+					"game": ["Halo 3"],
+					"tag": "char objects\\characters\\brute\\ai\\brute*",
+					"targets": [
+						{ "field": "Board Time", "block": "Boarding Properties", "index": "all", "min": 0 }
+					]
 				}
 			},
 			"Skirmisher": {
@@ -16857,15 +16897,16 @@
 				},
 				"Retreat": {
 					"desc": "Whether they break and run when the squad starts dying.",
-					"debug_desc": "Cower time plus the three retreat chances -- leader dead, one peer dead, a second peer dead.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. Skirmishers define all five as 0, so they never cower and never retreat. The cower bases (3.0 and 5.0) are `ai\\\\generic`'s own values, i.e. what a Skirmisher would have inherited had it not defined the block; the three chance bases are 0.5, matching the Engineer's Peer Dead Retreat Chance, the closest Reach sibling that sets one.",
+					"debug_desc": "Cower time plus the three retreat chances -- leader dead, one peer dead, a second peer dead.\\n\\n**Reach ships this at 0 on the enemy's own tags, and that 0 is real**: defining the block overrides what would otherwise be inherited from `ai\\\\generic`, so the enemy genuinely has none of this behaviour. A multiply against 0 stays 0, so the card carries `zero_is` -- a measured base to scale from, named below, not an engine default. Skirmishers define all five as 0, so they never cower and never retreat. The cower bases (3.0 and 5.0) are `ai\\\\generic`'s own values, i.e. what a Skirmisher would have inherited had it not defined the block; the three chance bases are 0.5, matching the Engineer's Peer Dead Retreat Chance, the closest Reach sibling that sets one. Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured 3 s.",
 					"game": ["Halo Reach"],
 					"tag": "char objects\\characters\\jackal\\ai\\skirmisher*",
 					"targets": [
-						{"field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "zero_is": 3.0, "min": 0, "group": "Forced Cower Time"},
-						{"field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "zero_is": 5.0, "min": 0, "group": "Forced Cower Time"},
-						{"field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"},
-						{"field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"},
-						{"field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance"}
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "zero_is": 3.0, "min": 0, "group": "Forced Cower Time" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "zero_is": 5.0, "min": 0, "group": "Forced Cower Time" },
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "zero_is": 0.5, "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1 }
 					]
 				},
 				"Flanking": {
@@ -17064,6 +17105,7 @@
 				},
 				"Retreat": {
 					"desc": "Cower time and flee chance when a leader or peers die.",
+					"debug_desc": "Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured 5 s in ODST and Reach.",
 					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"targets": [
@@ -17071,7 +17113,8 @@
 						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
 						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
 						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
-						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" }
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "index": "all", "min": 0, "max": 1, "group": "Retreat Chance" },
+						{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1 }
 					]
 				},
 				"Death": {
@@ -17221,12 +17264,14 @@
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
+					"debug_desc": "Melee Leap Prediction Time (ODST on) is how many seconds ahead they aim the lunge at where you are going; 0 lunges at where you stand. Measured: ODST Brutes 0.75-1.0, Reach Brutes 0.75, Halo 4 Knights 1.0.",
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
 					"targets": [
-						{"field": "Melee Attack Delay Timer", "block": "Charge Properties", "harder_when": "decreased", "index": "all"},
-						{"field": "Melee Attack Timeout", "block": "Charge Properties", "harder_when": "increased", "index": "all"},
-						{"field": "Melee Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1, "index": "all"}
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "harder_when": "decreased", "index": "all" },
+						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "harder_when": "increased", "index": "all" },
+						{ "field": "Melee Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1, "index": "all" },
+						{ "field": "Melee Leap Prediction Time", "block": "Charge Properties", "index": "all", "min": 0 }
 					]
 				},
 				"Grenades": {
@@ -17466,14 +17511,16 @@
 				},
 				"Retreat": {
 					"desc": "Cowering time and the chance to flee when a leader or nearby peers die",
+					"debug_desc": "Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured 3 s.",
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
 					"targets": [
-						{"field": "Forced Cower Time Bounds", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all"},
-						{"field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all"},
-						{"field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"},
-						{"field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"},
-						{"field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all"}
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "group": "Forced Cower Time", "index": "all" },
+						{ "field": "Leader Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all" },
+						{ "field": "Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all" },
+						{ "field": "Second Peer Dead Retreat Chance", "block": "Retreat Properties", "group": "Retreat Chance", "min": 0, "max": 1, "index": "all" },
+						{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1 }
 					]
 				},
 				"Melee Damage": {
@@ -17812,6 +17859,17 @@
 							{ "field": "Maximum Presearch Time Max", "block": "Pre-Search Properties", "group": "Maximum Presearch Time", "min": 0 }
 						]
 					}
+				},
+				"Retreat": {
+					"desc": "How long they cower and how long they flee before coming back.",
+					"debug_desc": "The Watchers' own Retreat Properties (storm_bishop): Forced Cower Time 1-3 s and Flee Timeout 8 s. They ship no leader/peer-dead retreat chances, so none are offered. Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17).",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\ai\\storm_bishop*",
+					"targets": [
+						{ "field": "Forced Cower Time Bounds", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Forced Cower Time Bounds Max", "block": "Retreat Properties", "index": "all", "group": "Forced Cower Time" },
+						{ "field": "Flee Timeout", "block": "Retreat Properties", "index": "all", "harder_when": "decreased", "min": 0.1 }
+					]
 				}
 			}
 		},

@@ -18,6 +18,7 @@ allows (the style is followed through the parent character when a char leaves it
     python sprint_toolkit/behaviour_census.py
     python sprint_toolkit/behaviour_census.py --game "Halo 4" --enemy Elite
     python sprint_toolkit/behaviour_census.py --json out.json
+    python sprint_toolkit/behaviour_census.py --fields "board|flee"
 """
 import argparse
 import contextlib
@@ -173,7 +174,13 @@ def main():
     ap.add_argument('--game')
     ap.add_argument('--enemy')
     ap.add_argument('--json')
+    ap.add_argument('--fields', metavar='REGEX',
+                    help='census these field names instead of the behaviour set '
+                         '(case-insensitive regex)')
     a = ap.parse_args()
+    if a.fields:
+        global FIELD_RX
+        FIELD_RX = re.compile(a.fields, re.I)
     he.load_settings()
     P = he.CONFIG['assembly_plugins_dir']
     with contextlib.redirect_stdout(io.StringIO()):
