@@ -20,9 +20,25 @@ Only fields some card actually names are considered, and each drift is scored by
 whether a card is really affected -- "12 fields moved" and "one card is now wrong" are
 very different headlines, the same distinction plugin_diff draws.
 
+EVERY campaign map is read (2026-09-17). The old fixed 3-5 map subsets missed variants
+-- Halo 3's skipped Sierra 117, where the Brutes define their grenades. A variant that
+appears on fewer than --min-maps maps is left out of the verdict as a one-off, unless
+that enemy has no other variant in the game.
+
+A row is matched across games by (enemy, card, target position), not by field name, so
+a renamed field (Halo 1 `Melee Attack Delay` -> Halo 2 `Melee Attack Delay Timer`) is
+still followed.
+
+HALO 1 is different: there is no character inheritance. Cards aim at `actr` (the actor,
+shared by all its variants) or `actv` (one variant), and both are flat structs that
+always carry every field, so an H1 enemy DEFINES every field its tags have. Halo 1 ->
+Halo 2 therefore only ever reports TO GENERIC: a value the H1 card set on the species
+that Halo 2 leaves to `ai\generic`.
+
     python sprint_toolkit/generic_drift.py
     python sprint_toolkit/generic_drift.py --pair "Halo Reach" "Halo 4"
-    python sprint_toolkit/generic_drift.py --all        # include unaffected drifts
+    python sprint_toolkit/generic_drift.py --all            # include unaffected drifts
+    python sprint_toolkit/generic_drift.py --min-maps 1     # count one-off variants too
 """
 import argparse
 import collections
@@ -44,27 +60,9 @@ import coverage_audit as ca                                       # noqa: E402
 S = chr(92)
 GENERIC = 'ai' + S + 'generic'
 _R = os.path.dirname(TOOL)
-# The same map subsets inherit_audit uses, and for the same reason: one map can only
-# UNDER-report, since an enemy it does not field is invisible, and a species counts as
-# defining a block if it defines it on ANY of these. Reading every map instead would
-# multiply the runtime for a handful of extra variants.
-CASES = [
-    ('Halo 2', ['Halo2MCC', 'Halo2'],
-     [os.path.join(_R, 'halo2', 'h2_maps_win64_dx11', n + '.map')
-      for n in ('07a_highcharity', '03a_oldmombasa', '05a_deltaapproach')]),
-    ('Halo 3', ['Halo3MCC', 'Halo3'],
-     [os.path.join(_R, 'halo3', 'maps', n + '.map')
-      for n in ('030_outskirts', '050_floodvoice', '120_halo')]),
-    ('Halo 3: ODST', ['ODSTMCC', 'ODST'],
-     [os.path.join(_R, 'halo3odst', 'maps', n + '.map')
-      for n in ('l300', 'sc110', 'sc140')]),
-    ('Halo Reach', ['ReachMCC', 'Reach'],
-     [os.path.join(_R, 'haloreach', 'maps', n + '.map')
-      for n in ('m10', 'm30', 'm35', 'm50', 'm70')]),
-    ('Halo 4', ['Halo4MCC', 'Halo4'],
-     [os.path.join(_R, 'halo4', 'maps', n + '.map')
-      for n in ('m60_rescue', 'm70_liftoff', 'm80_delta')]),
-]
+H1_GROUPS = ('actr', 'actv')
+CASES = ([('Halo 1', ['Halo1MCC', 'Halo1'], os.path.join(_R, 'halo1', 'maps'))]
+         + [(c[0], c[1], c[2]) for c in ca.CASES])
 
 
 #: (game, enemy, card) already recorded as dead in deadcards' VERIFIED table. A drift
@@ -89,7 +87,12 @@ def seeds(mod, game, games, block):
     """True if the card SEEDS this block for this game (init_defaults). An empty block
     is then the expected state, not a miss -- the patcher grows or copies it before
     writing, which is the whole point of the seeder."""
-    ini = gamed(mod.get('init_defaults'), game, games)
+    ini = mod.get('init_defaults')
+    # init_defaults is itself a dict ({tag, block, grow}); it is only per-game when its
+    # keys are games. Resolving the plain form as a game map returned None, so every
+    # boss seeder (Honor Guard, Specops Commander, Knight Commander) read as unseeded.
+    if isinstance(ini, dict) and any(k in games or k == 'default' for k in ini):
+        ini = gamed(ini, game, games)
     if not isinstance(ini, dict):
         return False
     b = ini.get('block')
@@ -100,14 +103,20 @@ def gamed(v, game, games):
     return he.resolve_gamed(v, game, games) if isinstance(v, dict) else v
 
 
+Row = collections.namedtuple('Row', 'key enemy card field block aim seed group pats')
+
+
 def card_rows(db, game):
-    """Every (enemy, card name, field, block, aim) a card declares for this game.
+    """Every Row a card declares for this game.
 
     `aim` is 'generic' when the row lands on the shared AI base and 'species' when it
     lands on the enemy's own tags -- the distinction the whole audit turns on. A row's
-    own `tag` wins over the card's, exactly as the patcher resolves it.
+    own `tag` wins over the card's, exactly as the patcher resolves it. `key` is what
+    matches the row in the neighbouring game: the target's position when the card's
+    target list is shared by every game, its field name when the list itself is per game.
     """
     games = db.get_games()
+    groups = H1_GROUPS if game == 'Halo 1' else ('char',)
     out = []
     pools = [db.enemy_mods, getattr(db, 'boss_mods', {})]
     for pool in pools:
@@ -125,69 +134,96 @@ def card_rows(db, game):
                         and he._is_allied_elite_mod(mod, game)):
                     continue
                 ctag = gamed(mod.get('tag'), game, games)
-                ts = gamed(mod.get('targets'), game, games) or []
-                for t in ts:
+                raw = mod.get('targets')
+                per_game_list = isinstance(raw, dict)
+                ts = gamed(raw, game, games) or []
+                for i, t in enumerate(ts):
                     if not isinstance(t, dict) or not he.target_applies(t, game):
                         continue
                     tag = gamed(t.get('tag'), game, games) or ctag
                     f = gamed(t.get('field'), game, games)
                     if not isinstance(f, str) or not isinstance(tag, str):
                         continue
-                    if not tag.startswith('char '):
+                    group, _sp, pats = tag.partition(' ')
+                    if group not in groups:
                         continue
-                    aim = ('generic' if tag.split(' ', 1)[-1].strip() == GENERIC
+                    pats = [p.strip() for p in pats.split(' & ') if p.strip()]
+                    aim = ('generic' if group == 'char' and pats == [GENERIC]
                            else 'species')
                     blk = gamed(t.get('block'), game, games)
-                    out.append((enemy, mod.get('name'), f, blk, aim,
-                                seeds(mod, game, games, blk)))
+                    key = (enemy, mod.get('name'), ('field', f) if per_game_list else i)
+                    out.append(Row(key, enemy, mod.get('name'), f, blk, aim,
+                                   seeds(mod, game, games, blk), group, pats))
     return out
 
 
-def defines(db, game, subs, paths, rows):
-    """{(enemy, field, block): (definers, inheritors)} over this game's maps.
+def measure(db, game, subs, folder, wants, min_maps):
+    """{(enemy, group, field, block): (definers, inheritors, one_offs_used)} over EVERY
+    map of the game.
 
     A tag DEFINES a field when the block chain leading to it actually has elements --
-    the same test the patcher's write does, so "defines" here means "a write lands".
+    the same test the patcher's write does, so "defines" here means "a write lands". In
+    Halo 1 a found actr/actv tag always defines (flat structs, no inheritance).
+    `wants` maps (enemy, group) to the tag patterns to look under.
     """
-    plug = hp.PluginRegistry(json.load(io.open(os.path.join(TOOL, 'settings.json'),
-                                               encoding='utf-8'))
-                             ['assembly_plugins_dir'], subs).get('char')
-    if plug is None:
-        return {}, None
-    maps = []
-    for p in paths:
+    reg = hp.PluginRegistry(json.load(io.open(os.path.join(TOOL, 'settings.json'),
+                                             encoding='utf-8'))
+                            ['assembly_plugins_dir'], subs)
+    plugs = {g: reg.get(g) for g in {g for (_e, g) in wants}}
+    fields = collections.defaultdict(set)          # (enemy, group) -> {(field, block)}
+    for (enemy, group), (_pats, fb) in wants.items():
+        fields[(enemy, group)].update(fb)
+    # tag path -> [maps it appears on, {(field, block): defines}]
+    seen = {}
+    owner = collections.defaultdict(set)           # (enemy, group) -> {tag path}
+    for mp in ca.game_maps(folder, game):
         try:
-            maps.append(hp.open_map(p, game))
+            with contextlib.redirect_stdout(io.StringIO()):
+                m = hp.open_map(mp, game)
         except Exception:
-            pass
-    tags = collections.defaultdict(dict)          # enemy -> {tag path: base}
-    for m in maps:
-        for enemy in {r[0] for r in rows}:
-            for pat in ca.enemy_tag_patterns(db, enemy):
-                for tp, base in m.find_tags('char', pat):
-                    if tp.endswith(GENERIC) or tp in tags[enemy]:
+            continue
+        for (enemy, group), (pats, _fb) in wants.items():
+            plug = plugs.get(group)
+            if plug is None:
+                continue
+            for pat in pats:
+                if pat == GENERIC:
+                    continue
+                for tp, base in m.find_tags(group, pat):
+                    if tp.endswith(GENERIC):
                         continue
-                    tags[enemy][tp] = (base, m)
+                    ident = (group, tp)
+                    rec = seen.get(ident)
+                    if rec is None:
+                        rec = seen[ident] = [set(), {}]
+                    rec[0].add(mp)
+                    owner[(enemy, group)].add(ident)
+                    for f, blk in fields[(enemy, group)]:
+                        if (f, blk) in rec[1]:
+                            continue
+                        fld = plug.find(f, blk)
+                        if not fld:
+                            continue
+                        if game == 'Halo 1':
+                            ok = True
+                        else:
+                            try:
+                                ok = bool(m.follow_all(base, fld['block_offsets'],
+                                                       fld.get('block_sizes'), 'all'))
+                            except Exception:
+                                ok = False
+                        rec[1][(f, blk)] = ok
+        del m
     out = {}
-    for enemy, _card, f, blk, _aim, _seed in rows:
-        key = (enemy, f, blk)
-        if key in out:
-            continue
-        fld = plug.find(f, blk)
-        if not fld:
-            continue
-        dfn = inh = 0
-        for _tp, (base, m) in tags[enemy].items():
-            try:
-                ok = bool(m.follow_all(base, fld['block_offsets'],
-                                       fld.get('block_sizes'), 'all'))
-            except Exception:
-                ok = False
-            dfn += 1 if ok else 0
-            inh += 0 if ok else 1
-        if dfn or inh:
-            out[key] = (dfn, inh)
-    return out, plug
+    for (enemy, group), idents in owner.items():
+        regular = {i for i in idents if len(seen[i][0]) >= min_maps}
+        used = regular or idents
+        for f, blk in fields[(enemy, group)]:
+            vals = [seen[i][1][(f, blk)] for i in used if (f, blk) in seen[i][1]]
+            if vals:
+                out[(enemy, group, f, blk)] = (sum(vals), len(vals) - sum(vals),
+                                               not regular)
+    return out
 
 
 def main():
@@ -197,19 +233,61 @@ def main():
                     help='only this pair of games')
     ap.add_argument('--all', action='store_true',
                     help='also list drifts no card is aimed at')
+    ap.add_argument('--min-maps', type=int, default=2,
+                    help='a variant must appear on at least this many maps to count '
+                         '(default 2; an enemy with no such variant uses all of them)')
     args = ap.parse_args()
     with contextlib.redirect_stdout(io.StringIO()):
         db = he.ModifierDatabase()
     order = [c[0] for c in CASES]
-    state = {}
-    for game, subs, paths in CASES:
-        if args.pair and game not in args.pair:
+    active = [c for c in CASES if not args.pair or c[0] in args.pair]
+    rows = {c[0]: card_rows(db, c[0]) for c in active}
+
+    # What each game has to measure: its own rows, plus -- for a row the OLDER game has
+    # no card for -- the newer row's field, so an enemy that only gained a card later
+    # still shows which side of the base it sat on before.
+    wants = {g: {} for g in rows}
+
+    def want(game, enemy, group, pats, f, blk):
+        pp, fb = wants[game].setdefault((enemy, group), ([], set()))
+        for p in pats:
+            if p not in pp:
+                pp.append(p)
+        fb.add((f, blk))
+
+    species_pats = collections.defaultdict(list)   # (game, enemy) -> species patterns
+    for g, rs in rows.items():
+        for r in rs:
+            if r.aim == 'species':
+                for p in r.pats:
+                    if p not in species_pats[(g, r.enemy)]:
+                        species_pats[(g, r.enemy)].append(p)
+
+    def pats_for(game, r):
+        if game == 'Halo 1':
+            return r.pats if r.group in H1_GROUPS else []
+        # Every game's patterns for the species (as generic_census does), or -- for a
+        # boss, which enemy_tag_patterns does not know -- this game's own card tags.
+        return (ca.enemy_tag_patterns(db, r.enemy)
+                or species_pats.get((game, r.enemy)) or [])
+
+    for g, rs in rows.items():
+        for r in rs:
+            want(g, r.enemy, r.group, pats_for(g, r), r.field, r.block)
+    for older, newer in zip(order, order[1:]):
+        if older not in rows or newer not in rows or older == 'Halo 1':
             continue
-        rows = card_rows(db, game)
-        d, _plug = defines(db, game, subs, paths, rows)
-        state[game] = (rows, d)
-        print('%-13s %4d card row(s) on char, %4d (enemy, field) pair(s) measured'
-              % (game, len(rows), len(d)))
+        okeys = {r.key for r in rows[older]}
+        for r in rows[newer]:
+            if r.key not in okeys:
+                want(older, r.enemy, 'char', pats_for(newer, r), r.field, r.block)
+
+    state = {}
+    for game, subs, folder in active:
+        d = measure(db, game, subs, folder, wants[game], args.min_maps)
+        state[game] = d
+        print('%-13s %4d card row(s), %4d (enemy, field) pair(s) measured on every map'
+              % (game, len(rows[game]), len(d)), flush=True)
 
     for older, newer in zip(order, order[1:]):
         if older not in state or newer not in state:
@@ -217,20 +295,27 @@ def main():
         print()
         print('=' * 78)
         print('%s  ->  %s' % (older, newer))
-        (orows, od), (nrows, nd) = state[older], state[newer]
-        aim_new = {}
-        for enemy, card, f, blk, aim, seed in nrows:
-            aim_new.setdefault((enemy, f, blk), set()).add((card, aim, seed))
+        od, nd = state[older], state[newer]
+        orows = {}
+        for r in rows[older]:
+            orows.setdefault(r.key, r)
         found = 0
-        for key, (odfn, oinh) in sorted(od.items()):
-            if key not in nd:
+        done = set()
+        for r in sorted(rows[newer], key=lambda r: (r.enemy, r.card, r.field)):
+            nkey = (r.enemy, 'char', r.field, r.block)
+            o = orows.get(r.key)
+            okey = ((o.enemy, o.group, o.field, o.block) if o is not None
+                    else (r.enemy, 'char', r.field, r.block))
+            if nkey not in nd or okey not in od or (okey, nkey) in done:
                 continue
-            ndfn, ninh = nd[key]
+            done.add((okey, nkey))
+            odfn, oinh, oone = od[okey]
+            ndfn, ninh, none_ = nd[nkey]
             o_defines, n_defines = odfn > 0, ndfn > 0
             if o_defines == n_defines:
                 continue
-            enemy, f, blk = key
-            cards = sorted(aim_new.get(key, ()))
+            cards = sorted({(x.card, x.aim, x.seed) for x in rows[newer]
+                            if (x.enemy, x.field, x.block) == (r.enemy, r.field, r.block)})
             drift = 'TO SPECIES' if n_defines else 'TO GENERIC'
             # A drift only BREAKS a card when the card aims the way the newer game no
             # longer supports: generic-aimed after the value moved onto the species,
@@ -239,19 +324,21 @@ def main():
             # suffering the drift.
             broken = [c for c, aim, seed in cards
                       if (aim == 'generic') == n_defines and not seed]
-            known = [c for c in broken if (newer, enemy, c) in VERIFIED]
+            known = [c for c in broken if (newer, r.enemy, c) in VERIFIED]
             broken = [c for c in broken if c not in known]
             if not broken and not (args.all or known):
                 continue
             found += 1
-            print('   %-10s %-11s %-28s %s'
-                  % (drift, enemy, f, '%d def/%d inh -> %d def/%d inh'
-                     % (odfn, oinh, ndfn, ninh)))
-            for c, aim, seed in sorted(cards):
+            renamed = ('  (was %s)' % okey[2]) if okey[2] != r.field else ''
+            oneoff = '  [one-off variants only]' if (oone or none_) else ''
+            print('   %-10s %-11s %-28s %s%s%s'
+                  % (drift, r.enemy, r.field, '%d def/%d inh -> %d def/%d inh'
+                     % (odfn, oinh, ndfn, ninh), renamed, oneoff))
+            for c, aim, seed in cards:
                 mark = ''
                 if (aim == 'generic') == n_defines and not seed:
                     mark = ('  <-- already recorded as dead'
-                            if (newer, enemy, c) in VERIFIED else '  <-- now wrong')
+                            if (newer, r.enemy, c) in VERIFIED else '  <-- now wrong')
                 elif seed:
                     mark = '  (seeds the block itself)'
                 print('        card %-30s aims at %-8s%s' % (c, aim, mark))
