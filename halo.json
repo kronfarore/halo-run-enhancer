@@ -1231,7 +1231,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3: ODST"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -2685,7 +2686,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -2990,7 +2992,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -3998,7 +4001,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4497,7 +4501,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4731,7 +4736,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5018,7 +5024,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				},
@@ -5271,7 +5278,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5636,6 +5644,34 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" }
+					]
+				},
+				"Energy Use": {
+					"desc": "How much energy each kill or hit costs.",
+					"debug_desc": "Halo 4 only: `Per Kill Or Hit Aging Amount` (0.1 = 10 kills), applied when the sword has 'ages with each kill' or 'ages when damage is inflicted' set (storm_energy_sword uses per hit, the elevator sword per kill). Halo 2, 3 and Reach have no field: the Halo 3 DLL hardcodes 1.0 / 10 = 0.1 per kill, or 0.25 / 10 = 0.025 in campaign when the victim's Default Team is Flood or Sentinel, and only when the killing damage reports as Energy Sword. Changing that needs a DLL patch.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+						"Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword",
+						"Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"
+					},
+					"targets": [
+						{ "field": "Per Kill Or Hit Aging Amount", "min": 0, "max": 1 }
+					]
+				},
+				"Energy Recharge": {
+					"desc": "Lets the weapon slowly recharge its energy over time.",
+					"debug_desc": "Halo 4 only: `Age Recovered Per Second`, which NO weapon ships (0 everywhere). Read in the Halo 4 DLL (2026-09-17): every tick, a weapon with some age loses Age Recovered Per Second x frame time of it, down to 0, unless it is firing or reloading. zero_is 0.02 (empty to full in 50 s) gives the operator something to act on.",
+					"game": ["Halo 4"],
+					"tag": {
+						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
+						"Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword",
+						"Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"
+					},
+					"targets": [
+						{ "field": "Age Recovered Per Second", "zero_is": 0.02, "min": 0 }
 					]
 				}
 			},
@@ -6304,6 +6340,31 @@
 					"targets": [
 						{"field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
 					]
+				},
+				"Energy Use": {
+					"desc": "How much energy every swing costs.",
+					"debug_desc": "`Campaign External Aging Amount` (0.05, 20 swings) and `External Aging Amount` (0.0835, 12 swings; the multiplayer value), grouped. Read in the Halo 3 DLL (2026-09-17): whenever a unit's attack deals its damage effect, the attacker's CURRENT weapon ages by the campaign value in campaign and the other one elsewhere, and only if that value is above 0. The hammer's swing always sets off its explosion damage, so every swing costs energy whether it hits anything or not. The energy sword works differently -- see its Energy Use card.",
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {
+						"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+						"Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"
+					},
+					"targets": [
+						{ "field": "Campaign External Aging Amount", "group": "Energy Use", "min": 0, "max": 1 },
+						{ "field": "External Aging Amount", "group": "Energy Use", "min": 0, "max": 1 }
+					]
+				},
+				"Energy Recharge": {
+					"desc": "Lets the weapon slowly recharge its energy over time.",
+					"debug_desc": "Halo 4 only: `Age Recovered Per Second`, which NO weapon ships (0 everywhere). Read in the Halo 4 DLL (2026-09-17): every tick, a weapon with some age loses Age Recovered Per Second x frame time of it, down to 0, unless it is firing or reloading. zero_is 0.02 (empty to full in 50 s) gives the operator something to act on.",
+					"game": ["Halo 4"],
+					"tag": {
+						"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer",
+						"Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"
+					},
+					"targets": [
+						{ "field": "Age Recovered Per Second", "zero_is": 0.02, "min": 0 }
+					]
 				}
 			},
 			"Spartan Laser": {
@@ -6514,7 +6575,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
 					]
 				}
 			},
@@ -7661,7 +7723,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach", "Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -7893,7 +7956,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
 					]
 				},
 				"More Shooting": {
@@ -8326,7 +8390,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -8549,7 +8614,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
 					]
 				},
 				"More Shooting": {
@@ -8994,7 +9060,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
 					]
 				},
 				"More Shooting": {
@@ -9853,7 +9920,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -10879,7 +10947,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -11096,7 +11165,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
 					]
 				},
 				"Magazine": {
@@ -17488,14 +17558,14 @@
 				},
 				"Melee Behavior": {
 					"desc": "Delay/timeout between melee attempts, and (Halo 2) chance of initiating one",
-					"debug_desc": "Melee Leap Prediction Time (ODST on) is how many seconds ahead they aim the lunge at where you are going; 0 lunges at where you stand. Measured: ODST Brutes 0.75-1.0, Reach Brutes 0.75, Halo 4 Knights 1.0.",
+					"debug_desc": "Melee Attack Delay Timer is grouped with Balling Melee Attack Delay Timer, the same wait for a Knight that attacks out of its balled-up dash (5 s on storm_knight and the Battlewagon, against 1 s normally). Melee Leap Prediction Time moved to **Melee Leap** 2026-09-17.",
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
 					"targets": [
-						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "harder_when": "decreased", "index": "all" },
+						{ "field": "Melee Attack Delay Timer", "block": "Charge Properties", "harder_when": "decreased", "index": "all", "group": "Melee Attack Delay" },
+						{ "field": "Balling Melee Attack Delay Timer", "block": "Charge Properties", "group": "Melee Attack Delay", "harder_when": "decreased", "index": "all", "min": 0 },
 						{ "field": "Melee Attack Timeout", "block": "Charge Properties", "harder_when": "increased", "index": "all" },
-						{ "field": "Melee Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1, "index": "all" },
-						{ "field": "Melee Leap Prediction Time", "block": "Charge Properties", "index": "all", "min": 0 }
+						{ "field": "Melee Chance", "block": "Charge Properties", "harder_when": "increased", "min": 0, "max": 1, "index": "all" }
 					]
 				},
 				"Grenades": {
@@ -17673,6 +17743,24 @@
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
 					"targets": [
 						{ "field": "Maximum Suppress Time", "block": "Pre-Search Properties", "index": "all", "harder_when": "increased", "min": 0 }
+					]
+				},
+				"Melee Leap": {
+					"desc": "How far and how fast they lunge at you, including out of their dash.",
+					"debug_desc": "Charge Properties, measured on every Halo 4 map: Melee Leap Range 3-5 m (storm_knight) / 4-8 m (Battlewagon), grouped with Balling Melee Leap Range 3-7 m -- the lunge out of the balled-up dash; Melee Leap Chance 1.0 (storm_knight) and Balling Melee Leap Chance 1.0; Balling Melee Leap Attack Range 2.5 m; Ideal / Maximum Leap Velocity 2.5-5.4 / 100; Melee Leap Prediction Time 1.0 s (how far ahead they aim the lunge at where you are going). Only storm_knight and the Battlewagon define these; the Ranger and Commander inherit storm_knight.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
+					"targets": [
+						{ "field": "Melee Leap Range", "block": "Charge Properties", "index": "all", "group": "Melee Leap Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Melee Leap Range Max", "block": "Charge Properties", "index": "all", "group": "Melee Leap Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Balling Melee Leap Range", "block": "Charge Properties", "index": "all", "group": "Melee Leap Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Balling Melee Leap Range Max", "block": "Charge Properties", "index": "all", "group": "Melee Leap Range", "harder_when": "increased", "min": 0 },
+						{ "field": "Melee Leap Chance", "block": "Charge Properties", "index": "all", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Balling Melee Leap Chance", "block": "Charge Properties", "index": "all", "harder_when": "increased", "min": 0, "max": 1 },
+						{ "field": "Balling Melee Leap Attack Range", "block": "Charge Properties", "index": "all", "harder_when": "increased", "min": 0 },
+						{ "field": "Ideal Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Maximum Leap Velocity", "block": "Charge Properties", "index": "all", "group": "Leap Velocity" },
+						{ "field": "Melee Leap Prediction Time", "block": "Charge Properties", "index": "all", "min": 0 }
 					]
 				}
 			},
@@ -17879,6 +17967,21 @@
 						{ "field": "Destroy Cover Weight", "block": "Pre-Search Properties", "index": "all", "min": 0 },
 						{ "field": "Guard Weight", "block": "Pre-Search Properties", "index": "all", "min": 0 },
 						{ "field": "Investigate Weight", "block": "Pre-Search Properties", "index": "all", "min": 0 }
+					]
+				},
+				"Fight Circle": {
+					"desc": "How they circle and strafe around you, and how long they keep shooting.",
+					"debug_desc": "Fight Circle, defined only by storm_pawn (every other Crawler inherits it): Strafe Time 1-3 s (grouped), Extra Firing Time 0.2-0.5 s (grouped), Maximum Angle From Threat Axis 90, Nearby Inner / Outer Angle 60 / 180. Target Patience Time (0.25) is not offered.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
+					"targets": [
+						{ "field": "Strafe Time", "block": "Fight Circle", "index": "all", "group": "Strafe Time", "min": 0 },
+						{ "field": "Strafe Time Max", "block": "Fight Circle", "index": "all", "group": "Strafe Time", "min": 0 },
+						{ "field": "Extra Firing Time", "block": "Fight Circle", "index": "all", "group": "Extra Firing Time", "harder_when": "increased", "min": 0 },
+						{ "field": "Extra Firing Time Max", "block": "Fight Circle", "index": "all", "group": "Extra Firing Time", "harder_when": "increased", "min": 0 },
+						{ "field": "Maximum Angle From Threat Axis", "block": "Fight Circle", "index": "all", "min": 0 },
+						{ "field": "Nearby Inner Angle", "block": "Fight Circle", "index": "all", "min": 0 },
+						{ "field": "Nearby Outer Angle", "block": "Fight Circle", "index": "all", "min": 0 }
 					]
 				}
 			},
@@ -18915,6 +19018,21 @@
 					"init_defaults": {"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander", "block": "Grenades Properties", "grow": true},
 					"targets": [
 						{"field": "Grenade Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1}
+					]
+				},
+				"Gravity Jump": {
+					"desc": "How often a Knight Commander leaps into the air to come down on you.",
+					"debug_desc": "Gravity Jump, which ONLY the Knight Commander (and its _aggressive stimulus override) defines in Halo 4: Cooldown 5 s between jumps, Trigger Distance 4 m (how close you must be), Jump Target Height 1.5, Float Time 0.5 s, Descend Gravity 0.1, Target Attractor 4.5 and Retreat Radius 3. Shorter cooldown and a longer trigger distance make it jump more often.",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight_commander*",
+					"targets": [
+						{ "field": "Cooldown", "block": "Gravity Jump", "index": "all", "harder_when": "decreased", "min": 0 },
+						{ "field": "Trigger Distance", "block": "Gravity Jump", "index": "all", "harder_when": "increased", "min": 0 },
+						{ "field": "Jump Target Height", "block": "Gravity Jump", "index": "all", "min": 0 },
+						{ "field": "Float Time", "block": "Gravity Jump", "index": "all", "min": 0 },
+						{ "field": "Descend Gravity", "block": "Gravity Jump", "index": "all", "min": 0 },
+						{ "field": "Target Attractor", "block": "Gravity Jump", "index": "all", "min": 0 },
+						{ "field": "Retreat Radius", "block": "Gravity Jump", "index": "all", "min": 0 }
 					]
 				}
 			},
