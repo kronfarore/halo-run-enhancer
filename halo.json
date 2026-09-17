@@ -19225,6 +19225,54 @@
 					]
 				}
 			}
+		},
+		"Regeneration Field": {
+			"Healing": {
+				"desc": "How fast the field restores shields.",
+				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. `Tree of Life Shield Regen Modifier` 0.66 on that damage effect (tooltip: overrides any shield recharge rate trait when not 1.0). The only other users are the Watcher and Sentinel beams' friendly second barrel (-0.2), not touched here.",
+				"game": ["Halo 4"],
+				"tag": "jpt! objects\\equipment\\storm_regen_field\\fx\\healing",
+				"targets": [
+					{"field": "Tree of Life Shield Regen Modifier", "harder_when": "decreased"}
+				]
+			},
+			"Field Duration": {
+				"desc": "How long the healing field stays on the ground.",
+				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. `healing_field` self-destructs after 10 s (Proximity Mine Self Destruct Time) and counts down 10 s (Countdown Time In Seconds); grouped so they move together.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_regen_field\\healing_field\\healing_field",
+				"targets": [
+					{"field": "Self Destruct Time", "block": "Proximity Mine", "index": "all", "group": "Duration", "harder_when": "decreased", "min": 0},
+					{"field": "Countdown Time In Seconds", "group": "Duration", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Activation Energy": {
+				"desc": "How much meter you need banked before you can drop it.",
+				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Minimum Activation Energy 1.0 -- a full meter.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
+				"targets": [
+					{"field": "Minimum Activation Energy", "harder_when": "increased", "min": 0, "max": 1.0}
+				]
+			},
+			"Recharge": {
+				"desc": "How quickly the meter comes back.",
+				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Inactive Energy Rate 0.033 per second (about 30 s from empty).",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
+				"targets": [
+					{"field": "Inactive Energy Rate", "harder_when": "decreased", "min": 0}
+				]
+			},
+			"Warmup Time": {
+				"desc": "How long it takes to deploy.",
+				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Warmup Time 0.5 s.",
+				"game": ["Halo 4"],
+				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
+				"targets": [
+					{"field": "Warmup Time", "harder_when": "increased", "min": 0}
+				]
+			}
 		}
 	},
 	"Skull modifiers": {
