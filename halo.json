@@ -931,7 +931,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -1232,7 +1233,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3: ODST"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -1659,7 +1660,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Misfire": {
@@ -2019,7 +2021,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Misfire": {
@@ -2390,7 +2393,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -2687,7 +2691,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -2993,7 +2997,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -3269,7 +3273,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -3516,7 +3521,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -4002,7 +4008,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4258,7 +4264,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4502,7 +4509,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4737,7 +4744,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5025,7 +5032,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				},
@@ -5279,7 +5286,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo 4"], "min": 0, "zero_is": 0.2}
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5643,7 +5650,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Energy Use": {
@@ -5984,7 +5992,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -6220,7 +6229,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -6296,7 +6306,8 @@
 					"targets": [
 						{"field": "Magnification Levels", "min": 0},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Hammer Damage": {
@@ -6576,7 +6587,7 @@
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
 						{ "field": "Magnification Range Max" },
-						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -6732,7 +6743,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -6954,7 +6966,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -7176,7 +7189,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -7337,7 +7351,8 @@
 					"targets": [
 						{ "field": "Magnification Levels" },
 						{ "field": "Magnification Range" },
-						{ "field": "Magnification Range Max" }
+						{ "field": "Magnification Range Max" },
+						{"field": "Weapon Zoom Time", "games": ["Halo 3", "Halo 3: ODST"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -7507,7 +7522,8 @@
 					"targets": [
 						{"field": "Magnification Levels", "min": 0},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Firing Noise": {
@@ -7724,7 +7740,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo Reach", "Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach", "Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -7957,7 +7973,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"More Shooting": {
@@ -8142,7 +8158,8 @@
 					"targets": [
 						{"field": "Magnification Levels", "min": 0},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Firing Noise": {
@@ -8391,7 +8408,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -8615,7 +8632,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"More Shooting": {
@@ -8827,7 +8844,8 @@
 					"targets": [
 						{"field": "Magnification Levels", "min": 0},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Heat Venting Time": {
@@ -9061,7 +9079,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo Reach"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"More Shooting": {
@@ -9308,7 +9326,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Misfire": {
@@ -9510,7 +9529,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -9726,7 +9746,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -9921,7 +9942,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -10125,7 +10146,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -10357,7 +10379,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -10421,6 +10444,15 @@
 						{"field": "Error Angle Max", "block": "Barrels", "index": "all", "group": "Error Angle"},
 						{"field": "Deviation Angle", "group": "Error Angle", "min": 0},
 						{"field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"]}
+					]
+				},
+				"Charging Time": {
+					"desc": "Time it takes to charge the blast",
+					"debug_desc": "`Charging Time` on the trigger, the same field as the Plasma Pistol's card: 0.6 s on the player's storm_stasis_pistol, 0.8 s on the pawnhead copy Crawlers and Watchers carry. (Its `Charged Time`, 0.8 s, is how long it can be held charged before it overcharges -- not offered.)",
+					"game": ["Halo 4"],
+					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
+					"targets": [
+						{ "field": "Charging Time", "block": "New Triggers" }
 					]
 				}
 			},
@@ -10600,7 +10632,8 @@
 					"targets": [
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				}
 			},
@@ -10713,7 +10746,8 @@
 					"targets": [
 						{"field": "Magnification Levels", "min": 0},
 						{"field": "Magnification Range"},
-						{"field": "Magnification Range Max"}
+						{"field": "Magnification Range Max"},
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Firing Noise": {
@@ -10948,7 +10982,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
@@ -11166,7 +11200,7 @@
 						{"field": "Magnification Levels"},
 						{"field": "Magnification Range"},
 						{"field": "Magnification Range Max"},
-						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0}
+						{"field": "Weapon Zoom Time", "games": ["Halo 4"], "min": 0, "zero_is": 0.2}
 					]
 				},
 				"Magazine": {
