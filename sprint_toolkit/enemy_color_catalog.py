@@ -41,6 +41,11 @@ H4_FAMILIES = {'storm_elite_ai': 'Elite', 'storm_grunt': 'Grunt', 'storm_jackal'
                'storm_knight': 'Knight', 'storm_hunter': 'Hunter', 'storm_pawn': 'Crawler',
                'storm_bishop': 'Watcher'}
 H4_SKIP = ('anatomy', 'techsuit', 'visor', 'skin', 'glass', 'eye')
+# ODST Brute armour shaders -> one row each group (shared stock, shared ranks)
+ODST_ARMOUR = (('armour', ('minor_major_armor', 'brute_metal')),
+               ('jump pack armour', ('jumppack_armor',)),
+               ('chieftain armour', ('chieftain_armor', 'chief_stalker_metal')),
+               ('stalker armour', ('stalker_armor',)))
 RANK_ORDER = ('minor', 'default', 'heavy', 'major', 'officer', 'captain', 'captain_major',
               'captain_ultra', 'spec_ops', 'ultra', 'general', 'zealot', 'ranger', 'stealth',
               'stealth_major', 'honor_guard', 'bodyguard', 'jumppack', 'jumppack_major',
@@ -180,6 +185,22 @@ def scan_maps(game, folder, acc):
             if not isinstance(t, dict) or not t.get('base'):
                 continue
             n, cls = str(t.get('name')), t.get('class')
+            if (game == 'Halo 3: ODST' and cls == 'rmsh'
+                    and 'characters' + B + 'brute' + B + 'shaders' + B in n):
+                for label, names in ODST_ARMOUR:
+                    if short(n) in names:
+                        fc = []
+                        for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
+                            fc = m.follow_all(pp, [0x1C], [0x10], 'all')
+                        if len(fc) > max(ec.ODST_ARMOUR_CONSTS):
+                            rec = acc.setdefault(('armour', label), {'targets': set(), 'maps': set(),
+                                                                     'stock': None})
+                            rec['targets'].add(n)
+                            rec['maps'].add(mname)
+                            if short(n) == names[0] or rec['stock'] is None:
+                                rec['stock'] = [ec.hexcol(*struct.unpack_from('<3f', m.data, fc[i]))
+                                                for i in ec.ODST_ARMOUR_CONSTS]
+                continue
             if game == 'Halo 2' and cls == 'shad' and n.endswith(('jackal_shield', 'jackal_shield_major')):
                 stops = []
                 for pp in m.follow_all(t['base'], [0x20], [0x7C], 'all'):
@@ -272,6 +293,14 @@ def scan_rows(game, acc, out):
                          'route': 'tint', 'slots': [{'stock': stock, 'hi': None, 'editable': True,
                                                      'name': 'tint'}],
                          'targets': sorted(rec['targets']), 'maps': len(rec['maps'])})
+        elif key[0] == 'armour':
+            label = key[1]
+            rows.append({'id': 'armour:%s' % label.replace(' ', '_'), 'enemy': 'Brute',
+                         'label': label, 'route': 'armour',
+                         'slots': [{'stock': c, 'hi': None, 'editable': True,
+                                    'name': 'armour colour %d' % (i + 1)}
+                                   for i, c in enumerate(rec['stock'])],
+                         'targets': sorted(rec['targets']), 'maps': len(rec['maps'])})
         elif key[0] == 'shield':
             rank = key[1]
             label = {'minor': 'minor shield', 'major': 'major shield',
@@ -331,7 +360,8 @@ def main():
                     pickle.dump((out, acc), f)
         rows = h1_rows(out) if game == 'Halo 1' else perm_rows(game, out)
         rows += scan_rows(game, acc, out)
-        rows.sort(key=lambda r: (r['enemy'], r['route'] == 'shield', _rank_key(r['label'])))
+        rows.sort(key=lambda r: (r['enemy'], r['route'] in ('shield', 'armour'),
+                                 _rank_key(r['label'])))
         catalog[game] = rows
         print('  %d rows' % len(rows), flush=True)
     with open(a.out, 'w', encoding='utf-8') as f:

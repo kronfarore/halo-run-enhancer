@@ -17,6 +17,9 @@ Routes (all confirmed in game, 2026-09-18 -- see the halo-enemy-colors memory):
           the rank's variant name (weight +0, lower +4, upper +0x10, name +0x1C)
   tint    Halo 4 armour materials: Postprocess Definition Float Constant[0], which
           multiplies the rank's texture (white = stock)
+  armour  ODST Brute armour shaders: their three armour colour constants (Postprocess Float
+          Constants 7, 8, 16). Per SHADER, not per rank -- minor and major share one; the
+          biped change colour only reaches the body in ODST
   shield  Jackal shields: H1 bipd slot C + sotr stage 0; H2 shad colour ramps; H3/ODST/
           Reach rmhg colour overlays; H4 mat colour functions
 """
@@ -326,6 +329,26 @@ def _route_shield(m, game, row, slots):
     return n
 
 
+ODST_ARMOUR_CONSTS = (7, 8, 16)       # rmsh Postprocess (0x28/0x8C) Float Constants (0x1C/0x10)
+
+
+def _route_armour(m, row, slots):
+    tags = _tags(m, 'rmsh')
+    n = 0
+    for name in row['targets']:
+        t = tags.get(name)
+        if not t:
+            continue
+        for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
+            fc = m.follow_all(pp, [0x1C], [0x10], 'all')
+            for si, col in slots.items():
+                ci = ODST_ARMOUR_CONSTS[int(si)] if int(si) < len(ODST_ARMOUR_CONSTS) else None
+                if ci is not None and ci < len(fc):
+                    struct.pack_into('<3f', m.data, fc[ci], *col)      # alpha (w) kept
+                    n += 1
+    return n
+
+
 def _odst_brute_overlays_off(m):
     """ODST Brutes: the armour shaders (minor_major_armor, brute_metal, jumppack_armor)
     carry colour overlays on input `variant` that set their three armour colour
@@ -387,6 +410,8 @@ def apply(m, game, overrides, catalog=None):
                 n = _route_tint(m, row, cols)
             elif route == 'shield':
                 n = _route_shield(m, game, row, cols)
+            elif route == 'armour':
+                n = _route_armour(m, row, cols)
             else:
                 continue
         except Exception as e:                        # never let a colour sink a patch
@@ -399,7 +424,7 @@ def apply(m, game, overrides, catalog=None):
                         'new': ', '.join('%s=%s' % (k, v) for k, v in sorted(slots.items()) if v)
                                + ' (%d write%s)' % (n, '' if n == 1 else 's')})
     if game == 'Halo 3: ODST' and any(
-            rows.get(rid, {}).get('enemy') == 'Brute' and rows[rid]['route'] == 'perm'
+            rows.get(rid, {}).get('enemy') == 'Brute' and rows[rid]['route'] in ('perm', 'armour')
             and any(v for v in (sl or {}).values()) for rid, sl in overrides.items()):
         k = _odst_brute_overlays_off(m)
         out.append({'tag': 'enemy colours', 'field': 'Brute armour rank overlays',

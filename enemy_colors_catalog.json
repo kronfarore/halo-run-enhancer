@@ -3470,6 +3470,128 @@
    ]
   },
   {
+   "enemy": "Brute",
+   "id": "armour:chieftain_armour",
+   "label": "chieftain armour",
+   "maps": 9,
+   "route": "armour",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 1",
+     "stock": "404242"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 2",
+     "stock": "181111"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 3",
+     "stock": "1B4F75"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\brute\\shaders\\chief_stalker_metal",
+    "objects\\characters\\brute\\shaders\\chieftain_armor"
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "armour:armour",
+   "label": "armour",
+   "maps": 9,
+   "route": "armour",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 1",
+     "stock": "7ADAD0"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 2",
+     "stock": "162645"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 3",
+     "stock": "9458A2"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\brute\\shaders\\brute_metal",
+    "objects\\characters\\brute\\shaders\\minor_major_armor"
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "armour:jump_pack_armour",
+   "label": "jump pack armour",
+   "maps": 9,
+   "route": "armour",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 1",
+     "stock": "61D7F4"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 2",
+     "stock": "120B09"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 3",
+     "stock": "1B387A"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\brute\\shaders\\jumppack_armor"
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "armour:stalker_armour",
+   "label": "stalker armour",
+   "maps": 9,
+   "route": "armour",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 1",
+     "stock": "517980"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 2",
+     "stock": "915234"
+    },
+    {
+     "editable": true,
+     "hi": null,
+     "name": "armour colour 3",
+     "stock": "224A66"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\brute\\shaders\\stalker_armor"
+   ]
+  },
+  {
    "enemy": "Bugger",
    "id": "bugger:minor",
    "label": "minor",
