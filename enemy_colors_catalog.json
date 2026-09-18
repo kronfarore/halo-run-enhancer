@@ -1,0 +1,6279 @@
+{
+ "Halo 1": [
+  {
+   "enemy": "Elite",
+   "id": "elite minor",
+   "label": "minor",
+   "maps": 7,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "610BCA",
+     "stock": "D10389"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite minor\\elite minor needler",
+    "characters\\elite\\elite minor\\elite minor plasma rifle",
+    "characters\\elite\\elite minor\\elite minor plasma rifle ranged"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite major",
+   "label": "major",
+   "maps": 7,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "401516",
+     "stock": "401516"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite major\\elite major needler",
+    "characters\\elite\\elite major\\elite major plasma rifle"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "stealth elite",
+   "label": "stealth elite",
+   "maps": 4,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "909090",
+     "stock": "ADADAD"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite special"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "stealth elite energy sword",
+   "label": "stealth energy sword",
+   "maps": 3,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "909090",
+     "stock": "ADADAD"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite special"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite commander",
+   "label": "commander",
+   "maps": 4,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "4B3D0E",
+     "stock": "4B3D0E"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite commander\\elite commander energy sword",
+    "characters\\elite\\elite commander\\elite commander plasma rifle"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite specops",
+   "label": "specops",
+   "maps": 2,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    "characters\\elite\\elite specops\\elite specops needler",
+    "characters\\elite\\elite specops\\elite specops plasma rifle"
+   ]
+  },
+  {
+   "enemy": "Flood Carrier Form",
+   "id": "floodcarrier",
+   "label": "floodcarrier",
+   "maps": 4,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "BAC4CC",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "characters\\floodcarrier\\floodcarrier"
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat elite",
+   "label": "floodcombat elite",
+   "maps": 5,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "BAC4CC",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "characters\\floodcombat elite\\floodcombat elite"
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat elite stealth",
+   "label": "floodcombat elite stealth",
+   "maps": 1,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "BAC4CC",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "characters\\floodcombat elite\\floodcombat elite"
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_human",
+   "label": "floodcombat_human",
+   "maps": 5,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    },
+    {
+     "editable": true,
+     "hi": "BAC4CC",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "characters\\floodcombat_human\\floodcombat_human"
+   ]
+  },
+  {
+   "enemy": "Flood Infection Form",
+   "id": "flood_infection",
+   "label": "flood_infection",
+   "maps": 5,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    }
+   ],
+   "targets": [
+    "characters\\flood_infection\\flood_infection",
+    "characters\\flood_infection\\flood_infection nopop"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt minor",
+   "label": "minor",
+   "maps": 7,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D27128",
+     "stock": "DC802C"
+    }
+   ],
+   "targets": [
+    "characters\\grunt\\grunt"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt major",
+   "label": "major",
+   "maps": 8,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A41717",
+     "stock": "D21313"
+    }
+   ],
+   "targets": [
+    "characters\\grunt\\grunt major needler",
+    "characters\\grunt\\grunt major plasma pistol"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt flee major",
+   "label": "flee major",
+   "maps": 1,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "991515",
+     "stock": "D21313"
+    }
+   ],
+   "targets": [
+    "characters\\grunt\\grunt flee major needler",
+    "characters\\grunt\\grunt flee major plasma pistol"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt flee minor",
+   "label": "flee minor",
+   "maps": 1,
+   "route": "h1bipd",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D27128",
+     "stock": "DC802C"
+    }
+   ],
+   "targets": [
+    "characters\\grunt\\grunt"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt specops",
+   "label": "specops",
+   "maps": 3,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "121212"
+    }
+   ],
+   "targets": [
+    "characters\\grunt\\grunt specops fuel rod",
+    "characters\\grunt\\grunt specops fuel rod airdef",
+    "characters\\grunt\\grunt specops needler"
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter",
+   "label": "hunter",
+   "maps": 6,
+   "route": "actv",
+   "slots": [],
+   "targets": [
+    "characters\\hunter\\hunter",
+    "characters\\hunter\\hunter major"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal minor",
+   "label": "minor",
+   "maps": 7,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "445A7B",
+     "stock": "425F7D"
+    }
+   ],
+   "targets": [
+    "characters\\jackal\\jackal minor plasma pistol"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal major",
+   "label": "major",
+   "maps": 7,
+   "route": "actv",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "B56F71",
+     "stock": "AC7575"
+    }
+   ],
+   "targets": [
+    "characters\\jackal\\jackal major plasma pistol"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:minor",
+   "label": "minor shield",
+   "maps": 7,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "2136FF"
+    }
+   ],
+   "sotr": [
+    "characters\\jackal\\shaders\\jackal shield"
+   ],
+   "targets": [
+    "characters\\jackal\\jackal"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:major",
+   "label": "major shield",
+   "maps": 7,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "FFAD1A"
+    }
+   ],
+   "sotr": [
+    "characters\\jackal\\shaders\\jackal shield"
+   ],
+   "targets": [
+    "characters\\jackal\\jackal major"
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel",
+   "label": "sentinel",
+   "maps": 3,
+   "route": "actv",
+   "slots": [],
+   "targets": [
+    "characters\\sentinel\\sentinel"
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_defensive",
+   "label": "sentinel_defensive",
+   "maps": 4,
+   "route": "actv",
+   "slots": [],
+   "targets": [
+    "characters\\sentinel\\sentinel major",
+    "characters\\sentinel\\sentinel_defensive",
+    "characters\\sentinel\\sentinel_shielded",
+    "characters\\sentinel\\sentinel_shielded major"
+   ]
+  }
+ ],
+ "Halo 2": [
+  {
+   "enemy": "Brute",
+   "id": "brute:minor",
+   "label": "minor",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "928458",
+     "stock": "99856A"
+    },
+    {
+     "editable": true,
+     "hi": "715122",
+     "stock": "7B5624"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_bth"
+    },
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_crl"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:major",
+   "label": "major",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "93866C",
+     "stock": "9E965A"
+    },
+    {
+     "editable": true,
+     "hi": "6B3D3D",
+     "stock": "784141"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_bth"
+    },
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_crl"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain",
+   "label": "captain",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89F82",
+     "stock": "A8A786"
+    },
+    {
+     "editable": true,
+     "hi": "BAB4A9",
+     "stock": "B4AA9E"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_bth"
+    },
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_crl"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:honor_guard",
+   "label": "honor_guard",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_honor_guard"
+     ],
+     "src": [
+      "none",
+      "none"
+     ],
+     "variant": "honor_guard_bth"
+    },
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_honor_guard"
+     ],
+     "src": [
+      "none",
+      "none"
+     ],
+     "variant": "honor_guard_crl"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_tartarus:default",
+   "label": "all (brute_tartarus)",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\tartarus\\brute_tartarus",
+     "chars": [
+      "brute_tartarus"
+     ],
+     "src": [
+      "none",
+      "none"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:(none)",
+   "label": "all",
+   "maps": 8,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:minor",
+   "label": "minor",
+   "maps": 12,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "4261B0",
+     "stock": "4654B7"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ranger:minor",
+   "label": "minor (elite_ranger)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "616298",
+     "stock": "616298"
+    },
+    {
+     "editable": true,
+     "hi": "818794",
+     "stock": "818794"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite_ranger\\elite_ranger",
+     "chars": [
+      "elite_ranger"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite_ranger\\elite_ranger",
+     "chars": [
+      "elite_ranger"
+     ],
+     "src": [
+      "none",
+      "none"
+     ],
+     "variant": "minor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "heretic:minor",
+   "label": "minor (heretic)",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\heretic\\heretic",
+     "chars": [
+      "heretic"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\heretic\\heretic",
+     "chars": [
+      "heretic"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:major",
+   "label": "major",
+   "maps": 12,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C60000",
+     "stock": "D92C00"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "heretic:major",
+   "label": "major (heretic)",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFFF00",
+     "stock": "FFFF00"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\heretic\\heretic",
+     "chars": [
+      "heretic_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "major_scl"
+    },
+    {
+     "bipd": "objects\\characters\\heretic\\heretic",
+     "chars": [
+      "heretic_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "major_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:spec_ops",
+   "label": "spec_ops",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2B225E",
+     "stock": "29264A"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:ultra",
+   "label": "ultra",
+   "maps": 12,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "F3F3F3",
+     "stock": "F8F8F8"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "ultra_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "ultra_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:zealot",
+   "label": "zealot",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFC02D",
+     "stock": "FFBF00"
+    },
+    {
+     "editable": true,
+     "hi": "CBAE6B",
+     "stock": "CBAE6B"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_zealot"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "zealot_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:stealth",
+   "label": "stealth",
+   "maps": 7,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "6E6E6E",
+     "stock": "6E6E6E"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_stealth"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stealth_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_stealth"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stealth_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:stealth_major",
+   "label": "stealth_major",
+   "maps": 7,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "655749",
+     "stock": "604D44"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_stealth_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stealth_major_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_stealth_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stealth_major_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:council",
+   "label": "council",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "FFFFFF"
+    },
+    {
+     "editable": true,
+     "hi": "C7C7C7",
+     "stock": "C7C7C7"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_councilor"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "council_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_councilor"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "council_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:honor",
+   "label": "honor",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "953737",
+     "stock": "934A42"
+    },
+    {
+     "editable": true,
+     "hi": "767687",
+     "stock": "767687"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_honor_guard"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "honor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_honor_guard"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "honor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "heretic_leader:leader_her",
+   "label": "leader_her (heretic_leader)",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "AD2727",
+     "stock": "C21212"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\heretic\\heretic_leader\\heretic_leader",
+     "chars": [
+      "heretic_leader"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "leader_her"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:soc",
+   "label": "soc",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "FFFFFF"
+    },
+    {
+     "editable": true,
+     "hi": "C7C7C7",
+     "stock": "C7C7C7"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops_commander"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "soc"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Carrier Form",
+   "id": "floodcarrier:default",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcarrier\\floodcarrier",
+     "chars": [
+      "flood_carrier"
+     ],
+     "src": [
+      "none",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_elite:(none)",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_elite\\floodcombat_elite",
+     "chars": [
+      "floodcombat_elite",
+      "floodcombat_elite_shielded"
+     ],
+     "src": [
+      "none",
+      "own"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_human:(none)",
+   "label": "all (floodcombat_human)",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_human\\floodcombat_human",
+     "chars": [
+      "flood_combat_human"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:minor",
+   "label": "minor",
+   "maps": 11,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "E2AF50",
+     "stock": "E2AF50"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor_crz"
+    },
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:heavy",
+   "label": "heavy",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "6AB07A",
+     "stock": "6AB07A"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_heavy"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "heavy_crz"
+    },
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_heavy"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "heavy_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:major",
+   "label": "major",
+   "maps": 11,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C42D24",
+     "stock": "C42D24"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "major_crz"
+    },
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "major_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:spec_ops",
+   "label": "spec_ops",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0B0510",
+     "stock": "1C0D28"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_specops"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "spec_ops_crz"
+    },
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_specops"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "spec_ops_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:ultra",
+   "label": "ultra",
+   "maps": 11,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_ultra"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "ultra_crz"
+    },
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_ultra"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "ultra_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "heretic_grunt:heretic",
+   "label": "heretic (heretic_grunt)",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\heretic_grunt\\heretic_grunt",
+     "chars": [
+      "heretic_grunt"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "heretic_crz"
+    },
+    {
+     "bipd": "objects\\characters\\heretic_grunt\\heretic_grunt",
+     "chars": [
+      "heretic_grunt"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "heretic_dop"
+    }
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter:(none)",
+   "label": "all",
+   "maps": 5,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\hunter\\hunter",
+     "chars": [
+      "hunter"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:minor",
+   "label": "minor",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "8B99BA",
+     "stock": "778CB5"
+    },
+    {
+     "editable": true,
+     "hi": "6F9CB3",
+     "stock": "6F9BB3"
+    },
+    {
+     "editable": true,
+     "hi": "2136FF",
+     "stock": "2136FF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:major",
+   "label": "major",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFAD04",
+     "stock": "FFAD04"
+    },
+    {
+     "editable": true,
+     "hi": "E3B553",
+     "stock": "E8A74F"
+    },
+    {
+     "editable": true,
+     "hi": "FF2227",
+     "stock": "FF2227"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:shieldless",
+   "label": "shieldless",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_sniper"
+     ],
+     "src": [
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "shieldless"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:minor",
+   "label": "minor shield",
+   "maps": 13,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "95FFCA"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield",
+    "objects\\weapons\\melee\\jackal_shield\\shaders\\jackal_shield"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:major",
+   "label": "major shield",
+   "maps": 11,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "FF040B"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield_major"
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:minor",
+   "label": "minor",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "95AABB",
+     "stock": "95AABB"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor_halo1:minor",
+   "label": "minor (sentinel_aggressor_halo1)",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "95AABB",
+     "stock": "95AABB"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor_halo1",
+     "chars": [
+      "sentinel_aggressor_halo1"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:major",
+   "label": "major",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor_major"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:captain",
+   "label": "captain",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "F9A200",
+     "stock": "F9A200"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor_eliminator"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "captain"
+    }
+   ]
+  }
+ ],
+ "Halo 3": [
+  {
+   "enemy": "Brute",
+   "id": "brute:minor",
+   "label": "minor",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2DBD43",
+     "stock": "26A925"
+    },
+    {
+     "editable": true,
+     "hi": "363D54",
+     "stock": "373D54"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute",
+      "brute_phantom"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:major",
+   "label": "major",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "262A5A",
+     "stock": "2E3673"
+    },
+    {
+     "editable": true,
+     "hi": "55374A",
+     "stock": "553844"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain",
+   "label": "captain",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "560C0E",
+     "stock": "711012"
+    },
+    {
+     "editable": true,
+     "hi": "311212",
+     "stock": "2C1111"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain",
+      "brute_captain_no_grenade"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain_major",
+   "label": "captain_major",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C6BF28",
+     "stock": "FAF021"
+    },
+    {
+     "editable": true,
+     "hi": "312212",
+     "stock": "2C1C11"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain_major",
+      "brute_captain_major_no_grenade"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain_ultra",
+   "label": "captain_ultra",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0686D3",
+     "stock": "09ACD3"
+    },
+    {
+     "editable": true,
+     "hi": "0B0B0B",
+     "stock": "0D0D0D"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:ultra",
+   "label": "ultra",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "5E11FF",
+     "stock": "6C0CFF"
+    },
+    {
+     "editable": true,
+     "hi": "0A0808",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:bodyguard",
+   "label": "bodyguard",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A9A490",
+     "stock": "A6A188"
+    },
+    {
+     "editable": true,
+     "hi": "3E0606",
+     "stock": "4C0304"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_bodyguard",
+      "brute_bodyguard_no_grenade"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "bodyguard"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_jumppack:jumppack",
+   "label": "jumppack (brute_jumppack)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "5CA1E9",
+     "stock": "4F91CF"
+    },
+    {
+     "editable": true,
+     "hi": "322D1E",
+     "stock": "403325"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_jumppack",
+     "chars": [
+      "brute_jumppack"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "jumppack"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_chieftain:chieftain_armor",
+   "label": "chieftain_armor (brute_chieftain)",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0A0B05",
+     "stock": "0A0B05"
+    },
+    {
+     "editable": true,
+     "hi": "7396A2",
+     "stock": "648799"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_chieftain",
+     "chars": [
+      "brute_chieftain_armor",
+      "brute_chieftain_armor_no_grenade"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "chieftain_armor"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_chieftain:chieftain_weapon",
+   "label": "chieftain_weapon (brute_chieftain)",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "7D5316",
+     "stock": "7C4916"
+    },
+    {
+     "editable": true,
+     "hi": "671B1C",
+     "stock": "551617"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_chieftain",
+     "chars": [
+      "brute_chieftain_weapon"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "chieftain_weapon"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:stalker",
+   "label": "stalker",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0F0E0C",
+     "stock": "0E0D0C"
+    },
+    {
+     "editable": true,
+     "hi": "0F1C13",
+     "stock": "0F1A11"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_stalker"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stalker"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:(none)",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger",
+      "bugger_major"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:minor",
+   "label": "minor",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "15202D",
+     "stock": "121C28"
+    },
+    {
+     "editable": true,
+     "hi": "17181B",
+     "stock": "212226"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:major",
+   "label": "major",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2C0303",
+     "stock": "250303"
+    },
+    {
+     "editable": true,
+     "hi": "1E0202",
+     "stock": "200202"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:spec_ops",
+   "label": "spec_ops",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "06050B",
+     "stock": "06060C"
+    },
+    {
+     "editable": true,
+     "hi": "050508",
+     "stock": "09090D"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:soc",
+   "label": "soc",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "B9B9B9",
+     "stock": "ABABAB"
+    },
+    {
+     "editable": true,
+     "hi": "C7C7C7",
+     "stock": "C7C7C7"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops_commander"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "soc"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Carrier Form",
+   "id": "floodcarrier:default",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcarrier\\floodcarrier",
+     "chars": [
+      "flood_carrier"
+     ],
+     "src": [
+      "none",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_brute:default",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "847A67",
+     "stock": "7E725C"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_brute\\floodcombat_brute",
+     "chars": [
+      "floodcombat_brute"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_elite:standard_fce",
+   "label": "standard_fce (floodcombat_elite)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "203044",
+     "stock": "1B293A"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_elite\\floodcombat_elite",
+     "chars": [
+      "floodcombat_elite",
+      "floodcombat_elite_shielded"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "standard_fce"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_human:standard_fch",
+   "label": "standard_fch (floodcombat_human)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_human\\floodcombat_human",
+     "chars": [
+      "flood_combat_human"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "standard_fch"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_ranged:(none)",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_ranged\\flood_ranged",
+     "chars": [
+      "flood_pureform_ranged"
+     ],
+     "src": [
+      "none",
+      "own"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_stalker:(none)",
+   "label": "all (flood_stalker)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_stalker\\flood_stalker",
+     "chars": [
+      "flood_pureform_stalker"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_tank:(none)",
+   "label": "all (flood_tank)",
+   "maps": 4,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_tank\\flood_tank",
+     "chars": [
+      "flood_pureform_tank"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:minor",
+   "label": "minor",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D25F00",
+     "stock": "E36200"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:heavy",
+   "label": "heavy",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "32B04F",
+     "stock": "35B151"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_heavy"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "heavy"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:major",
+   "label": "major",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C61010",
+     "stock": "C61313"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_major"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:ultra",
+   "label": "ultra",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D2D2D2",
+     "stock": "AEAEAE"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_ultra"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter:(none)",
+   "label": "all",
+   "maps": 4,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\hunter\\hunter",
+     "chars": [
+      "hunter"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:minor",
+   "label": "minor",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "8B99BA",
+     "stock": "778CB5"
+    },
+    {
+     "editable": true,
+     "hi": "6F9CB3",
+     "stock": "6F9BB3"
+    },
+    {
+     "editable": true,
+     "hi": "2136FF",
+     "stock": "2136FF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:major",
+   "label": "major",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFAD04",
+     "stock": "FFAD04"
+    },
+    {
+     "editable": true,
+     "hi": "E3B553",
+     "stock": "E8A74F"
+    },
+    {
+     "editable": true,
+     "hi": "FF2227",
+     "stock": "FF2227"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:sniper",
+   "label": "sniper",
+   "maps": 6,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_sniper"
+     ],
+     "src": [
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "sniper"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:minor",
+   "label": "minor shield",
+   "maps": 6,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "87FEFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:major",
+   "label": "major shield",
+   "maps": 6,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "FF87D9"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield_major"
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:minor",
+   "label": "minor",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "95AABB",
+     "stock": "95AABB"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:major",
+   "label": "major",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor_major"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:sid:000006F1",
+   "label": "sentinel_aggressor_captain",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "F9A200",
+     "stock": "F9A200"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor_captain"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "sid:000006F1"
+    }
+   ]
+  }
+ ],
+ "Halo 3: ODST": [
+  {
+   "enemy": "Brute",
+   "id": "brute:minor",
+   "label": "minor",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2DBD43",
+     "stock": "26A925"
+    },
+    {
+     "editable": true,
+     "hi": "363D54",
+     "stock": "373D54"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute",
+      "brute_phantom",
+      "brute_pilot_no_bomb"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:major",
+   "label": "major",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "262A5A",
+     "stock": "2E3673"
+    },
+    {
+     "editable": true,
+     "hi": "55374A",
+     "stock": "553844"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain",
+   "label": "captain",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "560C0E",
+     "stock": "711012"
+    },
+    {
+     "editable": true,
+     "hi": "311212",
+     "stock": "2C1111"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain_major",
+   "label": "captain_major",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C6BF28",
+     "stock": "FAF021"
+    },
+    {
+     "editable": true,
+     "hi": "312212",
+     "stock": "2C1C11"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:captain_ultra",
+   "label": "captain_ultra",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0686D3",
+     "stock": "09ACD3"
+    },
+    {
+     "editable": true,
+     "hi": "0B0B0B",
+     "stock": "0D0D0D"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "captain_ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:ultra",
+   "label": "ultra",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "5E11FF",
+     "stock": "6C0CFF"
+    },
+    {
+     "editable": true,
+     "hi": "0A0808",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_ultra"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:bodyguard",
+   "label": "bodyguard",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A9A490",
+     "stock": "A6A188"
+    },
+    {
+     "editable": true,
+     "hi": "3E0606",
+     "stock": "4C0304"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_bodyguard"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "bodyguard"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_jumppack:jumppack",
+   "label": "jumppack (brute_jumppack)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "5CA1E9",
+     "stock": "4F91CF"
+    },
+    {
+     "editable": true,
+     "hi": "322D1E",
+     "stock": "403325"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_jumppack",
+     "chars": [
+      "brute_jumppack"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "jumppack"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_jumppack:jumppack_major",
+   "label": "jumppack_major (brute_jumppack)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "400000",
+     "stock": "400000"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_jumppack",
+     "chars": [
+      "brute_jumppack_major"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "jumppack_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_jumppack:jumppack_ultra",
+   "label": "jumppack_ultra (brute_jumppack)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "624A02",
+     "stock": "4B3503"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_jumppack",
+     "chars": [
+      "brute_jumppack_ultra"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "jumppack_ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_chieftain:chieftain_armor",
+   "label": "chieftain_armor (brute_chieftain)",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0A0B05",
+     "stock": "0A0B05"
+    },
+    {
+     "editable": true,
+     "hi": "7396A2",
+     "stock": "648799"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_chieftain",
+     "chars": [
+      "brute_chieftain_armor"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "chieftain_armor"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_chieftain:chieftain_weapon",
+   "label": "chieftain_weapon (brute_chieftain)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "7D5316",
+     "stock": "7C4916"
+    },
+    {
+     "editable": true,
+     "hi": "671B1C",
+     "stock": "551617"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute_chieftain",
+     "chars": [
+      "brute_chieftain_weapon"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "chieftain_weapon"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:stalker",
+   "label": "stalker",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0F0E0C",
+     "stock": "0E0D0C"
+    },
+    {
+     "editable": true,
+     "hi": "0F1C13",
+     "stock": "0F1A11"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_stalker"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "stalker"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:tracker",
+   "label": "tracker",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0E330B",
+     "stock": "103906"
+    },
+    {
+     "editable": true,
+     "hi": "123307",
+     "stock": "113209"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_tracker"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "tracker"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:minor",
+   "label": "minor",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "44663E",
+     "stock": "44663E"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:major",
+   "label": "major",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "415483",
+     "stock": "405483"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:captain",
+   "label": "captain",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "250303",
+     "stock": "490606"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_captain"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "captain"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:captain_major",
+   "label": "captain_major",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C6BF28",
+     "stock": "FAF021"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_captain_major"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "captain_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:ultra",
+   "label": "ultra",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D2D2D2",
+     "stock": "AEAEAE"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_ultra"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:pupa",
+   "label": "pupa",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "8F915A",
+     "stock": "878B40"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_pupa"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "pupa"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:minor",
+   "label": "minor",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "15202D",
+     "stock": "121C28"
+    },
+    {
+     "editable": true,
+     "hi": "17181B",
+     "stock": "212226"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:major",
+   "label": "major",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2C0303",
+     "stock": "250303"
+    },
+    {
+     "editable": true,
+     "hi": "1E0202",
+     "stock": "200202"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_major"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:spec_ops",
+   "label": "spec_ops",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "06050B",
+     "stock": "06060C"
+    },
+    {
+     "editable": true,
+     "hi": "050508",
+     "stock": "09090D"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_scl"
+    },
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops_dog"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:soc",
+   "label": "soc",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "B9B9B9",
+     "stock": "ABABAB"
+    },
+    {
+     "editable": true,
+     "hi": "C7C7C7",
+     "stock": "C7C7C7"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite\\elite",
+     "chars": [
+      "elite_specops_commander"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "soc"
+    }
+   ]
+  },
+  {
+   "enemy": "Engineer",
+   "id": "engineer:(none)",
+   "label": "all",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\engineer\\engineer",
+     "chars": [
+      "engineer"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Engineer",
+   "id": "engineer_freeform:freeform",
+   "label": "freeform (engineer_freeform)",
+   "maps": 3,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\engineer\\engineer_freeform",
+     "chars": [
+      "engineer_freeform"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "freeform"
+    }
+   ]
+  },
+  {
+   "enemy": "Engineer",
+   "id": "engineer:slaveform",
+   "label": "slaveform",
+   "maps": 5,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\engineer\\engineer",
+     "chars": [
+      "engineer_slaveform",
+      "engineer_slaveform_cin"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "slaveform"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Carrier Form",
+   "id": "floodcarrier:default",
+   "label": "all",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcarrier\\floodcarrier",
+     "chars": [
+      "flood_carrier"
+     ],
+     "src": [
+      "none",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_brute:default",
+   "label": "all (floodcombat_brute)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "847A67",
+     "stock": "7E725C"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_brute\\floodcombat_brute",
+     "chars": [
+      "floodcombat_brute",
+      "floodcombat_brute_heavy",
+      "floodcombat_brute_stealth"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_civilian:default",
+   "label": "all (floodcombat_civilian)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2F372A",
+     "stock": "2D3A29"
+    },
+    {
+     "editable": true,
+     "hi": "584027",
+     "stock": "593E27"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_civilian\\floodcombat_civilian",
+     "chars": [
+      "flood_combat_civilian"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "default"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_elite:major_fce",
+   "label": "major_fce",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2C0303",
+     "stock": "250303"
+    },
+    {
+     "editable": true,
+     "hi": "1E0202",
+     "stock": "200202"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_elite\\floodcombat_elite",
+     "chars": [
+      "floodcombat_elite_shielded"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major_fce"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_elite:standard_fce",
+   "label": "standard_fce",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "203044",
+     "stock": "1B293A"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_elite\\floodcombat_elite",
+     "chars": [
+      "floodcombat_elite"
+     ],
+     "src": [
+      "own",
+      "any"
+     ],
+     "variant": "standard_fce"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_human:standard_fch",
+   "label": "standard_fch (floodcombat_human)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_human\\floodcombat_human",
+     "chars": [
+      "flood_combat_human"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "standard_fch"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Combat Form",
+   "id": "floodcombat_odst:standard_fch",
+   "label": "standard_fch (floodcombat_odst)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "A89160",
+     "stock": "8BA381"
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\floodcombat_human\\floodcombat_odst",
+     "chars": [
+      "flood_combat_odst"
+     ],
+     "src": [
+      "any",
+      "any"
+     ],
+     "variant": "standard_fch"
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_ranged:(none)",
+   "label": "all",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": true,
+     "hi": "BFBFBF",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_ranged\\flood_ranged",
+     "chars": [
+      "flood_pureform_ranged"
+     ],
+     "src": [
+      "none",
+      "own"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_stalker:(none)",
+   "label": "all (flood_stalker)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_stalker\\flood_stalker",
+     "chars": [
+      "flood_pureform_stalker"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Flood Pure Form",
+   "id": "flood_tank:(none)",
+   "label": "all (flood_tank)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\flood_tank\\flood_tank",
+     "chars": [
+      "flood_pureform_tank"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:minor",
+   "label": "minor",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D25F00",
+     "stock": "E36200"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:heavy",
+   "label": "heavy",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "32B04F",
+     "stock": "35B151"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_heavy"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "heavy"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:major",
+   "label": "major",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "C61010",
+     "stock": "C61313"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_major"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:spec_ops",
+   "label": "spec_ops",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0B0510",
+     "stock": "0C0611"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_specops"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "spec_ops"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:ultra",
+   "label": "ultra",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "D2D2D2",
+     "stock": "AEAEAE"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_ultra"
+     ],
+     "src": [
+      "own",
+      "none"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter:(none)",
+   "label": "all",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\hunter\\hunter",
+     "chars": [
+      "hunter",
+      "hunter_shielded"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter_flak:(none)",
+   "label": "all (hunter_flak)",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\hunter\\hunter_flak",
+     "chars": [
+      "hunter_classic"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:minor",
+   "label": "minor",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "8B99BA",
+     "stock": "778CB5"
+    },
+    {
+     "editable": true,
+     "hi": "6F9CB3",
+     "stock": "6F9BB3"
+    },
+    {
+     "editable": true,
+     "hi": "2136FF",
+     "stock": "2136FF"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:major",
+   "label": "major",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFAD04",
+     "stock": "FFAD04"
+    },
+    {
+     "editable": true,
+     "hi": "E3B553",
+     "stock": "E8A74F"
+    },
+    {
+     "editable": true,
+     "hi": "FF2227",
+     "stock": "FF2227"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:sniper",
+   "label": "sniper",
+   "maps": 9,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_sniper",
+      "jackal_sniper_far"
+     ],
+     "src": [
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "sniper"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:minor",
+   "label": "minor shield",
+   "maps": 9,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "87FEFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:major",
+   "label": "major shield",
+   "maps": 9,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "FF87D9"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\jackal\\shaders\\jackal_shield_major"
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:minor",
+   "label": "minor",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "95AABB",
+     "stock": "95AABB"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor"
+     ],
+     "src": [
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Sentinel",
+   "id": "sentinel_aggressor:major",
+   "label": "major",
+   "maps": 8,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\sentinel_aggressor\\sentinel_aggressor",
+     "chars": [
+      "sentinel_aggressor_major"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": "major"
+    }
+   ]
+  }
+ ],
+ "Halo 4": [
+  {
+   "enemy": "Crawler",
+   "id": "crawler:default",
+   "label": "minor",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_pawn\\materials\\storm_pawn_default\\storm_pawn_default"
+   ]
+  },
+  {
+   "enemy": "Crawler",
+   "id": "crawler:sniper",
+   "label": "sniper",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_pawn\\materials\\storm_pawn_sniper\\storm_pawn_sniper"
+   ]
+  },
+  {
+   "enemy": "Crawler",
+   "id": "crawler:leader",
+   "label": "prime",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_pawn\\materials\\storm_pawn_leader\\storm_pawn_leader"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:default",
+   "label": "minor",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_default_materials\\storm_elite_ai_default_armor",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_default_materials\\storm_elite_ai_default_armor_00",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_default_materials\\storm_elite_ai_default_armor_01",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_default_materials\\storm_elite_ai_default_armor_02",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_default_materials\\storm_elite_ai_default_armor_03"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:officer",
+   "label": "officer",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "6B6B6B"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_officer_material\\storm_elite_ai_officer_armor",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_officer_material\\storm_elite_ai_officer_armor_00",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_officer_material\\storm_elite_ai_officer_armor_01",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_officer_material\\storm_elite_ai_officer_armor_02",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_officer_material\\storm_elite_ai_officer_armor_03"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:general",
+   "label": "general",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_general_materials\\storm_elite_ai_general_armor",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_general_materials\\storm_elite_ai_general_armor_00",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_general_materials\\storm_elite_ai_general_armor_01",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_general_materials\\storm_elite_ai_general_armor_02",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_general_materials\\storm_elite_ai_general_armor_03"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:zealot",
+   "label": "zealot",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_zealot_material\\storm_elite_ai_zealot_armor",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_zealot_material\\storm_elite_ai_zealot_armor_00",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_zealot_material\\storm_elite_ai_zealot_armor_01",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_zealot_material\\storm_elite_ai_zealot_armor_02",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_zealot_material\\storm_elite_ai_zealot_armor_03"
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite:ranger",
+   "label": "ranger",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_ranger_materials\\storm_elite_ai_ranger_armor",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_ranger_materials\\storm_elite_ai_ranger_armor_00",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_ranger_materials\\storm_elite_ai_ranger_armor_01",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_ranger_materials\\storm_elite_ai_ranger_armor_02",
+    "objects\\characters\\storm_elite_ai\\storm_elite_ai_ranger_materials\\storm_elite_ai_ranger_armor_03"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:default",
+   "label": "minor",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_core",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_core_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_core_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_core_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_core_03",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_pack",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_pack_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_pack_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_pack_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_default\\storm_grunt_default_armor_pack_03"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:ultra",
+   "label": "ultra",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_core",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_core_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_core_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_core_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_core_03",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_pack",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_pack_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_pack_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_pack_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_ultra\\storm_grunt_ultra_armor_pack_03"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:imperial",
+   "label": "imperial",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_core",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_core_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_core_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_core_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_core_03",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_pack",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_pack_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_pack_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_pack_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_imperial\\storm_grunt_imperial_armor_pack_03"
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:space",
+   "label": "space",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_core",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_core_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_core_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_core_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_core_03",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_pack",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_pack_00",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_pack_01",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_pack_02",
+    "objects\\characters\\storm_grunt\\materials\\storm_grunt_space\\storm_grunt_space_armor_pack_03"
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter:default",
+   "label": "all",
+   "maps": 18,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_hunter\\materials\\storm_hunter_default\\storm_hunter_armor",
+    "objects\\characters\\storm_hunter\\materials\\storm_hunter_default\\storm_hunter_gun",
+    "objects\\characters\\storm_hunter\\materials\\storm_hunter_default\\storm_hunter_shield"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:default",
+   "label": "minor",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_default\\storm_jackal_default_armor",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_default\\storm_jackal_default_armor_00",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_default\\storm_jackal_default_armor_01",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_default\\storm_jackal_default_armor_02",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_default\\storm_jackal_default_armor_03"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:major",
+   "label": "major",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_major\\storm_jackal_major_armor",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_major\\storm_jackal_major_armor_00",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_major\\storm_jackal_major_armor_01",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_major\\storm_jackal_major_armor_02",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_major\\storm_jackal_major_armor_03"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:ranger",
+   "label": "ranger",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_ranger\\storm_jackal_ranger_armor",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_ranger\\storm_jackal_ranger_armor_00",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_ranger\\storm_jackal_ranger_armor_01",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_ranger\\storm_jackal_ranger_armor_02",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_ranger\\storm_jackal_ranger_armor_03"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:sniper",
+   "label": "sniper",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "DDFFFB"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_sniper\\storm_jackal_sniper_armor",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_sniper\\storm_jackal_sniper_armor_00",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_sniper\\storm_jackal_sniper_armor_01",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_sniper\\storm_jackal_sniper_armor_02",
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_sniper\\storm_jackal_sniper_armor_03"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:gauntlet",
+   "label": "gauntlet",
+   "maps": 20,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_jackal\\materials\\storm_jackal_gauntlet\\storm_jackal_gauntlet"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:minor",
+   "label": "minor shield",
+   "maps": 20,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "1CDF9E"
+    }
+   ],
+   "targets": [
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\cov_portable_shield_frontglow",
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\cov_portable_shield_pulse",
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\skirmisher_bracer_edge",
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\skirmisher_bracer_mainglow"
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:major",
+   "label": "major shield",
+   "maps": 20,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "FFC800"
+    }
+   ],
+   "targets": [
+    "objects\\weapons\\melee\\jackal_shield\\shaders\\major\\jackal_major_bracer_edge",
+    "objects\\weapons\\melee\\jackal_shield\\shaders\\major\\jackal_major_bracer_mainglow",
+    "objects\\weapons\\melee\\jackal_shield\\shaders\\major\\jackal_major_shield_frontglow",
+    "objects\\weapons\\melee\\jackal_shield\\shaders\\major\\jackal_major_shield_pulse"
+   ]
+  },
+  {
+   "enemy": "Knight",
+   "id": "knight:default",
+   "label": "minor",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_knight\\materials\\storm_knight_default\\storm_knight_default",
+    "objects\\characters\\storm_knight\\materials\\storm_knight_default\\storm_knight_default_wings"
+   ]
+  },
+  {
+   "enemy": "Knight",
+   "id": "knight:ranger",
+   "label": "ranger",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_knight\\materials\\storm_knight_ranger\\storm_knight_ranger",
+    "objects\\characters\\storm_knight\\materials\\storm_knight_ranger\\storm_knight_ranger_body"
+   ]
+  },
+  {
+   "enemy": "Knight",
+   "id": "knight:battle_wagon",
+   "label": "battlewagon",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_knight\\materials\\storm_knight_battle_wagon\\storm_knight_battle_wagon",
+    "objects\\characters\\storm_knight\\materials\\storm_knight_battle_wagon\\storm_knight_battle_wagon_inner_wings",
+    "objects\\characters\\storm_knight\\materials\\storm_knight_battle_wagon\\storm_knight_battle_wagon_wings"
+   ]
+  },
+  {
+   "enemy": "Knight",
+   "id": "knight:commander",
+   "label": "commander",
+   "maps": 16,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_knight\\materials\\storm_knight_commander\\storm_knight_commander",
+    "objects\\characters\\storm_knight\\materials\\storm_knight_commander\\storm_knight_commander_wings"
+   ]
+  },
+  {
+   "enemy": "Watcher",
+   "id": "watcher:default",
+   "label": "all",
+   "maps": 17,
+   "route": "tint",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "tint",
+     "stock": "FFFFFF"
+    }
+   ],
+   "targets": [
+    "objects\\characters\\storm_bishop\\materials\\storm_bishop_default\\storm_bishop_default"
+   ]
+  }
+ ],
+ "Halo Reach": [
+  {
+   "enemy": "Brute",
+   "id": "brute:minor",
+   "label": "minor",
+   "maps": 15,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "2DBD43",
+     "stock": "26A925"
+    },
+    {
+     "editable": true,
+     "hi": "363D54",
+     "stock": "373D54"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute:major",
+   "label": "major",
+   "maps": 15,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "262A5A",
+     "stock": "2E3673"
+    },
+    {
+     "editable": true,
+     "hi": "55374A",
+     "stock": "553844"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute\\brute",
+     "chars": [
+      "brute_captain"
+     ],
+     "src": [
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Brute",
+   "id": "brute_chieftain:chieftain",
+   "label": "chieftain (brute_chieftain)",
+   "maps": 13,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\brute_chieftain\\brute_chieftain",
+     "chars": [
+      "brute_chieftain_armor",
+      "brute_chieftain_weapon"
+     ],
+     "src": [
+      "none",
+      "none"
+     ],
+     "variant": "chieftain"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:minor",
+   "label": "minor",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "78691A",
+     "stock": "796A1A"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    },
+    {
+     "editable": true,
+     "hi": "21360E",
+     "stock": "21360E"
+    },
+    {
+     "editable": true,
+     "hi": "6B4D16",
+     "stock": "6B4D16"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:major",
+   "label": "major",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "310810",
+     "stock": "310811"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    },
+    {
+     "editable": true,
+     "hi": "223629",
+     "stock": "233629"
+    },
+    {
+     "editable": true,
+     "hi": "74381A",
+     "stock": "74391A"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Bugger",
+   "id": "bugger:officer",
+   "label": "officer",
+   "maps": 4,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "0A2179",
+     "stock": "0A2179"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    },
+    {
+     "editable": true,
+     "hi": "11080A",
+     "stock": "11090B"
+    },
+    {
+     "editable": true,
+     "hi": "3A6F4C",
+     "stock": "3B6F4C"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\bugger\\bugger",
+     "chars": [
+      "bugger_captain",
+      "bugger_captain_major",
+      "bugger_ultra"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "officer"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:minor",
+   "label": "minor",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "1F3D72",
+     "stock": "1F3E72"
+    },
+    {
+     "editable": true,
+     "hi": "232F4E",
+     "stock": "222D45"
+    },
+    {
+     "editable": true,
+     "hi": "D1670E",
+     "stock": "D1660D"
+    },
+    {
+     "editable": true,
+     "hi": "5167A9",
+     "stock": "5167A9"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite",
+      "elite_pilot"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:officer",
+   "label": "officer",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "5E1212",
+     "stock": "5E1313"
+    },
+    {
+     "editable": true,
+     "hi": "953200",
+     "stock": "953200"
+    },
+    {
+     "editable": true,
+     "hi": "9DB02B",
+     "stock": "9DB02C"
+    },
+    {
+     "editable": true,
+     "hi": "BC1C16",
+     "stock": "BC1C17"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_officer"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "officer"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:spec_ops",
+   "label": "spec_ops",
+   "maps": 17,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "1A111D",
+     "stock": "1D161F"
+    },
+    {
+     "editable": true,
+     "hi": "161018",
+     "stock": "161018"
+    },
+    {
+     "editable": true,
+     "hi": "2B674E",
+     "stock": "2C684E"
+    },
+    {
+     "editable": true,
+     "hi": "8F2D26",
+     "stock": "8F2D25"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_specops"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:ultra",
+   "label": "ultra",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "E7E7E7",
+     "stock": "EFEFEF"
+    },
+    {
+     "editable": true,
+     "hi": "837E6A",
+     "stock": "837F6B"
+    },
+    {
+     "editable": true,
+     "hi": "CB503F",
+     "stock": "CB5140"
+    },
+    {
+     "editable": true,
+     "hi": "CEFAF2",
+     "stock": "C1F1E8"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_ultra"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:general",
+   "label": "general",
+   "maps": 18,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "753A04",
+     "stock": "753904"
+    },
+    {
+     "editable": true,
+     "hi": "741F04",
+     "stock": "741F04"
+    },
+    {
+     "editable": true,
+     "hi": "440D0D",
+     "stock": "440D0D"
+    },
+    {
+     "editable": true,
+     "hi": "E8ED1A",
+     "stock": "E9ED1A"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_general"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "general"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:zealot",
+   "label": "zealot",
+   "maps": 2,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "361225",
+     "stock": "361224"
+    },
+    {
+     "editable": true,
+     "hi": "301534",
+     "stock": "2F1434"
+    },
+    {
+     "editable": true,
+     "hi": "FF673B",
+     "stock": "FF663B"
+    },
+    {
+     "editable": true,
+     "hi": "47162F",
+     "stock": "47162F"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_story"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "zealot"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:item_options",
+   "label": "item_options",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "BDE3D5",
+     "stock": "BDE3D6"
+    },
+    {
+     "editable": true,
+     "hi": "96B5A9",
+     "stock": "97B5AA"
+    },
+    {
+     "editable": true,
+     "hi": "FF663B",
+     "stock": "FF663B"
+    },
+    {
+     "editable": true,
+     "hi": "9EB3AE",
+     "stock": "9EB3AD"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_jetpack"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "item_options"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:jetpack",
+   "label": "jetpack",
+   "maps": 16,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "BDE3D5",
+     "stock": "BDE3D6"
+    },
+    {
+     "editable": true,
+     "hi": "96B5A9",
+     "stock": "97B5AA"
+    },
+    {
+     "editable": true,
+     "hi": "FF663B",
+     "stock": "FF663B"
+    },
+    {
+     "editable": true,
+     "hi": "9EB3AE",
+     "stock": "9EB3AD"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_jetpack"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "jetpack"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:select_difficulty",
+   "label": "select_difficulty",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "361225",
+     "stock": "361224"
+    },
+    {
+     "editable": true,
+     "hi": "301534",
+     "stock": "2F1434"
+    },
+    {
+     "editable": true,
+     "hi": "FF673B",
+     "stock": "FF663B"
+    },
+    {
+     "editable": true,
+     "hi": "47162F",
+     "stock": "47162F"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_story"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "select_difficulty"
+    }
+   ]
+  },
+  {
+   "enemy": "Elite",
+   "id": "elite_ai:story_elite",
+   "label": "story_elite",
+   "maps": 1,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "241831",
+     "stock": "231831"
+    },
+    {
+     "editable": true,
+     "hi": "2C132C",
+     "stock": "2B122C"
+    },
+    {
+     "editable": true,
+     "hi": "EF4F46",
+     "stock": "EF5046"
+    },
+    {
+     "editable": true,
+     "hi": "4D2A48",
+     "stock": "4D2947"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\elite_ai\\elite_ai",
+     "chars": [
+      "elite_story_unique"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "story_elite"
+    }
+   ]
+  },
+  {
+   "enemy": "Engineer",
+   "id": "engineer:(none)",
+   "label": "all",
+   "maps": 14,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\engineer\\engineer",
+     "chars": [
+      "engineer"
+     ],
+     "src": [
+      "none"
+     ],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:minor",
+   "label": "minor",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFB64F",
+     "stock": "FFB650"
+    },
+    {
+     "editable": true,
+     "hi": "A76317",
+     "stock": "A76318"
+    },
+    {
+     "editable": true,
+     "hi": "202146",
+     "stock": "212247"
+    },
+    {
+     "editable": true,
+     "hi": "DE8855",
+     "stock": "DE8855"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:heavy",
+   "label": "heavy",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "1B2C0D",
+     "stock": "1B2C0D"
+    },
+    {
+     "editable": true,
+     "hi": "1B2C0D",
+     "stock": "1B2C0D"
+    },
+    {
+     "editable": true,
+     "hi": "355841",
+     "stock": "355841"
+    },
+    {
+     "editable": true,
+     "hi": "925A29",
+     "stock": "935A29"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_heavy"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "heavy"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:major",
+   "label": "major",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "360202",
+     "stock": "360303"
+    },
+    {
+     "editable": true,
+     "hi": "340000",
+     "stock": "340000"
+    },
+    {
+     "editable": true,
+     "hi": "620C0C",
+     "stock": "630D0D"
+    },
+    {
+     "editable": true,
+     "hi": "87B344",
+     "stock": "87B344"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "major"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:spec_ops",
+   "label": "spec_ops",
+   "maps": 14,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "100A12",
+     "stock": "110A13"
+    },
+    {
+     "editable": true,
+     "hi": "100A12",
+     "stock": "100A12"
+    },
+    {
+     "editable": true,
+     "hi": "201015",
+     "stock": "211115"
+    },
+    {
+     "editable": true,
+     "hi": "475B3C",
+     "stock": "485C3C"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_specops"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "spec_ops"
+    }
+   ]
+  },
+  {
+   "enemy": "Grunt",
+   "id": "grunt:ultra",
+   "label": "ultra",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "FFFFFF"
+    },
+    {
+     "editable": true,
+     "hi": "808080",
+     "stock": "808080"
+    },
+    {
+     "editable": true,
+     "hi": "CA6E63",
+     "stock": "CB6F63"
+    },
+    {
+     "editable": true,
+     "hi": "A2B9B5",
+     "stock": "A2BAB6"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\grunt\\grunt",
+     "chars": [
+      "grunt_ultra"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "ultra"
+    }
+   ]
+  },
+  {
+   "enemy": "Hunter",
+   "id": "hunter:(none)",
+   "label": "all",
+   "maps": 17,
+   "route": "perm",
+   "slots": [],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\hunter\\hunter",
+     "chars": [
+      "hunter"
+     ],
+     "src": [],
+     "variant": ""
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:jackal_minor",
+   "label": "minor",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal"
+     ],
+     "src": [
+      "none",
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "jackal_minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:jackal_major",
+   "label": "major",
+   "maps": 20,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "694F83",
+     "stock": "574475"
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_major"
+     ],
+     "src": [
+      "own",
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "jackal_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "jackal:jackal_sniper",
+   "label": "sniper",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    },
+    {
+     "editable": false,
+     "hi": null,
+     "stock": null
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "jackal_sniper"
+     ],
+     "src": [
+      "none",
+      "none",
+      "none",
+      "none"
+     ],
+     "variant": "jackal_sniper"
+    }
+   ]
+  },
+  {
+   "enemy": "Jackal",
+   "id": "shield:all",
+   "label": "shields (shared with the portable shield and Skirmisher bracers)",
+   "maps": 36,
+   "route": "shield",
+   "slots": [
+    {
+     "editable": true,
+     "hi": null,
+     "name": "shield",
+     "stock": "2764E5"
+    }
+   ],
+   "targets": [
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\cov_portable_shield_frontglow",
+    "objects\\props\\covenant\\cov_portable_shield\\shaders\\cov_portable_shield_mainglow",
+    "objects\\weapons\\melee\\skirmisher_bracers\\shaders\\skirmisher_bracer_edge",
+    "objects\\weapons\\melee\\skirmisher_bracers\\shaders\\skirmisher_bracer_mainglow"
+   ]
+  },
+  {
+   "enemy": "Skirmisher",
+   "id": "jackal:skirmisher_minor",
+   "label": "minor",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "1C1C1C",
+     "stock": "1D1D1D"
+    },
+    {
+     "editable": true,
+     "hi": "1C1C1C",
+     "stock": "1C1C1C"
+    },
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "FFFFFF"
+    },
+    {
+     "editable": true,
+     "hi": "1C1C1C",
+     "stock": "1C1C1C"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "skirmisher"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "skirmisher_minor"
+    }
+   ]
+  },
+  {
+   "enemy": "Skirmisher",
+   "id": "jackal:skirmisher_major",
+   "label": "major",
+   "maps": 19,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "690D0D",
+     "stock": "690D0D"
+    },
+    {
+     "editable": true,
+     "hi": "690D0D",
+     "stock": "690D0D"
+    },
+    {
+     "editable": true,
+     "hi": "AB1818",
+     "stock": "AB1919"
+    },
+    {
+     "editable": true,
+     "hi": "717171",
+     "stock": "717171"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "skirmisher_major"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "skirmisher_major"
+    }
+   ]
+  },
+  {
+   "enemy": "Skirmisher",
+   "id": "jackal:skirmisher_champion",
+   "label": "champion",
+   "maps": 13,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "E18B00",
+     "stock": "E18B00"
+    },
+    {
+     "editable": true,
+     "hi": "E18B00",
+     "stock": "E18B00"
+    },
+    {
+     "editable": true,
+     "hi": "FFFFFF",
+     "stock": "EEEEEE"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "skirmisher_champion"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "skirmisher_champion"
+    }
+   ]
+  },
+  {
+   "enemy": "Skirmisher",
+   "id": "jackal:skirmisher_commando",
+   "label": "commando",
+   "maps": 16,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "316203",
+     "stock": "316203"
+    },
+    {
+     "editable": true,
+     "hi": "316203",
+     "stock": "316204"
+    },
+    {
+     "editable": true,
+     "hi": "656565",
+     "stock": "595959"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "skirmisher_commando"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "skirmisher_commando"
+    }
+   ]
+  },
+  {
+   "enemy": "Skirmisher",
+   "id": "jackal:skirmisher_murmillo",
+   "label": "murmillo",
+   "maps": 12,
+   "route": "perm",
+   "slots": [
+    {
+     "editable": true,
+     "hi": "AE2E00",
+     "stock": "AE2E00"
+    },
+    {
+     "editable": true,
+     "hi": "AE2E00",
+     "stock": "AE2E00"
+    },
+    {
+     "editable": true,
+     "hi": "FFA787",
+     "stock": "FFA787"
+    },
+    {
+     "editable": true,
+     "hi": "000000",
+     "stock": "000000"
+    }
+   ],
+   "targets": [
+    {
+     "bipd": "objects\\characters\\jackal\\jackal",
+     "chars": [
+      "skirmisher_murmillone"
+     ],
+     "src": [
+      "own",
+      "own",
+      "own",
+      "own"
+     ],
+     "variant": "skirmisher_murmillo"
+    }
+   ]
+  }
+ ]
+}

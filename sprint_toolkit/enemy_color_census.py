@@ -131,6 +131,7 @@ def census_gen2plus(game, subs, folder, fam, out):
                                            'bipd': unit['name']})
                 rec['chars'].add(tp.rsplit(B, 1)[-1])
                 rec['maps'].add(os.path.basename(mp))
+                rec.setdefault('sids', set()).add(sid)
                 if len(cols) > len(rec['slots']):
                     rec['slots'] = cols
         del m
@@ -162,10 +163,21 @@ def census_h1(folder, fam, out):
                 lo = struct.unpack_from('<3f', m.data, e)
                 hi = struct.unpack_from('<3f', m.data, e + 0xC)
                 cols.append((si, hexcol(*lo), hexcol(*hi), 'actv'))
+            if not cols and unit:
+                # No colours on the actor variant: the biped's own change colours show
+                # (Grunt minor -- the majors override them on their actv).
+                for _bp, bb in m.find_tags('bipd', unit):
+                    for si, s in enumerate(m.follow_all(bb, [0x164], [0x2C], 'all')):
+                        perms = m.follow_all(s, [0x20], [0x1C], 'all')
+                        if perms:
+                            lo = struct.unpack_from('<3f', m.data, perms[0] + 4)
+                            hi = struct.unpack_from('<3f', m.data, perms[-1] + 0x10)
+                            cols.append((si, hexcol(*lo), hexcol(*hi), 'bipd'))
             key = (game, enemy, actr.rsplit(B, 1)[-1] or tp.rsplit(B, 1)[-1], unit.rsplit(B, 1)[-1])
             rec = out.setdefault(key, {'chars': set(), 'maps': set(), 'slots': cols,
                                        'bipd': unit})
             rec['chars'].add(tp.rsplit(B, 1)[-1])
+            rec.setdefault('targets', set()).add(tp)
             rec['maps'].add(os.path.basename(mp))
         del m
 
@@ -181,6 +193,7 @@ def merge_unnamed(out):
         if twin:
             out[twin]['chars'] |= out[key]['chars']
             out[twin]['maps'] |= out[key]['maps']
+            out[twin].setdefault('sids', set()).update(out[key].get('sids', ()))
             del out[key]
 
 

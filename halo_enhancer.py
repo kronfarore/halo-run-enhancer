@@ -528,7 +528,7 @@ ZOOM_DONOR_WEAPONS = {
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
                  'shared_session_dir', 'shared_session_autosave',
-                 'vault_dir', 'baseline_root') + OPTION_KEYS
+                 'vault_dir', 'baseline_root', 'enemy_colors') + OPTION_KEYS
 
 
 def mcc_root():
@@ -7413,6 +7413,7 @@ class MagnitudeEditorDialog(QDialog):
                     {'Halo Reach': 'reach_equipment_drop',
                      'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
+                enemy_colors=(CONFIG.get('enemy_colors') or {}).get(self.game),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
@@ -7462,6 +7463,7 @@ class MagnitudeEditorDialog(QDialog):
                     self.target_difficulty, game=self.game,
                     **baseline_args(self.game),
                     skulls=skulls,
+                    enemy_colors=(CONFIG.get('enemy_colors') or {}).get(self.game),
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
@@ -9527,6 +9529,7 @@ class OptionsDialog(QDialog):
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
         self._opt_page("Patching").addWidget(patch_h4_g, 90)
+        self._build_enemy_colors()
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -9922,6 +9925,149 @@ class OptionsDialog(QDialog):
                 ('\n'.join(done) if done else 'Nothing to change.')
                 + '\n\nRestart MCC for this to take effect.')
 
+    # ---- Enemy colours ------------------------------------------------------
+    # Visual only, never a card. One row per enemy rank (enemy_colors_catalog.json,
+    # built from every campaign map by sprint_toolkit/enemy_color_catalog.py); each
+    # colour slot is a swatch showing the stock colour until overridden. Stored as
+    # CONFIG['enemy_colors'] = {game: {row id: {slot: 'RRGGBB'}}} -- a machine setting,
+    # not a run option: colours are taste, and a co-op partner keeps their own.
+    _EC_FIRST = ('Grunt', 'Elite', 'Jackal', 'Skirmisher', 'Brute')
+
+    def _build_enemy_colors(self):
+        import enemy_colors
+        self._ec_catalog = enemy_colors.load_catalog()
+        self._ec = {g: {r: dict(sl) for r, sl in (rows or {}).items()}
+                    for g, rows in (CONFIG.get('enemy_colors') or {}).items()}
+        box = QGroupBox("Enemy colours")
+        lay = QVBoxLayout(box)
+        note = QLabel(
+            "Repaint an enemy rank. Visual only: nothing gets harder. Each swatch is one "
+            "colour slot, showing the stock colour until you pick one; click to choose, "
+            "right-click to reset. Takes effect when a mission is patched.\n"
+            "Halo 4 colours are a tint over the rank's own texture (white = stock). "
+            "Greyed swatches have no colour data for that rank.")
+        note.setWordWrap(True)
+        lay.addWidget(note)
+        top = QHBoxLayout()
+        self._ec_game = QComboBox()
+        for g in BASELINE_GAMES:
+            if self._ec_catalog.get(g):
+                self._ec_game.addItem(g)
+        cur = getattr(self.parent(), 'game', None)
+        if cur and self._ec_game.findText(cur) >= 0:
+            self._ec_game.setCurrentText(cur)
+        top.addWidget(QLabel("Game:"))
+        top.addWidget(self._ec_game)
+        top.addStretch(1)
+        reset = QPushButton("Reset this game")
+        reset.setToolTip("Clear every colour override for the selected game.")
+        top.addWidget(reset)
+        lay.addLayout(top)
+        self._ec_tree = QTreeWidget()
+        self._ec_tree.setColumnCount(3)
+        self._ec_tree.setHeaderLabels(["Rank", "Colours", "Maps"])
+        self._ec_tree.setRootIsDecorated(True)
+        self._ec_tree.setMinimumHeight(520)
+        self._ec_tree.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)
+        self._ec_tree.header().setSectionResizeMode(1, QHeaderView.Stretch)
+        self._ec_tree.header().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        lay.addWidget(self._ec_tree)
+        if not self._ec_catalog:
+            lay.addWidget(QLabel("enemy_colors_catalog.json is missing -- run "
+                                 "sprint_toolkit/enemy_color_catalog.py."))
+
+        def _reset_game():
+            self._ec.pop(self._ec_game.currentText(), None)
+            self._ec_fill()
+        reset.clicked.connect(_reset_game)
+        self._ec_game.currentIndexChanged.connect(lambda _i: self._ec_fill())
+        self._ec_fill()
+        self._opt_page("Enemy colours").addWidget(box)
+
+    def _ec_fill(self):
+        game = self._ec_game.currentText()
+        rows = self._ec_catalog.get(game, [])
+        self._ec_tree.clear()
+        self._ec_items = {}
+        enemies = sorted({r['enemy'] for r in rows},
+                         key=lambda e: (self._EC_FIRST.index(e) if e in self._EC_FIRST
+                                        else len(self._EC_FIRST), e))
+        for enemy in enemies:
+            top = QTreeWidgetItem([enemy, "", ""])
+            f = top.font(0)
+            f.setBold(True)
+            top.setFont(0, f)
+            self._ec_tree.addTopLevelItem(top)
+            for row in [r for r in rows if r['enemy'] == enemy]:
+                it = QTreeWidgetItem([row['label'], "", str(row.get('maps', ''))])
+                it.setToolTip(2, "Campaign maps this rank appears on")
+                top.addChild(it)
+                self._ec_items[row['id']] = it
+                self._ec_tree.setItemWidget(it, 1, self._ec_swatches(game, row))
+            top.setExpanded(enemy in self._EC_FIRST
+                            or any(r['id'] in self._ec.get(game, {}) for r in rows
+                                   if r['enemy'] == enemy))
+
+    def _ec_swatches(self, game, row):
+        w = QWidget()
+        h = QHBoxLayout(w)
+        h.setContentsMargins(2, 1, 2, 1)
+        h.setSpacing(4)
+        chosen = self._ec.get(game, {}).get(row['id'], {})
+        if not row['slots']:
+            lbl = QLabel("no colour data (texture colours only)")
+            lbl.setStyleSheet("color: #888;")
+            h.addWidget(lbl)
+        for si, slot in enumerate(row['slots']):
+            key = str(si)
+            b = QPushButton()
+            b.setFixedSize(46, 20)
+            name = slot.get('name') or 'slot %d' % (si + 1)
+            stock = slot.get('stock')
+            if not slot.get('editable') or not stock:
+                b.setEnabled(False)
+                b.setText("—")
+                b.setToolTip("%s: no colour data for this rank" % name)
+                h.addWidget(b)
+                continue
+            val = chosen.get(key)
+            col = val or stock
+            text_col = '#000' if QColor('#' + col).lightness() > 128 else '#fff'
+            b.setStyleSheet("QPushButton { background-color: #%s; color: %s; border: %s; }"
+                            % (col, text_col, '2px solid #ffd54f' if val else '1px solid #555'))
+            b.setText("✎" if val else "")
+            rng = stock + ('..' + slot['hi'] if slot.get('hi') and slot['hi'] != stock else '')
+            b.setToolTip("%s\nstock %s%s\n\nClick to choose, right-click to reset."
+                         % (name, rng, ('\nset to ' + val) if val else ''))
+            b.clicked.connect(lambda _=False, g=game, r=row, k=key, c=col:
+                              self._ec_pick(g, r, k, c))
+            b.setContextMenuPolicy(Qt.CustomContextMenu)
+            b.customContextMenuRequested.connect(lambda _p, g=game, r=row, k=key:
+                                                 self._ec_set(g, r, k, None))
+            h.addWidget(b)
+        h.addStretch(1)
+        return w
+
+    def _ec_pick(self, game, row, key, current):
+        col = QColorDialog.getColor(QColor('#' + current), self,
+                                    "%s %s -- colour" % (row['enemy'], row['label']))
+        if col.isValid():
+            self._ec_set(game, row, key, col.name()[1:].upper())
+
+    def _ec_set(self, game, row, key, value):
+        slots = self._ec.setdefault(game, {}).setdefault(row['id'], {})
+        if value:
+            slots[key] = value
+        else:
+            slots.pop(key, None)
+        if not slots:
+            self._ec[game].pop(row['id'], None)
+        if not self._ec[game]:
+            self._ec.pop(game, None)
+        it = self._ec_items.get(row['id'])
+        if it is not None:
+            self._ec_tree.setItemWidget(it, 1, self._ec_swatches(game, row))
+
     def values(self):
         return {
             'target_difficulty': self.diff_combo.currentData(),   # internal slot name
@@ -10023,6 +10169,7 @@ class OptionsDialog(QDialog):
             # Empty is meaningful here (it selects the sibling .bak), so unlike
             # mcc_root this must NOT collapse to None.
             'baseline_root': self.baseline_root_edit.text().strip(),
+            'enemy_colors': self._ec,
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
             'swap_player_loadouts': self.swap_players_cb.isChecked(),
             'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),

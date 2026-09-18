@@ -6579,7 +6579,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
-              skip_flight=False, hostile_sentinels=False,
+              skip_flight=False, hostile_sentinels=False, enemy_colors=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -6916,6 +6916,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # m20's level script overrides the Target Locator's strike count; drop it so
         # the airstrike tag (and the Airstrike card) decides (_drop_airstrike_override).
         results.extend(_drop_airstrike_override(m))
+
+    if enemy_colors:
+        # Per-rank colour overrides from the Enemy colours options (enemy_colors.py).
+        # Visual only; the baseline rebuild means a cleared override is stock again.
+        import enemy_colors as _ec
+        results.extend(_ec.apply(m, game, enemy_colors))
 
     if par_time_scale and par_time_scale != 1:
         # Halo 3 on: the scenario's own par-time thresholds (see _scale_par_time). The
