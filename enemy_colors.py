@@ -326,6 +326,37 @@ def _route_shield(m, game, row, slots):
     return n
 
 
+def _odst_brute_overlays_off(m):
+    """ODST Brutes: the armour shaders (minor_major_armor, brute_metal, jumppack_armor)
+    carry colour overlays on input `variant` that set their three armour colour
+    constants. They do not tell ranks apart -- a test with the gradient stops painted
+    red / green / blue turned every rank red, head to toe -- and they override the
+    biped's change colours, which is why ODST Brutes ignored biped edits. With them
+    moved behind the block count the biped rank colours show (confirmed 2026-09-18:
+    minor magenta, captain green). Only these 1-register colour overlays (function type
+    8, >= 0x40 bytes) go; the shield and suit_bump overlays stay. The removed elements
+    are kept after the count, so the block is only reordered, never lost."""
+    n = 0
+    for t in m.tags:
+        if not isinstance(t, dict) or t.get('class') != 'rmsh' or not t.get('base'):
+            continue
+        if 'characters' + B + 'brute' + B + 'shaders' + B not in str(t.get('name')):
+            continue
+        for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
+            ovs = m.follow_all(pp, [0x5C], [0x24], 'all')
+            keep, drop = [], []
+            for o in ovs:
+                off = m.data2off(m.u32(o + 0x1C)) if m.i32(o + 0x10) >= 0x40 else None
+                colour = m.u32(o) == 1 and off and m.data[off] == 8
+                (drop if colour else keep).append(bytes(m.data[o:o + 0x24]))
+            if drop:
+                blob = b''.join(keep + drop)
+                m.data[ovs[0]:ovs[0] + len(blob)] = blob
+                struct.pack_into('<i', m.data, pp + 0x5C, len(keep))
+                n += len(drop)
+    return n
+
+
 # ----------------------------------------------------------------------------- entry
 def apply(m, game, overrides, catalog=None):
     """Write the overrides {row id: {slot: 'RRGGBB'}} of one game into an open map.
@@ -367,6 +398,13 @@ def apply(m, game, overrides, catalog=None):
                         'effect': 'Enemy colours', 'ok': True, 'old': 'stock',
                         'new': ', '.join('%s=%s' % (k, v) for k, v in sorted(slots.items()) if v)
                                + ' (%d write%s)' % (n, '' if n == 1 else 's')})
+    if game == 'Halo 3: ODST' and any(
+            rows.get(rid, {}).get('enemy') == 'Brute' and rows[rid]['route'] == 'perm'
+            and any(v for v in (sl or {}).values()) for rid, sl in overrides.items()):
+        k = _odst_brute_overlays_off(m)
+        out.append({'tag': 'enemy colours', 'field': 'Brute armour rank overlays',
+                    'effect': 'Enemy colours', 'ok': True, 'skip': k == 0,
+                    'old': 'shader colours', 'new': '%d overlay(s) off: biped colours show' % k})
     if getattr(m, '_ec_pending', None):
         try:
             k = _append_perms(m)
