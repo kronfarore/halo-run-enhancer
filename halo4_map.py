@@ -61,6 +61,7 @@ class Halo4Map(ReachMap):
     """Parsed Halo 4 MCC cache. See the module docstring for the five ways it
     differs from ReachMap; every other behaviour is inherited unchanged."""
 
+    SID_DYNAMIC_OFFSET = 6841   # Reach 4747 -- see ReachMap.resolve_stringid
     HEADER_SIZE = 0x1E000       # 'foot' at 0x1DFFC; Reach 0xA000, Halo 3 0x4000
     CHECKSUM_OFF = 0x358        # Reach and Halo 3 both use 0x360
 

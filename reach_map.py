@@ -244,9 +244,23 @@ class ReachMap(Halo3Map):
         self._sid_ok = True
         return True
 
+    # DYNAMIC stringIDs (animation names, model variant names, most action labels) sit
+    # a fixed distance further into the table than their index says: +4747 in Reach,
+    # +6841 in Halo 4, the same on every map. Measured 2026-09-18 by matching each
+    # action's label to the tail of the name of the animation it drives (98-99% on
+    # m10/m50/m70/m70_a/m70_bonus and m10_crash/m70_liftoff/m90_sacrifice). Static
+    # labels sit below 0x800 (the highest proven is 0x5A8) and keep the straight lookup.
+    # Before this every model-variant name read as garbage ("error7",
+    # "forge_object_edit_coords_roll_description").
+    SID_DYNAMIC_OFFSET = 4747
+    SID_DYNAMIC_FROM = 0x800
+
     def resolve_stringid(self, sid):
-        """Reach keeps the whole stringID set, so this is a straight index lookup —
-        no namespace restriction and no stripped-tail rebuild."""
+        """Reach keeps the whole stringID set: static ids are a straight index lookup,
+        dynamic ones (>= SID_DYNAMIC_FROM) sit SID_DYNAMIC_OFFSET further on."""
         if not self._locate_stringids():
             return None
-        return self._string_at(sid & 0xFFFF)
+        index = sid & 0xFFFF
+        if index >= self.SID_DYNAMIC_FROM:
+            index += self.SID_DYNAMIC_OFFSET
+        return self._string_at(index)
