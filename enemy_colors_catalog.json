@@ -3471,37 +3471,6 @@
   },
   {
    "enemy": "Brute",
-   "id": "armour:chieftain_armour",
-   "label": "chieftain armour",
-   "maps": 9,
-   "route": "armour",
-   "slots": [
-    {
-     "editable": true,
-     "hi": null,
-     "name": "main armour colour",
-     "stock": "404242"
-    },
-    {
-     "editable": true,
-     "hi": null,
-     "name": "armour colour 2 (subtle: highlights)",
-     "stock": "181111"
-    },
-    {
-     "editable": true,
-     "hi": null,
-     "name": "armour colour 3 (subtle: highlights)",
-     "stock": "1B4F75"
-    }
-   ],
-   "targets": [
-    "objects\\characters\\brute\\shaders\\chief_stalker_metal",
-    "objects\\characters\\brute\\shaders\\chieftain_armor"
-   ]
-  },
-  {
-   "enemy": "Brute",
    "id": "armour:armour",
    "label": "armour (minor, major, captain, jump pack bodies...)",
    "maps": 9,
@@ -3559,36 +3528,6 @@
    ],
    "targets": [
     "objects\\characters\\brute\\shaders\\jumppack_armor"
-   ]
-  },
-  {
-   "enemy": "Brute",
-   "id": "armour:stalker_armour",
-   "label": "stalker armour",
-   "maps": 9,
-   "route": "armour",
-   "slots": [
-    {
-     "editable": true,
-     "hi": null,
-     "name": "main armour colour",
-     "stock": "517980"
-    },
-    {
-     "editable": true,
-     "hi": null,
-     "name": "armour colour 2 (subtle: highlights)",
-     "stock": "915234"
-    },
-    {
-     "editable": true,
-     "hi": null,
-     "name": "armour colour 3 (subtle: highlights)",
-     "stock": "224A66"
-    }
-   ],
-   "targets": [
-    "objects\\characters\\brute\\shaders\\stalker_armor"
    ]
   },
   {

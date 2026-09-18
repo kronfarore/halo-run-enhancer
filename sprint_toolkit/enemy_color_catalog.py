@@ -43,9 +43,9 @@ H4_FAMILIES = {'storm_elite_ai': 'Elite', 'storm_grunt': 'Grunt', 'storm_jackal'
 H4_SKIP = ('anatomy', 'techsuit', 'visor', 'skin', 'glass', 'eye')
 # ODST Brute armour shaders -> one row each group (shared stock, shared ranks)
 ODST_ARMOUR = (('armour', ('minor_major_armor', 'brute_metal')),
-               ('jump pack armour', ('jumppack_armor',)),
-               ('chieftain armour', ('chieftain_armor', 'chief_stalker_metal')),
-               ('stalker armour', ('stalker_armor',)))
+               ('jump pack armour', ('jumppack_armor',)))
+# Chieftain and stalker armour shaders have no `variant` overlays, and their static
+# constants are not drawn (tested magenta, no change): texture colour, no row.
 # What the player sees them as (sc100 ring test): the shared shader is the body armour of
 # every standard rank, jump pack Brutes included; jumppack_armor is only helmet and pack.
 ODST_ARMOUR_LABELS = {'armour': 'armour (minor, major, captain, jump pack bodies...)',
@@ -299,6 +299,8 @@ def scan_rows(game, acc, out):
                          'targets': sorted(rec['targets']), 'maps': len(rec['maps'])})
         elif key[0] == 'armour':
             label = key[1]
+            if label not in dict(ODST_ARMOUR):
+                continue                  # a group dropped since the (cached) scan
             rows.append({'id': 'armour:%s' % label.replace(' ', '_'), 'enemy': 'Brute',
                          'label': ODST_ARMOUR_LABELS.get(label, label), 'route': 'armour',
                          'slots': [{'stock': c, 'hi': None, 'editable': True,

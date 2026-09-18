@@ -20,8 +20,9 @@ Routes (all confirmed in game, 2026-09-18 -- see the halo-enemy-colors memory):
   armour  ODST Brute armour shaders. Where the shader has `variant` colour overlays they
           ARE the armour colour (painting their gradient stops recolours it; the static
           constants underneath are overwritten every frame); overlay 1 is the main armour
-          colour. Shaders without overlays (chieftain, stalker) take Float Constants 7, 8,
-          16. Per SHADER, not per rank: minor, major and captain share one, and still read
+          colour. The static Float Constants are NOT drawn (all three set magenta on the
+          overlay-less chieftain and stalker shaders: no change), so only shaders with
+          overlays have armour rows. Per SHADER, not per rank: minor, major and captain share one, and still read
           apart through their own textures and per-rank body colours (biped route)
   shield  Jackal shields: H1 bipd slot C + sotr stage 0; H2 shad colour ramps; H3/ODST/
           Reach rmhg colour overlays; H4 mat colour functions
@@ -332,7 +333,9 @@ def _route_shield(m, game, row, slots):
     return n
 
 
-ODST_ARMOUR_CONSTS = (7, 8, 16)       # rmsh Postprocess (0x28/0x8C) Float Constants (0x1C/0x10)
+# rmsh Postprocess (0x28/0x8C) Float Constants (0x1C/0x10) holding the stock armour colours
+# -- equal to each overlay's first stop. Read for the catalogue's stock swatches only.
+ODST_ARMOUR_CONSTS = (7, 8, 16)
 
 
 def _variant_overlays(m, pp):
@@ -356,7 +359,6 @@ def _route_armour(m, row, slots):
             continue
         for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
             ovs = _variant_overlays(m, pp)
-            fc = m.follow_all(pp, [0x1C], [0x10], 'all')
             for si, col in slots.items():
                 si = int(si)
                 if ovs:
@@ -368,9 +370,6 @@ def _route_armour(m, row, slots):
                         for st in (0x4, 0x8, 0xC, 0x10):
                             m.data[ovs[si] + st:ovs[si] + st + 3] = bgr
                         n += 1
-                elif si < len(ODST_ARMOUR_CONSTS) and ODST_ARMOUR_CONSTS[si] < len(fc):
-                    struct.pack_into('<3f', m.data, fc[ODST_ARMOUR_CONSTS[si]], *col)
-                    n += 1
     return n
 
 
