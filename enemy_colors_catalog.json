@@ -3479,19 +3479,19 @@
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 1",
+     "name": "main armour colour",
      "stock": "404242"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 2",
+     "name": "armour colour 2 (subtle: highlights)",
      "stock": "181111"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 3",
+     "name": "armour colour 3 (subtle: highlights)",
      "stock": "1B4F75"
     }
    ],
@@ -3503,26 +3503,26 @@
   {
    "enemy": "Brute",
    "id": "armour:armour",
-   "label": "armour",
+   "label": "armour (minor, major, captain, jump pack bodies...)",
    "maps": 9,
    "route": "armour",
    "slots": [
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 1",
+     "name": "main armour colour",
      "stock": "7ADAD0"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 2",
+     "name": "armour colour 2 (subtle: highlights)",
      "stock": "162645"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 3",
+     "name": "armour colour 3 (subtle: highlights)",
      "stock": "9458A2"
     }
    ],
@@ -3534,26 +3534,26 @@
   {
    "enemy": "Brute",
    "id": "armour:jump_pack_armour",
-   "label": "jump pack armour",
+   "label": "jump pack helmet & pack",
    "maps": 9,
    "route": "armour",
    "slots": [
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 1",
+     "name": "main armour colour",
      "stock": "61D7F4"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 2",
+     "name": "armour colour 2 (subtle: highlights)",
      "stock": "120B09"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 3",
+     "name": "armour colour 3 (subtle: highlights)",
      "stock": "1B387A"
     }
    ],
@@ -3571,19 +3571,19 @@
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 1",
+     "name": "main armour colour",
      "stock": "517980"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 2",
+     "name": "armour colour 2 (subtle: highlights)",
      "stock": "915234"
     },
     {
      "editable": true,
      "hi": null,
-     "name": "armour colour 3",
+     "name": "armour colour 3 (subtle: highlights)",
      "stock": "224A66"
     }
    ],

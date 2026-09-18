@@ -46,6 +46,10 @@ ODST_ARMOUR = (('armour', ('minor_major_armor', 'brute_metal')),
                ('jump pack armour', ('jumppack_armor',)),
                ('chieftain armour', ('chieftain_armor', 'chief_stalker_metal')),
                ('stalker armour', ('stalker_armor',)))
+# What the player sees them as (sc100 ring test): the shared shader is the body armour of
+# every standard rank, jump pack Brutes included; jumppack_armor is only helmet and pack.
+ODST_ARMOUR_LABELS = {'armour': 'armour (minor, major, captain, jump pack bodies...)',
+                      'jump pack armour': 'jump pack helmet & pack'}
 RANK_ORDER = ('minor', 'default', 'heavy', 'major', 'officer', 'captain', 'captain_major',
               'captain_ultra', 'spec_ops', 'ultra', 'general', 'zealot', 'ranger', 'stealth',
               'stealth_major', 'honor_guard', 'bodyguard', 'jumppack', 'jumppack_major',
@@ -296,9 +300,10 @@ def scan_rows(game, acc, out):
         elif key[0] == 'armour':
             label = key[1]
             rows.append({'id': 'armour:%s' % label.replace(' ', '_'), 'enemy': 'Brute',
-                         'label': label, 'route': 'armour',
+                         'label': ODST_ARMOUR_LABELS.get(label, label), 'route': 'armour',
                          'slots': [{'stock': c, 'hi': None, 'editable': True,
-                                    'name': 'armour colour %d' % (i + 1)}
+                                    'name': ('main armour colour' if i == 0 else
+                                             'armour colour %d (subtle: highlights)' % (i + 1))}
                                    for i, c in enumerate(rec['stock'])],
                          'targets': sorted(rec['targets']), 'maps': len(rec['maps'])})
         elif key[0] == 'shield':

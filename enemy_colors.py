@@ -17,9 +17,12 @@ Routes (all confirmed in game, 2026-09-18 -- see the halo-enemy-colors memory):
           the rank's variant name (weight +0, lower +4, upper +0x10, name +0x1C)
   tint    Halo 4 armour materials: Postprocess Definition Float Constant[0], which
           multiplies the rank's texture (white = stock)
-  armour  ODST Brute armour shaders: their three armour colour constants (Postprocess Float
-          Constants 7, 8, 16). Per SHADER, not per rank -- minor and major share one; the
-          biped change colour only reaches the body in ODST
+  armour  ODST Brute armour shaders. Where the shader has `variant` colour overlays they
+          ARE the armour colour (painting their gradient stops recolours it; the static
+          constants underneath are overwritten every frame); overlay 1 is the main armour
+          colour. Shaders without overlays (chieftain, stalker) take Float Constants 7, 8,
+          16. Per SHADER, not per rank: minor, major and captain share one, and still read
+          apart through their own textures and per-rank body colours (biped route)
   shield  Jackal shields: H1 bipd slot C + sotr stage 0; H2 shad colour ramps; H3/ODST/
           Reach rmhg colour overlays; H4 mat colour functions
 """
@@ -332,6 +335,18 @@ def _route_shield(m, game, row, slots):
 ODST_ARMOUR_CONSTS = (7, 8, 16)       # rmsh Postprocess (0x28/0x8C) Float Constants (0x1C/0x10)
 
 
+def _variant_overlays(m, pp):
+    """The `variant` colour overlays of an ODST brute shader's Postprocess, in order:
+    1-register colour overlays (+0 == 1) whose function is a colour gradient (type 8,
+    >= 0x40 bytes). The shield and suit_bump overlays are not among them."""
+    out = []
+    for o in m.follow_all(pp, [0x5C], [0x24], 'all'):
+        off = m.data2off(m.u32(o + 0x1C)) if m.i32(o + 0x10) >= 0x40 else None
+        if m.u32(o) == 1 and off and m.data[off] == 8:
+            out.append(off)
+    return out
+
+
 def _route_armour(m, row, slots):
     tags = _tags(m, 'rmsh')
     n = 0
@@ -340,43 +355,22 @@ def _route_armour(m, row, slots):
         if not t:
             continue
         for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
+            ovs = _variant_overlays(m, pp)
             fc = m.follow_all(pp, [0x1C], [0x10], 'all')
             for si, col in slots.items():
-                ci = ODST_ARMOUR_CONSTS[int(si)] if int(si) < len(ODST_ARMOUR_CONSTS) else None
-                if ci is not None and ci < len(fc):
-                    struct.pack_into('<3f', m.data, fc[ci], *col)      # alpha (w) kept
+                si = int(si)
+                if ovs:
+                    if si < len(ovs):
+                        # Every stop: the input reads 0 for every rank (stops painted
+                        # red/green/blue came out all red), but paint the whole ramp so
+                        # nothing else can land on a stock colour.
+                        bgr = bytes(int(round(c * 255)) for c in reversed(col))
+                        for st in (0x4, 0x8, 0xC, 0x10):
+                            m.data[ovs[si] + st:ovs[si] + st + 3] = bgr
+                        n += 1
+                elif si < len(ODST_ARMOUR_CONSTS) and ODST_ARMOUR_CONSTS[si] < len(fc):
+                    struct.pack_into('<3f', m.data, fc[ODST_ARMOUR_CONSTS[si]], *col)
                     n += 1
-    return n
-
-
-def _odst_brute_overlays_off(m):
-    """ODST Brutes: the armour shaders (minor_major_armor, brute_metal, jumppack_armor)
-    carry colour overlays on input `variant` that set their three armour colour
-    constants. They do not tell ranks apart -- a test with the gradient stops painted
-    red / green / blue turned every rank red, head to toe -- and they override the
-    biped's change colours, which is why ODST Brutes ignored biped edits. With them
-    moved behind the block count the biped rank colours show (confirmed 2026-09-18:
-    minor magenta, captain green). Only these 1-register colour overlays (function type
-    8, >= 0x40 bytes) go; the shield and suit_bump overlays stay. The removed elements
-    are kept after the count, so the block is only reordered, never lost."""
-    n = 0
-    for t in m.tags:
-        if not isinstance(t, dict) or t.get('class') != 'rmsh' or not t.get('base'):
-            continue
-        if 'characters' + B + 'brute' + B + 'shaders' + B not in str(t.get('name')):
-            continue
-        for pp in m.follow_all(t['base'], [0x28], [0x8C], 'all'):
-            ovs = m.follow_all(pp, [0x5C], [0x24], 'all')
-            keep, drop = [], []
-            for o in ovs:
-                off = m.data2off(m.u32(o + 0x1C)) if m.i32(o + 0x10) >= 0x40 else None
-                colour = m.u32(o) == 1 and off and m.data[off] == 8
-                (drop if colour else keep).append(bytes(m.data[o:o + 0x24]))
-            if drop:
-                blob = b''.join(keep + drop)
-                m.data[ovs[0]:ovs[0] + len(blob)] = blob
-                struct.pack_into('<i', m.data, pp + 0x5C, len(keep))
-                n += len(drop)
     return n
 
 
@@ -423,13 +417,6 @@ def apply(m, game, overrides, catalog=None):
                         'effect': 'Enemy colours', 'ok': True, 'old': 'stock',
                         'new': ', '.join('%s=%s' % (k, v) for k, v in sorted(slots.items()) if v)
                                + ' (%d write%s)' % (n, '' if n == 1 else 's')})
-    if game == 'Halo 3: ODST' and any(
-            rows.get(rid, {}).get('enemy') == 'Brute' and rows[rid]['route'] in ('perm', 'armour')
-            and any(v for v in (sl or {}).values()) for rid, sl in overrides.items()):
-        k = _odst_brute_overlays_off(m)
-        out.append({'tag': 'enemy colours', 'field': 'Brute armour rank overlays',
-                    'effect': 'Enemy colours', 'ok': True, 'skip': k == 0,
-                    'old': 'shader colours', 'new': '%d overlay(s) off: biped colours show' % k})
     if getattr(m, '_ec_pending', None):
         try:
             k = _append_perms(m)
