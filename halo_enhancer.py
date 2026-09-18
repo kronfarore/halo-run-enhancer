@@ -420,7 +420,10 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'abilities_offered', 'ability_cards_for', 'ability_start_which',
                'overshield_mult', 'regen_percent', 'regen_duration_s',
                'regen_fx_every',
-               'camo_duration_s', 'camo_cooldown_s')
+               'camo_duration_s', 'camo_cooldown_s',
+               # Visual, but it changes map bytes: co-op partners must patch the same
+               # colours or the game fails to load, so it travels in the run.
+               'enemy_colors')
 
 
 class _WheelGuard(QObject):
@@ -528,7 +531,7 @@ ZOOM_DONOR_WEAPONS = {
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
                  'shared_session_dir', 'shared_session_autosave',
-                 'vault_dir', 'baseline_root', 'enemy_colors') + OPTION_KEYS
+                 'vault_dir', 'baseline_root') + OPTION_KEYS
 
 
 def mcc_root():
@@ -7881,6 +7884,23 @@ class OptionsDialog(QDialog):
                                             background-color: #141414; }
             QCheckBox::indicator:checked:disabled { background-color: #2f5b31;
                                                     border: 1px solid #2f5b31; }
+            /* Item views and their headers. The trap every time: a widget class with
+               no rule here falls back to the palette's near-black text on this dark
+               panel (QLineEdit, the category list, then the Enemy colours tree).
+               Rules are dialog-wide so the NEXT tree or table is readable too. */
+            QTreeView, QTreeWidget, QTableView, QTableWidget, QListView {
+                background-color: #1a1a1a; color: #e0e0e0;
+                alternate-background-color: #1e1e1e;
+                border: 1px solid #3a3a3a; }
+            QTreeView::item, QTableView::item, QListView::item { color: #e0e0e0; }
+            QTreeView::item:selected, QTableView::item:selected, QListView::item:selected {
+                background-color: #2a5a2a; color: #ffffff; }
+            QTreeView::item:hover, QListView::item:hover { background-color: #242424; }
+            QHeaderView { background-color: #222222; }
+            QHeaderView::section { background-color: #222222; color: #e0e0e0;
+                                   border: 1px solid #3a3a3a; padding: 3px 6px; }
+            QTableCornerButton::section { background-color: #222222;
+                                          border: 1px solid #3a3a3a; }
         """)
         outer = QVBoxLayout(self)
         # #6: a category list on the left driving a stack on the right. The dialog had
@@ -9929,8 +9949,8 @@ class OptionsDialog(QDialog):
     # Visual only, never a card. One row per enemy rank (enemy_colors_catalog.json,
     # built from every campaign map by sprint_toolkit/enemy_color_catalog.py); each
     # colour slot is a swatch showing the stock colour until overridden. Stored as
-    # CONFIG['enemy_colors'] = {game: {row id: {slot: 'RRGGBB'}}} -- a machine setting,
-    # not a run option: colours are taste, and a co-op partner keeps their own.
+    # CONFIG['enemy_colors'] = {game: {row id: {slot: 'RRGGBB'}}}, a RUN option
+    # (OPTION_KEYS): it changes map bytes, and co-op maps that differ do not load.
     _EC_FIRST = ('Grunt', 'Elite', 'Jackal', 'Skirmisher', 'Brute')
 
     def _build_enemy_colors(self):
@@ -9968,9 +9988,15 @@ class OptionsDialog(QDialog):
         self._ec_tree.setHeaderLabels(["Rank", "Colours", "Maps"])
         self._ec_tree.setRootIsDecorated(True)
         self._ec_tree.setMinimumHeight(520)
-        self._ec_tree.header().setSectionResizeMode(0, QHeaderView.ResizeToContents)
-        self._ec_tree.header().setSectionResizeMode(1, QHeaderView.Stretch)
-        self._ec_tree.header().setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        # Rank is a fixed, user-resizable width: sized to contents, one long label
+        # (Reach's shared shield row) pushed the swatches off the page.
+        hdr = self._ec_tree.header()
+        hdr.setStretchLastSection(False)
+        hdr.setSectionResizeMode(0, QHeaderView.Interactive)
+        hdr.setSectionResizeMode(1, QHeaderView.Stretch)
+        hdr.setSectionResizeMode(2, QHeaderView.ResizeToContents)
+        self._ec_tree.setColumnWidth(0, 230)
+        self._ec_tree.setTextElideMode(Qt.ElideRight)
         lay.addWidget(self._ec_tree)
         if not self._ec_catalog:
             lay.addWidget(QLabel("enemy_colors_catalog.json is missing -- run "
@@ -9987,6 +10013,7 @@ class OptionsDialog(QDialog):
     def _ec_fill(self):
         game = self._ec_game.currentText()
         rows = self._ec_catalog.get(game, [])
+        self._ec_drop_widgets()
         self._ec_tree.clear()
         self._ec_items = {}
         enemies = sorted({r['enemy'] for r in rows},
@@ -10000,6 +10027,7 @@ class OptionsDialog(QDialog):
             self._ec_tree.addTopLevelItem(top)
             for row in [r for r in rows if r['enemy'] == enemy]:
                 it = QTreeWidgetItem([row['label'], "", str(row.get('maps', ''))])
+                it.setToolTip(0, row['label'])
                 it.setToolTip(2, "Campaign maps this rank appears on")
                 top.addChild(it)
                 self._ec_items[row['id']] = it
@@ -10008,8 +10036,23 @@ class OptionsDialog(QDialog):
                             or any(r['id'] in self._ec.get(game, {}) for r in rows
                                    if r['enemy'] == enemy))
 
+    def _ec_drop_widgets(self, items=None):
+        """Delete the swatch strips of these items (default: all). clear() and
+        setItemWidget leave the old strip behind, parked visible at the top-left of
+        the tree -- a stray box over the first enemy name."""
+        for it in (items if items is not None else getattr(self, '_ec_items', {}).values()):
+            w = self._ec_tree.itemWidget(it, 1)
+            if w is not None:
+                self._ec_tree.removeItemWidget(it, 1)
+                w.hide()
+                w.deleteLater()
+
     def _ec_swatches(self, game, row):
         w = QWidget()
+        # Transparent strip: the app-wide QWidget background would paint a black band
+        # across the row behind the swatches.
+        w.setObjectName('ecSwatches')
+        w.setStyleSheet('#ecSwatches { background: transparent; }')
         h = QHBoxLayout(w)
         h.setContentsMargins(2, 1, 2, 1)
         h.setSpacing(4)
@@ -10024,19 +10067,24 @@ class OptionsDialog(QDialog):
             b.setFixedSize(46, 20)
             name = slot.get('name') or 'slot %d' % (si + 1)
             stock = slot.get('stock')
-            if not slot.get('editable') or not stock:
+            add = slot.get('add') and not stock
+            if not slot.get('editable') or not (stock or add):
                 b.setEnabled(False)
                 b.setText("—")
                 b.setToolTip("%s: no colour data for this rank" % name)
                 h.addWidget(b)
                 continue
             val = chosen.get(key)
-            col = val or stock
+            col = val or stock or '303030'
             text_col = '#000' if QColor('#' + col).lightness() > 128 else '#fff'
             b.setStyleSheet("QPushButton { background-color: #%s; color: %s; border: %s; }"
                             % (col, text_col, '2px solid #ffd54f' if val else '1px solid #555'))
-            b.setText("✎" if val else "")
-            rng = stock + ('..' + slot['hi'] if slot.get('hi') and slot['hi'] != stock else '')
+            b.setText("*" if val else ("+" if add else ""))
+            if add:
+                rng = ("none -- this rank shows its texture's own colour here; picking "
+                       "one adds a colour entry for it")
+            else:
+                rng = stock + ('..' + slot['hi'] if slot.get('hi') and slot['hi'] != stock else '')
             b.setToolTip("%s\nstock %s%s\n\nClick to choose, right-click to reset."
                          % (name, rng, ('\nset to ' + val) if val else ''))
             b.clicked.connect(lambda _=False, g=game, r=row, k=key, c=col:
@@ -10066,6 +10114,7 @@ class OptionsDialog(QDialog):
             self._ec.pop(game, None)
         it = self._ec_items.get(row['id'])
         if it is not None:
+            self._ec_drop_widgets([it])
             self._ec_tree.setItemWidget(it, 1, self._ec_swatches(game, row))
 
     def values(self):

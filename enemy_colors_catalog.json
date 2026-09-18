@@ -410,11 +410,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "928458",
      "stock": "99856A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "715122",
      "stock": "7B5624"
@@ -453,11 +455,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "93866C",
      "stock": "9E965A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "6B3D3D",
      "stock": "784141"
@@ -496,11 +500,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A89F82",
      "stock": "A8A786"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BAB4A9",
      "stock": "B4AA9E"
@@ -539,11 +545,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -582,11 +590,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -632,11 +642,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "4261B0",
      "stock": "4654B7"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -675,11 +687,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "616298",
      "stock": "616298"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "818794",
      "stock": "818794"
@@ -718,6 +732,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
@@ -754,11 +769,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C60000",
      "stock": "D92C00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -797,6 +814,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFFF00",
      "stock": "FFFF00"
@@ -833,11 +851,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2B225E",
      "stock": "29264A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -876,11 +896,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "F3F3F3",
      "stock": "F8F8F8"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -919,11 +941,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFC02D",
      "stock": "FFBF00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "CBAE6B",
      "stock": "CBAE6B"
@@ -951,11 +975,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "6E6E6E",
      "stock": "6E6E6E"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -994,11 +1020,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "655749",
      "stock": "604D44"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -1037,11 +1065,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "FFFFFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "C7C7C7",
      "stock": "C7C7C7"
@@ -1080,11 +1110,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "953737",
      "stock": "934A42"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "767687",
      "stock": "767687"
@@ -1123,6 +1155,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "AD2727",
      "stock": "C21212"
@@ -1149,11 +1182,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "FFFFFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "C7C7C7",
      "stock": "C7C7C7"
@@ -1181,11 +1216,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -1213,11 +1250,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -1246,11 +1285,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A89160",
      "stock": "8BA381"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -1278,6 +1319,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "E2AF50",
      "stock": "E2AF50"
@@ -1314,6 +1356,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "6AB07A",
      "stock": "6AB07A"
@@ -1350,6 +1393,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C42D24",
      "stock": "C42D24"
@@ -1386,6 +1430,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0B0510",
      "stock": "1C0D28"
@@ -1422,6 +1467,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "FFFFFF"
@@ -1458,6 +1504,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -1512,16 +1559,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "8B99BA",
      "stock": "778CB5"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "6F9CB3",
      "stock": "6F9BB3"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "2136FF",
      "stock": "2136FF"
@@ -1550,16 +1600,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFAD04",
      "stock": "FFAD04"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "E3B553",
      "stock": "E8A74F"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF2227",
      "stock": "FF2227"
@@ -1588,16 +1641,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -1663,6 +1719,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "95AABB",
      "stock": "95AABB"
@@ -1689,6 +1746,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "95AABB",
      "stock": "95AABB"
@@ -1715,6 +1773,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -1741,6 +1800,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "F9A200",
      "stock": "F9A200"
@@ -1769,11 +1829,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2DBD43",
      "stock": "26A925"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "363D54",
      "stock": "373D54"
@@ -1802,11 +1864,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "262A5A",
      "stock": "2E3673"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "55374A",
      "stock": "553844"
@@ -1834,11 +1898,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "560C0E",
      "stock": "711012"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "311212",
      "stock": "2C1111"
@@ -1867,11 +1933,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C6BF28",
      "stock": "FAF021"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "312212",
      "stock": "2C1C11"
@@ -1900,11 +1968,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0686D3",
      "stock": "09ACD3"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0B0B0B",
      "stock": "0D0D0D"
@@ -1932,11 +2002,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "5E11FF",
      "stock": "6C0CFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0A0808",
      "stock": "000000"
@@ -1964,11 +2036,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A9A490",
      "stock": "A6A188"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "3E0606",
      "stock": "4C0304"
@@ -1997,11 +2071,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "5CA1E9",
      "stock": "4F91CF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "322D1E",
      "stock": "403325"
@@ -2029,11 +2105,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0A0B05",
      "stock": "0A0B05"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "7396A2",
      "stock": "648799"
@@ -2062,11 +2140,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "7D5316",
      "stock": "7C4916"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "671B1C",
      "stock": "551617"
@@ -2094,11 +2174,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0F0E0C",
      "stock": "0E0D0C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0F1C13",
      "stock": "0F1A11"
@@ -2145,11 +2227,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "15202D",
      "stock": "121C28"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "17181B",
      "stock": "212226"
@@ -2188,11 +2272,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2C0303",
      "stock": "250303"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1E0202",
      "stock": "200202"
@@ -2231,11 +2317,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "06050B",
      "stock": "06060C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "050508",
      "stock": "09090D"
@@ -2274,11 +2362,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "B9B9B9",
      "stock": "ABABAB"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "C7C7C7",
      "stock": "C7C7C7"
@@ -2306,11 +2396,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -2338,11 +2430,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "847A67",
      "stock": "7E725C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -2370,11 +2464,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "203044",
      "stock": "1B293A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -2403,11 +2499,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A89160",
      "stock": "8BA381"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -2435,11 +2533,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -2503,12 +2603,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "D25F00",
      "stock": "E36200"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2535,12 +2637,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "32B04F",
      "stock": "35B151"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2567,12 +2671,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C61010",
      "stock": "C61313"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2599,12 +2705,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "D2D2D2",
      "stock": "AEAEAE"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2649,16 +2757,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "8B99BA",
      "stock": "778CB5"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "6F9CB3",
      "stock": "6F9BB3"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "2136FF",
      "stock": "2136FF"
@@ -2687,16 +2798,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFAD04",
      "stock": "FFAD04"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "E3B553",
      "stock": "E8A74F"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF2227",
      "stock": "FF2227"
@@ -2725,17 +2839,20 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2799,6 +2916,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "95AABB",
      "stock": "95AABB"
@@ -2825,7 +2943,8 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -2851,6 +2970,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "F9A200",
      "stock": "F9A200"
@@ -2879,11 +2999,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2DBD43",
      "stock": "26A925"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "363D54",
      "stock": "373D54"
@@ -2913,11 +3035,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "262A5A",
      "stock": "2E3673"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "55374A",
      "stock": "553844"
@@ -2945,11 +3069,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "560C0E",
      "stock": "711012"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "311212",
      "stock": "2C1111"
@@ -2977,11 +3103,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C6BF28",
      "stock": "FAF021"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "312212",
      "stock": "2C1C11"
@@ -3009,11 +3137,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0686D3",
      "stock": "09ACD3"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0B0B0B",
      "stock": "0D0D0D"
@@ -3041,11 +3171,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "5E11FF",
      "stock": "6C0CFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0A0808",
      "stock": "000000"
@@ -3073,11 +3205,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A9A490",
      "stock": "A6A188"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "3E0606",
      "stock": "4C0304"
@@ -3105,11 +3239,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "5CA1E9",
      "stock": "4F91CF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "322D1E",
      "stock": "403325"
@@ -3137,12 +3273,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "400000",
      "stock": "400000"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -3169,12 +3307,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "624A02",
      "stock": "4B3503"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -3201,11 +3341,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0A0B05",
      "stock": "0A0B05"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "7396A2",
      "stock": "648799"
@@ -3233,11 +3375,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "7D5316",
      "stock": "7C4916"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "671B1C",
      "stock": "551617"
@@ -3265,11 +3409,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0F0E0C",
      "stock": "0E0D0C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "0F1C13",
      "stock": "0F1A11"
@@ -3297,11 +3443,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0E330B",
      "stock": "103906"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "123307",
      "stock": "113209"
@@ -3329,6 +3477,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "44663E",
      "stock": "44663E"
@@ -3355,6 +3504,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "415483",
      "stock": "405483"
@@ -3381,6 +3531,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "250303",
      "stock": "490606"
@@ -3407,6 +3558,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C6BF28",
      "stock": "FAF021"
@@ -3433,6 +3585,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "D2D2D2",
      "stock": "AEAEAE"
@@ -3459,6 +3612,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "8F915A",
      "stock": "878B40"
@@ -3485,11 +3639,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "15202D",
      "stock": "121C28"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "17181B",
      "stock": "212226"
@@ -3528,11 +3684,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2C0303",
      "stock": "250303"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1E0202",
      "stock": "200202"
@@ -3571,11 +3729,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "06050B",
      "stock": "06060C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "050508",
      "stock": "09090D"
@@ -3614,11 +3774,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "B9B9B9",
      "stock": "ABABAB"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "C7C7C7",
      "stock": "C7C7C7"
@@ -3646,6 +3808,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -3672,7 +3835,8 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -3698,7 +3862,8 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -3725,11 +3890,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -3757,11 +3924,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "847A67",
      "stock": "7E725C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -3791,11 +3960,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2F372A",
      "stock": "2D3A29"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "584027",
      "stock": "593E27"
@@ -3823,11 +3994,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2C0303",
      "stock": "250303"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1E0202",
      "stock": "200202"
@@ -3855,11 +4028,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "203044",
      "stock": "1B293A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -3887,11 +4062,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A89160",
      "stock": "8BA381"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -3919,11 +4096,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "A89160",
      "stock": "8BA381"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -3951,11 +4130,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BFBFBF",
      "stock": "FFFFFF"
@@ -4019,12 +4200,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "D25F00",
      "stock": "E36200"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4051,12 +4234,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "32B04F",
      "stock": "35B151"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4083,12 +4268,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "C61010",
      "stock": "C61313"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4115,12 +4302,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0B0510",
      "stock": "0C0611"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4147,12 +4336,14 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "D2D2D2",
      "stock": "AEAEAE"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4179,6 +4370,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -4206,6 +4398,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -4232,16 +4425,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "8B99BA",
      "stock": "778CB5"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "6F9CB3",
      "stock": "6F9BB3"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "2136FF",
      "stock": "2136FF"
@@ -4270,16 +4466,19 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFAD04",
      "stock": "FFAD04"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "E3B553",
      "stock": "E8A74F"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF2227",
      "stock": "FF2227"
@@ -4308,17 +4507,20 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4383,6 +4585,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "95AABB",
      "stock": "95AABB"
@@ -4409,7 +4612,8 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -4974,11 +5178,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "2DBD43",
      "stock": "26A925"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "363D54",
      "stock": "373D54"
@@ -5006,11 +5212,13 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "262A5A",
      "stock": "2E3673"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "55374A",
      "stock": "553844"
@@ -5038,12 +5246,14 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -5071,21 +5281,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "78691A",
      "stock": "796A1A"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "21360E",
      "stock": "21360E"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "6B4D16",
      "stock": "6B4D16"
@@ -5115,21 +5329,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "310810",
      "stock": "310811"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "223629",
      "stock": "233629"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "74381A",
      "stock": "74391A"
@@ -5159,21 +5377,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "0A2179",
      "stock": "0A2179"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "11080A",
      "stock": "11090B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "3A6F4C",
      "stock": "3B6F4C"
@@ -5205,21 +5427,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "1F3D72",
      "stock": "1F3E72"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "232F4E",
      "stock": "222D45"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "D1670E",
      "stock": "D1660D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "5167A9",
      "stock": "5167A9"
@@ -5250,21 +5476,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "5E1212",
      "stock": "5E1313"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "953200",
      "stock": "953200"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "9DB02B",
      "stock": "9DB02C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "BC1C16",
      "stock": "BC1C17"
@@ -5294,21 +5524,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "1A111D",
      "stock": "1D161F"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "161018",
      "stock": "161018"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "2B674E",
      "stock": "2C684E"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "8F2D26",
      "stock": "8F2D25"
@@ -5338,21 +5572,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "E7E7E7",
      "stock": "EFEFEF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "837E6A",
      "stock": "837F6B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "CB503F",
      "stock": "CB5140"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "CEFAF2",
      "stock": "C1F1E8"
@@ -5382,21 +5620,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "753A04",
      "stock": "753904"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "741F04",
      "stock": "741F04"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "440D0D",
      "stock": "440D0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "E8ED1A",
      "stock": "E9ED1A"
@@ -5426,21 +5668,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "361225",
      "stock": "361224"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "301534",
      "stock": "2F1434"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF673B",
      "stock": "FF663B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "47162F",
      "stock": "47162F"
@@ -5470,21 +5716,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "BDE3D5",
      "stock": "BDE3D6"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "96B5A9",
      "stock": "97B5AA"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF663B",
      "stock": "FF663B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "9EB3AE",
      "stock": "9EB3AD"
@@ -5514,21 +5764,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "BDE3D5",
      "stock": "BDE3D6"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "96B5A9",
      "stock": "97B5AA"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF663B",
      "stock": "FF663B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "9EB3AE",
      "stock": "9EB3AD"
@@ -5558,21 +5812,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "361225",
      "stock": "361224"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "301534",
      "stock": "2F1434"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FF673B",
      "stock": "FF663B"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "47162F",
      "stock": "47162F"
@@ -5602,21 +5860,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "241831",
      "stock": "231831"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "2C132C",
      "stock": "2B122C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "EF4F46",
      "stock": "EF5046"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "4D2A48",
      "stock": "4D2947"
@@ -5646,6 +5908,7 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": false,
      "hi": null,
      "stock": null
@@ -5672,21 +5935,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFB64F",
      "stock": "FFB650"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "A76317",
      "stock": "A76318"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "202146",
      "stock": "212247"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "DE8855",
      "stock": "DE8855"
@@ -5716,21 +5983,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "1B2C0D",
      "stock": "1B2C0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1B2C0D",
      "stock": "1B2C0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "355841",
      "stock": "355841"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "925A29",
      "stock": "935A29"
@@ -5760,21 +6031,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "360202",
      "stock": "360303"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "340000",
      "stock": "340000"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "620C0C",
      "stock": "630D0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "87B344",
      "stock": "87B344"
@@ -5804,21 +6079,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "100A12",
      "stock": "110A13"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "100A12",
      "stock": "100A12"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "201015",
      "stock": "211115"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "475B3C",
      "stock": "485C3C"
@@ -5848,21 +6127,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "FFFFFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "808080",
      "stock": "808080"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "CA6E63",
      "stock": "CB6F63"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "A2B9B5",
      "stock": "A2BAB6"
@@ -5910,22 +6193,26 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -5954,22 +6241,26 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "694F83",
      "stock": "574475"
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -5998,22 +6289,26 @@
    "route": "perm",
    "slots": [
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     },
     {
-     "editable": false,
+     "add": true,
+     "editable": true,
      "hi": null,
      "stock": null
     }
@@ -6063,21 +6358,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "1C1C1C",
      "stock": "1D1D1D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1C1C1C",
      "stock": "1C1C1C"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "FFFFFF"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "1C1C1C",
      "stock": "1C1C1C"
@@ -6107,21 +6406,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "690D0D",
      "stock": "690D0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "690D0D",
      "stock": "690D0D"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "AB1818",
      "stock": "AB1919"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "717171",
      "stock": "717171"
@@ -6151,21 +6454,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "E18B00",
      "stock": "E18B00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "E18B00",
      "stock": "E18B00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FFFFFF",
      "stock": "EEEEEE"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
@@ -6195,21 +6502,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "316203",
      "stock": "316203"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "316203",
      "stock": "316204"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "656565",
      "stock": "595959"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"
@@ -6239,21 +6550,25 @@
    "route": "perm",
    "slots": [
     {
+     "add": false,
      "editable": true,
      "hi": "AE2E00",
      "stock": "AE2E00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "AE2E00",
      "stock": "AE2E00"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "FFA787",
      "stock": "FFA787"
     },
     {
+     "add": false,
      "editable": true,
      "hi": "000000",
      "stock": "000000"

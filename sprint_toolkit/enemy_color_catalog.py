@@ -89,7 +89,11 @@ def perm_rows(game, out):
             got = [c for _v, r in members for c in r['slots'] if c[0] == si]
             live = [c for c in got if c[3] in ('own', 'any')]
             c = live[0] if live else (got[0] if got else (si, None, None, 'none'))
-            slots.append({'stock': c[1], 'hi': c[2], 'editable': bool(live)})
+            # A slot the rank has no entry in can still be painted where the patcher
+            # can append one (enemy_colors.ADD_GAMES): stock is then the texture's own.
+            add = not live and bool(got) and game in ec.ADD_GAMES and rank not in ('(none)', 'default')
+            slots.append({'stock': c[1], 'hi': c[2], 'editable': bool(live) or add,
+                          'add': add})
         targets = []
         for variant, r in members:
             src = ['none'] * width

@@ -32,6 +32,10 @@ CATALOG_PATH = os.path.join(HERE, 'enemy_colors_catalog.json')
 PERM_BLOCK = {'Halo 2': (0xAC, 0x10), 'Halo 3': (0xD4, 0x18), 'Halo 3: ODST': (0xD4, 0x18),
               'Halo Reach': (0x134, 0x18), 'Halo 4': (0x148, 0x18)}
 H1_NEAR_BLACK = 0.02         # Halo 1 reads a (0,0,0) change colour as "no tint"
+# Where a rank has NO permutation in a colour slot (Reach Jackal minor, the Jackal sniper)
+# one is appended, relocating that slot's block into partition slack (halo_patch's
+# _h3_reserve). Third-gen layouts only; Halo 2's growth moves blocks to EOF, unverified.
+ADD_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
 
 
 def load_catalog(path=CATALOG_PATH):
@@ -164,7 +168,16 @@ def _route_perm(m, game, row, slots):
         sl = m.follow_all(t['base'], [blk], [el], 'all')
         for si, col in slots.items():
             si = int(si)
-            if si >= len(sl) or si >= len(tgt['src']) or tgt['src'][si] not in ('own', 'any'):
+            if si >= len(sl) or si >= len(tgt['src']):
+                continue
+            if tgt['src'][si] == 'none':
+                if game in ADD_GAMES and tgt['variant']:
+                    sid = _variant_sid(m, game, tgt)
+                    if sid is not None:
+                        _pending(m).setdefault(sl[si], []).append((sid, col))
+                        n += 1
+                continue
+            if tgt['src'][si] not in ('own', 'any'):
                 continue
             want = tgt['variant'] if tgt['src'][si] == 'own' else ''
             for p in m.follow_all(sl[si], [0x0], [0x20], 'all'):
@@ -173,6 +186,54 @@ def _route_perm(m, game, row, slots):
                     struct.pack_into('<3f', m.data, p + 0x10, *col)
                     n += 1
     return n
+
+
+def _variant_sid(m, game, tgt):
+    """This map's stringID for a target's variant, read off the characters that spawn
+    it (the variant has no permutation to read it from, which is the point)."""
+    chars = set(tgt.get('chars', ()))
+    cands = [sid for sid, cs in _sid_chars(m, game).items() if cs & chars and sid]
+    for sid in cands:
+        try:
+            if m.resolve_stringid(sid) == tgt['variant']:
+                return sid
+        except Exception:
+            pass
+    return cands[0] if len(cands) == 1 else None
+
+
+def _pending(m):
+    p = getattr(m, '_ec_pending', None)
+    if p is None:
+        p = m._ec_pending = {}
+    return p
+
+
+def _append_perms(m):
+    """Grow each colour slot's Initial Permutations by the queued (variant, colour)
+    entries: copy the block into reserved slack, append, repoint. Structural, so it runs
+    once after every value write."""
+    import halo_patch
+    out = 0
+    for slot, adds in sorted(_pending(m).items()):
+        count, ptr = m.i32(slot), m.u32(slot + 4)
+        src = m.data2off(ptr) if count else None
+        size = (count + len(adds)) * 0x20
+        got = halo_patch._h3_reserve(m, [size])
+        if not got:
+            raise RuntimeError('no free run of %d bytes for a colour permutation' % size)
+        dest = got[0]
+        if count:
+            m.data[dest:dest + count * 0x20] = m.data[src:src + count * 0x20]
+        for k, (sid, col) in enumerate(adds):
+            e = dest + (count + k) * 0x20
+            m.data[e:e + 0x20] = bytes(0x20)
+            struct.pack_into('<f3f3fI', m.data, e, 1.0, *col, *col, sid)
+        struct.pack_into('<i', m.data, slot, count + len(adds))
+        struct.pack_into('<I', m.data, slot + 4, m.off2data(dest))
+        out += len(adds)
+    m._ec_pending = {}
+    return out
 
 
 def _mat_fc0(m, base):
@@ -306,4 +367,14 @@ def apply(m, game, overrides, catalog=None):
                         'effect': 'Enemy colours', 'ok': True, 'old': 'stock',
                         'new': ', '.join('%s=%s' % (k, v) for k, v in sorted(slots.items()) if v)
                                + ' (%d write%s)' % (n, '' if n == 1 else 's')})
+    if getattr(m, '_ec_pending', None):
+        try:
+            k = _append_perms(m)
+            out.append({'tag': 'enemy colours', 'field': 'added colour permutations',
+                        'effect': 'Enemy colours', 'ok': True, 'old': 'none',
+                        'new': '%d rank colour(s) the biped had no entry for' % k})
+        except Exception as e:
+            out.append({'tag': 'enemy colours', 'field': 'added colour permutations',
+                        'effect': 'Enemy colours', 'ok': False,
+                        'reason': '%s: %s' % (type(e).__name__, e)})
     return out
