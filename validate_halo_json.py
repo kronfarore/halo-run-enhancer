@@ -210,6 +210,22 @@ def check_structure():
                 if k not in GAMES and k != 'default':
                     report(f'{label}: desc_overrides has unknown game key {k!r}')
 
+    # 5. Every enemy / hero / boss card names its colour-drift group (enemy_colors: an
+    #    active card shifts that enemy's colours toward red, blue or green). A new card
+    #    without one would silently never shift anything.
+    em = DB.get('Enemy modifiers', {})
+    for sec in ('Specific Enemy modifier', 'Hero enemy modifier', 'Boss enemy modifier'):
+        for who, effs in (em.get(sec) or {}).items():
+            for n, e in effs.items():
+                c = e.get('color') if isinstance(e, dict) else None
+                if c not in COLOR_GROUPS:
+                    report(f'{who}/{n}: "color" must be one of {", ".join(COLOR_GROUPS)} '
+                           f'(aggressive = more damage, defensive = survives longer, '
+                           f'utility = everything else), got {c!r}')
+
+
+COLOR_GROUPS = ('aggressive', 'defensive', 'utility')
+
 
 # Who each game actually fields, from its own Missions lists. A card about a weapon or
 # an enemy the game does not have CANNOT be drafted there, so its tag failing to resolve

@@ -140,6 +140,8 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          # source identity, so the patcher can remove it from the run
                          'weapon': mod.get('weapon'), 'enemy': mod.get('enemy'),
                          'equipment': mod.get('equipment'),
+                         # enemy colour drift group (enemy_colors.drift_counts)
+                         'color': mod.get('color'),
                          'group': group, 'cat': cat, 'count': 0}
             order.append(key)
         seen[key]['count'] += 1

@@ -423,7 +423,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'camo_duration_s', 'camo_cooldown_s',
                # Visual, but it changes map bytes: co-op partners must patch the same
                # colours or the game fails to load, so it travels in the run.
-               'enemy_colors')
+               'enemy_colors', 'enemy_color_drift')
 
 
 class _WheelGuard(QObject):
@@ -2372,6 +2372,8 @@ class ModifierDatabase:
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
             'easier_when': mod_data.get('easier_when'),  # ...and its opposite (all 4 uses are mod-level)
             'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
+            # Enemy colour drift group (aggressive / defensive / utility), see enemy_colors.
+            'color': mod_data.get('color'),
             # An Options gate. `requires_config` names a CONFIG key (and may be
             # per-game, resolved like `tag`); `requires_config_in` optionally lists the
             # values that count as on, for a setting that is a choice rather than a
@@ -4445,6 +4447,16 @@ def is_operator_box(widget):
 
 
 class MagnitudeEditorDialog(QDialog):
+    def _enemy_colors_for_patch(self):
+        """This game's colour overrides for apply_run: the player's picks (Enemy
+        colours options) plus, when enabled, the drift from the enemy / hero / boss
+        cards being patched (enemy_colors.drift). Read from self.effects, so a card
+        removed in this dialog stops shifting colours too."""
+        import enemy_colors
+        base = (CONFIG.get('enemy_colors') or {}).get(self.game) or {}
+        return enemy_colors.drift(self.game, enemy_colors.drift_counts(self.effects),
+                                  CONFIG.get('enemy_color_drift'), base) or None
+
     """Per-run editor: lists the selected effects grouped by tag, shows each
     field's vanilla value, takes a typed operator (-n/+n/*n or xn/=n) per target
     (pre-filled from the presets library), then backs up and patches the .map."""
@@ -7416,7 +7428,7 @@ class MagnitudeEditorDialog(QDialog):
                     {'Halo Reach': 'reach_equipment_drop',
                      'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
-                enemy_colors=(CONFIG.get('enemy_colors') or {}).get(self.game),
+                enemy_colors=self._enemy_colors_for_patch(),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
@@ -7466,7 +7478,7 @@ class MagnitudeEditorDialog(QDialog):
                     self.target_difficulty, game=self.game,
                     **baseline_args(self.game),
                     skulls=skulls,
-                    enemy_colors=(CONFIG.get('enemy_colors') or {}).get(self.game),
+                    enemy_colors=self._enemy_colors_for_patch(),
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
@@ -10010,6 +10022,54 @@ class OptionsDialog(QDialog):
         self._ec_fill()
         self._opt_page("Enemy colours").addWidget(box)
 
+        # Step 2: colour drift from the run's enemy cards.
+        dr = dict(enemy_colors.DRIFT_DEFAULTS, **(CONFIG.get('enemy_color_drift') or {}))
+        dbox = QGroupBox("Colour drift from enemy cards")
+        dl = QVBoxLayout(dbox)
+        self._ecd_on = QCheckBox("Enemies shift colour with the cards that buff them")
+        self._ecd_on.setChecked(bool(dr.get('enabled')))
+        self._ecd_on.setToolTip(
+            "Every enemy, hero and boss card in the run nudges that enemy's colours: "
+            "aggressive cards (more damage) toward red, defensive cards (survives "
+            "longer) toward blue, utility cards toward green. Applies on top of the "
+            "colours above, to every colour slot and shield, when a mission is patched. "
+            "A hero or boss card only shifts that rank.")
+        dl.addWidget(self._ecd_on)
+        grid = QGridLayout()
+        grid.addWidget(QLabel("per card:"), 0, 0)
+        grid.addWidget(QLabel("own channel +"), 0, 1)
+        grid.addWidget(QLabel("other two −"), 0, 2)
+        self._ecd_spins = {}
+        for row, (key, label, col) in enumerate((
+                ('aggressive', 'Aggressive (red)', '#e57373'),
+                ('defensive', 'Defensive (blue)', '#64b5f6'),
+                ('utility', 'Utility (green)', '#81c784')), start=1):
+            lab = QLabel(label)
+            lab.setStyleSheet("color: %s;" % col)
+            grid.addWidget(lab, row, 0)
+            up, down = (list(dr.get(key) or enemy_colors.DRIFT_DEFAULTS[key]) + [0, 0])[:2]
+            sp_up, sp_dn = QSpinBox(), QSpinBox()
+            for sp, v in ((sp_up, up), (sp_dn, down)):
+                sp.setRange(0, 64)
+                sp.setValue(int(v))
+                sp.setToolTip("0-255 colour steps per active card. Defaults are scaled "
+                              "inversely to how many cards the group has (211 "
+                              "aggressive, 142 defensive, 85 utility), so each group "
+                              "moves an enemy about equally often.")
+            grid.addWidget(sp_up, row, 1)
+            grid.addWidget(sp_dn, row, 2)
+            self._ecd_spins[key] = (sp_up, sp_dn)
+        grid.setColumnStretch(3, 1)
+        dl.addLayout(grid)
+
+        def _sync_drift(_=False):
+            for a, b in self._ecd_spins.values():
+                a.setEnabled(self._ecd_on.isChecked())
+                b.setEnabled(self._ecd_on.isChecked())
+        self._ecd_on.toggled.connect(_sync_drift)
+        _sync_drift()
+        self._opt_page("Enemy colours").addWidget(dbox)
+
     def _ec_fill(self):
         game = self._ec_game.currentText()
         rows = self._ec_catalog.get(game, [])
@@ -10219,6 +10279,9 @@ class OptionsDialog(QDialog):
             # mcc_root this must NOT collapse to None.
             'baseline_root': self.baseline_root_edit.text().strip(),
             'enemy_colors': self._ec,
+            'enemy_color_drift': dict(
+                enabled=self._ecd_on.isChecked(),
+                **{k: [a.value(), b.value()] for k, (a, b) in self._ecd_spins.items()}),
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
             'swap_player_loadouts': self.swap_players_cb.isChecked(),
             'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
@@ -13071,7 +13134,7 @@ class HaloGUI(QMainWindow):
                         'harder_when', 'easier_when',
                         'init_defaults', 'games', 'skip_games',
                         'requires_config', 'requires_config_in', 'ignore',
-                        'affected_by_skull'):
+                        'affected_by_skull', 'color'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
         else:

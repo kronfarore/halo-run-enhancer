@@ -373,6 +373,90 @@ def _route_armour(m, row, slots):
     return n
 
 
+# ----------------------------------------------------------------------------- drift
+# Step 2: every active enemy / hero / boss card shifts that enemy's colours toward the
+# card's group -- `color` in halo.json: aggressive = red, defensive = blue, utility =
+# green. Per card: + its group's step on the own channel, - on the other two (0..255),
+# on top of the stock colour or the player's own pick. Steps are per group because the
+# pool is lopsided (211 aggressive, 142 defensive, 85 utility cards): scaled inversely
+# to pool share, each group moves an enemy about equally often.
+DRIFT_CHANNEL = {'aggressive': 0, 'defensive': 2, 'utility': 1}          # R, B, G
+DRIFT_DEFAULTS = {'enabled': False,
+                  'aggressive': [8, 3], 'defensive': [12, 4], 'utility': [20, 7]}
+
+# A hero or boss card shifts only its own rank rows: (enemy, label prefixes).
+HERO_ROWS = {
+    'Brute Chieftain': ('Brute', ('chieftain',)),
+    'Elite Zealot': ('Elite', ('zealot',)),
+    'Elite General': ('Elite', ('general',)),
+    'Elite Honor Guard': ('Elite', ('honor',)),
+    'Elite Specops Commander': ('Elite', ('soc',)),
+    'Knight Commander': ('Knight', ('commander',)),
+    'Jackal Ranger': ('Jackal', ('ranger',)),
+    'Jackal Sniper': ('Jackal', ('sniper',)),
+    'Grunt Ultra': ('Grunt', ('ultra',)),
+    'Tartarus': ('Brute', ('all (brute_tartarus)',)),
+    'Heretic Leader': ('Elite', ('leader_her',)),
+}
+
+
+def drift_rows(rows, who):
+    """The catalogue rows a card for `who` (enemy family, hero or boss) recolours."""
+    if who in HERO_ROWS:
+        enemy, prefixes = HERO_ROWS[who]
+        return [r for r in rows if r['enemy'] == enemy and r['label'].startswith(prefixes)]
+    return [r for r in rows if r['enemy'] == who]
+
+
+def drift(game, counts, knobs=None, base=None, catalog=None):
+    """Overrides {row id: {slot: 'RRGGBB'}} for one game: `base` (the player's picks)
+    with every active card's shift added. `counts` = {(who, group): number of active
+    cards}. Slots with no stock colour (the '+' ones) drift only from a player pick."""
+    knobs = dict(DRIFT_DEFAULTS, **(knobs or {}))
+    out = {rid: dict(sl) for rid, sl in (base or {}).items()}
+    if not knobs.get('enabled') or not counts:
+        return out
+    cat = catalog if catalog is not None else load_catalog()
+    rows = cat.get(str(game).strip(), [])
+    delta = {}
+    for (who, group), n in counts.items():
+        ch = DRIFT_CHANNEL.get(group)
+        if ch is None or not n:
+            continue
+        up, down = (list(knobs.get(group) or DRIFT_DEFAULTS[group]) + [0, 0])[:2]
+        for r in drift_rows(rows, who):
+            d = delta.setdefault(r['id'], [0, 0, 0])
+            for c in range(3):
+                d[c] += n * (up if c == ch else -down)
+    for r in rows:
+        d = delta.get(r['id'])
+        if not d or not any(d):
+            continue
+        for si, slot in enumerate(r['slots']):
+            if not slot.get('editable'):
+                continue
+            key = str(si)
+            src = out.get(r['id'], {}).get(key) or slot.get('stock')
+            if not src:
+                continue
+            rgb8 = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
+            new = '%02X%02X%02X' % tuple(max(0, min(255, v + dv)) for v, dv in zip(rgb8, d))
+            if new != src.upper():
+                out.setdefault(r['id'], {})[key] = new
+    return out
+
+
+def drift_counts(effects):
+    """{(who, group): n} from the patcher's collected effects (halo_patch.collect_effects
+    entries carry `enemy` -- the family, hero or boss name -- `color` and `count`)."""
+    counts = {}
+    for e in effects or ():
+        who, group = e.get('enemy'), e.get('color')
+        if who and group in DRIFT_CHANNEL:
+            counts[(who, group)] = counts.get((who, group), 0) + int(e.get('count') or 1)
+    return counts
+
+
 # ----------------------------------------------------------------------------- entry
 def apply(m, game, overrides, catalog=None):
     """Write the overrides {row id: {slot: 'RRGGBB'}} of one game into an open map.
