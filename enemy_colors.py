@@ -416,7 +416,7 @@ def _route_armour(m, row, slots):
 # ----------------------------------------------------------------------------- drift
 # Every active enemy card shifts colours toward the card's group -- `color` in halo.json:
 # aggressive = red, defensive = blue, utility = green. Per card: + its group's step on the
-# own channel, - on the other two, clamped to 0..255, over the stock colour or the
+# own channel, - on the other two (clamped to 0..255 once, at the end), over the stock colour or the
 # player's pick.
 #   Step 2  a Specific Enemy card shifts that enemy; a hero / boss card only its rank.
 #   Step 3  a General enemy card shifts EVERY enemy, with its own (smaller) steps.
@@ -474,12 +474,16 @@ def _steps(knobs, who, group):
 
 
 def shift(rgb8, group, up, down, times=1):
-    """`times` cards of one group on an [r, g, b] 0..255 colour, one at a time, with the
-    white -> black wrap."""
+    """`times` cards of one group on an [r, g, b] colour, one at a time, with the
+    white -> black wrap. The TOP is capped per card (a channel pinned at 255 is what the
+    wrap reads), but the bottom is NOT: a channel pushed below 0 keeps that debt, so a
+    later card of its own group pays it back before the colour moves -- the end result
+    does not depend on which group came first. Clamp to 0..255 once, at the end
+    (drift does)."""
     ch = DRIFT_CHANNEL[group]
     v = list(rgb8)
     for _ in range(times):
-        v = [max(0, min(255, x + (up if c == ch else -down))) for c, x in enumerate(v)]
+        v = [min(255, x + (up if c == ch else -down)) for c, x in enumerate(v)]
         if v[ch] == 255 and up > 0 and all(x >= 255 - up for c, x in enumerate(v) if c != ch):
             v = [0, 0, 0]
     return v
@@ -519,7 +523,7 @@ def drift(game, events, knobs=None, base=None, catalog=None):
             v = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
             for group, up, down, n in steps:
                 v = shift(v, group, up, down, n)
-            new = '%02X%02X%02X' % tuple(v)
+            new = '%02X%02X%02X' % tuple(max(0, min(255, x)) for x in v)
             if new != src.upper():
                 out.setdefault(rid, {})[key] = new
     return out
