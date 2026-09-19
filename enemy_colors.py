@@ -63,6 +63,46 @@ def hexcol(r, g, b):
     return '%02X%02X%02X' % tuple(int(round(max(0.0, min(1.0, x)) * 255)) for x in (r, g, b))
 
 
+# Readable names for the patch log, from hue / saturation / brightness: the hue picks
+# the name, brightness and saturation add dark / light / greyish. (A nearest-of-a-palette
+# match read most muted rank colours as "grey" -- 2E3673, a Brute major's blue, included.)
+_HUES = ((12, 'red'), (40, 'orange'), (68, 'yellow'), (100, 'lime'), (160, 'green'),
+         (200, 'cyan'), (255, 'blue'), (285, 'violet'), (320, 'magenta'), (345, 'pink'),
+         (360, 'red'))
+
+
+def colour_name(hexstr):
+    import colorsys
+    h = str(hexstr).lstrip('#')
+    r, g, b = (int(h[i:i + 2], 16) / 255.0 for i in (0, 2, 4))
+    hue, sat, val = colorsys.rgb_to_hsv(r, g, b)
+    if val < 0.10:
+        return 'black'
+    if sat < 0.15 or (val < 0.25 and sat < 0.35):
+        return ('dark grey' if val < 0.40 else 'grey' if val < 0.70
+                else 'light grey' if val < 0.93 else 'white')
+    deg = hue * 360
+    name = next(n for top, n in _HUES if deg < top)
+    if name == 'orange' and val < 0.60:
+        name = 'brown'
+    elif name == 'yellow' and val < 0.60:
+        name = 'olive'
+    elif name == 'cyan' and val < 0.60:
+        name = 'teal'
+    if val < 0.45:
+        name = 'dark ' + name
+    elif sat < 0.45 and val > 0.70:
+        name = {'red': 'pink', 'orange': 'tan'}.get(name, 'light ' + name)
+    elif sat < 0.45:
+        name = 'greyish ' + name
+    return name
+
+
+def describe(hexstr):
+    """'FF00F6' -> 'FF00F6 (magenta)'."""
+    return '%s (%s)' % (str(hexstr).upper(), colour_name(hexstr))
+
+
 # ----------------------------------------------------------------------------- helpers
 def _tags(m, cls):
     """name -> tag dict of one class (second-gen and later). Keyed by class too: a
@@ -543,7 +583,7 @@ def apply(m, game, overrides, catalog=None):
         if n:
             out.append({'tag': 'enemy colours', 'field': '%s %s' % (row['enemy'], row['label']),
                         'effect': 'Enemy colours', 'ok': True, 'old': 'stock',
-                        'new': ', '.join('%s=%s' % (k, v) for k, v in sorted(slots.items()) if v)
+                        'new': ', '.join('%s=%s' % (k, describe(v)) for k, v in sorted(slots.items()) if v)
                                + ' (%d write%s)' % (n, '' if n == 1 else 's')})
     if getattr(m, '_ec_pending', None):
         try:

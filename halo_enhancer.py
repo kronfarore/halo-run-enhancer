@@ -6841,12 +6841,21 @@ class MagnitudeEditorDialog(QDialog):
         first_only = not CONFIG.get({'Halo 4': 'h4_spawn_all_weapons',
                                      'Halo 3': 'h3_spawn_all_weapons'}.get(
                                          self.game, 'reach_spawn_all_weapons'))
+        # A run carries weapons across games, and a plain-string tag resolves in every
+        # game, so a weapon this game never fields (Reach's SMG) reached the placer and
+        # came back as "not in this level weapon palette" on every map -- true, and no
+        # use to anyone. Drop what no mission of this game fields; a weapon the game
+        # has but this LEVEL lacks still reports, which is worth knowing.
+        fielded = set(db.get_game_weapons(self.game) or ())
 
         def paths(names):
             out, seen = [], set()
             for w in (names or []):
                 if db.is_equipment(w):
                     continue                    # abilities have their own marker path
+                base = w[5:] if str(w).startswith('Dual ') else w
+                if fielded and w not in fielded and base not in fielded:
+                    continue
                 tag = db.weap_tag_for(w, self.game)
                 if not tag or ' ' not in tag:
                     continue
@@ -10080,6 +10089,22 @@ class OptionsDialog(QDialog):
         grid2, self._ecd_gen_spins = _step_grid(
             dict(gdef, **(dr.get('general') or {})), gdef, '30 aggressive, 6 defensive, 9 utility')
         dl.addLayout(grid2)
+        reset_steps = QPushButton("Reset steps to defaults")
+        reset_steps.setToolTip("Put every step above back to its default (specific cards "
+                               "8/3, 12/4, 20/7; general cards 3/1, 12/4, 8/3). The two "
+                               "switches stay as they are.")
+
+        def _reset_steps():
+            for spins, defaults in ((self._ecd_spins, enemy_colors.DRIFT_DEFAULTS),
+                                    (self._ecd_gen_spins, enemy_colors.DRIFT_DEFAULTS['general'])):
+                for key, (a, b) in spins.items():
+                    a.setValue(int(defaults[key][0]))
+                    b.setValue(int(defaults[key][1]))
+        reset_steps.clicked.connect(_reset_steps)
+        rrow = QHBoxLayout()
+        rrow.addWidget(reset_steps)
+        rrow.addStretch(1)
+        dl.addLayout(rrow)
 
         def _sync_drift(_=False):
             for on, spins in ((self._ecd_on, self._ecd_spins),
