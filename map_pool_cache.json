@@ -538,29 +538,79 @@
   "Halo 4|m80_delta|equipment": {
    "names": [],
    "stamp": [
-    737103872,
-    "cc722c427b1042ce0542f28965a76d34684968909da6464c9fbd604c15edb9aa"
+    1292787712,
+    "5d17178293d713f2cb6e86b59d5993b4e158f241569156ffda9264e091f4a927"
    ]
   },
   "Halo 4|m80_delta|weapons": {
    "names": [],
    "stamp": [
-    737103872,
-    "cc722c427b1042ce0542f28965a76d34684968909da6464c9fbd604c15edb9aa"
+    1292787712,
+    "5d17178293d713f2cb6e86b59d5993b4e158f241569156ffda9264e091f4a927"
    ]
   },
   "Halo 4|m90_sacrifice|equipment": {
    "names": [],
    "stamp": [
-    671219712,
-    "c629aa7aec3f8aa004c94f769f8a7bf27996d8af96b54a8ab2b5d76f28944e59"
+    1141772288,
+    "e2a3a4539822a25f0e9ca6c3c5b7fc92d168573734fe252977d473bb97b11a62"
+   ]
+  },
+  "Halo 4|m90_sacrifice|equipment|crash": {
+   "names": [
+    "Auto Turret",
+    "Hardlight Shield",
+    "Promethean Vision",
+    "Active Camouflage",
+    "Hologram",
+    "Jet Pack",
+    "Thruster Pack"
+   ],
+   "stamp": [
+    1141903360,
+    "f148b8f3fc5f32090b3517351de04bd7b3711126cfdf9718be97e3bf8601ea62"
    ]
   },
   "Halo 4|m90_sacrifice|weapons": {
    "names": [],
    "stamp": [
-    671219712,
-    "c629aa7aec3f8aa004c94f769f8a7bf27996d8af96b54a8ab2b5d76f28944e59"
+    1141772288,
+    "31b0332249910f178b5290e2a62a2098ecb97fcdb8e38663ee5badd860c1d79a"
+   ]
+  },
+  "Halo 4|m90_sacrifice|weapons|crash": {
+   "names": [
+    "Battle Rifle",
+    "Binary Rifle",
+    "Boltshot",
+    "Covenant Carbine",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "LightRifle",
+    "Scattershot",
+    "Suppressor",
+    "Assault Rifle",
+    "Beam Rifle",
+    "Concussion Rifle",
+    "DMR",
+    "Energy Blade",
+    "Flak Cannon",
+    "Machine Gun",
+    "Needler",
+    "Pistol",
+    "Plasma Cannon",
+    "Railgun",
+    "Rocket Launcher",
+    "SAW",
+    "Shotgun",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Sticky Detonator",
+    "Storm Rifle"
+   ],
+   "stamp": [
+    1141903360,
+    "f148b8f3fc5f32090b3517351de04bd7b3711126cfdf9718be97e3bf8601ea62"
    ]
   },
   "Halo Reach|m10|equipment": {
@@ -573,8 +623,8 @@
     "Sprint"
    ],
    "stamp": [
-    881459200,
-    "92595751be40e82537241917fe19ca619c870f119f47ec2d64a101bb2a9231aa"
+    882106368,
+    "0119e69ab5d354272dddf70f18a0721f3f6f760c205458cf53c8702de0994a64"
    ]
   },
   "Halo Reach|m10|weapons": {
@@ -604,8 +654,8 @@
     "Target Locator"
    ],
    "stamp": [
-    881459200,
-    "92595751be40e82537241917fe19ca619c870f119f47ec2d64a101bb2a9231aa"
+    882106368,
+    "0119e69ab5d354272dddf70f18a0721f3f6f760c205458cf53c8702de0994a64"
    ]
   },
   "Halo Reach|m20|equipment": {
@@ -619,7 +669,7 @@
    ],
    "stamp": [
     842117120,
-    "5f4aae445e077a7fe1fc9a7ec97193657512d57633a45b79a0fc33d7553aa349"
+    "5f402b33119a08580319e0b2f163556ad6a3033ab680fde38bebcb2821b7ece8"
    ]
   },
   "Halo Reach|m20|weapons": {
@@ -650,7 +700,7 @@
    ],
    "stamp": [
     842117120,
-    "5f4aae445e077a7fe1fc9a7ec97193657512d57633a45b79a0fc33d7553aa349"
+    "5f402b33119a08580319e0b2f163556ad6a3033ab680fde38bebcb2821b7ece8"
    ]
   },
   "Halo Reach|m30|equipment": {
@@ -663,8 +713,8 @@
     "Sprint"
    ],
    "stamp": [
-    781774848,
-    "44e6ddb7082b4467d46e757bbe67e5c0dae2e8fa1ea593745e15620af14ff744"
+    782356480,
+    "3ba61e2149f9953343f42dd75080999b7fe0406c751b005d4277520f3a47839d"
    ]
   },
   "Halo Reach|m30|weapons": {
@@ -694,8 +744,8 @@
     "Target Locator"
    ],
    "stamp": [
-    781774848,
-    "44e6ddb7082b4467d46e757bbe67e5c0dae2e8fa1ea593745e15620af14ff744"
+    782356480,
+    "3ba61e2149f9953343f42dd75080999b7fe0406c751b005d4277520f3a47839d"
    ]
   },
   "Halo Reach|m35|equipment": {
@@ -708,8 +758,8 @@
     "Active Camouflage"
    ],
    "stamp": [
-    893562880,
-    "b89984710e9bc29f42bcce1228df8ab1385fbc305eb62a096a04e952fca8e8f4"
+    894132224,
+    "cc402edc6439c7a5d96e39a7bac85b12f297dc81e8a5a54cab40c39939b7fd21"
    ]
   },
   "Halo Reach|m35|weapons": {
@@ -739,8 +789,8 @@
     "Target Locator"
    ],
    "stamp": [
-    893562880,
-    "b89984710e9bc29f42bcce1228df8ab1385fbc305eb62a096a04e952fca8e8f4"
+    894132224,
+    "cc402edc6439c7a5d96e39a7bac85b12f297dc81e8a5a54cab40c39939b7fd21"
    ]
   },
   "Halo Reach|m45|equipment": {
@@ -754,7 +804,7 @@
    ],
    "stamp": [
     952922112,
-    "47aeae2a1b4c4d167fd92a02d574bb49a9b3ac094f3387fb0f5f2fab163fdca0"
+    "d356e9a4c33a7a0692b86ed808db040842e389b6f6231e651d33a70ca21069a0"
    ]
   },
   "Halo Reach|m45|weapons": {
@@ -785,7 +835,7 @@
    ],
    "stamp": [
     952922112,
-    "47aeae2a1b4c4d167fd92a02d574bb49a9b3ac094f3387fb0f5f2fab163fdca0"
+    "d356e9a4c33a7a0692b86ed808db040842e389b6f6231e651d33a70ca21069a0"
    ]
   },
   "Halo Reach|m50|equipment": {
@@ -798,8 +848,8 @@
     "Hologram"
    ],
    "stamp": [
-    835497984,
-    "438a2eb3432379cda6a2c1a513ce7087846b75d3d564dcf0b3ff73d2092f1c42"
+    836009984,
+    "e4121f68d05234cf0e10dff472490cc642e927df396a50fafe382ba2584aba70"
    ]
   },
   "Halo Reach|m50|weapons": {
@@ -829,8 +879,8 @@
     "Target Locator"
    ],
    "stamp": [
-    835497984,
-    "438a2eb3432379cda6a2c1a513ce7087846b75d3d564dcf0b3ff73d2092f1c42"
+    836009984,
+    "e4121f68d05234cf0e10dff472490cc642e927df396a50fafe382ba2584aba70"
    ]
   },
   "Halo Reach|m52|equipment": {
@@ -843,8 +893,8 @@
     "Sprint"
    ],
    "stamp": [
-    773779456,
-    "c09cd1933ef0d1b06ddff811bf1cd5f25b534686796e842f65934d2c18649d90"
+    774356992,
+    "07c44a66097ac4b8f5e20195b61a782eadbcd929f6a5f15864a544ffb2b4d7df"
    ]
   },
   "Halo Reach|m52|weapons": {
@@ -874,8 +924,8 @@
     "Target Locator"
    ],
    "stamp": [
-    773779456,
-    "c09cd1933ef0d1b06ddff811bf1cd5f25b534686796e842f65934d2c18649d90"
+    774356992,
+    "07c44a66097ac4b8f5e20195b61a782eadbcd929f6a5f15864a544ffb2b4d7df"
    ]
   },
   "Halo Reach|m60|equipment": {
@@ -888,8 +938,8 @@
     "Jet Pack"
    ],
    "stamp": [
-    1021526016,
-    "b5be24dc8dc08c72356dc38f976b1d55e20e5c7996e14dc2625b17914d80f42a"
+    1022033920,
+    "4e6831723275af08040d45d8fffc6d847970f47d1e20eb62586b3b5e628e35c9"
    ]
   },
   "Halo Reach|m60|weapons": {
@@ -919,8 +969,8 @@
     "Target Locator"
    ],
    "stamp": [
-    1021526016,
-    "b5be24dc8dc08c72356dc38f976b1d55e20e5c7996e14dc2625b17914d80f42a"
+    1022033920,
+    "4e6831723275af08040d45d8fffc6d847970f47d1e20eb62586b3b5e628e35c9"
    ]
   },
   "Halo Reach|m70_bonus|equipment": {
@@ -933,8 +983,8 @@
     "Sprint"
    ],
    "stamp": [
-    557641728,
-    "775e545176c2fd6474e651abc07e8bae127b1b66096c4d4d992a663eca5c2aae"
+    558284800,
+    "3b2c12efbb0dd5c50ba73e515c3f8a041386cff99b117353525e436f23aa281b"
    ]
   },
   "Halo Reach|m70_bonus|weapons": {
@@ -964,8 +1014,8 @@
     "Plasma Cannon"
    ],
    "stamp": [
-    557641728,
-    "775e545176c2fd6474e651abc07e8bae127b1b66096c4d4d992a663eca5c2aae"
+    558284800,
+    "3b2c12efbb0dd5c50ba73e515c3f8a041386cff99b117353525e436f23aa281b"
    ]
   },
   "Halo Reach|m70|equipment": {
@@ -978,8 +1028,8 @@
     "Jet Pack"
    ],
    "stamp": [
-    914071552,
-    "bd94f91a4ed80ddb8944f630efa5691a770f53bc3b38be5d4f3c542a3d4fe0f1"
+    914649088,
+    "2f0a129c58b11f114c7af6101396deaf6f4edaa5e32186e8e601de280190a779"
    ]
   },
   "Halo Reach|m70|weapons": {
@@ -1009,8 +1059,8 @@
     "Target Locator"
    ],
    "stamp": [
-    914071552,
-    "bd94f91a4ed80ddb8944f630efa5691a770f53bc3b38be5d4f3c542a3d4fe0f1"
+    914649088,
+    "2f0a129c58b11f114c7af6101396deaf6f4edaa5e32186e8e601de280190a779"
    ]
   },
   "baseline|Halo 1|Impossible": {
@@ -1075,8 +1125,8 @@
   },
   "baseline|Halo Reach|Impossible": {
    "stamp": [
-    881459200,
-    "dafc24a24883a07659b38cfcaad63aee43c3d2e8c738ba83aa75c25da63a6695"
+    882106368,
+    "0119e69ab5d354272dddf70f18a0721f3f6f760c205458cf53c8702de0994a64"
    ],
    "value": {
     "damage": 1.600000023841858,

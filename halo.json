@@ -597,12 +597,12 @@
 						{ "field": "Shield Recharge Velocity", "block": "New Damage Info" }
 					],
 					"Halo Reach": [
-						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info" },
-						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2}
+						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info", "group": "Shield Recharge Velocity" },
+						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2, "group": "Shield Recharge Velocity"}
 					],
 					"Halo 4": [
-						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info" },
-						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2}
+						{ "field": "Shield Recharge Velocity", "block": "Old Damage Info", "group": "Shield Recharge Velocity" },
+						{"field": "Recharge Velocity", "block": "Damage Sections", "index": 2, "group": "Shield Recharge Velocity"}
 					]
 				},
 				"special": true
@@ -638,9 +638,9 @@
 				"desc": "Sneak Forward, Sneak Backwards, Sneak Sideways, Sneak Acceleration",
 				"tag": "matg globals\\globals",
 				"targets": [
-					{"field": "Sneak Forward", "block": "Player Information", "index": "all"},
-					{"field": "Sneak Backward", "block": "Player Information", "index": "all"},
-					{"field": "Sneak Sideways", "block": "Player Information", "index": "all"},
+					{"field": "Sneak Forward", "block": "Player Information", "index": "all", "group": "Sneak Speed" },
+					{"field": "Sneak Backward", "block": "Player Information", "index": "all", "group": "Sneak Speed" },
+					{"field": "Sneak Sideways", "block": "Player Information", "index": "all", "group": "Sneak Speed" },
 					{"field": "Sneak Acceleration", "block": "Player Information", "index": "all"}
 				]
 			},
@@ -8974,13 +8974,13 @@
 					"tag": "airs objects\\weapons\\pistol\\target_laser\\projectiles\\default",
 					"constraints": [{"field": "Launch Arrival", "of": "Launch Duration", "not_above": true, "block": "Batteries"}],
 					"targets": [
-						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Strikes", "min": 1},
+						{"field": "Default Launch Count", "block": "Batteries", "index": "all", "group": "Charges", "min": 1},
 						{"field": "Shots Per Launch", "block": "Batteries", "index": "all", "group": "Shots Per Strike", "min": 1},
 						{"field": "Launch Cooldown", "block": "Batteries", "index": "all", "group": "Cooldown", "min": 0},
-						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "min": 0},
+						{"field": "Launch Warmup", "block": "Batteries", "index": "all", "group": "Warmup", "min": 0, "ignore": true},
 						{"field": "Launch Duration", "block": "Batteries", "index": "all", "group": "Duration", "min": 0},
 						{"field": "Launch Arrival", "block": "Batteries", "index": "all", "group": "Marker Time", "min": 0},
-						{"field": "Launch Radius", "block": "Batteries", "index": "all", "group": "Scatter", "min": 0},
+						{"field": "Launch Radius", "block": "Batteries", "index": "all", "min": 0},
 						{"field": "Offset x", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern x"},
 						{"field": "Offset y", "block": "Batteries/Fire Offsets", "index": "all", "group": "Strike Pattern y"}
 					]
@@ -9032,6 +9032,7 @@
 				"Ramp Up": {
 					"desc": "How long the weapon takes to spin up to full rate, and to wind back down.",
 					"debug_desc": "`Acceleration Time` is how long the weapon takes to reach its full rate of fire, `Deceleration Time` how long it takes to wind back down. Per barrel.\n\nNo card clamps Deceleration against Acceleration any more -- the constraint was removed on 2026-08-26 for retesting. The reasoning behind it was that guns spin up slowly and spin down fast, which holds for the plasma rifle, brute plasma rifle and needler, but is NOT universal: measuring every weapon that sets these fields disproves the stronger claim this text used to make: six weapon-games ship the OPPOSITE. Halo 3 and ODST's machinegun turret and plasma cannon both run 1.25 up / 2.0 down, Reach's plasma launcher 0.7 / 1.0, and Reach's spike rifle 0.0 / 0.2 -- it has no spin-up at all and still takes time to stop.\n\nSo the weapons that ship deceleration above acceleration deliberately carry NO constraint: clamping them would quietly rewrite their vanilla behaviour the first time the card was patched.\n\nAlso note Reach's stringid Rate Of Fire Acceleration/Deceleration fields are dead -- these numeric Time fields are the ones that carry the values.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
@@ -9099,6 +9100,7 @@
 				"Fire Recovery Time": {
 					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
+					"ignore": "yes",
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
@@ -9140,8 +9142,8 @@
 						{"field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
-				"Radius": {
-					"desc": "Min to Max Radius",
+				"Explosion Radius": {
+					"desc": "Radius of the impacts",
 					"game": ["Halo Reach"],
 					"tag": "jpt! objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\damage_effects\\airstrike_turret_round_impact",
 					"targets": [
@@ -9160,6 +9162,7 @@
 				"Per Round": {
 					"desc": "Heat per Round",
 					"game": ["Halo Reach"],
+					"ignore": "yes",
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
 						{ "field": "Heat Generated Per Round", "block": { "Halo 1": "Triggers", "Halo 2": "Barrels" }, "index": "all" }
@@ -13106,8 +13109,8 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"targets": [
-						{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
-						{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1 },
+						{ "field": "Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1, "group": "Armor Lock Chance" },
+						{ "field": "Grenade Stuck Armor Lock Chance", "block": "Movement Properties", "index": "all", "min": 0, "max": 1, "group": "Armor Lock Chance" },
 						{ "field": "Armor Lock Safety Duration", "block": "Movement Properties", "index": "all", "min": 0 },
 						{ "field": "Armor Lock Maximum Duration", "block": "Movement Properties", "index": "all", "min": 0 },
 						{ "field": "Armor Lock Cooldown", "block": "Movement Properties", "index": "all", "min": 0 }
@@ -14551,8 +14554,8 @@
 						"Halo 2": "jpt! objects\\characters\\grunt\\damage_effects\\grunt_obstacle_smash & objects\\characters\\heretic_grunt\\damage_effects\\heretic_grunt_obstacle_smash"
 					},
 					"targets": [
-						{ "field": "Radius", "group": "Radius", "min": 0, "is_zero": 0.25 },
-						{ "field": "Radius Max", "group": "Radius", "min": 0, "is_zero": 0.25 }
+						{ "field": "Radius", "group": "Radius", "min": 0, "zero_is": 0.25 },
+						{ "field": "Radius Max", "group": "Radius", "min": 0, "zero_is": 0.25 }
 					]
 				},
 				"Kamikaze": {
@@ -17324,8 +17327,8 @@
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Beserk Cooldown", "block": "Charge Properties", "index": "all"},
-						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" },
-						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all" }
+						{ "field": "Maximum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "group": "Berserk Count" },
+						{ "field": "Minimum Berserk Count", "block": "Charge Properties/Difficulty Limits", "index": "all", "group": "Berserk Count" }
 					]
 				},
 				"Leader Charge": {
@@ -17335,8 +17338,8 @@
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"targets": [
 						{ "field": "Leader Abandoned Berserk Chance", "block": "Charge Properties", "index": "all" , "games": ["Halo 2", "Halo 3"], "min": 0, "max": 1 },
-						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all" },
-						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all" }
+						{ "field": "Perimeter Range", "block": "Charge Properties", "index": "all", "group": "Perimeter Range" },
+						{ "field": "Perimeter Range Close", "block": "Charge Properties", "index": "all", "group": "Perimeter Range" }
 					]
 				},
 				"Leader Leash": {
