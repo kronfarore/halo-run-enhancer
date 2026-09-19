@@ -374,15 +374,28 @@ def _route_armour(m, row, slots):
 
 
 # ----------------------------------------------------------------------------- drift
-# Step 2: every active enemy / hero / boss card shifts that enemy's colours toward the
-# card's group -- `color` in halo.json: aggressive = red, defensive = blue, utility =
-# green. Per card: + its group's step on the own channel, - on the other two (0..255),
-# on top of the stock colour or the player's own pick. Steps are per group because the
-# pool is lopsided (211 aggressive, 142 defensive, 85 utility cards): scaled inversely
-# to pool share, each group moves an enemy about equally often.
+# Every active enemy card shifts colours toward the card's group -- `color` in halo.json:
+# aggressive = red, defensive = blue, utility = green. Per card: + its group's step on the
+# own channel, - on the other two, clamped to 0..255, over the stock colour or the
+# player's pick.
+#   Step 2  a Specific Enemy card shifts that enemy; a hero / boss card only its rank.
+#   Step 3  a General enemy card shifts EVERY enemy, with its own (smaller) steps.
+# Steps are per group because the pools are lopsided (specific 211 / 142 / 85, general
+# 30 / 6 / 9): scaled inversely to pool share, each group moves an enemy about equally
+# often.
+#   WRAP: cards apply one at a time; when a card leaves one channel at 255 and the other
+# two within that card's + step of 255 -- the colour has gone white -- it restarts from
+# black (Halo 1 draws near-black: pure black is "no tint" there) and later cards carry
+# on from black. A one-sided enemy stays pinned at pure red / blue / green; only a
+# mixed build that has washed out to white wraps. (Plain modulo was considered and
+# rejected: the - steps would wrap 0 -> 253, and a very aggressive enemy would cycle
+# out of red, so the colour would stop saying how buffed it is.)
 DRIFT_CHANNEL = {'aggressive': 0, 'defensive': 2, 'utility': 1}          # R, B, G
 DRIFT_DEFAULTS = {'enabled': False,
-                  'aggressive': [8, 3], 'defensive': [12, 4], 'utility': [20, 7]}
+                  'aggressive': [8, 3], 'defensive': [12, 4], 'utility': [20, 7],
+                  'general_enabled': False,
+                  'general': {'aggressive': [3, 1], 'defensive': [12, 4], 'utility': [8, 3]}}
+GENERAL = '*'                     # `who` of a General enemy card: every enemy
 
 # A hero or boss card shifts only its own rank rows: (enemy, label prefixes).
 HERO_ROWS = {
@@ -401,60 +414,92 @@ HERO_ROWS = {
 
 
 def drift_rows(rows, who):
-    """The catalogue rows a card for `who` (enemy family, hero or boss) recolours."""
+    """The catalogue rows a card for `who` (enemy family, hero, boss, or GENERAL)
+    recolours."""
+    if who == GENERAL:
+        return list(rows)
     if who in HERO_ROWS:
         enemy, prefixes = HERO_ROWS[who]
         return [r for r in rows if r['enemy'] == enemy and r['label'].startswith(prefixes)]
     return [r for r in rows if r['enemy'] == who]
 
 
-def drift(game, counts, knobs=None, base=None, catalog=None):
+def _steps(knobs, who, group):
+    if who == GENERAL:
+        gk = dict(DRIFT_DEFAULTS['general'], **(knobs.get('general') or {}))
+        pair = gk.get(group)
+    else:
+        pair = knobs.get(group) or DRIFT_DEFAULTS[group]
+    return (list(pair) + [0, 0])[:2]
+
+
+def shift(rgb8, group, up, down, times=1):
+    """`times` cards of one group on an [r, g, b] 0..255 colour, one at a time, with the
+    white -> black wrap."""
+    ch = DRIFT_CHANNEL[group]
+    v = list(rgb8)
+    for _ in range(times):
+        v = [max(0, min(255, x + (up if c == ch else -down))) for c, x in enumerate(v)]
+        if v[ch] == 255 and up > 0 and all(x >= 255 - up for c, x in enumerate(v) if c != ch):
+            v = [0, 0, 0]
+    return v
+
+
+def drift(game, events, knobs=None, base=None, catalog=None):
     """Overrides {row id: {slot: 'RRGGBB'}} for one game: `base` (the player's picks)
-    with every active card's shift added. `counts` = {(who, group): number of active
-    cards}. Slots with no stock colour (the '+' ones) drift only from a player pick."""
+    with every active card's shift applied in order. `events` = [(who, group, n), ...]
+    as drift_counts returns them (a dict {(who, group): n} is accepted too). Slots with
+    no stock colour (the '+' ones) drift only from a player pick."""
     knobs = dict(DRIFT_DEFAULTS, **(knobs or {}))
     out = {rid: dict(sl) for rid, sl in (base or {}).items()}
-    if not knobs.get('enabled') or not counts:
+    if isinstance(events, dict):
+        events = [(w, g, n) for (w, g), n in events.items()]
+    events = [(w, g, n) for w, g, n in (events or ())
+              if n and g in DRIFT_CHANNEL
+              and (knobs.get('general_enabled') if w == GENERAL else knobs.get('enabled'))]
+    if not events:
         return out
     cat = catalog if catalog is not None else load_catalog()
     rows = cat.get(str(game).strip(), [])
-    delta = {}
-    for (who, group), n in counts.items():
-        ch = DRIFT_CHANNEL.get(group)
-        if ch is None or not n:
-            continue
-        up, down = (list(knobs.get(group) or DRIFT_DEFAULTS[group]) + [0, 0])[:2]
+    by_id = {r['id']: r for r in rows}
+    plan = {}                                   # row id -> [(group, up, down, n), ...]
+    for who, group, n in events:
+        up, down = _steps(knobs, who, group)
         for r in drift_rows(rows, who):
-            d = delta.setdefault(r['id'], [0, 0, 0])
-            for c in range(3):
-                d[c] += n * (up if c == ch else -down)
-    for r in rows:
-        d = delta.get(r['id'])
-        if not d or not any(d):
-            continue
+            plan.setdefault(r['id'], []).append((group, up, down, n))
+    for rid, steps in plan.items():
+        r = by_id[rid]
         for si, slot in enumerate(r['slots']):
             if not slot.get('editable'):
                 continue
             key = str(si)
-            src = out.get(r['id'], {}).get(key) or slot.get('stock')
+            src = out.get(rid, {}).get(key) or slot.get('stock')
             if not src:
                 continue
-            rgb8 = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
-            new = '%02X%02X%02X' % tuple(max(0, min(255, v + dv)) for v, dv in zip(rgb8, d))
+            v = [int(src[i:i + 2], 16) for i in (0, 2, 4)]
+            for group, up, down, n in steps:
+                v = shift(v, group, up, down, n)
+            new = '%02X%02X%02X' % tuple(v)
             if new != src.upper():
-                out.setdefault(r['id'], {})[key] = new
+                out.setdefault(rid, {})[key] = new
     return out
 
 
 def drift_counts(effects):
-    """{(who, group): n} from the patcher's collected effects (halo_patch.collect_effects
-    entries carry `enemy` -- the family, hero or boss name -- `color` and `count`)."""
-    counts = {}
+    """[(who, group, n), ...] in the patcher's effect order (so both co-op machines wrap
+    at the same card). `who` is the card's enemy family / hero / boss, or GENERAL for a
+    General enemy card (no `enemy`, but a `color`: only enemy cards carry one)."""
+    order, counts = [], {}
     for e in effects or ():
-        who, group = e.get('enemy'), e.get('color')
-        if who and group in DRIFT_CHANNEL:
-            counts[(who, group)] = counts.get((who, group), 0) + int(e.get('count') or 1)
-    return counts
+        group = e.get('color')
+        if group not in DRIFT_CHANNEL:
+            continue
+        key = (e.get('enemy') or GENERAL, group)
+        if key not in counts:
+            order.append(key)
+            counts[key] = 0
+        counts[key] += int(e.get('count') or 1)
+    return [(w, g, counts[(w, g)]) for w, g in order]
 
 
 # ----------------------------------------------------------------------------- entry

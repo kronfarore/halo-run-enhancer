@@ -4450,7 +4450,7 @@ class MagnitudeEditorDialog(QDialog):
     def _enemy_colors_for_patch(self):
         """This game's colour overrides for apply_run: the player's picks (Enemy
         colours options) plus, when enabled, the drift from the enemy / hero / boss
-        cards being patched (enemy_colors.drift). Read from self.effects, so a card
+        cards being patched and from the General enemy cards (enemy_colors.drift). Read from self.effects, so a card
         removed in this dialog stops shifting colours too."""
         import enemy_colors
         base = (CONFIG.get('enemy_colors') or {}).get(self.game) or {}
@@ -10035,38 +10035,60 @@ class OptionsDialog(QDialog):
             "colours above, to every colour slot and shield, when a mission is patched. "
             "A hero or boss card only shifts that rank.")
         dl.addWidget(self._ecd_on)
-        grid = QGridLayout()
-        grid.addWidget(QLabel("per card:"), 0, 0)
-        grid.addWidget(QLabel("own channel +"), 0, 1)
-        grid.addWidget(QLabel("other two −"), 0, 2)
-        self._ecd_spins = {}
-        for row, (key, label, col) in enumerate((
-                ('aggressive', 'Aggressive (red)', '#e57373'),
-                ('defensive', 'Defensive (blue)', '#64b5f6'),
-                ('utility', 'Utility (green)', '#81c784')), start=1):
-            lab = QLabel(label)
-            lab.setStyleSheet("color: %s;" % col)
-            grid.addWidget(lab, row, 0)
-            up, down = (list(dr.get(key) or enemy_colors.DRIFT_DEFAULTS[key]) + [0, 0])[:2]
-            sp_up, sp_dn = QSpinBox(), QSpinBox()
-            for sp, v in ((sp_up, up), (sp_dn, down)):
-                sp.setRange(0, 64)
-                sp.setValue(int(v))
-                sp.setToolTip("0-255 colour steps per active card. Defaults are scaled "
-                              "inversely to how many cards the group has (211 "
-                              "aggressive, 142 defensive, 85 utility), so each group "
-                              "moves an enemy about equally often.")
-            grid.addWidget(sp_up, row, 1)
-            grid.addWidget(sp_dn, row, 2)
-            self._ecd_spins[key] = (sp_up, sp_dn)
-        grid.setColumnStretch(3, 1)
+        def _step_grid(values, defaults, pools):
+            grid = QGridLayout()
+            grid.addWidget(QLabel("per card:"), 0, 0)
+            grid.addWidget(QLabel("own channel +"), 0, 1)
+            grid.addWidget(QLabel("other two −"), 0, 2)
+            spins = {}
+            for row, (key, label, col) in enumerate((
+                    ('aggressive', 'Aggressive (red)', '#e57373'),
+                    ('defensive', 'Defensive (blue)', '#64b5f6'),
+                    ('utility', 'Utility (green)', '#81c784')), start=1):
+                lab = QLabel(label)
+                lab.setStyleSheet("color: %s;" % col)
+                grid.addWidget(lab, row, 0)
+                up, down = (list(values.get(key) or defaults[key]) + [0, 0])[:2]
+                sp_up, sp_dn = QSpinBox(), QSpinBox()
+                for sp, v in ((sp_up, up), (sp_dn, down)):
+                    sp.setRange(0, 64)
+                    sp.setValue(int(v))
+                    sp.setToolTip("0-255 colour steps per active card. Defaults are scaled "
+                                  "inversely to how many cards the group has (%s), so "
+                                  "each group moves an enemy about equally often." % pools)
+                grid.addWidget(sp_up, row, 1)
+                grid.addWidget(sp_dn, row, 2)
+                spins[key] = (sp_up, sp_dn)
+            grid.setColumnStretch(3, 1)
+            return grid, spins
+
+        grid, self._ecd_spins = _step_grid(dr, enemy_colors.DRIFT_DEFAULTS,
+                                           '211 aggressive, 142 defensive, 85 utility')
         dl.addLayout(grid)
+        # Step 3: General enemy cards shift every enemy.
+        self._ecd_gen_on = QCheckBox("General enemy cards shift every enemy")
+        self._ecd_gen_on.setChecked(bool(dr.get('general_enabled')))
+        self._ecd_gen_on.setToolTip(
+            "Cards from the General enemy modifiers (Enemy Vitality, Accuracy, Vision...) "
+            "change every enemy, so they nudge every enemy's colours the same way. Smaller "
+            "default steps: there are 30 aggressive, 6 defensive and 9 utility cards, "
+            "and each one moves the whole roster.\n\nBoth kinds of drift wrap: once a "
+            "colour has washed out to white (one channel at 255, the other two within "
+            "the card's + step of it), it starts again from black.")
+        dl.addWidget(self._ecd_gen_on)
+        gdef = enemy_colors.DRIFT_DEFAULTS['general']
+        grid2, self._ecd_gen_spins = _step_grid(
+            dict(gdef, **(dr.get('general') or {})), gdef, '30 aggressive, 6 defensive, 9 utility')
+        dl.addLayout(grid2)
 
         def _sync_drift(_=False):
-            for a, b in self._ecd_spins.values():
-                a.setEnabled(self._ecd_on.isChecked())
-                b.setEnabled(self._ecd_on.isChecked())
+            for on, spins in ((self._ecd_on, self._ecd_spins),
+                              (self._ecd_gen_on, self._ecd_gen_spins)):
+                for a, b in spins.values():
+                    a.setEnabled(on.isChecked())
+                    b.setEnabled(on.isChecked())
         self._ecd_on.toggled.connect(_sync_drift)
+        self._ecd_gen_on.toggled.connect(_sync_drift)
         _sync_drift()
         self._opt_page("Enemy colours").addWidget(dbox)
 
@@ -10281,6 +10303,8 @@ class OptionsDialog(QDialog):
             'enemy_colors': self._ec,
             'enemy_color_drift': dict(
                 enabled=self._ecd_on.isChecked(),
+                general_enabled=self._ecd_gen_on.isChecked(),
+                general={k: [a.value(), b.value()] for k, (a, b) in self._ecd_gen_spins.items()},
                 **{k: [a.value(), b.value()] for k, (a, b) in self._ecd_spins.items()}),
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
             'swap_player_loadouts': self.swap_players_cb.isChecked(),

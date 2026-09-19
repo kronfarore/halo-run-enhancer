@@ -214,14 +214,16 @@ def check_structure():
     #    active card shifts that enemy's colours toward red, blue or green). A new card
     #    without one would silently never shift anything.
     em = DB.get('Enemy modifiers', {})
+    cards = [(f'EnemyGen/{n}', e) for n, e in (em.get('General modifiers') or {}).items()]
     for sec in ('Specific Enemy modifier', 'Hero enemy modifier', 'Boss enemy modifier'):
         for who, effs in (em.get(sec) or {}).items():
-            for n, e in effs.items():
-                c = e.get('color') if isinstance(e, dict) else None
-                if c not in COLOR_GROUPS:
-                    report(f'{who}/{n}: "color" must be one of {", ".join(COLOR_GROUPS)} '
-                           f'(aggressive = more damage, defensive = survives longer, '
-                           f'utility = everything else), got {c!r}')
+            cards += [(f'{who}/{n}', e) for n, e in effs.items()]
+    for label, e in cards:
+        c = e.get('color') if isinstance(e, dict) else None
+        if c not in COLOR_GROUPS:
+            report(f'{label}: "color" must be one of {", ".join(COLOR_GROUPS)} '
+                   f'(aggressive = more damage, defensive = survives longer, '
+                   f'utility = everything else), got {c!r}')
 
 
 COLOR_GROUPS = ('aggressive', 'defensive', 'utility')
