@@ -6611,17 +6611,25 @@ def _set_port_ammo(m, registry, port, pick):
         return dict(res, ok=False, skip=True, reason='this port is not in this map')
     none = pick == weapon_ports.NO_AMMO
     datum = 0xFFFFFFFF if none else _tag_id_by_name(m, ammo.get('item_class', 'eqip'), pick)
+    fell_back = ''
     if datum is None:
-        return dict(res, ok=False, reason='%s is not in this map' % pick)
+        # Pickup items are per map (Halo 1's a10 carries no rocket or shotgun ammo at
+        # all), so a choice that this mission does not have is not an error: the port
+        # keeps the item it was built with, and the run says so.
+        fell_back = ' — %s is not on this mission' % pick.rsplit(chr(92), 1)[-1]
+        pick = ammo.get('default')
+        datum = _tag_id_by_name(m, ammo.get('item_class', 'eqip'), pick) if pick else None
+        if datum is None:
+            return dict(res, ok=False, reason='%s is not in this map' % pick)
     n = 0
     for _path, meta in tags:
         for base in m.follow_all(meta, fld['block_offsets'], fld.get('block_sizes'), 'all'):
             struct.pack_into('<I', m.data, base + int(ammo['ref_offset']) + 0xC, datum)
             n += 1
     return dict(res, ok=bool(n), skip=not n,
-                new='%s (%d magazine item%s)' % ('no ammo pickups' if none
-                                                 else pick.rsplit(chr(92), 1)[-1],
-                                                 n, '' if n == 1 else 's'))
+                new='%s (%d magazine item%s)%s' % ('no ammo pickups' if none
+                                                   else pick.rsplit(chr(92), 1)[-1],
+                                                   n, '' if n == 1 else 's', fell_back))
 
 
 def apply_weapon_ports(m, game, registry, ports):
@@ -6630,29 +6638,42 @@ def apply_weapon_ports(m, game, registry, ports):
     `ports` is a list of weapon_ports catalog entries, already filtered by the run's
     options: {'weapon', 'balance': [{class, tag, field, block, value}, ...],
     'anims': {'reload': mult, 'swap': mult}, 'fp_animations': tag path}. Values are in
-    the plugins' units, so they go in through the ordinary field writer with '='.
+    the plugins' units, so they go in through the ordinary field writer as a 'set'.
     """
     out = []
     import halo3_reload
     for port in ports or ():
         name = port.get('weapon') or 'port'
         wrote = missing = 0
+        why = {}                      # reason -> count, so a silent 0-of-N is readable
         for row in port.get('balance') or ():
             plugin = registry.get(row.get('class')) if registry else None
             if plugin is None or row.get('value') is None:
                 missing += 1
+                reason = ('no %s plugin' % row.get('class')) if plugin is None else 'no value'
+                why[reason] = why.get(reason, 0) + 1
                 continue
-            res = m.apply_field(row['class'], row['tag'], row['field'], '=', row['value'],
+            # 'set', not '=': apply_field takes the INTERNAL operator name (the signs are
+            # what card text is written in, and are normalized on the way in).
+            res = m.apply_field(row['class'], row['tag'], row['field'], 'set', row['value'],
                                 plugin, row.get('block'), row.get('index', 0) or 0)
             ok = [r for r in res if r.get('ok')]
             wrote += len(ok)
             missing += len(res) - len(ok)
+            for r in res:
+                if not r.get('ok'):
+                    reason = str(r.get('reason') or 'unknown')
+                    why[reason] = why.get(reason, 0) + 1
         if wrote or missing:
+            # Name the reasons, not just a count: a balance that writes nothing at all
+            # looks exactly like a port that is not in this map, and did once.
+            detail = ', '.join('%d %s' % (n, r) for r, n in
+                               sorted(why.items(), key=lambda kv: -kv[1]))
             out.append({'effect': '%s (ported)' % name, 'tag': 'weapon port',
                         'field': 'balance', 'ok': bool(wrote), 'old': 'original values',
-                        'new': '%d field(s) set%s' % (wrote, ', %d not in this map' % missing
-                                                      if missing else ''),
-                        'skip': not wrote})
+                        'new': '%d field(s) set%s' % (wrote, ' (%s)' % detail if detail else ''),
+                        'skip': not wrote,
+                        'reason': detail if not wrote else None})
         # The pickup item is written whatever it is, not only when it differs from what
         # the port was built with: a re-patch of an already patched map has to be able
         # to put the default back.

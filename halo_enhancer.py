@@ -10336,6 +10336,13 @@ class OptionsDialog(QDialog):
                     label = choice.get('label') or choice.get('tag')
                     if choice.get('tag') == ammo.get('default'):
                         label += "  (as built)"
+                    # Which items exist is per MAP, not per game: Halo 1's rocket and
+                    # shotgun ammo are missing from the Pillar of Autumn, Double Speed
+                    # is on one mission only. A mission without the chosen item leaves
+                    # the port on what it was built with.
+                    if choice.get('maps'):
+                        label += "  — %d of %d missions" % (len(choice['maps']),
+                                                            ammo.get('maps_total') or 0)
                     combo.addItem(label, choice.get('tag'))
                 combo.addItem("(none) — no ammo pickups", weapon_ports.NO_AMMO)
                 pick = weapon_ports.ammo_choice(port, st)

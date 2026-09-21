@@ -349,6 +349,51 @@
      "value": 540,
      "card": "Ammo pickup",
      "original": null
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 3
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Alpha Bias",
+     "block": "Meter Elements",
+     "value": 1,
+     "card": "Ammo display",
+     "original": 1
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "value": 23,
+     "card": "Ammo display",
+     "original": 12
     }
    ],
    "anims": {
@@ -365,34 +410,84 @@
     "default": "powerups\\assault rifle ammo\\assault rifle ammo",
     "choices": [
      {
-      "label": "Assault Rifle ammo",
+      "label": "Assault Rifle Ammo",
       "tag": "powerups\\assault rifle ammo\\assault rifle ammo"
      },
      {
-      "label": "Flamethrower ammo",
+      "label": "Flamethrower Ammo",
       "tag": "powerups\\flamethrower ammo\\flamethrower ammo"
      },
      {
-      "label": "Needler ammo",
+      "label": "Needler Ammo",
       "tag": "powerups\\needler ammo\\needler ammo"
      },
      {
-      "label": "Pistol ammo",
+      "label": "Pistol Ammo",
       "tag": "powerups\\pistol ammo\\pistol ammo"
      },
      {
-      "label": "Rocket Launcher ammo",
-      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo"
+      "label": "Rocket Launcher Ammo",
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
      },
      {
-      "label": "Shotgun ammo",
-      "tag": "powerups\\shotgun ammo\\shotgun ammo"
+      "label": "Shotgun Ammo",
+      "tag": "powerups\\shotgun ammo\\shotgun ammo",
+      "maps": [
+       "a30",
+       "a50",
+       "b30",
+       "b40",
+       "c10",
+       "c20",
+       "c40",
+       "d20",
+       "d40"
+      ]
      },
      {
-      "label": "Sniper Rifle ammo",
+      "label": "Sniper Rifle Ammo",
       "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo"
+     },
+     {
+      "label": "Active Camouflage",
+      "tag": "powerups\\active camouflage"
+     },
+     {
+      "label": "Double Speed",
+      "tag": "powerups\\double speed",
+      "maps": [
+       "b30"
+      ]
+     },
+     {
+      "label": "Health Pack",
+      "tag": "powerups\\health pack"
+     },
+     {
+      "label": "Over Shield",
+      "tag": "powerups\\over shield"
+     },
+     {
+      "label": "Frag Grenade",
+      "tag": "weapons\\frag grenade\\frag grenade"
+     },
+     {
+      "label": "Plasma Grenade",
+      "tag": "weapons\\plasma grenade\\plasma grenade"
      }
-    ]
+    ],
+    "maps_total": 10
    }
   }
  ]
