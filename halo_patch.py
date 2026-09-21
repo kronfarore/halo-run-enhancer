@@ -6632,6 +6632,129 @@ def _set_port_ammo(m, registry, port, pick):
                                                    n, '' if n == 1 else 's', fell_back))
 
 
+# --- Ammo display follows the magazine (Halo 1) --------------------------------
+# Halo 1 draws loaded ammo as a row of bullet ticks, not a number: a tick sheet whose
+# pixel LUMINANCE is that tick's threshold, and the engine lights a tick while
+#   threshold  <  rounds * alpha_multiplier + alpha_bias
+# (strict; fitted over four in-game tests, 2026-09-19..21). The sheet is art, so its
+# thresholds are fixed -- but the MULTIPLIER is a field in the map, and it is what ties
+# the art to the magazine. Leave it alone after a card changes how much the weapon holds
+# and the bar lies: a doubled magazine fills the bar at half full and stays there.
+#
+# The art's top threshold is what the weapon was drawn for: stock multiplier x stock
+# magazine (the Assault Rifle's 4 x 60 = 240). To keep "full bar = full magazine" the
+# multiplier simply moves the other way, top / new magazine. That needs no new art,
+# which matters because a stock weapon's HUD bitmaps live in the shared bitmaps.map and
+# are not ours to rewrite per map.
+H1_WEAP_HUD_REF = 0x480         # weap -> weapon_hud_interface tagRef; its datum at +0xC
+H1_HUD_STATE_LOADED_AMMO = 1    # State Attached To
+
+
+def _h1_weapon_magazines(m, registry):
+    """{weap path: rounds loaded maximum} for every weapon in the map."""
+    plugin = registry.get('weap') if registry else None
+    if plugin is None:
+        return {}
+    out = {}
+    for path, _meta in m.find_tags('weap', '*'):
+        try:
+            v = m.read_first('weap', path, 'Rounds Loaded Maximum', plugin)
+        except Exception:
+            continue
+        if v:
+            out[path] = int(v)
+    return out
+
+
+def _h1_hud_for_weapon(m, path):
+    """The weapon_hud_interface a weapon points at, by name."""
+    meta = m.get_tag_meta('weap', path)
+    if meta is None:
+        return None
+    datum = m.u32(meta + H1_WEAP_HUD_REF + 0xC)
+    if datum == 0xFFFFFFFF:
+        return None
+    name = _tag_name_by_id(m, datum)
+    return name if isinstance(name, str) and name else None
+
+
+def apply_ammo_display(m, game, registry, before):
+    """Rescale each weapon's bullet-tick meter to the magazine the run gave it.
+
+    `before` is the snapshot from _h1_weapon_magazines taken after the structural passes
+    and before the per-field ops, so this reacts to what the CARDS did (a ported weapon's
+    own readout is set by its balance rows, which run earlier and are part of `before`).
+    """
+    if str(game).strip() != 'Halo 1' or not before or registry is None:
+        return []
+    wphi = registry.get('wphi')
+    if wphi is None:
+        return []
+    mult_f = wphi.find('Alpha Multiplier', 'Meter Elements')
+    state_f = wphi.find('State Attached To', 'Meter Elements')
+    cutoff_f = wphi.find('Loaded Ammo Cutoff')
+    if not mult_f or not state_f:
+        return []
+    out = []
+    for path, old_mag in sorted(before.items()):
+        try:
+            new_mag = int(m.read_first('weap', path, 'Rounds Loaded Maximum',
+                                       registry.get('weap')) or 0)
+        except Exception:
+            continue
+        if not new_mag or new_mag == old_mag:
+            continue
+        hud = _h1_hud_for_weapon(m, path)
+        if not hud:
+            continue
+        name = path.rsplit(chr(92), 1)[-1]
+        for _p, meta in m.find_tags('wphi', hud):
+            for base in m.follow_all(meta, state_f['block_offsets'],
+                                     state_f.get('block_sizes'), 'all'):
+                if struct.unpack_from('<h', m.data, base + state_f['offset'])[0] \
+                        != H1_HUD_STATE_LOADED_AMMO:
+                    continue
+                old_mult = struct.unpack_from('<b', m.data, base + mult_f['offset'])[0]
+                if old_mult <= 0:
+                    continue
+                top = old_mult * old_mag                  # the sheet's top threshold
+                new_mult = max(1, min(127, int(round(top / float(new_mag)))))
+                if new_mult == old_mult and new_mag <= top:
+                    continue
+                if new_mag > top:
+                    # The art cannot go further: at a multiplier of 1 the last tick
+                    # lights at `top` rounds, so a bigger magazine fills the bar early
+                    # and holds it there. Say so rather than leaving a quiet lie.
+                    out.append({'effect': 'Ammo display', 'tag': name,
+                                'field': 'ticks per round', 'ok': True, 'skip': True,
+                                'old': 'x%d (%d rounds)' % (old_mult, old_mag),
+                                'new': 'x1, but the bar fills at %d of %d rounds '
+                                       '(the readout has no more ticks)' % (top, new_mag)})
+                    struct.pack_into('<b', m.data, base + mult_f['offset'], 1)
+                    continue
+                struct.pack_into('<b', m.data, base + mult_f['offset'], new_mult)
+                full_at = int(round(top / float(new_mult)))
+                out.append({'effect': 'Ammo display', 'tag': name,
+                            'field': 'ticks per round', 'ok': True,
+                            'old': 'x%d (%d rounds)' % (old_mult, old_mag),
+                            'new': 'x%d (%d rounds)%s'
+                                   % (new_mult, new_mag,
+                                      '' if full_at == new_mag
+                                      else ', bar full at %d' % full_at)})
+        # The low-ammo flash is counted in rounds, so it moves with the magazine too.
+        if cutoff_f:
+            try:
+                old_cut = int(m.read_first('wphi', hud, 'Loaded Ammo Cutoff', wphi) or 0)
+            except Exception:
+                old_cut = 0
+            new_cut = int(round(old_cut * new_mag / float(old_mag)))
+            if old_cut and new_cut != old_cut:
+                m.apply_field('wphi', hud, 'Loaded Ammo Cutoff', 'set', new_cut, wphi)
+                out.append({'effect': 'Ammo display', 'tag': name, 'field': 'low-ammo flash',
+                            'ok': True, 'old': old_cut, 'new': new_cut})
+    return out
+
+
 def apply_weapon_ports(m, game, registry, ports):
     """Write each enabled port's balance rows and retime its animations.
 
@@ -6700,7 +6823,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
-              difficulty_baseline=None, weapon_ports=None,
+              difficulty_baseline=None, weapon_ports=None, ammo_display=True,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
@@ -6742,6 +6865,11 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # field. Nothing else in the pass depends on them, so ordering costs nothing.
         results.extend(apply_difficulty_baseline(m, registry, target_difficulty,
                                                  difficulty_baseline))
+    # What every weapon holds BEFORE the cards run -- the yardstick apply_ammo_display
+    # rescales each bullet-tick meter against once they have. Taken after the ports, so a
+    # ported weapon's own readout (set by its balance rows) counts as its starting point.
+    mags_before = _h1_weapon_magazines(m, registry) if ammo_display else {}
+
     if weapon_swaps:
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
         # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
@@ -7160,6 +7288,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # ODST only. After the per-field ops so it composes on top of whatever the
         # run patched onto the plasma rifle, rather than being overwritten by it.
         results.extend(apply_red_plasma_as_brute(m, registry, red_plasma))
+
+    if mags_before:
+        # LAST of the value passes: it reads the magazine every other op has finished
+        # with, so anything that moves it -- a card, a skull, a port's balance -- is
+        # already accounted for.
+        results.extend(apply_ammo_display(m, game, registry, mags_before))
 
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):

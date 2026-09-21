@@ -408,6 +408,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'remove_superseded_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
+               'ammo_display_follows_magazine',
                'upgrade_inherits_base',
                'hide_tags', 'hide_fields',
                'h4_sprint_mode',
@@ -1153,6 +1154,7 @@ CONFIG = {
     # #7: offer map-replacement as a per-weapon CARD instead of the patcher's
     # sliders. The two are the same mechanism, so only one is shown at a time.
     "weapon_swap_cards": False,
+    "ammo_display_follows_magazine": True,
     # Sprint (New Features / Experimental). Only functions on maps built with the
     # sprint mod; on a plain map these are inert. sprint_feature is the master
     # switch; start-with vs card is how it enters a run; speed% scales the sprint
@@ -7475,6 +7477,7 @@ class MagnitudeEditorDialog(QDialog):
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
                 enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
+                ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
@@ -7526,6 +7529,7 @@ class MagnitudeEditorDialog(QDialog):
                     skulls=skulls,
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
+                ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
@@ -8223,6 +8227,18 @@ class OptionsDialog(QDialog):
                                       "it. Same mechanism as the patcher's swap sliders, so the "
                                       "sliders are hidden while this is on.")
         wform.addRow("Map replacement:", self.swap_cards_cb)
+
+        self.ammo_display_cb = QCheckBox("Keep the bullet-tick readout honest when a magazine changes")
+        self.ammo_display_cb.setChecked(bool(CONFIG.get('ammo_display_follows_magazine', True)))
+        self.ammo_display_cb.setToolTip(
+            "Halo 1 shows loaded ammo as a row of bullet ticks, and how fast that row "
+            "fills is a field on the weapon, set for its VANILLA magazine. Change the "
+            "magazine with a card and the bar lies -- a doubled magazine fills it at "
+            "half full and sits there.\n\nOn patch, each weapon whose magazine the run "
+            "changed has its readout rescaled, along with the low-ammo flash. The ticks "
+            "themselves are art, so a magazine larger than the art can show fills the "
+            "bar early; the patch log says when that happens.")
+        wform.addRow("Ammo readout:", self.ammo_display_cb)
 
         self.zoom_ui_cb = QCheckBox("Add a scope overlay to scopeless weapons given a Zoom")
         self.zoom_ui_cb.setChecked(bool(CONFIG.get('zoom_ui_on_scopeless', True)))
@@ -10458,6 +10474,7 @@ class OptionsDialog(QDialog):
             'remove_invincibility_invisibility': self.no_invinc_invis_cb.isChecked(),
             'denied_equipment_as_enemy_mods': self.denied_as_enemy_cb.isChecked(),
             'weapon_swap_cards': self.swap_cards_cb.isChecked(),
+            'ammo_display_follows_magazine': self.ammo_display_cb.isChecked(),
             'upgrade_inherits_base': self.upgrade_inherit_cb.isChecked(),
             'weapon_choice_negatives': self.negatives_cb.isChecked(),
             'special_rate_factor': round(self.special_rate.value(), 2),
