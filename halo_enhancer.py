@@ -4553,6 +4553,37 @@ class MagnitudeEditorDialog(QDialog):
             self.baseline_edit.setText(path)
             self._baseline_root_changed()
 
+    def _weapon_ports_for_patch(self):
+        """The ported weapons this run switched on for this game (weapon_ports)."""
+        try:
+            import weapon_ports
+            return weapon_ports.active_ports(self.game, CONFIG) or None
+        except Exception:
+            return None
+
+    def _port_balance(self):
+        """{(class, tag, field, block): value} the port balance will write. The vanilla
+        column must show these: they are written BEFORE every card op, so they are the
+        values a card's magnitude actually scales."""
+        if getattr(self, '_port_balance_map', None) is None:
+            try:
+                import weapon_ports
+                self._port_balance_map = weapon_ports.balance_map(self.game, CONFIG)
+            except Exception:
+                self._port_balance_map = {}
+        return self._port_balance_map
+
+    def _port_value(self, tag, field, block=None):
+        """The ported-balance value for a target, or None."""
+        table = self._port_balance()
+        if not table:
+            return None
+        try:
+            cls, path = self._hp.hm.split_tag(tag)
+        except Exception:
+            return None
+        return table.get((cls, path, field, block))
+
     def _read_source(self):
         """Load (once) the map used to display vanilla values — the pristine
         baseline if it exists, else the map itself. False if it can't be read."""
@@ -4587,8 +4618,10 @@ class MagnitudeEditorDialog(QDialog):
         if not m.find_tags(cls, path):
             return "— not in map"
         field = self._hp.apply_difficulty(target['field'], target, self.target_difficulty)
-        v = m.read_first(cls, path, field, plugin, target.get('block'),
-                         target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
+        v = self._port_value(tag, field, target.get('block'))
+        if v is None:
+            v = m.read_first(cls, path, field, plugin, target.get('block'),
+                             target.get('index', 0) or 0, nth=target.get('nth', 0) or 0)
         if v is None:
             return self._why_unreadable(m, cls, path, field, plugin, target)
         v = self._shown_value(target, v)        # stored -> the units shown/typed
@@ -4603,6 +4636,9 @@ class MagnitudeEditorDialog(QDialog):
         plugin = self.registry.get(cls)
         if plugin is None:
             return None
+        ported = self._port_value(tag, field, block)
+        if ported is not None:
+            return ported
         return m.read_first(cls, path, field, plugin, block, 0, nth=nth)
 
     def _absent_from_game(self, eff):
@@ -7438,6 +7474,7 @@ class MagnitudeEditorDialog(QDialog):
                      'Halo 4': 'h4_equipment_drop'}.get(self.game, ''))),
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
                 enemy_colors=self._enemy_colors_for_patch(),
+                weapon_ports=self._weapon_ports_for_patch(),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
@@ -7488,6 +7525,7 @@ class MagnitudeEditorDialog(QDialog):
                     **baseline_args(self.game),
                     skulls=skulls,
                     enemy_colors=self._enemy_colors_for_patch(),
+                weapon_ports=self._weapon_ports_for_patch(),
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),

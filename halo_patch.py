@@ -6571,13 +6571,56 @@ def _apply_sprint(m, game, registry, cfg):
     return results
 
 
+def apply_weapon_ports(m, game, registry, ports):
+    """Write each enabled port's balance rows and retime its animations.
+
+    `ports` is a list of weapon_ports catalog entries, already filtered by the run's
+    options: {'weapon', 'balance': [{class, tag, field, block, value}, ...],
+    'anims': {'reload': mult, 'swap': mult}, 'fp_animations': tag path}. Values are in
+    the plugins' units, so they go in through the ordinary field writer with '='.
+    """
+    out = []
+    import halo3_reload
+    for port in ports or ():
+        name = port.get('weapon') or 'port'
+        wrote = missing = 0
+        for row in port.get('balance') or ():
+            plugin = registry.get(row.get('class')) if registry else None
+            if plugin is None or row.get('value') is None:
+                missing += 1
+                continue
+            res = m.apply_field(row['class'], row['tag'], row['field'], '=', row['value'],
+                                plugin, row.get('block'), row.get('index', 0) or 0)
+            ok = [r for r in res if r.get('ok')]
+            wrote += len(ok)
+            missing += len(res) - len(ok)
+        if wrote or missing:
+            out.append({'effect': '%s (ported)' % name, 'tag': 'weapon port',
+                        'field': 'balance', 'ok': bool(wrote), 'old': 'original values',
+                        'new': '%d field(s) set%s' % (wrote, ', %d not in this map' % missing
+                                                      if missing else ''),
+                        'skip': not wrote})
+        anims, fp = port.get('anims') or {}, port.get('fp_animations')
+        for group, match in (('reload', ('reload',)), ('swap', ('ready', 'put_away'))):
+            mult = anims.get(group)
+            if not fp or not mult or abs(mult - 1.0) < 1e-6:
+                continue
+            rep = halo3_reload.scale_reload(m, fp, float(mult), game=game, match=match)
+            out.append({'effect': '%s (ported)' % name, 'tag': fp.rsplit(chr(92), 1)[-1],
+                        'field': '%s animation' % group, 'ok': bool(rep.get('ok')),
+                        'skip': bool(rep.get('skip')),
+                        'old': 'port timing', 'new': 'x%.3f' % mult,
+                        'reason': rep.get('reason')})
+    return out
+
+
 def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=None,
               starting=None, weapon_swaps=None, zoom_ui=None, zoom_donor=None,
               turret_first_person=None, keep_reticle=False,
               equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
-              difficulty_baseline=None,
+              difficulty_baseline=None, weapon_ports=None,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
@@ -6607,6 +6650,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     baseline = str(bak) if (from_baseline and found) else map_path
     m = open_map(baseline, game)
     results = []
+    if weapon_ports:
+        # Ported weapons: the suggested balance becomes the port's VANILLA, so the run's
+        # cards scale from it -- hence before every op, like the difficulty baseline. The
+        # patcher's vanilla column applies the same table (see weapon_ports.balance_map).
+        results.extend(apply_weapon_ports(m, game, registry, weapon_ports))
+
     if difficulty_baseline:
         # FIRST of everything: the whole-game dials are the floor the run's own enemy
         # effects then scale up from, so they have to be in place before any op reads a

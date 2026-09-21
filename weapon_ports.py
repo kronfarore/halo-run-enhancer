@@ -42,3 +42,29 @@ def enabled_ports(game, config_ports, catalog=None):
     chosen = ((config_ports or {}).get(str(game).strip()) or {})
     return [p for p in ports_for(game, catalog)
             if (chosen.get(p.get('weapon')) or {}).get('enabled', p.get('default_on', False))]
+
+
+def active_ports(game, config, catalog=None):
+    """The catalog entries to hand the patcher, shaped by the run's options:
+    `weapon_ports` picks which ports are on, `weapon_ports_balance` whether their
+    balance rows apply at all, and `weapon_ports_balance_anims` whether the retiming
+    comes with it."""
+    out = []
+    for port in enabled_ports(game, config.get('weapon_ports'), catalog):
+        entry = dict(port)
+        if not config.get('weapon_ports_balance', True):
+            entry['balance'], entry['anims'] = [], {}
+        elif not config.get('weapon_ports_balance_anims', True):
+            entry['anims'] = {}
+        out.append(entry)
+    return out
+
+
+def balance_map(game, config, catalog=None):
+    """{(class, tag, field, block): balanced value} for every enabled port -- what the
+    patcher writes before the cards, and therefore what its vanilla column must show."""
+    out = {}
+    for port in active_ports(game, config, catalog):
+        for row in port.get('balance') or ():
+            out[(row.get('class'), row.get('tag'), row.get('field'), row.get('block'))] = row.get('value')
+    return out

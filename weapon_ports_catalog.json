@@ -340,6 +340,15 @@
      "value": 7.447917,
      "card": "Error Angle",
      "original": 2.750000005377918
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\saw\\saw",
+     "field": "Rounds",
+     "block": "Magazines/Magazines",
+     "value": 540,
+     "card": "Ammo pickup",
+     "original": null
     }
    ],
    "anims": {
