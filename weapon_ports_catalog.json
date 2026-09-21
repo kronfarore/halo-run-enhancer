@@ -354,6 +354,45 @@
    "anims": {
     "reload": 1.28125,
     "swap": 0.971429
+   },
+   "ammo": {
+    "class": "weap",
+    "tag": "weapons\\saw\\saw",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 12,
+    "item_class": "eqip",
+    "default": "powerups\\assault rifle ammo\\assault rifle ammo",
+    "choices": [
+     {
+      "label": "Assault Rifle ammo",
+      "tag": "powerups\\assault rifle ammo\\assault rifle ammo"
+     },
+     {
+      "label": "Flamethrower ammo",
+      "tag": "powerups\\flamethrower ammo\\flamethrower ammo"
+     },
+     {
+      "label": "Needler ammo",
+      "tag": "powerups\\needler ammo\\needler ammo"
+     },
+     {
+      "label": "Pistol ammo",
+      "tag": "powerups\\pistol ammo\\pistol ammo"
+     },
+     {
+      "label": "Rocket Launcher ammo",
+      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo"
+     },
+     {
+      "label": "Shotgun ammo",
+      "tag": "powerups\\shotgun ammo\\shotgun ammo"
+     },
+     {
+      "label": "Sniper Rifle ammo",
+      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo"
+     }
+    ]
    }
   }
  ]

@@ -44,18 +44,38 @@ def enabled_ports(game, config_ports, catalog=None):
             if (chosen.get(p.get('weapon')) or {}).get('enabled', p.get('default_on', False))]
 
 
+NO_AMMO = '(none)'
+
+
+def ammo_choice(port, state):
+    """Which pickup item this port's magazines accept: the tag path chosen for it, or
+    NO_AMMO for a weapon that takes no ammo pickups at all. A port with nothing stored
+    (or a stored tag its game no longer lists) falls back to the donor's item, which is
+    what the port was built with."""
+    ammo = port.get('ammo') or {}
+    if not ammo:
+        return None
+    pick = (state or {}).get('ammo')
+    if pick == NO_AMMO:
+        return NO_AMMO
+    tags = [c.get('tag') for c in ammo.get('choices') or ()]
+    return pick if pick in tags else ammo.get('default')
+
+
 def active_ports(game, config, catalog=None):
     """The catalog entries to hand the patcher, shaped by the run's options:
     `weapon_ports` picks which ports are on, `weapon_ports_balance` whether their
-    balance rows apply at all, and `weapon_ports_balance_anims` whether the retiming
-    comes with it."""
+    balance rows apply at all, `weapon_ports_balance_anims` whether the retiming comes
+    with it, and each port's own `ammo` which pickup item it accepts."""
     out = []
+    chosen = (config.get('weapon_ports') or {}).get(str(game).strip()) or {}
     for port in enabled_ports(game, config.get('weapon_ports'), catalog):
         entry = dict(port)
         if not config.get('weapon_ports_balance', True):
             entry['balance'], entry['anims'] = [], {}
         elif not config.get('weapon_ports_balance_anims', True):
             entry['anims'] = {}
+        entry['ammo_pick'] = ammo_choice(port, chosen.get(port.get('weapon')))
         out.append(entry)
     return out
 

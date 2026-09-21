@@ -10306,6 +10306,7 @@ class OptionsDialog(QDialog):
         gform.addRow("Animations:", self._ports_anim_cb)
         lay.addWidget(gen)
         self._ports_boxes = {}
+        self._ports_ammo = {}
         for game in BASELINE_GAMES:
             ports = self._ports_catalog.get(game) or []
             gb = QGroupBox(game)
@@ -10322,6 +10323,33 @@ class OptionsDialog(QDialog):
                 cb.setToolTip(port.get('desc') or '')
                 f.addRow("Port:", cb)
                 self._ports_boxes[(game, port.get('weapon'))] = cb
+                ammo = port.get('ammo') or {}
+                if not ammo:
+                    continue
+                # Which ammo pickup the port's magazines accept. A port has no pickup
+                # item of its own (the SAW's home game has no ammo pickups at all), so
+                # it is built taking the DONOR's -- shown here as the default, with
+                # every other item of this game beside it and "(none)" for a weapon
+                # that can never be topped up.
+                combo = QComboBox()
+                for choice in ammo.get('choices') or ():
+                    label = choice.get('label') or choice.get('tag')
+                    if choice.get('tag') == ammo.get('default'):
+                        label += "  (as built)"
+                    combo.addItem(label, choice.get('tag'))
+                combo.addItem("(none) — no ammo pickups", weapon_ports.NO_AMMO)
+                pick = weapon_ports.ammo_choice(port, st)
+                at = combo.findData(pick)
+                combo.setCurrentIndex(at if at >= 0 else 0)
+                tune_combo(combo)
+                combo.setToolTip(
+                    "The pickup this weapon takes ammunition from. It was built taking "
+                    "the %s's, because the game it came from has no ammo pickups; any "
+                    "other item of this game works too, and (none) leaves it with what "
+                    "it spawns with.\n\nHow MUCH a pickup gives is the port's own "
+                    "number, and moves with the balance." % port.get('donor'))
+                f.addRow("Ammo pickup:", combo)
+                self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
         page = self._opt_page("Weapon ports")
         page.addWidget(box)
@@ -10443,9 +10471,12 @@ class OptionsDialog(QDialog):
             # mcc_root this must NOT collapse to None.
             'baseline_root': self.baseline_root_edit.text().strip(),
             'enemy_colors': self._ec,
-            'weapon_ports': {g: {w: {'enabled': cb.isChecked()}
-                                 for (g2, w), cb in self._ports_boxes.items() if g2 == g}
-                             for g in {gg for gg, _ in self._ports_boxes}},
+            'weapon_ports': {
+                g: {w: dict({'enabled': cb.isChecked()},
+                            **({'ammo': self._ports_ammo[(g, w)].currentData()}
+                               if (g, w) in self._ports_ammo else {}))
+                    for (g2, w), cb in self._ports_boxes.items() if g2 == g}
+                for g in {gg for gg, _ in self._ports_boxes}},
             'weapon_ports_balance': self._ports_balance_cb.isChecked(),
             'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
             'enemy_color_drift': dict(

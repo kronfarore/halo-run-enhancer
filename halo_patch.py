@@ -6571,6 +6571,59 @@ def _apply_sprint(m, game, registry, cfg):
     return results
 
 
+def _tag_id_by_name(m, cls, path):
+    """A tag's datum (what a tag reference stores), by group and path. Halo 1 index
+    entry: group @0x00, tag id @0x0C, name pointer @0x10, meta @0x14."""
+    for i in range(m.tag_count):
+        b = m.tag_array_off + i * 32
+        if bytes(m.data[b:b + 4][::-1]).decode('latin1') != cls:
+            continue
+        try:
+            if m._cstr((m.u32(b + 0x10) - m.magic) & 0xFFFFFFFF) == path:
+                return m.u32(b + 0x0C)
+        except Exception:
+            continue
+    return None
+
+
+def _set_port_ammo(m, registry, port, pick):
+    """Point a ported weapon's magazines at an ammo pickup item -- or at nothing.
+
+    The Assembly plugins skip tag references, so there is no field to write through:
+    the catalog names a SIBLING field in the same block (`anchor_field`, Rounds) and
+    the reference's offset from the block's start, and the datum goes in at +0xC of
+    the reference. A null reference is datum 0xFFFFFFFF, which is what a magazine with
+    no pickup item carries in a stock map.
+    """
+    import weapon_ports
+    ammo = port.get('ammo') or {}
+    if not ammo or not pick:
+        return None
+    plugin = registry.get(ammo.get('class')) if registry else None
+    fld = plugin.find(ammo.get('anchor_field'), ammo.get('block')) if plugin else None
+    res = {'effect': '%s (ported)' % (port.get('weapon') or 'port'), 'tag': 'weapon port',
+           'field': 'ammo pickup', 'old': 'as built'}
+    if fld is None:
+        return dict(res, ok=False, reason='no %s field in the %s plugin'
+                                          % (ammo.get('anchor_field'), ammo.get('class')))
+    tags = m.find_tags(ammo.get('class'), ammo.get('tag'))
+    if not tags:
+        return dict(res, ok=False, skip=True, reason='this port is not in this map')
+    none = pick == weapon_ports.NO_AMMO
+    datum = 0xFFFFFFFF if none else _tag_id_by_name(m, ammo.get('item_class', 'eqip'), pick)
+    if datum is None:
+        return dict(res, ok=False, reason='%s is not in this map' % pick)
+    n = 0
+    for _path, meta in tags:
+        for base in m.follow_all(meta, fld['block_offsets'], fld.get('block_sizes'), 'all'):
+            struct.pack_into('<I', m.data, base + int(ammo['ref_offset']) + 0xC, datum)
+            n += 1
+    return dict(res, ok=bool(n), skip=not n,
+                new='%s (%d magazine item%s)' % ('no ammo pickups' if none
+                                                 else pick.rsplit(chr(92), 1)[-1],
+                                                 n, '' if n == 1 else 's'))
+
+
 def apply_weapon_ports(m, game, registry, ports):
     """Write each enabled port's balance rows and retime its animations.
 
@@ -6600,6 +6653,12 @@ def apply_weapon_ports(m, game, registry, ports):
                         'new': '%d field(s) set%s' % (wrote, ', %d not in this map' % missing
                                                       if missing else ''),
                         'skip': not wrote})
+        # The pickup item is written whatever it is, not only when it differs from what
+        # the port was built with: a re-patch of an already patched map has to be able
+        # to put the default back.
+        ammo = _set_port_ammo(m, registry, port, port.get('ammo_pick'))
+        if ammo:
+            out.append(ammo)
         anims, fp = port.get('anims') or {}, port.get('fp_animations')
         for group, match in (('reload', ('reload',)), ('swap', ('ready', 'put_away'))):
             mult = anims.get(group)
