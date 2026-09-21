@@ -214,6 +214,46 @@ def _scale_frame(m, off, mult, cap):
 H1_ANIM_BLK, H1_ANIM_EL, H1_FC = 0x74, 0xB4, 0x22
 H1_I16_FRAMES = (0x2E, 0x34, 0x36, 0x3E)
 H1_I8_FRAMES = (0x40, 0x41)
+# Frame Size i16@0x24, Frame Info Type enum16@0x26, and three data refs (size i32@+0,
+# pointer@+0xC, magic-relative): Frame Info @0x48, Default Data @0x8C, Frame Data @0xA0.
+H1_FRAME_SIZE, H1_INFO_TYPE = 0x24, 0x26
+H1_FRAME_INFO, H1_FRAME_DATA = 0x48, 0xA0
+H1_INFO_SIZES = (0, 4, 8, 12)      # none / dx / dx dy / dx dy dyaw, per frame
+
+
+def _h1_dataref(m, el, off):
+    """(size, file offset) of an animation data ref, or (0, None)."""
+    size = m.i32(el + off)
+    ptr = m.u32(el + off + 0xC)
+    if size <= 0 or not ptr:
+        return 0, None
+    return size, (ptr - m.magic) & 0xFFFFFFFF
+
+
+def _h1_resample(m, el, old_fc, new_fc, off, per_frame):
+    """Rebuild one of an animation's per-frame buffers for a new frame count: each new
+    frame takes the nearest old one. Halo 1 animations are uncompressed, so this is a
+    straight copy. Written in place when it fits, else appended to the tag data at EOF
+    (append_raw) and the ref repointed -- which is what lets an animation grow LONGER;
+    rewriting the frame count alone would read past the stored frames."""
+    size, src = _h1_dataref(m, el, off)
+    if not size or per_frame <= 0 or old_fc < 1:
+        return False
+    have = min(old_fc, size // per_frame)
+    if have < 1:
+        return False
+    out = bytearray()
+    for i in range(new_fc):
+        k = 0 if new_fc == 1 else int(round(i * (have - 1) / float(new_fc - 1)))
+        k = max(0, min(have - 1, k))
+        out += bytes(m.data[src + k * per_frame:src + (k + 1) * per_frame])
+    if len(out) <= size:
+        m.data[src:src + len(out)] = out
+    else:
+        new_off = m.append_raw(bytes(out))
+        struct.pack_into('<I', m.data, el + off + 0xC, (new_off + m.magic) & 0xFFFFFFFF)
+    struct.pack_into('<i', m.data, el + off, len(out))
+    return True
 
 
 def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
@@ -229,10 +269,19 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
             if not _matches(nm, match):
                 continue
             hit = True
+            old_fc = struct.unpack_from('<h', m.data, el + H1_FC)[0]
             _, new_fc = _scale_frame(m, el + H1_FC, mult, 0x7FFF)
             if new_fc < 1:
                 new_fc = 1
                 struct.pack_into('<h', m.data, el + H1_FC, 1)
+            # The frames themselves, so the motion plays whole at its new length (and so
+            # a LONGER animation has frames to play).
+            if new_fc != old_fc and hasattr(m, 'append_raw'):
+                frame_size = struct.unpack_from('<h', m.data, el + H1_FRAME_SIZE)[0]
+                _h1_resample(m, el, old_fc, new_fc, H1_FRAME_DATA, frame_size)
+                itype = struct.unpack_from('<h', m.data, el + H1_INFO_TYPE)[0]
+                if 0 <= itype < len(H1_INFO_SIZES) and H1_INFO_SIZES[itype]:
+                    _h1_resample(m, el, old_fc, new_fc, H1_FRAME_INFO, H1_INFO_SIZES[itype])
             anims_scaled += 1
             edits += 1
             cap = new_fc - 1

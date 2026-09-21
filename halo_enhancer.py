@@ -423,7 +423,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'camo_duration_s', 'camo_cooldown_s',
                # Visual, but it changes map bytes: co-op partners must patch the same
                # colours or the game fails to load, so it travels in the run.
-               'enemy_colors', 'enemy_color_drift')
+               'enemy_colors', 'enemy_color_drift', 'weapon_ports')
 
 
 class _WheelGuard(QObject):
@@ -7832,6 +7832,7 @@ class OptionsDialog(QDialog):
         Only their VISIBILITY follows debug mode. Their values keep applying either
         way, so turning debug off cannot silently undo a rule the run depends on."""
         on = self.debug_mode_cb.isChecked()
+        self._sync_ports_page()
         for w in getattr(self, '_debug_only_rows', ()):
             w.setVisible(on)
             lbl = w.parentWidget().layout().labelForField(w) if w.parentWidget() else None
@@ -9571,6 +9572,7 @@ class OptionsDialog(QDialog):
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
         self._opt_page("Patching").addWidget(patch_h4_g, 90)
         self._build_enemy_colors()
+        self._build_weapon_ports()
 
         # ---- Metagame scoring ----
         # Unlike everything else in this dialog, this writes OUTSIDE the map folders,
@@ -10224,6 +10226,83 @@ class OptionsDialog(QDialog):
             self._ec_drop_widgets([it])
             self._ec_tree.setItemWidget(it, 1, self._ec_swatches(game, row))
 
+    # ---- Weapon ports (experimental, debug only) ---------------------------
+    # A ported weapon carries its SOURCE game's numbers in its target-game tags. The
+    # options here decide what the patcher does with a port on top of that: the
+    # suggested balance (the donor weapon's own numbers, read across the two games,
+    # applied as the port's new vanilla so the cards scale from it) and the matching
+    # animation timing. Stored as CONFIG['weapon_ports'] = {game: {weapon: {...}}},
+    # a RUN option: co-op partners must patch identical weapons.
+    def _build_weapon_ports(self):
+        import weapon_ports
+        self._ports_catalog = weapon_ports.load_catalog()
+        self._ports = {g: {w: dict(v) for w, v in (ws or {}).items()}
+                       for g, ws in (CONFIG.get('weapon_ports') or {}).items()}
+        box = QGroupBox("Weapon ports — EXPERIMENTAL")
+        lay = QVBoxLayout(box)
+        note = QLabel(
+            "Weapons carried from one game into another. A port ships with its ORIGINAL "
+            "numbers from the game it came from.\n\nExperimental: shown only with Debug "
+            "on, and every port needs testing in game before it is worth trusting.")
+        note.setWordWrap(True)
+        lay.addWidget(note)
+        gen = QGroupBox("Every game")
+        gform = QFormLayout(gen)
+        gform.setLabelAlignment(Qt.AlignRight)
+        self._ports_balance_cb = QCheckBox("Apply the suggested balance")
+        self._ports_balance_cb.setChecked(bool(CONFIG.get('weapon_ports_balance', True)))
+        self._ports_balance_cb.setToolTip(
+            "Rebalance each ported weapon for the game it lands in, using a weapon that "
+            "exists in BOTH games as the yardstick (the SAW is measured against the "
+            "Assault Rifle): every card field moves by the ratio between that weapon's "
+            "two versions.\n\nThe balanced values become the port's vanilla, so cards "
+            "scale from them. Off, the port keeps its original numbers.")
+        gform.addRow("Balance:", self._ports_balance_cb)
+        self._ports_anim_cb = QCheckBox("Retime reload and weapon swap with it")
+        self._ports_anim_cb.setChecked(bool(CONFIG.get('weapon_ports_balance_anims', True)))
+        self._ports_anim_cb.setToolTip(
+            "Scale the port's reload / ready / put-away animations by the same yardstick, "
+            "so its timing keeps the same relation to the donor weapon that it had at "
+            "home. The patcher resamples the animation in the map, so it can be made "
+            "longer as well as shorter.")
+        gform.addRow("Animations:", self._ports_anim_cb)
+        lay.addWidget(gen)
+        self._ports_boxes = {}
+        for game in BASELINE_GAMES:
+            ports = self._ports_catalog.get(game) or []
+            gb = QGroupBox(game)
+            f = QFormLayout(gb)
+            f.setLabelAlignment(Qt.AlignRight)
+            if not ports:
+                lbl = QLabel("no ported weapons yet")
+                lbl.setStyleSheet("color: #888;")
+                f.addRow("", lbl)
+            for port in ports:
+                cb = QCheckBox("%s (from %s)" % (port.get('weapon'), port.get('source')))
+                st = (self._ports.get(game) or {}).get(port.get('weapon')) or {}
+                cb.setChecked(bool(st.get('enabled', port.get('default_on', False))))
+                cb.setToolTip(port.get('desc') or '')
+                f.addRow("Port:", cb)
+                self._ports_boxes[(game, port.get('weapon'))] = cb
+            lay.addWidget(gb)
+        page = self._opt_page("Weapon ports")
+        page.addWidget(box)
+        # Debug-only: the nav entry is hidden unless Debug is on (the page itself stays
+        # built, so its values are still saved either way).
+        self._ports_nav_row = self._opt_nav.count() - 1
+
+    def _sync_ports_page(self):
+        row = getattr(self, '_ports_nav_row', None)
+        if row is None:
+            return
+        item = self._opt_nav.item(row)
+        if item is None:
+            return
+        on = self.debug_mode_cb.isChecked()
+        item.setHidden(not on)
+        if not on and self._opt_nav.currentRow() == row:
+            self._opt_nav.setCurrentRow(0)
+
     def values(self):
         return {
             'target_difficulty': self.diff_combo.currentData(),   # internal slot name
@@ -10326,6 +10405,11 @@ class OptionsDialog(QDialog):
             # mcc_root this must NOT collapse to None.
             'baseline_root': self.baseline_root_edit.text().strip(),
             'enemy_colors': self._ec,
+            'weapon_ports': {g: {w: {'enabled': cb.isChecked()}
+                                 for (g2, w), cb in self._ports_boxes.items() if g2 == g}
+                             for g in {gg for gg, _ in self._ports_boxes}},
+            'weapon_ports_balance': self._ports_balance_cb.isChecked(),
+            'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
             'enemy_color_drift': dict(
                 enabled=self._ecd_on.isChecked(),
                 general_enabled=self._ecd_gen_on.isChecked(),
