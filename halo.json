@@ -5977,7 +5977,8 @@
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
-					]
+					],
+					"dual_only": true
 				},
 				"Reload Time": {
 					"desc": "How long you spend reloading. *0.5 is twice as fast.",
@@ -6213,7 +6214,8 @@
 						{ "field": "Minimum Error", "block": "Barrels", "group": "Error Angle" },
 						{ "field": "Error Angle", "block": "Barrels", "group": "Error Angle" },
 						{ "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle" }
-					]
+					],
+					"dual_only": true
 				},
 				"Dual Weapon Damage": {
 					"desc": "Damage scale while dual wielding",
@@ -6221,7 +6223,8 @@
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
 						{ "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0" }
-					]
+					],
+					"dual_only": true
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
