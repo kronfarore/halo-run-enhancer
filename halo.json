@@ -1035,9 +1035,9 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" }
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"}
 					]
 				}
 			},
@@ -1049,13 +1049,13 @@
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -1350,9 +1350,9 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"},
 						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" },
 						{"field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"]}
 					]
@@ -1391,13 +1391,13 @@
 					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2138,9 +2138,9 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" }
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1, "Halo 3: ODST": 1}, "group": "Error Angle"}
 					]
 				},
 				"Per Round": {
@@ -2167,13 +2167,13 @@
 					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2520,9 +2520,9 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
 						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" },
 						{"field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"]}
 					]
@@ -2546,13 +2546,13 @@
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -2803,9 +2803,9 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"
 					},
 					"targets": [
-						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
-						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0}, "group": "Error Angle" },
+						{"field": "Minimum Error", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
+						{"field": "Error Angle Max", "block": {"Halo 1": "Triggers", "Halo 2": "Barrels"}, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo Reach": 0, "Halo 3": 1}, "group": "Error Angle"},
 						{"field": "Deviation Angle", "games": ["Halo Reach", "Halo 4"], "min": 0, "group": "Error Angle" },
 						{"field": "Deviation Angle", "block": "Aim Assist Modes", "index": "all", "group": "Error Angle", "min": 0, "games": ["Halo 4"]}
 					]
@@ -2819,13 +2819,13 @@
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -3109,13 +3109,13 @@
 					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 1": 0, "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -3882,11 +3882,11 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4365,11 +4365,11 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4618,11 +4618,11 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -4857,13 +4857,13 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5134,11 +5134,11 @@
 					},
 					"targets": [
 						{ "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{ "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}},
 						{ "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
@@ -5557,13 +5557,13 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
 					"targets": [
 						{"field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
+						{"field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
 						{"field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{"field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
 					],
 					"affected_by_skull": "Eyepatch"
 				},
