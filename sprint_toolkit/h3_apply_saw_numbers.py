@@ -49,15 +49,22 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--map', default='010_jungle')
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--no-balance', action='store_true',
+                    help="write the port's OWN Halo 4 numbers instead of the balanced "
+                         "ones -- the same thing the run option does")
     a = ap.parse_args()
     he.load_settings()
     live = os.path.join(he.mcc_root(), 'halo3', 'maps', a.map + '.map')
     reg = hp.PluginRegistry(he.CONFIG.get('assembly_plugins_dir'),
                             he.CONFIG.get('plugin_subdirs_by_game', {}).get(GAME, []))
-    ports = weapon_ports.active_ports(GAME, he.CONFIG)
+    cfg = dict(he.CONFIG)
+    if a.no_balance:
+        cfg['weapon_ports_balance'] = False
+    ports = weapon_ports.active_ports(GAME, cfg)
     if not ports:
         raise SystemExit('no active Halo 3 ports in the catalog')
-    print('ports: %s' % [p['weapon'] for p in ports])
+    print('ports: %s  (%s)' % ([p['weapon'] for p in ports],
+                               'Halo 4 originals' if a.no_balance else 'balanced'))
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(live, GAME)
     before = snap(m, reg)

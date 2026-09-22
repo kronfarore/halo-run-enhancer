@@ -723,6 +723,26 @@
      "nth": 1
     },
     {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile",
+     "original": 0.0,
+     "note": "measured from the donor tags: no card target in Halo 3"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 0.2,
+     "card": "Projectile",
+     "original": 0.20000000298023224,
+     "note": "measured from the donor tags: no card target in Halo 3"
+    },
+    {
      "class": "weap",
      "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Total Maximum",

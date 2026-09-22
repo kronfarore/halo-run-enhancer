@@ -18,8 +18,9 @@ animation graph, so retiming it would retime the Assault Rifle too.
 """
 import json, os, sys
 
-HERE = os.path.dirname(os.path.abspath(__file__))  # balance tables live beside the JMS converters, see the port backup on F:
-TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+HERE = os.path.dirname(os.path.abspath(__file__))
+TOOL = os.path.join('C:' + os.sep, 'Program Files (x86)', 'Steam', 'steamapps', 'common',
+                    'Halo The Master Chief Collection', 'tool')
 TABLE = os.path.join(HERE, 'balance_SAW_Halo4_to_Halo3_mgvel.json')
 OUT = os.path.join(TOOL, 'weapon_ports_catalog.json')
 B = os.sep
@@ -45,6 +46,66 @@ SHARED = {('jpt!', B.join(['objects', 'weapons', 'damage_effects', 'strike_melee
 # the Halo 3 Assault Rifle (352 + 32 = 384) and declared by the card's `derived` key.
 DERIVED = [('Rounds Total Maximum', 'Magazines', 'weap',
             ['Rounds Inventory Maximum', 'Rounds Loaded Maximum'])]
+
+
+# (field, block, class, the donor's projectile/weapon in each game) -- read directly,
+# because the Assault Rifle's card does not target these in Halo 3.
+MEASURED = [('Air Gravity Scale', None, 'proj'), ('Water Gravity Scale', None, 'proj')]
+SRC_GAME, DST_GAME = 'Halo 4', 'Halo 3'
+TAGS_BY_GAME = {
+    'Halo 4': {'proj': B.join(['objects', 'weapons', 'rifle', 'storm_assault_rifle',
+                               'projectiles', 'storm_assault_rifle_bullet']),
+               'port': B.join(['objects', 'weapons', 'rifle', 'storm_lmg',
+                               'projectiles', 'storm_lmg_bullet'])},
+    'Halo 3': {'proj': AR + B + 'projectiles' + B + 'assault_rifle_bullet'},
+}
+MISSIONS = {'Halo 4': ('halo4', 'm10_crash'), 'Halo 3': ('halo3', '010_jungle')}
+
+
+def measured_rows():
+    """Rows whose ratio is read from the donor's tags rather than through a card."""
+    import contextlib, io as _io, sys
+    sys.path.insert(0, TOOL)
+    os.chdir(TOOL)
+    os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    import halo_enhancer as he
+    import halo_patch as hp
+    he.load_settings()
+    read = {}
+    for game in (SRC_GAME, DST_GAME):
+        folder, mission = MISSIONS[game]
+        src = he.baseline_source(hp.default_map_path(he.mcc_root(), folder, mission), game)
+        with contextlib.redirect_stdout(_io.StringIO()):
+            m = hp.open_map(src, game)
+        reg = hp.PluginRegistry(he.CONFIG.get('assembly_plugins_dir'),
+                                he.CONFIG.get('plugin_subdirs_by_game', {}).get(game, []))
+        for field, block, cls in MEASURED:
+            for role in ('proj', 'port'):
+                tag = TAGS_BY_GAME[game].get(role)
+                if not tag:
+                    continue
+                try:
+                    read[(game, role, field)] = m.read_first(cls, tag, field,
+                                                             reg.get(cls), block)
+                except Exception:
+                    read[(game, role, field)] = None
+        del m
+    out = []
+    for field, block, cls in MEASURED:
+        d_src = read.get((SRC_GAME, 'proj', field))
+        d_dst = read.get((DST_GAME, 'proj', field))
+        port = read.get((SRC_GAME, 'port', field))
+        if not all(isinstance(v, (int, float)) for v in (d_src, d_dst, port)):
+            print('   %-24s cannot measure (%s / %s / %s)' % (field, port, d_src, d_dst))
+            continue
+        value = port * (d_dst / float(d_src)) if d_src else (d_dst if port == d_src else port)
+        print('   %-24s port %g, donor %g -> %g, gives %g' % (field, port, d_src, d_dst, value))
+        out.append({'class': cls, 'tag': PORT_TAGS[(cls, AR + B + 'projectiles' + B
+                                                    + 'assault_rifle_bullet')],
+                    'field': field, 'block': block, 'value': round(float(value), 6),
+                    'card': 'Projectile', 'original': port,
+                    'note': 'measured from the donor tags: no card target in ' + DST_GAME})
+    return out
 
 
 def derived_rows(rows):
@@ -104,6 +165,8 @@ def main():
                      'Rifle, which is 1500 in Halo 4 and 80 here.' % (t['ported'], t['source']),
              'balance': rows,
              'anims': {}}
+    print('\nfields the cards cannot reach, measured from the donor tags:')
+    rows.extend(measured_rows())
     print('\nderived totals (nothing else recomputes these in Halo 3):')
     rows.extend(derived_rows(rows))
 

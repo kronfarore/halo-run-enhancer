@@ -72,7 +72,15 @@ def active_ports(game, config, catalog=None):
     for port in enabled_ports(game, config.get('weapon_ports'), catalog):
         entry = dict(port)
         if not config.get('weapon_ports_balance', True):
-            entry['balance'], entry['anims'] = [], {}
+            # Balance OFF means the port plays like the weapon it came from -- which is
+            # not the same as writing nothing. A port built by CLONING a donor tag starts
+            # out holding the DONOR's numbers, so leaving them alone would hand the player
+            # an Assault Rifle wearing the SAW's model (16 of the Halo 3 port's fields,
+            # measured). Writing each row's `original` puts the source game's numbers in
+            # whether or not the port's own tags could be edited at build time.
+            entry['balance'] = [dict(r, value=r['original']) for r in port.get('balance') or ()
+                                if r.get('original') is not None]
+            entry['anims'] = {}
         elif not config.get('weapon_ports_balance_anims', True):
             entry['anims'] = {}
         entry['ammo_pick'] = ammo_choice(port, chosen.get(port.get('weapon')))
