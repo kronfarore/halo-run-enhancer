@@ -9145,6 +9145,9 @@ class OptionsDialog(QDialog):
         # #2: one "Map patching" box had grown to ten rows across three games. Split
         # per game, so a row is found by the game it belongs to. Built as separate
         # group boxes on the same page rather than more nav pages — they are short.
+        patch_h1_g = QGroupBox("Map patching — Halo 1")
+        h1form = QFormLayout(patch_h1_g)
+        h1form.setLabelAlignment(Qt.AlignRight)
         patchg = QGroupBox("Map patching — Halo 3")
         patch_odst_g = QGroupBox("Map patching — Halo 3: ODST")
         odform = QFormLayout(patch_odst_g)
@@ -9415,7 +9418,7 @@ class OptionsDialog(QDialog):
             "\n\n"
             "Needs 'Set starting weapons', and a map REBUILT with the markers in it -- a "
             "mission without them is left alone and says so.")
-        form.addRow("Halo 1 weapons:", self.h1_spawn_weapons_cb)
+        h1form.addRow("Starting weapons:", self.h1_spawn_weapons_cb)
         self.h1_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
         self.h1_spawn_all_cb.setChecked(bool(CONFIG.get('h1_spawn_all_weapons')))
         self.h1_spawn_all_cb.setToolTip(
@@ -9429,7 +9432,7 @@ class OptionsDialog(QDialog):
                 self.h1_spawn_all_cb.setChecked(False)
         self.h1_spawn_weapons_cb.toggled.connect(_sync_h1_spawn)
         _sync_h1_spawn()
-        form.addRow("", self.h1_spawn_all_cb)
+        h1form.addRow("", self.h1_spawn_all_cb)
 
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
@@ -9653,6 +9656,7 @@ class OptionsDialog(QDialog):
         h4form.addRow("Opening flight:", self.h4_skip_flight_cb)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
+        self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
         self._opt_page("Patching").addWidget(patch_odst_g, 70)
         self._opt_page("Patching").addWidget(patch_reach_g, 80)
