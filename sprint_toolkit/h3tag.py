@@ -18,8 +18,13 @@ parses, so `check()` re-walks the tree afterwards.
 import io, os, struct
 
 HEADER = 0x40                      # where the chunk tree starts
+# 'want' closes most tags and was missing, which is what made big tags mis-parse: the
+# real chain at 0x40 is 'tag!' then 'want', and with 'want' unknown that chain was
+# rejected, so the forward scan fell through to a coincidental run near the end of the
+# file -- and then reported a complete parse. Surveyed across 600 Editing Kit tags:
+# tag!/blay/bdat in all of them, want in 583, nothing else at the top two levels.
 MARKERS = {'tag!', 'blay', 'bdat', 'tgst', 'tgbl', 'tgrf', 'tgsi', 'tgsr',
-           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd'}
+           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd', 'want'}
 
 
 class Node(object):
@@ -89,6 +94,11 @@ class Tag(object):
             return self._cache
         out = []
         self.covered = self._walk(HEADER, len(self.data), None, out)
+        # Where the OUTERMOST chain actually began. At the top level a chunk has no field
+        # data of its own, so anything other than HEADER means the scan skipped a region
+        # and locked onto a coincidental run -- which is exactly how a 366 KB graph once
+        # reported a complete parse off a chain in its last 1.4 KB.
+        self.root_at = min([n.off for n in out if n.parent is None], default=None)
         self._cache = out
         return out
 
@@ -96,9 +106,12 @@ class Tag(object):
         self._cache = None
 
     def check(self):
-        """(ok, covered, total) -- the tree must span the file exactly."""
+        """(ok, covered, total) -- the tree must span the file exactly AND start at the
+        header. Both halves matter: covering to the end says nothing if the walk began
+        somewhere in the middle."""
         self.nodes()
-        return self.covered == len(self.data), self.covered, len(self.data)
+        ok = self.covered == len(self.data) and self.root_at == HEADER
+        return ok, self.covered, len(self.data)
 
     # --- references ---
     def references(self):

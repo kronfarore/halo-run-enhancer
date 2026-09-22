@@ -31,23 +31,29 @@ The stride is per animation because it depends on how many nodes move: the two 2
 flag fields are three 64-bit masks each (rotation / translation / scale, static and
 animated), which is enough for the graph's 43 nodes.
 
+WHERE THE BLOBS ARE
+-------------------
+Each animation is its own `tgst` chunk, and the chunk is always exactly 24 bytes longer
+than the sum of its declared sections -- which turned out to be two chunk headers rather
+than any member fields: an EMPTY `tgst` (length 0), then a `tgda` whose length equals the
+section sum exactly. Verified for all seventeen animations, so the sections begin at
+`payload_at + 24` and `tgda`'s length is the check that the member was found.
+
+Searching for the blobs as a flat run of members from the start of `bdat` never worked
+because they are not laid out that way: they are chunks in the tree, one per animation,
+under the resource-members block.
+
 WHAT IS NOT SETTLED
 -------------------
-Where the blobs actually START. They live inside the tag's `bdat` chunk (353307 bytes
-against 337032 of member sections), but laying the members out back to back from the
-start of that chunk does not produce flag fields that read as flags -- every candidate
-offset has bits set above node 43. So either the members are not stored in declaration
-order, the sections are individually aligned, or a per-group header sits between them.
-That is the next thing to pin down, and `--scan` is the harness for it.
-
-Note also: h3tag's chunk walker MIS-PARSES this tag. It scans forward for a run of
-chunks ending exactly where its parent does, and on a 366 KB graph it locks onto a run
-in the last 1.4 KB and reports a full-file parse. The tree really starts at 0x40 with
-'tag!' -> 'blay' + 'bdat'. Use `--tree` here, not h3tag, until that is fixed.
+The ORDER of the sections inside the blob. Reading the first 24 bytes as
+static_node_flags gives `01 <n> <m> 01` shapes rather than sparse bitmasks, and the next
+24 read as zero, so the sections are not simply in the order the tag declares their
+sizes. A 0x7fff -- a normalised int16, almost certainly a pose value -- shows up 62 bytes
+in, which suggests the default pose starts earlier than that order would put it.
 
     python h3_anim_decode.py --tree            # the real chunk tree
     python h3_anim_decode.py --sizes           # the section table and the stride law
-    python h3_anim_decode.py --scan            # hunt for where the blobs begin
+    python h3_anim_decode.py --blobs           # locate each animation's data
 """
 import argparse, io, os, re, struct, sys
 
@@ -113,6 +119,25 @@ def sizes(mem):
           % (good, len(mem)))
 
 
+def blobs(tag, mem):
+    """Each animation's data chunk, matched to its declared sizes.
+
+    A member is a `tgst` whose length is its section sum plus 24 -- an empty `tgst` and
+    a `tgda` header. `tgda`'s own length must equal the section sum, which is what makes
+    the match a proof rather than a guess.
+    """
+    want = {e['size'] for e in mem}
+    found = sorted((n for n in tag.nodes()
+                    if n.marker == 'tgst' and (n.length - 24) in want),
+                   key=lambda n: n.off)
+    out = []
+    for n, e in zip(found, mem):
+        inner = struct.unpack_from('<I', tag.data, n.payload_at + 12 + 8)[0]
+        out.append(dict(e, chunk=n.off, at=n.payload_at + 24, tgda=inner,
+                        ok=inner == e['size']))
+    return out
+
+
 def scan(d, mem, lo, hi):
     """Look for a start where every member's flag fields read as real flags: sparse, and
     with no bit set above the graph's node count."""
@@ -148,13 +173,14 @@ def main():
     ap.add_argument('--tree', action='store_true')
     ap.add_argument('--sizes', action='store_true')
     ap.add_argument('--scan', action='store_true')
+    ap.add_argument('--blobs', action='store_true')
     a = ap.parse_args()
 
     d = io.open(a.tag, 'rb').read()
     print('%s  %d bytes\n' % (os.path.basename(a.tag), len(d)))
-    if a.tree or not (a.sizes or a.scan):
+    if a.tree or not (a.sizes or a.scan or a.blobs):
         tree(d)
-    if not (a.sizes or a.scan):
+    if not (a.sizes or a.scan or a.blobs):
         return
     if not a.xml or not os.path.exists(a.xml):
         raise SystemExit('--sizes and --scan need --xml from tool export-tag-to-xml')
@@ -162,6 +188,16 @@ def main():
     print('%d animation(s)\n' % len(mem))
     if a.sizes:
         sizes(mem)
+    if a.blobs:
+        sys.path.insert(0, HERE)
+        import h3tag
+        got = blobs(h3tag.Tag(a.tag), mem)
+        print('%-5s %-10s %-10s %-8s %s' % ('anim', 'chunk', 'data at', 'tgda', 'sections'))
+        for e in got:
+            print('%-5d %#-10x %#-10x %-8d %-8d %s'
+                  % (e['index'], e['chunk'], e['at'], e['tgda'], e['size'],
+                     'ok' if e['ok'] else 'MISMATCH'))
+        print('\n%d of %d animations located' % (sum(e['ok'] for e in got), len(mem)))
     if a.scan:
         scan(d, mem, HEADER, min(len(d) - sum(e['size'] for e in mem), 0x8000))
 
