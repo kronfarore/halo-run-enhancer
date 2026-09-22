@@ -3160,6 +3160,10 @@ def _no_equipment_reason(game):
 #: Object Names block per game: (scnr offset, element size, name kind). Reach stores
 #: the name as a stringID; Halo 3 and ODST as a 32-byte ASCII string.
 _OBJECT_NAMES = {
+    # Halo 1 sits one block before Scenery (0x204 + 0xC = 0x210), 0x24 an entry, the
+    # name inline as ASCII like Halo 3's. Read off b30/a10/b40/c10: 119/387/458/333
+    # entries, every one a name the level's own scripts use.
+    'Halo 1':       (0x204, 0x24, 'ascii'),
     'Halo 3':       (0xA8, 0x24, 'ascii'),
     'Halo 3: ODST': (0xC4, 0x24, 'ascii'),
     'Halo Reach':   (0xF0, 0x08, 'sid'),
@@ -3170,7 +3174,7 @@ _OBJECT_NAMES = {
 }
 #: Games whose prepared maps carry NAMED enhancer markers, and so hand the player's
 #: picks over by placement at that marker.
-MARKER_GAMES = ('Halo Reach', 'Halo 4')
+MARKER_GAMES = ('Halo Reach', 'Halo 4', 'Halo 1')
 #: What the user names a marker in Sapien. `enhancer_marker1` is player 1's position,
 #: `enhancer_marker2` player 2's.
 REACH_MARKER_PREFIX = 'enhancer_marker'
@@ -3790,6 +3794,134 @@ def _palette_variant(tag, pal, pal_names):
     return family[0] if family else tag
 
 
+def _apply_spawn_weapons_h1(m, game, spec, registry=None):
+    """Halo 1: place the player's weapons at the enhancer marker.
+
+    Same idea as the Reach path and a different mechanism, because Halo 1's scenario is
+    first generation. A weapon placement is 0x5C bytes -- palette index, name index,
+    flags, position, rotation -- with no unique id, folder, zone set or BSP attach mask,
+    so the later games' writer cannot be aimed at it.
+
+    Two Halo 1 specifics decide whether anything appears at all:
+      * placement flags bit 0 is NOT AUTOMATICALLY. A placement carrying it does not
+        spawn with the level, which is exactly why the b40 ring stayed invisible until
+        the bit was cleared. Appended placements get flags 0.
+      * the block has to GROW, and Halo 1 has no spare reflexive space, so the whole
+        block is copied to appended tag data and the reflexive repointed at it.
+
+    The marker itself is an equipment placement and is left alone; weapons are appended
+    beside it, so no pickup the level meant to offer is taken over.
+    """
+    out = []
+    lay = _MAP_WEAPONS.get('Halo 1')
+    E = _MAP_EQUIPMENT.get('Halo 1')
+    scnr = _scnr_base(m)
+    groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
+    if not lay or not E or scnr is None or not any(groups):
+        return out
+
+    named = reach_named_markers(m, game)
+    if not named:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'this map carries no enhancer markers'}]
+    eoff, ees = E['items']
+    ebase = _block_base(m, scnr + eoff)
+    if not ebase:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'this map has no equipment placements'}]
+    anchors = {nm: struct.unpack_from('<fff', m.data, ebase + idx * ees + _EQ_POS)
+               for nm, idx in named.items()}
+
+    woff, wes = lay['weapons']
+    poff, pes = lay['palette']
+    N = max(0, m.i32(scnr + woff))
+    base = _block_base(m, scnr + woff)
+    pbase = _block_base(m, scnr + poff)
+    if not base or not pbase:
+        return [{'effect': 'spawned weapons', 'ok': False,
+                 'reason': 'level has no weapon placements to extend'}]
+    pal, pal_names = {}, []
+    for i in range(max(0, m.i32(scnr + poff))):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if isinstance(nm, str):
+            pal[nm.replace('/', chr(92)).lower()] = i
+            pal_names.append(nm)
+    groups = [[_concrete_tag(m, 'weap', t, pal_names) or t for t in g] for g in groups]
+    groups = [[_palette_variant(t, pal, pal_names) for t in g] for g in groups]
+
+    LIFT = 0.30
+    radius = spec.get('radius')
+    radius = 0.25 if radius is None else max(0.0, float(radius))
+    weap_plug = registry.get('weap') if registry is not None else None
+    plan = []
+    for gi, g in enumerate(groups):
+        key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
+        anchor = anchors.get(key)
+        if anchor is None:
+            for t in g:
+                out.append({'effect': 'spawned weapons',
+                            'field': str(t).rsplit(chr(92), 1)[-1], 'ok': False,
+                            'reason': 'no %s on this map' % key})
+            continue
+        ax, ay, az = anchor
+        placeable = [t for t in g
+                     if pal.get(str(t).replace('/', chr(92)).lower()) is not None]
+        n = len(placeable)
+        seat = 0
+        for t in g:
+            short = str(t).rsplit(chr(92), 1)[-1]
+            pi = pal.get(str(t).replace('/', chr(92)).lower())
+            if pi is None:
+                out.append({'effect': 'spawned weapons', 'field': short, 'ok': False,
+                            'reason': 'not in this level weapon palette'})
+                continue
+            if n > 1 and radius > 0:
+                ang = 2.0 * math.pi * seat / n
+                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang),
+                       az + LIFT)
+            else:
+                pos = (ax, ay, az + LIFT)
+            seat += 1
+            loaded = total = None
+            wb = _weap_base(m, str(t))
+            if wb is not None and weap_plug is not None:
+                loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug,
+                                          block='Magazines', index=0)
+                total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug,
+                                         block='Magazines', index=0)
+            plan.append((pi, pos, short, key,
+                         0 if loaded is None else int(loaded),
+                         0 if total is None else int(total)))
+    if not plan:
+        return out
+
+    # Grow the block by copying it whole into appended tag data. Halo 1 reflexives are
+    # a count and a magic-relative pointer, so the copy is a repoint and a new count.
+    blob = bytearray(m.data[base:base + N * wes])
+    tmpl = bytes(m.data[base:base + wes]) if N else bytes(wes)
+    for pi, pos, short, key, loaded, total in plan:
+        e = bytearray(tmpl)
+        struct.pack_into('<h', e, _EQ_PALETTE, pi)
+        struct.pack_into('<h', e, _EQ_NAME, -1)              # unnamed
+        struct.pack_into('<I', e, _EQ_FLAGS, 0)              # clear NOT AUTOMATICALLY
+        struct.pack_into('<fff', e, _EQ_POS, *pos)
+        struct.pack_into('<fff', e, 0x14, 0.0, 0.0, 0.0)     # rotation
+        struct.pack_into('<h', e, lay['rounds_left'],
+                         max(-32768, min(32767, total)))
+        struct.pack_into('<h', e, lay['rounds_loaded'],
+                         max(-32768, min(32767, loaded)))
+        blob += e
+    new_off = m.append_raw(bytes(blob))
+    struct.pack_into('<I', m.data, scnr + woff, N + len(plan))
+    struct.pack_into('<I', m.data, scnr + woff + 4, (new_off + m.magic) & 0xFFFFFFFF)
+    for pi, pos, short, key, loaded, total in plan:
+        out.append({'effect': 'spawned weapons', 'field': short, 'ok': True,
+                    'old': key,
+                    'new': 'placed at (%.1f, %.1f, %.1f), %d/%d rounds'
+                           % (pos[0], pos[1], pos[2], loaded, total)})
+    return out
+
+
 def _apply_spawn_weapons(m, game, spec, registry=None):
     """Reach: hand a player their weapons by PLACING them at the marker.
 
@@ -3821,6 +3953,8 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     game = str(game).strip()
     if game == 'Halo 3':
         return _apply_spawn_weapons_h3(m, game, spec, registry)
+    if game == 'Halo 1':
+        return _apply_spawn_weapons_h1(m, game, spec, registry)
     if game not in MARKER_GAMES:
         return out
     lay = _MAP_WEAPONS.get(game)

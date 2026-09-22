@@ -378,6 +378,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h4_skip_flight',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
+               'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -903,6 +904,8 @@ CONFIG = {
     # Halo 3's counterpart, placing at the player spawn (no markers needed). The
     # profile cannot give every weapon -- a turret written into it never arrives.
     "h3_spawn_starting_weapons": False,
+    "h1_spawn_starting_weapons": False,
+    "h1_spawn_all_weapons": False,
     "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
     # Debug-only switch, but it stays in force whether or not debug mode is on: the
@@ -6854,7 +6857,8 @@ class MagnitudeEditorDialog(QDialog):
         in Sapien should not flip the other game's loadout over with it."""
         key = {'Halo Reach': 'reach_spawn_starting_weapons',
                'Halo 4': 'h4_spawn_starting_weapons',
-               'Halo 3': 'h3_spawn_starting_weapons'}.get(self.game)
+               'Halo 3': 'h3_spawn_starting_weapons',
+               'Halo 1': 'h1_spawn_starting_weapons'}.get(self.game)
         return (key is not None
                 and bool(CONFIG.get('set_starting_weapons'))
                 and bool(CONFIG.get(key)))
@@ -6877,7 +6881,8 @@ class MagnitudeEditorDialog(QDialog):
         if rs is None or db is None:
             return None
         first_only = not CONFIG.get({'Halo 4': 'h4_spawn_all_weapons',
-                                     'Halo 3': 'h3_spawn_all_weapons'}.get(
+                                     'Halo 3': 'h3_spawn_all_weapons',
+                                     'Halo 1': 'h1_spawn_all_weapons'}.get(
                                          self.game, 'reach_spawn_all_weapons'))
         # A run carries weapons across games, and a plain-string tag resolves in every
         # game, so a weapon this game never fields (Reach's SMG) reached the placer and
@@ -9399,6 +9404,33 @@ class OptionsDialog(QDialog):
         _sync_h3_spawn()
         form.addRow("", self.h3_spawn_all_cb)
 
+        self.h1_spawn_weapons_cb = QCheckBox(
+            "Place starting weapons at the enhancer marker instead of the profile")
+        self.h1_spawn_weapons_cb.setChecked(bool(CONFIG.get('h1_spawn_starting_weapons')))
+        self.h1_spawn_weapons_cb.setToolTip(
+            "Halo 1 hands the player their weapons through the starting profile, which "
+            "has room for two. With this on they are PLACED at enhancer_marker1 (and "
+            "player 2's at enhancer_marker2) to be picked up instead, so a run can hand "
+            "over as many as it likes and the level's own opening loadout survives."
+            "\n\n"
+            "Needs 'Set starting weapons', and a map REBUILT with the markers in it -- a "
+            "mission without them is left alone and says so.")
+        form.addRow("Halo 1 weapons:", self.h1_spawn_weapons_cb)
+        self.h1_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
+        self.h1_spawn_all_cb.setChecked(bool(CONFIG.get('h1_spawn_all_weapons')))
+        self.h1_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, as a profile would give it. "
+            "On: every weapon that player holds is placed, ringed round the marker.")
+
+        def _sync_h1_spawn(on=None):
+            on = self.h1_spawn_weapons_cb.isChecked()
+            self.h1_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.h1_spawn_all_cb.setChecked(False)
+        self.h1_spawn_weapons_cb.toggled.connect(_sync_h1_spawn)
+        _sync_h1_spawn()
+        form.addRow("", self.h1_spawn_all_cb)
+
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
         self.reach_pools_cb.setChecked(bool(CONFIG.get('reach_pools_from_map')))
@@ -10428,6 +10460,8 @@ class OptionsDialog(QDialog):
             'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
+            'h1_spawn_starting_weapons': self.h1_spawn_weapons_cb.isChecked(),
+            'h1_spawn_all_weapons': self.h1_spawn_all_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
