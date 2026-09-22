@@ -833,17 +833,6 @@
      "original": 57640,
      "card": null,
      "note": "0xE128 is one of only two unclaimed weapon-shaped glyphs in the shared Halo 3 / ODST icon font. NOTE: this field does NOT draw the pickup prompt -- proved by setting it to the gravity hammer's 0xE120 and seeing no change in game. It is kept because it is the weapon's own icon codepoint and the donor's would be wrong, but the prompt icon comes from somewhere else: most likely the chud's Sequence Index into ui\\chud\bitmaps\\weapon_scematics, which the port inherited from the Assault Rifle along with its chud."
-    },
-    {
-     "class": "chdt",
-     "tag": "ui\\chud\\saw",
-     "field": "Sequence Index",
-     "block": "Widget Collections/Bitmap Widgets",
-     "index": 4,
-     "value": 19.0,
-     "original": 19.0,
-     "card": null,
-     "note": "which sprite of ui\\chud\bitmaps\ballistic_meters the ammo meter draws. Each sprite is a tick grid whose columns x rows IS the magazine, and the largest Halo 3 ships is the SMG's 60 -- so a 72-round port had nothing to point at and inherited the Assault Rifle's 32. Sprite 19 is used by none of the 66 chud tags and is 309x81, the same three-row footprint, so it was redrawn as 24x3 = 72 (h3_meter_art.py). Widget index 4 is the ballistic_meters widget; the order is red_flash, elite_corner_flash, hud_reticles, schematic, METER, schematic, divider."
     }
    ],
    "anims": {
