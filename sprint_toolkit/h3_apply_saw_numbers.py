@@ -7,7 +7,7 @@ would apply.
 
     python h3_apply_saw_numbers.py [--map 010_jungle] [--dry-run]
 """
-import argparse, contextlib, io, os, sys
+import argparse, contextlib, io, os, shutil, sys
 
 TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, TOOL)
@@ -49,6 +49,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--map', default='010_jungle')
     ap.add_argument('--dry-run', action='store_true')
+    ap.add_argument('--keep', action='store_true',
+                    help='do NOT restore from the baseline first (values will compound)')
     ap.add_argument('--no-balance', action='store_true',
                     help="write the port's OWN Halo 4 numbers instead of the balanced "
                          "ones -- the same thing the run option does")
@@ -65,6 +67,18 @@ def main():
         raise SystemExit('no active Halo 3 ports in the catalog')
     print('ports: %s  (%s)' % ([p['weapon'] for p in ports],
                                'Halo 4 originals' if a.no_balance else 'balanced'))
+    # RESTORE FIRST, like a real run does. Without this the pass compounds on whatever
+    # the last one left behind, and the animation scaling is not idempotent: applying
+    # balanced (128 -> 109) and then the Halo 4 originals left the reload at 109, because
+    # "originals" scales nothing and there was nothing to undo. That reads as the port
+    # ignoring the setting, and would have cost an in-game test to notice.
+    if not a.keep:
+        base = he.baseline_source(hp.default_map_path(he.mcc_root(), 'halo3', a.map), GAME)
+        if os.path.exists(base):
+            shutil.copyfile(base, live)
+            print('restored from the baseline first')
+        else:
+            print('NO BASELINE -- values may compound on the last run')
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(live, GAME)
     before = snap(m, reg)
