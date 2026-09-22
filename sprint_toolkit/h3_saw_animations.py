@@ -53,6 +53,20 @@ TARGET = {'first_person:reload_empty': 128,
           'first_person:reload_full': 128,
           'first_person:ready': 24}
 
+#: A SPLIT build, to find out which stage breaks the animations in game.
+#:
+#: Three attempts have now failed identically, and each was a guess. What the reports
+#: DO say is precise: exactly the three animations that get retimed look wrong, and
+#: nothing else does -- firing, idle and melee are untouched and fine. That points at
+#: the retiming rather than the cloning, but it has never been separated.
+#:
+#: So this leaves reload_empty and ready ALONE in the port's own graph and retimes only
+#: reload_full. One test then says which:
+#:   reload_empty and ready fine, reload_full broken -> the RETIMING is at fault
+#:   all three still broken                          -> the CLONE or the build is
+#: Pass --split to get it.
+SPLIT = {'first_person:reload_full': 128}
+
 
 def export_xml(tag_rel, out):
     """tool export-tag-to-xml, which is how the animation NAMES and section sizes are
@@ -79,10 +93,16 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--scratch', default=os.environ.get('TEMP', '.'))
+    ap.add_argument('--split', action='store_true',
+                    help='retime ONLY reload_full, to isolate retiming from cloning')
     a = ap.parse_args()
 
+    targets = SPLIT if a.split else TARGET
+    if a.split:
+        print('SPLIT BUILD: only reload_full is retimed; reload_empty and ready stay '
+              'plain clones.\n')
     print('retiming to the Halo 4 SAW\'s own frame counts:')
-    for k, v in sorted(TARGET.items()):
+    for k, v in sorted(targets.items()):
         print('   %-32s -> %d frames' % (k, v))
     print()
 
@@ -96,7 +116,7 @@ def main():
             xml = export_xml(src, os.path.join(a.scratch, 'probe_names.xml'))
             if xml:
                 have = names_from_xml(xml)
-                for k in sorted(TARGET):
+                for k in sorted(targets):
                     print('      %-32s %s' % (k, 'index %d' % have[k] if k in have
                                               else 'NOT IN THIS GRAPH'))
             continue
@@ -108,7 +128,7 @@ def main():
             print('   could not export the clone -- skipped')
             continue
         have = names_from_xml(xml)
-        for name, frames in sorted(TARGET.items()):
+        for name, frames in sorted(targets.items()):
             if name not in have:
                 print('      %-32s not in this graph, skipped' % name)
                 continue
