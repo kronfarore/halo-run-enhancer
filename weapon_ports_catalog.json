@@ -813,6 +813,16 @@
      "card": "Magazine",
      "original": null,
      "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    },
+    {
+     "class": "chdt",
+     "tag": "ui\\chud\\saw",
+     "field": "Low Ammo Loaded Threshold",
+     "block": null,
+     "value": 18.0,
+     "original": 18.0,
+     "card": null,
+     "note": "the ammo readout turns red at the same quarter-magazine Halo 3 uses everywhere: 8 of 32 on the Assault Rifle, 18 of 72 here (and 18 of 60 on the SMG). Same either way, because the port's magazine is 72 balanced or not."
     }
    ],
    "anims": {}
