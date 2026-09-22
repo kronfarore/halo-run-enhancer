@@ -62,37 +62,37 @@ identical popcounts there have completely different strides (five share [6,3,4] 
 their strides are 96, 96, 96, 336 and 352), so whatever those bytes are, they are not
 what sizes the per-frame record. The skeleton really is 43 nodes, checked in the graph.
 
-THE LAYOUT, SETTLED
+THE LAYOUT, CRACKED
 -------------------
     [default_data][compressed_data][static flags 24][animated flags 24][uncompressed]
 
-The two flag fields were found by their signature rather than by guessing an order: the
-first three masks' popcounts are exactly (n, m, 1), the same counts default_data's header
-declares. They sit at `default_data + compressed_data` in all seventeen animations.
+The flag fields were found by signature, not by guessing an order: their first three
+masks' popcounts are exactly (n, m, 1), the counts default_data's header declares. They
+sit at `default_data + compressed_data` in all seventeen animations. The last three
+masks are the ANIMATED nodes: R rotations, T translations, S scales.
 
-The last three masks are the ANIMATED nodes, and they size a frame:
+The frames are CHANNEL-MAJOR. Not one record per frame -- every rotation for every
+frame, then every translation, then every scale:
 
-    stride == 16 * R + 12 * T + 4 * S       exact, all seventeen
+    [ frames * R quaternions, 16 bytes -- four float32 ]
+    [ frames * T translations, 12 bytes -- three float32 ]
+    [ frames * S scales, 4 bytes ]
 
-including the awkward 324 that is not a multiple of 8. So a rotation is SIXTEEN bytes --
-four float32, a plain unit quaternion -- a translation twelve, a scale four. Nothing is
-quantised, nothing is packed, and no codec has to be broken: the poses are sitting there
-as floats, which is what makes a resample arithmetic.
+so `uncompressed_data == 32 + frames*(16R + 12T + 4S)`, exact for all seventeen. That is
+why it looked like a per-frame stride of 16R+12T+4S -- that number is just the total
+divided by the frames, and reading it as a record is what made every earlier attempt
+fail. The giveaway was that the non-unit quaternions were never scattered: they were
+always one contiguous run at the END, starting at exactly frames*R.
 
-The data agrees. Every animation with no animated translations reads as exactly unit
-quaternions on every frame, to five decimals -- eight of eight. That is the check that
-turns this from a plausible reading into a decoded one.
+Nothing is quantised and nothing is packed, so the compressed section can be ignored
+entirely. Verified: all 17 decode to unit quaternions (error 0.000000), translations
+come out small and smooth, and decode -> pack reproduces the original bytes EXACTLY for
+every animation. `resample` slerps rotations and lerps the rest; an identity resample is
+byte-identical, endpoints are preserved exactly, and 58 -> 109 frames gives 51448 bytes,
+which is what 32 + 109*(16*25 + 12*6) predicts.
 
-STILL OPEN: how a frame interleaves rotations with translations. The eight animations
-that have translations do not read as unit quaternions under either "all rotations then
-all translations" or the reverse, so it is neither. Curiously, on the reload frame 0
-reads as 29 consecutive unit quaternions covering 464 of its 472 bytes, which no simple
-split explains.
-
-Superseded, recorded so it is not re-derived: an int16 reading of the records with a
-period of 8 looked structural, and was an artifact of float32 data seen two bytes at a
-time. And `len(blob) - (32 + frames*stride) == 48 + default_data + compressed_data` is a
-TAUTOLOGY, not evidence of section order.
+Only the default pose is quantised: its rotations are 8-byte int16 quaternions
+(/32767), its translations three float32, and its single scale 1.0.
 
     python h3_anim_decode.py --tree            # the real chunk tree
     python h3_anim_decode.py --sizes           # the section table and the stride law
@@ -331,6 +331,114 @@ def report_layout(tag, mem):
     print('stride == 16R + 12T + 4S          : %d/%d' % (ok['stride'], n))
     print('unit quaternions every frame      : %d/%d of the animations with no animated'
           ' translations' % (ok['unit'], ok['unit_possible']))
+
+
+def read_animation(tag, e):
+    """Decode one animation's poses.
+
+    The frames are CHANNEL-MAJOR, not one record per frame -- which is what made the
+    earlier readings fail. Every rotation for every frame comes first, then every
+    translation, then every scale:
+
+        [ frames * R quaternions, 16 bytes each ]
+        [ frames * T translations, 12 bytes each ]
+        [ frames * S scales, 4 bytes each ]
+
+    so `uncompressed_data == 32 + frames*(16R + 12T + 4S)`. That is why the size looked
+    like a per-frame stride of 16R+12T+4S: it is simply the total divided by the frames.
+
+    Returns {'rotations': [[(w,x,y,z) per animated node] per frame], 'translations':
+    [[(x,y,z)]], 'scales': [[f]]} -- plain floats, nothing quantised.
+    """
+    b = tag.data[e['at']:e['at'] + e['size']]
+    F = e['frames']
+    R, T, S = e['animated']
+    at = e['frames_at']
+    tbase = at + F * R * 16
+    sbase = tbase + F * T * 12
+    return {
+        'frames': F,
+        'rotations': [[struct.unpack_from('<4f', b, at + (f * R + i) * 16)
+                       for i in range(R)] for f in range(F)],
+        'translations': [[struct.unpack_from('<3f', b, tbase + (f * T + j) * 12)
+                          for j in range(T)] for f in range(F)],
+        'scales': [[struct.unpack_from('<f', b, sbase + (f * S + k) * 4)[0]
+                    for k in range(S)] for f in range(F)],
+    }
+
+
+def _slerp(a, b, u):
+    """Shortest-arc interpolation between two unit quaternions.
+
+    The endpoints are returned untouched. q and -q are the same rotation, so slerp is
+    free to flip one of them to take the short way round -- but that would hand back a
+    sign-flipped copy of a frame that was not interpolated at all, and an unchanged
+    animation should come back unchanged.
+    """
+    import math
+    if u <= 0.0:
+        return tuple(a)
+    if u >= 1.0:
+        return tuple(b)
+    dot = sum(x * y for x, y in zip(a, b))
+    if dot < 0.0:                       # take the short way round
+        b = tuple(-y for y in b)
+        dot = -dot
+    if dot > 0.9995:                    # nearly parallel: straight line, renormalised
+        out = tuple(x + (y - x) * u for x, y in zip(a, b))
+    else:
+        th = math.acos(max(-1.0, min(1.0, dot)))
+        s = math.sin(th)
+        wa, wb = math.sin((1 - u) * th) / s, math.sin(u * th) / s
+        out = tuple(x * wa + y * wb for x, y in zip(a, b))
+    n = math.sqrt(sum(c * c for c in out)) or 1.0
+    return tuple(c / n for c in out)
+
+
+def resample(anim, frames):
+    """The same motion at a different frame count.
+
+    Rotations are slerped and everything else interpolated linearly, both sampled at the
+    same normalised position, so the animation keeps its shape and only its duration
+    changes. This is the whole point of decoding the format: making a reload longer is
+    arithmetic, with no codec to re-encode.
+    """
+    old = anim['frames']
+    if frames < 1 or old < 1:
+        raise ValueError('need at least one frame')
+    if old == 1:
+        return dict(anim, frames=frames,
+                    rotations=[list(anim['rotations'][0]) for _ in range(frames)],
+                    translations=[list(anim['translations'][0]) for _ in range(frames)],
+                    scales=[list(anim['scales'][0]) for _ in range(frames)])
+    out = {'frames': frames, 'rotations': [], 'translations': [], 'scales': []}
+    for f in range(frames):
+        pos = f * (old - 1) / float(frames - 1) if frames > 1 else 0.0
+        i = min(int(pos), old - 2)
+        u = pos - i
+        out['rotations'].append([_slerp(a, b, u) for a, b in
+                                 zip(anim['rotations'][i], anim['rotations'][i + 1])])
+        out['translations'].append([tuple(x + (y - x) * u for x, y in zip(a, b))
+                                    for a, b in zip(anim['translations'][i],
+                                                    anim['translations'][i + 1])])
+        out['scales'].append([a + (b - a) * u for a, b in
+                              zip(anim['scales'][i], anim['scales'][i + 1])])
+    return out
+
+
+def pack_animation(anim):
+    """The bytes an animation's frame section should hold, channel-major."""
+    out = bytearray()
+    for f in range(anim['frames']):
+        for q in anim['rotations'][f]:
+            out += struct.pack('<4f', *q)
+    for f in range(anim['frames']):
+        for v in anim['translations'][f]:
+            out += struct.pack('<3f', *v)
+    for f in range(anim['frames']):
+        for s in anim['scales'][f]:
+            out += struct.pack('<f', s)
+    return bytes(out)
 
 
 def scan(d, mem, lo, hi):
