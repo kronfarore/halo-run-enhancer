@@ -1,0 +1,174 @@
+{
+ "game": "Halo 1",
+ "weapons": [
+  {
+   "tag": "weapons\\assault rifle\\assault rifle",
+   "rounds": 240,
+   "item": "powerups\\assault rifle ammo\\assault rifle ammo",
+   "maps": [
+    "a10",
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\flamethrower\\flamethrower",
+   "rounds": 100,
+   "item": "powerups\\flamethrower ammo\\flamethrower ammo",
+   "maps": [
+    "a10",
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\needler\\needler",
+   "rounds": 80,
+   "item": "powerups\\needler ammo\\needler ammo",
+   "maps": [
+    "a10",
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\pistol\\pistol",
+   "rounds": 120,
+   "item": "powerups\\pistol ammo\\pistol ammo",
+   "maps": [
+    "a10",
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\rocket launcher\\rocket launcher",
+   "rounds": 2,
+   "item": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+   "maps": [
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\shotgun\\shotgun",
+   "rounds": 60,
+   "item": "powerups\\shotgun ammo\\shotgun ammo",
+   "maps": [
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "weapons\\sniper rifle\\sniper rifle",
+   "rounds": 16,
+   "item": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+   "maps": [
+    "a10",
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  }
+ ],
+ "items": [
+  {
+   "tag": "powerups\\assault rifle ammo\\assault rifle ammo",
+   "label": "Assault Rifle Ammo"
+  },
+  {
+   "tag": "powerups\\flamethrower ammo\\flamethrower ammo",
+   "label": "Flamethrower Ammo"
+  },
+  {
+   "tag": "powerups\\needler ammo\\needler ammo",
+   "label": "Needler Ammo"
+  },
+  {
+   "tag": "powerups\\pistol ammo\\pistol ammo",
+   "label": "Pistol Ammo"
+  },
+  {
+   "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
+   "label": "Rocket Launcher Ammo",
+   "maps": [
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "powerups\\shotgun ammo\\shotgun ammo",
+   "label": "Shotgun Ammo",
+   "maps": [
+    "a30",
+    "a50",
+    "b30",
+    "b40",
+    "c10",
+    "c20",
+    "c40",
+    "d20",
+    "d40"
+   ]
+  },
+  {
+   "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo",
+   "label": "Sniper Rifle Ammo"
+  }
+ ]
+}
