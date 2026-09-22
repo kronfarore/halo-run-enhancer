@@ -43,8 +43,15 @@ TAGS = os.path.join(EK, 'tags')
 TOOL = os.path.join(EK, 'tool.exe')
 SAW = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw', 'saw.weapon')
 UNIC = os.path.join(TAGS, 'ui', 'hud', 'hud_messages.multilingual_unicode_string_list')
-#: the Assault Rifle's, which the port inherited -> the automag's, which Halo 3 never uses
-MOVE = {'ar_pickup': 'am_pickup', 'ar_swap': 'am_swap'}
+#: the Assault Rifle's, which the port inherited -> the automag's, which Halo 3 never uses.
+#: ALL FIVE of them. A weapon names five messages, not two: `pickup message` and
+#: `swap message` are the prompts you get while looking at it on the ground, but
+#: `picked up msg`, `switch-to msg` and `switch-to from ai msg` are what you see once it
+#: is in your hands, and those three kept pointing at the Assault Rifle's strings long
+#: after the prompts had been moved.
+MOVE = {'ar_pickup': 'am_pickup', 'ar_swap': 'am_swap',
+        'ar_picked_up': 'am_picked_up', 'ar_switch_to': 'am_switch_to',
+        'ar_swap_ai': 'am_swap_ai'}
 DEFAULT_GLYPH = 0xE128          # unclaimed by any Halo 3 or ODST weapon, 123x39
 AUTOMAG_GLYPH = 0xE144
 
@@ -79,6 +86,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--glyph', type=lambda v: int(v, 0), default=DEFAULT_GLYPH)
+    ap.add_argument('--name', default='SAW',
+                    help="what the port calls itself in 'Picked up a ...'")
     ap.add_argument('--scratch', default=os.environ.get('TEMP', '.'))
     a = ap.parse_args()
 
@@ -110,24 +119,69 @@ def main():
         raise SystemExit('weapon tag not saved')
     w.save(SAW)
 
-    # 2. the glyph inside the hijacked message -- same length in UTF-8, so in place
+    # 2. the glyph inside the hijacked messages -- same length in UTF-8, so in place.
+    #
+    # EVERY LANGUAGE, not just English. The element carries an offset per language into
+    # one shared blob, and patching only `english offset` leaves the German, French,
+    # Spanish, Italian and Portuguese copies of the same message still drawing the
+    # automag: 26 strings carried U+E144 when only two had been swapped. Anyone not
+    # playing in English sees the old icon and the tag looks correct from the XML.
+    #
+    # So the substitution is made over the WHOLE string blob. That is not a blunt
+    # instrument here -- U+E144 is the automag's icon and nothing else's, and this port
+    # has already taken the automag's messages and its schematic sprite, so every
+    # occurrence of it is one we mean to replace.
     old, new = chr(AUTOMAG_GLYPH).encode('utf-8'), chr(a.glyph).encode('utf-8')
     if len(old) != len(new):
         raise SystemExit('glyphs differ in UTF-8 length; the blob would have to move')
+    _at, blob_len = blob(u)
     hits = 0
-    for sid in MOVE.values():
-        off = offs.get(sid)
-        if off is None or off < 0:
-            continue
-        text = read_string(u, at, off).encode('utf-8')
-        if old not in text:
-            print('   %s does not carry U+%04X -- left alone' % (sid, AUTOMAG_GLYPH))
-            continue
-        start = at + off + text.index(old)
-        u.data[start:start + len(old)] = new
+    start = at
+    while True:
+        i = bytes(u.data).find(old, start, at + blob_len)
+        if i < 0:
+            break
+        u.data[i:i + len(old)] = new
         hits += 1
+        start = i + len(new)
+    # 3. the donor's NAME, which is text and not an icon.
+    #
+    # `picked up msg` is not a prompt with a picture, it reads "Picked up an Assault
+    # Rifle" -- so moving it to the automag's makes the port announce itself as "Picked
+    # up an Automag", along with two ammo lines. Three strings carry the word; each is
+    # rewritten in place and shortened, which is safe because only bytes inside one
+    # NUL-terminated string move and every other string keeps its offset.
+    named = 0
+    want, call = b'Automag', a.name.encode('utf-8')
+    if len(call) > len(want):
+        raise SystemExit('%r is longer than %r; the blob would have to grow' % (a.name, 'Automag'))
+    while True:
+        i = bytes(u.data).find(want, at, at + blob_len)
+        if i < 0:
+            break
+        end = bytes(u.data).find(b'\0', i)
+        tail = bytes(u.data[i + len(want):end])
+        u.data[i:i + len(call)] = call
+        u.data[i + len(call):i + len(call) + len(tail)] = tail
+        cut = i + len(call) + len(tail)
+        u.data[cut:end + 1] = b'\0' * (end + 1 - cut)
+        named += 1
+    # and the article with it, or the port reads "Picked up an SAW"
+    art = 0
+    if a.name[:1].upper() not in 'AEIOU':
+        while True:
+            i = bytes(u.data).find(b'an ' + call, at, at + blob_len)
+            if i < 0:
+                break
+            end = bytes(u.data).find(b'\0', i)
+            tail = bytes(u.data[i + 1:end])      # keep the 'a', drop the 'n'
+            u.data[i:i + len(tail)] = tail
+            u.data[i + len(tail):end + 1] = b'\0' * (end + 1 - i - len(tail))
+            art += 1
+    print('messages: %d glyph(s) swapped, %d string(s) renamed to %r, %d article(s) fixed'
+          % (hits, named, a.name, art))
     ok, cov, tot = u.check()
-    print('messages: %d glyph(s) swapped; parses %s (%d/%d)' % (hits, ok, cov, tot))
+    print('messages: parses %s (%d/%d)' % (ok, cov, tot))
     if not ok:
         raise SystemExit('string list not saved')
     u.save(UNIC)

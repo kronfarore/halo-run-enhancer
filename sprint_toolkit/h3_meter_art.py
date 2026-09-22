@@ -181,11 +181,29 @@ def main():
     # keeps drawing as full after the tick itself has emptied. That is an OUTLINE around
     # spent ticks, travelling with the full/empty boundary as the magazine drains, and it
     # is exactly what the vanilla weapons do not do.
-    bands = [row_y[r] - 2 for r in range(rows)]
-    bands[0] = MARGIN
-    bands.append(y1 - y0 - MARGIN)
-    edges = [MARGIN + int(round(c * pitch)) for c in range(a.cols)]
-    edges.append(MARGIN + span)
+    # A CELL REACHES HALFWAY TO ITS NEIGHBOUR, AND THE FIELD COVERS THE WHOLE SPRITE.
+    #
+    # Padding the field to the tick is not enough. A tick whose own threshold stops at
+    # its last opaque row is sampled, minified, against the NEXT row's threshold, and the
+    # next row's is lower -- still loaded when this row is spent -- so a sliver of the
+    # tick stays lit along that edge. The first tick of each row does the same against
+    # the dead margin, where 0 means "always loaded". That is the fill left at the bottom
+    # of each cell and down the left of the first one.
+    #
+    # Bungie biases the padding DOWNWARD and RIGHTWARD. The SMG's band boundary is 30,
+    # which is the next tick's FIRST row, so a tick keeps both blank rows beneath it and
+    # the tick below starts flush with its own band. Its column boundaries sit on the
+    # pitch grid, two pixels before each tick. Copying that puts the slack exactly where
+    # the artefact was, and the top edge -- which is the soft one -- stays inside its own
+    # band either way.
+    #
+    # Outside the outermost ticks the field runs all the way to the sprite edge instead
+    # of stopping at the margin, so no 0 survives anywhere inside the sprite.
+    tick_x = [MARGIN + int(round(c * pitch + (pitch - use_w) / 2.0))
+              for c in range(a.cols)]
+    edges = ([0] + [MARGIN + int(round(c * pitch)) for c in range(1, a.cols)]
+             + [x1 - x0])
+    bands = [0] + [row_y[r] for r in range(1, rows)] + [y1 - y0]
     for r in range(rows):
         for c in range(a.cols):
             thr = a.rounds - (r * a.cols + c)
@@ -197,7 +215,7 @@ def main():
     drawn = 0
     for r in range(rows):
         for c in range(a.cols):
-            cx = x0 + edges[c] + int(round((edges[c + 1] - edges[c] - use_w) / 2.0))
+            cx = x0 + tick_x[c]
             cy = y0 + row_y[r]
             for sy in range(sh):
                 for sx in range(use_w):

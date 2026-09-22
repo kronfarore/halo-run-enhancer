@@ -107,6 +107,26 @@ def art(V, idx, sw, sh):
     return out
 
 
+def downsample(alphas, w, h):
+    """The mip, as a 2x2 box filter of the base -- never re-rendered.
+
+    Rendering the half-size image separately looks equivalent and is not: the inset is a
+    fixed number of PIXELS, so at half resolution it eats twice the proportion and the
+    art comes out 90% of the width it has in the base, shifted inward about 4.5% on each
+    side. A weapon chud has TWO schematic widgets, and if one samples the base while the
+    other samples the mip, that shows up in game as two copies of the weapon slightly
+    offset from one another. Deriving the mip from the base makes them register by
+    construction.
+    """
+    out = []
+    for y in range(h // 2):
+        for x in range(w // 2):
+            out.append((alphas[(y * 2) * w + x * 2] + alphas[(y * 2) * w + x * 2 + 1]
+                        + alphas[(y * 2 + 1) * w + x * 2]
+                        + alphas[(y * 2 + 1) * w + x * 2 + 1]) // 4)
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--sprite', type=int, default=SPRITE)
@@ -137,7 +157,7 @@ def main():
     V, idx = wg.mesh(a.model)
     print('   %d vertices, %d strip indices' % (len(V), len(idx)))
     full = art(V, idx, sw, sh)
-    half = art(V, idx, sw // 2, sh // 2)
+    half = downsample(full, sw, sh)
 
     from PIL import Image
     im = Image.new('RGBA', (sw, sh))
