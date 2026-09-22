@@ -137,7 +137,17 @@ def retime(tag, mem, index, frames, xml):
     e = lay[index]
     old = e['frames']
     anim = dec.read_animation(tag, e)
-    packed = dec.pack_animation(dec.resample(anim, frames))
+    done = dec.resample(anim, frames)
+    packed = dec.pack_animation(done)
+    # Test the frame ORDER rather than assume it. Reading it the wrong way round is
+    # byte-exact on a round trip and leaves every quaternion unit, so nothing else here
+    # notices -- and in game it shakes the screen.
+    order, node_major, frame_major = dec.ordering_ok(tag, e)
+    if not order:
+        raise SystemExit('anim %d reads SMOOTHER frame-major (%.2f) than node-major '
+                         '(%.2f deg/frame) -- the frame order is wrong'
+                         % (index, frame_major, node_major))
+    smooth_before, smooth_after = dec.smoothness(anim), dec.smoothness(done)
 
     blob = bytes(tag.data[e['at']:e['at'] + e['size']])
     head = blob[:e['frames_at']]                       # everything up to the frames
@@ -168,7 +178,8 @@ def retime(tag, mem, index, frames, xml):
             struct.pack_into('<h', tag.data, at, now)
             scaled.append((was, now))
     return {'index': index, 'old': old, 'new': frames, 'bytes': delta,
-            'uncompressed': new_unc, 'events': scaled}
+            'uncompressed': new_unc, 'events': scaled,
+            'smooth': (smooth_before, smooth_after)}
 
 
 def main():
@@ -201,6 +212,9 @@ def main():
     rep = retime(tag, mem, a.anim, a.frames, a.xml)
     print('anim %d: %d -> %d frames, data %+d bytes, uncompressed_data %d'
           % (rep['index'], rep['old'], rep['new'], rep['bytes'], rep['uncompressed']))
+    (mw, mm), (rw, rm) = rep['smooth']
+    print('   frame-to-frame motion: max %.1f -> %.1f deg, mean %.2f -> %.2f deg'
+          % (mw, rw, mm, rm))
     for was, now in rep['events']:
         print('   event frame %d -> %d' % (was, now))
     ok, cov, tot = tag.check()

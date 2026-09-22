@@ -330,13 +330,19 @@ def read_animation(tag, e):
     at = e['frames_at']
     tbase = at + F * R * 16
     sbase = tbase + F * T * 12
+    # NODE-major within each channel: all of node 0's frames, then all of node 1's.
+    # Reading it frame-major costs nothing in the round trip (same bytes, regrouped) and
+    # still gives unit quaternions, so neither of those checks catches the mistake -- but
+    # it interpolates between DIFFERENT NODES, and in game that is a weapon that snaps
+    # and a screen that shakes. The tell is smoothness: mean frame-to-frame step on the
+    # idle is 0.05 degrees read this way against 6.18 read frame-major.
     return {
         'frames': F,
-        'rotations': [[struct.unpack_from('<4f', b, at + (f * R + i) * 16)
+        'rotations': [[struct.unpack_from('<4f', b, at + (i * F + f) * 16)
                        for i in range(R)] for f in range(F)],
-        'translations': [[struct.unpack_from('<3f', b, tbase + (f * T + j) * 12)
+        'translations': [[struct.unpack_from('<3f', b, tbase + (j * F + f) * 12)
                           for j in range(T)] for f in range(F)],
-        'scales': [[struct.unpack_from('<f', b, sbase + (f * S + k) * 4)[0]
+        'scales': [[struct.unpack_from('<f', b, sbase + (k * F + f) * 4)[0]
                     for k in range(S)] for f in range(F)],
     }
 
@@ -369,6 +375,29 @@ def _slerp(a, b, u):
     return tuple(c / n for c in out)
 
 
+def canonicalise(anim):
+    """Put every node's rotation track in one hemisphere.
+
+    q and -q are the SAME rotation. Interpolating across a flip goes wrong: slerp takes
+    the short arc within each pair, but consecutive output frames come from DIFFERENT
+    pairs, so they could land in opposite hemispheres and the engine would then take the
+    long way round at playback.
+
+    The Assault Rifle's shipped tracks turn out to have NO flips once they are read
+    node-major, so this is a safeguard rather than a fix. It looked like a fix at first:
+    reading the frames in the wrong order reported 150 flips in the reload, which is what
+    interpolating between different nodes looks like from here. Flipping a track into one
+    hemisphere costs nothing when there is nothing to flip.
+    """
+    out = [list(f) for f in anim['rotations']]
+    nodes = len(out[0]) if out else 0
+    for n in range(nodes):
+        for f in range(1, len(out)):
+            if sum(x * y for x, y in zip(out[f - 1][n], out[f][n])) < 0.0:
+                out[f][n] = tuple(-c for c in out[f][n])
+    return dict(anim, rotations=out)
+
+
 def resample(anim, frames):
     """The same motion at a different frame count.
 
@@ -376,10 +405,18 @@ def resample(anim, frames):
     same normalised position, so the animation keeps its shape and only its duration
     changes. This is the whole point of decoding the format: making a reload longer is
     arithmetic, with no codec to re-encode.
+
+    The source is canonicalised first -- see `canonicalise`, without which the output
+    shakes.
     """
     old = anim['frames']
     if frames < 1 or old < 1:
         raise ValueError('need at least one frame')
+    if frames == old:
+        return dict(anim, rotations=[list(f) for f in anim['rotations']],
+                    translations=[list(f) for f in anim['translations']],
+                    scales=[list(f) for f in anim['scales']])
+    anim = canonicalise(anim)
     if old == 1:
         return dict(anim, frames=frames,
                     rotations=[list(anim['rotations'][0]) for _ in range(frames)],
@@ -400,18 +437,92 @@ def resample(anim, frames):
     return out
 
 
+def read_animation_frame_major(tag, e):
+    """The WRONG reading, kept on purpose: every node for frame 0, then frame 1.
+
+    It exists so the ordering can be tested rather than assumed -- `ordering_ok`
+    compares the two and insists the node-major one describes smoother motion.
+    """
+    b = tag.data[e['at']:e['at'] + e['size']]
+    F = e['frames']
+    R, T, S = e['animated']
+    at = e['frames_at']
+    tbase = at + F * R * 16
+    sbase = tbase + F * T * 12
+    return {
+        'frames': F,
+        'rotations': [[struct.unpack_from('<4f', b, at + (f * R + i) * 16)
+                       for i in range(R)] for f in range(F)],
+        'translations': [[struct.unpack_from('<3f', b, tbase + (f * T + j) * 12)
+                          for j in range(T)] for f in range(F)],
+        'scales': [[struct.unpack_from('<f', b, sbase + (f * S + k) * 4)[0]
+                    for k in range(S)] for f in range(F)],
+    }
+
+
+def ordering_ok(tag, e):
+    """(ok, node_major_mean, frame_major_mean) -- is the frame order the right way round?
+
+    Reading the frames the wrong way is byte-exact on a round trip and leaves every
+    quaternion unit, so the obvious checks pass. This compares the two readings and
+    requires the node-major one to describe smoother motion, which is the property that
+    actually distinguishes them.
+
+    Resampling does NOT distinguish them: interpolating to more frames lowers the mean
+    step either way, so "did the resample get smoother" is not a test -- it was tried,
+    and it passed the wrong reading.
+
+    Judged with slack, because an animation that barely moves cannot tell the orderings
+    apart: `first_person:overlays` is nine frames of near-identity rotations and reads
+    1.04 node-major against 0.99 frame-major, which is noise. A real mistake is not
+    close -- the reload reads 3.16 against 32.83, the idle 0.05 against 6.18.
+    """
+    a = smoothness(read_animation(tag, e))[1]
+    b = smoothness(read_animation_frame_major(tag, e))[1]
+    return a <= b * 1.5 + 0.25, a, b
+
+
+def smoothness(anim):
+    """(max, mean) angle in degrees between consecutive frames, over every node.
+
+    The check that distinguishes a correct reading from a plausible one. A round trip
+    stays byte-exact and every quaternion stays unit whether the frames are read
+    node-major or frame-major, because both are the same bytes regrouped -- so neither
+    catches reading them the wrong way. Motion does: the Assault Rifle's IDLE averages
+    0.05 degrees a frame read correctly and 6.18 read frame-major, and a resample built
+    on the wrong one shakes the screen in game.
+
+    A resample to MORE frames must LOWER these numbers; if it raises them, the reading
+    is wrong.
+    """
+    import math
+    worst = total = 0.0
+    count = 0
+    for n in range(len(anim['rotations'][0]) if anim['frames'] else 0):
+        for f in range(anim['frames'] - 1):
+            dot = abs(sum(x * y for x, y in
+                          zip(anim['rotations'][f][n], anim['rotations'][f + 1][n])))
+            ang = 2.0 * math.degrees(math.acos(min(1.0, dot)))
+            worst = max(worst, ang)
+            total += ang
+            count += 1
+    return worst, total / max(count, 1)
+
+
 def pack_animation(anim):
-    """The bytes an animation's frame section should hold, channel-major."""
+    """The bytes an animation's frame section should hold: channel-major, and NODE-major
+    within each channel -- see `read_animation`."""
+    F = anim['frames']
     out = bytearray()
-    for f in range(anim['frames']):
-        for q in anim['rotations'][f]:
-            out += struct.pack('<4f', *q)
-    for f in range(anim['frames']):
-        for v in anim['translations'][f]:
-            out += struct.pack('<3f', *v)
-    for f in range(anim['frames']):
-        for s in anim['scales'][f]:
-            out += struct.pack('<f', s)
+    for i in range(len(anim['rotations'][0]) if F else 0):
+        for f in range(F):
+            out += struct.pack('<4f', *anim['rotations'][f][i])
+    for j in range(len(anim['translations'][0]) if F else 0):
+        for f in range(F):
+            out += struct.pack('<3f', *anim['translations'][f][j])
+    for k in range(len(anim['scales'][0]) if F else 0):
+        for f in range(F):
+            out += struct.pack('<f', anim['scales'][f][k])
     return bytes(out)
 
 

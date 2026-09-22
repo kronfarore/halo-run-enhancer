@@ -120,8 +120,9 @@ def main():
             if not ok:
                 raise SystemExit('   %s: tree no longer spans the file' % name)
             tag.save(dp)
-            print('      %-32s %d -> %d frames (%+d bytes)%s'
-                  % (name, rep['old'], rep['new'], rep['bytes'],
+            (_mw, mm), (_rw, rm) = rep['smooth']
+            print('      %-32s %d -> %d frames (%+d bytes)  motion %.2f -> %.2f deg/frame%s'
+                  % (name, rep['old'], rep['new'], rep['bytes'], mm, rm,
                      '  events ' + ', '.join('%d->%d' % e for e in rep['events'])
                      if rep['events'] else ''))
             xml = export_xml(dst, os.path.join(a.scratch, 'clone.xml'))
@@ -135,6 +136,13 @@ def main():
 
     wp = os.path.join(TAGS, SAW_WEAPON + '.weapon')
     w = h3tag.Tag(wp)
+    have = {p for _o, g, p in w.references() if g == 'jmad'}
+    want = {dst for _src, dst in GRAPHS}
+    if want <= have:
+        # Re-running rebuilds the graphs from the donor, which is the point; there is
+        # then nothing left to repoint and that is success, not failure.
+        print('\nweapon already points at the port\'s graphs')
+        return
     n = 0
     for src, dst in GRAPHS:
         n += w.repoint(src, dst, 'jmad')
