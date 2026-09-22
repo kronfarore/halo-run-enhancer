@@ -126,9 +126,10 @@ def main():
                      '  events ' + ', '.join('%d->%d' % e for e in rep['events'])
                      if rep['events'] else ''))
             xml = export_xml(dst, os.path.join(a.scratch, 'clone.xml'))
-        out = recompress(dst)
-        got = [l for l in out.splitlines() if 'compression reset' in l]
-        print('   %s' % (got[0].strip() if got else 'recompressed'))
+        # NOT recompressed on purpose -- retime() stores the frames raw (codec 8), so
+        # the engine reads exactly what was written. Running
+        # model-animation-reset-compression here re-encodes them and swaps the codec
+        # from "best accuracy" to "best score", and the animation still played wrong.
 
     if not a.write:
         print('\n(dry run -- pass --write)')

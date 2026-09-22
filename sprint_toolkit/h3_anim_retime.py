@@ -149,9 +149,28 @@ def retime(tag, mem, index, frames, xml):
                          % (index, frame_major, node_major))
     smooth_before, smooth_after = dec.smoothness(anim), dec.smoothness(done)
 
+    # Rebuild BOTH copies of the frames. The member carries a compressed stream as well
+    # as the uncompressed one, and the engine reads the compressed one -- so rewriting
+    # only the uncompressed frames leaves the old motion playing, which is what happened
+    # the first two times. `tool model-animation-reset-compression` was meant to close
+    # that and did not: it changed the codec from "best accuracy" to "best score" and
+    # the animation still played wrong.
+    #
+    # Codec 8 is the way out: the Assault Rifle's own pitch_and_turn uses it, and there
+    # the compressed section is the uncompressed one byte for byte apart from two header
+    # fields -- the codec byte, and a float that reads 1.0 instead of 0.0. So the frames
+    # can be stored RAW in the compressed slot, losslessly, with no encoder at all.
     blob = bytes(tag.data[e['at']:e['at'] + e['size']])
-    head = blob[:e['frames_at']]                       # everything up to the frames
-    new_blob = head + packed
+    unc_header = bytearray(blob[e['frames_at'] - 32:e['frames_at']])
+    raw_header = bytearray(unc_header)
+    raw_header[0] = 8                                   # codec: stored raw
+    struct.pack_into('<f', raw_header, 8, 1.0)
+
+    default = blob[:e['default_data']]
+    flags_at = e['default_data'] + e['compressed_data']
+    flags = blob[flags_at:flags_at + 48]
+    new_blob = (default + bytes(raw_header) + packed + flags
+                + bytes(unc_header) + packed)
     new_unc = 32 + len(packed)
 
     # the member's own data chunk is the `tgda` inside its `tgst`
@@ -163,6 +182,7 @@ def retime(tag, mem, index, frames, xml):
     mo = mbase + index * mes
     struct.pack_into('<h', tag.data, mo, frames)
     struct.pack_into('<I', tag.data, mo + 12, new_unc)
+    struct.pack_into('<I', tag.data, mo + 16, new_unc)   # compressed == uncompressed now
 
     astart = animations_block(tag, mem)
     ao = astart + index * ANIM_ES
