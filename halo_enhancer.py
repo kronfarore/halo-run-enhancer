@@ -408,7 +408,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'remove_superseded_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
-               'ammo_display_follows_magazine', 'h1_ammo_pickups',
+               'ammo_display_follows_magazine',
                'upgrade_inherits_base',
                'hide_tags', 'hide_fields',
                'h4_sprint_mode',
@@ -1155,7 +1155,6 @@ CONFIG = {
     # sliders. The two are the same mechanism, so only one is shown at a time.
     "weapon_swap_cards": False,
     "ammo_display_follows_magazine": True,
-    "h1_ammo_pickups": {},
     # Sprint (New Features / Experimental). Only functions on maps built with the
     # sprint mod; on a plain map these are inert. sprint_feature is the master
     # switch; start-with vs card is how it enters a run; speed% scales the sprint
@@ -7479,7 +7478,6 @@ class MagnitudeEditorDialog(QDialog):
                 enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
-                ammo_pickups=CONFIG.get('h1_ammo_pickups') or None,
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
@@ -7532,7 +7530,6 @@ class MagnitudeEditorDialog(QDialog):
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
-                ammo_pickups=CONFIG.get('h1_ammo_pickups') or None,
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
                     odst_downgrade=self._odst_downgrade_keep(),
@@ -10378,59 +10375,11 @@ class OptionsDialog(QDialog):
                 self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
 
-        # Halo 1's own weapons take ammo from a pickup item too, and the same control
-        # applies -- so it sits beside the ports rather than in a page of its own.
-        self._h1_ammo = {}
-        self._h1_shipped = {}
-        cat = self._h1_magazine_catalog()
-        if cat.get('weapons'):
-            gb = QGroupBox("Halo 1 ammo pickups")
-            f = QFormLayout(gb)
-            f.setLabelAlignment(Qt.AlignRight)
-            note = QLabel(
-                "Which pickup each weapon takes ammunition from. Halo 1 is the only game "
-                "that works this way -- later games hand ammo over with the weapon "
-                "itself. A mission without the chosen item leaves that weapon alone.")
-            note.setWordWrap(True)
-            f.addRow(note)
-            saved = CONFIG.get('h1_ammo_pickups') or {}
-            for w in cat['weapons']:
-                combo = QComboBox()
-                for item in cat.get('items') or ():
-                    label = item.get('label') or item.get('tag')
-                    if item.get('tag') == w.get('item'):
-                        label += "  (as shipped)"
-                    if item.get('maps'):
-                        label += "  \u2014 %d of %d missions" % (
-                            len(item['maps']), len(CONFIG.get('h1_campaign_maps') or []))
-                    combo.addItem(label, item.get('tag'))
-                combo.addItem("(none) \u2014 no ammo pickups", '(none)')
-                pick = saved.get(w['tag']) or w.get('item')
-                at = combo.findData(pick)
-                combo.setCurrentIndex(at if at >= 0 else 0)
-                combo.setToolTip("%s gives %d round(s) as shipped."
-                                 % (w['tag'].rsplit(os.sep, 1)[-1], w.get('rounds') or 0))
-                tune_combo(combo)
-                f.addRow("%s:" % w['tag'].rsplit(os.sep, 1)[-1].title(), combo)
-                self._h1_ammo[w['tag']] = combo
-                self._h1_shipped[w['tag']] = w.get('item')
-            lay.addWidget(gb)
-
         page = self._opt_page("Weapon ports")
         page.addWidget(box)
         # Debug-only: the nav entry is hidden unless Debug is on (the page itself stays
         # built, so its values are still saved either way).
         self._ports_nav_row = self._opt_nav.count() - 1
-
-    def _h1_magazine_catalog(self):
-        """Halo 1 weapons that take ammo from a pickup, and the items they could take.
-        Built by sprint_toolkit/h1_magazine_scan.py from every campaign map."""
-        try:
-            here = os.path.dirname(os.path.abspath(__file__))
-            with open(os.path.join(here, 'h1_magazine_catalog.json'), encoding='utf-8') as fh:
-                return json.load(fh)
-        except (OSError, ValueError):
-            return {}
 
     def _sync_ports_page(self):
         row = getattr(self, '_ports_nav_row', None)
@@ -10445,8 +10394,6 @@ class OptionsDialog(QDialog):
             self._opt_nav.setCurrentRow(0)
 
     def values(self):
-        if not hasattr(self, '_h1_ammo'):
-            self._h1_ammo, self._h1_shipped = {}, {}
         return {
             'target_difficulty': self.diff_combo.currentData(),   # internal slot name
             'remove_single_game_mods': self.single_game_cb.isChecked(),
@@ -10555,8 +10502,6 @@ class OptionsDialog(QDialog):
                                if (g, w) in self._ports_ammo else {}))
                     for (g2, w), cb in self._ports_boxes.items() if g2 == g}
                 for g in {gg for gg, _ in self._ports_boxes}},
-            'h1_ammo_pickups': {w: cb.currentData() for w, cb in self._h1_ammo.items()
-                                if cb.currentData() != self._h1_shipped.get(w)},
             'weapon_ports_balance': self._ports_balance_cb.isChecked(),
             'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
             'enemy_color_drift': dict(

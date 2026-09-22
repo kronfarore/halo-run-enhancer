@@ -6586,65 +6586,6 @@ def _tag_id_by_name(m, cls, path):
     return None
 
 
-H1_MAGAZINE_BLOCK = 'Magazines/Magazines'
-H1_MAGAZINE_ANCHOR = 'Rounds'
-H1_MAGAZINE_REF = 0xC               # the Equipment reference, from the block's start
-
-
-def apply_ammo_pickups(m, game, registry, choices):
-    """Change which pickup item a weapon's magazines accept.
-
-    Halo 1 is the only game built this way: a weapon's magazine names an EQUIPMENT tag,
-    and walking over one of those tops the weapon up. Every later game hands ammo over
-    with the weapon itself, so there is nothing to point anywhere.
-
-    `choices` is {weapon tag: equipment tag, or NO_AMMO for a weapon that can never be
-    topped up}. The Assembly plugins skip tag references, so the write is anchored on a
-    sibling field in the same block (Rounds) with the datum at +0xC of the reference --
-    the same trick the ported weapons use.
-    """
-    import weapon_ports
-    if str(game).strip() != 'Halo 1' or not choices or registry is None:
-        return []
-    plugin = registry.get('weap')
-    fld = plugin.find(H1_MAGAZINE_ANCHOR, H1_MAGAZINE_BLOCK) if plugin else None
-    if fld is None:
-        return [{'effect': 'Ammo pickups', 'ok': False,
-                 'reason': 'no %s field in the weap plugin' % H1_MAGAZINE_ANCHOR}]
-    out = []
-    for tag, pick in sorted(choices.items()):
-        if not pick:
-            continue
-        name = tag.rsplit(chr(92), 1)[-1]
-        res = {'effect': 'Ammo pickup', 'tag': name, 'field': 'magazine item'}
-        tags = m.find_tags('weap', tag)
-        if not tags:
-            out.append(dict(res, ok=False, skip=True, reason='not in this map'))
-            continue
-        none = pick == weapon_ports.NO_AMMO
-        datum = 0xFFFFFFFF if none else _tag_id_by_name(m, 'eqip', pick)
-        if datum is None:
-            # Pickup items are per MAP -- Halo 1's a10 carries neither rocket nor
-            # shotgun ammo -- so a choice this mission lacks leaves the weapon alone.
-            out.append(dict(res, ok=False, skip=True,
-                            reason='%s is not on this mission' % pick.rsplit(chr(92), 1)[-1]))
-            continue
-        n = 0
-        for _path, meta in tags:
-            for base in m.follow_all(meta, fld['block_offsets'], fld.get('block_sizes'),
-                                     'all'):
-                old = m.u32(base + H1_MAGAZINE_REF + 0xC)
-                struct.pack_into('<I', m.data, base + H1_MAGAZINE_REF + 0xC, datum)
-                if old != datum:
-                    n += 1
-        out.append(dict(res, ok=True, skip=not n,
-                        old='as shipped',
-                        new='%s (%d magazine item%s)'
-                            % ('no ammo pickups' if none else pick.rsplit(chr(92), 1)[-1],
-                               n, '' if n == 1 else 's')))
-    return out
-
-
 def _set_port_ammo(m, registry, port, pick):
     """Point a ported weapon's magazines at an ammo pickup item -- or at nothing.
 
@@ -6886,7 +6827,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
-              difficulty_baseline=None, weapon_ports=None, ammo_display=True, ammo_pickups=None,
+              difficulty_baseline=None, weapon_ports=None, ammo_display=True,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
@@ -7351,11 +7292,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # ODST only. After the per-field ops so it composes on top of whatever the
         # run patched onto the plasma rifle, rather than being overwritten by it.
         results.extend(apply_red_plasma_as_brute(m, registry, red_plasma))
-
-    if ammo_pickups:
-        # Which pickup item each weapon accepts. Halo 1 only, and independent of the
-        # value ops, so order among the structural passes does not matter.
-        results.extend(apply_ammo_pickups(m, game, registry, ammo_pickups))
 
     if mags_before:
         # LAST of the value passes: it reads the magazine every other op has finished

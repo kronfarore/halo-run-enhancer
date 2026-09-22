@@ -183,6 +183,14 @@ def main():
     if write:
         cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
         cat.setdefault('Halo 3', [])
+        # Keep whatever this entry carries that the balance table does not produce --
+        # the ammo-pickup choices are wired in separately, and regenerating the numbers
+        # must not silently drop them (which is how Halo 1's went missing).
+        for old in cat['Halo 3']:
+            if old.get('weapon') == entry['weapon']:
+                for k in ('ammo',):
+                    if old.get(k) and not entry.get(k):
+                        entry[k] = old[k]
         cat['Halo 3'] = [e for e in cat['Halo 3'] if e.get('weapon') != entry['weapon']] + [entry]
         json.dump(cat, open(OUT, 'w', encoding='utf-8'), indent=1)
         print('\nwrote %s' % OUT)
