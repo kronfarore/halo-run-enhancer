@@ -62,33 +62,42 @@ identical popcounts there have completely different strides (five share [6,3,4] 
 their strides are 96, 96, 96, 336 and 352), so whatever those bytes are, they are not
 what sizes the per-frame record. The skeleton really is 43 nodes, checked in the graph.
 
-HUNTING THE PER-FRAME RECORDS
------------------------------
-`--records` scans for where the frames start, by the one property real motion has and
-noise does not: consecutive frames resemble each other. On the reload it puts the best
-offset at 2514, scoring 3.3x better than a middling offset -- suggestive, not proof, and
-the candidates smear across a 30-byte range rather than landing on one.
+THE LAYOUT, SETTLED
+-------------------
+    [default_data][compressed_data][static flags 24][animated flags 24][uncompressed]
 
-What IS structural there: reading those records byte by byte across the 58 frames, the
-change-rate has a period of EIGHT (mean spread within a lane 5.2, against 10.8 at period
-4 and 9.9 at period 12), and as int16 lanes the pattern repeats `~20000, ~32000, ~32767,
-~32000` for all 59 groups in the stride. A bounded first lane against three near-full-
-range ones, repeating without exception, is not what random data looks like. Eight bytes
-is four int16s, which is the shape of a packed quaternion.
+The two flag fields were found by their signature rather than by guessing an order: the
+first three masks' popcounts are exactly (n, m, 1), the same counts default_data's header
+declares. They sit at `default_data + compressed_data` in all seventeen animations.
 
-Against that: 472 bytes of stride over 8 is 59 groups, and the skeleton has 43 nodes. So
-either the offset is still wrong, or a record is not simply one quaternion per node.
+The last three masks are the ANIMATED nodes, and they size a frame:
 
-A WARNING, because it looks like evidence and is not: `len(blob) - (32 + frames*stride)`
-equals `48 + default_data + compressed_data` for all seventeen animations. That is a
-TAUTOLOGY -- the sections sum to the blob, so subtracting one leaves the others -- and it
-says nothing about which order they are stored in. Do not cite it as proof that the
-uncompressed section comes last.
+    stride == 16 * R + 12 * T + 4 * S       exact, all seventeen
+
+including the awkward 324 that is not a multiple of 8. So a rotation is SIXTEEN bytes --
+four float32, a plain unit quaternion -- a translation twelve, a scale four. Nothing is
+quantised, nothing is packed, and no codec has to be broken: the poses are sitting there
+as floats, which is what makes a resample arithmetic.
+
+The data agrees. Every animation with no animated translations reads as exactly unit
+quaternions on every frame, to five decimals -- eight of eight. That is the check that
+turns this from a plausible reading into a decoded one.
+
+STILL OPEN: how a frame interleaves rotations with translations. The eight animations
+that have translations do not read as unit quaternions under either "all rotations then
+all translations" or the reverse, so it is neither. Curiously, on the reload frame 0
+reads as 29 consecutive unit quaternions covering 464 of its 472 bytes, which no simple
+split explains.
+
+Superseded, recorded so it is not re-derived: an int16 reading of the records with a
+period of 8 looked structural, and was an artifact of float32 data seen two bytes at a
+time. And `len(blob) - (32 + frames*stride) == 48 + default_data + compressed_data` is a
+TAUTOLOGY, not evidence of section order.
 
     python h3_anim_decode.py --tree            # the real chunk tree
     python h3_anim_decode.py --sizes           # the section table and the stride law
     python h3_anim_decode.py --blobs           # locate each animation's data
-    python h3_anim_decode.py --records         # hunt for the frames, and profile them
+    python h3_anim_decode.py --layout          # sections, counts, and the quaternion check
 """
 import argparse, io, os, re, struct, sys
 
@@ -238,6 +247,92 @@ def records(tag, mem, want=13):
         print('   period %-3d mean spread within a lane %.1f' % (period, spread))
 
 
+def layout(tag, mem):
+    """Where every section of every blob is, and what shape its frames are.
+
+    THE BLOB, settled against all seventeen animations:
+
+        [default_data][compressed_data][static flags 24][animated flags 24][uncompressed]
+
+    `default_data` comes FIRST and opens with a 32-byte header:
+        +0   four bytes, `01 n m 01` -- n static rotations, m static translations, 1 scale
+        +12  8 * (n + 4), the offset to the translations
+        +16  default_data - 4, the offset to the single scale
+    so `default_data == 32 + 8n + 12m + 4`, exact for every animation.
+
+    The two flag fields sit at `default_data + compressed_data`, which is how they were
+    found: the first three masks' popcounts are exactly (n, m, 1), matching the header.
+    The last three are the ANIMATED nodes, and they size the frames:
+
+        stride == 16 * R + 12 * T + 4 * S
+
+    exact for all seventeen, including the awkward 324 that is not a multiple of 8.
+    So a rotation is SIXTEEN bytes -- four float32, a plain unit quaternion -- a
+    translation twelve, and a scale four. Nothing is quantised and nothing is packed,
+    which is what makes resampling arithmetic.
+
+    Confirmed by the data itself: every animation with no animated translations reads
+    as exactly unit quaternions, on every frame, to five decimal places. The eight that
+    DO have translations do not yet, so how a frame interleaves the two is still open.
+    """
+    pc = lambda v: bin(v).count('1')                          # noqa: E731
+    out = []
+    for e in blobs(tag, mem):
+        b = tag.data[e['at']:e['at'] + e['size']]
+        hdr = struct.unpack_from('<I', b, 0)[0]
+        n, mm = (hdr >> 8) & 0xFF, (hdr >> 16) & 0xFF
+        flags_at = e['default_data'] + e['compressed_data']
+        w = struct.unpack_from('<6Q', b, flags_at)
+        R, T, Sc = pc(w[3]), pc(w[4]), pc(w[5])
+        stride = (e['uncompressed_data'] - 32) // e['frames'] if e['frames'] else 0
+        out.append(dict(e, static=(n, mm, 1), animated=(R, T, Sc), flags_at=flags_at,
+                        frames_at=flags_at + 48 + 32, stride=stride,
+                        default_ok=e['default_data'] == 32 + 8 * n + 12 * mm + 4,
+                        stride_ok=stride == 16 * R + 12 * T + 4 * Sc,
+                        static_ok=(pc(w[0]), pc(w[1]), pc(w[2])) == (n, mm, 1)))
+    return out
+
+
+def quaternions(tag, e, frame):
+    """The rotations of one frame, as (w, x, y, z) floats. Only trustworthy while the
+    animation has no animated translations -- see `layout`."""
+    b = tag.data[e['at']:e['at'] + e['size']]
+    at = e['frames_at'] + frame * e['stride']
+    return [struct.unpack_from('<4f', b, at + i * 16) for i in range(e['animated'][0])]
+
+
+def report_layout(tag, mem):
+    import math
+    print('%-5s %-7s %-7s %-14s %-14s %-9s %s'
+          % ('anim', 'frames', 'stride', 'static R/T/S', 'animated R/T/S', 'frames@',
+             'checks'))
+    ok = {'default': 0, 'static': 0, 'stride': 0, 'unit': 0, 'unit_possible': 0}
+    for e in layout(tag, mem):
+        ok['default'] += e['default_ok']
+        ok['static'] += e['static_ok']
+        ok['stride'] += e['stride_ok']
+        worst = 0.0
+        for f in range(e['frames']):
+            for q in quaternions(tag, e, f):
+                worst = max(worst, abs(math.sqrt(sum(c * c for c in q)) - 1.0))
+        unit = worst < 1e-3
+        if e['animated'][1] == 0:
+            ok['unit_possible'] += 1
+            ok['unit'] += unit
+        print('%-5d %-7d %-7d %-14s %-14s %-9d %s%s%s  quat err %.5f%s'
+              % (e['index'], e['frames'], e['stride'], str(e['static']),
+                 str(e['animated']), e['frames_at'],
+                 'D' if e['default_ok'] else '-', 'S' if e['static_ok'] else '-',
+                 'T' if e['stride_ok'] else '-', worst,
+                 '' if e['animated'][1] == 0 else '   (has translations)'))
+    n = len(mem)
+    print('\ndefault_data == 32 + 8n + 12m + 4 : %d/%d' % (ok['default'], n))
+    print('static masks popcount (n, m, 1)   : %d/%d' % (ok['static'], n))
+    print('stride == 16R + 12T + 4S          : %d/%d' % (ok['stride'], n))
+    print('unit quaternions every frame      : %d/%d of the animations with no animated'
+          ' translations' % (ok['unit'], ok['unit_possible']))
+
+
 def scan(d, mem, lo, hi):
     """Look for a start where every member's flag fields read as real flags: sparse, and
     with no bit set above the graph's node count."""
@@ -275,13 +370,15 @@ def main():
     ap.add_argument('--scan', action='store_true')
     ap.add_argument('--blobs', action='store_true')
     ap.add_argument('--header', action='store_true')
+    ap.add_argument('--layout', action='store_true')
     ap.add_argument('--records', type=int, nargs='?', const=13, default=None,
                     help='hunt for the per-frame records of this animation')
     a = ap.parse_args()
 
     d = io.open(a.tag, 'rb').read()
     print('%s  %d bytes\n' % (os.path.basename(a.tag), len(d)))
-    opts = (a.sizes or a.scan or a.blobs or a.header or a.records is not None)
+    opts = (a.sizes or a.scan or a.blobs or a.header or a.layout
+            or a.records is not None)
     if a.tree or not opts:
         tree(d)
     if not opts:
@@ -306,6 +403,10 @@ def main():
         sys.path.insert(0, HERE)
         import h3tag
         header(h3tag.Tag(a.tag), mem)
+    if a.layout:
+        sys.path.insert(0, HERE)
+        import h3tag
+        report_layout(h3tag.Tag(a.tag), mem)
     if a.records is not None:
         sys.path.insert(0, HERE)
         import h3tag
