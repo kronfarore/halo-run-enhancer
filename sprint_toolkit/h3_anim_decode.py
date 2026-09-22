@@ -62,9 +62,33 @@ identical popcounts there have completely different strides (five share [6,3,4] 
 their strides are 96, 96, 96, 336 and 352), so whatever those bytes are, they are not
 what sizes the per-frame record. The skeleton really is 43 nodes, checked in the graph.
 
+HUNTING THE PER-FRAME RECORDS
+-----------------------------
+`--records` scans for where the frames start, by the one property real motion has and
+noise does not: consecutive frames resemble each other. On the reload it puts the best
+offset at 2514, scoring 3.3x better than a middling offset -- suggestive, not proof, and
+the candidates smear across a 30-byte range rather than landing on one.
+
+What IS structural there: reading those records byte by byte across the 58 frames, the
+change-rate has a period of EIGHT (mean spread within a lane 5.2, against 10.8 at period
+4 and 9.9 at period 12), and as int16 lanes the pattern repeats `~20000, ~32000, ~32767,
+~32000` for all 59 groups in the stride. A bounded first lane against three near-full-
+range ones, repeating without exception, is not what random data looks like. Eight bytes
+is four int16s, which is the shape of a packed quaternion.
+
+Against that: 472 bytes of stride over 8 is 59 groups, and the skeleton has 43 nodes. So
+either the offset is still wrong, or a record is not simply one quaternion per node.
+
+A WARNING, because it looks like evidence and is not: `len(blob) - (32 + frames*stride)`
+equals `48 + default_data + compressed_data` for all seventeen animations. That is a
+TAUTOLOGY -- the sections sum to the blob, so subtracting one leaves the others -- and it
+says nothing about which order they are stored in. Do not cite it as proof that the
+uncompressed section comes last.
+
     python h3_anim_decode.py --tree            # the real chunk tree
     python h3_anim_decode.py --sizes           # the section table and the stride law
     python h3_anim_decode.py --blobs           # locate each animation's data
+    python h3_anim_decode.py --records         # hunt for the frames, and profile them
 """
 import argparse, io, os, re, struct, sys
 
@@ -164,6 +188,56 @@ def header(tag, mem):
     print('\n+16 == default_data - 4 for %d of %d animations' % (exact, len(mem)))
 
 
+def records(tag, mem, want=13):
+    """Where do the per-frame records start, and what shape are they?
+
+    Real motion is smooth: frame n+1 resembles frame n. Noise does not. So the frames
+    are hunted by reading every candidate offset as int16 and scoring the mean absolute
+    difference between consecutive records at the known stride.
+    """
+    import array
+    e = next((g for g in blobs(tag, mem) if g['index'] == want), None)
+    if e is None:
+        print('no animation %d' % want)
+        return
+    blob = bytes(tag.data[e['at']:e['at'] + e['size']])
+    frames = e['frames']
+    stride = (e['uncompressed_data'] - 32) // frames
+    need = 32 + frames * stride
+    print('animation %d: %d frames, stride %d, needs %d of %d blob bytes'
+          % (want, frames, stride, need, len(blob)))
+
+    def rough(at, k=4):
+        tot = cnt = 0
+        for i in range(min(k, frames - 2)):
+            a, b = array.array('h'), array.array('h')
+            a.frombytes(blob[at + 32 + i * stride:at + 32 + (i + 1) * stride])
+            b.frombytes(blob[at + 32 + (i + 1) * stride:at + 32 + (i + 2) * stride])
+            for x, y in zip(a, b):
+                tot += abs(x - y)
+                cnt += 1
+        return tot / max(cnt, 1)
+
+    best = sorted((rough(at), at) for at in range(0, len(blob) - need + 1, 2))
+    print('\nlowest frame-to-frame difference:')
+    for v, at in best[:5]:
+        print('   offset %-7d mean |delta| %.1f' % (at, v))
+    mid = best[len(best) // 2]
+    print('   (a middling offset %d scores %.1f, so the best is %.1fx better)'
+          % (mid[1], mid[0], mid[0] / max(best[0][0], 1e-9)))
+
+    at = best[0][1]
+    recs = [blob[at + 32 + i * stride:at + 32 + (i + 1) * stride] for i in range(frames)]
+    ch = [sum(1 for i in range(frames - 1) if recs[i][j] != recs[i + 1][j])
+          for j in range(stride)]
+    print('\nbyte columns that change, first 32 at offset %d:' % at)
+    print('   ' + ' '.join('%2d' % c for c in ch[:32]))
+    for period in (4, 8, 12, 16):
+        groups = [[ch[j] for j in range(k, stride, period)] for k in range(period)]
+        spread = sum(max(g) - min(g) for g in groups) / float(period)
+        print('   period %-3d mean spread within a lane %.1f' % (period, spread))
+
+
 def scan(d, mem, lo, hi):
     """Look for a start where every member's flag fields read as real flags: sparse, and
     with no bit set above the graph's node count."""
@@ -201,13 +275,16 @@ def main():
     ap.add_argument('--scan', action='store_true')
     ap.add_argument('--blobs', action='store_true')
     ap.add_argument('--header', action='store_true')
+    ap.add_argument('--records', type=int, nargs='?', const=13, default=None,
+                    help='hunt for the per-frame records of this animation')
     a = ap.parse_args()
 
     d = io.open(a.tag, 'rb').read()
     print('%s  %d bytes\n' % (os.path.basename(a.tag), len(d)))
-    if a.tree or not (a.sizes or a.scan or a.blobs or a.header):
+    opts = (a.sizes or a.scan or a.blobs or a.header or a.records is not None)
+    if a.tree or not opts:
         tree(d)
-    if not (a.sizes or a.scan or a.blobs or a.header):
+    if not opts:
         return
     if not a.xml or not os.path.exists(a.xml):
         raise SystemExit('--sizes and --scan need --xml from tool export-tag-to-xml')
@@ -229,6 +306,10 @@ def main():
         sys.path.insert(0, HERE)
         import h3tag
         header(h3tag.Tag(a.tag), mem)
+    if a.records is not None:
+        sys.path.insert(0, HERE)
+        import h3tag
+        records(h3tag.Tag(a.tag), mem, a.records)
     if a.scan:
         scan(d, mem, HEADER, min(len(d) - sum(e['size'] for e in mem), 0x8000))
 
