@@ -18,13 +18,14 @@ parses, so `check()` re-walks the tree afterwards.
 import io, os, struct
 
 HEADER = 0x40                      # where the chunk tree starts
-# 'want' closes most tags and was missing, which is what made big tags mis-parse: the
-# real chain at 0x40 is 'tag!' then 'want', and with 'want' unknown that chain was
-# rejected, so the forward scan fell through to a coincidental run near the end of the
-# file -- and then reported a complete parse. Surveyed across 600 Editing Kit tags:
-# tag!/blay/bdat in all of them, want in 583, nothing else at the top two levels.
+# 'want' and 'info' close Editing Kit tags and were both missing, which is what made big
+# tags mis-parse: the real chain at 0x40 is 'tag!' then 'want' and/or 'info', and with
+# either unknown that chain was rejected, so the forward scan fell through to a
+# coincidental run near the end of the file -- and then reported a complete parse.
+# Surveyed over 2000 tags (the 500 largest plus a random 1500), walking the top level of
+# every one: tag! in all, want in 974, info in 245, nothing else.
 MARKERS = {'tag!', 'blay', 'bdat', 'tgst', 'tgbl', 'tgrf', 'tgsi', 'tgsr',
-           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd', 'want'}
+           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd', 'want', 'info'}
 
 
 class Node(object):
