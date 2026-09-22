@@ -260,11 +260,15 @@ def layout(tag, mem):
 
 
 def quaternions(tag, e, frame):
-    """The rotations of one frame, as (w, x, y, z) floats. Only trustworthy while the
-    animation has no animated translations -- see `layout`."""
+    """The rotations of one frame, as (w, x, y, z) floats.
+
+    Channel-major: every frame's rotations sit together before any translation, so a
+    frame's block starts at `frames_at + frame * R * 16`, NOT at a per-frame stride.
+    """
     b = tag.data[e['at']:e['at'] + e['size']]
-    at = e['frames_at'] + frame * e['stride']
-    return [struct.unpack_from('<4f', b, at + i * 16) for i in range(e['animated'][0])]
+    R = e['animated'][0]
+    at = e['frames_at'] + frame * R * 16
+    return [struct.unpack_from('<4f', b, at + i * 16) for i in range(R)]
 
 
 def report_layout(tag, mem):
@@ -282,21 +286,25 @@ def report_layout(tag, mem):
             for q in quaternions(tag, e, f):
                 worst = max(worst, abs(math.sqrt(sum(c * c for c in q)) - 1.0))
         unit = worst < 1e-3
-        if e['animated'][1] == 0:
-            ok['unit_possible'] += 1
-            ok['unit'] += unit
+        ok['unit_possible'] += 1
+        ok['unit'] += unit
         print('%-5d %-7d %-7d %-14s %-14s %-9d %s%s%s  quat err %.5f%s'
               % (e['index'], e['frames'], e['stride'], str(e['static']),
                  str(e['animated']), e['frames_at'],
                  'D' if e['default_ok'] else '-', 'S' if e['static_ok'] else '-',
                  'T' if e['stride_ok'] else '-', worst,
-                 '' if e['animated'][1] == 0 else '   (has translations)'))
+                 '' if unit else '   <-- NOT UNIT'))
     n = len(mem)
     print('\ndefault_data == 32 + 8n + 12m + 4 : %d/%d' % (ok['default'], n))
     print('static masks popcount (n, m, 1)   : %d/%d' % (ok['static'], n))
     print('stride == 16R + 12T + 4S          : %d/%d' % (ok['stride'], n))
-    print('unit quaternions every frame      : %d/%d of the animations with no animated'
-          ' translations' % (ok['unit'], ok['unit_possible']))
+    print('unit quaternions every frame      : %d/%d' % (ok['unit'], ok['unit_possible']))
+    exact_bytes = 0
+    for e in layout(tag, mem):
+        blob = bytes(tag.data[e['at']:e['at'] + e['size']])
+        want = blob[e['frames_at']:e['frames_at'] + e['uncompressed_data'] - 32]
+        exact_bytes += pack_animation(read_animation(tag, e)) == want
+    print('round trip decode -> pack exact    : %d/%d' % (exact_bytes, n))
 
 
 def read_animation(tag, e):
