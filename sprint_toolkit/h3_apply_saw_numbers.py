@@ -51,6 +51,9 @@ def main():
     ap.add_argument('--dry-run', action='store_true')
     ap.add_argument('--keep', action='store_true',
                     help='do NOT restore from the baseline first (values will compound)')
+    ap.add_argument('--no-anims', action='store_true',
+                    help="leave the animations alone -- the balance multiplier scales "
+                         "BOTH reloads, which would hide a split test")
     ap.add_argument('--no-balance', action='store_true',
                     help="write the port's OWN Halo 4 numbers instead of the balanced "
                          "ones -- the same thing the run option does")
@@ -62,6 +65,8 @@ def main():
     cfg = dict(he.CONFIG)
     if a.no_balance:
         cfg['weapon_ports_balance'] = False
+    if a.no_anims:
+        cfg['weapon_ports_balance_anims'] = False
     ports = weapon_ports.active_ports(GAME, cfg)
     if not ports:
         raise SystemExit('no active Halo 3 ports in the catalog')
