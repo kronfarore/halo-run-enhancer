@@ -161,7 +161,23 @@ def retime(tag, mem, index, frames, xml):
     # fields -- the codec byte, and a float that reads 1.0 instead of 0.0. So the frames
     # can be stored RAW in the compressed slot, losslessly, with no encoder at all.
     blob = bytes(tag.data[e['at']:e['at'] + e['size']])
-    unc_header = bytearray(blob[e['frames_at'] - 32:e['frames_at']])
+    # THE SECTION HEADER IS FRAME-DEPENDENT AND MUST BE REBUILT, not copied. It carries
+    # the size of ONE node's track for each channel, and where the translations begin:
+    #
+    #   +0   codec | R<<8 | T<<16        +12  32 + 16*R*F   (translations start here)
+    #   +4   0                           +16  total size
+    #   +8   0.0 (1.0 when stored raw)   +20  16*F   +24  12*F   +28  4*F
+    #
+    # Derived exactly from (frames, R, T, S) for all seventeen of the donor's
+    # animations, so this is the format rather than a guess. Copying it verbatim is
+    # what broke the retimed reload in game: 128 frames of data read with 58-frame
+    # strides puts every node's track at the wrong offset.
+    R, T, S = e['animated']
+    trans_at = 32 + 16 * R * frames
+    total = trans_at + 12 * T * frames + 4 * S * frames
+    old_head = struct.unpack_from('<8I', blob, e['frames_at'] - 32)
+    unc_header = bytearray(struct.pack('<8I', old_head[0], 0, 0, trans_at, total,
+                                       16 * frames, 12 * frames, 4 * frames))
     raw_header = bytearray(unc_header)
     raw_header[0] = 8                                   # codec: stored raw
     struct.pack_into('<f', raw_header, 8, 1.0)
