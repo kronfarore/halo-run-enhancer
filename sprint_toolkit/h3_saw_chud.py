@@ -14,15 +14,27 @@ which is, for what it is worth, exactly what the SMG uses, the closest thing Hal
 to a high-capacity automatic.
 
 The port cannot simply have the number written into the Assault Rifle's chud, because
-they SHARE it -- the same trap that moved the Assault Rifle's magazine to 72 when the
-port's was written. So the chud is cloned and the weapon repointed, exactly like the
-projectile and the damage effect, and the threshold itself is a balance row applied to
-the port's own tag at patch time.
+they SHARE it -- the same trap that moved the Assault Rifle's magazine to 72. So the chud
+is cloned and the weapon repointed, exactly like the projectile and the damage effect.
+
+AND THE CLONE MUST DIFFER BEFORE THE BUILD. A byte-identical copy is deduplicated by the
+cache builder onto its donor's blocks, so the clone alone is not enough: the first build
+came out with the port's chud SHARING the Assault Rifle's, and writing one moved the
+other. Measured, not guessed -- h3_saw_deploy.py --check reported SHARED. Writing the
+threshold here is what keeps them apart, and the retimed animations are not deduplicated
+for exactly the same reason: they differ.
+
+WHERE THE FIELD IS: the chud's root struct lives in the FIRST `bdat` (a chud tag has two,
+the second under `want`), and the threshold triple -- loaded, reserve, battery -- sits at
+its `tgbl` payload + 0x14. Verified against six weapons whose values are known from the
+map: assault rifle 8, battle rifle 8, smg 18, magnum 3, sniper rifle 1, shotgun 2.
+A plain byte search does NOT work: (8, 0, 0) occurs fourteen times in the Assault Rifle's
+chud.
 
     python h3_saw_chud.py            # show what it would do
     python h3_saw_chud.py --write
 """
-import argparse, os, shutil, sys
+import argparse, os, shutil, struct, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -47,6 +59,14 @@ def threshold(donor_threshold=AR_LOADED, donor_magazine=AR_MAGAZINE,
     return int(round(donor_threshold * (float(port_magazine) / donor_magazine)))
 
 
+def threshold_offset(tag):
+    """Where Low Ammo Loaded Threshold sits: first `bdat` -> `tgbl` payload + 0x14."""
+    root = [n for n in tag.nodes() if n.parent is None and n.marker == 'tag!'][0]
+    bdat = [c for c in root.children if c.marker == 'bdat'][0]
+    tgbl = [c for c in bdat.children if c.marker == 'tgbl'][0]
+    return tgbl.payload_at + 0x14
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
@@ -69,9 +89,23 @@ def main():
     clone = h3tag.Tag(dst)
     ok, covered, total = clone.check()
     print('clone parses: %s (%d/%d bytes)' % (ok, covered, total))
+    at = threshold_offset(clone)
+    was = struct.unpack_from('<i', clone.data, at)[0]
+    struct.pack_into('<i', clone.data, at, want)
+    print('threshold at %#x: %d -> %d' % (at, was, want))
+    ok, covered, total = clone.check()
+    if not ok:
+        raise SystemExit('clone no longer spans the file -- not saved')
+    clone.save(dst)
 
     wp = os.path.join(TAGS, SAW_WEAPON + '.weapon')
     w = h3tag.Tag(wp)
+    already = [p for _o, g, p in w.references() if g == 'chdt' and p == SAW_CHUD]
+    if already:
+        # Re-running should refresh the threshold without treating "nothing left to
+        # repoint" as a failure.
+        print('weapon already points at %s' % SAW_CHUD)
+        return
     n = w.repoint(AR_CHUD, SAW_CHUD, 'chdt')
     ok, covered, total = w.check()
     print('weapon repointed %d reference(s); parses: %s (%d/%d bytes)'
