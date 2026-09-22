@@ -87,14 +87,22 @@ def groups(vals, thr=80):
 
 
 def read_stamp(data, at, x0, x1, y0, y1):
-    """One tick's alpha shape, taken from the donor sprite's first column."""
+    """One tick's full RGBA, taken from the donor sprite's first column.
+
+    The whole pixel, not just its alpha. The shipped ticks PREMULTIPLY the colour
+    channels by coverage -- an edge pixel reads (0, 2, 60, 70) and a fully covered one
+    (0, 5, 60, 255) -- so synthesising a flat (0, 5, threshold) over a copied alpha
+    gets the interior right and every antialiased edge wrong. Copying the donor's
+    pixels and overriding only the BLUE channel keeps the edges exactly as Bungie drew
+    them; blue is the threshold and is NOT premultiplied (it reads 60 even at alpha 8).
+    """
     cols = groups([max(get(data, at, cx, cy)[3] for cy in range(y0, y1))
                    for cx in range(x0, x1)])
     rows = groups([max(get(data, at, cx, cy)[3] for cx in range(x0, x1))
                    for cy in range(y0, y1)])
     ca, cb = cols[0]
     ra, rb = rows[0]
-    stamp = [[get(data, at, x0 + cx, y0 + cy)[3] for cx in range(ca, cb)]
+    stamp = [[get(data, at, x0 + cx, y0 + cy) for cx in range(ca, cb)]
              for cy in range(ra, rb)]
     return stamp, rows, len(cols)
 
@@ -138,10 +146,14 @@ def main():
         print('\n(dry run -- pass --write)')
         return
 
-    # the donor's row geometry, rebased onto the target sprite
-    row_h = (y1 - y0) // rows
+    # The donor's own row positions, not evenly divided ones: its rows sit at fixed
+    # offsets inside the sprite and matching them keeps the meter where the eye expects.
+    if len(drows) >= rows:
+        row_y = [drows[i][0] for i in range(rows)]
+    else:
+        step = (y1 - y0) // rows
+        row_y = [i * step + max(0, (step - sh) // 2) for i in range(rows)]
     use_w = min(sw, max(3, int(pitch) - 2))
-    # clear the target sprite
     for y in range(y0, y1):
         for x in range(x0, x1):
             put(tag.data, at, x, y, 0, 0, 0, 0)
@@ -150,17 +162,19 @@ def main():
         for c in range(a.cols):
             thr = a.rounds - (r * a.cols + c)
             cx = x0 + int(round(c * pitch + (pitch - use_w) / 2.0))
-            cy = y0 + r * row_h + max(0, (row_h - sh) // 2)
+            cy = y0 + row_y[r]
             for sy in range(sh):
                 for sx in range(use_w):
-                    al = stamp[sy][int(sx * sw / float(use_w))]
+                    pr, pg, _pb, al = stamp[sy][int(sx * sw / float(use_w))]
                     if not al:
                         continue
                     px, py = cx + sx, cy + sy
                     if x0 <= px < x1 and y0 <= py < y1:
-                        put(tag.data, at, px, py, TICK_RGB[0], TICK_RGB[1], thr, al)
+                        # the donor's own colour and coverage; only the threshold moves
+                        put(tag.data, at, px, py, pr, pg, thr, al)
             drawn += 1
-    print('drew %d ticks, blue %d..1' % (drawn, a.rounds))
+    print('drew %d ticks, blue %d..1, rows at y+%s'
+          % (drawn, a.rounds, row_y))
 
     # the mip that follows the base image, so the art matches if it is ever sampled
     if blob_len >= BASE + (W // 2) * (H // 2) * 4:
