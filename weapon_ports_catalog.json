@@ -835,7 +835,10 @@
      "note": "the pickup prompt's symbol. Cloned from the Assault Rifle it showed 0xE112, the Assault Rifle's own. 0xE128 is one of only two glyphs in the shared Halo 3 / ODST icon font that are weapon-shaped (123x39) and claimed by neither game -- 0xE145 is wider but ODST names it the golf club. Same either way: an icon is not a balance number."
     }
    ],
-   "anims": {}
+   "anims": {
+    "reload": 0.851562
+   },
+   "fp_animations": "objects\\weapons\\rifle\\saw\\fp\\fp_saw_*"
   }
  ]
 }
