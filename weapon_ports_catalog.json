@@ -829,10 +829,10 @@
      "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Private Use Font Icon",
      "block": null,
-     "value": 57632,
-     "original": 57632,
+     "value": 57640,
+     "original": 57640,
      "card": null,
-     "note": "DIAGNOSTIC, 2026-09-22: the gravity hammer's icon. 0xE128 looked like the Assault Rifle's in game, and its glyph IS distinct in the font (123x39 vs 155x44, different bytes) -- so either it is simply another rifle silhouette, or this field is not what draws the pickup prompt. A hammer is unmistakable, so one look settles which. Put back to a weapon icon afterwards."
+     "note": "0xE128 is one of only two unclaimed weapon-shaped glyphs in the shared Halo 3 / ODST icon font. NOTE: this field does NOT draw the pickup prompt -- proved by setting it to the gravity hammer's 0xE120 and seeing no change in game. It is kept because it is the weapon's own icon codepoint and the donor's would be wrong, but the prompt icon comes from somewhere else: most likely the chud's Sequence Index into ui\\chud\bitmaps\\weapon_scematics, which the port inherited from the Assault Rifle along with its chud."
     }
    ],
    "anims": {
