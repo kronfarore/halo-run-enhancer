@@ -23,9 +23,11 @@ HEADER = 0x40                      # where the chunk tree starts
 # either unknown that chain was rejected, so the forward scan fell through to a
 # coincidental run near the end of the file -- and then reported a complete parse.
 # Surveyed over 2000 tags (the 500 largest plus a random 1500), walking the top level of
-# every one: tag! in all, want in 974, info in 245, nothing else.
+# every one: tag! in all, want in 974, info in 245, nothing else. 'tgda' holds a block's
+# raw data (an animation's frames, for one) and is nested, so the top-level survey never
+# saw it -- without it a member chunk looks childless and its payload cannot be replaced.
 MARKERS = {'tag!', 'blay', 'bdat', 'tgst', 'tgbl', 'tgrf', 'tgsi', 'tgsr',
-           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd', 'want', 'info'}
+           'tgdt', 'tghd', 'tgcs', 'bdpd', 'tbfd', 'want', 'info', 'tgda'}
 
 
 class Node(object):
@@ -211,6 +213,30 @@ class Tag(object):
             if off + 12 == target:          # the target chunk itself
                 return out
             lo, hi = off + 12, stop
+
+    def replace_payload(self, node, blob):
+        """Swap one chunk's payload for `blob`, of any length.
+
+        The chunk's own length is rewritten and so is every ANCESTOR's, because a chunk
+        contains its children: grow a leaf and each enclosing chunk has to grow by the
+        same delta or the tree stops spanning the file. `check()` afterwards is the
+        proof. Returns the delta.
+
+        Ancestors are read off the cached tree BEFORE the data moves, since the offsets
+        of anything after this chunk shift by the delta.
+        """
+        at, old_len = node.payload_at, node.length
+        chain = []
+        up = node
+        while up is not None:
+            chain.append((up.off, up.length))
+            up = up.parent
+        delta = len(blob) - old_len
+        self.data[at:at + old_len] = bytes(blob)
+        for off, length in chain:
+            struct.pack_into('<I', self.data, off + 8, length + delta)
+        self._dirty()
+        return delta
 
     def rename_stringid(self, old, new):
         """Rename every `tgsi` string id, growing the chunk and each of its ancestors.
