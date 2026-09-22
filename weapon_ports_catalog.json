@@ -254,6 +254,15 @@
     {
      "class": "weap",
      "tag": "weapons\\saw\\saw",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 578.571429,
+     "card": "Magazine",
+     "original": 216.0
+    },
+    {
+     "class": "weap",
+     "tag": "weapons\\saw\\saw",
      "field": "Rounds Loaded Maximum",
      "block": "Magazines",
      "value": 135.0,
@@ -268,15 +277,6 @@
      "value": 135.0,
      "card": "Magazine",
      "original": 72.0
-    },
-    {
-     "class": "weap",
-     "tag": "weapons\\saw\\saw",
-     "field": "Rounds Total Maximum",
-     "block": "Magazines",
-     "value": 675.0,
-     "card": "Magazine",
-     "original": 288.0
     },
     {
      "class": "weap",
@@ -349,146 +349,391 @@
      "value": 540,
      "card": "Ammo pickup",
      "original": null
-    },
-    {
-     "class": "wphi",
-     "tag": "weapons\\saw\\saw",
-     "field": "Sequence Index",
-     "block": "Static Elements",
-     "value": 1,
-     "card": "Ammo display",
-     "original": 0
-    },
-    {
-     "class": "wphi",
-     "tag": "weapons\\saw\\saw",
-     "field": "Sequence Index",
-     "block": "Meter Elements",
-     "value": 1,
-     "card": "Ammo display",
-     "original": 0
-    },
-    {
-     "class": "wphi",
-     "tag": "weapons\\saw\\saw",
-     "field": "Alpha Multiplier",
-     "block": "Meter Elements",
-     "value": 1,
-     "card": "Ammo display",
-     "original": 3
-    },
-    {
-     "class": "wphi",
-     "tag": "weapons\\saw\\saw",
-     "field": "Alpha Bias",
-     "block": "Meter Elements",
-     "value": 1,
-     "card": "Ammo display",
-     "original": 1
-    },
-    {
-     "class": "wphi",
-     "tag": "weapons\\saw\\saw",
-     "field": "Loaded Ammo Cutoff",
-     "block": null,
-     "value": 23,
-     "card": "Ammo display",
-     "original": 12
     }
    ],
    "anims": {
     "reload": 1.28125,
     "swap": 0.971429
-   },
-   "ammo": {
-    "class": "weap",
-    "tag": "weapons\\saw\\saw",
-    "block": "Magazines/Magazines",
-    "anchor_field": "Rounds",
-    "ref_offset": 12,
-    "item_class": "eqip",
-    "default": "powerups\\assault rifle ammo\\assault rifle ammo",
-    "choices": [
-     {
-      "label": "Assault Rifle Ammo",
-      "tag": "powerups\\assault rifle ammo\\assault rifle ammo"
-     },
-     {
-      "label": "Flamethrower Ammo",
-      "tag": "powerups\\flamethrower ammo\\flamethrower ammo"
-     },
-     {
-      "label": "Needler Ammo",
-      "tag": "powerups\\needler ammo\\needler ammo"
-     },
-     {
-      "label": "Pistol Ammo",
-      "tag": "powerups\\pistol ammo\\pistol ammo"
-     },
-     {
-      "label": "Rocket Launcher Ammo",
-      "tag": "powerups\\rocket launcher ammo\\rocket launcher ammo",
-      "maps": [
-       "a30",
-       "a50",
-       "b30",
-       "b40",
-       "c10",
-       "c20",
-       "c40",
-       "d20",
-       "d40"
-      ]
-     },
-     {
-      "label": "Shotgun Ammo",
-      "tag": "powerups\\shotgun ammo\\shotgun ammo",
-      "maps": [
-       "a30",
-       "a50",
-       "b30",
-       "b40",
-       "c10",
-       "c20",
-       "c40",
-       "d20",
-       "d40"
-      ]
-     },
-     {
-      "label": "Sniper Rifle Ammo",
-      "tag": "powerups\\sniper rifle ammo\\sniper rifle ammo"
-     },
-     {
-      "label": "Active Camouflage",
-      "tag": "powerups\\active camouflage"
-     },
-     {
-      "label": "Double Speed",
-      "tag": "powerups\\double speed",
-      "maps": [
-       "b30"
-      ]
-     },
-     {
-      "label": "Health Pack",
-      "tag": "powerups\\health pack"
-     },
-     {
-      "label": "Over Shield",
-      "tag": "powerups\\over shield"
-     },
-     {
-      "label": "Frag Grenade",
-      "tag": "weapons\\frag grenade\\frag grenade"
-     },
-     {
-      "label": "Plasma Grenade",
-      "tag": "weapons\\plasma grenade\\plasma grenade"
-     }
-    ],
-    "maps_total": 10
    }
+  }
+ ],
+ "Halo 3": [
+  {
+   "weapon": "SAW",
+   "source": "Halo 4",
+   "donor": "Assault Rifle",
+   "default_on": true,
+   "desc": "SAW carried from Halo 4 into Halo 3, built on the Assault Rifle. Bullet speed is measured against the Machine Gun rather than the Assault Rifle, which is 1500 in Halo 4 and 80 here.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 10.0,
+     "card": "Magnetism",
+     "original": 9.99999970909292
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 20.0,
+     "card": "Magnetism",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Falloff Range",
+     "block": null,
+     "value": 10.0,
+     "card": "Magnetism",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 5.0,
+     "card": "Autoaim",
+     "original": 4.99999985454646
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 15.0,
+     "card": "Autoaim",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Falloff Range",
+     "block": null,
+     "value": 7.5,
+     "card": "Autoaim",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 2.0,
+     "card": "Firing Noise",
+     "original": 4.0,
+     "index": "all"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 30.0,
+     "card": "Projectile",
+     "original": 75.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 75.0,
+     "card": "Projectile",
+     "original": 300.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 75.0,
+     "card": "Projectile",
+     "original": 300.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Autoaim Leading Maximum Lead Time",
+     "block": null,
+     "value": 0,
+     "card": "Projectile",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 5.0,
+     "card": "Projectile",
+     "original": 5.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile",
+     "original": 10.0
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 0.0,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 7.5,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\damage_effects\\saw_bullet_h4_original_numbers",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 7.5,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0.0,
+     "card": "Zoom",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0.0,
+     "card": "Zoom",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Weapon Zoom Time",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 129.6,
+     "card": "Magazine",
+     "original": 216.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 339.428571,
+     "card": "Magazine",
+     "original": 216.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 72.0,
+     "card": "Magazine",
+     "original": 72.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 72.0,
+     "card": "Magazine",
+     "original": 72.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 20.0,
+     "card": "More Shooting",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 20.0,
+     "card": "More Shooting",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 0,
+     "card": "More Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 0,
+     "card": "More Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "More Shooting",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.0,
+     "card": "Fire Recovery Time",
+     "original": 0.06666667014360428
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0.1,
+     "card": "Error Angle",
+     "original": 0.0,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.2,
+     "card": "Error Angle",
+     "original": 0.29999999767609,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 3.4375,
+     "card": "Error Angle",
+     "original": 2.750000005377918,
+     "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 411.428571,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ],
+   "anims": {}
   }
  ]
 }

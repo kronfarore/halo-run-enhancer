@@ -6778,8 +6778,12 @@ def apply_weapon_ports(m, game, registry, ports):
                 continue
             # 'set', not '=': apply_field takes the INTERNAL operator name (the signs are
             # what card text is written in, and are normalized on the way in).
+            # `nth` matters from Halo 2 on: those games declare the barrel fields
+            # twice (dual-wield set first), so a row without it would patch the dead
+            # copy -- the same trap the cards had.
             res = m.apply_field(row['class'], row['tag'], row['field'], 'set', row['value'],
-                                plugin, row.get('block'), row.get('index', 0) or 0)
+                                plugin, row.get('block'), row.get('index', 0) or 0,
+                                nth=row.get('nth', 0) or 0)
             ok = [r for r in res if r.get('ok')]
             wrote += len(ok)
             missing += len(res) - len(ok)
