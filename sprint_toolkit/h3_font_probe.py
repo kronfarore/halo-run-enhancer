@@ -87,8 +87,18 @@ def build(images):
 
 
 def cleanup():
+    """Undo everything a probe build leaves behind, including the part that bites.
+
+    `windows-font-from-settings` writes the .font tag it builds into "your working
+    folder", which for this pipeline means maps\fonts\icon\ -- a directory that does not
+    otherwise exist. Leaving it there makes `tool build-cache-file` DIE in globals
+    postprocessing after about 23 seconds, and it exits 0 while doing so, so the only
+    symptoms are a map whose timestamp never moved and a tail that says nothing useful.
+    Two rebuilds were thrown away to that before the stray directory was found.
+    """
     shutil.rmtree(os.path.join(EK, DATA), ignore_errors=True)
     shutil.rmtree(os.path.join(EK, TAGS), ignore_errors=True)
+    shutil.rmtree(os.path.join(EK, 'maps', 'fonts', 'icon'), ignore_errors=True)
     for p in (SETTINGS, TABLE, PKG):
         if os.path.exists(os.path.join(EK, p)):
             os.remove(os.path.join(EK, p))
