@@ -10337,10 +10337,10 @@ class OptionsDialog(QDialog):
                 st = (self._ports.get(game) or {}).get(port.get('weapon')) or {}
                 cb.setChecked(bool(st.get('enabled', port.get('default_on', False))))
                 cb.setToolTip(port.get('desc') or '')
-                f.addRow("Port:", cb)
                 self._ports_boxes[(game, port.get('weapon'))] = cb
                 ammo = port.get('ammo') or {}
                 if not ammo:
+                    f.addRow("Port:", cb)
                     continue
                 # Which ammo pickup the port's magazines accept. A port has no pickup
                 # item of its own (the SAW's home game has no ammo pickups at all), so
@@ -10371,7 +10371,25 @@ class OptionsDialog(QDialog):
                     "other item of this game works too, and (none) leaves it with what "
                     "it spawns with.\n\nHow MUCH a pickup gives is the port's own "
                     "number, and moves with the balance." % port.get('donor'))
-                f.addRow("Ammo pickup:", combo)
+                # Beside the checkbox, not under it: the pickup belongs to THIS port, and
+                # a row of its own reads like a separate option for the whole game.
+                row = QWidget()
+                rl = QHBoxLayout(row)
+                rl.setContentsMargins(0, 0, 0, 0)
+                rl.addWidget(cb)
+                lbl = QLabel("Ammo pickup:")
+                lbl.setToolTip(combo.toolTip())
+                rl.addSpacing(12)
+                rl.addWidget(lbl)
+                rl.addWidget(combo, 1)
+                # tune_combo sizes the box to its widest label, which on a shared row
+                # pushes the page into a horizontal scrollbar. Let the BOX shrink and
+                # give the popup the width instead, so the long labels stay readable.
+                view_w = combo.minimumWidth()
+                combo.setMinimumWidth(0)
+                combo.setMaximumWidth(340)
+                combo.view().setMinimumWidth(view_w)
+                f.addRow("Port:", row)
                 self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
 
