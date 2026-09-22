@@ -40,6 +40,8 @@ W, H = 1024, 512
 BASE = W * H * 4
 DONOR_SPRITE = 10          # the SMG's 20x3, whose tick shape is copied
 TICK_RGB = (0, 5)          # red, green -- blue is the threshold
+EDGE = 2                   # alpha above which a pixel counts as part of a tick
+MARGIN = 4                 # dead border Bungie leaves around every sprite's threshold field
 
 
 def pixels(tag):
@@ -95,11 +97,16 @@ def read_stamp(data, at, x0, x1, y0, y1):
     gets the interior right and every antialiased edge wrong. Copying the donor's
     pixels and overriding only the BLUE channel keeps the edges exactly as Bungie drew
     them; blue is the threshold and is NOT premultiplied (it reads 60 even at alpha 8).
+
+    The bands are found with a near-zero alpha threshold, not a comfortable one. A tick
+    is hard edged left and right but SOFT top and bottom -- the SMG's runs
+    8, 70, 132, 173, 218, 238, 255 -- so cutting the band at alpha 80 throws the
+    antialiasing away and stamps a tick with raw stair-stepped edges.
     """
     cols = groups([max(get(data, at, cx, cy)[3] for cy in range(y0, y1))
-                   for cx in range(x0, x1)])
+                   for cx in range(x0, x1)], EDGE)
     rows = groups([max(get(data, at, cx, cy)[3] for cx in range(x0, x1))
-                   for cy in range(y0, y1)])
+                   for cy in range(y0, y1)], EDGE)
     ca, cb = cols[0]
     ra, rb = rows[0]
     stamp = [[get(data, at, x0 + cx, y0 + cy) for cx in range(ca, cb)]
@@ -137,7 +144,10 @@ def main():
         raise SystemExit('%d does not divide into %d columns' % (a.rounds, a.cols))
     print('target sprite #%d: %d,%d %dx%d -> %d cols x %d rows = %d ticks'
           % (a.sprite, x0, y0, x1 - x0, y1 - y0, a.cols, rows, a.rounds))
-    pitch = (x1 - x0) / float(a.cols)
+    # the grid is inset by the same dead margin Bungie leaves, so that every tick sits
+    # inside its own threshold cell rather than straddling the sprite's edge
+    span = (x1 - x0) - 2 * MARGIN
+    pitch = span / float(a.cols)
     print('   pitch %.1f px (donor %.1f), tick %d px wide' % (pitch, (dx1 - dx0) / float(dcols), sw))
     if pitch < sw:
         print('   tick is wider than the pitch; it will be narrowed to %d px' % int(pitch) - 1)
@@ -157,11 +167,37 @@ def main():
     for y in range(y0, y1):
         for x in range(x0, x1):
             put(tag.data, at, x, y, 0, 0, 0, 0)
-    drawn = 0
+
+    # THE THRESHOLD FIELD FIRST, AND IT IS CONTINUOUS.
+    #
+    # Blue is not a property of the tick, it is a property of the CELL: in the shipped
+    # sheets it runs as an unbroken staircase across the whole sprite, so the blank gap
+    # between two ticks carries the same threshold as the tick beside it. The Assault
+    # Rifle reads 32 for seventeen columns, then 31 for nineteen, with no zero anywhere.
+    #
+    # Painting blue only where a tick is opaque -- which is what this did -- leaves 0 in
+    # every gap, and 0 means "this pixel is still loaded". The HUD samples the sheet
+    # filtered, so each tick's outer rim mixes its own threshold with the 0 beside it and
+    # keeps drawing as full after the tick itself has emptied. That is an OUTLINE around
+    # spent ticks, travelling with the full/empty boundary as the magazine drains, and it
+    # is exactly what the vanilla weapons do not do.
+    bands = [row_y[r] - 2 for r in range(rows)]
+    bands[0] = MARGIN
+    bands.append(y1 - y0 - MARGIN)
+    edges = [MARGIN + int(round(c * pitch)) for c in range(a.cols)]
+    edges.append(MARGIN + span)
     for r in range(rows):
         for c in range(a.cols):
             thr = a.rounds - (r * a.cols + c)
-            cx = x0 + int(round(c * pitch + (pitch - use_w) / 2.0))
+            for y in range(bands[r], bands[r + 1]):
+                for x in range(edges[c], edges[c + 1]):
+                    i = at + ((y0 + y) * W + x0 + x) * 4
+                    tag.data[i] = thr              # blue only; alpha stays 0
+
+    drawn = 0
+    for r in range(rows):
+        for c in range(a.cols):
+            cx = x0 + edges[c] + int(round((edges[c + 1] - edges[c] - use_w) / 2.0))
             cy = y0 + row_y[r]
             for sy in range(sh):
                 for sx in range(use_w):
@@ -170,11 +206,14 @@ def main():
                         continue
                     px, py = cx + sx, cy + sy
                     if x0 <= px < x1 and y0 <= py < y1:
-                        # the donor's own colour and coverage; only the threshold moves
-                        put(tag.data, at, px, py, pr, pg, thr, al)
+                        # the donor's own colour and coverage over the field's threshold
+                        i = at + (py * W + px) * 4
+                        tag.data[i + 1], tag.data[i + 2], tag.data[i + 3] = pg, pr, al
             drawn += 1
-    print('drew %d ticks, blue %d..1, rows at y+%s'
+    print('drew %d ticks, blue %d..1 as a continuous field, rows at y+%s'
           % (drawn, a.rounds, row_y))
+    print('   tick stamp %dx%d, top edge alpha %s'
+          % (sw, sh, [p[3] for p in (stamp[0][sw // 2], stamp[1][sw // 2])]))
 
     # the mip that follows the base image, so the art matches if it is ever sampled
     if blob_len >= BASE + (W // 2) * (H // 2) * 4:
