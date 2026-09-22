@@ -4,63 +4,29 @@ Step 9 needs an animation made LONGER -- the cloned graph holds the Assault Rifl
 58-frame reload and the SAW wants 109 -- and nothing short of rebuilding the frames will
 do it (see h3_anim_inspect.py for the shortcuts that were ruled out).
 
-WHAT IS PROVEN HERE
--------------------
-Each animation is one "resource member" declaring seven sections, whose sizes the tag
-reports: static_node_flags, animated_node_flags, movement_data, pill_offset_data,
-default_data, uncompressed_data and compressed_data.
-
-The important one is a law that holds EXACTLY for all seventeen animations in the
-Assault Rifle's first-person graph:
-
-    uncompressed_data == 32 + frame_count * stride
-
-   member  frames  uncompressed   stride          member  frames  uncompressed  stride
-        0       5           512       96               9      90         30272     336
-        3     100         14432      144              10     109         38400     352
-        4      30         14432      480              12      20          6512     324
-        5      30         14912      496              13      58         27408     472
-        6      20          1952       96              15      41         15776     384
-
-That is the whole point: the uncompressed form is a 32-byte header followed by one
-fixed-size record per FRAME. Resampling is then interpolation between records rather
-than a codec problem, and the tag carries the uncompressed size alongside the compressed
-one -- so the poses may be readable without touching the compression at all.
-
-The stride is per animation because it depends on how many nodes move: the two 24-byte
-flag fields are three 64-bit masks each (rotation / translation / scale, static and
-animated), which is enough for the graph's 43 nodes.
+THE SECTION SIZES
+-----------------
+Each animation is one "resource member" declaring seven section sizes:
+static_node_flags, animated_node_flags, movement_data, pill_offset_data, default_data,
+uncompressed_data and compressed_data.
 
 WHERE THE BLOBS ARE
 -------------------
-Each animation is its own `tgst` chunk, and the chunk is always exactly 24 bytes longer
-than the sum of its declared sections -- which turned out to be two chunk headers rather
-than any member fields: an EMPTY `tgst` (length 0), then a `tgda` whose length equals the
-section sum exactly. Verified for all seventeen animations, so the sections begin at
-`payload_at + 24` and `tgda`'s length is the check that the member was found.
+Each animation is its own `tgst` chunk, always exactly 24 bytes longer than the sum of
+its sections -- two chunk headers: an EMPTY `tgst` (length 0), then a `tgda` whose
+length equals the section sum exactly. That equality is the proof a member was found,
+and it holds for all seventeen. Sections begin at `payload_at + 24`.
 
-Searching for the blobs as a flat run of members from the start of `bdat` never worked
-because they are not laid out that way: they are chunks in the tree, one per animation,
-under the resource-members block.
+They are NOT a flat run inside `bdat`; they are chunks in the tree, one per animation.
 
-THE BLOB STARTS WITH A DESCRIPTOR, NOT BITMASKS
------------------------------------------------
-The tag lists the section SIZES in a `data sizes` struct, and it is tempting to read the
-blob in that order -- 24 bytes of static node flags, then 24 animated. That is wrong. The
-first 24 bytes are a descriptor of six u32s, and one of them settles it:
-
-    u32 at +16 == default_data - 4        exactly, for all seventeen animations
-    (360/356, 312/308, 144/140, 136/132, 216/212, 232/228, 168/164, 192/188, ...)
-
-A bitmask cannot track a section size like that. The other fields fit a descriptor too:
-+0 packs four small bytes, `01 <n> <m> 01`, where n runs 11..33 and m is 1, 3 or 5; +12
-is a second offset sitting either 16 or 64 below default_data.
-
-The earlier reading looked plausible because the first 24 bytes DO parse as three 64-bit
-masks with every bit below the skeleton's 43 nodes. What killed it: animations with
-identical popcounts there have completely different strides (five share [6,3,4] while
-their strides are 96, 96, 96, 336 and 352), so whatever those bytes are, they are not
-what sizes the per-frame record. The skeleton really is 43 nodes, checked in the graph.
+DEFAULT_DATA COMES FIRST, AND DESCRIBES ITSELF
+----------------------------------------------
+It opens with a 32-byte header:
+    +0   `01 n m 01` -- n static rotations, m static translations, one scale
+    +12  8 * (n + 4), the offset to the translations
+    +16  default_data - 4, the offset to the scale
+so `default_data == 32 + 8n + 12m + 4`, exact for every animation. Its rotations are the
+only quantised thing in the format: 8-byte int16 quaternions over 32767.
 
 THE LAYOUT, CRACKED
 -------------------
