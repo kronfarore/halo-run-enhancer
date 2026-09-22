@@ -43,13 +43,24 @@ Searching for the blobs as a flat run of members from the start of `bdat` never 
 because they are not laid out that way: they are chunks in the tree, one per animation,
 under the resource-members block.
 
-WHAT IS NOT SETTLED
--------------------
-The ORDER of the sections inside the blob. Reading the first 24 bytes as
-static_node_flags gives `01 <n> <m> 01` shapes rather than sparse bitmasks, and the next
-24 read as zero, so the sections are not simply in the order the tag declares their
-sizes. A 0x7fff -- a normalised int16, almost certainly a pose value -- shows up 62 bytes
-in, which suggests the default pose starts earlier than that order would put it.
+THE BLOB STARTS WITH A DESCRIPTOR, NOT BITMASKS
+-----------------------------------------------
+The tag lists the section SIZES in a `data sizes` struct, and it is tempting to read the
+blob in that order -- 24 bytes of static node flags, then 24 animated. That is wrong. The
+first 24 bytes are a descriptor of six u32s, and one of them settles it:
+
+    u32 at +16 == default_data - 4        exactly, for all seventeen animations
+    (360/356, 312/308, 144/140, 136/132, 216/212, 232/228, 168/164, 192/188, ...)
+
+A bitmask cannot track a section size like that. The other fields fit a descriptor too:
++0 packs four small bytes, `01 <n> <m> 01`, where n runs 11..33 and m is 1, 3 or 5; +12
+is a second offset sitting either 16 or 64 below default_data.
+
+The earlier reading looked plausible because the first 24 bytes DO parse as three 64-bit
+masks with every bit below the skeleton's 43 nodes. What killed it: animations with
+identical popcounts there have completely different strides (five share [6,3,4] while
+their strides are 96, 96, 96, 336 and 352), so whatever those bytes are, they are not
+what sizes the per-frame record. The skeleton really is 43 nodes, checked in the graph.
 
     python h3_anim_decode.py --tree            # the real chunk tree
     python h3_anim_decode.py --sizes           # the section table and the stride law
@@ -138,6 +149,21 @@ def blobs(tag, mem):
     return out
 
 
+def header(tag, mem):
+    """The 24-byte descriptor each blob opens with, against the declared sizes."""
+    print('%-5s %-12s %-9s %-9s %-9s %s'
+          % ('anim', '+0', '+4/+8', '+12', '+16', 'default_data  (+16 == default-4?)'))
+    exact = 0
+    for e in blobs(tag, mem):
+        f = struct.unpack_from('<6I', tag.data, e['at'])
+        hit = f[4] == e['default_data'] - 4
+        exact += hit
+        print('%-5d %#-12x %-9s %-9d %-9d %-13d %s'
+              % (e['index'], f[0], '%d/%d' % (f[1], f[2]), f[3], f[4],
+                 e['default_data'], 'yes' if hit else 'NO'))
+    print('\n+16 == default_data - 4 for %d of %d animations' % (exact, len(mem)))
+
+
 def scan(d, mem, lo, hi):
     """Look for a start where every member's flag fields read as real flags: sparse, and
     with no bit set above the graph's node count."""
@@ -174,13 +200,14 @@ def main():
     ap.add_argument('--sizes', action='store_true')
     ap.add_argument('--scan', action='store_true')
     ap.add_argument('--blobs', action='store_true')
+    ap.add_argument('--header', action='store_true')
     a = ap.parse_args()
 
     d = io.open(a.tag, 'rb').read()
     print('%s  %d bytes\n' % (os.path.basename(a.tag), len(d)))
-    if a.tree or not (a.sizes or a.scan or a.blobs):
+    if a.tree or not (a.sizes or a.scan or a.blobs or a.header):
         tree(d)
-    if not (a.sizes or a.scan or a.blobs):
+    if not (a.sizes or a.scan or a.blobs or a.header):
         return
     if not a.xml or not os.path.exists(a.xml):
         raise SystemExit('--sizes and --scan need --xml from tool export-tag-to-xml')
@@ -198,6 +225,10 @@ def main():
                   % (e['index'], e['chunk'], e['at'], e['tgda'], e['size'],
                      'ok' if e['ok'] else 'MISMATCH'))
         print('\n%d of %d animations located' % (sum(e['ok'] for e in got), len(mem)))
+    if a.header:
+        sys.path.insert(0, HERE)
+        import h3tag
+        header(h3tag.Tag(a.tag), mem)
     if a.scan:
         scan(d, mem, HEADER, min(len(d) - sum(e['size'] for e in mem), 0x8000))
 
