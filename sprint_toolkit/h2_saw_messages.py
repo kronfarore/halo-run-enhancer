@@ -120,22 +120,35 @@ def prompt_sets(data, glyph=None):
             {k: v[1] for k, v in seen.items() if len(v) > 1})
 
 
-def repoint(data, which, old=None, new=None):
-    """Move one set of prompts onto the port's own glyph, in place."""
+#: Which of the two sets each prompt belongs to, settled one look at a time. They are NOT
+#: one weapon per set: the ground pickup is the donor's in set A, and the ally trade is
+#: not -- so the two weapons' prompts are interleaved in the file and only the game can
+#: say which is which.
+CHOICE = {'to pick up': 'a',        # confirmed in game: the SAW's icon appears
+          "take ally's": 'b',       # set A showed no change, so it is the other one
+          'to swap for': 'a',       # untested
+          'to switch to': 'a'}      # untested
+
+
+def repoint(data, choice=None, old=None, new=None):
+    """Move the chosen prompt of each kind onto the port's glyph, and only that one."""
     old = old if old is not None else PROMPT_GLYPH
     new = new if new is not None else PORT_GLYPH
+    choice = choice or CHOICE
     first, second = prompt_sets(data, old)
-    want = (first if which == 'a' else second)
     out = bytearray(data)
     done = []
-    for kind, at in sorted(want.items(), key=lambda kv: kv[1]):
-        raw = dict(strings(data))[at] if False else next(
-            r for o, r in strings(data) if o == at)
+    for kind, which in choice.items():
+        key = kind.encode()
+        want = (first if which == 'a' else second).get(key)
+        if want is None:
+            continue
+        raw = next(r for o, r in strings(data) if o == want)
         edited = raw.replace(chr(old).encode('utf-8'), chr(new).encode('utf-8'))
         if len(edited) != len(raw):
             raise ValueError('the glyphs differ in length; the file would move')
-        out[at:at + len(raw)] = edited
-        done.append((kind.decode(), at))
+        out[want:want + len(raw)] = edited
+        done.append((kind, which, want))
     return bytes(out), done
 
 
