@@ -331,14 +331,40 @@ What is established, for Halo 3:
   (0xE144) and `golf_club` (0xE145) sit past its end, out of alphabetical order — appended
   after the fact. The highest codepoint any font declares is 0xE151.
 
-So growing the list means writing the container instead of asking the tool to: append the
-glyph payload, add an 8-byte character map entry, and bump the font header's glyph count
-and highest codepoint. What is NOT yet established is where each table's entry count lives
-and whether lookup needs the entries sorted. Both have to be answered before a glyph can
-be ADDED rather than replaced.
+**The tables are bounded** — `h3_font_package.py --bounds` proves it and exits non-zero if
+it ever stops adding up. The file is five regions of 0xC000: region 0 is the package and
+font headers, and each of the other four opens with two u32s that bound everything in it.
 
-Until that is done a port REPLACES a codepoint, and the second port fights the first over
-the same slot. Treat the current icon as borrowed, not solved.
+    +0x00   (entry count << 16) | table offset in the block, always 8
+    +0x04   (glyph data size << 16) | glyph data offset in the block
+
+So the character map is exactly `count` entries at `block + 8`, and the payloads follow at
+`block + data offset`. A glyph's own offset is relative to the BLOCK, not to the data —
+the first one equals the data offset exactly, which is what gives it away — and the last
+ends at data offset + data size.
+
+Within a table the entries form per-font RUNS, each ascending by codepoint, and one font's
+runs may span blocks: fixedsys-hud's 144 glyphs are 34 + 69 + 41 across blocks 2, 3 and 4.
+Summed per font they come to exactly the counts the font headers declare — 24, 98, 144, 24,
+290 in all. Nothing is scattered and nothing needs a heuristic.
+
+### Adding a glyph
+
+Everything needed is now known:
+
+1. append the payload in a block that has room — used extent is data offset + data size,
+   and against the 0xC000 block that leaves **288, 32, 1088 and 5688 bytes** free in blocks
+   1 to 4, so block 4 will take several icons as it stands;
+2. insert an 8-byte entry into that block's table, inside the right font's run and in
+   ascending codepoint order;
+3. that insertion pushes the glyph data along by 8, so **every offset in that block moves
+   by 8**, and the block's own two u32s move with it;
+4. bump the font header's glyph count at +0x13C, and its highest codepoint at +0x138 if the
+   new one is higher.
+
+Until that is built a port REPLACES a codepoint, and the second port fights the first over
+the same slot. The Halo 2 side is further back: its fonts are standalone files in
+`halo2\h2_fonts\`, not a package, and nothing about them is decoded.
 
 ---
 

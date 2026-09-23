@@ -5,12 +5,19 @@ a loose file next to the game -- the same discovery that made the Halo 3 pickup 
 unfixable from the tag side (see `mcc-localization-overrides-tags`). Being loose is the
 good news: this needs no rebuild and shows on the next load.
 
-The donor's own lines are already there, and nothing else uses them, so there is nothing
-to hijack -- only to reword:
+**These lines are BORROWED, not owned.** The GPMG is a cut weapon that is meant to be
+restored one day, so its three lines belong to it and not to the port. The rule
+(`PORTING.md`, step 8) is therefore: a line that would have to be borrowed is **blanked**,
+never reworded, because a reworded line leaves the real weapon wrong for the rest of the
+game. The lines that carry a SYMBOL rather than a name -- the pickup prompt is
+`<button> to pick up <glyph>` -- already read correctly for any weapon and are left alone.
 
-    Picked up a GPMG                 ->  Picked up a SAW
-    Picked up <n> round for GPMG     ->  Picked up <n> round for SAW
-    Picked up <n> rounds for GPMG    ->  Picked up <n> rounds for SAW
+    Picked up a GPMG                 ->  (spaces)
+    Picked up <n> round for GPMG     ->  (spaces)
+    Picked up <n> rounds for GPMG    ->  (spaces)
+
+So the port says nothing when picked up, which costs nothing: the prompt carries the icon,
+and that is the part that identifies a weapon.
 
 **The file's length must never change.** Its index is a table of (hash, offset) pairs --
 7506 of them in the English file, the offsets monotonic -- so moving one byte moves every
@@ -40,7 +47,8 @@ LOC = os.path.join(MCC, 'data', 'UI', 'Localization')
 BACKUP = os.path.join('E:' + B, 'HaloBackups', 'mcc_localization')
 MAGIC = 0x90CE6B7A
 
-WAS, NOW = 'GPMG', 'SAW'
+#: The weapon whose lines these are. Every line naming it is blanked, not reworded.
+WAS = 'GPMG'
 
 
 def sections(data):
@@ -69,18 +77,14 @@ def strings(data):
 
 
 def rewrite(data):
-    """The same bytes with GPMG reworded, padded back to length with spaces."""
+    """The same bytes with every line naming the donor blanked, same length, spaces."""
     out = bytearray(data)
     changed = []
     for at, raw in strings(data):
         if WAS.encode('latin-1') not in raw:
             continue
-        new = raw.replace(WAS.encode('latin-1'), NOW.encode('latin-1'))
-        if len(new) > len(raw):
-            continue                       # never grow; there is nowhere to grow into
-        new = new + b' ' * (len(raw) - len(new))
-        out[at:at + len(raw)] = new
-        changed.append((raw.decode('utf-8', 'replace'), new.decode('utf-8', 'replace')))
+        out[at:at + len(raw)] = b' ' * len(raw)
+        changed.append((raw.decode('utf-8', 'replace'), ''))
     return bytes(out), changed
 
 
@@ -123,8 +127,8 @@ def main():
             continue
         check(before, after)
         print('   %-16s %d line(s)' % (name, len(changed)))
-        for was, now in changed:
-            print('        %-42s -> %s' % (was.strip(), now.strip()))
+        for was, _now in changed:
+            print('        %-42s -> (blank)' % was.strip())
         if a.write:
             if not os.path.exists(keep):
                 shutil.copy(path, keep)

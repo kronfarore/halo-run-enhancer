@@ -11,8 +11,8 @@ Format, as far as it is needed here:
   each font header is 0x168 bytes, laid end to end from the first triple's offset:
     +0x04 name (e.g. "icon\fixedsys-hud"), +0x138 highest codepoint, +0x13c glyph count
   the character map is a set of TABLES of 8-byte entries -- u16 codepoint, u16 font index,
-  u32 glyph data offset -- scattered through the file rather than one sorted array, which
-  is why a single sorted-run search misses most of them.
+  u32 glyph data offset. They are NOT scattered and they do not have to be searched for:
+  see `blocks_of` for where each one starts and ends, which `--bounds` proves.
 
     python h3_font_package.py                  # what the package contains
     python h3_font_package.py --free           # codepoints no Halo 3 tag claims
@@ -24,6 +24,79 @@ MCC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONTS = os.path.join(os.path.dirname(MCC), 'halo3', 'maps', 'fonts')
 PKG = 'font_package_icon.bin'
 ENTRY = 8
+
+
+#: The file is five regions of 0xC000. Region 0 is the package and font headers; each of
+#: the other four opens with two u32s that bound everything inside it:
+#:
+#:     +0x00   (entry count << 16) | table offset within the block, always 8
+#:     +0x04   (glyph data size << 16) | glyph data offset within the block
+#:
+#: so the character map is exactly `count` entries at `block + 8`, and the glyph payloads
+#: follow at `block + data offset`. A glyph's own offset is relative to the BLOCK, not to
+#: the data -- the first one equals the data offset exactly, which is what gives it away --
+#: and the last of them ends at data offset + data size. Nothing is scattered and nothing
+#: needs a heuristic.
+#:
+#: Within a table the entries are grouped into per-font RUNS, each ascending by codepoint,
+#: and a font's runs may span several blocks -- fixedsys-hud's 144 glyphs are 34 + 69 + 41
+#: across blocks 2, 3 and 4. Summed per font they come to the glyph counts the font headers
+#: declare, 24 + 98 + 144 + 24 = 290, which is what `--bounds` checks.
+BLOCK = 0xC000
+
+
+def blocks_of(d):
+    """(block start, entry count, table offset, data offset, data size) per block."""
+    out = []
+    for base in range(BLOCK, len(d), BLOCK):
+        a, b = struct.unpack_from('<II', d, base)
+        out.append((base, a >> 16, a & 0xFFFF, b & 0xFFFF, b >> 16))
+    return out
+
+
+def runs_in(d, base, count, table):
+    """The per-font runs of one block's table, each ascending by codepoint."""
+    ents = [struct.unpack_from('<HHI', d, base + table + k * 8) for k in range(count)]
+    runs, cur = [], [ents[0]] if ents else []
+    for e in ents[1:]:
+        if e[1] == cur[-1][1] and e[0] > cur[-1][0]:
+            cur.append(e)
+        else:
+            runs.append(cur)
+            cur = [e]
+    if cur:
+        runs.append(cur)
+    return runs
+
+
+def bounds(d):
+    """Print the whole container's layout and check it adds up. True if it does."""
+    _magic, fonts = fonts_in(d)
+    per_font = {}
+    total = 0
+    for base, count, table, data, size in blocks_of(d):
+        print('block 0x%06X  %3d entries at +0x%X   glyph data +0x%X, %d bytes'
+              % (base, count, table, data, size))
+        if data + size > BLOCK or base + BLOCK > len(d):
+            print('   the glyph data does not fit inside its own block')
+            return False
+        for run in runs_in(d, base, count, table):
+            fi = run[0][1]
+            per_font[fi] = per_font.get(fi, 0) + len(run)
+            print('   font %d  %3d entries  cp 0x%04X..0x%04X  offsets %d..%d'
+                  % (fi, len(run), run[0][0], run[-1][0], run[0][2], run[-1][2]))
+            if not (data <= run[0][2] and run[-1][2] < data + size):
+                print('   an offset falls outside the glyph data of this block')
+                return False
+        total += count
+    ok = True
+    for i, (name, declared, _top) in enumerate(fonts):
+        got = per_font.get(i, 0)
+        print('%-24s header says %3d glyphs, the tables hold %3d   %s'
+              % (name, declared, got, 'ok' if got == declared else 'MISMATCH'))
+        ok &= got == declared
+    print('%d entries in total' % total)
+    return ok
 
 
 def fonts_in(d):
@@ -126,6 +199,8 @@ def glyphs(d):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--package', default=PKG)
+    ap.add_argument('--bounds', action='store_true',
+                    help='where every table starts and ends, and whether it adds up')
     ap.add_argument('--free', action='store_true',
                     help='cross-check against what the Halo 3 campaign claims')
     a = ap.parse_args()
@@ -150,6 +225,10 @@ def main():
     print('\n%d private-use codepoints with a glyph:' % len(pua))
     for i in range(0, len(pua), 12):
         print('   ' + ' '.join('%04x' % c for c in pua[i:i + 12]))
+
+    if a.bounds:
+        print()
+        sys.exit(0 if bounds(d) else 1)
 
     if not a.free:
         return
