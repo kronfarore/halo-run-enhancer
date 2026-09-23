@@ -363,15 +363,23 @@ Everything needed is now known:
    new one is higher.
 
 `h3_font_add.py` does it, and `h3_weapon_glyph.py` calls it whenever the codepoint it is
-asked for does not exist yet. The SAW now owns **0xE151** — the first free one above the
-0xE150 the package tops out at — in all three resolutions, and 0xE128, which it used to
-borrow, is byte-identical to Bungie's again.
+asked for does not exist yet. The SAW now owns **0xE06A** in all three resolutions, and
+0xE128, which it used to borrow, is byte-identical to Bungie's again.
 
-One thing the first attempt got wrong: a font's entries are NOT one run. `fixedsys-hud`'s
-live in a dozen blocks, each ascending on its own, and the block holding its highest glyph
-is usually its fullest — 344 bytes free in the x2 package against the 1768 a glyph needs.
-A new codepoint may follow ANY run whose last codepoint is below it, so the rule is to
-take the run ending highest that still has room.
+**The rule, which cost two goes to get right: a new entry goes in its SORTED position.**
+A font's entries are not one run — `fixedsys-hud`'s live in a dozen blocks — but they must
+read as ONE ascending list across the package. Inserting after whichever run had room keeps
+that run ascending and breaks the font: 0xE151 after the run ending 0xE069 made the font
+read `... 0xE069, 0xE151, 0xE070 ...`, and a lookup that assumes a sorted list stops
+finding things. The x1 package was fine because there it landed above the font's highest,
+so one package of three was right and two were not — and the pickup and ally-trade prompts
+drew no icon at all while the player's inventory icon, which is not a font glyph, kept
+working. That is the shape of the bug to expect here.
+
+So: insert sorted, and when the block a codepoint sorts into has no room, change the
+CODEPOINT rather than the place. `h3_font_add.add()` refuses to return a package whose font
+no longer ascends. 0xE06A was chosen because it is free in all three packages AND sorts
+into a block with room in all three — confirmed in game.
 
 The Halo 2 side is further back: its fonts are standalone files in `halo2\h2_fonts\`, not
 a package, and nothing about them is decoded.
