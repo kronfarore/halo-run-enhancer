@@ -60,6 +60,21 @@ PART_MATERIAL = {0: None, 1: 'saw_gun', 2: None, 3: 'saw_display'}
 #: LIFT=None measures it from the two files; a number overrides.
 LIFT = None
 
+#: How far BELOW the bore the barrel marker goes, and why it is not zero.
+#:
+#: The first look in game said the muzzle flash sat above the muzzle. The marker was not
+#: the problem -- measured, it is 0.07 units off the centre of the port's own barrel
+#: opening, which is as close as the art allows. The effect is. The port borrows the
+#: SMG's firing effect, and Bungie's SMG carries its barrel marker **1.40 units below its
+#: own bore** (marker z 2.65, bore centre 4.04), so the particles are authored to draw
+#: that far above where they are emitted. Hang that effect off a marker that IS on the
+#: bore and the flash floats.
+#:
+#: So the port adopts the donor effect's convention instead of fighting it. The bullet
+#: then leaves 1.4 units under the bore as well -- 0.014 world units, and exactly what
+#: every SMG round in Halo 2 already does.
+MUZZLE_DROP = 1.40
+
 #: GPMG marker -> the SAW marker it should move to. Everything else keeps the GPMG's
 #: position: the hands because the animation places them, `ground point` because it is
 #: where the dropped weapon rests and belongs to the world, not to the model.
@@ -142,6 +157,8 @@ def convert(rm, template, node_map, lift=0.0):
         pos = mk.pos
         if src_mk:
             pos = tuple(src_mk['pos'][k] * UNITS * SCALE + anchor[k] for k in range(3))
+            if mk.name == 'primary_trigger':
+                pos = (pos[0], pos[1], pos[2] - MUZZLE_DROP)
         out.markers.append(h2_jms.Marker(mk.name, mk.node, mk.rot, pos, mk.radius))
     return out
 

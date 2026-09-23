@@ -251,6 +251,35 @@ Four things that bite:
   is a string id length or a block count, which stops the tag loading. Probing the real
   tag destroyed one when an interrupted run could not write its restore back.
 
+### Steps 6 and 7, ammo pickup and the HUD readout
+
+**Step 6 is n/a in Halo 2**, as in Halo 3: there are no ammo items, you top up from
+dropped weapons. A Halo 2 weapon's nested `magazines` block is the physical magazine
+thrown out during a reload, not a pickup -- the SMG and shotgun use it, the GPMG does not.
+
+**Step 7.** `h2_saw_meter.py`. Halo 2 draws the ammo readout as ONE bitmap of tick art,
+revealed as the magazine empties, so the tick count is purely a property of the art.
+Bungie's, measured:
+
+    battle_rifle_meter  197x34   2 rows of 18 = 36   tick 6px wide, row pitch 17
+    smg_meter           198x42   3 rows of 20 = 60   tick 6px wide, row pitch 14
+
+The tick is **6 pixels wide in both**; the magazine changes the rows and their spacing.
+Keep the donor's canvas so the widget does not move, lift the tick sprite and the cyan to
+green ramp out of the donor's own meter, and only the row pitch changes.
+
+Give the port its **own HUD**: clone the donor's `new_hud_definition` and repoint the
+weapon at it, so the donor's stays as Bungie left it.
+
+### A borrowed effect brings its own conventions
+
+Worth knowing before borrowing any effect. The port's muzzle flash sat above the muzzle,
+and the marker was not at fault -- it measured 0.07 units off the centre of the barrel
+opening. Bungie's SMG carries its barrel marker **1.40 units BELOW its own bore**, so the
+SMG's firing effect is authored to draw that far above where it is emitted. Hung off a
+marker that is actually on the bore, it floats. Measure the donor's marker against the
+donor's bore, and adopt the difference.
+
 ### Editing tags
 
 There is no XML importer, so tag edits are byte edits. A tag reference is 16 bytes with
