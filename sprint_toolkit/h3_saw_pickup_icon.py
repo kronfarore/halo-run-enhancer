@@ -86,8 +86,6 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--glyph', type=lambda v: int(v, 0), default=DEFAULT_GLYPH)
-    ap.add_argument('--name', default='SAW',
-                    help="what the port calls itself in 'Picked up a ...'")
     ap.add_argument('--scratch', default=os.environ.get('TEMP', '.'))
     a = ap.parse_args()
 
@@ -144,47 +142,13 @@ def main():
         u.data[i:i + len(old)] = new
         hits += 1
         start = i + len(new)
-    # 3. the donor's NAME, which is text and not an icon.
-    #
-    # `picked up msg` is not a prompt with a picture, it reads "Picked up an Assault
-    # Rifle" -- so moving it to the automag's makes the port announce itself as "Picked
-    # up an Automag", along with two ammo lines. Three strings carry the word; each is
-    # rewritten in place and shortened, which is safe because only bytes inside one
-    # NUL-terminated string move and every other string keeps its offset.
-    named = 0
-    want, call = b'Automag', a.name.encode('utf-8')
-    if len(call) > len(want):
-        raise SystemExit('%r is longer than %r; the blob would have to grow' % (a.name, 'Automag'))
-    while True:
-        i = bytes(u.data).find(want, at, at + blob_len)
-        if i < 0:
-            break
-        end = bytes(u.data).find(b'\0', i)
-        tail = bytes(u.data[i + len(want):end])
-        u.data[i:i + len(call)] = call
-        u.data[i + len(call):i + len(call) + len(tail)] = tail
-        cut = i + len(call) + len(tail)
-        u.data[cut:end + 1] = b'\0' * (end + 1 - cut)
-        named += 1
-    # and the article with it, or the port reads "Picked up an SAW"
-    art = 0
-    if a.name[:1].upper() not in 'AEIOU':
-        while True:
-            i = bytes(u.data).find(b'an ' + call, at, at + blob_len)
-            if i < 0:
-                break
-            end = bytes(u.data).find(b'\0', i)
-            # the 'a' at i stays put and everything from the space onward slides one
-            # left; shifting from i eats the article and leaves "Picked up n SAW"
-            tail = bytes(u.data[i + 2:end])
-            u.data[i + 1:i + 1 + len(tail)] = tail
-            cut = i + 1 + len(tail)
-            u.data[cut:end + 1] = b'\0' * (end + 1 - cut)
-            art += 1
-    print('messages: %d glyph(s) swapped, %d string(s) renamed to %r, %d article(s) fixed'
-          % (hits, named, a.name, art))
+    # NO NAME REWRITE HERE. The confirmation line is TEXT, and MCC takes its text
+    # from data\UI\Localization, not from this tag -- see
+    # h3_mcc_localization, which BLANKS it. A port does not need a name of its own:
+    # the prompts carry the icon, which is the part that matters, and blanking costs
+    # nothing per port where renaming would cost one donor string each.
     ok, cov, tot = u.check()
-    print('messages: parses %s (%d/%d)' % (ok, cov, tot))
+    print('messages: %d glyph(s) swapped; parses %s (%d/%d)' % (hits, ok, cov, tot))
     if not ok:
         raise SystemExit('string list not saved')
     u.save(UNIC)

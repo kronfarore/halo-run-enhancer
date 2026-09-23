@@ -70,10 +70,22 @@ def patch(d, glyph, name):
         if i < 0:
             break
         s, e = strings_at(bytes(d), i)
-        text = bytes(d[s:e]).replace(DONOR_NAME, call)
-        if name[:1].upper() not in 'AEIOU' and b'an ' + call in text:
-            text = text.replace(b'an ' + call, b'a ' + call)
-            a += 1
+        if not name:
+            # BLANK, WHICH MEANS SPACES. The confirmation line ("Picked up an Automag"
+            # and its two ammo variants) is the only per-port TEXT, and a port does not
+            # need one -- the prompts carry the icon, which is what matters. So the whole
+            # line is blanked rather than renamed, and nothing has to be written per port.
+            #
+            # It cannot be blanked by terminating it early: the index is ordinal, so the
+            # freed bytes would become empty entries and renumber every string after
+            # them. A line of spaces keeps the entry, the offsets and the length, and
+            # shows as nothing.
+            text = b''
+        else:
+            text = bytes(d[s:e]).replace(DONOR_NAME, call)
+            if name[:1].upper() not in 'AEIOU' and b'an ' + call in text:
+                text = text.replace(b'an ' + call, b'a ' + call)
+                a += 1
         # PAD WITH SPACES, NEVER WITH NUL.
         #
         # The file is indexed by ORDINAL -- the Nth NUL-terminated string -- not only by
@@ -103,7 +115,9 @@ def entries(b):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--glyph', type=lambda v: int(v, 0), default=0xE128)
-    ap.add_argument('--name', default='SAW')
+    ap.add_argument('--name', default='',
+                    help="what the port calls itself; EMPTY (the default) "
+                         "blanks the confirmation line instead of renaming it")
     ap.add_argument('--game', default='Halo3')
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--restore', action='store_true')

@@ -94,7 +94,7 @@ def art(V, idx, sw, sh):
     """Mirrored side view in the shipped palette: white, shape in alpha."""
     from PIL import ImageFilter, ImageOps
     # the same gap closing the pickup glyph gets, so the two stay one drawing
-    cov = wg.close_gaps(ImageOps.mirror(wg.silhouette(V, idx, sw, sh, margin=3)), 3)
+    cov = wg.close_gaps(ImageOps.mirror(wg.silhouette(V, idx, sw, sh, margin=3)), 5)
     solid = cov.point(lambda v: 255 if v > 128 else 0)
     inner = solid.filter(ImageFilter.MinFilter(3))
     c, s, e = cov.load(), solid.load(), inner.load()

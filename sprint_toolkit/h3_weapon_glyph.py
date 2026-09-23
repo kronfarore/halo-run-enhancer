@@ -171,6 +171,11 @@ def close_gaps(cov, k):
     same size eats the interior detail and leaves a blob, and an OPENING (which deletes
     thin things rather than joining them) leaves the whole underside ragged. Holes wider
     than k, like the trigger guard, survive untouched.
+
+    k is 5 at x1, not 3. The last strip left hanging sat under a TWO row gap -- fifteen
+    columns of it, almost exactly a tenth of the width -- and a k of 3 only bridges one.
+    k of 7 closes everything but starts eating the trigger guard, so 5 is the largest
+    that costs no interior detail, and it scales with the resolution as 4 * res + 1.
     """
     W, H = cov.size
     p = cov.load()
@@ -289,7 +294,7 @@ def main():
         res = RES.get(name, 1)
         W, H = BOX[0] * res, BOX[1] * res
         # margin 0: the shipped icons run to the edge of their box, so this does too
-        cov = close_gaps(silhouette(V, idx, W, H, margin=0), 2 * res + 1)
+        cov = close_gaps(silhouette(V, idx, W, H, margin=0), 4 * res + 1)
         px = stylise(cov)
         pay = fc.encode(px)
         if fc.decode(pay, W, H) != px:
