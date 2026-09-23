@@ -19,11 +19,17 @@ WHAT AN INSERT TOUCHES, all inside one 0xC000 block:
     the font header takes its new glyph count, its highest codepoint, its running total
     and, if this glyph is the biggest so far, its decode buffer size.
 
-Only appending ABOVE a font's existing range is allowed. The entries of one font form a
-run ascending by codepoint, and appending keeps that true without having to know whether
-the engine binary-searches it. `--check` re-runs the bounds proof afterwards.
+**A font's entries must read as ONE ascending list across the whole package**, so the new
+entry goes in its SORTED position, not merely after a run that happens to have room. That
+distinction is not academic: putting 0xE151 after the run ending 0xE069 kept that run
+ascending and broke the font, in two packages out of three, because a lookup that assumes
+one sorted list stops finding things. `add` refuses to return a package where that no
+longer holds.
 
-    python h3_font_add.py <package> --cp 0xE151 --font 2 --from <glyph.bin> --box 155x44
+If the block a codepoint sorts into has no room, the answer is a different CODEPOINT --
+one that sorts somewhere roomier -- not a different place.
+
+    python h3_font_add.py <package> --cp 0xE06A --font 2 --payload <glyph.bin> --box 155x44
 """
 import argparse
 import os
@@ -43,33 +49,59 @@ def _font_header(d, font):
     return struct.unpack_from('<I', d, 8 + font * 12)[0]
 
 
-def where(d, cp, font, need):
-    """(block base, index in its table) the new entry goes, in a block it fits in.
+def sequence(d, font):
+    """Every entry of one font, in file order, as (codepoint, block, index in its table).
 
-    A font's entries are not one run: fixedsys-hud's live in a dozen blocks, each an
-    ascending run of its own. The new codepoint may follow ANY of those runs whose last
-    codepoint is below it -- that run stays ascending either way -- and that matters,
-    because the block holding a font's highest glyph is usually its fullest. In the x2
-    package that block has 344 bytes free against the 1768 a glyph needs.
-
-    So: of the runs this codepoint could extend, take the one ending highest that still
-    has room. Falling back to a lower run costs nothing and keeps the package valid,
-    which `--bounds` then proves.
+    A font's glyphs are spread over many blocks -- fixedsys-hud's over a dozen -- and the
+    engine is entitled to assume they read as ONE ascending list. `ordered` is what proves
+    it still does.
     """
-    best = None
-    for base, count, table, data, size in fp.blocks_of(d):
-        free = fp.BLOCK - data - size
+    out = []
+    for base, count, table, _data, _size in fp.blocks_of(d):
         at = 0
         for run in fp.runs_in(d, base, count, table):
+            for k, e in enumerate(run):
+                if e[1] == font:
+                    out.append((e[0], base, at + k))
             at += len(run)
-            if run[0][1] != font or run[-1][0] >= cp or free < need:
-                continue
-            if best is None or run[-1][0] > best[2]:
-                best = (base, at, run[-1][0])
-    if best is None:
-        raise SystemExit('nowhere to put 0x%04X in font %d: no run it could extend has '
-                         '%d bytes free' % (cp, font, need))
-    return best[0], best[1]
+    return out
+
+
+def ordered(d, font):
+    """True when that font's codepoints ascend across the whole package."""
+    cps = [c for c, _b, _i in sequence(d, font)]
+    return all(a < b for a, b in zip(cps, cps[1:]))
+
+
+def where(d, cp, font, need):
+    """(block, index in its table) that keeps the font's ONE ascending list ascending.
+
+    The first version of this appended after whichever run had room, which keeps that
+    run ascending and quietly breaks the font. In the x2 package it put 0xE151 after the
+    run ending 0xE069, so the font then read ... 0xE069, 0xE151, 0xE070 ... -- and a
+    lookup that assumes one sorted list stops finding things. The x1 package was fine
+    because 0xE151 went after the font's highest, so only two of the three broke, which
+    is exactly the kind of half-failure that gets shipped.
+
+    So the position is the SORTED one, and if the block it falls in has no room the
+    answer is a different codepoint, not a different place.
+    """
+    seq = sequence(d, font)
+    if not seq:
+        raise SystemExit('font %d has no entries' % font)
+    if any(c == cp for c, _b, _i in seq):
+        raise SystemExit('font %d already draws 0x%04X' % (font, cp))
+    before = [e for e in seq if e[0] < cp]
+    if not before:
+        raise SystemExit('0x%04X is below everything font %d draws' % (cp, font))
+    _c, base, index = before[-1]
+    free = next(fp.BLOCK - data - size
+                for b, _count, _table, data, size in fp.blocks_of(d) if b == base)
+    if free < need:
+        raise SystemExit('0x%04X sorts into block 0x%06X, which has %d bytes free and '
+                         'needs %d -- pick a codepoint that sorts somewhere roomier'
+                         % (cp, base, free, need))
+    return base, index + 1
 
 
 def add(data, cp, font, payload, box, advance=None):
@@ -117,7 +149,10 @@ def add(data, cp, font, payload, box, advance=None):
     for field, delta in ((0x144, len(record)), (0x158, len(payload))):
         struct.pack_into('<I', d, off + field,
                          struct.unpack_from('<I', d, off + field)[0] + delta)
-    return bytes(d)
+    out = bytes(d)
+    if not ordered(out, font):
+        raise SystemExit('font %d no longer reads as one ascending list; refusing' % font)
+    return out
 
 
 def main():

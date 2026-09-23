@@ -47,11 +47,12 @@ MODEL_XML = os.path.join(EK, 'saw_3p_rm.xml')
 BACKUP = os.path.join('E:' + B, 'HaloBackups', 'h3_live_fonts')
 PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
             'font_package_icon_x3.bin')
-#: The port's OWN codepoint. 0xE150 is the highest the shipped package draws, so 0xE151
-#: is the first free one and nothing has to be taken from another weapon. The old value,
-#: 0xE128, was a shipped icon the SAW borrowed -- see `h3_font_add.py` for why that could
-#: only ever work once.
-GLYPH = 0xE151
+#: The port's OWN codepoint, taken from nobody. It is not the first free one: a new entry
+#: has to go in its SORTED position among its font's glyphs, and the block 0xE151 sorts
+#: into is full in the x2 and x3 packages -- 344 bytes free against the 1768 a glyph needs.
+#: 0xE06A is free in all three and sorts into a block with room in all three, which is the
+#: whole requirement. The old value, 0xE128, was a shipped icon the SAW borrowed.
+GLYPH = 0xE06A
 FONT = 2                        # iconixedsys-hud, which draws the pickup prompt
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
 RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
