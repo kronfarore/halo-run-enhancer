@@ -15,8 +15,7 @@ Each gap comes out as one of:
 import contextlib, io, json, os, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TOOL = os.path.join('C:' + os.sep, 'Program Files (x86)', 'Steam', 'steamapps', 'common',
-                    'Halo The Master Chief Collection', 'tool')
+TOOL = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, TOOL)
 os.chdir(TOOL)
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
