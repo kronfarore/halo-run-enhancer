@@ -124,10 +124,10 @@ def prompt_sets(data, glyph=None):
 #: one weapon per set: the ground pickup is the donor's in set A, and the ally trade is
 #: not -- so the two weapons' prompts are interleaved in the file and only the game can
 #: say which is which.
-CHOICE = {'to pick up': 'a',        # confirmed in game: the SAW's icon appears
-          "take ally's": 'b',       # set A showed no change, so it is the other one
-          'to swap for': 'a',       # untested
-          'to switch to': 'a'}      # untested
+CHOICE = {'to pick up': 'a',        # confirmed: the weapon on the ground
+          "take ally's": 'b',       # confirmed: taking one from an ally
+          'to switch to': 'b',      # confirmed: prompted to switch TO the SAW
+          'to swap for': 'a'}       # still untested
 
 
 def repoint(data, choice=None, old=None, new=None):
