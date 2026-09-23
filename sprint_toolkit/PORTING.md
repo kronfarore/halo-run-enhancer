@@ -151,7 +151,8 @@ format and its three traps.
 
 ## Halo 2
 
-The donor is `objects\weaponsifle\gpmg`, a **cut** Bungie LMG that is in no
+The donor is `objects\weapons
+ifle\gpmg`, a **cut** Bungie LMG that is in no
 scenario's palette but still owns its own first-person model, HUD and the full set of
 pickup message string ids. Nothing live has to be hijacked -- the ceiling the Halo 3 port
 ran into does not exist here. See `halo2-weapon-port-donor`.
@@ -159,7 +160,8 @@ ran into does not exist here. See `halo2-weapon-port-donor`.
     tool extract-render-data <render_model>     Bungie's ORIGINAL .jms, unzipped from the tag
     saw_to_jms_h2.py <storm_lmg_rm.xml>         H4 geometry onto the donor's skeleton
     h2_jms_preview.py <out.png> <jms...>        look before importing
-    tool render objects\weaponsifle\saw       and \sawp_saw
+    tool render objects\weapons
+ifle\saw       and \sawp_saw
     h2_tagref.py <tag> --set <class> <old> <new>  repoint a reference (model, weapon, ...)
 
 ### Step 1, geometry
@@ -189,6 +191,33 @@ own file rather than something reconstructed from a tag dump.
 `tool render` reports far fewer triangles than it was given (13836 -> 8361 for the SAW).
 That is welding, not loss: the surface area is **98.4%** of what went in, and the shape
 is whole. Check the area, not the count.
+
+### Step 2, textures and shaders
+
+`h2_saw_textures.py` decodes the Halo 4 maps, imports them and repoints the shaders.
+
+* **A Halo 2 bump map is a HEIGHT map**, not a normal map (`usage = height map`,
+  `bump height 4.0`). Halo 4's is tangent-space normals, so it has to be integrated back
+  into a height field -- Poisson, solved with an FFT, then high-passed, because an atlas
+  is dozens of unconnected islands and the solution drifts between them.
+* **Seed each .bitmap tag from a Bungie one.** The import keeps a tag's settings and
+  there is no way to set `usage` short of editing bytes, so a bump map created from
+  nothing is silently wrong. FORMAT is not inherited -- tool picks it from the content.
+* `p8-bump` is gone from H2EK's tool; bumps come out `x8r8g8b8`, 11 MB at 2048x1024, so
+  import the bump at **512x256**. Save the colour plate as RGB: an 8-bit 'L' TIFF
+  imports without a word of complaint.
+* **Measure the relief against the game.** Straight integration gave half Halo 2's slope
+  (std 8/12 per channel against the SMG's 21/27); a gain of 2.2 brings it to 14/22. The
+  tool prints both every run.
+* `tex_bump` cannot self-illuminate. For a glowing part, clone a shader that already
+  uses `tex_bump_illum` -- the shotgun's lit sight uses one map as both base and
+  self-illum, which is exactly a weapon's display panel.
+
+`h4_bitmap.py`'s pixel finder had a real bug, fixed here: the marker before the pixels is
+the mip chain **+8 for dxt1, +0 for a single-mip dxt5 and +16 for dxn**, and searching
+only for +8 put the SAW's normal map 196 bytes late -- mid block, decoding to noise while
+still consuming the file to its last byte, so the arithmetic looked perfect. Candidates
+are now decoded and the quietest wins.
 
 ### Editing tags
 

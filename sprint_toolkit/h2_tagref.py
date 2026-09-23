@@ -93,16 +93,21 @@ def records(data, length, cls=None):
 
 
 def pooled(data, path):
-    """Offsets where this exact path sits in the file as a null terminated string."""
-    raw = path.encode('latin-1')
+    """Offsets where this exact path sits in the file as a null terminated string.
+
+    Only the null AFTER it can be tested. A pooled path is not necessarily preceded by
+    one: in a shader the parameter's string id is pooled flush against it, so the byte
+    before the path is an ordinary letter (`...base_mapobjects\\weapons\\...`). Requiring
+    a null on both sides finds nothing at all, which is how the first attempt at this
+    silently failed.
+    """
+    raw = path.encode('latin-1') + b'\0'
     out, at = [], 0
     while True:
-        at = data.find(raw + b'\0', at)
+        at = data.find(raw, at)
         if at < 0:
             return out
-        before = data[at - 1:at]
-        if at == 0 or before == b'\0' or not PATH_OK.match(before):
-            out.append(at)
+        out.append(at)
         at += 1
 
 
@@ -129,16 +134,47 @@ def retarget(data, cls, old_path, new_path):
     return bytes(out)
 
 
-def set_reference(tag_path, cls, old_path, new_path):
-    """Repoint one reference and prove it with tool.exe, or put the tag back."""
+def retarget_all(data, cls, old_path, new_path):
+    """`data` with EVERY `cls` reference to `old_path` pointing at `new_path`.
+
+    A shader commonly names the same bitmap twice -- the shotgun's sight light is its own
+    base map and its own self-illumination map -- and then neither copy of the string can
+    be told from the other. Moving them together is well defined where moving one is not.
+    """
+    at = pooled(data, old_path)
+    mine = records(data, len(old_path), cls)
+    same_length = records(data, len(old_path))
+    if not at or len(at) != len(same_length) or len(mine) != len(at):
+        raise ValueError('%d pooled copies of %r, %d records of that length, %d of them '
+                         '%s -- not every copy is this reference'
+                         % (len(at), old_path, len(same_length), len(mine), cls))
+    new = new_path.encode('latin-1')
+    out = bytearray(data)
+    for start in reversed(at):                # from the end, so earlier offsets hold
+        out[start:start + len(old_path)] = new
+    for rec in mine:
+        struct.pack_into('<I', out, rec + 8, len(new))
+    return bytes(out)
+
+
+def set_reference(tag_path, cls, old_path, new_path, every=False):
+    """Repoint a reference and prove it with tool.exe, or put the tag back."""
     before = references(tag_path)
     if (cls, old_path) not in before:
         raise ValueError('tool.exe does not report a %s reference to %s in %s'
                          % (cls, old_path, tag_path))
+    if not every and before.count((cls, old_path)) > 1:
+        raise ValueError('%s names %s %d times; pass every=True to move them together'
+                         % (os.path.basename(tag_path), old_path,
+                            before.count((cls, old_path))))
     want = [(cls, new_path) if r == (cls, old_path) else r for r in before]
 
     original = open(tag_path, 'rb').read()
-    open(tag_path, 'wb').write(retarget(original, cls, old_path, new_path))
+    # Build the new bytes BEFORE opening the file. `open(p, 'wb').write(f(...))`
+    # truncates the moment it is evaluated, so anything f raises leaves an empty tag
+    # behind -- which is exactly how the SAW's shader got destroyed once.
+    edited = (retarget_all if every else retarget)(original, cls, old_path, new_path)
+    open(tag_path, 'wb').write(edited)
     after = references(tag_path)
     if after != want:
         open(tag_path, 'wb').write(original)
