@@ -140,6 +140,21 @@ Glyph and schematic are drawn from the port's **own geometry**, not by hand — 
 `h3_weapon_glyph.py`, which documents the model-XML traps. The glyph box **is** the
 on-screen size; borrow a shipped glyph's exact dimensions.
 
+**The rule for the TEXT: blank it, do not rename it.** A port has no lines of its own, so
+rewording one means taking a live weapon's — and that weapon is then wrong for the rest of
+the game. The lines that matter carry a SYMBOL rather than a name (the pickup prompt is
+`<button> to pick up <glyph>`), and those are already right for any weapon, because they
+never say what it is. So:
+
+* a line that would have to be **borrowed** is blanked — filled with SPACES, which keeps
+  the entry, its offset and the file's length, and shows as nothing;
+* a line that carries only a symbol is **left alone**;
+* a line the port genuinely OWNS may be reworded. That is the Halo 2 case below: the cut
+  donor came with its own three lines and nothing else uses them.
+
+Blanking by terminating the string early does NOT work — the freed bytes become new
+entries and renumber every string after them. That is the "CARNAGE REPORT" failure.
+
 ### Step 9, animation timing
 
 `h3_saw_animations.py` retimes by NAME and clones **both** graphs the weapon references
@@ -292,6 +307,38 @@ file if it did not.
 
 `tool verify-tag-load` proves nothing: it is silent for a good tag AND for one that does
 not exist.
+
+---
+
+## The icon supply, and why it has to grow
+
+A port needs a pickup glyph, and taking a shipped weapon's is only tolerable once. There
+are a limited number of icons and a great many more weapons to port, so the list has to be
+extensible or the whole pipeline has a ceiling built into it. This should have been
+settled at the end of the Halo 3 port and was not.
+
+What is established, for Halo 3:
+
+* **The official build path cannot add one.** `tool font-package` takes codepoints from a
+  name table compiled into tool.exe — alphabetical from 0xE112 — and a tif whose name is
+  not in that table aborts the run. The set of names is fixed at the tool.
+* **The container is not fixed.** `font_package_icon.bin` is four fonts and four character
+  map tables, each an array of 8-byte entries (u16 codepoint, u16 font index, u32 glyph
+  offset), at 0xC000-spaced blocks holding 92, 64, 69 and 66 entries — in blocks with room
+  for thousands. The glyph payload is a codec `h3_font_codec.py` reads and writes exactly,
+  in both directions, across all 73895 shipped glyphs.
+* **Bungie grew it themselves.** The alphabetical block starts at 0xE112, and `automag`
+  (0xE144) and `golf_club` (0xE145) sit past its end, out of alphabetical order — appended
+  after the fact. The highest codepoint any font declares is 0xE151.
+
+So growing the list means writing the container instead of asking the tool to: append the
+glyph payload, add an 8-byte character map entry, and bump the font header's glyph count
+and highest codepoint. What is NOT yet established is where each table's entry count lives
+and whether lookup needs the entries sorted. Both have to be answered before a glyph can
+be ADDED rather than replaced.
+
+Until that is done a port REPLACES a codepoint, and the second port fights the first over
+the same slot. Treat the current icon as borrowed, not solved.
 
 ---
 
