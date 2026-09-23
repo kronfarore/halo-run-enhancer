@@ -149,6 +149,62 @@ format and its three traps.
 
 ---
 
+## Halo 2
+
+The donor is `objects\weaponsifle\gpmg`, a **cut** Bungie LMG that is in no
+scenario's palette but still owns its own first-person model, HUD and the full set of
+pickup message string ids. Nothing live has to be hijacked -- the ceiling the Halo 3 port
+ran into does not exist here. See `halo2-weapon-port-donor`.
+
+    tool extract-render-data <render_model>     Bungie's ORIGINAL .jms, unzipped from the tag
+    saw_to_jms_h2.py <storm_lmg_rm.xml>         H4 geometry onto the donor's skeleton
+    h2_jms_preview.py <out.png> <jms...>        look before importing
+    tool render objects\weaponsifle\saw       and \sawp_saw
+    h2_tagref.py <tag> --set <class> <old> <new>  repoint a reference (model, weapon, ...)
+
+### Step 1, geometry
+
+Halo 2 is the **easiest of the three** to read, because `extract-render-data` hands back
+the source: the tags still carry the zipped .jms, where `extract-import-info` finds
+nothing on H4's. So the skeleton, rest pose, markers and material strings are Bungie's
+own file rather than something reconstructed from a tag dump.
+
+* **JMS 8210 is not JMS 8200.** Reclaimer writes Halo 1's, and only that, so `write_jms`
+  cannot be aimed at Halo 2: nodes carry a parent index instead of child/sibling links,
+  triangles name only a material, and there is **no REGIONS section at all** -- region and
+  permutation are parsed out of the material's second line, `(1) base gun`. `h2_jms.py`
+  implements the format and proves it, writing all four extracted files back byte for byte.
+* **Node translations are absolute**, not parent-relative as in Halo 1.
+* **JMS v is 1 - the tag's v.** Measured against the donor, not assumed.
+* Place the mesh by the donor's `right_hand` marker: the H4 weapons are authored with
+  their root bone ON the grip, so the two grips then coincide and the hand the animation
+  drives is right by construction. Scale is settled by the grip-to-foregrip span -- for
+  the SAW into the GPMG that came out at 1.0, and the left hand landed within half a unit
+  without moving a marker.
+* **Halo 2 fires from the barrel marker the weapon tag names**, and for the GPMG that is
+  `primary_trigger`, not a `muzzle_flash` -- there is no muzzle marker in the file at all.
+  It sits 32 units out, past the end of a shorter gun, so it has to be moved or the flash
+  hangs in mid air.
+
+`tool render` reports far fewer triangles than it was given (13836 -> 8361 for the SAW).
+That is welding, not loss: the surface area is **98.4%** of what went in, and the shape
+is whole. Check the area, not the count.
+
+### Editing tags
+
+There is no XML importer, so tag edits are byte edits. A tag reference is 16 bytes with
+the class 4CC REVERSED, and the path is pooled elsewhere -- and since the file is laid
+out in strict field order, a struct's paths are interleaved with its child blocks, so
+which record owns which string cannot be recovered from the bytes alone. `h2_tagref.py`
+therefore edits **by class and current path**, refuses anything ambiguous, and re-exports
+with tool.exe afterwards to prove the list changed in exactly one place, restoring the
+file if it did not.
+
+`tool verify-tag-load` proves nothing: it is silent for a good tag AND for one that does
+not exist.
+
+---
+
 ## Reading H4 source data
 
     tool export-tag-to-xml <ABSOLUTE tag path> <out.xml>
