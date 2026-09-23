@@ -49,6 +49,30 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 GLYPH = 0xE128                  # what am_pickup / am_swap point at, for the SAW
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
 
+#: Geometry to leave out of the silhouette, as world boxes
+#: (x lo, x hi, z lo, z hi, |y| limit or None).
+#:
+#: Under the SAW's barrel sit TWO sub-assemblies that are real on the model and useless
+#: on an icon. Side on at 123x39 each is a couple of pixels tall, separated from the body
+#: by a one-pixel slot, and reads as a stray line ruled under the weapon:
+#:
+#:   1. a flat FULL-WIDTH slab, 132 triangles, x 0.078..0.215, z 0.003..0.013;
+#:   2. a NARROW CENTRED rail, 94 triangles, x 0.090..0.217, z 0.010..0.021, and only
+#:      |y| <= 0.0082 where the weapon is +-0.0375 wide. That lateral limit is what makes
+#:      it separable at all: its z band overlaps the barrel, so an x/z box alone would
+#:      bite into the barrel, and the rail is told apart by being thin, not by being low.
+#:
+#: The seam under 1 is real -- there is a band at z 0.0133..0.0150 holding no vertices at
+#: all in this x range, which is where the assembly ends and the barrel begins.
+#:
+#: Dropping both leaves the barrel with a clean underside and costs no other detail.
+#: Closing the slots instead was tried and merges the whole barrel into a blob.
+#:
+#: A triangle goes only when ALL THREE of its vertices are inside one box, so a box can
+#: never punch a hole in geometry that merely passes through it.
+EXCLUDE = ((0.077, 0.216, 0.0028, 0.0132, None),
+           (0.089, 0.218, 0.0100, 0.0210, 0.009))
+
 
 def mesh(path):
     """(vertices in world units, index strip) from a render_model XML."""
@@ -86,9 +110,21 @@ def mesh(path):
     return V, idx
 
 
-def silhouette(V, idx, W, H, ss=8, margin=2):
+def dropped(V, exclude):
+    """Which vertices sit inside an exclusion box."""
+    out = set()
+    for i, v in enumerate(V):
+        for x0, x1, z0, z1, ymax in exclude:
+            if x0 <= v[0] <= x1 and z0 <= v[2] <= z1 and (ymax is None or abs(v[1]) <= ymax):
+                out.add(i)
+                break
+    return out
+
+
+def silhouette(V, idx, W, H, ss=8, margin=2, exclude=EXCLUDE):
     """Coverage of an orthographic side view -- x across, z up -- antialiased."""
     from PIL import Image, ImageDraw
+    skip = dropped(V, exclude) if exclude else set()
     a = [v[0] for v in V]
     b = [v[2] for v in V]
     ea, eb = max(a) - min(a), max(b) - min(b)
@@ -102,6 +138,8 @@ def silhouette(V, idx, W, H, ss=8, margin=2):
         i0, i1, i2 = idx[t], idx[t + 1], idx[t + 2]
         if i0 == i1 or i1 == i2 or i0 == i2:
             continue                                   # degenerate strip stitch
+        if i0 in skip and i1 in skip and i2 in skip:
+            continue                                   # wholly inside an exclusion box
         d.polygon([P[i0], P[i1], P[i2]], fill=255)
     return im.resize((W, H), Image.LANCZOS)
 
