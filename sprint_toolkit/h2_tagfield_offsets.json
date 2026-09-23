@@ -1,0 +1,15 @@
+{
+ "damage_effect": {
+  "damage lower bound": 108,
+  "damage upper bound": 112
+ },
+ "weapon": {
+  "barrels[0].error angle#1": 3548,
+  "barrels[0].minimum error#1": 3544,
+  "barrels[0].rounds per second": 3436,
+  "magazines[0].rounds loaded maximum": 3126,
+  "magazines[0].rounds reloaded": 3140,
+  "magazines[0].rounds total initial": 3122,
+  "magazines[0].rounds total maximum": 3124
+ }
+}

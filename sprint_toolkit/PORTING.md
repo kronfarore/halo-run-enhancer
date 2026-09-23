@@ -219,6 +219,38 @@ only for +8 put the SAW's normal map 196 bytes late -- mid block, decoding to no
 still consuming the file to its last byte, so the arithmetic looked perfect. Candidates
 are now decoded and the quietest wins.
 
+### Steps 3 and 4, ownership and numbers
+
+`h2_saw_weapon.py` then `h2_saw_numbers.py`.
+
+The cut GPMG borrows the Warthog turret's ammunition, so its projectile and both damage
+effects are shared with `h_turret_ap.weapon`, a live weapon on real maps -- tuning the
+port through them retunes the Warthog. Clone the projectile and both damage effects; the
+melee effects and the pickup sound stay shared, as they do in the Halo 1 and Halo 3
+ports, so a melee balance row would move every weapon in the game.
+
+**Numbers need `h2_tagfield.py`, and the Assembly plugins cannot help.** They give cache
+offsets; the weapon's root struct is 0x31C bytes in a cache and 0x5F4 on disk, and the
+difference is not a conversion -- solving it for the wider references, blocks and string
+ids has no whole-number answer, so the loose struct holds editor data the cache does not.
+Instead each field's offset is FOUND: read what tool says the field is, list every place
+in its own element whose bytes decode to that, write a probe into each and export again;
+the offset is where that field alone changed. Distinctive values resolve in one or two
+tries, and the answers are cached.
+
+Four things that bite:
+
+* **Angles are stored in radians and printed in degrees.** Searching for the 1.0 tool
+  prints finds nothing; 0.0174533 finds it exactly.
+* **A field name is not unique.** tool flattens a block's nested structs into one list,
+  so `barrels` prints two "minimum error" fields and two "error angle"s -- the live ones
+  are the second. Take the wrong one and the spread lands in the rate of fire.
+* **A field reading zero cannot be found at all**, because padding reads zero too. Say so
+  rather than guess.
+* **Probe into a COPY.** A probe lands wherever the search says, and sooner or later that
+  is a string id length or a block count, which stops the tag loading. Probing the real
+  tag destroyed one when an interrupted run could not write its restore back.
+
 ### Editing tags
 
 There is no XML importer, so tag edits are byte edits. A tag reference is 16 bytes with
