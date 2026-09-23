@@ -51,15 +51,22 @@ FILL, EDGE = 10, 15             # body and outline alpha, both on the level tabl
 RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
        'font_package_icon_x3.bin': 3}
 
-#: The glyph's own box, at x1. THE BOX IS THE ON-SCREEN SIZE -- the prompt draws a glyph
-#: at its declared width and height -- so inheriting the donor codepoint's 123x39 made a
-#: 1.16 m weapon draw smaller than the Assault Rifle's 155x44, which was the complaint.
-#: 156x42 is as wide as the widest icon Halo 3 ships (the sniper rifle's 156x33, so the
-#: width is proven safe in that layout) and its aspect matches the SAW's 3.72, so the art
-#: fills the box edge to edge the way every shipped icon does -- the Assault Rifle's ink
-#: spans its full 155x44, the SMG's its full 99x41. Both x1 packages stay inside the
-#: font's declared maximum unpacked size, so no header field has to move.
-BOX = (156, 42)
+#: The glyph's own box, at x1: EXACTLY the Assault Rifle's, and its x2/x3 multiples are
+#: exactly the Assault Rifle's too (310x88, 465x132).
+#:
+#: THE BOX IS THE ON-SCREEN SIZE -- the prompt draws a glyph at its declared width and
+#: height -- so inheriting the donor codepoint's 123x39 made a 1.16 m weapon draw
+#: smaller than the Assault Rifle. A custom 156x42 fixed that but brought a stray dash
+#: on the glyph box's BOTTOM EDGE: where the art leaves that edge transparent something
+#: bleeds through, and where a test frame drew an opaque edge it was masked. It appeared
+#: when the height went 39 -> 42, which repacks the font atlas, so it reads as edge
+#: sampling catching whatever now sits below this glyph there.
+#:
+#: Borrowing a SHIPPED glyph's exact dimensions sidesteps the guesswork: the game packs
+#: and samples that size every time it draws an Assault Rifle. It is also bigger in area
+#: than 156x42, and since the weapon's 3.72 aspect is wider than 155/44, the art fits by
+#: width and leaves a transparent row top and bottom rather than running into the edge.
+BOX = (155, 44)
 
 #: Geometry to leave out of the silhouette, as world boxes
 #: (x lo, x hi, z lo, z hi, |y| limit or None).
