@@ -45,6 +45,15 @@ DONOR_HUD = B.join(['ui', 'hud', 'gpmg'])
 PORT_HUD = B.join(['ui', 'hud', 'saw'])
 WEAPON = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw', 'saw.weapon')
 
+#: The HUD's own weapon symbol, the one outside the text prompts. It is NOT a glyph:
+#: the `backpack` widget draws a sequence of the new_hud backpack_weapons bitmap,
+#: which is not a sprite sheet but a stack of separate 62x30 interface bitmaps, one
+#: per weapon. So the port gets its own one-bitmap version and the widget points at
+#: that -- nothing shared, and the sequence index stays 0.
+BACKPACK = B.join(['ui', 'hud', 'bitmaps', 'new_hud', 'backpack_weapons'])
+BACKPACK_PORT = B.join(['ui', 'hud', 'bitmaps', 'new_hud', 'saw_backpack'])
+BACKPACK_SIZE = (62, 30)
+
 ROUNDS = 72
 CANVAS = (197, 34)          # the Battle Rifle's, so the HUD widget is untouched
 TICK_W = 6                  # 6 in both of Bungie's meters, whatever the magazine
@@ -114,6 +123,52 @@ def build(rounds=ROUNDS, rows=3):
     return Image.fromarray(sheet, 'RGBA')
 
 
+def point(tag, cls, old, new):
+    """Repoint unless it already points there, so a re-run is harmless."""
+    have = h2_tagref.references(tag)
+    if (cls, new) in have and (cls, old) not in have:
+        print('   %-28s already points at the port' % os.path.basename(tag))
+        return
+    h2_tagref.set_reference(tag, cls, old, new)
+
+
+def run_lines(p):
+    """tool's output, one tidy line at a time."""
+    text = (p.stdout or '') + (p.stderr or '')
+    return text.replace(chr(13), chr(10)).split(chr(10))
+
+
+def backpack():
+    """The SAW drawn at the size the HUD's weapon symbol is, as its own bitmap."""
+    import h3_weapon_glyph as wg
+    from PIL import Image
+    verts, idx = wg.mesh(os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common',
+                                      'H3EK', 'saw_3p_rm.xml'))
+    w, h = BACKPACK_SIZE
+    cov = wg.close_gaps(wg.silhouette(verts, idx, w, h, margin=0), 3)
+    px = wg.stylise(cov)
+    im = Image.new('RGBA', (w, h))
+    im.putdata([(r * 17, g * 17, b * 17, a * 17) for a, r, g, b in px])
+    data = os.path.join(H2EK, 'data', os.path.dirname(BACKPACK_PORT))
+    os.makedirs(data, exist_ok=True)
+    tif = os.path.join(data, os.path.basename(BACKPACK_PORT) + '.tif')
+    im.save(tif, compression=None)
+    print('   %s  %dx%d, %d ink' % (os.path.basename(tif), w, h,
+                                    sum(1 for q in px if q[0])))
+    dest = os.path.join(TAGS, BACKPACK_PORT + '.bitmap')
+    if not os.path.exists(dest):
+        shutil.copy(os.path.join(TAGS, BACKPACK + '.bitmap'), dest)
+    p = subprocess.run([os.path.join(H2EK, 'tool.exe'), 'bitmaps',
+                        os.path.dirname(BACKPACK_PORT)],
+                       cwd=H2EK, capture_output=True, text=True)
+    for line in run_lines(p):
+        line = ' '.join(line.split())
+        if 'saw_backpack' in line or 'bitmap created' in line:
+            print('   | %s' % line)
+    hud = os.path.join(TAGS, PORT_HUD + '.new_hud_definition')
+    point(hud, 'bitm', BACKPACK, BACKPACK_PORT)
+
+
 def main():
     rounds = ROUNDS
     if '--rounds' in sys.argv:
@@ -146,8 +201,10 @@ def main():
     if not os.path.exists(hud):
         shutil.copy(os.path.join(TAGS, DONOR_HUD + '.new_hud_definition'), hud)
         print('   %s cloned from the GPMG HUD' % PORT_HUD)
-    h2_tagref.set_reference(hud, 'bitm', DONOR_METER, B.join([REL, NAME]))
-    h2_tagref.set_reference(WEAPON, 'nhdt', DONOR_HUD, PORT_HUD)
+    point(hud, 'bitm', DONOR_METER, B.join([REL, NAME]))
+    point(WEAPON, 'nhdt', DONOR_HUD, PORT_HUD)
+    print('the HUD weapon symbol:')
+    backpack()
 
 
 if __name__ == '__main__':

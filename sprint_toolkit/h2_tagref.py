@@ -111,32 +111,33 @@ def pooled(data, path):
         at += 1
 
 
-def retarget(data, cls, old_path, new_path):
-    """`data` with the one `cls` reference to `old_path` pointing at `new_path`."""
+def retarget(data, cls, old_path, new_path, record=None):
+    """`data` with a `cls` reference to `old_path` pointing at `new_path`.
+
+    A record does not carry its path, and which record owns which pooled string cannot be
+    recovered from a loose tag -- the file is laid out in field order, so a struct's paths
+    interleave with its child blocks. Where that leaves more than one candidate, `record`
+    names which to try and `set_reference` works through them, letting tool.exe say which
+    was right. Guessing is fine when the guess is checked; it is only unchecked guessing
+    that ruins a tag.
+    """
     at = pooled(data, old_path)
+    if len(at) != 1:
+        raise ValueError('%d pooled copies of %r; expected one' % (len(at), old_path))
     mine = records(data, len(old_path), cls)
-    if len(mine) != 1:
-        raise ValueError('%d %s records of length %d -- cannot tell which is meant'
-                         % (len(mine), cls, len(old_path)))
-    if len(at) == 1:
-        k = 0                       # one string, one record of that class: no ambiguity
-    else:
-        # A path can be pooled more than once: gpmg.model names the same path as both
-        # its render model and its collision model. Both are laid out in field order, so
-        # the k-th record of that length owns the k-th copy of the string -- but only
-        # when every record of that length is one of these copies. Otherwise a reference
-        # to some OTHER path of the same length is in the count and the pairing slides.
-        same_length = records(data, len(old_path))
-        if len(at) != len(same_length):
-            raise ValueError('%d pooled copies of %r but %d records of that length -- '
-                             'the pairing is not determined'
-                             % (len(at), old_path, len(same_length)))
-        k = same_length.index(mine[0])
+    if not mine:
+        raise ValueError('no %s record with a %d-character path' % (cls, len(old_path)))
+    rec = record if record is not None else mine[0]
     new = new_path.encode('latin-1')
     out = bytearray(data)
-    out[at[k]:at[k] + len(old_path)] = new
-    struct.pack_into('<I', out, mine[0] + 8, len(new))
+    out[at[0]:at[0] + len(old_path)] = new
+    struct.pack_into('<I', out, rec + 8, len(new))
     return bytes(out)
+
+
+def candidates(data, cls, length):
+    """Every record that could be the one, in file order."""
+    return records(data, length, cls)
 
 
 def retarget_all(data, cls, old_path, new_path):
@@ -175,18 +176,18 @@ def set_reference(tag_path, cls, old_path, new_path, every=False):
     want = [(cls, new_path) if r == (cls, old_path) else r for r in before]
 
     original = open(tag_path, 'rb').read()
-    # Build the new bytes BEFORE opening the file. `open(p, 'wb').write(f(...))`
-    # truncates the moment it is evaluated, so anything f raises leaves an empty tag
-    # behind -- which is exactly how the SAW's shader got destroyed once.
-    edited = (retarget_all if every else retarget)(original, cls, old_path, new_path)
-    open(tag_path, 'wb').write(edited)
-    after = references(tag_path)
-    if after != want:
-        open(tag_path, 'wb').write(original)
-        raise ValueError('the edit did not read back as intended; %s restored.\n'
-                         '  wanted %s\n  got    %s' % (tag_path, want, after))
-    print('%s: %s %s -> %s  (%d references, all others unchanged)'
-          % (os.path.basename(tag_path), cls, old_path, new_path, len(after)))
+    tries = [None] if every else candidates(original, cls, len(old_path))
+    for rec in tries:
+        edited = (retarget_all(original, cls, old_path, new_path) if every
+                  else retarget(original, cls, old_path, new_path, rec))
+        open(tag_path, 'wb').write(edited)
+        if references(tag_path) == want:
+            print('%s: %s %s -> %s  (%d references, all others unchanged)'
+                  % (os.path.basename(tag_path), cls, old_path, new_path, len(want)))
+            return
+    open(tag_path, 'wb').write(original)
+    raise ValueError('none of the %d candidate records gave the intended result; '
+                     '%s restored' % (len(tries), os.path.basename(tag_path)))
 
 
 def main():
