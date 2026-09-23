@@ -64,35 +64,40 @@ def patch(d, glyph, name):
     call = name.encode('utf-8')
     if len(call) > len(DONOR_NAME):
         raise SystemExit('%r is longer than %r' % (name, DONOR_NAME.decode()))
-    n = 0
+    n = a = 0
     while True:
         i = bytes(d).find(DONOR_NAME)
         if i < 0:
             break
-        _s, e = strings_at(bytes(d), i)
-        tail = bytes(d[i + len(DONOR_NAME):e])
-        d[i:i + len(call)] = call
-        d[i + len(call):i + len(call) + len(tail)] = tail
-        cut = i + len(call) + len(tail)
-        d[cut:e + 1] = b'\0' * (e + 1 - cut)          # shorten, never move
-        n += 1
-
-    a = 0
-    if name[:1].upper() not in 'AEIOU':
-        while True:
-            i = bytes(d).find(b'an ' + call)
-            if i < 0:
-                break
-            _s, e = strings_at(bytes(d), i)
-            # "an SAW" -> "a SAW": the 'a' at i stays put and everything from the space
-            # onward slides one left. Shifting from i instead eats the article itself
-            # and leaves "Picked up n SAW".
-            tail = bytes(d[i + 2:e])
-            d[i + 1:i + 1 + len(tail)] = tail
-            cut = i + 1 + len(tail)
-            d[cut:e + 1] = b'\0' * (e + 1 - cut)
+        s, e = strings_at(bytes(d), i)
+        text = bytes(d[s:e]).replace(DONOR_NAME, call)
+        if name[:1].upper() not in 'AEIOU' and b'an ' + call in text:
+            text = text.replace(b'an ' + call, b'a ' + call)
             a += 1
+        # PAD WITH SPACES, NEVER WITH NUL.
+        #
+        # The file is indexed by ORDINAL -- the Nth NUL-terminated string -- not only by
+        # byte offset. Filling the bytes freed by a shorter name with NUL therefore does
+        # not "leave dead space", it invents extra EMPTY ENTRIES: rewriting five strings
+        # added 21 of them and shifted every entry after index 2126, so the Assault
+        # Rifle's pickup line came out as "CARNAGE REPORT" and the icon line as a
+        # service-tag error. Spaces keep the byte length, the entry count and every
+        # offset identical, and are invisible at the end of a line.
+        d[s:e] = text + b' ' * (e - s - len(text))
+        n += 1
     return bytes(d), g, n, a
+
+
+def entries(b):
+    """The start offset of every NUL-terminated string, which is how they are indexed."""
+    out, i, size = [], 16, len(b)
+    while i < size:
+        e = b.find(b'\0', i)
+        if e < 0:
+            break
+        out.append(i)
+        i = e + 1
+    return out
 
 
 def main():
@@ -125,10 +130,20 @@ def main():
             print('%-18s skipped, magic %#x' % (f, magic))
             continue
         out, g, n, art = patch(d, a.glyph, a.name)
+        # THE CHECK THAT WOULD HAVE CAUGHT IT. Same length is not enough: the index is
+        # ordinal, so the ENTRY LIST has to come back identical too, offset for offset.
         if len(out) != len(d):
             raise SystemExit('%s: length changed, every offset after it would move' % f)
-        print('%-18s %-8d %-8d %-8d %d bytes%s'
-              % (f, g, n, art, len(out), '' if (g or n) else '   (nothing to do)'))
+        before, after = entries(d), entries(out)
+        if before != after:
+            k = next((j for j in range(min(len(before), len(after)))
+                      if before[j] != after[j]), min(len(before), len(after)))
+            raise SystemExit('%s: entry list changed (%d -> %d entries, first moved at '
+                             'index %d) -- every string after it would be misindexed'
+                             % (f, len(before), len(after), k))
+        print('%-18s %-8d %-8d %-8d %d bytes, %d entries intact%s'
+              % (f, g, n, art, len(out), len(after),
+                 '' if (g or n) else '   (nothing to do)'))
         if a.write and (g or n or art):
             if not os.path.exists(os.path.join(BACKUP, f)):
                 os.makedirs(BACKUP, exist_ok=True)
