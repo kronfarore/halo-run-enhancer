@@ -362,9 +362,19 @@ Everything needed is now known:
 4. bump the font header's glyph count at +0x13C, and its highest codepoint at +0x138 if the
    new one is higher.
 
-Until that is built a port REPLACES a codepoint, and the second port fights the first over
-the same slot. The Halo 2 side is further back: its fonts are standalone files in
-`halo2\h2_fonts\`, not a package, and nothing about them is decoded.
+`h3_font_add.py` does it, and `h3_weapon_glyph.py` calls it whenever the codepoint it is
+asked for does not exist yet. The SAW now owns **0xE151** — the first free one above the
+0xE150 the package tops out at — in all three resolutions, and 0xE128, which it used to
+borrow, is byte-identical to Bungie's again.
+
+One thing the first attempt got wrong: a font's entries are NOT one run. `fixedsys-hud`'s
+live in a dozen blocks, each ascending on its own, and the block holding its highest glyph
+is usually its fullest — 344 bytes free in the x2 package against the 1768 a glyph needs.
+A new codepoint may follow ANY run whose last codepoint is below it, so the rule is to
+take the run ending highest that still has room.
+
+The Halo 2 side is further back: its fonts are standalone files in `halo2\h2_fonts\`, not
+a package, and nothing about them is decoded.
 
 ---
 

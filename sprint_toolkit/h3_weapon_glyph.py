@@ -39,6 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3_font_package as fp                                    # noqa: E402
 import h3_font_codec as fc                                      # noqa: E402
+import h3_font_add as fa                                        # noqa: E402
 
 B = os.sep
 EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
@@ -46,7 +47,12 @@ MODEL_XML = os.path.join(EK, 'saw_3p_rm.xml')
 BACKUP = os.path.join('E:' + B, 'HaloBackups', 'h3_live_fonts')
 PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
             'font_package_icon_x3.bin')
-GLYPH = 0xE128                  # what am_pickup / am_swap point at, for the SAW
+#: The port's OWN codepoint. 0xE150 is the highest the shipped package draws, so 0xE151
+#: is the first free one and nothing has to be taken from another weapon. The old value,
+#: 0xE128, was a shipped icon the SAW borrowed -- see `h3_font_add.py` for why that could
+#: only ever work once.
+GLYPH = 0xE151
+FONT = 2                        # iconixedsys-hud, which draws the pickup prompt
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
 RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
        'font_package_icon_x3.bin': 3}
@@ -295,9 +301,11 @@ def main():
         path = os.path.join(fp.FONTS, name)
         d = io.open(path, 'rb').read()
         g = fp.glyphs(d)
-        if a.glyph not in g:
-            raise SystemExit('%s has no %04X' % (name, a.glyph))
-        font, w, h, old, at = g[a.glyph]
+        # A codepoint the package does not have yet is ADDED rather than refused. That is
+        # the difference between a port owning an icon and borrowing one: see
+        # `h3_font_add.py`. Anything already there is spliced in place, as before.
+        new_cp = a.glyph not in g
+        font, w, h, old, at = (FONT, 0, 0, 0, 0) if new_cp else g[a.glyph]
         res = RES.get(name, 1)
         W, H = BOX[0] * res, BOX[1] * res
         # margin 0: the shipped icons run to the edge of their box, so this does too
@@ -306,15 +314,25 @@ def main():
         pay = fc.encode(px, full=True)
         if fc.decode(pay, W, H) != px:
             raise SystemExit('%s: the glyph does not survive its own codec' % name)
-        room = slot_of(d, g, at)
-        print('%-26s %04X %3dx%-3d -> %3dx%-3d  was %5d b, now %5d b, slot %5d  %s'
-              % (name, a.glyph, w, h, W, H, old, len(pay), room,
-                 'fits' if len(pay) <= room else 'TOO BIG'))
+        room = 0 if new_cp else slot_of(d, g, at)
+        if new_cp:
+            print('%-26s %04X NEW in font %d  %3dx%-3d  %5d b'
+                  % (name, a.glyph, font, W, H, len(pay)))
+        else:
+            print('%-26s %04X %3dx%-3d -> %3dx%-3d  was %5d b, now %5d b, slot %5d  %s'
+                  % (name, a.glyph, w, h, W, H, old, len(pay), room,
+                     'fits' if len(pay) <= room else 'TOO BIG'))
         im = Image.new('RGBA', (W, H))
         im.putdata([(r * 17, gg * 17, b * 17, al * 17) for al, r, gg, b in px])
         shots.append(im)
         if a.write:
-            splice(path, a.glyph, pay, (W, H))
+            if new_cp:
+                out = fa.add(d, a.glyph, font, pay, (W, H))
+                io.open(path, 'wb').write(out)
+                if not fp.bounds(out):
+                    raise SystemExit('%s no longer adds up; restore it' % name)
+            else:
+                splice(path, a.glyph, pay, (W, H))
 
     sheet = Image.new('RGBA', (max(s.width for s in shots),
                                sum(s.height + 6 for s in shots)), (20, 22, 26, 255))
