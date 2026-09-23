@@ -381,8 +381,33 @@ CODEPOINT rather than the place. `h3_font_add.add()` refuses to return a package
 no longer ascends. 0xE06A was chosen because it is free in all three packages AND sorts
 into a block with room in all three — confirmed in game.
 
-The Halo 2 side is further back: its fonts are standalone files in `halo2\h2_fonts\`, not
-a package, and nothing about them is decoded.
+### Halo 2 is easier, and needs no codec at all
+
+H2EK ships **`tool replace-font-char <font> <tiff> <utf16>`**, so Bungie's own encoder
+draws the pixels and the payload format never has to be understood — which matters,
+because the SHIPPED payloads do not decode with the Halo 3 codec even though that tool
+writes with it. The 2004 data is in some older form; what the tool writes today is what
+the engine reads today.
+
+What it will NOT do is add a codepoint. An unmapped one resolves to the font's notdef
+glyph and `replace-font-char` replaces THAT — one command and every unmapped character in
+the game becomes a SAW. So `h2_font_add.py` creates the entry first: append a 16-byte
+record to the glyph table, push every payload along by 16 and bump every absolute offset
+with it, point the codepoint's slot in the character map at the new index, and raise the
+glyph count. The character map being indexed by codepoint is what makes this easier than
+Halo 3 — no table to insert into, no order to keep.
+
+Two traps, one run each:
+
+* **the codepoint argument is DECIMAL.** `0xE13D` is read as 0, and the tool silently
+  rewrites the notdef glyph while reporting "replaced char 0" and the notdef's size — the
+  only sign anything went wrong;
+* the font has to be edited where tool.exe can reach it, so copy it into H2EK, edit, copy
+  back.
+
+`h2_saw_glyph.py` drives the pair over all eight English fonts and refuses any font where
+a shipped glyph moved. The SAW owns **0xE13D**, free in all of them, with 195 more above
+it for the ports after this one.
 
 ---
 
