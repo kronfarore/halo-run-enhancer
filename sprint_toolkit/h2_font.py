@@ -24,13 +24,27 @@ also makes adding an icon far EASIER than in Halo 3: there is no table to insert
 no offsets to shift, because every codepoint already has its slot -- pointing one at a new
 glyph is a single u32.
 
-**What is NOT settled: the payload's stride.** It is clearly the Halo 3 codec -- the same
-opcode stream over ARGB4444, and `h3_font_codec` decodes these payloads without complaint
--- and the weapon glyphs come out recognisably weapon shaped. But every one of them SHEARS,
-which means the row length is not the width the glyph table declares, and a search for the
-stride that de-shears them lands about five pixels short without ever settling. So the
-decode is close but not exact, and nothing here writes a payload: a font is not a thing to
-guess at.
+**What is NOT settled: how the pixels are laid out.** Four things about the payload are
+now certain, and they rule out the obvious answers:
+
+* the format is ARGB4444 as in Halo 3 -- rendering the R, G and B channels of any glyph
+  gives solid white and the ALPHA carries the shape, exactly as the Halo 3 icons do;
+* the opcode pixel COUNTS are Halo 3's. Sweeping the alternatives (a literal worth two
+  pixels, a single worth two, a pair worth one or three) against all 416 glyphs, Halo 3's
+  own reading is the only one with ZERO overflows and it gives 409 of them a sane count;
+* the space glyph decodes exactly: 1x38, one opcode 0x26, 38 transparent pixels, nothing
+  left over;
+* so the glyph table's width and height are right too.
+
+And yet no row length produces a legible letter. Strides from 11 to 24 were rendered for
+H, A and M and none of them reads; autocorrelating the stream peaks four or five pixels
+BELOW the declared width for every icon and never settles. Counts right, format right,
+size right, order wrong -- so the question is not the stride at all. The pixels are not
+laid down as a plain left-to-right raster, and what they are laid down as is the next
+thing to find.
+
+Nothing here writes a payload. A font is not a thing to guess at: it draws every word in
+the game.
 
     python h2_font.py <font>                 the header, the map and the glyph table
     python h2_font.py <font> --render <out.png> --cp 0xE112 0xE113
