@@ -50,6 +50,16 @@ MAGIC = 0x90CE6B7A
 #: The weapon whose lines these are. Every line naming it is blanked, not reworded.
 WAS = 'GPMG'
 
+#: The PROMPT is the line we keep, because it carries a SYMBOL rather than a name and so
+#: reads correctly for any weapon. The cut GPMG's prompts use 0xE128 -- and so does a live
+#: weapon: that codepoint appears in exactly TWO complete sets of the four prompts (pick
+#: up, swap for, take ally's, switch to) where every other weapon has one. One set is the
+#: GPMG's and one is not, and nothing in the file says which, so a set is moved and the
+#: game is asked. Both codepoints are three bytes of UTF-8, so the file does not move.
+PROMPT_GLYPH = 0xE128
+PORT_GLYPH = 0xE13D
+
+
 
 def sections(data):
     """(table start, table size) of the language section -- what must not move."""
@@ -86,6 +96,47 @@ def rewrite(data):
         out[at:at + len(raw)] = b' ' * len(raw)
         changed.append((raw.decode('utf-8', 'replace'), ''))
     return bytes(out), changed
+
+
+def prompt_sets(data, glyph=None):
+    """The prompts carrying `glyph`, split into the two complete sets they form.
+
+    Every other weapon's glyph appears in ONE set of four -- pick up, swap for, take
+    ally's, switch to. This one appears in two, which is what says a live weapon and the
+    cut donor share it. They are told apart by nothing but which came first in the file,
+    so both are offered and the game decides.
+    """
+    glyph = chr(glyph if glyph is not None else PROMPT_GLYPH).encode('utf-8')
+    kinds = (b'to pick up', b'to swap for', b"take ally's", b'to switch to')
+    seen = {k: [] for k in kinds}
+    for at, raw in strings(data):
+        if glyph not in raw:
+            continue
+        for k in kinds:
+            if k in raw:
+                seen[k].append(at)
+                break
+    return ({k: v[0] for k, v in seen.items() if v},
+            {k: v[1] for k, v in seen.items() if len(v) > 1})
+
+
+def repoint(data, which, old=None, new=None):
+    """Move one set of prompts onto the port's own glyph, in place."""
+    old = old if old is not None else PROMPT_GLYPH
+    new = new if new is not None else PORT_GLYPH
+    first, second = prompt_sets(data, old)
+    want = (first if which == 'a' else second)
+    out = bytearray(data)
+    done = []
+    for kind, at in sorted(want.items(), key=lambda kv: kv[1]):
+        raw = dict(strings(data))[at] if False else next(
+            r for o, r in strings(data) if o == at)
+        edited = raw.replace(chr(old).encode('utf-8'), chr(new).encode('utf-8'))
+        if len(edited) != len(raw):
+            raise ValueError('the glyphs differ in length; the file would move')
+        out[at:at + len(raw)] = edited
+        done.append((kind.decode(), at))
+    return bytes(out), done
 
 
 def check(before, after):
