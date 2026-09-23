@@ -1,0 +1,1665 @@
+{
+ "ported": "SAW",
+ "source": "Halo 4",
+ "target": "Halo 2",
+ "donor": "SMG",
+ "hops": [
+  [
+   "Assault Rifle",
+   "Assault Rifle",
+   "Halo 4",
+   "Halo 3"
+  ],
+  [
+   "SMG",
+   "SMG",
+   "Halo 3",
+   "Halo 2"
+  ]
+ ],
+ "rows": [
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Angle",
+   "dst_field": "Magnetism Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 9.99999970909292,
+   "donor_dst": 12.000000333930423,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnetism Angle",
+     "value_from": 9.99999970909292,
+     "field_to": "Magnetism Angle",
+     "value_to": 9.99999970909292
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Angle",
+     "value_from": 12.000000333930423,
+     "field_to": "Magnetism Angle",
+     "value_to": 12.000000333930423
+    }
+   ],
+   "donor_src": 9.99999970909292,
+   "original": 9.99999970909292,
+   "ratio": 1.0,
+   "balanced": 9.99999970909292
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Range",
+   "dst_field": "Magnetism Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 18.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnetism Range",
+     "value_from": 16.0,
+     "field_to": "Magnetism Range",
+     "value_to": 20.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnetism Range",
+     "value_from": 18.0,
+     "field_to": "Magnetism Range",
+     "value_to": 18.0
+    }
+   ],
+   "donor_src": 16.0,
+   "original": 16.0,
+   "ratio": 1.25,
+   "balanced": 20.0
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Falloff Range",
+   "dst_field": "Magnetism Falloff Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 8.0,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnetism Falloff Range",
+     "value_from": 8.0,
+     "field_to": "Magnetism Falloff Range",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 8.0,
+   "original": 8.0,
+   "ratio": 1.25,
+   "balanced": 10.0
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Near Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Near Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Angle",
+   "dst_field": "Autoaim Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 4.99999985454646,
+   "donor_dst": 6.000000166965211,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Autoaim Angle",
+     "value_from": 4.99999985454646,
+     "field_to": "Autoaim Angle",
+     "value_to": 4.99999985454646
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Angle",
+     "value_from": 4.99999985454646,
+     "field_to": "Autoaim Angle",
+     "value_to": 6.000000166965211
+    }
+   ],
+   "donor_src": 4.99999985454646,
+   "original": 4.99999985454646,
+   "ratio": 1.2000000683018939,
+   "balanced": 6.000000166965211
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Range",
+   "dst_field": "Autoaim Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 12.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Autoaim Range",
+     "value_from": 16.0,
+     "field_to": "Autoaim Range",
+     "value_to": 15.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Autoaim Range",
+     "value_from": 12.0,
+     "field_to": "Autoaim Range",
+     "value_to": 12.0
+    }
+   ],
+   "donor_src": 16.0,
+   "original": 16.0,
+   "ratio": 0.9375,
+   "balanced": 15.0
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Falloff Range",
+   "dst_field": "Autoaim Falloff Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 8.0,
+   "donor_dst": 7.5,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Autoaim Falloff Range",
+     "value_from": 8.0,
+     "field_to": "Autoaim Falloff Range",
+     "value_to": 7.5
+    }
+   ],
+   "donor_src": 8.0,
+   "original": 8.0,
+   "ratio": 0.9375,
+   "balanced": 7.5
+  },
+  {
+   "card": "Weapon Swap Speed",
+   "field": "Ready / Put Away Animation",
+   "dst_field": "Ready / Put Away Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_smg*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Accuracy Penalties",
+   "field": "Reload Penalty",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Accuracy Penalties",
+   "field": "Switch Penalty",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Function",
+   "dst_field": "Distribution Function",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Distribution Function",
+     "value_from": 0,
+     "field_to": "Distribution Function",
+     "value_to": 0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Distribution Function",
+     "value_from": 0,
+     "field_to": "Distribution Function",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Angle",
+   "dst_field": "Distribution Angle",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Distribution Angle",
+     "value_from": 0.0,
+     "field_to": "Distribution Angle",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Distribution Angle",
+     "value_from": 0.0,
+     "field_to": "Distribution Angle",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Firing Noise",
+   "dst_field": "Firing Noise",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 4,
+   "donor_dst": 2,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Firing Noise",
+     "value_from": 4,
+     "field_to": "Firing Noise",
+     "value_to": 2
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Firing Noise",
+     "value_from": 2,
+     "field_to": "Firing Noise",
+     "value_to": 2
+    }
+   ],
+   "donor_src": 4,
+   "original": 4.0,
+   "ratio": 0.5,
+   "balanced": 2.0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Impact Noise",
+   "dst_field": "Impact Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Impact Noise",
+     "value_from": null,
+     "field_to": "Impact Noise",
+     "value_to": null
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Impact Noise",
+     "value_from": null,
+     "field_to": "Impact Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Detonation Noise",
+   "dst_field": "Detonation Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Detonation Noise",
+     "value_from": null,
+     "field_to": "Detonation Noise",
+     "value_to": null
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Detonation Noise",
+     "value_from": null,
+     "field_to": "Detonation Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Projectile",
+   "field": "Maximum Range",
+   "dst_field": "Maximum Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 75.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Maximum Range",
+     "value_from": 100.0,
+     "field_to": "Maximum Range",
+     "value_to": 40.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Maximum Range",
+     "value_from": 40.0,
+     "field_to": "Maximum Range",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 100.0,
+   "original": 75.0,
+   "ratio": 0.4,
+   "balanced": 30.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Initial Velocity",
+   "dst_field": "Initial Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 300.0,
+   "donor_dst": 400.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Initial Velocity",
+     "value_from": 1500.0,
+     "field_to": "Initial Velocity",
+     "value_to": 80.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Initial Velocity",
+     "value_from": 400.0,
+     "field_to": "Initial Velocity",
+     "value_to": 400.0
+    }
+   ],
+   "donor_src": 1500.0,
+   "original": 300.0,
+   "ratio": 0.05333333333333334,
+   "balanced": 16.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Final Velocity",
+   "dst_field": "Final Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 300.0,
+   "donor_dst": 400.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Final Velocity",
+     "value_from": 1500.0,
+     "field_to": "Final Velocity",
+     "value_to": 80.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Final Velocity",
+     "value_from": 400.0,
+     "field_to": "Final Velocity",
+     "value_to": 400.0
+    }
+   ],
+   "donor_src": 1500.0,
+   "original": 300.0,
+   "ratio": 0.05333333333333334,
+   "balanced": 16.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Minimum Velocity",
+   "dst_field": "Minimum Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Minimum Velocity",
+     "value_from": 0.0,
+     "field_to": "Minimum Velocity",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Minimum Velocity",
+     "value_from": 0.0,
+     "field_to": "Minimum Velocity",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile",
+   "field": "Autoaim Leading Maximum Lead Time",
+   "dst_field": "Autoaim Leading Maximum Lead Time",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Autoaim Leading Maximum Lead Time",
+     "value_from": 0.0,
+     "field_to": "Autoaim Leading Maximum Lead Time",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile",
+   "field": "Air Damage Range",
+   "dst_field": "Air Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Air Damage Range",
+     "value_from": 0.0,
+     "field_to": "Air Damage Range",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range",
+     "value_from": 0.0,
+     "field_to": "Air Damage Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile",
+   "field": "Air Damage Range Max",
+   "dst_field": "Air Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 40.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Air Damage Range Max",
+     "value_from": 40.0,
+     "field_to": "Air Damage Range Max",
+     "value_to": 40.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Air Damage Range Max",
+     "value_from": 40.0,
+     "field_to": "Air Damage Range Max",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 40.0,
+   "original": 40.0,
+   "ratio": 1.0,
+   "balanced": 40.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Water Damage Range",
+   "dst_field": "Water Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 5.0,
+   "donor_dst": 5.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Water Damage Range",
+     "value_from": 5.0,
+     "field_to": "Water Damage Range",
+     "value_to": 5.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range",
+     "value_from": 5.0,
+     "field_to": "Water Damage Range",
+     "value_to": 5.0
+    }
+   ],
+   "donor_src": 5.0,
+   "original": 5.0,
+   "ratio": 1.0,
+   "balanced": 5.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Water Damage Range Max",
+   "dst_field": "Water Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 10.0,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Water Damage Range Max",
+     "value_from": 10.0,
+     "field_to": "Water Damage Range Max",
+     "value_to": 10.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Water Damage Range Max",
+     "value_from": 10.0,
+     "field_to": "Water Damage Range Max",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 10.0,
+   "ratio": 1.0,
+   "balanced": 10.0
+  },
+  {
+   "card": "Projectile",
+   "field": "Air Gravity Scale",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Projectile",
+   "field": "Water Gravity Scale",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Lower Bound",
+     "value_from": 7.5,
+     "field_to": "Damage Lower Bound",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Lower Bound",
+     "value_from": 0.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 4.75,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Upper Bound",
+     "value_from": 7.5,
+     "field_to": "Damage Upper Bound",
+     "value_to": 7.5
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound",
+     "value_from": 5.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 4.75
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": 0.95,
+   "balanced": 7.125
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\damage_effects\\smg_bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 4.75,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 7.5,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 7.5
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 5.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 4.75
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": 0.95,
+   "balanced": 7.125
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 20.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Lower Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 70.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Lower Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 20.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.2857142857142857,
+   "balanced": 20.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Upper Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 70.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 60.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "objects\\weapons\\damage_effects\\strike_melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 70.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 60.0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Levels",
+   "dst_field": "Magnification Levels",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range",
+   "dst_field": "Magnification Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnification Range",
+     "value_from": 1.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range",
+     "value_from": 0.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range Max",
+   "dst_field": "Magnification Range Max",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Magnification Range Max",
+     "value_from": 1.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Magnification Range Max",
+     "value_from": 0.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Weapon Zoom Time",
+   "dst_field": "Weapon Zoom Time",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\assault_rifle\\assault_rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Weapon Zoom Time",
+     "value_from": 0.0,
+     "field_to": "Weapon Zoom Time",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Magazine",
+   "field": "Rounds Total Initial",
+   "dst_field": "Rounds Total Initial",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 216,
+   "donor_dst": 180,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Total Initial",
+     "value_from": 160,
+     "field_to": "Rounds Total Initial",
+     "value_to": 96
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Total Initial",
+     "value_from": 180,
+     "field_to": "Rounds Total Initial",
+     "value_to": 180
+    }
+   ],
+   "donor_src": 160,
+   "original": 216.0,
+   "ratio": 0.6,
+   "balanced": 129.6
+  },
+  {
+   "card": "Magazine",
+   "field": "Rounds Inventory Maximum",
+   "dst_field": "Rounds Inventory Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 216,
+   "donor_dst": 180,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Inventory Maximum",
+     "value_from": 224,
+     "field_to": "Rounds Inventory Maximum",
+     "value_to": 352
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Inventory Maximum",
+     "value_from": 180,
+     "field_to": "Rounds Inventory Maximum",
+     "value_to": 180
+    }
+   ],
+   "donor_src": 224,
+   "original": 216.0,
+   "ratio": 1.5714285714285714,
+   "balanced": 339.42857142857144
+  },
+  {
+   "card": "Magazine",
+   "field": "Rounds Loaded Maximum",
+   "dst_field": "Rounds Loaded Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72,
+   "donor_dst": 60,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Loaded Maximum",
+     "value_from": 32,
+     "field_to": "Rounds Loaded Maximum",
+     "value_to": 32
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Loaded Maximum",
+     "value_from": 60,
+     "field_to": "Rounds Loaded Maximum",
+     "value_to": 60
+    }
+   ],
+   "donor_src": 32,
+   "original": 72.0,
+   "ratio": 1.0,
+   "balanced": 72.0
+  },
+  {
+   "card": "Magazine",
+   "field": "Rounds Reloaded",
+   "dst_field": "Rounds Reloaded",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72,
+   "donor_dst": 60,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Reloaded",
+     "value_from": 32,
+     "field_to": "Rounds Reloaded",
+     "value_to": 32
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Reloaded",
+     "value_from": 60,
+     "field_to": "Rounds Reloaded",
+     "value_to": 60
+    }
+   ],
+   "donor_src": 32,
+   "original": 72.0,
+   "ratio": 1.0,
+   "balanced": 72.0
+  },
+  {
+   "card": "Magazine",
+   "field": "Rounds Total Maximum",
+   "note": "Assault Rifle card has no target in Halo 3"
+  },
+  {
+   "card": "Reload Time",
+   "field": "Reload Animation",
+   "dst_field": "Reload Animation",
+   "dst_block": null,
+   "dst_class": "jmad",
+   "dst_tag": "*fp_smg*",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Reload Animation",
+     "value_from": null,
+     "field_to": "Reload Animation",
+     "value_to": null
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Reload Animation",
+     "value_from": null,
+     "field_to": "Reload Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "More Shooting",
+   "field": "Rounds Per Second",
+   "dst_field": "Rounds Per Second",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 20.0,
+   "donor_dst": 15.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Per Second",
+     "value_from": 10.0,
+     "field_to": "Rounds Per Second",
+     "value_to": 10.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second",
+     "value_from": 15.0,
+     "field_to": "Rounds Per Second",
+     "value_to": 15.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 20.0,
+   "ratio": 1.0,
+   "balanced": 20.0
+  },
+  {
+   "card": "More Shooting",
+   "field": "Rounds Per Second Max",
+   "dst_field": "Rounds Per Second Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 20.0,
+   "donor_dst": 15.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Per Second Max",
+     "value_from": 10.0,
+     "field_to": "Rounds Per Second Max",
+     "value_to": 10.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Second Max",
+     "value_from": 15.0,
+     "field_to": "Rounds Per Second Max",
+     "value_to": 15.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 20.0,
+   "ratio": 1.0,
+   "balanced": 20.0
+  },
+  {
+   "card": "More Shooting",
+   "field": "Shots Per Fire",
+   "dst_field": "Shots Per Fire",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Shots Per Fire",
+     "value_from": 0,
+     "field_to": "Shots Per Fire",
+     "value_to": 0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Shots Per Fire",
+     "value_from": 0,
+     "field_to": "Shots Per Fire",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "More Shooting",
+   "field": "Shots Per Fire Max",
+   "dst_field": "Shots Per Fire Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Shots Per Fire Max",
+     "value_from": 0,
+     "field_to": "Shots Per Fire Max",
+     "value_to": 0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Shots Per Fire Max",
+     "value_from": 0,
+     "field_to": "Shots Per Fire Max",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "More Shooting",
+   "field": "Rounds Per Shot",
+   "dst_field": "Rounds Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Rounds Per Shot",
+     "value_from": 1,
+     "field_to": "Rounds Per Shot",
+     "value_to": 1
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Rounds Per Shot",
+     "value_from": 1,
+     "field_to": "Rounds Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Fire Recovery Time",
+   "field": "Fire Recovery Time",
+   "dst_field": "Fire Recovery Time",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.06666667014360428,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Fire Recovery Time",
+     "value_from": 0.06666667014360428,
+     "field_to": "Fire Recovery Time",
+     "value_to": 0.0
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Fire Recovery Time",
+     "value_from": 0.0,
+     "field_to": "Fire Recovery Time",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.06666667014360428,
+   "original": 0.06666667014360428,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Projectiles Per Shot",
+   "dst_field": "Projectiles Per Shot",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Projectiles Per Shot",
+     "value_from": 1,
+     "field_to": "Projectiles Per Shot",
+     "value_to": 1
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Projectiles Per Shot",
+     "value_from": 1,
+     "field_to": "Projectiles Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Error Angle",
+   "field": "Minimum Error",
+   "dst_field": "Minimum Error",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.9999999922536332,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Minimum Error",
+     "value_from": 0.0,
+     "field_to": "Minimum Error",
+     "value_to": 0.09999999922536333
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Minimum Error",
+     "value_from": 0.2499999980634083,
+     "field_to": "Minimum Error",
+     "value_to": 0.9999999922536332
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0.9999999922536332
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle",
+   "dst_field": "Error Angle",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 0.29999999767609,
+   "donor_dst": 0.9999999922536332,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Error Angle",
+     "value_from": 0.149999998838045,
+     "field_to": "Error Angle",
+     "value_to": 0.09999999922536333
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Error Angle",
+     "value_from": 1.249999963636615,
+     "field_to": "Error Angle",
+     "value_to": 0.9999999922536332
+    }
+   ],
+   "donor_src": 0.149999998838045,
+   "original": 0.29999999767609,
+   "ratio": 0.5333333447169823,
+   "balanced": 0.160000002175676
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle Max",
+   "dst_field": "Error Angle Max",
+   "dst_block": "Barrels",
+   "dst_class": "weap",
+   "dst_tag": "objects\\weapons\\rifle\\smg\\smg",
+   "dst_nth": 1,
+   "dst_index": 0,
+   "ported_src": 2.750000005377918,
+   "donor_dst": 2.750000005377918,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 3",
+     "field_from": "Error Angle Max",
+     "value_from": 2.39999998140872,
+     "field_to": "Error Angle Max",
+     "value_to": 3.0000000834826057
+    },
+    {
+     "donor": "SMG",
+     "frm": "Halo 3",
+     "to": "Halo 2",
+     "field_from": "Error Angle Max",
+     "value_from": 2.750000005377918,
+     "field_to": "Error Angle Max",
+     "value_to": 2.750000005377918
+    }
+   ],
+   "donor_src": 2.39999998140872,
+   "original": 2.750000005377918,
+   "ratio": 1.2500000444673778,
+   "balanced": 3.4375001290076868
+  }
+ ]
+}

@@ -45,6 +45,21 @@ UNITS = 100.0                   # JMS units per world unit
 #: z-fight. Both are left out, exactly as the Halo 1 port leaves them out.
 PART_MATERIAL = {0: None, 1: 'saw_gun', 2: None, 3: 'saw_display'}
 
+#: How far the FIRST PERSON mesh is lifted, and why it needs to be.
+#:
+#: Anchoring on the grip put the barrel within a fifth of a unit of the donor's -- and
+#: the gun still sat too low in the hands, which is what the first look in game said.
+#: The reason is that the two guns carry their barrels at different heights: the SAW's
+#: is 71% of the way up its body, the GPMG's 38%, so lining the barrels up drops the
+#: SAW's bulk below where a Halo 2 weapon sits. Measured, the port's mesh centred 3.5
+#: units under the donor's while their barrels were level.
+#:
+#: So the first person mesh is raised until its vertical band matches the donor's. None
+#: of this applies to the world model, which was right first time.
+#:
+#: LIFT=None measures it from the two files; a number overrides.
+LIFT = None
+
 #: GPMG marker -> the SAW marker it should move to. Everything else keeps the GPMG's
 #: position: the hands because the animation places them, `ground point` because it is
 #: where the dropped weapon rests and belongs to the world, not to the model.
@@ -69,10 +84,20 @@ def decompress(rm):
     return out
 
 
-def convert(rm, template, node_map):
+def measure_lift(src, template, anchor):
+    """How far to raise the mesh so its vertical band sits where the donor's does."""
+    port = [pos[2] * SCALE + anchor[2] for pos, _n, _uv, _nodes, _w in src]
+    donor = [v.pos[2] for v in template.verts]
+    if not donor:
+        return 0.0
+    return ((min(donor) + max(donor)) - (min(port) + max(port))) / 2.0
+
+
+def convert(rm, template, node_map, lift=0.0):
     """A Halo 2 JMS: the SAW's mesh under the template's skeleton and markers."""
     src = decompress(rm)
     anchor = {mk.name: mk for mk in template.markers}['right_hand'].pos
+    anchor = (anchor[0], anchor[1], anchor[2] + lift)
 
     out = h2_jms.Model()
     out.nodes = list(template.nodes)
@@ -139,7 +164,13 @@ def main():
         names = [n.name for n in template.nodes]
         # the SAW's two skinned bones -> the GPMG nodes that move the same parts
         node_map = {0: names.index('frame gun'), 1: names.index('frame magazine')}
-        jm = convert(rm, template, node_map)
+        lift = 0.0
+        if 'fp_' in os.path.basename(out_path):
+            anchor = {mk.name: mk for mk in template.markers}['right_hand'].pos
+            lift = LIFT if LIFT is not None else measure_lift(decompress(rm), template,
+                                                              anchor)
+            print('   lifting the first person mesh %.2f units' % lift)
+        jm = convert(rm, template, node_map, lift)
         h2_jms.write(out_path, jm)
         xs = [v.pos[0] for v in jm.verts]
         zs = [v.pos[2] for v in jm.verts]

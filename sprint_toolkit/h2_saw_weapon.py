@@ -46,6 +46,10 @@ TAGS = os.path.join(H2EK, 'tags')
 SAW = B.join(['objects', 'weapons', 'rifle', 'saw'])
 GPMG = B.join(['objects', 'weapons', 'rifle', 'gpmg'])
 TURRET = B.join(['objects', 'vehicles', 'h_turret_ap'])
+SMG_FIRE = B.join(['effects', 'objects', 'weapons', 'rifle', 'smg', 'fire_bullet'])
+SAW_FIRE = B.join(['effects', 'objects', 'weapons', 'rifle', 'saw', 'saw_fire'])
+SMG_LIGHT = B.join(['effects', 'objects', 'weapons', 'rifle', 'smg', 'smg_muzzle_flash'])
+GPMG_FIRE = B.join(['effects', 'objects', 'weapons', 'rifle', 'gpmg', 'gpmg_gun_fire'])
 
 #: (what it is copied from, what it becomes)
 CLONES = [
@@ -56,6 +60,10 @@ CLONES = [
      SAW + B + B.join(['damage_effects', 'saw_bullet.damage_effect'])),
     (TURRET + B + B.join(['damage_effects', 'h_turret_ap_trigger.damage_effect']),
      SAW + B + B.join(['damage_effects', 'saw_trigger.damage_effect'])),
+    # The GPMG fires the WARTHOG CHAINGUN's muzzle flash, smoke and casings -- turret
+    # sized, and at 20 rounds a second the first look in game said so. The SMG's is the
+    # nearest thing Halo 2 has to a fast automatic rifle firing.
+    (SMG_FIRE + '.effect', SAW_FIRE + '.effect'),
 ]
 
 #: (tag, class, the path it currently names, what it should name instead, why)
@@ -78,13 +86,18 @@ WIRING = [
     (SAW + B + B.join(['projectiles', 'saw_bullet.projectile']), 'jpt!',
      TURRET + B + B.join(['damage_effects', 'h_turret_ap_bullet']),
      SAW + B + B.join(['damage_effects', 'saw_bullet']), 'impact damage'),
+    (SAW + B + 'saw.weapon', 'effe', GPMG_FIRE, SAW_FIRE,
+     'firing effect -- was the Warthog chaingun, far too big'),
+    (SAW + B + 'saw.weapon', 'ligh',
+     TURRET + B + B.join(['weapon', 'muzzle_flash_turret_ap']), SMG_LIGHT,
+     'muzzle flash light -- the turret one lit up the room'),
 ]
 
 #: references the port keeps pointing at somebody else's tag, and the reason
 SHARED = [
     ('ui\\hud\\gpmg', 'the donor HUD -- the reason this donor was chosen'),
-    ('effects\\objects\\weapons\\rifle\\gpmg\\gpmg_gun_fire',
-     'firing effect, owned by the GPMG and used by nothing else'),
+    ('the SMG particles inside saw_fire',
+     "the effect tag is the port's, the particles in it are the SMG's"),
     ('objects\\weapons\\damage_effects\\*_melee', 'shared by every Halo 2 weapon'),
     ('sound\\weapons\\sniper_rifle\\sniper_ammo', 'pickup sound'),
 ]
