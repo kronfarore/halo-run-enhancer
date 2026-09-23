@@ -48,6 +48,18 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
             'font_package_icon_x3.bin')
 GLYPH = 0xE128                  # what am_pickup / am_swap point at, for the SAW
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
+RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
+       'font_package_icon_x3.bin': 3}
+
+#: The glyph's own box, at x1. THE BOX IS THE ON-SCREEN SIZE -- the prompt draws a glyph
+#: at its declared width and height -- so inheriting the donor codepoint's 123x39 made a
+#: 1.16 m weapon draw smaller than the Assault Rifle's 155x44, which was the complaint.
+#: 156x42 is as wide as the widest icon Halo 3 ships (the sniper rifle's 156x33, so the
+#: width is proven safe in that layout) and its aspect matches the SAW's 3.72, so the art
+#: fills the box edge to edge the way every shipped icon does -- the Assault Rifle's ink
+#: spans its full 155x44, the SMG's its full 99x41. Both x1 packages stay inside the
+#: font's declared maximum unpacked size, so no header field has to move.
+BOX = (156, 42)
 
 #: Geometry to leave out of the silhouette, as world boxes
 #: (x lo, x hi, z lo, z hi, |y| limit or None).
@@ -144,6 +156,41 @@ def silhouette(V, idx, W, H, ss=8, margin=2, exclude=EXCLUDE):
     return im.resize((W, H), Image.LANCZOS)
 
 
+def close_gaps(cov, k):
+    """Close vertical gaps narrower than k, so no sliver floats free of the body.
+
+    The weapon has several layered assemblies stacked under its barrel. Projected side
+    on and shrunk to forty rows, each becomes a one or two pixel strip separated from
+    the body by a ONE PIXEL gap, and a strip with clear air above and below it does not
+    read as a detail of the gun, it reads as a line ruled underneath it.
+
+    Deleting them by hand does not converge -- there are several, they sit at different
+    heights, and the lowest two were removed only for a third to take over. Closing the
+    gap instead keeps every strip but joins it to the body, so it becomes an edge rather
+    than a floating line. It is vertical only and exactly k tall: a square close of the
+    same size eats the interior detail and leaves a blob, and an OPENING (which deletes
+    thin things rather than joining them) leaves the whole underside ragged. Holes wider
+    than k, like the trigger guard, survive untouched.
+    """
+    W, H = cov.size
+    p = cov.load()
+    m = [1 if p[x, y] > 128 else 0 for y in range(H) for x in range(W)]
+    r = k // 2
+    dil = [0] * (W * H)
+    for y in range(H):
+        for x in range(W):
+            dil[y * W + x] = 1 if any(0 <= y + d < H and m[(y + d) * W + x]
+                                      for d in range(-r, r + 1)) else 0
+    out = cov.copy()
+    q = out.load()
+    for y in range(H):
+        for x in range(W):
+            keep = all(0 <= y + d < H and dil[(y + d) * W + x] for d in range(-r, r + 1))
+            if keep and not m[y * W + x]:
+                q[x, y] = 255                      # a closed gap becomes body
+    return out
+
+
 def stylise(cov):
     """Coverage -> the shipped look: grey body, bright outline, white throughout."""
     from PIL import ImageFilter
@@ -169,7 +216,7 @@ def slot_of(d, g, at):
     return nxt - at - 16
 
 
-def splice(path, cp, payload):
+def splice(path, cp, payload, box=None):
     d = bytearray(io.open(path, 'rb').read())
     g = fp.glyphs(bytes(d))
     font, w, h, old, at = g[cp]
@@ -177,6 +224,18 @@ def splice(path, cp, payload):
     if len(payload) > room:
         raise SystemExit('%s: %d bytes will not fit the %d byte slot'
                          % (os.path.basename(path), len(payload), room))
+    if box:
+        # the 16-byte glyph header is: u32 advance width, u32 payload size,
+        # u16 width, u16 height, u16 x, u16 y. Resizing means all three of the first,
+        # third and fourth -- leaving the advance behind makes the prompt lay the icon
+        # out at the old width.
+        bw, bh = box
+        if bw * bh * 2 > struct.unpack_from(
+                '<I', d, struct.unpack_from('<I', d, 8 + font * 12)[0] + 0x154)[0]:
+            raise SystemExit('%s: %dx%d exceeds the font\'s maximum unpacked size'
+                             % (os.path.basename(path), bw, bh))
+        struct.pack_into('<I', d, at, bw)
+        struct.pack_into('<HH', d, at + 8, bw, bh)
     struct.pack_into('<I', d, at + 4, len(payload))
     d[at + 16:at + 16 + len(payload)] = payload
     for i in range(len(payload), room):                 # scrub the old tail
@@ -227,19 +286,23 @@ def main():
         if a.glyph not in g:
             raise SystemExit('%s has no %04X' % (name, a.glyph))
         font, w, h, old, at = g[a.glyph]
-        px = stylise(silhouette(V, idx, w, h))
+        res = RES.get(name, 1)
+        W, H = BOX[0] * res, BOX[1] * res
+        # margin 0: the shipped icons run to the edge of their box, so this does too
+        cov = close_gaps(silhouette(V, idx, W, H, margin=0), 2 * res + 1)
+        px = stylise(cov)
         pay = fc.encode(px)
-        if fc.decode(pay, w, h) != px:
+        if fc.decode(pay, W, H) != px:
             raise SystemExit('%s: the glyph does not survive its own codec' % name)
         room = slot_of(d, g, at)
-        print('%-26s %04X %3dx%-3d  was %5d b, now %5d b, slot %5d  %s'
-              % (name, a.glyph, w, h, old, len(pay), room,
+        print('%-26s %04X %3dx%-3d -> %3dx%-3d  was %5d b, now %5d b, slot %5d  %s'
+              % (name, a.glyph, w, h, W, H, old, len(pay), room,
                  'fits' if len(pay) <= room else 'TOO BIG'))
-        im = Image.new('RGBA', (w, h))
+        im = Image.new('RGBA', (W, H))
         im.putdata([(r * 17, gg * 17, b * 17, al * 17) for al, r, gg, b in px])
         shots.append(im)
         if a.write:
-            splice(path, a.glyph, pay)
+            splice(path, a.glyph, pay, (W, H))
 
     sheet = Image.new('RGBA', (max(s.width for s in shots),
                                sum(s.height + 6 for s in shots)), (20, 22, 26, 255))
