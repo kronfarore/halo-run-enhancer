@@ -1,0 +1,91 @@
+{
+ "comment": [
+  "Related weapons: which weapon plays the same ROLE in each game, used as the yardstick",
+  "a port is balanced against. A port keeps its ratio to this weapon when it moves games,",
+  "so the SAW -- 2.25x the Halo 4 Assault Rifle's magazine -- stays 2.25x whatever the",
+  "target game's automatic rifle holds.",
+  "Defined by hand on purpose: no reading of the tags can tell you that Halo 2's SMG is",
+  "what its players reach for where every other game hands them an Assault Rifle.",
+  "field_overrides name a DIFFERENT yardstick for named fields, for when the base family's weapon does not hold the same position in both games. The Assault Rifle is the fastest automatic weapon in Halo 4 (1500) and one of the slowest in Halo 3 (80), so bullet speed measured against it swings wildly; the Machine Gun sits beside the SAW in both. A game with no weapon for the override family falls back to the base family."
+ ],
+ "families": {
+  "automatic rifle": {
+   "Halo 1": "Assault Rifle",
+   "Halo 2": "SMG",
+   "Halo 3": "Assault Rifle",
+   "Halo 3: ODST": "Assault Rifle",
+   "Halo Reach": "Assault Rifle",
+   "Halo 4": "Assault Rifle"
+  },
+  "pistol": {
+   "Halo 1": "Pistol",
+   "Halo 2": "Pistol",
+   "Halo 3": "Pistol",
+   "Halo 3: ODST": "Pistol",
+   "Halo Reach": "Pistol",
+   "Halo 4": "Pistol"
+  },
+  "shotgun": {
+   "Halo 1": "Shotgun",
+   "Halo 2": "Shotgun",
+   "Halo 3": "Shotgun",
+   "Halo 3: ODST": "Shotgun",
+   "Halo Reach": "Shotgun",
+   "Halo 4": "Shotgun"
+  },
+  "sniper rifle": {
+   "Halo 1": "Sniper Rifle",
+   "Halo 2": "Sniper Rifle",
+   "Halo 3": "Sniper Rifle",
+   "Halo 3: ODST": "Sniper Rifle",
+   "Halo Reach": "Sniper Rifle",
+   "Halo 4": "Sniper Rifle"
+  },
+  "plasma rifle": {
+   "Halo 1": "Plasma Rifle",
+   "Halo 2": "Plasma Rifle",
+   "Halo 3": "Plasma Rifle",
+   "Halo 3: ODST": "Plasma Rifle",
+   "Halo Reach": "Plasma Repeater",
+   "Halo 4": "Storm Rifle"
+  },
+  "plasma pistol": {
+   "Halo 1": "Plasma Pistol",
+   "Halo 2": "Plasma Pistol",
+   "Halo 3": "Plasma Pistol",
+   "Halo 3: ODST": "Plasma Pistol",
+   "Halo Reach": "Plasma Pistol",
+   "Halo 4": "Plasma Pistol"
+  },
+  "needler": {
+   "Halo 1": "Needler",
+   "Halo 2": "Needler",
+   "Halo 3": "Needler",
+   "Halo 3: ODST": "Needler",
+   "Halo Reach": "Needler",
+   "Halo 4": "Needler"
+  },
+  "rocket launcher": {
+   "Halo 1": "Rocket Launcher",
+   "Halo 2": "Rocket Launcher",
+   "Halo 3": "Rocket Launcher",
+   "Halo 3: ODST": "Rocket Launcher",
+   "Halo Reach": "Rocket Launcher",
+   "Halo 4": "Rocket Launcher"
+  },
+  "heavy automatic": {
+   "Halo 3": "Machine Gun",
+   "Halo 4": "Machine Gun"
+  }
+ },
+ "ports": {
+  "SAW": "automatic rifle"
+ },
+ "field_overrides": {
+  "automatic rifle": {
+   "Initial Velocity": "heavy automatic",
+   "Final Velocity": "heavy automatic",
+   "Minimum Velocity": "heavy automatic"
+  }
+ }
+}
