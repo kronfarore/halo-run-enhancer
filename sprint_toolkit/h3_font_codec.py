@@ -10,7 +10,8 @@ there is no terminator.
     0x00        literal: the next TWO bytes are one pixel
     0x01..0x3F  N fully transparent pixels (N = op)
     0x40..0x7F  N copies of the PREVIOUS pixel (N = op & 0x3F)
-    0x80..0xBF  one WHITE pixel whose alpha is level (op >> 3) & 7
+    0x80..0xBF  a WHITE pixel at level (op >> 3) & 7 -- but the low three bits mean
+                something this codec never observed, so it is NEVER EMITTED (see UNUSED)
     0xC0..0xFF  two WHITE pixels, levels (op >> 3) & 7 and op & 7
 
 A payload that stops early is not truncated: the pixels it never reaches are TRANSPARENT.
@@ -115,8 +116,15 @@ def _white_level(p):
 UNUSED = frozenset((0x01, 0x88, 0x90, 0x98, 0xA8, 0xB0, 0xB8, 0xC0, 0xFF))
 
 
-def encode(pixels):
+def encode(pixels, full=False):
     """A payload that decodes back to `pixels` exactly.
+
+    `full` spells the trailing transparent tail out instead of leaving it implicit. The
+    tail is legal -- Bungie leaves one on most glyphs -- but a test frame whose last
+    pixel was opaque, and so carried no tail at all, drew cleanly where the real art
+    drew a stray mark. Spelling it out costs about five bytes at x1 and thirty at x3,
+    which is nothing against the slot, so a glyph we author says exactly what every one
+    of its pixels is.
 
     Only lossless choices are made. Bungie's own encoder additionally snaps near-white
     pixels onto the nearest alpha level; doing that here would make a round trip
@@ -126,8 +134,9 @@ def encode(pixels):
     prev = WHITE
     i = 0
     n = len(pixels)
-    while n and pixels[n - 1] == CLEAR:      # the tail is implicit
-        n -= 1
+    if not full:
+        while n and pixels[n - 1] == CLEAR:  # the tail is implicit
+            n -= 1
     while i < n:
         p = pixels[i]
         run = 1

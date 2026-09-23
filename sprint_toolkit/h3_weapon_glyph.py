@@ -303,7 +303,7 @@ def main():
         # margin 0: the shipped icons run to the edge of their box, so this does too
         cov = close_gaps(silhouette(V, idx, W, H, margin=0), 4 * res + 1)
         px = stylise(cov)
-        pay = fc.encode(px)
+        pay = fc.encode(px, full=True)
         if fc.decode(pay, W, H) != px:
             raise SystemExit('%s: the glyph does not survive its own codec' % name)
         room = slot_of(d, g, at)
