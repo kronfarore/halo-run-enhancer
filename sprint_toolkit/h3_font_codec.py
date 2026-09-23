@@ -96,6 +96,25 @@ def _white_level(p):
     return None
 
 
+#: Opcode bytes that appear in NONE of the 73895 shipped glyphs, and which this encoder
+#: therefore refuses to emit.
+#:
+#: 0x88 0x90 0x98 0xa8 0xb0 0xb8 -- the whole 0x80..0xBF family with its low three bits
+#: ZERO. Bungie writes 21318 opcodes in that family and never one of these six, while
+#: writing 0x8c alone 3171 times. So the low bits are not spare padding, they carry
+#: something, and low=0 is exactly what the 1x1 probes produced -- the only shape of that
+#: opcode this codec was ever able to observe. Rather than guess, the family is avoided:
+#: every other opcode's pixel count has been confirmed directly, so a payload built
+#: without it decodes the same however the engine reads that family.
+#:
+#: 0xFF and 0xC0 -- the two extremes of the pair form, absent from 454096 uses of it.
+#: 0x01 -- a one-pixel transparent run, absent from 39507 runs.
+#:
+#: Cost is a few bytes: a lone white pixel becomes a literal, which Bungie writes 86711
+#: times, and a lone transparent pixel does too.
+UNUSED = frozenset((0x01, 0x88, 0x90, 0x98, 0xA8, 0xB0, 0xB8, 0xC0, 0xFF))
+
+
 def encode(pixels):
     """A payload that decodes back to `pixels` exactly.
 
@@ -114,33 +133,25 @@ def encode(pixels):
         run = 1
         while i + run < n and pixels[i + run] == p and run < 63:
             run += 1
-        if p == CLEAR and run > 1:
+        if p == CLEAR and run > 1 and run not in UNUSED:
             out.append(run)                       # transparent run, no pixel needed
             prev = CLEAR
             i += run
             continue
-        if p == prev and run > 1:
+        if p == prev and run > 1 and (0x40 | run) not in UNUSED:
             out.append(0x40 | run)
             i += run
             continue
         lv = _white_level(p)
-        if lv is not None:
-            nxt = _white_level(pixels[i + 1]) if i + 1 < n else None
-            if nxt is not None:
-                out.append(0xC0 | (lv << 3) | nxt)
+        nxt = _white_level(pixels[i + 1]) if i + 1 < n else None
+        if lv is not None and nxt is not None:
+            op = 0xC0 | (lv << 3) | nxt
+            if op not in UNUSED:                  # the pair form, never the single one
+                out.append(op)
                 prev = pixels[i + 1]
                 i += 2
                 continue
-            out.append(0x80 | (lv << 3))
-            prev = p
-            i += 1
-            continue
-        if p == CLEAR:
-            out.append(1)
-            prev = CLEAR
-            i += 1
-            continue
-        out.append(0x00)
+        out.append(0x00)                          # literal: always safe, always one pixel
         out.extend(pack_pixel(p))
         prev = p
         i += 1
