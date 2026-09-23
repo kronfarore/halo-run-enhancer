@@ -118,15 +118,20 @@ def retarget(data, cls, old_path, new_path):
     if len(mine) != 1:
         raise ValueError('%d %s records of length %d -- cannot tell which is meant'
                          % (len(mine), cls, len(old_path)))
-    # A path can be pooled more than once: gpmg.model names the same path as both its
-    # render model and its collision model. Both are laid out in field order, so the
-    # k-th record of that length owns the k-th copy of the string.
-    same_length = records(data, len(old_path))
-    if len(at) != len(same_length):
-        raise ValueError('%d pooled copies of %r but %d records of that length -- the '
-                         'pairing is not determined' % (len(at), old_path,
-                                                        len(same_length)))
-    k = same_length.index(mine[0])
+    if len(at) == 1:
+        k = 0                       # one string, one record of that class: no ambiguity
+    else:
+        # A path can be pooled more than once: gpmg.model names the same path as both
+        # its render model and its collision model. Both are laid out in field order, so
+        # the k-th record of that length owns the k-th copy of the string -- but only
+        # when every record of that length is one of these copies. Otherwise a reference
+        # to some OTHER path of the same length is in the count and the pairing slides.
+        same_length = records(data, len(old_path))
+        if len(at) != len(same_length):
+            raise ValueError('%d pooled copies of %r but %d records of that length -- '
+                             'the pairing is not determined'
+                             % (len(at), old_path, len(same_length)))
+        k = same_length.index(mine[0])
     new = new_path.encode('latin-1')
     out = bytearray(data)
     out[at[k]:at[k] + len(old_path)] = new
