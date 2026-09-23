@@ -174,9 +174,12 @@ def main():
             if i < 0:
                 break
             end = bytes(u.data).find(b'\0', i)
-            tail = bytes(u.data[i + 1:end])      # keep the 'a', drop the 'n'
-            u.data[i:i + len(tail)] = tail
-            u.data[i + len(tail):end + 1] = b'\0' * (end + 1 - i - len(tail))
+            # the 'a' at i stays put and everything from the space onward slides one
+            # left; shifting from i eats the article and leaves "Picked up n SAW"
+            tail = bytes(u.data[i + 2:end])
+            u.data[i + 1:i + 1 + len(tail)] = tail
+            cut = i + 1 + len(tail)
+            u.data[cut:end + 1] = b'\0' * (end + 1 - cut)
             art += 1
     print('messages: %d glyph(s) swapped, %d string(s) renamed to %r, %d article(s) fixed'
           % (hits, named, a.name, art))
