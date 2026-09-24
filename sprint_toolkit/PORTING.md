@@ -203,6 +203,15 @@ own file rather than something reconstructed from a tag dump.
   It sits 32 units out, past the end of a shorter gun, so it has to be moved or the flash
   hangs in mid air.
 
+**Check the dump before you trust it.** The H4 render model can be exported more than once
+and the exports are NOT interchangeable: the SAW's full dump is 10736 vertices in four
+parts, a sparser one is 7916 in two, and the render method indices mean different things in
+each -- part 0 is a twelve-index decal sheet in one and the entire gun in the other. Feed
+the wrong one in and the part map drops the body, keeps a seven-index scrap, and builds a
+**two-triangle weapon** without a single error from any tool in the chain. The converter now
+refuses anything under a thousand triangles. Keep the dump somewhere durable, too: this one
+was living in %TEMP%.
+
 `tool render` reports far fewer triangles than it was given (13836 -> 8361 for the SAW).
 That is welding, not loss: the surface area is **98.4%** of what went in, and the shape
 is whole. Check the area, not the count.
@@ -286,6 +295,67 @@ green ramp out of the donor's own meter, and only the row pitch changes.
 Give the port its **own HUD**: clone the donor's `new_hud_definition` and repoint the
 weapon at it, so the donor's stays as Bungie left it.
 
+**Blue is the threshold, and it is a property of the CELL -- in Halo 2 as well.** This is
+the same rule the Halo 3 meter needed, and it was re-learnt the hard way here. A Halo 2
+meter tick carries red 0, a constant green, and BLUE counting down 254..4 across the ticks
+in order; the engine lights a pixel while its blue is above the level. Bungie's field is
+continuous -- `battle_rifle_meter` has **zero** zero-blue pixels, reading 11 columns of
+254 then 11 of 246, and two bands of 17 rows -- so the blank gap between two ticks carries
+the same threshold as the tick beside it.
+
+Paint blue only where a tick is opaque and every gap is 0, which means "still loaded"; the
+HUD samples filtered, each tick's rim mixes its own threshold with the 0 next to it, and
+every SPENT tick keeps an outline that travels with the full/empty boundary. **It is not an
+alpha problem.** Bungie's ticks are softly antialiased (alpha 9..137), so hard-edging the
+art fixes nothing -- that was tried first, and the outlines came back unchanged.
+
+### The HUD's own weapon symbol
+
+Not a glyph, and not the `backpack` widget (that is the small stowed icon at the left of
+the group). The big symbol beside the ammo is painted into
+`ui\hud\bitmaps\new_hud\backgrounds\<weapon>_bkd`, a 206x38 plate per weapon, which is
+why a port wearing the donor's plate shows the donor's gun whatever else is fixed.
+
+There is no empty plate, so rebuild one: the silhouette sits in x 105..190, y 5..33, and
+the background behind it is a smooth gradient, so interpolate each row between the pixels
+either side of the box. (Averaging other weapons' plates together instead leaves the seams
+of whatever each one covered.)
+
+Then draw the port's weapon the way Bungie draws theirs, which is worth looking at before
+writing any code:
+
+* the symbol is **flat**, a hard bright cyan silhouette -- not a shaded picture of the gun.
+  Shading the port's by its own geometry gives a dim mottled shape that sinks into the
+  plate;
+* the colour is a **vertical gradient** down the box, green at the top through cyan to blue
+  at the bottom, so take one colour per ROW out of the donor;
+* **alpha tells you nothing** about what is symbol and what is plate -- it is 190 or above
+  across the whole image. Green plus blue separates them, the plate being flat dark green;
+* every shipped symbol **fills the box top to bottom**, so fit the width and then stretch
+  vertically to fill. A long weapon drawn to one scale sits in a band across the middle and
+  comes out flat green, because that is where the gradient is;
+* close the one-pixel holes. A 13836-triangle gun at 29 rows breaks into slivers, and a
+  sliver reads as a scratch, not a gun.
+
+Only image 0 is written. Stacking all four of the donor's images into one colour plate
+makes tool import a single 206x152 bitmap, and the widget asks for sequence 0 at every
+screen size anyway.
+
+### Step 5, collision
+
+`tool collision` on the render mesh asserts in `reduce_collision_geometry.cpp`
+(`next_edge_index != edge_index`): a Halo 2 hull has to be closed, convex-ish and simple,
+and a weapon's render mesh is none of those. **Do not try to build one from the port's
+geometry.**
+
+What works is `tool extract-collision-data <donor>`, which unzips Bungie's own authored
+hull out of the donor tag exactly as `extract-render-data` unzips the render source, and
+then scaling it. Every property that makes it compile is kept and only the size changes.
+Scale it **per axis**, each axis's ratio of the two render meshes clamped to [1.0, 1.25],
+and about the hull's own centre so it does not drift off the grip: one factor big enough
+for the port's width would otherwise stretch the hull a third of a gun past the muzzle.
+The port then owns its collision tag, which matters the moment the donor is restored.
+
 ### A borrowed effect brings its own conventions
 
 Worth knowing before borrowing any effect. The port's muzzle flash sat above the muzzle,
@@ -294,6 +364,36 @@ opening. Bungie's SMG carries its barrel marker **1.40 units BELOW its own bore*
 SMG's firing effect is authored to draw that far above where it is emitted. Hung off a
 marker that is actually on the bore, it floats. Measure the donor's marker against the
 donor's bore, and adopt the difference.
+
+### Step 9, animation: what Halo 2 will not do
+
+Clone the graphs (**both** -- the weapon names one per player species) and repoint the
+weapon, so retiming the port cannot retime the weapon it was cloned from.
+
+**Fix the sounds; they are the audible half.** The graph's `snd!` references are the
+donor's, so the port reloads with the donor's noises. Point them at the balance donor's
+equivalents one for one.
+
+**Retiming can only SHORTEN.** `halo3_reload` rewrites an animation's frame count and its
+event frames, and there are no frames past the end to stretch into. So the reload the port
+can have is bounded by the longest suitable one Halo 2 ships. Measured across every
+first-person graph, with the node each one animates:
+
+    rocket launcher 112   gun only, and no reload_empty at all
+    brute shot       95   gun only
+    flak cannon      90   gun only
+    sniper rifle     72   gun + magazine
+    covenant carbine 69   gun only
+    battle rifle     58   gun + magazine
+    SMG              50   gun + magazine
+
+A magazine swap needs a `magazine` node, which only five of them have, so 72 frames is the
+ceiling for a port that reloads visibly -- against the Halo 4 SAW's own 128.
+
+And unlike a render model, **a jmad carries no source**: there is no extract verb for
+animations, and the zlib-looking runs in the file are coincidence, not a stored .jma. So
+lengthening a Halo 2 reload needs the animation codec, which is not decoded. State the
+ceiling; do not pretend the timing is done.
 
 ### Editing tags
 

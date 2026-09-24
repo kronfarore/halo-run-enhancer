@@ -1,0 +1,474 @@
+[
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Angle",
+  "block": null,
+  "src": 9.99999970909292,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Angle",
+  "block": "Aim Assist Modes",
+  "src": 9.99999970909292,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Range",
+  "block": null,
+  "src": 16.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Range",
+  "block": "Aim Assist Modes",
+  "src": 16.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Falloff Range",
+  "block": null,
+  "src": 8.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Falloff Range",
+  "block": "Aim Assist Modes",
+  "src": 8.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Near Falloff Range",
+  "block": null,
+  "src": 1.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Near Falloff Range",
+  "block": "Aim Assist Modes",
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Angle",
+  "block": null,
+  "src": 4.99999985454646,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Angle",
+  "block": "Aim Assist Modes",
+  "src": 4.99999985454646,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Range",
+  "block": null,
+  "src": 16.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Range",
+  "block": "Aim Assist Modes",
+  "src": 16.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Falloff Range",
+  "block": null,
+  "src": 8.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Falloff Range",
+  "block": "Aim Assist Modes",
+  "src": 8.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Weapon Swap Speed",
+  "field": "Ready / Put Away Animation",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Accuracy Penalties",
+  "field": "Reload Penalty",
+  "block": "Barrels",
+  "src": 2.5,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Accuracy Penalties",
+  "field": "Switch Penalty",
+  "block": "Barrels",
+  "src": 1.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Distribution Function",
+  "field": "Distribution Function",
+  "block": "Barrels",
+  "src": 0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Distribution Function",
+  "field": "Distribution Angle",
+  "block": "Barrels",
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Firing Noise",
+  "block": "Barrels",
+  "src": 4,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Impact Noise",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Detonation Noise",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Maximum Range",
+  "block": null,
+  "src": 100.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Initial Velocity",
+  "block": null,
+  "src": 1500.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Final Velocity",
+  "block": null,
+  "src": 1500.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Minimum Velocity",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Autoaim Leading Maximum Lead Time",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Air Damage Range",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Air Damage Range Max",
+  "block": null,
+  "src": 40.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Water Damage Range",
+  "block": null,
+  "src": 5.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Water Damage Range Max",
+  "block": null,
+  "src": 10.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Air Gravity Scale",
+  "block": null,
+  "src": 1.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Water Gravity Scale",
+  "block": null,
+  "src": 0.20000000298023224,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Lower Bound",
+  "block": null,
+  "src": 7.5,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Upper Bound",
+  "block": null,
+  "src": 7.5,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Upper Bound Max",
+  "block": null,
+  "src": 7.5,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Lower Bound",
+  "block": null,
+  "src": 70.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Upper Bound",
+  "block": null,
+  "src": 70.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Upper Bound Max",
+  "block": null,
+  "src": 70.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Levels",
+  "block": null,
+  "src": 0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Range",
+  "block": null,
+  "src": 1.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Range Max",
+  "block": null,
+  "src": 1.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Weapon Zoom Time",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Total Initial",
+  "block": "Magazines",
+  "src": 160,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Inventory Maximum",
+  "block": "Magazines",
+  "src": 224,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Loaded Maximum",
+  "block": "Magazines",
+  "src": 32,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Reloaded",
+  "block": "Magazines",
+  "src": 32,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Total Maximum",
+  "block": "Magazines",
+  "src": 256,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Reload Time",
+  "field": "Reload Animation",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Second",
+  "block": "Barrels",
+  "src": 10.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Second Max",
+  "block": "Barrels",
+  "src": 10.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Shots Per Fire",
+  "block": "Barrels",
+  "src": 0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Shots Per Fire Max",
+  "block": "Barrels",
+  "src": 0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Shot",
+  "block": "Barrels",
+  "src": 1,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Fire Recovery Time",
+  "field": "Fire Recovery Time",
+  "block": "Barrels",
+  "src": 0.06666667014360428,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectiles Per Shot",
+  "field": "Projectiles Per Shot",
+  "block": "Barrels",
+  "src": 1,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Error Angle",
+  "field": "Minimum Error",
+  "block": "Barrels",
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Error Angle",
+  "field": "Error Angle",
+  "block": "Barrels",
+  "src": 0.149999998838045,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Error Angle",
+  "field": "Error Angle Max",
+  "block": "Barrels",
+  "src": 2.39999998140872,
+  "dst": null,
+  "ratio": null
+ }
+]

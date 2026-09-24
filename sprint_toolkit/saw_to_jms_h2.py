@@ -39,6 +39,14 @@ OUT_SUB = 'saw'                 # data\objects\weapons\rifle\<OUT_SUB>
 SCALE = 1.0
 UNITS = 100.0                   # JMS units per world unit
 
+#: THE DUMP MATTERS, and two of them are not interchangeable. `storm_lmg_rm.xml` is the
+#: H4 SAW's full render model -- 10736 vertices in FOUR parts -- and is the one this port
+#: was built from. The `saw_*_rm.xml` files next to it are a sparser export, 7916 vertices
+#: in two parts, whose render method indices mean something else entirely: part 0 there is
+#: the whole gun, where here part 0 is a twelve-index decal sheet. Feed one of those in and
+#: PART_MATERIAL drops the body and keeps a 7-index scrap -- a two-triangle weapon, built
+#: and imported without a single error. Hence the floor in `convert`.
+#:
 #: H4 part index -> the material this port gives it, or None to drop the part.
 #: Part 0 is four triangles of a shared decal sheet and part 2 the depleted display, a
 #: second quad laid over the live one -- Halo 4 switches between them, Halo 2 would
@@ -64,7 +72,10 @@ LIFT = None
 #: forward, Y LEFT, Z up, so +Y moves it towards the middle of the screen and -Z drops it.
 #: Set from a look in game: the gun read as sitting too far right and a little high, out
 #: of the hand rather than in it. Applied to the first person model only.
-FP_NUDGE = (0.0, 1.5, -1.5)
+#:
+#: Second look: (0, 1.5, -1.5) overshot -- the gun had gone past the hand and sat too
+#: low. Back 1.0 right and 0.25 up, which is the user's read off the screenshot.
+FP_NUDGE = (0.0, 0.5, -1.25)
 
 #: How far BELOW the bore the barrel marker goes, and why it is not zero.
 #:
@@ -154,6 +165,14 @@ def convert(rm, template, node_map, lift=0.0, nudge=(0.0, 0.0, 0.0)):
         idx = indices[part['start']:part['start'] + part['count']]
         for i in range(0, len(idx) - 2, 3):
             out.tris.append((mat_index[name], (idx[i], idx[i + 1], idx[i + 2])))
+
+    # A weapon is thousands of triangles. Anything less means the part map and this dump
+    # disagree about what the render method indices mean, and the result imports happily.
+    if len(out.tris) < 1000:
+        raise SystemExit('only %d triangles came through: this dump numbers its parts '
+                         'differently (%s). Use the full storm_lmg_rm.xml.'
+                         % (len(out.tris),
+                            [(p['material'], p['count']) for p in rm['meshes'][0]['parts']]))
 
     by_name = {}
     for m in rm['markers']:

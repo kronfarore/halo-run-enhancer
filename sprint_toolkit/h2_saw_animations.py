@@ -10,13 +10,34 @@ This clones both and repoints the port, so the timing work has somewhere safe to
     objects\characters\masterchief\fp\weapons\rifle\fp_saw\fp_saw.model_animation_graph
     objects\characters\dervish\fp\weapons\rifle\fp_saw\fp_saw.model_animation_graph
 
-**The retiming itself is not done yet**, and it needs the Halo 2 jmad frame format, which
-has not been decoded here -- `h3-animation-format` is the Halo 3 one and does not carry
-over. What the port has now is a sniper rifle's timing on a drum-fed machine gun: the
-motions are a sniper's, and so are their durations. Two separate problems, and only the
-second is step 9's.
+**The SOUNDS are fixed here**, and they were the audible half: the graph carries four
+sound references and every one of them was the sniper rifle's, so the port reloaded with a
+bolt-action's noises. They now point at the SMG's, the same donor the balance follows.
 
-    python h2_saw_animations.py [--force]
+**The retiming is NOT done, and it now has a measured reason.** Halo 2 animation retiming
+can only ever SHORTEN -- `halo3_reload` rewrites an animation's frame count and its event
+frames, and there are no frames past the end to stretch into. The Halo 4 SAW's own reload
+is 128 frames; the longest first-person reload Halo 2 ships anywhere is the rocket
+launcher's 112, and of the ten graphs that reload at all only five animate a `magazine`
+node -- which is the bone a magazine swap actually moves, and the one the port's model
+carries. The sniper rifle's 72 is the longest of those five:
+
+    rocket launcher 112   gun only, and no reload_empty at all
+    brute shot       95   gun only
+    flak cannon      90   gun only
+    SNIPER RIFLE     72   gun + magazine   <- what the port has
+    covenant carbine 69   gun only
+    battle rifle     58   gun + magazine
+    SMG              50   gun + magazine
+
+So the port already reloads as slowly as Halo 2's art allows, and it reloads with its own
+magazine moving, because the H4 SAW's magazine bone is mapped onto `frame magazine`.
+Reaching the SAW's real 4.3 seconds needs animation SOURCE, and unlike a render model a
+jmad carries none: `extract-render-data` unzips a .jms out of the tag, there is no
+equivalent verb for animations, and the three zlib-looking runs in the file are
+coincidence, not a stored .jma. That is the gap, stated exactly.
+
+    python h2_saw_animations.py [--force] [--write]
 """
 import os
 import shutil
@@ -42,6 +63,19 @@ GRAPHS = [
 ]
 WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw.weapon'])
 
+#: The sniper's sound -> the SMG's equivalent. One for one: every sound the graph names
+#: has a counterpart in the SMG's set, so nothing is dropped and nothing is invented.
+SOUNDS = [
+    (B.join(['sound', 'weapons', 'sniper_rifle', 'sniper_reload']),
+     B.join(['sound', 'weapons', 'smg', 'smg_reload'])),
+    (B.join(['sound', 'weapons', 'sniper_rifle', 'sniper_ready']),
+     B.join(['sound', 'weapons', 'smg', 'smg_ready'])),
+    (B.join(['sound', 'weapons', 'sniper_rifle', 'sniper_posing']),
+     B.join(['sound', 'weapons', 'smg', 'smg_posing_var0'])),
+    (B.join(['sound', 'weapons', 'sniper_rifle', 'sniper_melee_first']),
+     B.join(['sound', 'weapons', 'smg', 'smg_melee1'])),
+]
+
 
 def main():
     force = '--force' in sys.argv
@@ -65,6 +99,18 @@ def main():
             print('   %-12s already the port\'s' % species)
             continue
         h2_tagref.set_reference(path, 'jmad', donor, port)
+
+    print('giving it the SMG noises instead of the sniper rifle ones:')
+    for _species, _donor, port in GRAPHS:
+        graph = os.path.join(TAGS, port + EXT)
+        have = h2_tagref.references(graph)
+        for old, new in SOUNDS:
+            if ('snd!', new) in have:
+                print('   %-22s already the SMG version' % os.path.basename(new))
+            elif ('snd!', old) in have:
+                h2_tagref.set_reference(graph, 'snd!', old, new)
+            else:
+                print('   %-22s not named by %s' % (os.path.basename(old), port))
 
     print('what the sniper rifle still points at, which must be untouched:')
     sniper = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'sniper_rifle',

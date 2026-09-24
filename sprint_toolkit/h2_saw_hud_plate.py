@@ -47,6 +47,10 @@ TEMP = os.environ.get('TEMP', '.')
 #: images differ in more than the weapon.
 FALLBACK_BOX = (105, 191, 5, 34)
 
+#: How far the drawing may be stretched vertically to fill the box. Bungie's symbols are
+#: authored to the plate, not to the weapon's true proportions.
+STRETCH = 1.4
+
 
 def export(tag, prefix):
     subprocess.run([os.path.join(H2EK, 'tool.exe'), 'export-bitmap-tga', tag, prefix],
@@ -71,14 +75,127 @@ def weapon_box(donor, other):
     return int(xs.min()), int(xs.max()) + 1, int(ys.min()), int(ys.max()) + 1
 
 
-def saw_mask(w, h):
-    """The SAW as a solid mask at that size, from the same geometry as the glyph."""
+def solidify(cov):
+    """Close the one-pixel holes a thin weapon leaves when it is shrunk to 29 rows.
+
+    Bungie's symbols are CHUNKY: solid blocks with a few deliberate cutouts. A 13836
+    triangle gun projected this small breaks into slivers instead, and a sliver with a
+    part-lit pixel either side of it reads as a scratch rather than as a gun. So any
+    pixel with solid neighbours on both sides, across or down, is filled in.
+    """
+    out = cov.copy()
+    full = cov >= 0.999
+    across = np.zeros_like(full)
+    down = np.zeros_like(full)
+    across[:, 1:-1] = full[:, :-2] & full[:, 2:]
+    down[1:-1, :] = full[:-2, :] & full[2:, :]
+    out[across | down] = 1.0
+    return out
+
+
+def saw_mask(w, h, ss=4):
+    """The SAW drawn side on as coverage and shading, the way the shipped plates are.
+
+    A solid silhouette is the wrong picture. Bungie's symbols are SHADED drawings -- the
+    Battle Rifle's runs from (0,151,131) on average up to (0,228,236) at its brightest,
+    with interior structure -- so a flat blob at one colour reads as a smudge however
+    good the outline is, which is what the first version of this produced.
+
+    So the mesh is rasterised properly: an orthographic side view with a z buffer, at
+    four times the final size, shading each triangle by how much its normal faces the
+    light. Coverage comes out of the same pass as the fraction of subpixels that were
+    hit, which gives the edges their antialiasing for free.
+
+    Returns (coverage 0..1, shade 0..1), both h x w.
+    """
     import h3_weapon_glyph as wg
     verts, idx = wg.mesh(MODEL)
-    cov = wg.close_gaps(wg.silhouette(verts, idx, w, h, margin=0), 3)
-    px = wg.stylise(cov)
-    return np.array([[1 if px[y * w + x][0] else 0 for x in range(w)]
-                     for y in range(h)])
+    W, H = w * ss, h * ss
+    xs = [v[0] for v in verts]
+    zs = [v[2] for v in verts]
+    # Fit the width, then stretch to fill the height, up to STRETCH. Every shipped symbol
+    # spans the box top to bottom; a long thin LMG drawn to a single scale would sit in a
+    # band across the middle, and the plate's colour is a GRADIENT down the box, so it
+    # would also come out flat green instead of running green to blue like the rest.
+    ex, ez = max(xs) - min(xs), max(zs) - min(zs)
+    sx = W / ex
+    sz = min(H / ez, sx * STRETCH)
+    ox, oy = (W - ex * sx) / 2.0, (H - ez * sz) / 2.0
+    px = [((ox + (v[0] - min(xs)) * sx), (H - oy - (v[2] - min(zs)) * sz)) for v in verts]
+
+    depth = np.full((H, W), 1e9)
+    shade = np.zeros((H, W))
+    light = np.array([0.0, -0.80, 0.60])          # from the viewer, a little above
+    for t in range(len(idx) - 2):
+        i0, i1, i2 = idx[t], idx[t + 1], idx[t + 2]
+        if i0 == i1 or i1 == i2 or i0 == i2:
+            continue                               # degenerate strip stitch
+        p = [px[i0], px[i1], px[i2]]
+        x0 = max(int(min(q[0] for q in p)), 0)
+        x1 = min(int(max(q[0] for q in p)) + 1, W)
+        y0 = max(int(min(q[1] for q in p)), 0)
+        y1 = min(int(max(q[1] for q in p)) + 1, H)
+        if x1 <= x0 or y1 <= y0:
+            continue
+        ax, ay = p[0]
+        bx, by = p[1]
+        cx, cy = p[2]
+        det = (by - cy) * (ax - cx) + (cx - bx) * (ay - cy)
+        if abs(det) < 1e-9:
+            continue
+        # the triangle's own depth and its facing, flat shaded: a weapon symbol at
+        # twenty-nine pixels tall gains nothing from interpolating either
+        d = (verts[i0][1] + verts[i1][1] + verts[i2][1]) / 3.0
+        n = np.cross(np.subtract(verts[i1], verts[i0]), np.subtract(verts[i2], verts[i0]))
+        ln = np.linalg.norm(n)
+        lit = 0.25 if ln < 1e-9 else 0.25 + 0.75 * abs(float(np.dot(n / ln, light)))
+        yy, xx = np.mgrid[y0:y1, x0:x1]
+        gx, gy = xx + 0.5, yy + 0.5
+        l0 = ((by - cy) * (gx - cx) + (cx - bx) * (gy - cy)) / det
+        l1 = ((cy - ay) * (gx - cx) + (ax - cx) * (gy - cy)) / det
+        inside = (l0 >= 0) & (l1 >= 0) & (l0 + l1 <= 1) & (d < depth[y0:y1, x0:x1])
+        if inside.any():
+            depth[y0:y1, x0:x1][inside] = d
+            shade[y0:y1, x0:x1][inside] = lit
+
+    hit = (depth < 1e9).astype(float)
+    cov = solidify(hit.reshape(h, ss, w, ss).mean((1, 3)))
+    lit = np.where(cov > 0,
+                   (shade * hit).reshape(h, ss, w, ss).sum((1, 3))
+                   / np.maximum(hit.reshape(h, ss, w, ss).sum((1, 3)), 1), 0.0)
+    return cov, lit
+
+
+def symbol_colours(donor, box):
+    """The colour the donor's symbol is drawn in, ROW BY ROW down the box.
+
+    The plate's ALPHA is no guide to what is symbol and what is plate -- it sits at 190
+    or above across the whole image, which is why the first version of this averaged the
+    background into the symbol and produced a washed out green smudge. What separates
+    them is COLOUR: the plate is a flat dark green (0,96,0) and the symbol is cyan, so
+    green plus blue tells them apart cleanly.
+
+    And the symbol is FLAT -- Bungie draws a hard, bright cyan silhouette, not a shaded
+    picture of the gun. The spread of colour in it is a vertical GRADIENT down the plate,
+    not modelling, so the port takes one colour per row and stamps it flat. Shading the
+    port's drawing by its own geometry, which the first attempt at this did, produces a
+    dim mottled shape that sinks into the background instead of reading as an icon.
+    """
+    reg = donor[box[2]:box[3], box[0]:box[1]].astype(float)
+    lum = reg[:, :, 1] + reg[:, :, 2]
+    bg = np.median(donor[box[2]:box[3], 10:100].reshape(-1, 4), 0)
+    sym = lum > bg[1] + bg[2] + 40
+    fallback = np.array([0, 228, 236, 250.0])
+    rows = []
+    for y in range(reg.shape[0]):
+        ink = reg[y][sym[y]]
+        # the brightest half of the row, so a row that catches a dark interior line of
+        # the donor's weapon still yields the colour that weapon is DRAWN in
+        if len(ink):
+            order = np.argsort(ink[:, 1] + ink[:, 2])
+            ink = ink[order[len(order) // 2:]]
+        rows.append(ink.mean(0) if len(ink) else fallback)
+    return rows
 
 
 def repaint(donor, box, mask):
@@ -88,7 +205,12 @@ def repaint(donor, box, mask):
     each row between the pixels either side of the box -- both of which are plate, never
     weapon. That is steadier than averaging other weapons' plates together, which leaves
     the seams of whatever they happened to cover.
+
+    The port's drawing is then composited over that in the donor's own colour for each
+    row, with coverage doing the blending, so the edges are antialiased against the real
+    background rather than cut out of it.
     """
+    cov, _lit = mask
     x0, x1, y0, y1 = box
     out = donor.copy()
     for y in range(y0, y1):
@@ -99,15 +221,15 @@ def repaint(donor, box, mask):
             t = (x - x0 + 1) / (span + 1)
             out[y, x] = (left * (1 - t) + right * t).astype(np.int16)
 
-    ink = donor[y0:y1, x0:x1, 3] > 0
-    region = donor[y0:y1, x0:x1]
+    rows = symbol_colours(donor, box)
     for y in range(y1 - y0):
-        row = region[y][ink[y]] if ink[y].any() else None
-        colour = (row.mean(0) if row is not None and len(row)
-                  else np.array([40, 190, 255, 255], dtype=float))
+        colour = rows[y]
         for x in range(x1 - x0):
-            if mask[y][x]:
-                out[y0 + y, x0 + x] = colour.astype(np.int16)
+            c = cov[y][x]
+            if c <= 0:
+                continue
+            base = out[y0 + y, x0 + x].astype(float)
+            out[y0 + y, x0 + x] = (base * (1 - c) + colour * c).astype(np.int16)
     return out
 
 

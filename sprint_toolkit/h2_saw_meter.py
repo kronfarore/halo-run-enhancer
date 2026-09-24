@@ -81,15 +81,14 @@ def tick_sprite(img):
     return img.crop((x0, y0, x0 + TICK_W, y1))
 
 
-def ramp(img, n):
-    """`n` colours from the donor's first tick to its last -- Bungie's cyan to green."""
-    a = np.asarray(img).astype(float)
-    alpha = a[:, :, 3]
-    ys, xs = np.nonzero(alpha)
-    first = a[ys[0] + 1, xs.min() + 2]
-    last = a[ys[-1] - 1, xs.max() - 2]
-    return [tuple(int(round(first[k] + (last[k] - first[k]) * (i / max(n - 1, 1))))
-                  for k in range(4)) for i in range(n)]
+def thresholds(n):
+    """The blue staircase: 254 down to 4, spread over however many ticks there are.
+
+    Measured off both shipped meters. The Battle Rifle runs 254..4 across its 36 ticks
+    and the SMG 254..4 across its 60, so the SPAN is fixed whatever the magazine holds
+    and only the step changes -- 7.1 for the Battle Rifle, 4.2 for the SMG, 3.5 here.
+    """
+    return [int(round(254 - i * 250.0 / max(n - 1, 1))) for i in range(n)]
 
 
 def build(rounds=ROUNDS, rows=3):
@@ -100,36 +99,44 @@ def build(rounds=ROUNDS, rows=3):
     pitch = w / float(per_row)
     row_pitch = h / float(rows)
     tick_h = int(row_pitch) - 1
-    small = sprite.resize((TICK_W, tick_h), Image.LANCZOS)
-    mask = np.asarray(small)[:, :, 3]
-    # HARD EDGES. Resampling leaves a rim of part-lit pixels, and a part-lit pixel stays
-    # visible when its tick is spent -- which in game reads as every tick having an
-    # outline, the same complaint the Halo 3 meter drew. The donor's own ticks are
-    # essentially binary (2340 pixels at alpha 137, 324 partial), so the resized mask is
-    # snapped back to that: the donor's alpha where the tick covers half a pixel or more,
-    # nothing where it does not.
-    peak = int(np.bincount(np.asarray(sprite)[:, :, 3].flatten()).argmax() or 0)
-    if peak == 0:
-        peak = int(np.asarray(sprite)[:, :, 3].max())
-    mask = np.where(mask >= peak // 2, peak, 0).astype(np.uint8)
+    small = np.asarray(sprite.resize((TICK_W, tick_h), Image.LANCZOS)).astype(np.uint8)
 
     sheet = np.zeros((h, w, 4), dtype=np.uint8)
-    colours = ramp(donor, rounds)
+    thr = thresholds(rounds)
+    edges = [int(round(c * pitch)) for c in range(per_row)] + [w]
+    bands = [int(round(r * row_pitch)) for r in range(rows)] + [h]
+
+    # THE THRESHOLD FIELD FIRST, AND IT COVERS EVERY PIXEL.
+    #
+    # Blue is the threshold and it is a property of the CELL, not of the tick -- exactly
+    # as in Halo 3, and measurable here: `battle_rifle_meter` has ZERO zero-blue pixels,
+    # its blue running 11 columns of 254, 11 of 246, 11 of 238 with no gap anywhere, and
+    # 17 rows then 17 rows down. The blank space between two ticks carries the same
+    # threshold as the tick beside it.
+    #
+    # Painting blue only where a tick is opaque leaves 0 in every gap, and 0 means "still
+    # loaded". The HUD samples the meter filtered, so each tick's outer rim mixes its own
+    # threshold with the 0 beside it and keeps drawing after the tick itself has emptied:
+    # an OUTLINE around every spent tick, travelling with the full/empty boundary. That
+    # is the complaint, in both games, and it is not an alpha problem -- Bungie's own
+    # ticks are softly antialiased (alpha 9..137), so hard-edging them fixes nothing.
+    for r in range(rows):
+        for c in range(per_row):
+            i = min(r * per_row + c, rounds - 1)
+            sheet[bands[r]:bands[r + 1], edges[c]:edges[c + 1], 2] = thr[i]
+
+    # then the tick art over it: red, green and alpha, and blue is not touched
     for i in range(rounds):
         r, c = divmod(i, per_row)
-        x = int(round(c * pitch))
-        y = int(round(r * row_pitch))
+        x = edges[c] + max((edges[c + 1] - edges[c] - TICK_W) // 2, 0)
+        y = bands[r] + max((bands[r + 1] - bands[r] - tick_h) // 2, 0)
         if x + TICK_W > w or y + tick_h > h:
             continue
-        col = colours[i]
-        for k in range(3):
-            sheet[y:y + tick_h, x:x + TICK_W, k] = np.where(mask > 0, col[k], 0)
-        # The donor's alpha AS IT IS. It already carries the meter's strength -- its
-        # ticks peak around 130, not 255 -- so multiplying by the ramp's alpha as well
-        # halves it and the meter comes out washed out.
-        sheet[y:y + tick_h, x:x + TICK_W, 3] = mask
-    print('   %d ticks, %d rows of %d, pitch %.2f x %.2f, tick %dx%d on a %dx%d sheet'
-          % (rounds, rows, per_row, pitch, row_pitch, TICK_W, tick_h, w, h))
+        for k in (0, 1, 3):
+            sheet[y:y + tick_h, x:x + TICK_W, k] = small[:, :, k]
+    print('   %d ticks, %d rows of %d, pitch %.2f x %.2f, tick %dx%d on a %dx%d sheet, '
+          'blue %d..%d' % (rounds, rows, per_row, pitch, row_pitch, TICK_W, tick_h, w, h,
+                           thr[-1], thr[0]))
     return Image.fromarray(sheet, 'RGBA')
 
 

@@ -1,0 +1,466 @@
+[
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Angle",
+  "block": null,
+  "src": 12.000000333930423,
+  "dst": 12.000000333930423,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Range",
+  "block": null,
+  "src": 18.0,
+  "dst": 18.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magnetism",
+  "field": "Magnetism Falloff Range",
+  "block": null,
+  "src": 9.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Angle",
+  "block": null,
+  "src": 4.99999985454646,
+  "dst": 6.000000166965211,
+  "ratio": 1.2000000683018939
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Range",
+  "block": null,
+  "src": 12.0,
+  "dst": 12.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Autoaim",
+  "field": "Autoaim Falloff Range",
+  "block": null,
+  "src": 6.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Rider Damage",
+  "field": "Rider Direct Damage Scale",
+  "block": null,
+  "src": 1.0,
+  "dst": 0.75,
+  "ratio": 0.75
+ },
+ {
+  "card": "Rider Damage",
+  "field": "Rider Maximum Transfer Damage Scale",
+  "block": null,
+  "src": 1.0,
+  "dst": 0.75,
+  "ratio": 0.75
+ },
+ {
+  "card": "Rider Damage",
+  "field": "Rider Minimum Transfer Damage Scale",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Weapon Swap Speed",
+  "field": "Ready / Put Away Animation",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Ramp Up",
+  "field": "Acceleration Time",
+  "block": "Barrels",
+  "src": 1.0,
+  "dst": 1.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Ramp Up",
+  "field": "Deceleration Time",
+  "block": "Barrels",
+  "src": 0.20000000298023224,
+  "dst": 0.20000000298023224,
+  "ratio": 1.0
+ },
+ {
+  "card": "Distribution Function",
+  "field": "Distribution Function",
+  "block": "Barrels",
+  "src": 0,
+  "dst": 0,
+  "ratio": null
+ },
+ {
+  "card": "Distribution Function",
+  "field": "Distribution Angle",
+  "block": "Barrels",
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Firing Noise",
+  "block": "Barrels",
+  "src": 2,
+  "dst": 2,
+  "ratio": 1.0
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Impact Noise",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Firing Noise",
+  "field": "Detonation Noise",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Lower Bound",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Upper Bound",
+  "block": null,
+  "src": 5.0,
+  "dst": 4.75,
+  "ratio": 0.95
+ },
+ {
+  "card": "Bullet Damage",
+  "field": "Damage Upper Bound Max",
+  "block": null,
+  "src": 5.0,
+  "dst": 4.75,
+  "ratio": 0.95
+ },
+ {
+  "card": "Projectile",
+  "field": "Maximum Range",
+  "block": null,
+  "src": 40.0,
+  "dst": 40.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Projectile",
+  "field": "Initial Velocity",
+  "block": null,
+  "src": 400.0,
+  "dst": 400.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Projectile",
+  "field": "Final Velocity",
+  "block": null,
+  "src": 400.0,
+  "dst": 400.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Projectile",
+  "field": "Minimum Velocity",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Autoaim Leading Maximum Lead Time",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Air Damage Range",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Projectile",
+  "field": "Air Damage Range Max",
+  "block": null,
+  "src": 40.0,
+  "dst": 40.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Projectile",
+  "field": "Water Damage Range",
+  "block": null,
+  "src": 5.0,
+  "dst": 5.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Projectile",
+  "field": "Water Damage Range Max",
+  "block": null,
+  "src": 10.0,
+  "dst": 10.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Levels",
+  "block": null,
+  "src": 0,
+  "dst": 0,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Range",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Magnification Range Max",
+  "block": null,
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Zoom",
+  "field": "Weapon Zoom Time",
+  "block": null,
+  "src": 0.0,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Total Initial",
+  "block": "Magazines",
+  "src": 180,
+  "dst": 180,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Inventory Maximum",
+  "block": "Magazines",
+  "src": 180,
+  "dst": 180,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Loaded Maximum",
+  "block": "Magazines",
+  "src": 60,
+  "dst": 60,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Reloaded",
+  "block": "Magazines",
+  "src": 60,
+  "dst": 60,
+  "ratio": 1.0
+ },
+ {
+  "card": "Magazine",
+  "field": "Rounds Total Maximum",
+  "block": "Magazines",
+  "src": 240,
+  "dst": 240,
+  "ratio": 1.0
+ },
+ {
+  "card": "Reload Time",
+  "field": "Reload Animation",
+  "block": null,
+  "src": null,
+  "dst": null,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Second",
+  "block": "Barrels",
+  "src": 15.0,
+  "dst": 15.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Second Max",
+  "block": "Barrels",
+  "src": 15.0,
+  "dst": 15.0,
+  "ratio": 1.0
+ },
+ {
+  "card": "More Shooting",
+  "field": "Shots Per Fire",
+  "block": "Barrels",
+  "src": 0,
+  "dst": 0,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Shots Per Fire Max",
+  "block": "Barrels",
+  "src": 0,
+  "dst": 0,
+  "ratio": null
+ },
+ {
+  "card": "More Shooting",
+  "field": "Rounds Per Shot",
+  "block": "Barrels",
+  "src": 1,
+  "dst": 1,
+  "ratio": 1.0
+ },
+ {
+  "card": "Fire Recovery Time",
+  "field": "Fire Recovery Time",
+  "block": "Barrels",
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Recoil",
+  "field": "Angle Change Per Shot",
+  "block": "Barrels",
+  "src": 0.0,
+  "dst": 0.0,
+  "ratio": null
+ },
+ {
+  "card": "Recoil",
+  "field": "Angle Change Per Shot Max",
+  "block": "Barrels",
+  "src": 0.3999999969014533,
+  "dst": 0.6999999945775432,
+  "ratio": 1.7499999999999998
+ },
+ {
+  "card": "Projectiles Per Shot",
+  "field": "Projectiles Per Shot",
+  "block": "Barrels",
+  "src": 1,
+  "dst": 1,
+  "ratio": 1.0
+ },
+ {
+  "card": "Error Angle",
+  "field": "Minimum Error",
+  "block": "Barrels",
+  "src": 0.2499999980634083,
+  "dst": 0.9999999922536332,
+  "ratio": 4.0
+ },
+ {
+  "card": "Error Angle",
+  "field": "Error Angle",
+  "block": "Barrels",
+  "src": 1.249999963636615,
+  "dst": 0.9999999922536332,
+  "ratio": 0.8000000170754734
+ },
+ {
+  "card": "Error Angle",
+  "field": "Error Angle Max",
+  "block": "Barrels",
+  "src": 2.750000005377918,
+  "dst": 2.750000005377918,
+  "ratio": 1.0
+ },
+ {
+  "card": "Dual Weapon Error",
+  "field": "Minimum Error",
+  "block": "Barrels",
+  "src": 0.4999999961268166,
+  "dst": 0.4999999961268166,
+  "ratio": 1.0
+ },
+ {
+  "card": "Dual Weapon Error",
+  "field": "Error Angle",
+  "block": "Barrels",
+  "src": 1.5000000417413029,
+  "dst": 1.5000000417413029,
+  "ratio": 1.0
+ },
+ {
+  "card": "Dual Weapon Error",
+  "field": "Error Angle Max",
+  "block": "Barrels",
+  "src": 3.0000000834826057,
+  "dst": 3.0000000834826057,
+  "ratio": 1.0
+ },
+ {
+  "card": "Dual Weapon Damage",
+  "field": "Dual Wield Damage Scale",
+  "block": "Barrels",
+  "src": 0.8999999761581421,
+  "dst": 0.75,
+  "ratio": 0.8333333554091282
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Lower Bound",
+  "block": null,
+  "src": 70.0,
+  "dst": 20.0,
+  "ratio": 0.2857142857142857
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Upper Bound",
+  "block": null,
+  "src": 70.0,
+  "dst": 60.0,
+  "ratio": 0.8571428571428571
+ },
+ {
+  "card": "Melee Damage",
+  "field": "Damage Upper Bound Max",
+  "block": null,
+  "src": 70.0,
+  "dst": 60.0,
+  "ratio": 0.8571428571428571
+ }
+]
