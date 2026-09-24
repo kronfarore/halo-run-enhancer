@@ -189,360 +189,350 @@ format and its three traps.
 
 ## Halo 2
 
-The donor is `objects\weapons
-ifle\gpmg`, a **cut** Bungie LMG that is in no
-scenario's palette but still owns its own first-person model, HUD and the full set of
-pickup message string ids. Nothing live has to be hijacked -- the ceiling the Halo 3 port
-ran into does not exist here. See `halo2-weapon-port-donor`.
+The donor is `objects\weapons\rifle\gpmg`, a **cut** Bungie LMG that is in no scenario's
+palette but still owns its own first-person model, HUD and the full set of pickup message
+string ids. Nothing live has to be hijacked -- the ceiling the Halo 3 port ran into does not
+exist here. See `halo2-weapon-port-donor`.
 
-    tool extract-render-data <render_model>     Bungie's ORIGINAL .jms, unzipped from the tag
-    saw_to_jms_h2.py <storm_lmg_rm.xml>         H4 geometry onto the donor's skeleton
-    h2_jms_preview.py <out.png> <jms...>        look before importing
-    tool render objects\weapons
-ifle\saw       and \sawp_saw
-    h2_tagref.py <tag> --set <class> <old> <new>  repoint a reference (model, weapon, ...)
+Halo 2 is the easiest of the three to READ (the kit hands back Bungie's own source for
+geometry and collision) and the hardest to WRITE: there is no XML importer, so every tag
+edit is a byte edit, and the animation format had to be decoded before the reload could be
+retimed.
+
+### The pipeline, end to end
+
+Each of these is one script, and each proves its own work before it keeps it.
+
+    saw_to_jms_h2.py <storm_lmg_rm.xml>            1. geometry onto the donor's skeleton
+    tool render objects\weapons\rifle\saw          and \saw\fp_saw
+    h2_saw_textures.py                             2. skin, bump maps, shaders
+    h2_saw_weapon.py                               3. its own weapon, projectile, effects
+    h2_saw_numbers.py                              4. the balance numbers
+    h2_saw_collision.py --write                    5. its own collision hull
+    h2_saw_meter.py                                7. a 72-round ammo meter
+    h2_saw_hud_plate.py --write                       the HUD's weapon symbol
+    h2_saw_reticle.py --write                         the crosshair, ported from H4
+    h2_saw_scope.py --write                           blank the scope widgets
+    h2_saw_glyph.py --write                        8. a pickup icon of its own
+    h2_saw_messages.py                                the pickup prompts
+    h2_saw_animations.py --force                   9. its own animation graphs
+    h2_anim_retime.py <graph> reloads 128 --write     and its own reload length
+    h2_saw_place.py --level <name> --build --deploy   put it in the player's hands
+
+Two tools underneath all of it:
+
+    h2_tagref.py   <tag> --set <class> <old> <new>   repoint a reference
+    h2_tagfield.py <tag> --set "<field>" <value>     change a number
 
 ### Step 1, geometry
 
-Halo 2 is the **easiest of the three** to read, because `extract-render-data` hands back
-the source: the tags still carry the zipped .jms, where `extract-import-info` finds
-nothing on H4's. So the skeleton, rest pose, markers and material strings are Bungie's
-own file rather than something reconstructed from a tag dump.
+`tool extract-render-data <render_model>` unzips Bungie's ORIGINAL .jms out of the tag, so
+the skeleton, rest pose, markers and material strings are the authored file rather than
+something reconstructed from a tag dump. (H4's `extract-import-info` finds nothing, which is
+why the other two ports work harder here.)
 
-* **JMS 8210 is not JMS 8200.** Reclaimer writes Halo 1's, and only that, so `write_jms`
+* **JMS 8210 is not JMS 8200.** Reclaimer writes Halo 1's and only that, so `write_jms`
   cannot be aimed at Halo 2: nodes carry a parent index instead of child/sibling links,
   triangles name only a material, and there is **no REGIONS section at all** -- region and
   permutation are parsed out of the material's second line, `(1) base gun`. `h2_jms.py`
-  implements the format and proves it, writing all four extracted files back byte for byte.
+  implements it and proves it by writing all four extracted files back byte for byte.
 * **Node translations are absolute**, not parent-relative as in Halo 1.
-* **JMS v is 1 - the tag's v.** Measured against the donor, not assumed.
-* Place the mesh by the donor's `right_hand` marker: the H4 weapons are authored with
-  their root bone ON the grip, so the two grips then coincide and the hand the animation
-  drives is right by construction. Scale is settled by the grip-to-foregrip span -- for
-  the SAW into the GPMG that came out at 1.0, and the left hand landed within half a unit
-  without moving a marker.
+* **JMS v is 1 - the tag's v**, measured against the donor rather than assumed.
+* Anchor the mesh on the donor's `right_hand` marker: the H4 weapons are authored with the
+  root bone ON the grip, so the two grips coincide and the hand the animation drives is
+  right by construction. Scale is settled by the grip-to-foregrip span; for the SAW into the
+  GPMG that came out at 1.0, with the left hand landing within half a unit unaided.
 * **Halo 2 fires from the barrel marker the weapon tag names**, and for the GPMG that is
   `primary_trigger`, not a `muzzle_flash` -- there is no muzzle marker in the file at all.
-  It sits 32 units out, past the end of a shorter gun, so it has to be moved or the flash
-  hangs in mid air.
+  It sits 32 units out, past the end of a shorter gun, so it has to be moved.
 
 **Check the dump before you trust it.** The H4 render model can be exported more than once
-and the exports are NOT interchangeable: the SAW's full dump is 10736 vertices in four
-parts, a sparser one is 7916 in two, and the render method indices mean different things in
-each -- part 0 is a twelve-index decal sheet in one and the entire gun in the other. Feed
-the wrong one in and the part map drops the body, keeps a seven-index scrap, and builds a
+and the exports are NOT interchangeable: the SAW's full dump is 10736 vertices in four parts,
+a sparser one is 7916 in two, and the render method indices mean different things in each --
+part 0 is a twelve-index decal sheet in one and the entire gun in the other. Feed the wrong
+one in and the part map drops the body, keeps a seven-index scrap, and builds a
 **two-triangle weapon** without a single error from any tool in the chain. The converter now
-refuses anything under a thousand triangles. Keep the dump somewhere durable, too: this one
-was living in %TEMP%.
+refuses anything under a thousand triangles. Keep the dump somewhere durable: this one was
+living in `%TEMP%`.
 
-`tool render` reports far fewer triangles than it was given (13836 -> 8361 for the SAW).
-That is welding, not loss: the surface area is **98.4%** of what went in, and the shape
-is whole. Check the area, not the count.
+`tool render` reports far fewer triangles than it was given (13836 -> 8361 for the SAW). That
+is welding, not loss: the surface area is 98.4% of what went in. Check the area, not the
+count.
 
 ### Step 2, textures and shaders
 
 `h2_saw_textures.py` decodes the Halo 4 maps, imports them and repoints the shaders.
 
-* **A Halo 2 bump map is a HEIGHT map**, not a normal map (`usage = height map`,
-  `bump height 4.0`). Halo 4's is tangent-space normals, so it has to be integrated back
-  into a height field -- Poisson, solved with an FFT, then high-passed, because an atlas
-  is dozens of unconnected islands and the solution drifts between them.
-* **Seed each .bitmap tag from a Bungie one.** The import keeps a tag's settings and
-  there is no way to set `usage` short of editing bytes, so a bump map created from
-  nothing is silently wrong. FORMAT is not inherited -- tool picks it from the content.
-* `p8-bump` is gone from H2EK's tool; bumps come out `x8r8g8b8`, 11 MB at 2048x1024, so
-  import the bump at **512x256**. Save the colour plate as RGB: an 8-bit 'L' TIFF
-  imports without a word of complaint.
-* **Measure the relief against the game.** Straight integration gave half Halo 2's slope
-  (std 8/12 per channel against the SMG's 21/27); a gain of 2.2 brings it to 14/22. The
-  tool prints both every run.
-* `tex_bump` cannot self-illuminate. For a glowing part, clone a shader that already
-  uses `tex_bump_illum` -- the shotgun's lit sight uses one map as both base and
-  self-illum, which is exactly a weapon's display panel.
+* **A Halo 2 bump map is a HEIGHT map**, not a normal map (`usage = height map`, bump height
+  4.0). Halo 4's is tangent-space normals, so it has to be integrated back into heights --
+  Poisson/FFT, then a high pass, then a gain fitted against Bungie's own slope statistics.
+* The p8-bump format is gone in MCC; x8r8g8b8 is what imports.
+* **h4_bitmap's pixel offset depends on the format**: the marker is chain+8 for dxt1,
+  chain+0 for a single-mip dxt5, and **chain+16 for dxn**. Score the result for roughness
+  rather than trusting the first offset that decodes.
 
-`h4_bitmap.py`'s pixel finder had a real bug, fixed here: the marker before the pixels is
-the mip chain **+8 for dxt1, +0 for a single-mip dxt5 and +16 for dxn**, and searching
-only for +8 put the SAW's normal map 196 bytes late -- mid block, decoding to noise while
-still consuming the file to its last byte, so the arithmetic looked perfect. Candidates
-are now decoded and the quietest wins.
+### Step 3, what the port must OWN
 
-### Steps 3 and 4, ownership and numbers
+A port that shares a tag with a live weapon changes that weapon when it is tuned. Clone and
+repoint: the projectile, both damage effects, the firing effect, and the animation graphs.
 
-`h2_saw_weapon.py` then `h2_saw_numbers.py`.
+**Borrowed effects bring their own conventions, and their own owners.** Two caught here:
 
-The cut GPMG borrows the Warthog turret's ammunition, so its projectile and both damage
-effects are shared with `h_turret_ap.weapon`, a live weapon on real maps -- tuning the
-port through them retunes the Warthog. Clone the projectile and both damage effects; the
-melee effects and the pickup sound stay shared, as they do in the Halo 1 and Halo 3
-ports, so a melee balance row would move every weapon in the game.
+* the GPMG fires the WARTHOG CHAINGUN's muzzle flash, smoke and casings, with the turret's
+  muzzle light, at 20 rounds a second. The port takes the SMG's firing effect instead;
+* the projectile kept `effects\materials\objects\weapons\warthog_chaingun`, the turret's
+  IMPACT set, which reads in game as an uncharacteristic fireball on every wall hit. That is
+  a separate reference from the firing effect and has to be repointed separately.
 
-**Numbers need `h2_tagfield.py`, and the Assembly plugins cannot help.** They give cache
-offsets; the weapon's root struct is 0x31C bytes in a cache and 0x5F4 on disk, and the
-difference is not a conversion -- solving it for the wider references, blocks and string
-ids has no whole-number answer, so the loose struct holds editor data the cache does not.
-Instead each field's offset is FOUND: read what tool says the field is, list every place
-in its own element whose bytes decode to that, write a probe into each and export again;
-the offset is where that field alone changed. Distinctive values resolve in one or two
-tries, and the answers are cached.
+**A borrowed effect is authored around its donor's marker.** The port's muzzle flash sat
+above the muzzle and the marker was not at fault -- it measured 0.07 units off the centre of
+the barrel opening. Bungie's SMG carries its barrel marker **1.40 units BELOW its own bore**,
+so the effect is drawn that far above where it is emitted. Measure the donor's marker against
+the donor's bore and adopt the difference (the GPMG's own is 3.72, so the number is per
+weapon, not per game).
 
-Four things that bite:
+### Step 4, the numbers
 
-* **Angles are stored in radians and printed in degrees.** Searching for the 1.0 tool
-  prints finds nothing; 0.0174533 finds it exactly.
-* **A field name is not unique.** tool flattens a block's nested structs into one list,
-  so `barrels` prints two "minimum error" fields and two "error angle"s -- the live ones
-  are the second. Take the wrong one and the spread lands in the rate of fire.
-* **A field reading zero cannot be found at all**, because padding reads zero too. Say so
-  rather than guess.
-* **Probe into a COPY.** A probe lands wherever the search says, and sooner or later that
-  is a string id length or a block count, which stops the tag loading. Probing the real
-  tag destroyed one when an interrupted run could not write its restore back.
+`h2_tagfield.py`. The Assembly plugins cannot be used: they give offsets in the CACHE layout
+and a loose tag is laid out differently (the weapon's root struct is 0x31C in a cache and
+0x5F4 on disk, and no arithmetic gets from one to the other). So the offset is FOUND and the
+finding is PROVED -- read what tool.exe reports, list every place in the tag whose bytes
+decode to that, probe each **into a copy**, and keep the one where that field changed and
+nothing else did. Results cache in `h2_tagfield_offsets.json`.
 
-### Steps 6 and 7, ammo pickup and the HUD readout
-
-**Step 6 is n/a in Halo 2**, as in Halo 3: there are no ammo items, you top up from
-dropped weapons. A Halo 2 weapon's nested `magazines` block is the physical magazine
-thrown out during a reload, not a pickup -- the SMG and shotgun use it, the GPMG does not.
-
-**Step 7.** `h2_saw_meter.py`. Halo 2 draws the ammo readout as ONE bitmap of tick art,
-revealed as the magazine empties, so the tick count is purely a property of the art.
-Bungie's, measured:
-
-    battle_rifle_meter  197x34   2 rows of 18 = 36   tick 6px wide, row pitch 17
-    smg_meter           198x42   3 rows of 20 = 60   tick 6px wide, row pitch 14
-
-The tick is **6 pixels wide in both**; the magazine changes the rows and their spacing.
-Keep the donor's canvas so the widget does not move, lift the tick sprite and the cyan to
-green ramp out of the donor's own meter, and only the row pitch changes.
-
-Give the port its **own HUD**: clone the donor's `new_hud_definition` and repoint the
-weapon at it, so the donor's stays as Bungie left it.
-
-**Blue is the threshold, and it is a property of the CELL -- in Halo 2 as well.** This is
-the same rule the Halo 3 meter needed, and it was re-learnt the hard way here. A Halo 2
-meter tick carries red 0, a constant green, and BLUE counting down 254..4 across the ticks
-in order; the engine lights a pixel while its blue is above the level. Bungie's field is
-continuous -- `battle_rifle_meter` has **zero** zero-blue pixels, reading 11 columns of
-254 then 11 of 246, and two bands of 17 rows -- so the blank gap between two ticks carries
-the same threshold as the tick beside it.
-
-Paint blue only where a tick is opaque and every gap is 0, which means "still loaded"; the
-HUD samples filtered, each tick's rim mixes its own threshold with the 0 next to it, and
-every SPENT tick keeps an outline that travels with the full/empty boundary. **It is not an
-alpha problem.** Bungie's ticks are softly antialiased (alpha 9..137), so hard-edging the
-art fixes nothing -- that was tried first, and the outlines came back unchanged.
-
-### The HUD's own weapon symbol
-
-Not a glyph, and not the `backpack` widget (that is the small stowed icon at the left of
-the group). The big symbol beside the ammo is painted into
-`ui\hud\bitmaps\new_hud\backgrounds\<weapon>_bkd`, a 206x38 plate per weapon, which is
-why a port wearing the donor's plate shows the donor's gun whatever else is fixed.
-
-There is no empty plate, so rebuild one: the silhouette sits in x 105..190, y 5..33, and
-the background behind it is a smooth gradient, so interpolate each row between the pixels
-either side of the box. (Averaging other weapons' plates together instead leaves the seams
-of whatever each one covered.)
-
-**The gradient is the symbol's own, and this is the part to get right** -- it is what makes
-a ported symbol look drawn rather than pasted. The symbol carries a green ramp stretched
-across ITS OWN bounding box, from about 225 at whatever row the weapon starts on to about 7
-at the row it ends on, with blue held near constant at 215. The shotgun proves it belongs to
-the symbol and not to the plate: its drawing spans rows 4..24 and ramps 218..14 over exactly
-that, while the plate underneath is running 189..22.
-
-Do NOT sample the donor row by row. The plate's own green is 222 at the top, so every
-background pixel there passes for symbol and the port's top few rows come out plate
-coloured -- a symbol that fades out exactly where it should be brightest. Take the two ENDS
-of the donor's ramp and stretch them over the port's own extent instead.
-
-In game it reads as a slow gradient that changes suddenly right at the top. That is not a
-second effect: green only overtakes blue in the last few rows, so the shape is blue almost
-all the way up and then turns cyan and white.
-
-Then draw the port's weapon the way Bungie draws theirs, which is worth looking at before
-writing any code:
-
-* the symbol is **flat**, a hard bright cyan silhouette -- not a shaded picture of the gun.
-  Shading the port's by its own geometry gives a dim mottled shape that sinks into the
-  plate;
-* the colour is a **vertical gradient** down the box, green at the top through cyan to blue
-  at the bottom, so take one colour per ROW out of the donor;
-* **alpha tells you nothing** about what is symbol and what is plate -- it is 190 or above
-  across the whole image. Green plus blue separates them, the plate being flat dark green;
-* every shipped symbol **fills the box top to bottom**, so fit the width and then stretch
-  vertically to fill. A long weapon drawn to one scale sits in a band across the middle and
-  comes out flat green, because that is where the gradient is;
-* close the one-pixel holes. A 13836-triangle gun at 29 rows breaks into slivers, and a
-  sliver reads as a scratch, not a gun.
-
-Only image 0 is written. Stacking all four of the donor's images into one colour plate
-makes tool import a single 206x152 bitmap, and the widget asks for sequence 0 at every
-screen size anyway.
-
-### The crosshair, which ports across
-
-The port wears the donor's reticle, and a donor picked for its skeleton has no reason to
-have a suitable one -- the Halo 2 SAW came out with the cut GPMG's broken circle and tick
-marks, which reads as a scope sight.
-
-**Halo 4's reticle is fully specified in H4EK's tags, so it can be ported rather than
-approximated.** Each weapon has `ui\hud\weapons\<race>\<weapon>\<weapon>.cui_screen`,
-whose widgets name their bitmap and carry `prop_left/top/width/height`, `prop_bitmap_flipx/y`
-and `prop_opacity` -- an exact layout in HUD units. The SAW's is four mirrored copies of
-`img_saw_quarter` (an L bracket, 32x32 at +-4 / +-36) plus four 8x8 ticks at 55% opacity.
-Decode the bitmaps with `h4_bitmap.py`, mirror and place them at Halo 4's own offsets, and
-scale the whole thing so it fills the footprint the donor's reticle filled.
-
-Keep the TARGET game's colour convention: Halo 2 reticles are flat blue with the shape in
-the alpha and the widget's shader tints them (green for a friendly, grey for an
-invincible target), so the H4 art supplies coverage only.
-
-Give the port its **own one-image bitmap** rather than a sequence in the shared sheet, so
-no other weapon's reticle can move. That changes the widget's sequence index to 0 -- three
-widgets (`crosshair`, `crosshair_friendly`, `crosshair_invincible`) x fullscreen,
-halfscreen and quarterscreen, nine `char integer` fields.
-
-Size it against the donor's SHAPE, not its box. The donor reticle is usually a circle
-inscribed in its image; a bracket frame drawn to the same footprint reaches into the
-corners, which the circle never does, and reads far bigger on screen. The Halo 2 SAW needed
-0.6 of the donor's footprint. Shrink the ART inside the image rather than the image, and no
-widget geometry changes.
-
-**The scope widgets DO draw, whatever the flags say.** A HUD cloned from a zooming weapon
-carries `scope_mask`, the four bracket crosshairs, `2x` and `distance_meter`, and every one
-is gated on `[Y] unit flags` = *unit is zoomed* while the port's `magnification levels` is
-0 -- so by the tag's own logic none of them can appear. In game they still did. Do not argue
-with it: give them a blank bitmap (one transparent image) and set all three sequence indices
-on each to 0. The widgets stay in the tag, drawing nothing, which needs no structural edit
-to a loose tag and re-exports as proof.
+* **Angles are RADIANS in the file and DEGREES in the export.** Searching for the 1.0 that
+  tool prints for a minimum error finds nothing; 0.0174533 finds it on the nose.
+* **A field reading zero cannot be found this way** -- padding reads zero too. Locate it in a
+  tag of the same group that has a non-zero one, and apply the same offset WITHIN the block
+  element. (The element layout is shared; the absolute offset is not.)
+* Probe into a copy, never the tag. An interrupted probe once left `saw.weapon` unloadable.
 
 ### Step 5, collision
 
 `tool collision` on the render mesh asserts in `reduce_collision_geometry.cpp`
-(`next_edge_index != edge_index`): a Halo 2 hull has to be closed, convex-ish and simple,
-and a weapon's render mesh is none of those. **Do not try to build one from the port's
-geometry.**
+(`next_edge_index != edge_index`): a Halo 2 hull has to be closed, convex-ish and simple, and
+a weapon's render mesh is none of those. **Do not try to build one from the port's geometry.**
 
-What works is `tool extract-collision-data <donor>`, which unzips Bungie's own authored
-hull out of the donor tag exactly as `extract-render-data` unzips the render source, and
-then scaling it. Every property that makes it compile is kept and only the size changes.
-Scale it **per axis**, each axis's ratio of the two render meshes clamped to [1.0, 1.25],
-and about the hull's own centre so it does not drift off the grip: one factor big enough
-for the port's width would otherwise stretch the hull a third of a gun past the muzzle.
-The port then owns its collision tag, which matters the moment the donor is restored.
+What works is `tool extract-collision-data <donor>`, which unzips Bungie's own authored hull
+out of the donor tag exactly as `extract-render-data` unzips the render source, and then
+scaling it. Every property that makes it compile is kept and only the size changes. Scale it
+**per axis**, each axis's ratio of the two render meshes clamped to [1.0, 1.25], about the
+hull's own centre so it does not drift off the grip: one factor big enough for the port's
+width would otherwise stretch the hull a third of a gun past the muzzle. The SAW came out
+[1.0, 1.25, 1.11] -- wider and taller than the GPMG, but shorter.
 
-### A borrowed effect brings its own conventions
+### Steps 6 and 7, ammo and the HUD
 
-Worth knowing before borrowing any effect. The port's muzzle flash sat above the muzzle,
-and the marker was not at fault -- it measured 0.07 units off the centre of the barrel
-opening. Bungie's SMG carries its barrel marker **1.40 units BELOW its own bore**, so the
-SMG's firing effect is authored to draw that far above where it is emitted. Hung off a
-marker that is actually on the bore, it floats. Measure the donor's marker against the
-donor's bore, and adopt the difference.
+**Step 6 is n/a in Halo 2**, as in Halo 3: there are no ammo items, you top up from dropped
+weapons. A weapon's nested `magazines` block is the physical magazine thrown out during a
+reload, not a pickup.
 
-### Step 9, animation: what Halo 2 will not do
+**The ammo meter.** Halo 2 draws the readout as ONE bitmap of tick art, revealed as the
+magazine empties, so the tick count is purely a property of the art. Bungie's, measured:
 
-Clone the graphs (**both** -- the weapon names one per player species) and repoint the
-weapon, so retiming the port cannot retime the weapon it was cloned from.
+    battle_rifle_meter  197x34   2 rows of 18 = 36   tick 6px wide, row pitch 17
+    smg_meter           198x42   3 rows of 20 = 60   tick 6px wide, row pitch 14
 
-**Fix the sounds; they are the audible half.** The graph's `snd!` references are the
-donor's, so the port reloads with the donor's noises. Point them at the balance donor's
-equivalents one for one.
+The tick is 6 pixels wide in both; the magazine changes the rows and their spacing. Keep the
+donor's canvas so the widget does not move. **And blue is the threshold, and a property of
+the CELL** -- see the rule at the top of this file, which cost a fix in two games.
 
-**The tag-side `reload time` is a TRAP, and this is TESTED.** The magazines block has
-`reload time` and `chamber time`, and seven shipped Halo 2 weapons carry a non-zero one (the
-rocket launcher 5.0s against a 3.7s animation), which makes it look exactly like the
-lengthening control. The user tested it in game: it does nothing for the player -- most
-likely an AI reload timer. Do not spend a build on it.
+**The HUD's own weapon symbol** is not a glyph, and not the `backpack` widget (that is the
+small stowed icon at the left of the group). The big symbol beside the ammo is painted into
+`ui\hud\bitmaps\new_hud\backgrounds\<weapon>_bkd`, a 206x38 plate per weapon, which is why a
+port wearing the donor's plate shows the donor's gun whatever else is fixed.
 
-**Retiming used to only SHORTEN, and does not any more.** `halo3_reload` rewrites an
-animation's frame count and its event frames and leaves the data alone, so there were no
-frames past the end to stretch into. Halo 2's codec 3 is now decoded (`h2_anim.py`) and the
-data can be rebuilt at any length (`h2_anim_retime.py`), which is what the SAW's 72-frame
-reload needed to become its own 128.
+There is no empty plate, so rebuild one: the silhouette sits in x 105..190, y 5..33, and the
+background behind it is a smooth gradient, so interpolate each row between the pixels either
+side of the box. (Averaging other weapons' plates together instead leaves the seams of
+whatever each one covered.) Then draw the port's weapon the way Bungie draws theirs:
 
-    python h2_anim_retime.py <graph> reloads 128 --write
+* the symbol is **flat**, a hard bright cyan silhouette, not a shaded picture of the gun.
+  Shading it by its own geometry gives a dim mottled shape that sinks into the plate;
+* **the gradient belongs to the SYMBOL, not the plate**, and this is the part that makes it
+  look drawn rather than pasted. It runs from about 225 at whatever row the weapon starts on
+  to about 7 at the row it ends on, with blue near constant at 215. The shotgun proves it:
+  its drawing spans rows 4..24 and ramps 218..14 over exactly that, while the plate underneath
+  runs 189..22. Take the two ENDS of the donor's ramp and stretch them over the port's own
+  extent. Do NOT sample the donor row by row -- the plate's own green is 222 at the top, so
+  every background pixel there passes for symbol and the port's top comes out plate coloured,
+  a symbol that fades exactly where it should be brightest;
+* **alpha tells you nothing** about what is symbol and what is plate -- it is 190 or above
+  across the whole image. Green plus blue separates them, the plate being flat dark green;
+* every shipped symbol **fills the box top to bottom**, so fit the width and then stretch
+  vertically to fill;
+* close the one-pixel holes: a 13836-triangle gun at 29 rows breaks into slivers, and a sliver
+  reads as a scratch, not a gun.
 
-THE FORMAT, for codec 3 -- verified to the byte on 355 animations across every character
-graph H2EK ships, so it is a rule and not a sample:
+Write only image 0. Stacking all four of the donor's images into one colour plate makes tool
+import a single 206x152 bitmap, and the widget asks for sequence 0 at every screen size anyway.
 
-* the blob is NOT pointed at from the element. It sits in the child data immediately after
-  the animation's pooled NAME, which has no terminator; the element's +0x34 gives its size;
-* a 32-byte header whose two offsets are `32 + 8b` and `+ 12c`, delimiting two tables of
-  STATIC poses -- b packed i16 quaternions, c float triples. **This is why size does not
-  track frame count**: it tracks how many nodes MOVE, and b swings from 1 to 33;
-* then a 52-byte sub-header: a codec byte at +0x04 and, at +0x05/+0x06, R and T -- the
-  nodes with an animated rotation and an animated translation -- then `A = 32 + R*f*8`,
-  `B = A + T*f*12` and the three strides f*8, f*12, f*4;
-* then the animation TWICE. `[0,A)` is R x f packed quaternions, `[A,B)` is T x f float3
-  translations followed by a 32-byte TRAILER, and the tail is a 32-byte HEADER plus R x f
-  FLOAT quaternions and T x f translations. Both halves are node-major: all of one node's
-  frames, then the next.
+**The crosshair ports across from Halo 4.** The port otherwise wears the donor's, and a donor
+picked for its skeleton has no reason to have a suitable one -- the SAW came out with the cut
+GPMG's broken circle and tick marks, which reads as a scope sight. H4EK specifies the real one
+exactly: `ui\hud\weapons\<race>\<weapon>\<weapon>.cui_screen` names each widget's bitmap and
+carries `prop_left/top/width/height`, `prop_bitmap_flipx/y` and `prop_opacity`. The SAW's is
+four mirrored copies of `img_saw_quarter` (an L bracket, 32x32 at +-4 / +-36) plus four 8x8
+ticks at 55% opacity. Decode with `h4_bitmap.py`, mirror and place at Halo 4's own offsets.
 
-**The 32 bytes are at the END of the compressed half and the START of the uncompressed one**,
-and getting that backwards costs a build: it shifts every quaternion by four frames and
-`build-cache-file` asserts in `uncompressed_static_data_codec.h` on
-`node < header->total_rotated_nodes`. Two measurements settle which way round it is -- the
-packed quaternions read as unit-length more often from offset 0 than from 32, and, because
-the two halves hold the SAME rotations, comparing them node by node gives a mean error three
-times lower at 0. The uncompressed half's 32 bytes are a real header: (codec 2, R, T, 0),
-its own A and B, its own three strides, all of which must be rewritten.
+Keep the TARGET game's colour convention: Halo 2 reticles are flat blue with the shape in the
+alpha and the widget's shader tints them (green for a friendly, grey for an invincible
+target), so the H4 art supplies coverage only. Give the port its **own one-image bitmap**
+rather than a sequence in the shared sheet, so no other weapon's reticle can move -- which
+changes the widget's sequence index to 0 on three widgets x three screen sizes.
 
-**The compressed half is a PLACEHOLDER; write something non-degenerate and let tool.exe
-replace it.** Three in-game results settle what `model-animation-reset-compression` does,
-after two wrong readings on the way:
+Size it against the donor's SHAPE, not its box: the donor is a circle inscribed in its image,
+and a bracket frame drawn to the same footprint reaches into corners the circle never touches.
+0.6 of the footprint was right for the SAW.
 
-    resampled data, not recompressed   the reload jerked at its start and end
+**The scope widgets DO draw, whatever the flags say.** A HUD cloned from a zooming weapon
+carries `scope_mask`, four bracket crosshairs, `2x` and `distance_meter`, all gated on
+`[Y] unit flags` = *unit is zoomed* while the port's `magnification levels` is 0 -- so by the
+tag's own logic none can appear, and in game they did. Do not argue with it: give them a blank
+bitmap (one transparent image) and set all three sequence indices on each to 0.
+
+### Step 8, the icons and the text
+
+See "The icon supply" below for the general rule. In Halo 2 specifically:
+
+* `tool replace-font-char <font> <tiff> <utf16>` writes the glyph, so the codec never has to
+  be cracked -- but **the codepoint argument is DECIMAL**. Hex is read as 0 and silently
+  rewrites the notdef glyph, which turns every unmapped character in the game into a SAW;
+* the tool will not ADD a codepoint, so `h2_font_add.py` creates the entry first;
+* eight English fonts draw HUD text and all eight need the glyph;
+* **MCC reads `data\UI\Localization\<LANG>_Halo2.bin`, not the map.** The index is (hash,
+  offset) pairs, NOT ordinal like Halo 3, so patch by CONTENT: find the line, pad with SPACES
+  never NUL, and keep the length, entry count and offsets invariant;
+* the prompt sets are INTERLEAVED, not one set per weapon. Getting "picked up" right does not
+  mean "take from ally" is right; check each.
+
+### Step 9, ANIMATION
+
+The long one. A port inherits the donor's animation graph, which means it inherits the
+donor's reload -- the SAW reloaded at the sniper rifle's 2.4 seconds instead of its own 4.3 --
+and, until Halo 2's animation format was decoded, that could not be changed. It can now.
+
+#### Own the graphs, and fix the sounds
+
+Clone **both** graphs (a weapon names one per player species) and repoint the weapon, so
+retiming the port cannot retime the weapon it was cloned from. Then fix the `snd!` references:
+they are the donor's, so the port reloads with the donor's noises. Point them at the balance
+donor's equivalents one for one -- the SAW took the SMG's reload, ready, melee and posing.
+
+#### The format, codec 3
+
+Verified to the byte on **355 animations across every character graph H2EK ships**, so it is
+a rule rather than a sample.
+
+Finding the data: the blob is NOT pointed at from the element. It sits in the child data
+immediately after the animation's pooled NAME, which has no terminator, so find the name and
+step past it; the element's `+0x34` gives its length.
+
+    element   +0x13 node count   +0x14 frame count   +0x34 frame data size
+              +0x50 tail size    +0x54 B
+
+    blob      32-byte header: (1, b, c, 1), then X = 32 + 8b and Y = X + 12c
+              table A   b packed i16 quaternions   STATIC rotations
+              table B   c float3                   STATIC translations
+              52-byte sub-header:
+                  +0x04 codec, +0x05 R, +0x06 T   R/T = nodes with an ANIMATED rotation
+                  +0x10 A = 32 + R*f*8            or translation
+                  +0x14 B = A + T*f*12
+                  +0x18 f*8, +0x1C f*12, +0x20 f*4
+              [0,A)   R x f packed i16 quaternions
+              [A,B)   T x f float3 translations, then a 32-byte TRAILER
+              [B,end) a 32-byte HEADER (codec 2, R, T, its own A, B, strides), then
+                      R x f FLOAT quaternions and T x f float3 translations
+
+Both halves are node-major: all of one node's frames, then the next node's.
+
+**Size does not track frame count, it tracks how many nodes MOVE** -- b swings from 1 to 33
+between animations. Believing otherwise is what made this look keyframe-compressed for a
+while; it is not, it is full frame.
+
+**The 32 bytes are at the END of the compressed half and the START of the uncompressed one.**
+Getting that backwards shifts every quaternion by four frames and `build-cache-file` asserts
+in `uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes`. Two
+measurements settle it: the packed quaternions read as unit-length more often from offset 0
+than from 32, and -- decisively, since both halves hold the same rotations -- comparing them
+node by node gives a mean error three times lower at 0.
+
+Codecs 4, 6 and 8 (`put_away`, `sprint`, `throw_grenade`, `pitch_and_turn`) are undecoded. No
+reload uses them.
+
+#### What recompression does, and why it is needed
+
+`tool model-animation-reset-compression` rebuilds the compressed half from the uncompressed
+one -- but only for the animations it judges worth recompressing. Three in-game results pin
+it down, after two wrong readings on the way:
+
+    resampled data, not recompressed   the reload jerked at its start and its end
     the same, recompressed             smooth and correct
-    ZEROS, recompressed                FROZEN: the hands hold one pose throughout
+    ZEROS, recompressed                FROZEN: the hands held one pose throughout
 
 Zeros surviving says tool did not replace them; the same data going jerky-to-smooth says it
-did. Both hold if it rebuilds that half from the uncompressed one **only for the animations
-it judges worth recompressing** -- and zeros already look optimal, so they are kept. So
-rewrite the uncompressed half properly, fill the compressed half with a quantisation of it,
-and recompress. Do not fill it with zeros, and do not trust a retimed animation that was
-never recompressed.
+did. So the compressed half is a PLACEHOLDER that this side need not understand, but it must
+not be degenerate or it will be kept. Write a quantisation of the resampled uncompressed data
+and let Bungie's compressor do the compressing.
 
-**It TRUNCATES THE TAG TO 64 BYTES when it asserts, and leaves a tool.exe holding the file
-open.** It destroyed two of the port's graphs before that was understood, and the hung
-process made later runs return silently until it was killed. Never point it at a real tag:
-write the graph to a scratch tag, run it there, and copy back only a whole result.
+**It TRUNCATES THE TAG IT IS GIVEN TO 64 BYTES WHEN IT ASSERTS**, and leaves a `tool.exe`
+running that holds the file open -- later writes fail with "Device or resource busy", further
+runs return nothing, and on the user's desktop a crash dialog waits to be dismissed. It
+destroyed two graphs before that was understood. **Never point it at a real tag**: write to a
+scratch tag, run there, copy back only a whole result, and kill the hung process on failure.
+Keep failing attempts few; each one costs the person at the keyboard a dialog.
 
-**Not every graph accepts interpolated TRANSLATIONS, so ask rather than guess.** The Master
-Chief's graph retimes with everything interpolated; the Dervish's asserts, and it is the
-translations it objects to -- hold the rotations and interpolate the translations and it
-asserts, do the reverse and it recompresses. It is not the translation data, which is
-numerically identical in the two graphs. What differs is how the whole animation scores once
-they are interpolated, and a "best score" compressor then takes a path that trips the assert.
+#### Retiming
 
-So build the best version, offer it to tool.exe, and fall back to held translations only if
-it is refused -- and report which was used. No per-graph special-casing, and a new weapon's
-graph sorts itself out.
+`h2_anim_retime.py <graph> reloads <frames> --write`. Rewrite the uncompressed half, fill the
+compressed half, hand it to tool.exe, and write only what comes back whole. Resample with the
+ENDS PINNED -- new frame t reads old position `t*(f-1)/(new-1)` -- so the first and last poses
+are the animator's exactly. Align the sign of each quaternion pair before blending.
 
-**Build every species' graph at the SAME length**, the one the source weapon actually has. A
-graph that falls back to held translations steps its position, and a fractional ratio steps
-raggedly: 72 to 128 alternates one- and two-frame holds, which in game reads as the weapon
-jittering rather than settling at the end of the reload. Retiming just that graph by a whole
-multiple (72 to 144) evens the steps out and costs one species a different reload duration,
-which is worse than the jitter.
+**Nodes that do not move are sampled, not blended.** Interpolating a node made of nothing but
+float noise is wrong on its own terms: `_qlerp` normalises, which erases the noise. The
+threshold is measured, not picked -- across the two reload graphs the nodes fall into two
+populations with nothing between them (Dervish: seven at ~1e-7 and one at 1.2e-4; Chief:
+nothing below 1.1e-2), so 1e-3 sits in the gap with two orders of magnitude of margin.
 
-**The reload card cannot even the durations up afterwards either.**
-`halo3_reload.scale_reload` rewrites the FRAME COUNT and never the frame data, so shortening
-144 to 128 leaves 144 frames of data and plays 128 of them: it truncates the tail, which is
-where the weapon settles back to rest. Build at the length you want played, and let the card
-shorten only for balance. (The same applies to the Halo 3 port, built at 128 and shortened to
-109 by its multiplier.)
+**Not every graph accepts interpolated TRANSLATIONS.** The Chief's retimes with everything
+interpolated; the Dervish's asserts, and it is the translations it objects to -- hold the
+rotations and interpolate the translations and it asserts, do the reverse and it recompresses.
+It is not the translation data, which is numerically identical in the two graphs. What differs
+is how the whole animation scores once they are interpolated. So **ask rather than guess**:
+build the best version, offer it, fall back to held translations only if refused, and report
+which was used.
 
-**A weapon has one FIRST-PERSON MODEL PER SPECIES**, not just one set of animations: the
-`first person` block holds an element for each, and each names its own model. A port starts
-with both pointing at the same one, so two rigs that hold the weapon differently -- 42-node
-Spartan, 36-node Elite -- get the same position in the view. Build a second model at its own
-offset (`saw_to_jms_h2.py --fp-sub=NAME --fp-nudge=x,y,z`), clone the .model tag, point it at
-the new render model, and retarget that ONE entry -- which needs an `nth=` aware reference
-edit, because the two paths are identical until one of them changes.
+Ruled out on the way, one run each, so none of it is repeated:
 
-WHAT THE RELOAD SHOULD BE, measured from each kit rather than chosen (frames at 30fps):
+    the graph itself        untouched recompresses, and so does an identity retime
+    the length              96, 128 and 144 assert, and 36 does too -- not per-frame deltas
+    the trailer             clearing it instead of copying it asserts
+    the placeholder         tiling the original compressed bytes asserts; only ZEROS pass,
+                            and they pass by being SKIPPED, which is the frozen weapon
+    one of a pair           retiming both byte-identical reloads asserts
+    still nodes             holding all eight of the Dervish's non-moving rotations asserts
+    per-axis                holding a node's still axes and blending its moving one is
+                            refused on BOTH graphs, including the one that takes plain
+                            blending -- a mixture is worse than either
+    per-node                blending only the nodes that visibly move is refused as well
+
+**Held translations step, and every species' graph must still be the same length.** Sampling
+means the position advances in steps, and a fractional ratio steps raggedly: 72 to 128
+alternates one- and two-frame holds, which in game reads as the weapon jittering rather than
+settling at the end of the reload. A whole multiple (72 to 144) evens it out -- and costs that
+species a different reload duration, which is worse than the jitter. Nor can the reload card
+even them up afterwards: `halo3_reload.scale_reload` rewrites the FRAME COUNT and never the
+data, so shortening 144 to 128 plays 128 of 144 frames and truncates the tail, which is where
+the weapon settles.
+
+**Event frames are not scaled yet.** The sound and effect keys live in child blocks and
+matching each chunk to its animation in a loose tag has not been done. It does not bite on a
+reload whose only key is at frame 1, which is frame 1 at any length.
+
+#### How long the reload should be
+
+Measured from each kit's own first-person graphs (frames at 30fps):
 
     H4 SAW 128   H4 AR 68   H3 AR 58   H3 SMG 50   H2 SMG 50
 
@@ -550,44 +540,38 @@ WHAT THE RELOAD SHOULD BE, measured from each kit rather than chosen (frames at 
     H3 -> H2 via the SMG             50/50 = 1.000
     balanced Halo 2 reload           109 frames, 3.64s
 
-Build the tag at the SAW's own 128 (4.27s) and let the Reload Time card take it to 109, which
-is the same multiplier the Halo 3 port uses.
+Build the tag at the SAW's **own 128** (4.27s), because the card can only shorten, and let the
+Reload Time card take it to 109 -- the same multiplier the Halo 3 port arrived at
+independently, which is a good check on the chain.
 
+#### A weapon has one first-person MODEL per species
 
+Not just one set of animations: the `first person` block holds an element for each, and each
+names its own model. A port starts with both pointing at the same one, so two rigs that hold
+the weapon differently -- 42-node Spartan, 36-node Elite -- get the same position in the view.
+Build a second model at its own offset (`saw_to_jms_h2.py --fp-sub=NAME --fp-nudge=x,y,z`),
+clone the `.model` tag, point it at the new render model, and retarget that ONE entry, which
+needs an `nth=` aware reference edit because the two paths are identical until one changes.
 
-The second copy is the uncompressed source the kit keeps so it can recompress without a
-re-import, which is exactly what `model-animation-reset-compression` does. **Rewrite both**,
-or the next recompression undoes the work.
-
-**The tail's 32 bytes are a HEADER, not a preamble** -- (codec 2, R, T, 0) then its own A
-and B and its own strides. Leaving it describing the old length is not a silent error:
-`build-cache-file` asserts in `uncompressed_static_data_codec.h` on
-`node < header->total_rotated_nodes`. The compressed half's 32 bytes, by contrast, are data.
-
-Resample with the ENDS PINNED -- new frame t reads old position `t*(f-1)/(new-1)` -- so the
-first and last poses are the animator's exactly and only the middle is interpolated. Align
-the sign of each quaternion pair before interpolating: q and -q are the same rotation, and
-without that the interpolation takes the long way round and a limb swings through the body
-between two otherwise fine frames.
-
-STILL OPEN: **codecs 4, 6 and 8** (put_away, sprint, throw_grenade, pitch_and_turn) are
-undecoded -- no reload uses them. And **event frames are not scaled yet**: the sound and
-effect keys live in child blocks and matching each chunk to its animation in a loose tag
-has not been done. It does not bite on a reload whose only key is at frame 1, which is
-frame 1 at any length, but check before reusing.
+The two graphs are NOT interchangeable, so a species whose graph will not retime keeps the
+donor's length; it cannot borrow the other's.
 
 ### Editing tags
 
-There is no XML importer, so tag edits are byte edits. A tag reference is 16 bytes with
-the class 4CC REVERSED, and the path is pooled elsewhere -- and since the file is laid
-out in strict field order, a struct's paths are interleaved with its child blocks, so
-which record owns which string cannot be recovered from the bytes alone. `h2_tagref.py`
-therefore edits **by class and current path**, refuses anything ambiguous, and re-exports
-with tool.exe afterwards to prove the list changed in exactly one place, restoring the
-file if it did not.
+There is no XML importer, so tag edits are byte edits. A tag reference is 16 bytes with the
+class 4CC REVERSED, and the path is pooled elsewhere -- and since the file is laid out in
+strict FIELD order, a struct's paths are interleaved with its child blocks, so which record
+owns which string cannot be recovered from the bytes alone. `h2_tagref.py` therefore edits
+**by class and current path**, refuses anything ambiguous, and re-exports with tool.exe
+afterwards to prove the list changed in exactly one place, restoring the file if it did not.
 
-`tool verify-tag-load` proves nothing: it is silent for a good tag AND for one that does
-not exist.
+**Write the length field BEFORE the string.** A record is not necessarily before the string it
+names -- in a HUD the last scope widget's record sits two kilobytes past the first pooled path
+-- so replacing a path with a shorter one moves that record out from under its own offset. Do
+the lengths first, which cannot move anything, then the strings from the end backwards.
+
+`tool verify-tag-load` proves nothing: it is silent for a good tag AND for one that does not
+exist.
 
 ---
 
@@ -711,12 +695,21 @@ about the render_model XML cost time every time they are rediscovered:
 ## Open, and deliberately so
 
 * **The crosshair is not ported in Halo 1 or Halo 3 yet.** Only Halo 2's is. The method is
-  in "The crosshair, which ports across" above and is game-agnostic -- H4EK specifies the
-  layout, so the same read applies -- but both earlier ports still wear their donor's
-  reticle. Do these once the Halo 2 port is finished.
+  game-agnostic -- H4EK specifies the layout, so the same read applies -- but both earlier
+  ports still wear their donor's reticle.
 * **Codecs 4, 6 and 8 of the Halo 2 animation format** are undecoded, so `ready`,
-  `put_away`, `sprint` and `throw_grenade` cannot be retimed in most graphs. Codec 3, which
-  every reload uses, is done.
+  `put_away`, `sprint` and `throw_grenade` cannot be retimed. Codec 3, which every reload
+  uses, is done.
+* **Halo 2 animation EVENT frames are not scaled** when an animation is retimed. It does
+  not bite on a reload whose only key is at frame 1, but a weapon with a mid-reload key
+  needs this first.
+* **Whether shortening truncates.** `scale_reload` rewrites the frame count and not the
+  data, so a shortened animation should play the first N frames and cut the tail -- where a
+  reload settles. Read from the code, never seen in game, and it applies to the Halo 3 port
+  as much as to Halo 2. One look with a Reload Time card applied would settle it.
+* **Halo 2 collision is the donor's hull, scaled.** Good enough for a similar weapon; a port
+  whose shape differs a lot from its donor's would want a real hull, and `tool collision`
+  will not build one from a render mesh.
 
 ---
 
