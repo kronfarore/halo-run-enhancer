@@ -77,14 +77,21 @@ Ruled out on the way, one run each, and recorded so none of it is repeated:
     retiming one of a pair  retiming both byte-identical reloads asserts
     still nodes             holding all eight of the Dervish's non-moving rotations asserts
 
-**PICK A WHOLE MULTIPLE OF THE ORIGINAL WHEN THE TRANSLATIONS ARE HELD.** Holding means
-sampling original frames, so the position advances in steps -- and with a fractional ratio
-the steps are RAGGED. 72 -> 128 is a ratio of 1.78 and the holds alternate between one and
-two frames; in game that reads as the weapon jittering instead of settling at the end of
-the reload, while the arms rotate smoothly through it. 72 -> 144 is exactly 2x and every
-hold is two frames, which is even. So a graph that falls back to held translations should
-be retimed by a whole multiple, at the cost of a slightly different duration from a graph
-that does not.
+**HELD TRANSLATIONS STEP, AND A WHOLE MULTIPLE MAKES THE STEPS EVEN** -- but that is not
+usually worth taking. Holding samples original frames, so a fractional ratio steps raggedly:
+72 -> 128 is 1.78 and the holds alternate between one and two frames, which in game reads as
+the weapon jittering rather than settling at the end of the reload. 72 -> 144 is exactly 2x
+and every hold is two frames.
+
+The catch is that it costs a DIFFERENT DURATION from a graph that interpolates, and a weapon
+whose two species reload at different speeds is worse than a small jitter. Nor can the
+Enhancer's reload card paper over it: `halo3_reload.scale_reload` rewrites the FRAME COUNT
+and never the data, so shortening 144 to 128 leaves 144 frames of data and plays 128 of them
+-- it truncates the tail, which is exactly where the weapon settles. (That applies to the
+Halo 3 port too, which is built at 128 and shortened to 109 by its balance multiplier.)
+
+So both graphs are built at the same length, the one the source weapon actually has, and the
+jitter on a graph that falls back to held translations is accepted.
 
 Two ways NOT to fix that jitter, both tried and refused by tool.exe:
 

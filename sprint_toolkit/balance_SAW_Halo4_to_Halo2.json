@@ -1277,7 +1277,7 @@
    "dst_tag": "*fp_smg*",
    "dst_nth": 0,
    "dst_index": 0,
-   "ported_src": null,
+   "ported_src": 128.0,
    "donor_dst": null,
    "legs": [
     {
@@ -1285,21 +1285,21 @@
      "frm": "Halo 4",
      "to": "Halo 3",
      "field_from": "Reload Animation",
-     "value_from": null,
+     "value_from": 68.0,
      "field_to": "Reload Animation",
-     "value_to": null
+     "value_to": 58.0
     },
     {
      "donor": "SMG",
      "frm": "Halo 3",
      "to": "Halo 2",
      "field_from": "Reload Animation",
-     "value_from": null,
+     "value_from": 50.0,
      "field_to": "Reload Animation",
-     "value_to": null
+     "value_to": 50.0
     }
    ],
-   "donor_src": null
+   "donor_src": 68.0
   },
   {
    "card": "More Shooting",
