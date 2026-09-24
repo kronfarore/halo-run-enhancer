@@ -31,17 +31,36 @@ done. It does not bite here -- every reload in the port's graph carries a single
 event at frame 1, which is frame 1 at any length -- but a weapon whose reload rings a key
 halfway through would need this first, so check before reusing.
 
-**NOT EVERY LENGTH WORKS, AND THE RULE IS NOT KNOWN.** On the sniper rifle's graph,
-`reload_full` 72 -> 128 and 72 -> 144 rebuild and pass `build-cache-file`; 72 -> 73 does not,
-and neither does `ready` at 21, 32 or 40, `moving` at 16, 21, 24 or 40, or `overlays` at 20.
-A "multiple of 16" rule fitted the first seven results and was then falsified by testing it
-(32 and 16 both assert), which is why it is not in the code. The failures assert in
-`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes`, the same place a
-mis-placed 32-byte block does, so something else about the rebuilt data is still not right.
+**THE COMPRESSED HALF IS NOT DECODED, AND IS NOT REWRITTEN BY HAND.** Its size is exactly
+R x frames x 8 plus T x frames x 12, which is what made it look like a plain array of
+per-frame quaternions -- and it is not one. The test that settles it: a full reload and an
+idle both END IN THE POSE THEY START IN, and the uncompressed half shows that exactly
+(idle: mean |frame0 - frameLast| = 0.00006, reload 0.003), while the packed half does not
+close the loop under ANY reading tried -- node-major or frame-major, at offset 0 or 32
+(0.28 to 0.68). Resampling it as if it were an array is what put a jerk at the start of the
+reload and threw the weapon to the top right at the end, in game.
 
-So **always `--check` before building**. It copies the graph to a scratch tag and runs
-`tool model-animation-reset-compression`, which exercises the same codecs in seconds and
-reproduces the assert -- rather than finding out three minutes into a map build.
+So this rewrites the UNCOMPRESSED half, which is understood and verifiable, fills the
+compressed half with a straight quantisation of it as a placeholder, and then has
+**`tool model-animation-reset-compression` regenerate the compressed half from the
+uncompressed source** -- which is precisely what that verb exists to do. Bungie's compressor
+does the compressing; nothing here has to understand it.
+
+**NOT EVERY GRAPH TAKES IT, AND THE RULE IS NOT KNOWN.** The Master Chief's graph retimes to
+128 and recompresses; the Dervish's, rebuilt exactly the same way, asserts in
+`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes` (it differs in
+having 21 rotated nodes rather than 23). Various lengths behave differently too: 128 and 144
+work where 73 does not. A "multiple of 16" rule fitted seven results and was then falsified
+by testing it, so no rule is claimed here.
+
+That is why `recompress` is a gate rather than a step: a graph that does not come back whole
+is NOT written, and the caller is told. A port that only retimes one of its two graphs is a
+known, stated outcome -- not a silent one.
+
+**`model-animation-reset-compression` TRUNCATES THE TAG IT IS GIVEN TO 64 BYTES WHEN IT
+ASSERTS**, and leaves a `tool.exe` running that holds the file open. It destroyed two of the
+port's graphs before that was understood. So it is never pointed at a real tag: the graph
+goes to a scratch tag, and only a whole result is copied back.
 
     python h2_anim_retime.py <graph> <animation> <frames> [--write]
     python h2_anim_retime.py <graph> reloads <frames> [--check] [--write]
@@ -171,9 +190,9 @@ def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed):
     return bytes(out)
 
 
-def blob_of(data, base, k, name):
+def blob_of(data, base, k, name, elem=h2_anim.ELEM):
     """Everything needed to rewrite one animation."""
-    e = h2_anim.element(data, base, k)
+    e = h2_anim.element(data, base, k, elem)
     at = h2_anim.blob(data, name)
     h = h2_anim.header(data, at)
     s = h2_anim.sub(data, at, h['data'])
@@ -183,13 +202,13 @@ def blob_of(data, base, k, name):
 
 def retime(data, name, new_frames):
     """`data` with that animation rebuilt at `new_frames`, everything else untouched."""
-    chunk, count = h2_anim.animations_chunk(data)
+    chunk, count, elem = h2_anim.animations_chunk(data)
     base = chunk + 16
     names = h2_anim.names(data, count)
     if name not in names:
         raise SystemExit('%s is not in this graph' % name)
     k = names.index(name)
-    e, at, h, s, m = blob_of(data, base, k, name)
+    e, at, h, s, m = blob_of(data, base, k, name, elem)
     if s['codec'] != 3:
         raise SystemExit('%s is codec %d; only 3 is decoded' % (name, s['codec']))
     if not m['ok']:
@@ -217,13 +236,50 @@ def retime(data, name, new_frames):
     out = bytearray(data[:at] + blob + data[at + e['size']:])
 
     # the element: frame count, total size, tail size, and B
-    el = base + k * h2_anim.ELEM
+    el = base + k * elem
     struct.pack_into('<H', out, el + 0x14, new_frames)
     struct.pack_into('<I', out, el + 0x34, size)
     struct.pack_into('<I', out, el + 0x50, tail)
     struct.pack_into('<I', out, el + 0x54, b)
     return bytes(out), dict(name=name, frames=f, new=new_frames, R=R, T=T,
                             size=e['size'], new_size=size)
+
+
+SCRATCH = os.path.join('objects', 'characters', 'masterchief', 'fp', 'weapons', 'rifle',
+                       'fp_retime_check', 'fp_retime_check')
+
+
+def recompress(data):
+    """Have tool.exe rebuild the compressed half from the uncompressed one.
+
+    This is not optional. The compressed half is not decoded, so what this module writes
+    into it is only a placeholder of the right shape; `model-animation-reset-compression`
+    replaces it with real compressed data derived from the uncompressed source, and that is
+    what the engine actually plays. It also rewrites the tag in a tighter layout -- 124-byte
+    animation elements instead of 136 -- and the retimed frame counts survive that.
+
+    **It is run on a COPY, and never on the real tag.** When it asserts it leaves the tag it
+    was given TRUNCATED TO 64 BYTES: that is what destroyed two of the port's graphs before
+    it was understood. So the graph goes to a scratch tag, and only a result that came back
+    whole is handed to the caller.
+    """
+    dst = os.path.join(h2_anim.H2EK, 'tags', SCRATCH + '.model_animation_graph')
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    try:
+        open(dst, 'wb').write(data)
+        p = subprocess.run([os.path.join(h2_anim.H2EK, 'tool.exe'),
+                            'model-animation-reset-compression', SCRATCH],
+                           cwd=h2_anim.H2EK, capture_output=True, text=True)
+        out = (p.stdout or '') + (p.stderr or '')
+        done = open(dst, 'rb').read() if os.path.exists(dst) else b''
+        if 'ASSERTION' in out or len(done) < len(data) // 4:
+            print('   tool.exe could NOT recompress it (%d bytes back): %s'
+                  % (len(done), ' '.join(out.split())[-90:]))
+            return None
+        print('   recompressed by tool.exe: %d -> %d bytes' % (len(data), len(done)))
+        return done
+    finally:
+        shutil.rmtree(os.path.dirname(dst), ignore_errors=True)
 
 
 def check(data):
@@ -273,7 +329,11 @@ def main():
     if a.check and not check(data):
         raise SystemExit('tool.exe asserts on this result; NOT written')
     if a.write:
-        open(a.graph, 'wb').write(data)
+        done = recompress(data)
+        if done is None:
+            raise SystemExit('NOT written: the rebuilt graph does not recompress, and '
+                             'without that the engine plays the placeholder')
+        open(a.graph, 'wb').write(done)
         print('written')
     else:
         print('(dry run -- pass --write)')

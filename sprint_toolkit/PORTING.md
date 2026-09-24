@@ -489,13 +489,31 @@ the two halves hold the SAME rotations, comparing them node by node gives a mean
 times lower at 0. The uncompressed half's 32 bytes are a real header: (codec 2, R, T, 0),
 its own A and B, its own three strides, all of which must be rewritten.
 
-**Not every length works, and the rule is not known.** The SAW's reload rebuilds at 128 and
-144 and builds clean; 73 does not, and neither did any length tried on `ready`, `moving` or
-`overlays`. A "multiple of 16" rule fitted the first seven results and was then falsified by
-testing it. So the retimer does not pretend to a rule -- it offers `--check`, which copies the
-graph to a scratch tag and runs `tool model-animation-reset-compression`. That exercises the
-same codecs in seconds and asserts the same way, so a bad rebuild costs a few seconds rather
-than a three-minute build. **Always --check before building.**
+**Do NOT rewrite the compressed half by hand.** Its size is exactly R x f x 8 plus T x f x
+12, which makes it look like a plain array of per-frame quaternions, and it is not one.
+The test that settles it: a reload and an idle both END IN THE POSE THEY START IN, and the
+uncompressed half shows that exactly (idle 0.00006, reload 0.003 mean |frame0 - frameLast|)
+while the packed half does not close the loop under ANY reading -- node-major or frame-major,
+at offset 0 or 32, 0.28 to 0.68. Resampling it as an array put a jerk at the start of the
+reload and threw the weapon off screen at the end, in game.
+
+So rewrite the UNCOMPRESSED half only and let **`tool model-animation-reset-compression`
+regenerate the compressed half from it**. That is what the verb is for; Bungie's compressor
+does the compressing. The retimed frame counts survive it, and it rewrites the tag in a
+tighter layout (124-byte animation elements instead of 136) which `h2_anim.py` will not read
+-- use `export-tag-to-xml` to check one.
+
+**It TRUNCATES THE TAG TO 64 BYTES when it asserts, and leaves a tool.exe holding the file
+open.** It destroyed two of the port's graphs before that was understood, and the hung
+process made later runs return silently until it was killed. Never point it at a real tag:
+write the graph to a scratch tag, run it there, and copy back only a whole result.
+
+**Not every graph or length takes it, and the rule is not known.** The Master Chief's graph
+retimes to 128; the Dervish's, rebuilt identically, asserts (21 rotated nodes against 23).
+128 and 144 work where 73 does not. A "multiple of 16" rule fitted seven results and was
+falsified on test, so none is claimed. Make the recompression a GATE -- if it does not come
+back whole, do not write the graph -- and a port that retimes one graph and not the other is
+then a stated outcome rather than a silent one.
 
 
 

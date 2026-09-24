@@ -105,24 +105,32 @@ H2EK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H2EK'
 DEFAULT = os.path.join(H2EK, 'tags', 'objects', 'characters', 'masterchief', 'fp',
                        'weapons', 'rifle', 'fp_saw', 'fp_saw.model_animation_graph')
 SIG = b'dfbt'
+#: An animation element is 136 bytes as the kit ships graphs -- and 124 after
+#: `model-animation-reset-compression` has rewritten one, which also takes the root struct
+#: from 260 to 236: the same fields in a tighter layout, whose offsets have not been
+#: mapped. The block is still FOUND in a recompressed graph, and then reported as such
+#: rather than read with the wrong offsets -- `tool export-tag-to-xml` is the way to check
+#: one of those, and it confirms the retimed frame counts survive recompression.
+ELEMS = (136, 124)
 ELEM = 136
 SUB_HEADER = 52
 
 
 def animations_chunk(data):
-    """(offset, count) of the animations block: the chunk whose elements are 136 bytes."""
+    """(offset, count, element size) of the animations block."""
     i = data.find(SIG)
     while i >= 0:
         _ver, count, elem = struct.unpack_from('<III', data, i + 4)
-        if elem == ELEM:
-            return i, count
+        if elem in ELEMS:
+            return i, count, elem
         i = data.find(SIG, i + 4)
-    raise SystemExit('no block of %d-byte elements: not a Halo 2 animation graph' % ELEM)
+    raise SystemExit('no block of %s-byte elements: not a Halo 2 animation graph'
+                     % ' or '.join(str(e) for e in ELEMS))
 
 
-def element(data, base, k):
+def element(data, base, k, elem=ELEM):
     """The numbers a single animation's element carries."""
-    e = base + k * ELEM
+    e = base + k * elem
     return {'nodes': data[e + 0x13],
             'frames': struct.unpack_from('<H', data, e + 0x14)[0],
             'size': struct.unpack_from('<I', data, e + 0x34)[0],
@@ -185,14 +193,14 @@ def sections(e, h, s):
 
 def report(path):
     data = open(path, 'rb').read()
-    chunk, count = animations_chunk(data)
+    chunk, count, elem = animations_chunk(data)
     base = chunk + 16
     print('%s  %d bytes, %d animations' % (os.path.basename(path), len(data), count))
     print('%-28s %-5s %-6s %-4s %-4s %-7s %-8s %s'
           % ('name', 'frms', 'codec', 'R', 'T', 'size', 'tail', 'checks'))
     good = 0
     for k, name in enumerate(names(data, count)):
-        e = element(data, base, k)
+        e = element(data, base, k, elem)
         at = blob(data, name)
         if at < 0:
             print('%-28s  no blob found' % name)
@@ -209,7 +217,7 @@ def report(path):
         print('%-28s %-5d %-6d %-4d %-4d %-7d %-8d %s'
               % (name, e['frames'], s['codec'], s['R'], s['T'], e['size'], m['tail'],
                  ' '.join(checks)))
-    total = sum(1 for k, n in enumerate(names(data, count))
+    total = sum(1 for _k, n in enumerate(names(data, count))
                 if sub(data, blob(data, n), header(data, blob(data, n))['data'])['codec'] == 3)
     print('%d of %d codec-3 animations decode exactly' % (good, total))
 
