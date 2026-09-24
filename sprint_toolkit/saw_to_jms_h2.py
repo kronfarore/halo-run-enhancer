@@ -60,6 +60,12 @@ PART_MATERIAL = {0: None, 1: 'saw_gun', 2: None, 3: 'saw_display'}
 #: LIFT=None measures it from the two files; a number overrides.
 LIFT = None
 
+#: Where the first-person weapon sits in the view, after the lift. Halo's axes are X
+#: forward, Y LEFT, Z up, so +Y moves it towards the middle of the screen and -Z drops it.
+#: Set from a look in game: the gun read as sitting too far right and a little high, out
+#: of the hand rather than in it. Applied to the first person model only.
+FP_NUDGE = (0.0, 1.5, -1.5)
+
 #: How far BELOW the bore the barrel marker goes, and why it is not zero.
 #:
 #: The first look in game said the muzzle flash sat above the muzzle. The marker was not
@@ -108,11 +114,11 @@ def measure_lift(src, template, anchor):
     return ((min(donor) + max(donor)) - (min(port) + max(port))) / 2.0
 
 
-def convert(rm, template, node_map, lift=0.0):
+def convert(rm, template, node_map, lift=0.0, nudge=(0.0, 0.0, 0.0)):
     """A Halo 2 JMS: the SAW's mesh under the template's skeleton and markers."""
     src = decompress(rm)
     anchor = {mk.name: mk for mk in template.markers}['right_hand'].pos
-    anchor = (anchor[0], anchor[1], anchor[2] + lift)
+    anchor = (anchor[0] + nudge[0], anchor[1] + nudge[1], anchor[2] + lift + nudge[2])
 
     out = h2_jms.Model()
     out.nodes = list(template.nodes)
@@ -186,8 +192,10 @@ def main():
             anchor = {mk.name: mk for mk in template.markers}['right_hand'].pos
             lift = LIFT if LIFT is not None else measure_lift(decompress(rm), template,
                                                               anchor)
-            print('   lifting the first person mesh %.2f units' % lift)
-        jm = convert(rm, template, node_map, lift)
+            print('   lifting the first person mesh %.2f units, nudging %s'
+                  % (lift, FP_NUDGE))
+        jm = convert(rm, template, node_map, lift,
+                     FP_NUDGE if lift else (0.0, 0.0, 0.0))
         h2_jms.write(out_path, jm)
         xs = [v.pos[0] for v in jm.verts]
         zs = [v.pos[2] for v in jm.verts]

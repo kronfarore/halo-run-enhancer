@@ -102,6 +102,16 @@ def build(rounds=ROUNDS, rows=3):
     tick_h = int(row_pitch) - 1
     small = sprite.resize((TICK_W, tick_h), Image.LANCZOS)
     mask = np.asarray(small)[:, :, 3]
+    # HARD EDGES. Resampling leaves a rim of part-lit pixels, and a part-lit pixel stays
+    # visible when its tick is spent -- which in game reads as every tick having an
+    # outline, the same complaint the Halo 3 meter drew. The donor's own ticks are
+    # essentially binary (2340 pixels at alpha 137, 324 partial), so the resized mask is
+    # snapped back to that: the donor's alpha where the tick covers half a pixel or more,
+    # nothing where it does not.
+    peak = int(np.bincount(np.asarray(sprite)[:, :, 3].flatten()).argmax() or 0)
+    if peak == 0:
+        peak = int(np.asarray(sprite)[:, :, 3].max())
+    mask = np.where(mask >= peak // 2, peak, 0).astype(np.uint8)
 
     sheet = np.zeros((h, w, 4), dtype=np.uint8)
     colours = ramp(donor, rounds)
