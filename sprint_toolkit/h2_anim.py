@@ -61,9 +61,24 @@ FRAME, which is the whole point of this file:
 
 A and B are not sizes, they are the boundaries of the sections that follow the sub-header:
 
-    [0, A)      32 bytes, then R nodes x frames x 8: a packed i16 quaternion PER FRAME
-    [A, B)      T nodes x frames x 12: three floats, a translation PER FRAME
-    [B, end)    the tail, whose size is exactly the element's first stream size (+0x50)
+    [0, A)      R nodes x frames x 8: a packed i16 quaternion PER FRAME
+    [A, B)      T nodes x frames x 12: three floats, a translation PER FRAME,
+                then a 32-byte TRAILER
+    [B, end)    the tail, whose size is exactly the element's first stream size (+0x50):
+                a 32-byte HEADER, then the same animation at full precision --
+                R x frames x 16 float quaternions and T x frames x 12 translations
+
+**The 32 bytes are at the END of the compressed half and at the START of the uncompressed
+one**, and getting that backwards is not a silent error -- it shifts every quaternion by
+four frames and `build-cache-file` asserts in `uncompressed_static_data_codec.h` on
+`node < header->total_rotated_nodes`. Two measurements settle it: reading the packed
+quaternions from offset 0 yields more unit-length ones than reading from 32, and comparing
+the packed half against the float half node by node and frame by frame gives a mean error
+three times lower at 0 than at 32 (the two halves hold the same rotations, so they can be
+checked against each other).
+
+The uncompressed half's 32 bytes are a real header -- (codec 2, R, T, 0), then its own A
+and B and its own three strides -- and must be rewritten when the length changes.
 
 **Those two formulas hold on all eleven codec-3 animations, to the byte, and the tail
 lands exactly on the element's own number every time.** That is the finding: the rotation

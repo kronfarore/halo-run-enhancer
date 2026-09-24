@@ -456,38 +456,69 @@ rocket launcher 5.0s against a 3.7s animation), which makes it look exactly like
 lengthening control. The user tested it in game: it does nothing for the player -- most
 likely an AI reload timer. Do not spend a build on it.
 
-**Retiming can only SHORTEN.** `halo3_reload` rewrites an animation's frame count and its
-event frames, and there are no frames past the end to stretch into. So the reload the port
-can have is bounded by the longest suitable one Halo 2 ships. Measured across every
-first-person graph, with the node each one animates:
+**Retiming used to only SHORTEN, and does not any more.** `halo3_reload` rewrites an
+animation's frame count and its event frames and leaves the data alone, so there were no
+frames past the end to stretch into. Halo 2's codec 3 is now decoded (`h2_anim.py`) and the
+data can be rebuilt at any length (`h2_anim_retime.py`), which is what the SAW's 72-frame
+reload needed to become its own 128.
 
-    rocket launcher 112   gun only, and no reload_empty at all
-    brute shot       95   gun only
-    flak cannon      90   gun only
-    sniper rifle     72   gun + magazine
-    covenant carbine 69   gun only
-    battle rifle     58   gun + magazine
-    SMG              50   gun + magazine
+    python h2_anim_retime.py <graph> reloads 128 --write
 
-A magazine swap needs a `magazine` node, which only five of them have, so 72 frames is the
-ceiling for a port that reloads visibly -- against the Halo 4 SAW's own 128.
+THE FORMAT, for codec 3 -- verified to the byte on 355 animations across every character
+graph H2EK ships, so it is a rule and not a sample:
 
-And unlike a render model, **a jmad carries no source**: there is no extract verb for
-animations, and the zlib-looking runs in the file are coincidence, not a stored .jma.
+* the blob is NOT pointed at from the element. It sits in the child data immediately after
+  the animation's pooled NAME, which has no terminator; the element's +0x34 gives its size;
+* a 32-byte header whose two offsets are `32 + 8b` and `+ 12c`, delimiting two tables of
+  STATIC poses -- b packed i16 quaternions, c float triples. **This is why size does not
+  track frame count**: it tracks how many nodes MOVE, and b swings from 1 to 33;
+* then a 52-byte sub-header: a codec byte at +0x04 and, at +0x05/+0x06, R and T -- the
+  nodes with an animated rotation and an animated translation -- then `A = 32 + R*f*8`,
+  `B = A + T*f*12` and the three strides f*8, f*12, f*4;
+* then the animation TWICE. `[0,A)` is R x f packed quaternions, `[A,B)` is T x f float3
+  translations followed by a 32-byte TRAILER, and the tail is a 32-byte HEADER plus R x f
+  FLOAT quaternions and T x f translations. Both halves are node-major: all of one node's
+  frames, then the next.
 
-`tool model-animation-reset-compression` does not help either: it RE-compresses, choosing
-by score, and ignores the per-animation `desired compression` (whose six options are best
-score / compression / accuracy / fullframe / small keyframe / large keyframe -- there is no
-uncompressed).
+**The 32 bytes are at the END of the compressed half and the START of the uncompressed one**,
+and getting that backwards costs a build: it shifts every quaternion by four frames and
+`build-cache-file` asserts in `uncompressed_static_data_codec.h` on
+`node < header->total_rotated_nodes`. Two measurements settle which way round it is -- the
+packed quaternions read as unit-length more often from offset 0 than from 32, and, because
+the two halves hold the SAME rotations, comparing them node by node gives a mean error three
+times lower at 0. The uncompressed half's 32 bytes are a real header: (codec 2, R, T, 0),
+its own A and B, its own three strides, all of which must be rewritten.
 
-**What is known about the data, which is where lengthening has to happen.** In the loose
-tag the animations block is 136 bytes per element, and +0x34 is the frame data size, with
-+0x50 and +0x54 two streams inside it. Those sizes are NOT proportional to frame count --
-35-frame melee takes 23412 bytes and 70-frame posing only 29152 -- so Halo 2 is keyframe
-compressed, not full frame like Halo 3's codec 8. That is the good news: a keyframe stream
-stores frame INDICES, so lengthening should be arithmetic on those indices plus the frame
-count, with nothing invented and no resampling. Decoding the per-node keyframe layout is
-the remaining work.
+**Not every length works, and the rule is not known.** The SAW's reload rebuilds at 128 and
+144 and builds clean; 73 does not, and neither did any length tried on `ready`, `moving` or
+`overlays`. A "multiple of 16" rule fitted the first seven results and was then falsified by
+testing it. So the retimer does not pretend to a rule -- it offers `--check`, which copies the
+graph to a scratch tag and runs `tool model-animation-reset-compression`. That exercises the
+same codecs in seconds and asserts the same way, so a bad rebuild costs a few seconds rather
+than a three-minute build. **Always --check before building.**
+
+
+
+The second copy is the uncompressed source the kit keeps so it can recompress without a
+re-import, which is exactly what `model-animation-reset-compression` does. **Rewrite both**,
+or the next recompression undoes the work.
+
+**The tail's 32 bytes are a HEADER, not a preamble** -- (codec 2, R, T, 0) then its own A
+and B and its own strides. Leaving it describing the old length is not a silent error:
+`build-cache-file` asserts in `uncompressed_static_data_codec.h` on
+`node < header->total_rotated_nodes`. The compressed half's 32 bytes, by contrast, are data.
+
+Resample with the ENDS PINNED -- new frame t reads old position `t*(f-1)/(new-1)` -- so the
+first and last poses are the animator's exactly and only the middle is interpolated. Align
+the sign of each quaternion pair before interpolating: q and -q are the same rotation, and
+without that the interpolation takes the long way round and a limb swings through the body
+between two otherwise fine frames.
+
+STILL OPEN: **codecs 4, 6 and 8** (put_away, sprint, throw_grenade, pitch_and_turn) are
+undecoded -- no reload uses them. And **event frames are not scaled yet**: the sound and
+effect keys live in child blocks and matching each chunk to its animation in a loose tag
+has not been done. It does not bite on a reload whose only key is at frame 1, which is
+frame 1 at any length, but check before reusing.
 
 ### Editing tags
 
@@ -627,8 +658,9 @@ about the render_model XML cost time every time they are rediscovered:
   in "The crosshair, which ports across" above and is game-agnostic -- H4EK specifies the
   layout, so the same read applies -- but both earlier ports still wear their donor's
   reticle. Do these once the Halo 2 port is finished.
-* **A Halo 2 reload cannot be lengthened yet.** See step 9: the ceiling is the donor's
-  frame count until the keyframe layout is decoded.
+* **Codecs 4, 6 and 8 of the Halo 2 animation format** are undecoded, so `ready`,
+  `put_away`, `sprint` and `throw_grenade` cannot be retimed in most graphs. Codec 3, which
+  every reload uses, is done.
 
 ---
 
