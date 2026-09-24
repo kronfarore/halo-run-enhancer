@@ -141,6 +141,16 @@ def main():
             raise SystemExit('no %s to restore from' % os.path.basename(backup))
         shutil.copy(backup, path)
         print('restored %s' % os.path.basename(path))
+        # and the DEPLOYED map with it: restoring the scenario alone leaves MCC playing
+        # the built one, which is the state that looks like a restore and is not.
+        stock = os.path.join(MCC, a.level + '.map.og')
+        live = os.path.join(MCC, a.level + '.map')
+        if os.path.exists(stock):
+            shutil.copy(stock, live)
+            print('   put the stock map back, %.0f MB' % (os.path.getsize(live) / 1e6))
+        else:
+            print('   no %s.map.og -- the deployed map is left as it is'
+                  % a.level)
         check(a.level)
         return
 

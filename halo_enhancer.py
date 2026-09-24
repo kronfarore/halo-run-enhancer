@@ -10353,8 +10353,11 @@ class OptionsDialog(QDialog):
         self._ports_anim_cb.setToolTip(
             "Scale the port's reload / ready / put-away animations by the same yardstick, "
             "so its timing keeps the same relation to the donor weapon that it had at "
-            "home. The patcher resamples the animation in the map, so it can be made "
-            "longer as well as shorter.")
+            "home.\n\nIn Halo 1 the frame data is resampled, so an animation can be made "
+            "longer as well as shorter. In every other game only the frame COUNT is "
+            "rewritten: an animation can be shortened, and a shortened one plays fewer of "
+            "its frames rather than playing faster, so its tail is cut. Ports are built at "
+            "the length they should play and scaled down from there.")
         gform.addRow("Animations:", self._ports_anim_cb)
         lay.addWidget(gen)
         self._ports_boxes = {}
