@@ -9,6 +9,29 @@ only kit that ships real source tags for every weapon.
 
 ---
 
+## Outlined ammo ticks: always the same cause
+
+Recorded here because it has now cost a fix in two games, and the WRONG fix was tried
+first in the second one. If spent ticks keep a lit rim that travels with the full/empty
+boundary as the magazine drains:
+
+**The threshold channel is a property of the CELL, not of the tick, and it must cover
+every pixel.** Halo 1, 2 and 3 all light a meter pixel by comparing a channel of the art
+against the ammo level (Halo 1 luminance, Halo 2 and 3 blue), and Bungie's own art carries
+that value across the blank gaps too -- `battle_rifle_meter` has ZERO zero-blue pixels.
+Paint it only where a tick is opaque and every gap reads 0, which means "still loaded";
+the HUD samples filtered, so each tick's rim mixes its own threshold with the 0 beside it
+and keeps drawing after the tick has emptied.
+
+Lay the threshold field down FIRST as a continuous staircase over the whole bitmap, then
+stamp the tick art over it without touching that channel.
+
+**It is not an alpha problem, so do not hard-edge the art.** That was tried in Halo 2 and
+changed nothing, because Bungie's ticks are softly antialiased (alpha 9..137) and always
+were. Hard edges only throw the antialiasing away.
+
+---
+
 ## What "ported" actually means
 
 A port is not done when it appears in game. Nine things have to be true, and Halo 3
@@ -341,6 +364,35 @@ Only image 0 is written. Stacking all four of the donor's images into one colour
 makes tool import a single 206x152 bitmap, and the widget asks for sequence 0 at every
 screen size anyway.
 
+### The crosshair, which ports across
+
+The port wears the donor's reticle, and a donor picked for its skeleton has no reason to
+have a suitable one -- the Halo 2 SAW came out with the cut GPMG's broken circle and tick
+marks, which reads as a scope sight.
+
+**Halo 4's reticle is fully specified in H4EK's tags, so it can be ported rather than
+approximated.** Each weapon has `ui\hud\weapons\<race>\<weapon>\<weapon>.cui_screen`,
+whose widgets name their bitmap and carry `prop_left/top/width/height`, `prop_bitmap_flipx/y`
+and `prop_opacity` -- an exact layout in HUD units. The SAW's is four mirrored copies of
+`img_saw_quarter` (an L bracket, 32x32 at +-4 / +-36) plus four 8x8 ticks at 55% opacity.
+Decode the bitmaps with `h4_bitmap.py`, mirror and place them at Halo 4's own offsets, and
+scale the whole thing so it fills the footprint the donor's reticle filled.
+
+Keep the TARGET game's colour convention: Halo 2 reticles are flat blue with the shape in
+the alpha and the widget's shader tints them (green for a friendly, grey for an
+invincible target), so the H4 art supplies coverage only.
+
+Give the port its **own one-image bitmap** rather than a sequence in the shared sheet, so
+no other weapon's reticle can move. That changes the widget's sequence index to 0 -- three
+widgets (`crosshair`, `crosshair_friendly`, `crosshair_invincible`) x fullscreen,
+halfscreen and quarterscreen, nine `char integer` fields.
+
+**The scope widgets are not the problem.** A HUD cloned from a zooming weapon does carry
+`scope_mask`, `2x`, `distance_meter` and four bracket widgets, but every one is gated on
+`[Y] unit flags` = *unit is zoomed*, and a port with `magnification levels` 0 can never
+enter that state. Check the gate before trying to remove anything: what looks like a scope
+overlay is usually the reticle art itself.
+
 ### Step 5, collision
 
 `tool collision` on the render mesh asserts in `reduce_collision_geometry.cpp`
@@ -374,6 +426,11 @@ weapon, so retiming the port cannot retime the weapon it was cloned from.
 donor's, so the port reloads with the donor's noises. Point them at the balance donor's
 equivalents one for one.
 
+**The tag-side `reload time` is a TRAP.** The magazines block has `reload time` and
+`chamber time`, and seven shipped Halo 2 weapons carry a non-zero one (the rocket launcher
+5.0s against a 3.7s animation), which makes it look exactly like the lengthening control.
+It does not drive the PLAYER's reload. Do not spend a build on it.
+
 **Retiming can only SHORTEN.** `halo3_reload` rewrites an animation's frame count and its
 event frames, and there are no frames past the end to stretch into. So the reload the port
 can have is bounded by the longest suitable one Halo 2 ships. Measured across every
@@ -391,9 +448,21 @@ A magazine swap needs a `magazine` node, which only five of them have, so 72 fra
 ceiling for a port that reloads visibly -- against the Halo 4 SAW's own 128.
 
 And unlike a render model, **a jmad carries no source**: there is no extract verb for
-animations, and the zlib-looking runs in the file are coincidence, not a stored .jma. So
-lengthening a Halo 2 reload needs the animation codec, which is not decoded. State the
-ceiling; do not pretend the timing is done.
+animations, and the zlib-looking runs in the file are coincidence, not a stored .jma.
+
+`tool model-animation-reset-compression` does not help either: it RE-compresses, choosing
+by score, and ignores the per-animation `desired compression` (whose six options are best
+score / compression / accuracy / fullframe / small keyframe / large keyframe -- there is no
+uncompressed).
+
+**What is known about the data, which is where lengthening has to happen.** In the loose
+tag the animations block is 136 bytes per element, and +0x34 is the frame data size, with
++0x50 and +0x54 two streams inside it. Those sizes are NOT proportional to frame count --
+35-frame melee takes 23412 bytes and 70-frame posing only 29152 -- so Halo 2 is keyframe
+compressed, not full frame like Halo 3's codec 8. That is the good news: a keyframe stream
+stores frame INDICES, so lengthening should be arithmetic on those indices plus the frame
+count, with nothing invented and no resampling. Decoding the per-node keyframe layout is
+the remaining work.
 
 ### Editing tags
 

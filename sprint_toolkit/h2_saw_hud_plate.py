@@ -166,36 +166,35 @@ def saw_mask(w, h, ss=4):
     return cov, lit
 
 
-def symbol_colours(donor, box):
-    """The colour the donor's symbol is drawn in, ROW BY ROW down the box.
+def symbol_ramp(donor, box):
+    """The two ends of the gradient the donor's symbol is drawn with.
 
-    The plate's ALPHA is no guide to what is symbol and what is plate -- it sits at 190
-    or above across the whole image, which is why the first version of this averaged the
-    background into the symbol and produced a washed out green smudge. What separates
-    them is COLOUR: the plate is a flat dark green (0,96,0) and the symbol is cyan, so
-    green plus blue tells them apart cleanly.
+    Measured across the battle rifle, the SMG and the shotgun, and they agree. A symbol
+    is BLUE at a near constant 215, and its GREEN is a ramp -- but the ramp belongs to
+    the SYMBOL, not to the plate: it runs from about 225 at whatever row the weapon
+    starts on down to about 7 at the row it ends on, whichever rows those are. The
+    shotgun's drawing spans rows 4..24 and ramps 218..14 over exactly that span, while
+    the plate underneath is running 189..22 there. So it is stretched to fit the weapon.
 
-    And the symbol is FLAT -- Bungie draws a hard, bright cyan silhouette, not a shaded
-    picture of the gun. The spread of colour in it is a vertical GRADIENT down the plate,
-    not modelling, so the port takes one colour per row and stamps it flat. Shading the
-    port's drawing by its own geometry, which the first attempt at this did, produces a
-    dim mottled shape that sinks into the background instead of reading as an icon.
+    That is also why the gradient reads as "slow, then sudden": green only overtakes
+    blue in the last few rows at the top, so the shape is blue almost all the way up and
+    then turns cyan and white right at the end.
+
+    Sampling the donor row by row, which is what this did before, gets the top wrong:
+    the plate's own green is 222 up there, so every background pixel passes for symbol
+    and the port's top comes out plate coloured and faded.
     """
     reg = donor[box[2]:box[3], box[0]:box[1]].astype(float)
-    lum = reg[:, :, 1] + reg[:, :, 2]
-    bg = np.median(donor[box[2]:box[3], 10:100].reshape(-1, 4), 0)
-    sym = lum > bg[1] + bg[2] + 40
-    fallback = np.array([0, 228, 236, 250.0])
     rows = []
     for y in range(reg.shape[0]):
-        ink = reg[y][sym[y]]
-        # the brightest half of the row, so a row that catches a dark interior line of
-        # the donor's weapon still yields the colour that weapon is DRAWN in
-        if len(ink):
-            order = np.argsort(ink[:, 1] + ink[:, 2])
-            ink = ink[order[len(order) // 2:]]
-        rows.append(ink.mean(0) if len(ink) else fallback)
-    return rows
+        bg = np.median(donor[box[2] + y, 10:100], 0)
+        # BLUE above this ROW's background blue: the plate has none, the symbol has 215
+        ink = reg[y][reg[y][:, 2] > bg[2] + 60]
+        rows.append(ink.mean(0) if len(ink) >= 3 else None)
+    lit = [y for y, r in enumerate(rows) if r is not None]
+    if not lit:
+        return np.array([0, 225, 215, 250.0]), np.array([0, 7, 215, 250.0])
+    return rows[lit[0]], rows[lit[-1]]
 
 
 def repaint(donor, box, mask):
@@ -206,9 +205,10 @@ def repaint(donor, box, mask):
     weapon. That is steadier than averaging other weapons' plates together, which leaves
     the seams of whatever they happened to cover.
 
-    The port's drawing is then composited over that in the donor's own colour for each
-    row, with coverage doing the blending, so the edges are antialiased against the real
-    background rather than cut out of it.
+    The port's drawing is then composited over that, its own gradient stretched over its
+    own vertical extent the way every shipped symbol's is, with coverage doing the
+    blending so the edges are antialiased against the real background rather than cut out
+    of it.
     """
     cov, _lit = mask
     x0, x1, y0, y1 = box
@@ -221,9 +221,13 @@ def repaint(donor, box, mask):
             t = (x - x0 + 1) / (span + 1)
             out[y, x] = (left * (1 - t) + right * t).astype(np.int16)
 
-    rows = symbol_colours(donor, box)
+    top, bottom = symbol_ramp(donor, box)
+    drawn = [y for y in range(y1 - y0) if cov[y].max() > 0]
+    first, last = (drawn[0], drawn[-1]) if drawn else (0, y1 - y0 - 1)
+    span = max(last - first, 1)
     for y in range(y1 - y0):
-        colour = rows[y]
+        t = min(max((y - first) / float(span), 0.0), 1.0)
+        colour = top + (bottom - top) * t
         for x in range(x1 - x0):
             c = cov[y][x]
             if c <= 0:

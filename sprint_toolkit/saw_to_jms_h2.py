@@ -74,8 +74,8 @@ LIFT = None
 #: of the hand rather than in it. Applied to the first person model only.
 #:
 #: Second look: (0, 1.5, -1.5) overshot -- the gun had gone past the hand and sat too
-#: low. Back 1.0 right and 0.25 up, which is the user's read off the screenshot.
-FP_NUDGE = (0.0, 0.5, -1.25)
+#: low. Back 1.0 right and 0.25 up. Third look: a further 0.25 up.
+FP_NUDGE = (0.0, 0.5, -1.0)
 
 #: How far BELOW the bore the barrel marker goes, and why it is not zero.
 #:

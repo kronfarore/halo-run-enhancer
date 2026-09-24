@@ -3,10 +3,25 @@
   "damage lower bound": 108,
   "damage upper bound": 112
  },
+ "model_animation_graph": {
+  "animations[12].desired compression": 4104
+ },
+ "new_hud_definition": {
+  "bitmap widgets[11].fullscreen sequence index": 1540,
+  "bitmap widgets[11].halfscreen sequence index": 1541,
+  "bitmap widgets[11].quarterscreen sequence index": 1542,
+  "bitmap widgets[12].fullscreen sequence index": 1660,
+  "bitmap widgets[12].halfscreen sequence index": 1661,
+  "bitmap widgets[12].quarterscreen sequence index": 1662,
+  "bitmap widgets[3].fullscreen sequence index": 580,
+  "bitmap widgets[3].halfscreen sequence index": 581,
+  "bitmap widgets[3].quarterscreen sequence index": 582
+ },
  "weapon": {
   "barrels[0].error angle#1": 3548,
   "barrels[0].minimum error#1": 3544,
   "barrels[0].rounds per second": 3436,
+  "magazines[0].reload time": 2514,
   "magazines[0].rounds loaded maximum": 3126,
   "magazines[0].rounds reloaded": 3140,
   "magazines[0].rounds total initial": 3122,
