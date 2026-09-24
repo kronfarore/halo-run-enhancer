@@ -7,16 +7,17 @@ codec 3 decoded (`h2_anim.py`) the data can be rebuilt instead, at any length.
 
 A codec-3 blob holds the animation TWICE, which is what the layout turned out to mean:
 
-    [0, A)      32 bytes, then R nodes x frames x 8   packed i16 quaternion per frame
-    [A, B)                     T nodes x frames x 12  float3 translation per frame
-    [B, end)    32 bytes, then R nodes x frames x 16  FLOAT quaternion per frame
-                               T nodes x frames x 12  float3 translation per frame
+    [0, A)      R nodes x frames x 8   packed i16 quaternion per frame
+    [A, B)      T nodes x frames x 12  float3 translation per frame, then a 32-byte TRAILER
+    [B, end)    a 32-byte HEADER, then R x frames x 16 FLOAT quaternions
+                                   and T x frames x 12 float3 translations
 
 The first pair is what the engine plays; the second is the uncompressed source the kit kept
 so it can recompress without a re-import (which is exactly what
 `tool model-animation-reset-compression` does). Both are node-major -- all of one node's
-frames, then the next node's -- and both are rewritten here, because leaving the source at
-the old length would make the next recompression undo the work.
+frames, then the next node's. **The 32 bytes are at the END of the compressed half and the
+START of the uncompressed one**; getting that backwards shifts every quaternion by four
+frames and the build asserts.
 
 Every array is resampled with the ENDS PINNED: new frame t reads old position
 t*(frames-1)/(new-1), so the first and last poses are exactly the ones the animator set and
@@ -152,8 +153,14 @@ def _write_vecs(vecs):
     return bytes(out)
 
 
-def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed):
+def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False):
     """One of the blob's two halves, resampled: rotations then translations.
+
+    `blank` writes the COMPRESSED half as zeros instead of as a quantisation of the
+    resampled data. That is the one thing that makes the Dervish's graph recompress, and
+    whether tool.exe then rebuilds that half from the uncompressed one -- a working
+    animation -- or keeps the zeros -- a frozen one -- is the open question. It is an
+    experiment, not the default.
 
     The 32 bytes are in a DIFFERENT PLACE in each half, which cost a build to find out.
 
@@ -171,6 +178,9 @@ def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed):
     """
     rot_size = 16 if not packed else 8
     span = nodes_r * frames * rot_size + nodes_t * frames * 12
+    if packed and blank:
+        return bytes(nodes_r * new_frames * rot_size
+                     + nodes_t * new_frames * 12 + PRE)
     out = bytearray()
     if not packed:
         head = bytearray(data[at:at + PRE])
@@ -208,7 +218,7 @@ def blob_of(data, base, k, name, elem=h2_anim.ELEM):
     return e, at, h, s, m
 
 
-def retime(data, name, new_frames):
+def retime(data, name, new_frames, blank=False):
     """`data` with that animation rebuilt at `new_frames`, everything else untouched."""
     chunk, count, elem = h2_anim.animations_chunk(data)
     base = chunk + 16
@@ -224,7 +234,7 @@ def retime(data, name, new_frames):
 
     f, R, T = e['frames'], s['R'], s['T']
     data_at = at + h['data'] + SUB
-    first = _half(data, data_at, R, T, f, new_frames, True)
+    first = _half(data, data_at, R, T, f, new_frames, True, blank)
     second = _half(data, at + h['data'] + SUB + s['B'], R, T, f, new_frames, False)
 
     a = PRE + R * new_frames * 8
@@ -339,6 +349,8 @@ def main():
                                       'animation whose name contains reload')
     ap.add_argument('frames', type=int)
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--blank', action='store_true',
+                    help='write the compressed half as zeros (the experiment)')
     ap.add_argument('--check', action='store_true',
                     help='run the result past tool.exe before trusting it')
     a = ap.parse_args()
@@ -347,7 +359,7 @@ def main():
     names = ([n for n in h2_anim.names(data, h2_anim.animations_chunk(data)[1])
               if 'reload' in n] if a.animation == 'reloads' else [a.animation])
     for name in names:
-        data, info = retime(data, name, a.frames)
+        data, info = retime(data, name, a.frames, a.blank)
         print('%-28s %d -> %d frames   %d -> %d bytes  (R=%d T=%d)'
               % (info['name'], info['frames'], info['new'], info['size'],
                  info['new_size'], info['R'], info['T']))
