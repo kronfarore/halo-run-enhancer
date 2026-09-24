@@ -48,10 +48,18 @@ does the compressing; nothing here has to understand it.
 
 **NOT EVERY GRAPH TAKES IT, AND THE RULE IS NOT KNOWN.** The Master Chief's graph retimes to
 128 and recompresses; the Dervish's, rebuilt exactly the same way, asserts in
-`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes` (it differs in
-having 21 rotated nodes rather than 23). Various lengths behave differently too: 128 and 144
-work where 73 does not. A "multiple of 16" rule fitted seven results and was then falsified
-by testing it, so no rule is claimed here.
+`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes` (it has 21 rotated
+nodes against 23, and a 36-node Elite skeleton against 42). Its UNTOUCHED graph recompresses
+fine and so does an identity retime, so it is the rebuild it objects to, not the graph.
+
+Zeroing the compressed half makes the Dervish graph recompress -- and that is NOT adopted,
+because of what the next test showed. Recompressing the untouched graph and the same graph
+with one compressed half zeroed gives DIFFERENT output (206637 against 202761 bytes). If
+tool.exe rebuilt that half purely from the uncompressed one, the two would be identical. So
+the placeholder is not simply discarded, and zeros could ship a frozen animation. Against
+that sits the in-game evidence: the same data without recompression played with a jerk and
+with recompression played smoothly, which says the rebuild does happen. The two do not
+reconcile yet, so nothing is shipped on the strength of either.
 
 That is why `recompress` is a gate rather than a step: a graph that does not come back whole
 is NOT written, and the caller is told. A port that only retimes one of its two graphs is a
@@ -249,6 +257,22 @@ SCRATCH = os.path.join('objects', 'characters', 'masterchief', 'fp', 'weapons', 
                        'fp_retime_check', 'fp_retime_check')
 
 
+def _clear_hung():
+    """Kill the tool.exe an assert leaves behind.
+
+    An assert does not just truncate the tag: it leaves tool.exe running, which holds the
+    file open (later writes fail with "Device or resource busy" and further runs return
+    nothing), and on the user's desktop it raises a crash dialog that has to be dismissed
+    before anything is released. So every failure cleans up after itself, and a caller
+    should keep the number of failing attempts small.
+    """
+    try:
+        subprocess.run(['taskkill', '/F', '/IM', 'tool.exe'],
+                       capture_output=True, text=True, timeout=30)
+    except Exception:
+        pass
+
+
 def recompress(data):
     """Have tool.exe rebuild the compressed half from the uncompressed one.
 
@@ -275,6 +299,7 @@ def recompress(data):
         if 'ASSERTION' in out or len(done) < len(data) // 4:
             print('   tool.exe could NOT recompress it (%d bytes back): %s'
                   % (len(done), ' '.join(out.split())[-90:]))
+            _clear_hung()
             return None
         print('   recompressed by tool.exe: %d -> %d bytes' % (len(data), len(done)))
         return done
