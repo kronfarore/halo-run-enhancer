@@ -77,6 +77,23 @@ Ruled out on the way, one run each, and recorded so none of it is repeated:
     retiming one of a pair  retiming both byte-identical reloads asserts
     still nodes             holding all eight of the Dervish's non-moving rotations asserts
 
+**PICK A WHOLE MULTIPLE OF THE ORIGINAL WHEN THE TRANSLATIONS ARE HELD.** Holding means
+sampling original frames, so the position advances in steps -- and with a fractional ratio
+the steps are RAGGED. 72 -> 128 is a ratio of 1.78 and the holds alternate between one and
+two frames; in game that reads as the weapon jittering instead of settling at the end of
+the reload, while the arms rotate smoothly through it. 72 -> 144 is exactly 2x and every
+hold is two frames, which is even. So a graph that falls back to held translations should
+be retimed by a whole multiple, at the cost of a slightly different duration from a graph
+that does not.
+
+Two ways NOT to fix that jitter, both tried and refused by tool.exe:
+
+    per-axis      hold a node's still axes and blend its moving one. Refused on BOTH
+                  graphs, including the Chief's, which accepts plain blending -- a mixture
+                  is worse than either. `_translations` is kept, unused, as the record.
+    per-node      blend only the nodes that visibly move (0 and 4, the pair that is still
+                  travelling at the end) and hold the rest. Also refused.
+
 That is why `recompress` is a gate rather than a step: a graph that does not come back whole
 is NOT written, and the caller is told. A port that only retimes one of its two graphs is a
 known, stated outcome -- not a silent one.
@@ -155,6 +172,42 @@ def _nearest(values, new_frames):
         return [list(values[0])]
     return [list(values[min(int(round(t * (old - 1) / float(new_frames - 1))), old - 1)])
             for t in range(new_frames)]
+
+
+def _translations(vecs, new_frames):
+    """NOT USED, and kept for the record: resample per AXIS rather than per node.
+
+    It looked like the answer -- hold the still axes, blend the moving one -- and tool.exe
+    refuses it on BOTH graphs, including the Chief's, which accepts plain blending. So a
+    mixture of held and blended axes is worse than either, which is worth knowing before
+    anyone tries it again.
+
+    A translation node is usually a mixture. The Dervish reload's node 0 has an X that is
+    exactly constant, a Y that varies by 1e-9 -- pure float noise -- and a Z that ramps
+    5cm over the last dozen frames. Holding the whole node to protect the noisy axes froze
+    the one axis you can see, and in game that stair-stepped: the weapon jittered instead
+    of settling while the arms rotated smoothly through it.
+
+    So each axis is judged on its own. An axis that does not move is SAMPLED, which keeps
+    its noise intact and keeps the compressor from reclassifying it; an axis that moves is
+    BLENDED, which is what makes the motion smooth. For a still axis the two agree to far
+    below float precision, so nothing is traded away.
+    """
+    old = len(vecs)
+    if old == new_frames or old == 1:
+        return [list(v) for v in vecs] if old == new_frames else [list(vecs[0])] * new_frames
+    out = [[0.0, 0.0, 0.0] for _ in range(new_frames)]
+    for c in range(3):
+        axis = [v[c] for v in vecs]
+        still = max(axis) - min(axis) < CONSTANT
+        for t in range(new_frames):
+            pos = t * (old - 1) / float(new_frames - 1) if new_frames > 1 else 0.0
+            if still:
+                out[t][c] = axis[min(int(round(pos)), old - 1)]
+            else:
+                i = min(int(pos), old - 2)
+                out[t][c] = _lerp(axis[i], axis[i + 1], pos - i)
+    return out
 
 
 def _resample(values, new_frames, blend):
@@ -260,12 +313,14 @@ def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False,
     t0 = o + nodes_r * frames * rot_size
     for n in range(nodes_t):
         vecs = _read_vecs(data, t0 + n * frames * 12, frames)
-        if translations == 'hold':
-            out += _write_vecs(_nearest(vecs, new_frames))
-        else:
+        blend_it = (translations == 'interpolate'
+                    or (not isinstance(translations, str) and n in translations))
+        if blend_it:
             out += _write_vecs(_resample(vecs, new_frames,
                                          lambda a_, b_, t: [_lerp(a_[k], b_[k], t)
                                                             for k in range(3)]))
+        else:
+            out += _write_vecs(_nearest(vecs, new_frames))
     if packed:
         # THE TRAILER. Carrying the original's through is wrong once the length changes:
         # it describes the 72-frame animation, and a stale one is what made the first
@@ -424,6 +479,8 @@ def main():
                     help="what to put in the compressed half's 32-byte trailer")
     ap.add_argument('--blank', action='store_true',
                     help='write the compressed half as zeros (the experiment)')
+    ap.add_argument('--translate-nodes', default='',
+                    help='interpolate only these translation nodes, hold the rest')
     ap.add_argument('--check', action='store_true',
                     help='run the result past tool.exe before trusting it')
     a = ap.parse_args()
@@ -439,13 +496,16 @@ def main():
     # Rather than guess at a compressor's scoring, ask it: build the best version, and if
     # it will not take that, hold the translations instead and say so.
     done = None
-    for mode in ('interpolate', 'hold'):
+    modes = ([[int(x) for x in a.translate_nodes.split(',')]] if a.translate_nodes
+             else ['interpolate', 'hold'])
+    for mode in modes:
         data = source
         for name in names:
             data, info = retime(data, name, a.frames, a.blank, a.trailer, mode)
             print('%-28s %d -> %d frames   %d -> %d bytes  (R=%d T=%d, translations %s)'
                   % (info['name'], info['frames'], info['new'], info['size'],
-                     info['new_size'], info['R'], info['T'], mode))
+                     info['new_size'], info['R'], info['T'],
+                     mode if isinstance(mode, str) else 'nodes %s' % mode))
         if not (a.write or a.check):
             break
         done = recompress(data)

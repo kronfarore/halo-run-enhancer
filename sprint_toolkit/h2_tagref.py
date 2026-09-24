@@ -173,23 +173,58 @@ def retarget_all(data, cls, old_path, new_path):
     return bytes(out)
 
 
-def set_reference(tag_path, cls, old_path, new_path, every=False):
-    """Repoint a reference and prove it with tool.exe, or put the tag back."""
+def retarget_one(data, cls, old_path, new_path, which, rec):
+    """`data` with the `which`th pooled copy of `old_path` repointed, using record `rec`.
+
+    For a tag that names the same path twice -- a weapon's `first person` block holds one
+    model per species, and a port starts with both pointing at the same one -- neither copy
+    can be told from the other by content. They CAN be told apart by order, since the file
+    is laid out in field order, and anyway the caller need not be right: every combination
+    is offered to tool.exe and the one that produces the intended list is kept.
+    """
+    at = pooled(data, old_path)
+    new = new_path.encode('latin-1')
+    out = bytearray(data)
+    struct.pack_into('<I', out, rec + 8, len(new))      # the length first, as ever
+    out[at[which]:at[which] + len(old_path)] = new
+    return bytes(out)
+
+
+def set_reference(tag_path, cls, old_path, new_path, every=False, nth=None):
+    """Repoint a reference and prove it with tool.exe, or put the tag back.
+
+    `nth` picks WHICH of several identical references to move, counted over the list
+    tool.exe reports. Without it, an ambiguous edit is still refused.
+    """
     before = references(tag_path)
     if (cls, old_path) not in before:
         raise ValueError('tool.exe does not report a %s reference to %s in %s'
                          % (cls, old_path, tag_path))
-    if not every and before.count((cls, old_path)) > 1:
-        raise ValueError('%s names %s %d times; pass every=True to move them together'
+    if not every and nth is None and before.count((cls, old_path)) > 1:
+        raise ValueError('%s names %s %d times; pass nth= to move one or every=True to '
+                         'move them together'
                          % (os.path.basename(tag_path), old_path,
                             before.count((cls, old_path))))
-    want = [(cls, new_path) if r == (cls, old_path) else r for r in before]
+    if nth is None:
+        want = [(cls, new_path) if r == (cls, old_path) else r for r in before]
+    else:
+        hits = [i for i, r in enumerate(before) if r == (cls, old_path)]
+        want = list(before)
+        want[hits[nth]] = (cls, new_path)
 
     original = open(tag_path, 'rb').read()
-    tries = [None] if every else candidates(original, cls, len(old_path))
+    if nth is not None:
+        copies = len(pooled(original, old_path))
+        tries = [(j, rec) for j in range(copies)
+                 for rec in candidates(original, cls, len(old_path))]
+    else:
+        tries = [None] if every else candidates(original, cls, len(old_path))
     for rec in tries:
-        edited = (retarget_all(original, cls, old_path, new_path) if every
-                  else retarget(original, cls, old_path, new_path, rec))
+        if nth is not None:
+            edited = retarget_one(original, cls, old_path, new_path, rec[0], rec[1])
+        else:
+            edited = (retarget_all(original, cls, old_path, new_path) if every
+                      else retarget(original, cls, old_path, new_path, rec))
         open(tag_path, 'wb').write(edited)
         if references(tag_path) == want:
             print('%s: %s %s -> %s  (%d references, all others unchanged)'

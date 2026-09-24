@@ -189,17 +189,35 @@ def convert(rm, template, node_map, lift=0.0, nudge=(0.0, 0.0, 0.0)):
 
 
 def main():
-    global SCALE
-    rm = h4_rm.load(sys.argv[1])
-    if len(sys.argv) > 2:
-        SCALE = float(sys.argv[2])
+    global SCALE, FP_NUDGE
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    opts = dict(a[2:].split('=', 1) for a in sys.argv[1:] if a.startswith('--'))
+    rm = h4_rm.load(args[0])
+    if len(args) > 1:
+        SCALE = float(args[1])
     print('scale %s' % SCALE)
 
+    # A SECOND FIRST-PERSON MODEL, for the other species.
+    #
+    # A Halo 2 weapon's `first person` block holds one entry PER SPECIES -- masterchief and
+    # dervish -- and each names its own first person MODEL as well as its own animations. A
+    # port starts with both pointing at the one model, which means one position in the view
+    # for two rigs that hold the weapon differently. `--fp-sub=NAME --fp-nudge=x,y,z` builds
+    # a second model, for that entry alone, at its own offset.
+    sub = opts.get('fp-sub')
+    if 'fp-nudge' in opts:
+        FP_NUDGE = tuple(float(v) for v in opts['fp-nudge'].split(','))
+        print('first person nudge overridden: %s' % (FP_NUDGE,))
+
     base = os.path.join(H2EK, 'data', 'objects', 'weapons', 'rifle', OUT_SUB)
-    jobs = [(os.path.join(EXTRACTED, 'fp_gpmg', 'render', 'fp_gpmg.jms'),
-             os.path.join(base, 'fp_' + OUT_SUB, 'render', 'fp_%s.jms' % OUT_SUB)),
-            (os.path.join(EXTRACTED, 'gpmg', 'render', 'L5_gpmg.jms'),
-             os.path.join(base, 'render', '%s.jms' % OUT_SUB))]
+    if sub:
+        jobs = [(os.path.join(EXTRACTED, 'fp_gpmg', 'render', 'fp_gpmg.jms'),
+                 os.path.join(base, sub, 'render', '%s.jms' % sub))]
+    else:
+        jobs = [(os.path.join(EXTRACTED, 'fp_gpmg', 'render', 'fp_gpmg.jms'),
+                 os.path.join(base, 'fp_' + OUT_SUB, 'render', 'fp_%s.jms' % OUT_SUB)),
+                (os.path.join(EXTRACTED, 'gpmg', 'render', 'L5_gpmg.jms'),
+                 os.path.join(base, 'render', '%s.jms' % OUT_SUB))]
 
     for tmpl_path, out_path in jobs:
         template = h2_jms.read(tmpl_path)
