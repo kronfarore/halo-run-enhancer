@@ -7,6 +7,8 @@
   "animations[12].desired compression": 4104
  },
  "new_hud_definition": {
+  "bitmap widgets[0].halfscreen sequence index": 221,
+  "bitmap widgets[0].quarterscreen sequence index": 222,
   "bitmap widgets[11].fullscreen sequence index": 1540,
   "bitmap widgets[11].halfscreen sequence index": 1541,
   "bitmap widgets[11].quarterscreen sequence index": 1542,
@@ -15,7 +17,25 @@
   "bitmap widgets[12].quarterscreen sequence index": 1662,
   "bitmap widgets[3].fullscreen sequence index": 580,
   "bitmap widgets[3].halfscreen sequence index": 581,
-  "bitmap widgets[3].quarterscreen sequence index": 582
+  "bitmap widgets[3].quarterscreen sequence index": 582,
+  "bitmap widgets[4].fullscreen sequence index": 700,
+  "bitmap widgets[4].halfscreen sequence index": 701,
+  "bitmap widgets[4].quarterscreen sequence index": 702,
+  "bitmap widgets[5].fullscreen sequence index": 820,
+  "bitmap widgets[5].halfscreen sequence index": 821,
+  "bitmap widgets[5].quarterscreen sequence index": 822,
+  "bitmap widgets[6].fullscreen sequence index": 940,
+  "bitmap widgets[6].halfscreen sequence index": 941,
+  "bitmap widgets[6].quarterscreen sequence index": 942,
+  "bitmap widgets[7].fullscreen sequence index": 1060,
+  "bitmap widgets[7].halfscreen sequence index": 1061,
+  "bitmap widgets[7].quarterscreen sequence index": 1062,
+  "bitmap widgets[8].fullscreen sequence index": 1180,
+  "bitmap widgets[8].halfscreen sequence index": 1181,
+  "bitmap widgets[8].quarterscreen sequence index": 1182,
+  "bitmap widgets[9].fullscreen sequence index": 1300,
+  "bitmap widgets[9].halfscreen sequence index": 1301,
+  "bitmap widgets[9].quarterscreen sequence index": 1302
  },
  "weapon": {
   "barrels[0].error angle#1": 3548,

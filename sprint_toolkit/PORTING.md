@@ -344,6 +344,22 @@ the background behind it is a smooth gradient, so interpolate each row between t
 either side of the box. (Averaging other weapons' plates together instead leaves the seams
 of whatever each one covered.)
 
+**The gradient is the symbol's own, and this is the part to get right** -- it is what makes
+a ported symbol look drawn rather than pasted. The symbol carries a green ramp stretched
+across ITS OWN bounding box, from about 225 at whatever row the weapon starts on to about 7
+at the row it ends on, with blue held near constant at 215. The shotgun proves it belongs to
+the symbol and not to the plate: its drawing spans rows 4..24 and ramps 218..14 over exactly
+that, while the plate underneath is running 189..22.
+
+Do NOT sample the donor row by row. The plate's own green is 222 at the top, so every
+background pixel there passes for symbol and the port's top few rows come out plate
+coloured -- a symbol that fades out exactly where it should be brightest. Take the two ENDS
+of the donor's ramp and stretch them over the port's own extent instead.
+
+In game it reads as a slow gradient that changes suddenly right at the top. That is not a
+second effect: green only overtakes blue in the last few rows, so the shape is blue almost
+all the way up and then turns cyan and white.
+
 Then draw the port's weapon the way Bungie draws theirs, which is worth looking at before
 writing any code:
 
@@ -387,11 +403,19 @@ no other weapon's reticle can move. That changes the widget's sequence index to 
 widgets (`crosshair`, `crosshair_friendly`, `crosshair_invincible`) x fullscreen,
 halfscreen and quarterscreen, nine `char integer` fields.
 
-**The scope widgets are not the problem.** A HUD cloned from a zooming weapon does carry
-`scope_mask`, `2x`, `distance_meter` and four bracket widgets, but every one is gated on
-`[Y] unit flags` = *unit is zoomed*, and a port with `magnification levels` 0 can never
-enter that state. Check the gate before trying to remove anything: what looks like a scope
-overlay is usually the reticle art itself.
+Size it against the donor's SHAPE, not its box. The donor reticle is usually a circle
+inscribed in its image; a bracket frame drawn to the same footprint reaches into the
+corners, which the circle never does, and reads far bigger on screen. The Halo 2 SAW needed
+0.6 of the donor's footprint. Shrink the ART inside the image rather than the image, and no
+widget geometry changes.
+
+**The scope widgets DO draw, whatever the flags say.** A HUD cloned from a zooming weapon
+carries `scope_mask`, the four bracket crosshairs, `2x` and `distance_meter`, and every one
+is gated on `[Y] unit flags` = *unit is zoomed* while the port's `magnification levels` is
+0 -- so by the tag's own logic none of them can appear. In game they still did. Do not argue
+with it: give them a blank bitmap (one transparent image) and set all three sequence indices
+on each to 0. The widgets stay in the tag, drawing nothing, which needs no structural edit
+to a loose tag and re-exports as proof.
 
 ### Step 5, collision
 
@@ -426,10 +450,11 @@ weapon, so retiming the port cannot retime the weapon it was cloned from.
 donor's, so the port reloads with the donor's noises. Point them at the balance donor's
 equivalents one for one.
 
-**The tag-side `reload time` is a TRAP.** The magazines block has `reload time` and
-`chamber time`, and seven shipped Halo 2 weapons carry a non-zero one (the rocket launcher
-5.0s against a 3.7s animation), which makes it look exactly like the lengthening control.
-It does not drive the PLAYER's reload. Do not spend a build on it.
+**The tag-side `reload time` is a TRAP, and this is TESTED.** The magazines block has
+`reload time` and `chamber time`, and seven shipped Halo 2 weapons carry a non-zero one (the
+rocket launcher 5.0s against a 3.7s animation), which makes it look exactly like the
+lengthening control. The user tested it in game: it does nothing for the player -- most
+likely an AI reload timer. Do not spend a build on it.
 
 **Retiming can only SHORTEN.** `halo3_reload` rewrites an animation's frame count and its
 event frames, and there are no frames past the end to stretch into. So the reload the port
@@ -593,6 +618,17 @@ about the render_model XML cost time every time they are rediscovered:
 * `raw indices` is a triangle **STRIP**; read as a list it draws a discus.
 
 `extract-import-info` fails on H4 tags — there are no original source files to recover.
+
+---
+
+## Open, and deliberately so
+
+* **The crosshair is not ported in Halo 1 or Halo 3 yet.** Only Halo 2's is. The method is
+  in "The crosshair, which ports across" above and is game-agnostic -- H4EK specifies the
+  layout, so the same read applies -- but both earlier ports still wear their donor's
+  reticle. Do these once the Halo 2 port is finished.
+* **A Halo 2 reload cannot be lengthened yet.** See step 9: the ceiling is the donor's
+  frame count until the keyframe layout is decoded.
 
 ---
 

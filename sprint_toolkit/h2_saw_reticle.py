@@ -57,6 +57,13 @@ HUD = B.join(['ui', 'hud', 'saw'])
 TEMP = os.environ.get('TEMP', '.')
 
 DONOR_SEQUENCE = 16                 # the GPMG's, and so the port's
+
+#: How much of the donor's footprint the reticle fills. The donor is a CIRCLE inscribed in
+#: its 220x222 image; the SAW's is a square bracket frame, so drawn to the same footprint
+#: its corners reach further out than the circle ever does and it reads as much bigger on
+#: screen. Reported in game as "huge" at 1.0. The bitmap keeps the donor's size -- only the
+#: art inside it shrinks -- so no widget geometry changes.
+FOOTPRINT = 0.6
 H4_ART = B.join(['ui', 'hud', 'weapons', 'human', 'lmg', 'bitmap'])
 
 #: Halo 4's own layout, in its HUD units: (bitmap, left, top, w, h, flipx, flipy, opacity)
@@ -110,7 +117,7 @@ def compose(donor):
     # Halo 4 lays the reticle out in a box 72 units across (-36..+36). Scale that to the
     # donor's own footprint so the crosshair is the same size on screen as the one it
     # replaces -- the widget's box is not changing.
-    scale = w / 72.0
+    scale = w * FOOTPRINT / 72.0
     out = Image.new('RGBA', (w, h), (0, 0, 0, 0))
     cx, cy = w / 2.0, h / 2.0
     for name, left, top, bw, bh, fx, fy, opacity in LAYOUT:

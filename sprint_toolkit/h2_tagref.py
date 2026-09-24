@@ -130,8 +130,15 @@ def retarget(data, cls, old_path, new_path, record=None):
     rec = record if record is not None else mine[0]
     new = new_path.encode('latin-1')
     out = bytearray(data)
-    out[at[0]:at[0] + len(old_path)] = new
+    # THE LENGTH FIELD FIRST, then the string. A record is not necessarily before the
+    # string it names: the file is laid out in FIELD order, so paths interleave with the
+    # elements that follow them, and in a HUD the last scope widget's record sits two
+    # kilobytes past the first pooled path. Replacing a path with a shorter one deletes
+    # bytes and moves everything after it, so a length written afterwards at its original
+    # offset lands in the middle of some other field. Writing lengths first cannot move
+    # anything, so every offset is still the one that was measured.
     struct.pack_into('<I', out, rec + 8, len(new))
+    out[at[0]:at[0] + len(old_path)] = new
     return bytes(out)
 
 
@@ -156,10 +163,13 @@ def retarget_all(data, cls, old_path, new_path):
                          % (len(at), old_path, len(same_length), len(mine), cls))
     new = new_path.encode('latin-1')
     out = bytearray(data)
-    for start in reversed(at):                # from the end, so earlier offsets hold
-        out[start:start + len(old_path)] = new
+    # lengths first, for the reason in `retarget`: with eight copies to move, most of the
+    # records sit AFTER some of the strings and would have shifted out from under these
+    # offsets. Then the strings from the end backwards, so the earlier ones still hold.
     for rec in mine:
         struct.pack_into('<I', out, rec + 8, len(new))
+    for start in reversed(at):
+        out[start:start + len(old_path)] = new
     return bytes(out)
 
 
