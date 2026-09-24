@@ -52,21 +52,30 @@ So the compressed half is a PLACEHOLDER and this module need not understand it, 
 not be degenerate or it will be kept. What goes in is a quantisation of the resampled
 uncompressed data, and tool.exe replaces it.
 
-**THE DERVISH GRAPH STILL REFUSES, AND THE REASON IS NOT FOUND.** Rebuilt exactly as the
-Master Chief's, it asserts in `uncompressed_static_data_codec.h` on
-`node < header->total_rotated_nodes`. Ruled out, one run each:
+**NOT EVERY GRAPH ACCEPTS INTERPOLATED TRANSLATIONS, SO THE TOOL ASKS RATHER THAN GUESSES.**
+The Master Chief's graph retimes with everything interpolated. The Dervish's asserts in
+`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes`, and it is the
+TRANSLATIONS it objects to: hold the rotations and interpolate the translations and it
+asserts; interpolate the rotations and hold the translations and it recompresses. What it is
+NOT is the translation data, which is numerically identical in the two graphs -- same values
+to six decimals, same deviations -- so what differs is how the whole animation scores once
+they are interpolated, and a "best score" compressor then takes a path that trips the
+assert. Reverse-engineering that scoring from outside is not worth it.
 
-    the graph itself       untouched recompresses, and so does an identity retime
-    the length             96, 128 and 144 all assert
-    the trailer            clearing it instead of copying it asserts
-    the placeholder        tiling the original compressed bytes asserts; only ZEROS pass,
-                           and they pass by being skipped -- which is the frozen weapon
-    retiming one of a pair retiming BOTH reloads, which are byte-identical, asserts
+So `main` builds the best version, offers it to tool.exe, and falls back to held
+translations only if that is refused, reporting which it used. The Chief keeps full
+interpolation; the Dervish gets the fallback; a future graph sorts itself out.
 
-The Chief's graph takes the identical treatment. The two differ in having 21 rotated nodes
-against 23 and a 36-node Elite rig against 42, and no mechanism connecting that to the
-assert has been found. So the Dervish keeps the sniper rifle's 72 frames -- Arbiter levels
-reload at the old speed, Chief levels at the SAW's own 128.
+Ruled out on the way, one run each, and recorded so none of it is repeated:
+
+    the graph itself        untouched recompresses, and so does an identity retime
+    the length              96, 128 and 144 assert; 36 asserts too, so it is not about
+                            per-frame deltas shrinking
+    the trailer             clearing it instead of copying it asserts
+    the placeholder         tiling the original compressed bytes asserts; only ZEROS pass,
+                            and they pass by being SKIPPED -- which is the frozen weapon
+    retiming one of a pair  retiming both byte-identical reloads asserts
+    still nodes             holding all eight of the Dervish's non-moving rotations asserts
 
 That is why `recompress` is a gate rather than a step: a graph that does not come back whole
 is NOT written, and the caller is told. A port that only retimes one of its two graphs is a
@@ -115,13 +124,58 @@ def _qlerp(a, b, t):
     return [x / n for x in out]
 
 
+#: Below this, a node is not moving: what varies is float rounding or a twitch far under
+#: anything the eye or the engine resolves. The number is measured, not picked. Across the
+#: two reload graphs the nodes fall into two populations with nothing in between:
+#:
+#:     Dervish   seven nodes at ~1e-7 (pure last-bit noise), then one at 1.2e-4,
+#:               then nothing until 7.8e-2
+#:     Chief     nothing at all below 1.1e-2
+#:
+#: 1e-3 sits in that gap with two orders of magnitude of margin on each side, so every
+#: still node is caught and no moving node is. In rotation terms 1.2e-4 of a quaternion
+#: component is about 0.014 degrees.
+CONSTANT = 1e-3
+
+
+def _still(values):
+    """Is this node's whole run the same pose, to within float noise?
+
+    Seven of the Dervish reload's 21 animated rotations are constant to 7e-8 -- they carry
+    last-bit jitter and nothing else. They matter because of what INTERPOLATING them does.
+    """
+    first = values[0]
+    return all(max(abs(a - b) for a, b in zip(v, first)) < CONSTANT for v in values)
+
+
+def _nearest(values, new_frames):
+    """Resample by picking original frames verbatim, interpolating nothing."""
+    old = len(values)
+    if new_frames < 2:
+        return [list(values[0])]
+    return [list(values[min(int(round(t * (old - 1) / float(new_frames - 1))), old - 1)])
+            for t in range(new_frames)]
+
+
 def _resample(values, new_frames, blend):
-    """`values` is a list of per-frame items for ONE node; hand back `new_frames` of them."""
+    """`values` is a list of per-frame items for ONE node; hand back `new_frames` of them.
+
+    A node that is not moving is resampled by NEAREST NEIGHBOUR, not by blending, and that
+    is load-bearing rather than an optimisation. `_qlerp` normalises what it produces, which
+    erases the float noise such a node consists of and makes it EXACTLY constant -- and
+    `model-animation-reset-compression` then wants to move it into the static pose table,
+    which has only as many slots as there were static nodes, so it overflows and asserts on
+    `node < header->total_rotated_nodes`. Picking original frames keeps the noise, so the
+    node stays animated and nothing is reclassified. For a node that does not move, the two
+    are identical to well below float precision anyway.
+    """
     old = len(values)
     if old == new_frames:
         return list(values)
     if old == 1:
         return [values[0]] * new_frames
+    if _still(values):
+        return _nearest(values, new_frames)
     out = []
     for t in range(new_frames):
         pos = t * (old - 1) / float(new_frames - 1) if new_frames > 1 else 0.0
@@ -160,7 +214,7 @@ def _write_vecs(vecs):
 
 
 def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False,
-          trailer='copy'):
+          trailer='copy', translations='interpolate'):
     """One of the blob's two halves, resampled: rotations then translations.
 
     `blank` writes the COMPRESSED half as zeros instead of as a quantisation of the
@@ -206,9 +260,12 @@ def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False,
     t0 = o + nodes_r * frames * rot_size
     for n in range(nodes_t):
         vecs = _read_vecs(data, t0 + n * frames * 12, frames)
-        out += _write_vecs(_resample(vecs, new_frames,
-                                     lambda a_, b_, t: [_lerp(a_[k], b_[k], t)
-                                                        for k in range(3)]))
+        if translations == 'hold':
+            out += _write_vecs(_nearest(vecs, new_frames))
+        else:
+            out += _write_vecs(_resample(vecs, new_frames,
+                                         lambda a_, b_, t: [_lerp(a_[k], b_[k], t)
+                                                            for k in range(3)]))
     if packed:
         # THE TRAILER. Carrying the original's through is wrong once the length changes:
         # it describes the 72-frame animation, and a stale one is what made the first
@@ -229,7 +286,8 @@ def blob_of(data, base, k, name, elem=h2_anim.ELEM):
     return e, at, h, s, m
 
 
-def retime(data, name, new_frames, blank=False, trailer='copy'):
+def retime(data, name, new_frames, blank=False, trailer='copy',
+           translations='interpolate'):
     """`data` with that animation rebuilt at `new_frames`, everything else untouched."""
     chunk, count, elem = h2_anim.animations_chunk(data)
     base = chunk + 16
@@ -245,8 +303,10 @@ def retime(data, name, new_frames, blank=False, trailer='copy'):
 
     f, R, T = e['frames'], s['R'], s['T']
     data_at = at + h['data'] + SUB
-    first = _half(data, data_at, R, T, f, new_frames, True, blank, trailer)
-    second = _half(data, at + h['data'] + SUB + s['B'], R, T, f, new_frames, False)
+    first = _half(data, data_at, R, T, f, new_frames, True, blank, trailer,
+                  translations)
+    second = _half(data, at + h['data'] + SUB + s['B'], R, T, f, new_frames, False,
+                   False, 'copy', translations)
 
     a = PRE + R * new_frames * 8
     b = a + T * new_frames * 12
@@ -368,21 +428,34 @@ def main():
                     help='run the result past tool.exe before trusting it')
     a = ap.parse_args()
 
-    data = open(a.graph, 'rb').read()
-    names = ([n for n in h2_anim.names(data, h2_anim.animations_chunk(data)[1])
+    source = open(a.graph, 'rb').read()
+    names = ([n for n in h2_anim.names(source, h2_anim.animations_chunk(source)[1])
               if 'reload' in n] if a.animation == 'reloads' else [a.animation])
-    for name in names:
-        data, info = retime(data, name, a.frames, a.blank, a.trailer)
-        print('%-28s %d -> %d frames   %d -> %d bytes  (R=%d T=%d)'
-              % (info['name'], info['frames'], info['new'], info['size'],
-                 info['new_size'], info['R'], info['T']))
-    if a.check and not check(data):
-        raise SystemExit('tool.exe asserts on this result; NOT written')
-    if a.write:
+
+    # HIGHEST FIDELITY FIRST, and fall back only when tool.exe refuses. Interpolating the
+    # translations is what the Dervish's graph will not accept -- on data numerically
+    # identical to the Chief's, which takes it -- so the difference is in how the whole
+    # animation scores once they are interpolated, not in the translations themselves.
+    # Rather than guess at a compressor's scoring, ask it: build the best version, and if
+    # it will not take that, hold the translations instead and say so.
+    done = None
+    for mode in ('interpolate', 'hold'):
+        data = source
+        for name in names:
+            data, info = retime(data, name, a.frames, a.blank, a.trailer, mode)
+            print('%-28s %d -> %d frames   %d -> %d bytes  (R=%d T=%d, translations %s)'
+                  % (info['name'], info['frames'], info['new'], info['size'],
+                     info['new_size'], info['R'], info['T'], mode))
+        if not (a.write or a.check):
+            break
         done = recompress(data)
-        if done is None:
-            raise SystemExit('NOT written: the rebuilt graph does not recompress, and '
-                             'without that the engine plays the placeholder')
+        if done is not None:
+            break
+        print('   trying again with the translations held')
+    if (a.write or a.check) and done is None:
+        raise SystemExit('NOT written: no version of this graph recompresses, and without '
+                         'that the engine plays the placeholder')
+    if a.write:
         open(a.graph, 'wb').write(done)
         print('written')
     else:
