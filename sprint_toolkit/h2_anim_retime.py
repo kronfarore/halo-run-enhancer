@@ -32,35 +32,41 @@ done. It does not bite here -- every reload in the port's graph carries a single
 event at frame 1, which is frame 1 at any length -- but a weapon whose reload rings a key
 halfway through would need this first, so check before reusing.
 
-**THE COMPRESSED HALF IS NOT DECODED, AND IS NOT REWRITTEN BY HAND.** Its size is exactly
-R x frames x 8 plus T x frames x 12, which is what made it look like a plain array of
-per-frame quaternions -- and it is not one. The test that settles it: a full reload and an
-idle both END IN THE POSE THEY START IN, and the uncompressed half shows that exactly
-(idle: mean |frame0 - frameLast| = 0.00006, reload 0.003), while the packed half does not
-close the loop under ANY reading tried -- node-major or frame-major, at offset 0 or 32
-(0.28 to 0.68). Resampling it as if it were an array is what put a jerk at the start of the
-reload and threw the weapon to the top right at the end, in game.
+**WHAT THE COMPRESSED HALF IS, AND WHAT RECOMPRESSION DOES** -- settled by an in-game test
+after two wrong readings, so the evidence is kept here and not just the conclusion.
 
-So this rewrites the UNCOMPRESSED half, which is understood and verifiable, fills the
-compressed half with a straight quantisation of it as a placeholder, and then has
-**`tool model-animation-reset-compression` regenerate the compressed half from the
-uncompressed source** -- which is precisely what that verb exists to do. Bungie's compressor
-does the compressing; nothing here has to understand it.
+    build      compressed half              in game
+    -----      ---------------              -------
+    76a3ebe    resampled by this module     the reload jerked at its start and its end
+    0d97411    the same, then recompressed  smooth, 4.3 seconds, correct
+    c9634e0    ZEROS, then recompressed     FROZEN: the hands hold one pose throughout
 
-**NOT EVERY GRAPH TAKES IT, AND THE RULE IS NOT KNOWN.** The Master Chief's graph retimes to
-128 and recompresses; the Dervish's, rebuilt exactly the same way, asserts in
-`uncompressed_static_data_codec.h` on `node < header->total_rotated_nodes` (it has 21 rotated
-nodes against 23, and a 36-node Elite skeleton against 42). Its UNTOUCHED graph recompresses
-fine and so does an identity retime, so it is the rebuild it objects to, not the graph.
+Zeros surviving into the game says tool.exe did not replace them. The same data going from
+jerky to smooth when recompressed says it did replace that. Both hold if
+**`model-animation-reset-compression` rebuilds the compressed half from the uncompressed one
+only for the animations it judges worth recompressing** -- and all-zero data already looks
+optimal, so it is kept. The sizes agree: recompressing the untouched graph gives 206637
+bytes against the zeroed one's 202761, the difference being the animation it skipped.
 
-Zeroing the compressed half makes the Dervish graph recompress -- and that is NOT adopted,
-because of what the next test showed. Recompressing the untouched graph and the same graph
-with one compressed half zeroed gives DIFFERENT output (206637 against 202761 bytes). If
-tool.exe rebuilt that half purely from the uncompressed one, the two would be identical. So
-the placeholder is not simply discarded, and zeros could ship a frozen animation. Against
-that sits the in-game evidence: the same data without recompression played with a jerk and
-with recompression played smoothly, which says the rebuild does happen. The two do not
-reconcile yet, so nothing is shipped on the strength of either.
+So the compressed half is a PLACEHOLDER and this module need not understand it, but it must
+not be degenerate or it will be kept. What goes in is a quantisation of the resampled
+uncompressed data, and tool.exe replaces it.
+
+**THE DERVISH GRAPH STILL REFUSES, AND THE REASON IS NOT FOUND.** Rebuilt exactly as the
+Master Chief's, it asserts in `uncompressed_static_data_codec.h` on
+`node < header->total_rotated_nodes`. Ruled out, one run each:
+
+    the graph itself       untouched recompresses, and so does an identity retime
+    the length             96, 128 and 144 all assert
+    the trailer            clearing it instead of copying it asserts
+    the placeholder        tiling the original compressed bytes asserts; only ZEROS pass,
+                           and they pass by being skipped -- which is the frozen weapon
+    retiming one of a pair retiming BOTH reloads, which are byte-identical, asserts
+
+The Chief's graph takes the identical treatment. The two differ in having 21 rotated nodes
+against 23 and a 36-node Elite rig against 42, and no mechanism connecting that to the
+assert has been found. So the Dervish keeps the sniper rifle's 72 frames -- Arbiter levels
+reload at the old speed, Chief levels at the SAW's own 128.
 
 That is why `recompress` is a gate rather than a step: a graph that does not come back whole
 is NOT written, and the caller is told. A port that only retimes one of its two graphs is a
@@ -153,7 +159,8 @@ def _write_vecs(vecs):
     return bytes(out)
 
 
-def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False):
+def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False,
+          trailer='copy'):
     """One of the blob's two halves, resampled: rotations then translations.
 
     `blank` writes the COMPRESSED half as zeros instead of as a quantisation of the
@@ -203,8 +210,12 @@ def _half(data, at, nodes_r, nodes_t, frames, new_frames, packed, blank=False):
                                      lambda a_, b_, t: [_lerp(a_[k], b_[k], t)
                                                         for k in range(3)]))
     if packed:
-        # the trailer, whatever it is, carried through untouched
-        out += data[at + span:at + span + PRE]
+        # THE TRAILER. Carrying the original's through is wrong once the length changes:
+        # it describes the 72-frame animation, and a stale one is what made the first
+        # retimed reload jerk at its start and end, and what makes the encoder choke on
+        # some graphs. `trailer='zero'` clears it instead of copying it.
+        out += (bytes(PRE) if trailer == 'zero'
+                else data[at + span:at + span + PRE])
     return bytes(out)
 
 
@@ -218,7 +229,7 @@ def blob_of(data, base, k, name, elem=h2_anim.ELEM):
     return e, at, h, s, m
 
 
-def retime(data, name, new_frames, blank=False):
+def retime(data, name, new_frames, blank=False, trailer='copy'):
     """`data` with that animation rebuilt at `new_frames`, everything else untouched."""
     chunk, count, elem = h2_anim.animations_chunk(data)
     base = chunk + 16
@@ -234,7 +245,7 @@ def retime(data, name, new_frames, blank=False):
 
     f, R, T = e['frames'], s['R'], s['T']
     data_at = at + h['data'] + SUB
-    first = _half(data, data_at, R, T, f, new_frames, True, blank)
+    first = _half(data, data_at, R, T, f, new_frames, True, blank, trailer)
     second = _half(data, at + h['data'] + SUB + s['B'], R, T, f, new_frames, False)
 
     a = PRE + R * new_frames * 8
@@ -349,6 +360,8 @@ def main():
                                       'animation whose name contains reload')
     ap.add_argument('frames', type=int)
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--trailer', choices=('copy', 'zero'), default='copy',
+                    help="what to put in the compressed half's 32-byte trailer")
     ap.add_argument('--blank', action='store_true',
                     help='write the compressed half as zeros (the experiment)')
     ap.add_argument('--check', action='store_true',
@@ -359,7 +372,7 @@ def main():
     names = ([n for n in h2_anim.names(data, h2_anim.animations_chunk(data)[1])
               if 'reload' in n] if a.animation == 'reloads' else [a.animation])
     for name in names:
-        data, info = retime(data, name, a.frames, a.blank)
+        data, info = retime(data, name, a.frames, a.blank, a.trailer)
         print('%-28s %d -> %d frames   %d -> %d bytes  (R=%d T=%d)'
               % (info['name'], info['frames'], info['new'], info['size'],
                  info['new_size'], info['R'], info['T']))

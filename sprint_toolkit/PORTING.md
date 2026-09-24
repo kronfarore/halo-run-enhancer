@@ -489,19 +489,20 @@ the two halves hold the SAME rotations, comparing them node by node gives a mean
 times lower at 0. The uncompressed half's 32 bytes are a real header: (codec 2, R, T, 0),
 its own A and B, its own three strides, all of which must be rewritten.
 
-**Do NOT rewrite the compressed half by hand.** Its size is exactly R x f x 8 plus T x f x
-12, which makes it look like a plain array of per-frame quaternions, and it is not one.
-The test that settles it: a reload and an idle both END IN THE POSE THEY START IN, and the
-uncompressed half shows that exactly (idle 0.00006, reload 0.003 mean |frame0 - frameLast|)
-while the packed half does not close the loop under ANY reading -- node-major or frame-major,
-at offset 0 or 32, 0.28 to 0.68. Resampling it as an array put a jerk at the start of the
-reload and threw the weapon off screen at the end, in game.
+**The compressed half is a PLACEHOLDER; write something non-degenerate and let tool.exe
+replace it.** Three in-game results settle what `model-animation-reset-compression` does,
+after two wrong readings on the way:
 
-So rewrite the UNCOMPRESSED half only and let **`tool model-animation-reset-compression`
-regenerate the compressed half from it**. That is what the verb is for; Bungie's compressor
-does the compressing. The retimed frame counts survive it, and it rewrites the tag in a
-tighter layout (124-byte animation elements instead of 136) which `h2_anim.py` will not read
--- use `export-tag-to-xml` to check one.
+    resampled data, not recompressed   the reload jerked at its start and end
+    the same, recompressed             smooth and correct
+    ZEROS, recompressed                FROZEN: the hands hold one pose throughout
+
+Zeros surviving says tool did not replace them; the same data going jerky-to-smooth says it
+did. Both hold if it rebuilds that half from the uncompressed one **only for the animations
+it judges worth recompressing** -- and zeros already look optimal, so they are kept. So
+rewrite the uncompressed half properly, fill the compressed half with a quantisation of it,
+and recompress. Do not fill it with zeros, and do not trust a retimed animation that was
+never recompressed.
 
 **It TRUNCATES THE TAG TO 64 BYTES when it asserts, and leaves a tool.exe holding the file
 open.** It destroyed two of the port's graphs before that was understood, and the hung
