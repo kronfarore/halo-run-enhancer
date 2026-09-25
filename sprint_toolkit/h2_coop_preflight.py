@@ -43,10 +43,13 @@ PATCHED = '4883ec2883f9ff7440488b05787af700488b50'
 OLD = '488b05b947ca008b80bc000000c1e8142401c3'
 
 ABILITY = {0: 'none', 1: 'sprint', 2: 'overshield', 3: 'camo', 4: 'regeneration'}
-# Only abilities that WRITE UNIT STATE replicate online. The others create objects or
-# grant equipment, and script-created objects stay on the machine that made them --
-# see the H2 online co-op script model.
-OBJECT_FREE = {2, 4}
+# Confirmed working in online co-op on 2026-09-25: overshield (writes unit state) and
+# sprint (unit_add_equipment -- so equipment GRANTS do reach the right unit on both
+# machines, unlike object_create). Camo is the one still known to misbehave: it creates
+# an object, and script-created objects stay on the machine that made them. See the H2
+# online co-op script model.
+COOP_CONFIRMED = {1, 2}
+COOP_SUSPECT = {3: 'creates an object; known NOT to replicate online'}
 
 
 def md5(path):
@@ -136,15 +139,36 @@ def _check_sprint_tags(path):
         print('  FAIL  token weapon not in the map')
         good = False
     if good:
-        fwd = struct.unpack_from('<f', m.data,
-                                 tok[0]['base'] + h2_sprint.FWD_PENALTY)[0]
-        if fwd >= 0:
-            print('  FAIL  token forward penalty %.3f -- no speed bonus. Run:' % fwd)
+        # The speed comes from matg Run Forward, with every REAL weapon carrying a
+        # penalty that cancels it and the token exempt. A NEGATIVE token penalty was
+        # tried instead and inverted forward/backward movement in game (2026-09-25), so
+        # what matters is that the token ends up FASTER than a gun, not that it carries
+        # any particular number.
+        pi = h2_sprint._player_info(m)
+        run_fwd = struct.unpack_from('<f', m.data, pi + h2_sprint.RUN_FORWARD)[0]
+        tok_pen = struct.unpack_from('<f', m.data,
+                                     tok[0]['base'] + h2_sprint.FWD_PENALTY)[0]
+        guns = [struct.unpack_from('<f', m.data, t['base'] + h2_sprint.FWD_PENALTY)[0]
+                for t in m.tags
+                if t['class'] == 'weap' and t['base'] and t['name'] != h2_sprint.TOKEN
+                and h2_sprint._player_held(t['name'])]
+        if tok_pen < 0 or any(p < 0 for p in guns):
+            print('  FAIL  a NEGATIVE movement penalty is present -- that INVERTS '
+                  'forward/backward')
+            print('        re-run h2_sprint.py; it now refuses to write one')
+            return False
+        sprint_speed = run_fwd * (1.0 - tok_pen)
+        gun_speed = run_fwd * (1.0 - (max(guns) if guns else 0.0))
+        ratio = sprint_speed / gun_speed if gun_speed else 0.0
+        if ratio <= 1.01:
+            print('  FAIL  sprint %.3f vs gun %.3f = %.2fx -- no speed bonus. Run:'
+                  % (sprint_speed, gun_speed, ratio))
             print('        h2_sprint.py "<map>" --mult 1.5 --profile %s' % profile)
             good = False
         else:
-            print('  ok    sprint tags: %s profile, token present, forward %.3f'
-                  % (profile, fwd))
+            print('  ok    sprint tags: %s profile, token present' % profile)
+            print('        Run Forward %.3f; sprint %.3f vs gun %.3f = %.2fx'
+                  % (run_fwd, sprint_speed, gun_speed, ratio))
     return good
 
 
@@ -171,8 +195,9 @@ def check_map(level):
             print('  FAIL  %s = none. A REBUILD RESETS THIS -- re-run h2_tune.py' % who)
             ok = False
         else:
-            warn = ('' if a in OBJECT_FREE else
-                    '  <- creates objects; may not replicate online')
+            warn = '' if a in COOP_CONFIRMED else (
+                '  <- ' + COOP_SUSPECT[a] if a in COOP_SUSPECT else
+                '  <- not yet confirmed in online co-op')
             print('  ok    %s = %s%s' % (who, ABILITY.get(a, a), warn))
     if ok and a0 == a1:
         print('  WARN  both players have the SAME ability -- use different ones or the')

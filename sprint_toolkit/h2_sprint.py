@@ -148,18 +148,27 @@ def apply(map_path, mult=1.5, profile='wimpy', out_path=None, side='cancel',
     # untouched by sprint.
     live, = struct.unpack_from('<f', m.data, pi + RUN_FORWARD)
     if mode == 'token':
-        # Leave global movement completely alone and give the boost to the TOKEN as a
-        # NEGATIVE forward penalty. Halo 2 evidently blends diagonal movement from the
-        # raised Run Forward in a way the per-weapon forward penalty does not fully
-        # cancel -- measured in-game: normal weapons strafe/move diagonally too fast,
-        # while Halo 1 with the identical arrangement feels right. Touching nothing
-        # global sidesteps that entirely.
-        struct.pack_into('<f', m.data, pi + RUN_FORWARD, STOCK_RUN_FORWARD)
-        struct.pack_into('<f', m.data, pi + SNEAK_FORWARD, STOCK_SNEAK_FORWARD)
+        # DEAD END, measured in game 2026-09-25: this used to leave global movement
+        # alone and put the boost on the TOKEN as a NEGATIVE forward penalty, on the
+        # theory that a "percent slowdown" field would read a negative as a speed-up.
+        # In co-op that INVERTED forward/backward movement while sprinting.
+        #
+        # The arithmetic is not the problem -- +6C2357 does exactly
+        #     axis *= (1.0 - penalty)
+        # (xmm11 is loaded with 1.0 at +6C20EF), so -0.5 scales the forward axis by
+        # 1.5 and should simply be faster. But the field is scaling the INPUT AXIS, not
+        # the speed, and no shipping weapon in Halo 2 carries anything but 0.000 in it
+        # (checked across a vanilla map's 19 weap tags), so a value that drives the axis
+        # past 1.0 is outside anything the engine is exercised for.
+        #
+        # So the boost comes from Run Forward again, the arrangement Halo 1 uses and
+        # that is confirmed working there. `token` now differs from `global` only in
+        # that the token alone is exempt from the cancelling penalty.
+        mode = 'global'
         if verbose:
-            print('Run Forward %.3f -> %.3f (stock; boost moved onto the token)'
-                  % (live, STOCK_RUN_FORWARD))
-    else:
+            print('NOTE: token mode now boosts Run Forward (a negative token penalty '
+                  'inverted movement in game)')
+    if True:
         fwd = STOCK_RUN_FORWARD * mult if run_forward is None else run_forward
         snk = STOCK_SNEAK_FORWARD * mult if sneak_forward is None else sneak_forward
         struct.pack_into('<f', m.data, pi + RUN_FORWARD, fwd)
@@ -198,7 +207,11 @@ def apply(map_path, mult=1.5, profile='wimpy', out_path=None, side='cancel',
     # 'token' mode: nobody is faster, and the token carries a negative penalty, which
     # the field's "percent slowdown" semantics should read as a speed-up.
     if penalty is None:
-        penalty = 0.0 if mode == 'token' else 1.0 - 1.0 / float(mult)
+        penalty = 1.0 - 1.0 / float(mult)
+    if penalty < 0 or (token_side is not None and token_side < 0):
+        raise SystemExit('a NEGATIVE movement penalty inverts forward/backward movement '
+                         '(measured in game 2026-09-25). These fields only slow down; '
+                         'the speed-up has to come from matg Run Forward.')
     n = 0
     for t in m.tags:
         if t['class'] != 'weap' or t['base'] is None or t['name'] == TOKEN:
@@ -223,7 +236,9 @@ def apply(map_path, mult=1.5, profile='wimpy', out_path=None, side='cancel',
         # Match the real weapons' sideways penalty so strafing WHILE sprinting stays at
         # vanilla speed: sprint is a forward dash, as in Halo 1.
         token_side = min(penalty + side_delta, 0.95) if side == 'delta' else 0.5
-    token_fwd = (1.0 - float(mult)) if mode == 'token' else 0.0
+    # NEVER negative -- see the dead end above. The token's exemption from the penalty
+    # IS the sprint; it must not try to be a boost in its own right.
+    token_fwd = 0.0
     struct.pack_into('<f', m.data, token['base'] + FWD_PENALTY, token_fwd)
     struct.pack_into('<f', m.data, token['base'] + SIDEWAYS_PENALTY, token_side)
     if verbose:
