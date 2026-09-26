@@ -369,13 +369,13 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'keep_reticle_zoomed',
                'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
-               'keep_title_hud',
+               'keep_title_hud', 'clear_profile_equipment', 'clear_profile_grenades',
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
                'reach_equipment_drop', 'h4_equipment_drop', 'h4_hostile_sentinels',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
-               'h4_skip_flight',
+               'h4_skip_flight', 'h4_keep_loadout',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
@@ -530,7 +530,7 @@ ZOOM_DONOR_WEAPONS = {
 # 'zoom_donor' persists the user's chosen scope source per game ({game: weapon}).
 # 'mcc_root' is the remembered "Halo The Master Chief Collection" folder that maps are
 # found under (per-game subfolder); defaults to the tool's parent when unset.
-SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'mcc_root', 'show_new_at_top',
+SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'zoom_donor_by_weapon', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
                  'shared_session_dir', 'shared_session_autosave',
                  'vault_dir', 'baseline_root') + OPTION_KEYS
@@ -840,6 +840,10 @@ CONFIG = {
     # Preferred scope source per game for the zoom-UI copy ({game: weapon name}).
     # Used when that weapon is present on the map being patched, else auto-picked.
     "zoom_donor": {},
+    # Per-card scope source: {game: {weapon given the Zoom: donor weapon}}. Chosen on
+    # each Zoom card in the patcher; a weapon without an entry takes the automatic
+    # donor (or the old per-game `zoom_donor`, still honoured as the default).
+    "zoom_donor_by_weapon": {},
     # Whether deliberate weapon choices (start-of-run picks and the New Weapon
     # button) carry a tied negative. Random new-weapon pairs from
     # new_weapon_chance are unaffected (their pair always has an enemy). False
@@ -866,6 +870,11 @@ CONFIG = {
     # On by default (the user's call, 2026-09-14): the HUD stays up through chapter
     # titles; the titles themselves still appear.
     "keep_title_hud": True,
+    # Empty the level's own starting loadout extras (user, 2026-09-26): the armour
+    # ability / equipment the starting profiles hand out (Reach, Halo 4 -- the only
+    # games whose profile has one), and separately the starting grenades (every game).
+    "clear_profile_equipment": False,
+    "clear_profile_grenades": False,
     # Off by default so a user on STOCK maps keeps the full halo.json list. On, the
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
@@ -893,6 +902,9 @@ CONFIG = {
     "reach_skip_space": False,
     # Halo 4 script edit (h4_scripts.py): Midnight starts on foot at the crash site.
     "h4_skip_flight": False,
+    # Halo 4 script edit (h4_scripts.keep_loadout): Infinity's rally teleport no longer
+    # re-applies a starting profile, so the players keep what they carry.
+    "h4_keep_loadout": True,
     # Weapon names never offered in Halo 4 (see get_level_weapons).
     "h4_never_offer": ["Sentinel Beam", "Sentinel Eliminator Beam", "Target Locator"],
     # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
@@ -3576,6 +3588,9 @@ class RunState:
             # so a partner loading this run must patch with the SAME donor -- a local
             # default differing here desynced a co-op session.
             "zoom_donor": dict(CONFIG.get('zoom_donor') or {}),
+            "zoom_donor_by_weapon": {g: dict(v) for g, v in
+                                     (CONFIG.get('zoom_donor_by_weapon') or {}).items()
+                                     if isinstance(v, dict)},
             "mission": {"id": self.mission_id, "name": self.mission_name},
             "players": {
                 "player1": {
@@ -3618,6 +3633,16 @@ class RunState:
             merged = dict(CONFIG.get('zoom_donor') or {})
             merged.update({g: w for g, w in zd.items() if isinstance(w, str) and w})
             CONFIG['zoom_donor'] = merged
+        zw = data.get('zoom_donor_by_weapon')
+        if isinstance(zw, dict) and zw:
+            merged = {g: dict(v) for g, v in
+                      (CONFIG.get('zoom_donor_by_weapon') or {}).items()
+                      if isinstance(v, dict)}
+            for g, v in zw.items():
+                if isinstance(v, dict):
+                    merged.setdefault(g, {}).update(
+                        {w: d for w, d in v.items() if isinstance(d, str) and d})
+            CONFIG['zoom_donor_by_weapon'] = merged
         state.mission_id = data.get('mission', {}).get('id', 'a10')
         state.mission_name = data.get('mission', {}).get('name', 'The Pillar of Autumn')
         p1data = data.get('players', {}).get('player1', {})
@@ -5200,10 +5225,6 @@ class MagnitudeEditorDialog(QDialog):
         if swap_group:
             head.addWidget(swap_group)
 
-        zoom_row = self._build_zoom_source_row()
-        if zoom_row:
-            head.addWidget(zoom_row)
-
         # #5/#7: search-to-effect + "show new effects first" toggle.
         #
         # PINNED, unlike the setup rows above: the whole point of Find is to jump around
@@ -6359,7 +6380,19 @@ class MagnitudeEditorDialog(QDialog):
             row.addWidget(leftw)
             # #1/#2: variant values on the right, one line per distinct value, plus
             # every difficulty's value where the field has one per difficulty.
-            _vals = self._variant_values_str(target_tag(eff, t), t, eff)
+            # A group shows the first member that holds a real value: Error Angle's
+            # first member is Minimum Error, 0 on nearly every Halo 4 weapon, so the
+            # row read "0.0" although the spread it scales is not zero. The preset
+            # key stays on the first member; this only picks what is displayed.
+            _shown = t
+            if len(_members) > 1:
+                for _mt in _members:
+                    _nv = self._vanilla_num(target_tag(eff, _mt), _mt['field'],
+                                            _mt.get('block'), _mt.get('nth', 0) or 0)
+                    if _nv:
+                        _shown = _mt
+                        break
+            _vals = self._variant_values_str(target_tag(eff, _shown), _shown, eff)
             _diffs = self._difficulty_values_str(eff['tag'], t)
             variants = QLabel(_vals + ('\n' + _diffs if _diffs else ''))
             variants.setStyleSheet("color: #7aa0c0; font-size: 12px; font-family: monospace;")
@@ -6374,6 +6407,11 @@ class MagnitudeEditorDialog(QDialog):
             for _mt in _members:
                 self.rows.append((eff, _mt, le))
             local_rows.append((t, le))
+
+        # A Zoom card picks its own scope source (it used to be one patcher-wide row).
+        zr = self._zoom_donor_row(eff)
+        if zr is not None:
+            v.addWidget(self._wrap(zr))
 
         # Wire derived rows: live-recompute from the source rows' vanilla values
         # with the user's pending operators applied.
@@ -7039,75 +7077,106 @@ class MagnitudeEditorDialog(QDialog):
         return tags or None
 
     def _zoom_donor_candidates(self):
-        """Scope-source weapons offered to the user: real scoped weapons that are
-        guaranteed present on this mission's map (its level weapon pool)."""
+        """Scope-source weapons offered on a Zoom card: every weapon of this level's
+        pool whose HUD on the map really carries a scope. Read from the map, so an
+        extended map (ODST's, Reach's and Halo 4's widened pools, the Halo 3 imports)
+        offers every scoped weapon it holds; the fixed per-game list only orders them."""
+        cached = getattr(self, '_donor_cands', None)
+        if cached is not None:
+            return cached
+        self._donor_cands = []
         db = getattr(self.parent_gui, 'db', None)
         rs = getattr(self.parent_gui, 'run_state', None)
-        if db is None or rs is None:
-            return []
+        m = self._read_source()
+        if db is None or rs is None or not m:
+            return self._donor_cands
         mid = getattr(rs, 'mission_id', None)
-        onmap = set(db.mission_weapons.get(mid, []) or [])
-        # Honour an expanded ODST pool: with odst_pools_from_map on, the level really
-        # does carry every weapon the prepared map supports, so a donor the halo.json
-        # list happens not to mention is still a legitimate scope source. Read from the
-        # map rather than the list, or the option widens the offers but not the donors.
+        onmap = list(db.mission_weapons.get(mid, []) or [])
         if CONFIG.get('odst_pools_from_map') and db.mission_games.get(mid) == 'Halo 3: ODST':
-            onmap |= set(db.odst_map_pool(mid) or ())
-        # Reach reads the same way for the same reason, now that its pool widens too.
+            onmap += list(db.odst_map_pool(mid) or ())
         if CONFIG.get('reach_pools_from_map') and db.mission_games.get(mid) == 'Halo Reach':
-            onmap |= set(db.reach_map_pool(mid, 'weapons') or ())
+            onmap += list(db.reach_map_pool(mid, 'weapons') or ())
         if CONFIG.get('h4_pools_from_map') and db.mission_games.get(mid) == 'Halo 4':
-            onmap |= set(db.h4_map_pool(mid, 'weapons') or ())
-        return [w for w in ZOOM_DONOR_WEAPONS.get(self.game, []) if w in onmap]
+            onmap += list(db.h4_map_pool(mid, 'weapons') or ())
+        try:
+            scoped = set(self._hp.scoped_weapons(m, self.game))
+        except Exception:
+            scoped = set()
+        order = ZOOM_DONOR_WEAPONS.get(self.game, [])
+        names = sorted(dict.fromkeys(onmap),
+                       key=lambda w: (order.index(w) if w in order else len(order), w))
+        for w in names:
+            tag = db.weap_tag_for(w, self.game)
+            if not tag:
+                continue
+            paths = [p.strip() for p in tag.split(' ', 1)[-1].split('&')]
+            if any(p in scoped for p in paths):
+                self._donor_cands.append(w)
+        return self._donor_cands
 
-    def _build_zoom_source_row(self):
-        """A combo to pick which weapon's scope overlay to copy, shown only when a
-        weapon Zoom is being patched and there are eligible on-map donors. Defaults
-        to the remembered choice when it's available on this map, else Auto."""
+    def _zoom_donor_row(self, eff):
+        """The scope-source choice for ONE Zoom card, or None. The weapon itself is
+        left out: a HUD cannot donate to itself."""
         if not CONFIG.get('zoom_ui_on_scopeless', True):
             return None
-        if not any(e.get('name') == 'Zoom' and str(e.get('tag', '')).startswith('weap ')
-                   for e in self.effects):
+        if eff.get('name') != 'Zoom' or not str(eff.get('tag', '')).startswith('weap '):
             return None
-        cands = self._zoom_donor_candidates()
-        if not cands:
+        w = eff.get('weapon')
+        cands = [c for c in self._zoom_donor_candidates() if c != w]
+        if not w or not cands:
             return None
-        box = QGroupBox("Scope overlay source")
-        h = QHBoxLayout(box)
-        h.addWidget(QLabel("Copy the scope from:"))
-        self.zoom_src_combo = QComboBox()
-        self.zoom_src_combo.addItem("Auto (any scoped weapon on the map)", None)
-        for w in cands:
-            self.zoom_src_combo.addItem(w, w)
-        remembered = (CONFIG.get('zoom_donor') or {}).get(self.game)
-        if remembered in cands:
-            self.zoom_src_combo.setCurrentIndex(cands.index(remembered) + 1)
-        self.zoom_src_combo.currentIndexChanged.connect(self._on_zoom_src_changed)
-        h.addWidget(self.zoom_src_combo)
-        h.addStretch()
-        return box
+        row = QHBoxLayout()
+        row.addWidget(QLabel("Scope copied from:"))
+        combo = QComboBox()
+        combo.addItem("Auto (any scoped weapon on the map)", None)
+        for c in cands:
+            combo.addItem(c, c)
+        chosen = ((CONFIG.get('zoom_donor_by_weapon') or {}).get(self.game) or {}).get(w)
+        if chosen in cands:
+            combo.setCurrentIndex(cands.index(chosen) + 1)
+        combo.setToolTip("Which weapon's scope overlay this weapon gets when the Zoom "
+                         "gives it magnification it never had. Saved with the run, so "
+                         "your co-op partner patches the same scope.")
+        combo.currentIndexChanged.connect(
+            lambda _i, cb=combo, weapon=w: self._on_zoom_src_changed(weapon, cb.currentData()))
+        row.addWidget(combo)
+        row.addStretch()
+        return row
 
-    def _on_zoom_src_changed(self):
-        """Remember the choice per game (persisted); it is reused on any later map
-        that has that weapon (else the patcher falls back to auto)."""
-        w = self.zoom_src_combo.currentData()
-        zd = dict(CONFIG.get('zoom_donor') or {})
-        if w:
-            zd[self.game] = w
+    def _on_zoom_src_changed(self, weapon, donor):
+        """Remember one card's choice per game (persisted, and carried by the run)."""
+        zw = {g: dict(v) for g, v in (CONFIG.get('zoom_donor_by_weapon') or {}).items()
+              if isinstance(v, dict)}
+        per = zw.setdefault(self.game, {})
+        if donor:
+            per[weapon] = donor
         else:
-            zd.pop(self.game, None)
-        CONFIG['zoom_donor'] = zd
+            per.pop(weapon, None)
+        CONFIG['zoom_donor_by_weapon'] = zw
         save_settings()
 
-    def _zoom_donor_spec(self):
-        """The chosen scope-source as a weap tag path, or None for auto. Reads the
-        combo when shown, else the remembered per-game preference."""
-        combo = getattr(self, 'zoom_src_combo', None)
-        w = combo.currentData() if combo is not None else (CONFIG.get('zoom_donor') or {}).get(self.game)
+    def _zoom_donor_spec(self, plan):
+        """{target weap path: donor weap tag} for every Zoom in the plan that has a
+        donor chosen, or None for automatic everywhere. A card without its own choice
+        falls back to the old per-game `zoom_donor`."""
         db = getattr(self.parent_gui, 'db', None)
-        if not w or db is None:
+        if db is None:
             return None
-        return db.weap_tag_for(w, self.game)
+        per = (CONFIG.get('zoom_donor_by_weapon') or {}).get(self.game) or {}
+        legacy = (CONFIG.get('zoom_donor') or {}).get(self.game)
+        out = {}
+        for item in plan:
+            tag = str(item.get('tag', ''))
+            if item.get('name') != 'Zoom' or not tag.startswith('weap '):
+                continue
+            w = per.get(item.get('weapon')) or legacy
+            dtag = db.weap_tag_for(w, self.game) if w else None
+            if not dtag:
+                continue
+            for p in tag[5:].split('&'):
+                if p.strip():
+                    out[p.strip()] = dtag
+        return out or None
 
     def _run_busy(self, fn, title="Patching", label="Working"):
         return run_busy(self, fn, title, label)
@@ -7467,13 +7536,27 @@ class MagnitudeEditorDialog(QDialog):
         if confirm != QMessageBox.Yes:
             return
 
+        # Hand the magnitudes to the co-op partner BEFORE patching (user, 2026-09-26).
+        # The shared file used to be written only once this whole patch had finished,
+        # live pushes included, so the second player sat waiting to start their own.
+        # The run file reads its magnitudes from the preset FILE, so save that first.
+        # It is written again after the patch, with the patch code.
+        if CONFIG.get('shared_session_autosave', True):
+            try:
+                self._save_magnitudes_now(report=False)
+                exporter = getattr(self.parent_gui, 'export_shared_session', None)
+                if exporter is not None:
+                    self._shared_path = exporter() or getattr(self, '_shared_path', None)
+            except Exception:
+                pass        # never let the hand-over block the patch itself
+
         try:
             results, backup = self._run_busy(lambda: self._hp.apply_run(
                 map_path, plan, self.registry,
                 self.target_difficulty, game=self.game,
                 **baseline_args(self.game),
                 starting=starting, weapon_swaps=weapon_swaps,
-                zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(),
+                zoom_ui=zoom_ui, zoom_donor=self._zoom_donor_spec(plan),
                 turret_first_person=turret_fp,
                 keep_reticle=bool(CONFIG.get('keep_reticle_zoomed', True)),
                 equipment_drop=bool(CONFIG.get(
@@ -7486,6 +7569,9 @@ class MagnitudeEditorDialog(QDialog):
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
                 skip_flight=bool(CONFIG.get('h4_skip_flight')),
+                h4_keep_loadout=bool(CONFIG.get('h4_keep_loadout', True)),
+                clear_profile_equipment=bool(CONFIG.get('clear_profile_equipment')),
+                clear_profile_grenades=bool(CONFIG.get('clear_profile_grenades')),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
@@ -9189,6 +9275,27 @@ class OptionsDialog(QDialog):
             "script container (where f_hud_chapter fades the HUD) and the level's own.")
         allform.addRow("Chapter titles:", self.keep_title_hud_cb)
 
+        self.clear_profile_equipment_cb = QCheckBox(
+            "Remove the level's own starting equipment / abilities")
+        self.clear_profile_equipment_cb.setChecked(bool(CONFIG.get('clear_profile_equipment')))
+        self.clear_profile_equipment_cb.setToolTip(
+            "Empties the armour ability or equipment every starting profile of the level "
+            "hands out, respawn profiles included, so you only have what the run gives "
+            "you. Reach and Halo 4 are the only games whose starting profiles carry "
+            "one (Reach's sprint and jetpack, Halo 4's hologram, Promethean Vision and "
+            "Hardlight Shield); elsewhere it does nothing.\n\n"
+            "Careful: Reach's Exodus hands out the jetpack through a profile, and "
+            "Infinity's rally point hands out Promethean Vision, which the level's "
+            "training sequence waits for.")
+        allform.addRow("Starting equipment:", self.clear_profile_equipment_cb)
+
+        self.clear_profile_grenades_cb = QCheckBox("Remove the level's own starting grenades")
+        self.clear_profile_grenades_cb.setChecked(bool(CONFIG.get('clear_profile_grenades')))
+        self.clear_profile_grenades_cb.setToolTip(
+            "Sets every starting profile's grenade counts to 0, respawn profiles "
+            "included. Grenades picked up in the level are unaffected.")
+        allform.addRow("Starting grenades:", self.clear_profile_grenades_cb)
+
         self.par_time_scale = QDoubleSpinBox()
         self.par_time_scale.setRange(0.1, 10.0)
         self.par_time_scale.setSingleStep(0.1)
@@ -9654,6 +9761,16 @@ class OptionsDialog(QDialog):
             "would have begun -- the same result as starting from that insertion. "
             "EXPERIMENTAL: not yet seen in game.")
         h4form.addRow("Opening flight:", self.h4_skip_flight_cb)
+
+        self.h4_keep_loadout_cb = QCheckBox("Infinity: keep weapons through the rally teleport")
+        self.h4_keep_loadout_cb.setChecked(bool(CONFIG.get('h4_keep_loadout', True)))
+        self.h4_keep_loadout_cb.setToolTip(
+            "On: half-way through Infinity the level teleports you to the rally point "
+            "and hands every player a fresh starting loadout, throwing away what you "
+            "carried. This skips that one script call, so you keep your weapons. "
+            "Starting the level at an insertion point still gives that insertion's "
+            "loadout.")
+        h4form.addRow("Travel sections:", self.h4_keep_loadout_cb)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
@@ -10458,11 +10575,14 @@ class OptionsDialog(QDialog):
             'combine_heretic_hologram': self.combine_holo_cb.isChecked(),
             'remove_h3_cutscenes': self.cutscenes_cb.isChecked(),
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
+            'clear_profile_equipment': self.clear_profile_equipment_cb.isChecked(),
+            'clear_profile_grenades': self.clear_profile_grenades_cb.isChecked(),
             'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
             'par_time_scale': self.par_time_scale.value(),
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
+            'h4_keep_loadout': self.h4_keep_loadout_cb.isChecked(),
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
@@ -12740,7 +12860,7 @@ class HaloGUI(QMainWindow):
             # the round is unfinished, though: a greyed button with no explanation is
             # a mystery to debug mid-session, and quicksave_shared already refuses
             # politely with the reason. What changes is the tooltip, which says why.
-            ready = bool(rs) and rs.phase == 'complete'
+            ready = bool(rs) and not self._mid_picking_round()
             qb.setEnabled(bool(rs))
             qb.setToolTip("Write this run straight into the shared session folder."
                           if ready else
@@ -13242,7 +13362,9 @@ class HaloGUI(QMainWindow):
         forth used to leave one timestamped file per patch, so the folder filled up and
         "the newest one" got harder to trust."""
         folder = (CONFIG.get('shared_session_dir') or '').strip()
-        if not folder or self.run_state.phase != 'complete':
+        # Same rule as Save and Quicksave: demanding 'complete' skipped every export
+        # after a load, which waits for Generate in 'player1_turn' with no cards dealt.
+        if not folder or self._mid_picking_round():
             return None
         try:
             d = Path(folder)
@@ -13271,9 +13393,13 @@ class HaloGUI(QMainWindow):
                                     "Set a shared session folder in Options first "
                                     "(point both machines at the same synced folder).")
             return None
-        if self.run_state.phase != 'complete':
-            QMessageBox.warning(self, "Not Complete",
-                                "Both players must select before saving!")
+        # Same rule as Save. Demanding 'complete' refused a freshly loaded run: a load
+        # waits for Generate in 'player1_turn' with no cards dealt, which is not a
+        # round in progress at all.
+        if self._mid_picking_round():
+            QMessageBox.warning(self, "Round in progress",
+                                "Finish this picking round before saving — both players "
+                                "need to choose a card first.")
             return None
         existing = self._shared_run_path()
         name = existing.name if existing else self._default_shared_name()

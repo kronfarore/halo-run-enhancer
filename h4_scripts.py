@@ -153,3 +153,95 @@ def skip_flight(m, mission, block_base):
     tr.set_next(name, datum)
     return {'ok': True, 'reason': 'after the opening, (thread (ins_trench)) now runs '
                                   'ins_crash_on_foot'}
+
+
+# KEEP THE LOADOUT THROUGH INFINITY'S RALLY TELEPORT (m60_rescue). Half-way through the
+# level, rally_teleport moves the players to the rally point and calls
+#     (f_insertion_playerprofile rally_profile ...)
+# which re-applies a starting profile to every player (player_set_profile, then
+# unit_add_equipment playerN <profile> with the reset flag) and so throws away whatever
+# they were carrying. Skipping that one statement keeps their weapons. The ins_* scripts
+# make the same call, but only when a level STARTS at that insertion; they are left alone.
+# Surveyed on all eight missions (2026-09-26): the only other mid-mission call is
+# Shutdown's f_dlg_flight_a_incoming (profile_spire_02), not touched unless asked for.
+LOADOUT_RESETS = {'m60_rescue': ('rally_teleport',)}
+
+
+def _script_names(m, tr):
+    """{first statement index: script name} for every script root in the tree.
+
+    A script's name is a stringID whose table offset is per map; a script CALL record
+    carries the called script's index in its opcode, so the offset every such call
+    agrees on is the right one (builtins vote for scattered wrong values)."""
+    import collections
+    if not m._locate_stringids():
+        return {}
+    tbl = {}
+    for i in range(m.str_tbl_count):
+        s = m._string_at(i)
+        if s and s not in tbl:
+            tbl[s] = i
+    sids = [m.u32(o - 0xC) & 0xFFFFFF for o in tr.roots]
+    votes = collections.Counter()
+    for i in range(tr.n):
+        r = tr.at(i)
+        if r['vtype'] == ht.T_FUNCNAME and r['string'] in tbl and r['opcode'] < len(sids):
+            votes[tbl[r['string']] - sids[r['opcode']]] += 1
+    if not votes:
+        return {}
+    off = votes.most_common(1)[0][0]
+    out = {}
+    for k, o in enumerate(tr.roots):
+        d = m.u32(o)
+        if d != T:
+            out[d & 0xFFFF] = m._string_at(sids[k] + off)
+    return out
+
+
+def _script_of(tr, g, parent, pred, names):
+    """Name of the script whose body contains statement `g`, or None."""
+    j = g
+    for _ in range(256):
+        f = _first_stmt(tr, j, pred)
+        if f in names:
+            return names[f]
+        ups = [n for n in pred.get(f, []) if tr.at(n)['vtype'] == ht.T_FUNCNAME]
+        if not ups:
+            return None
+        grp = [b for b in parent.get(ups[0], []) if b != ups[0] and tr.at(b)['child'] == ups[0]]
+        if not grp:
+            return None
+        j = grp[0]
+    return None
+
+
+def keep_loadout(m, mission, block_base):
+    """Skip the mid-mission profile re-application listed in LOADOUT_RESETS."""
+    scripts = LOADOUT_RESETS.get(mission)
+    if not scripts:
+        return {'skip': True, 'quiet': True,
+                'reason': 'no mid-mission loadout reset on this mission'}
+    tr = _scenario_tree(m, block_base, mission)
+    if tr is None:
+        return {'ok': False, 'reason': 'no compiled scenario script'}
+    names = _script_names(m, tr)
+    parent, pred = _index(tr)
+    every = _call_groups(tr, 'f_insertion_playerprofile', parent)
+    calls = [g for g in every if _script_of(tr, g, parent, pred, names) in scripts]
+    if not calls and any(not tr.entered(g) for g in every):
+        # A skipped call is orphaned, so no script owns it any more.
+        return {'ok': True, 'reason': 'already applied'}
+    if not calls:
+        return {'ok': False, 'reason': 'no f_insertion_playerprofile call found in %s'
+                                       % ', '.join(scripts)}
+    live = [g for g in calls if tr.entered(g)]
+    if not live:
+        return {'ok': True, 'reason': 'already applied'}
+    for g in live:
+        ht._skip(tr, g)
+    left = [g for g in calls if tr.entered(g)]
+    if left:
+        return {'ok': False, 'reason': '%d of %d reset call(s) could not be skipped'
+                                       % (len(left), len(calls))}
+    return {'ok': True, 'reason': '%s no longer re-applies a starting profile'
+                                  % ', '.join(scripts)}

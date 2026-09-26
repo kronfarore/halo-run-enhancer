@@ -190,7 +190,7 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
 
 # Bump when the MEANING of a written value changes, so codes from before and after
 # don't compare equal and quietly suggest two players are in sync when they aren't.
-SIGNATURE_VERSION = 1
+SIGNATURE_VERSION = 2
 
 
 def patch_signature(results, map_path=None, difficulty=None):
@@ -210,9 +210,18 @@ def patch_signature(results, map_path=None, difficulty=None):
     for r in results or []:
         if not (r.get('ok') and not r.get('skip')):
             continue                       # skips/failures wrote nothing
+        if r.get('tag') == 'MCC process':
+            continue                       # a live write: lands only with MCC running
         new = r.get('new')
         if isinstance(new, float):
             new = f"{new:.4f}"
+        elif isinstance(new, str):
+            # A file row's value can carry a note on whether it was ALSO pushed into
+            # the running MCC ("-- pushed live ...", "-- RESTART MCC to apply"). That
+            # note depends on MCC being open, not on what was written, so patching with
+            # MCC closed and then again with it running gave two different codes.
+            for sep in (' -- ', ' — '):
+                new = new.split(sep)[0]
         lines.append(f"{r.get('tag', '')}|{r.get('field', '')}|{new}")
     if not lines:
         return None
@@ -1380,6 +1389,69 @@ def _profile_is_empty(m, poff, game):
     lay = _STARTING_SLOTS[game]
     ro = poff + lay['primary']['ref'] + lay['id_at']
     return struct.unpack_from('<I', m.data, ro)[0] == 0xFFFFFFFF
+
+
+# Starting grenade counts in a Player Starting Profile element: (offset, how many int8
+# counts), read off each MCC scnr plugin. Halo 4 has eight grenade slots, the rest four.
+_PROFILE_GRENADES = {'Halo 1': (0x50, 4), 'Halo 2': (0x40, 4), 'Halo 3': (0x50, 4),
+                     'Halo 3: ODST': (0x50, 4), 'Halo Reach': (0x50, 4),
+                     'Halo 4': (0x58, 8)}
+
+
+def _clear_profile_loadout(m, game, registry, equipment=False, grenades=False):
+    """Empty what the level's OWN starting profiles hand out: the armour ability /
+    equipment ref (Reach and Halo 4 are the only games whose profile has one) and the
+    starting grenade counts. Every profile, respawn ones included, so the vanilla item
+    does not come back on death. Runs after the starting-weapon write, which reads the
+    equipment ref to tell Reach's player profiles apart."""
+    game = str(game).strip()
+    out = []
+    scnr_plug = registry.get('scnr')
+    scnr_base = _scnr_base(m)
+    bf = None
+    for fn in ('Starting Health Damage', 'Starting Health Modifier'):
+        bf = scnr_plug.find(fn, 'Player Starting Profile') if scnr_plug else None
+        if bf:
+            break
+    if scnr_base is None or not bf:
+        return [{'effect': 'clear loadout', 'ok': False,
+                 'reason': 'Player Starting Profile layout unavailable'}]
+    boff, esize = bf['block_offsets'][-1], bf['block_sizes'][-1]
+    count = m.i32(scnr_base + boff)
+    lay = _STARTING_SLOTS.get(game) or {}
+    eq = lay.get('equipment') if equipment else None
+    gr = _PROFILE_GRENADES.get(game) if grenades else None
+    n_eq = n_gr = 0
+    for i in range(count):
+        poff = m.follow(scnr_base, [boff], [esize], i)
+        if poff is None:
+            continue
+        if eq is not None:
+            ro = poff + eq
+            if struct.unpack_from('<I', m.data, ro + lay['id_at'])[0] != 0xFFFFFFFF:
+                struct.pack_into('<I', m.data, ro, 0xFFFFFFFF)
+                struct.pack_into('<II', m.data, ro + 4, 0, 0)
+                struct.pack_into('<I', m.data, ro + lay['id_at'], 0xFFFFFFFF)
+                n_eq += 1
+        if gr is not None:
+            at, k = gr
+            if any(m.data[poff + at:poff + at + k]):
+                m.data[poff + at:poff + at + k] = bytes(k)
+                n_gr += 1
+    if equipment:
+        if 'equipment' not in lay:
+            out.append({'effect': 'clear loadout', 'field': 'starting equipment',
+                        'ok': True, 'skip': True,
+                        'reason': "this game's starting profiles carry no equipment"})
+        else:
+            out.append({'effect': 'clear loadout', 'field': 'starting equipment',
+                        'ok': True, 'old': 'vanilla',
+                        'new': 'emptied on %d of %d profile(s)' % (n_eq, count)})
+    if grenades:
+        out.append({'effect': 'clear loadout', 'field': 'starting grenades',
+                    'ok': True, 'old': 'vanilla',
+                    'new': 'zeroed on %d of %d profile(s)' % (n_gr, count)})
+    return out
 
 
 def _apply_starting_equipment(m, game, registry, starting):
@@ -5222,14 +5294,24 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
     by_leaf = {}
     for n, b in hud_of.values():
         by_leaf.setdefault(str(n).rsplit(chr(92), 1)[-1], (n, b))
-    donors = []
-    if prefer_donor:
-        pd = str(prefer_donor).split(' ', 1)[-1] if str(prefer_donor).startswith(
-            'weap ') else str(prefer_donor)
-        pd = pd.split('&')[0].strip()           # a joined tag names its variants
-        if pd in hud_of:
-            donors.append(hud_of[pd])
-    donors += [by_leaf[d] for d in (donor_huds or _H4_SCOPE_DONORS) if d in by_leaf]
+    auto = [by_leaf[d] for d in (donor_huds or _H4_SCOPE_DONORS) if d in by_leaf]
+    if donor_huds is None:
+        # Then any other scoped screen the map carries: an extended map may hold a
+        # scoped weapon the fixed list does not name.
+        for n in scoped_weapons(m, 'Halo 4'):
+            if n in hud_of and hud_of[n] not in auto:
+                auto.append(hud_of[n])
+
+    def donors_for(name):
+        pref = _donor_for(prefer_donor, name)
+        first = []
+        if pref:
+            pd = str(pref).split(' ', 1)[-1] if str(pref).startswith(
+                'weap ') else str(pref)
+            pd = pd.split('&')[0].strip()           # a joined tag names its variants
+            if pd in hud_of:
+                first.append(hud_of[pd])
+        return first + auto
     names = []
     for tag in targets:
         _, joined = hm.split_tag(tag)
@@ -5253,7 +5335,7 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
                                    % str(hud[0]).rsplit(chr(92), 1)[-1]))
             continue
         reason = 'no scoped weapon HUD on this map to copy from'
-        for dn, db in donors:
+        for dn, db in donors_for(name):
             if db == hud[1]:
                 continue
             plan = _h4_scope_plan(m, hud[1], db)
@@ -6025,6 +6107,57 @@ def _h4_hostile_sentinels(m, game):
     return out
 
 
+def _donor_for(prefer_donor, name):
+    """The donor asked for one target weapon. `prefer_donor` is a weap tag path (one
+    donor for every target, the old patcher-wide choice) or a dict {target weap path:
+    donor weap tag} from the per-card choice; a target the dict does not name, or maps
+    to None, gets the automatic donor."""
+    if isinstance(prefer_donor, dict):
+        return prefer_donor.get(name)
+    return prefer_donor
+
+
+def scoped_weapons(m, game):
+    """Weap tag paths on this map whose HUD carries a scope that the zoom UI can copy.
+    It reads the map, so an extended map offers every scoped weapon it has, not just
+    the ones on a fixed list."""
+    game = str(game).strip()
+    out = []
+    if game == 'Halo 4':
+        C, U = _H4_CUSC, _H4_COMP.unpack
+        for name, b in m.find_tags('weap', '*'):
+            hud = _h4_tag_at(m, b + _H4_HUD_REF)
+            if not hud:
+                continue
+            comps = _h4_rows(m, hud[1], *C['components'])
+            sid = _h4_scope_sids(m, {U(r)[1] for r in comps if not U(r)[1] >> 17})
+            if not (sid and sid['zoom_decision'] in {U(r)[1] for r in comps}):
+                continue
+            # Only a screen _h4_scope_plan can copy from: ONE component under the
+            # scope container, instancing ONE template. Measured on Dawn, that is the
+            # battle rifle and the magnum; the other scoped screens (sniper, beam
+            # rifle, carbine, DMR...) wire their scope some other way.
+            cont = [r for r in comps if U(r)[2] == sid['scope_container']]
+            if len(cont) != 1:
+                continue
+            kids = {U(r)[4] for r in comps if U(r)[2] == U(cont[0])[1]}
+            if len(kids) == 1 and 0 <= min(kids) < len(_h4_rows(m, hud[1], *C['templates'])):
+                out.append(name)
+        return out
+    if game not in _ZOOM_UI:
+        return out
+    if isinstance(getattr(m, 'tags', None), dict):          # H1
+        weaps = [(n, off) for (c, n), off in m.tags.items() if c == 'weap']
+    else:
+        weaps = [(t['name'], t['base']) for t in m.tags
+                 if t.get('class') == 'weap' and t.get('base')]
+    for name, wb in weaps:
+        hud = _hud_base(m, game, wb)
+        if hud is not None and _hud_is_scoped(m, game, hud):
+            out.append(name)
+    return out
+
+
 def _apply_zoom_ui(m, game, targets, prefer_donor=None):
     """Give each target weapon (weap tag paths) a scope if its HUD lacks one, by
     copying every scope source block from a donor weapon on the map. `prefer_donor`
@@ -6067,7 +6200,8 @@ def _apply_zoom_ui(m, game, targets, prefer_donor=None):
             out.append({'effect': 'zoom UI', 'field': short, 'ok': True, 'skip': True,
                         'old': short, 'new': 'already has a scope — unchanged'})
             continue
-        donor_hud, donor = _zoom_donor(m, game, exclude_hud=hud, prefer=prefer_donor)
+        donor_hud, donor = _zoom_donor(m, game, exclude_hud=hud,
+                                       prefer=_donor_for(prefer_donor, name))
         if donor_hud is None:
             out.append({'effect': 'zoom UI', 'field': short, 'ok': False,
                         'reason': 'no scoped donor weapon in this map'})
@@ -6966,6 +7100,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
+              h4_keep_loadout=False, clear_profile_equipment=False,
+              clear_profile_grenades=False,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -7270,6 +7406,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                       'starting profile instead'})
         results.extend(_apply_starting_equipment(m, game, registry, starting))
 
+    if clear_profile_equipment or clear_profile_grenades:
+        # AFTER the starting-weapon write: Reach tells its player profiles apart by the
+        # armour ability ref this empties.
+        results.extend(_clear_profile_loadout(m, game, registry,
+                                              equipment=clear_profile_equipment,
+                                              grenades=clear_profile_grenades))
+
     if spawn_weapons:
         results.extend(_apply_spawn_weapons(m, game, spawn_weapons, registry))
     if spawn_equipment:
@@ -7370,6 +7513,22 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 row.update(ok=True, old='vanilla',
                            new=rep.get('reason') or '%d of %d reset call(s) removed (%s)'
                            % (rep['removed'], rep['found'], ', '.join(rep['profiles'])))
+            else:
+                row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
+            results.append(row)
+
+    if h4_keep_loadout and str(game).strip() == 'Halo 4':
+        # Infinity's rally teleport re-applies a starting profile (h4_scripts.py).
+        import h4_scripts
+        mission = os.path.splitext(os.path.basename(map_path))[0].lower()
+        rep = h4_scripts.keep_loadout(m, mission, _block_base)
+        if not rep.get('quiet'):
+            row = {'tag': 'hsdt', 'field': 'level script',
+                   'effect': 'Keep loadout through travel'}
+            if rep.get('skip'):
+                row.update(ok=True, skip=True, reason=rep.get('reason'))
+            elif rep.get('ok'):
+                row.update(ok=True, old='vanilla', new=rep.get('reason'))
             else:
                 row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
             results.append(row)
