@@ -3332,9 +3332,34 @@ class ModifierDatabase:
             return str(val).strip().lower() in [str(a).strip().lower() for a in allowed]
         return bool(val)
 
+    def _fielded_weapons(self, game):
+        """Every weapon, grenade and turret name any level of `game` knows about --
+        its lists and its map-read pools. Not cached: the pools follow the options."""
+        out = set(self.get_game_weapons(game) or ())
+        for mid, g in self.mission_games.items():
+            if g != game:
+                continue
+            for src in (self.mission_weapons, self.mission_grenades, self.mission_turrets):
+                out |= set(src.get(mid) or ())
+        return {self.resolve_weapon(w) for w in out} | out
+
+    def _weapon_fielded(self, mod, game, fielded=None):
+        """False for a weapon card whose weapon the game does not field at all. A run
+        carries its weapons from game to game, so a Plasma Rifle owned since Reach
+        kept offering its cards in Halo 4, which has none (user, 2026-09-26)."""
+        w = mod.get('weapon')
+        if not w or not game or self.is_equipment(w):
+            return True
+        base = w[5:] if w.startswith('Dual ') else w
+        if fielded is None:
+            fielded = self._fielded_weapons(game)
+        return base in fielded or self.resolve_weapon(base) in fielded
+
     def filter_blacklisted(self, mods, blacklist, game=None):
         drop = (set(self.SUPERSEDED_VITALITY_CARDS)
                 if CONFIG.get('remove_superseded_vitality_cards') else ())
+        fielded = (self._fielded_weapons(game)
+                   if game and any(m.get('weapon') for m in mods) else None)
         return [m for m in mods
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                 and self._cross_game_ok(m) and not mod_ignored(m)
@@ -3343,6 +3368,7 @@ class ModifierDatabase:
                 # initial selection, the New Weapon draw and every reroll — the
                 # recurring bug class of fixing only one of them.
                 and (m.get('name') not in drop)
+                and self._weapon_fielded(m, game, fielded)
                 # Enemies the game no longer fields, whose tags nonetheless resolve:
                 # the Flood from ODST on, and the Elites from Halo 3 on. Both are
                 # excluded at patch time too — this is the offer half of the pair.

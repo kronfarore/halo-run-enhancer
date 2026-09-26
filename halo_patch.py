@@ -5329,6 +5329,17 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
                             reason='not in this map' if not m.find_tags('weap', name)
                             else 'weapon has no HUD screen'))
             continue
+        hudl = str(hud[0]).lower()
+        if hudl.startswith(('ui' + chr(92) + 'hud' + chr(92) + 'turrets' + chr(92),
+                            'ui' + chr(92) + 'hud' + chr(92) + 'vehicles' + chr(92))):
+            # Turret and vehicle-gun screens (user, 2026-09-26): the grafted scope drew
+            # all the time, zoomed or not, on every machine gun variant -- the zoom
+            # binding the graft copies does not follow a turret's zoom. The Zoom
+            # itself still works (first person, magnification); only the overlay goes.
+            out.append(dict(row, ok=True, skip=True,
+                            reason='turret HUD: zooms without a scope overlay (a '
+                                   'grafted one showed while not zoomed)'))
+            continue
         if hud[0] in done:
             out.append(dict(row, ok=True, skip=True,
                             reason='shares %s, already given a scope'
