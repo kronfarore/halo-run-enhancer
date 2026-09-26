@@ -376,7 +376,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'reach_placement_radius',
                'reach_equipment_drop', 'h4_equipment_drop', 'h4_hostile_sentinels',
                'reach_keep_loadout', 'reach_skip_space', 'par_time_scale',
-               'h4_skip_flight', 'h4_keep_loadout',
+               'h4_skip_flight', 'h4_keep_loadout', 'h4_ability_visibility',
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
@@ -909,6 +909,9 @@ CONFIG = {
     # Halo 4 script edit (h4_scripts.keep_loadout): Infinity's rally teleport no longer
     # re-applies a starting profile, so the players keep what they carry.
     "h4_keep_loadout": True,
+    # TEST (2026-09-27): make Halo 4 abilities on the ground easier to see. '' off,
+    # 'icon' bigger hologram visible further, 'glow' stronger lights, 'lift' raised.
+    "h4_ability_visibility": '',
     # Weapon names never offered in Halo 4 (see get_level_weapons).
     "h4_never_offer": ["Sentinel Beam", "Sentinel Eliminator Beam", "Target Locator"],
     # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
@@ -7164,12 +7167,18 @@ class MagnitudeEditorDialog(QDialog):
         order = ZOOM_DONOR_WEAPONS.get(self.game, [])
         names = sorted(dict.fromkeys(onmap),
                        key=lambda w: (order.index(w) if w in order else len(order), w))
+        # The fixed per-game list is ALSO a manual allow-list (user, 2026-09-27): a
+        # weapon on it is offered whenever the level carries it, even if reading the
+        # map's HUD finds no copyable scope. The patcher falls back to an automatic
+        # donor when the chosen one cannot donate, so offering it is safe.
+        manual = {db.resolve_weapon(x) for x in order} | set(order)
         for w in names:
             tag = db.weap_tag_for(w, self.game)
             if not tag:
                 continue
             paths = [p.strip() for p in tag.split(' ', 1)[-1].split('&')]
-            if any(p in scoped for p in paths):
+            if (any(p in scoped for p in paths) or w in manual
+                    or db.resolve_weapon(w) in manual):
                 self._donor_cands.append(w)
         return self._donor_cands
 
@@ -7632,6 +7641,7 @@ class MagnitudeEditorDialog(QDialog):
                 clear_profile_equipment=bool(CONFIG.get('clear_profile_equipment')),
                 clear_profile_grenades=bool(CONFIG.get('clear_profile_grenades')),
                 spawn_grenades=self._spawn_grenades_spec(),
+                h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
@@ -9843,6 +9853,22 @@ class OptionsDialog(QDialog):
             "loadout.")
         h4form.addRow("Travel sections:", self.h4_keep_loadout_cb)
 
+        self.h4_ability_vis_combo = QComboBox()
+        for label, val in (("Off (vanilla)", ''), ("Bigger icon, visible further", 'icon'),
+                           ("Stronger glow", 'glow'), ("Lifted at the markers", 'lift')):
+            self.h4_ability_vis_combo.addItem(label, val)
+        _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
+        self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
+        self.h4_ability_vis_combo.setToolTip(
+            "TEST: Halo 4 abilities lying on the ground are hard to see. Pick one fix per "
+            "map to compare them in game:\n"
+            "  Bigger icon -- the floating hologram x3 size, visible to 150 units "
+            "instead of fading out past 20.\n"
+            "  Stronger glow -- the ability's lights x3 radius and brightness.\n"
+            "  Lifted -- abilities placed at the enhancer markers sit 0.5 units higher. "
+            "Only affects placed abilities, not ones dropped on death.")
+        h4form.addRow("Ability visibility (test):", self.h4_ability_vis_combo)
+
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
         self._opt_page("Patching").addWidget(patchg, 60)
@@ -10655,6 +10681,7 @@ class OptionsDialog(QDialog):
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
             'h4_keep_loadout': self.h4_keep_loadout_cb.isChecked(),
+            'h4_ability_visibility': self.h4_ability_vis_combo.currentData() or '',
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),
