@@ -1,0 +1,269 @@
+Cards whose rows are NOT one grouped concept (one input per group). Candidates to split,
+like Zoom -> Zoom + Zoom Time. Format: card name (N cards)  ->  its distinct rows.
+
+Melee Seeking (44)
+    44x  Damage Pyramid Angles | Damage Pyramid Depth
+Zoom (44)
+    44x  Magnification Levels | Magnification Range | Magnification Range Max
+Projectile (40)
+    24x  Range | Velocity | Autoaim Leading Maximum Lead Time
+    16x  Range | Velocity | Autoaim Leading Maximum Lead Time | Gravity Scale
+Distribution Function (39)
+    39x  Distribution Function | Distribution Angle
+Firing Noise (39)
+    39x  Firing Noise | Impact Noise | Detonation Noise
+More Shooting (35)
+    35x  Rounds Per Second | Shots Per Fire | Rounds Per Shot
+Accuracy Penalties (29)
+    29x  Reload Penalty | Switch Penalty
+Magazine (28)
+    17x  Rounds Total Initial | Rounds Inventory Maximum | Rounds Loaded Maximum | Rounds Reloaded | Rounds Total Maximum
+    10x  Rounds Total Initial | Rounds Total Maximum | Rounds Loaded Maximum | Rounds Reloaded
+     1x  Rounds Loaded Maximum | Rounds Total Maximum
+Rider Damage (22)
+    22x  Rider Direct Damage Scale | Rider Damage Scale
+Melee Behavior (15)
+     5x  Melee Attack Delay Timer | Melee Attack Timeout | Melee Chance | Melee Leap Range
+     4x  Melee Attack Delay | Melee Charge Time | Melee Chance
+     4x  Melee Attack Delay Timer | Melee Attack Timeout | Melee Chance
+     1x  Melee Attack Delay | Melee Attack Timeout | Melee Chance
+Per Round (13)
+    13x  Heat Generated Per Round | Age Generated Per Round
+Heat Recovery (11)
+    11x  Heat Recovery Threshold | Heat Loss
+Search Tactics (11)
+     9x  Suppressing Fire Weight | Uncover Weight | Leap On Cover Weight | Destroy Cover Weight | Guard Weight | Investigate Weight
+     1x  Suppressing Fire Weight | Uncover Weight | Destroy Cover Weight | Guard Weight | Investigate Weight
+     1x  Suppressing Fire Weight | Uncover Weight | Guard Weight | Investigate Weight
+Ramp Up (10)
+    10x  Acceleration Time | Deceleration Time
+Perception (9)
+     8x  Notice Projectile Chance | Notice Vehicle Chance | Combat Perception Time | Guard Perception Time | Non-Combat Perception Time
+     1x  Notice Projectile Chance | Notice Vehicle Chance | Perception Time
+Vision (8)
+     8x  Vision | Peripheral Vision
+Leader Leash (8)
+     8x  Maximum Leader Distance | Absolute Maximum Leader Distance
+Cover Properties (8)
+     7x  Hide Behind Cover Time | Cover Vitality Threshold
+     1x  Hide Behind Cover Time | Shield Fractions
+Duration (7)
+     7x  Duration | Arm Time | Self Destruct Time
+Grenades (7)
+     4x  Grenade Velocity | Grenade Ideal Velocity | Grenade Ranges | Grenade Ranges Max | Collateral Damage Radius
+     2x  Grenade Velocity | Grenade Ranges | Collateral Damage Radius
+     1x  Grenade Velocity | Grenade Ideal Velocity | Grenade Ranges | Collateral Damage Radius
+Homing (6)
+     3x  Targeted Leading Fraction | Guided Angular Velocity | Guided Projectile (Outer Range) Error Radius
+     3x  Targeted Leading Fraction | Guided Angular Velocity | Guided Projectile Outer Range Error Radius
+Recharge (6)
+     4x  Energy Recovery Time | Inactive Energy Rate
+     2x  Recharge Rate | Energy Recovery Time
+Target Tracking & Leading (6)
+     6x  Target Tracking | Target Leading
+Retreat (6)
+     4x  Forced Cower Time | Retreat Chance | Flee Timeout
+     1x  Forced Cower Time | Retreat Chance
+     1x  Forced Cower Time | Flee Timeout
+Shield Recharge (6)
+     6x  Shield Recharge Delay Time | Shield Recharge Time
+Melee Leap (6)
+     4x  Melee Leap Range | Leap Velocity | Melee Leap Chance | Melee Leap Ballistic
+     1x  Melee Leap Range | Leap Velocity | Melee Leap Chance | Melee Leap Ballistic | Melee Leap Prediction Time
+     1x  Melee Leap Range | Melee Leap Chance | Balling Melee Leap Chance | Balling Melee Leap Attack Range | Leap Velocity | Melee Leap Prediction Time
+Target Tracking (5)
+     4x  Acquire Time | Grace Time | Decay Time
+     1x  Lock-On Acquire Time | Lock-On Grace Time | Lock-On Hold Time
+Misfire (5)
+     5x  Age Misfire Start | Age Misfire Chance
+Accuracy (5)
+     3x  Accuracy Bounds | Accuracy Time
+     2x  Accuracy Bounds | Accuracy Time | Projectile Error
+Firing Positions (5)
+     5x  Guard Position Time | Combat Position Time | Old Position Avoid Distance
+Leap (4)
+     4x  Maximum Leap Height | Leap Proximity Fraction
+Boarding (4)
+     3x  Boarding Distance | Maximum Speed | Board Time
+     1x  Boarding Distance | Maximum Speed
+Body Recharge (4)
+     4x  Body Recharge Fraction | Body Recharge Delay Time | Body Recharge Time
+Suppress (4)
+     4x  Suppressing Time | Max Suppress Count
+Armor Lock (3)
+     2x  Armor Lock Chance | Grenade Stuck Armor Lock Chance | Armor Lock Safety Duration | Armor Lock Maximum Duration | Armor Lock Cooldown
+     1x  Armor Lock Chance | Armor Lock Safety Duration | Armor Lock Maximum Duration | Armor Lock Cooldown
+Grenades Chance (3)
+     1x  Grenade Chance | Grenade Check Time | Encounter Grenade Timeout
+     1x  Grenade Chance | Anti-Vehicle Grenade Chance | Grenade Check Time | Encounter Grenade Timeout | Grenade Throw Delay
+     1x  Grenade Chance | Anti-Vehicle Grenade Chance
+More Shooting (Charged) (2)
+     2x  Rounds Per Second | Shots Per Fire | Rounds Per Shot
+Needle Timer (2)
+     2x  Timer | Timer Max | Super Detonation Time | Super Detonation Projectile Count | Fuse
+Pellet Spread (2)
+     2x  Yaw Count | Pitch Count | Spread | Distribution Exponent
+Motion Tracker Noise (2)
+     2x  Arm Time | Noise Radius | Noise Count | Flash Radius
+Equipment Explosion (2)
+     2x  Radius | Damage
+Upgrade Chance (2)
+     2x  Few Upgrade Chance | Normal Upgrade Chance | Many Upgrade Chance
+Hunter Berserk (2)
+     2x  Berserk Damage Amount | Berserk Damage Threshold | Berserk Grenade Chance
+Berserk (2)
+     1x  Beserk Cooldown | Perimeter Range | Perimeter Range Close | Maximum Berserk Count | Minimum Berserk Count
+     1x  Beserk Cooldown | Shield-Down Berserk Chance | Shield-Down Berserk Range | Maximum Berserk Count | Play Berserk Animation Chance When Stuck
+Special-Case Firing (2)
+     1x  Special Damage Modifier | Special-Fire Chance | Special-Fire Delay | Special-Fire Mode
+     1x  Special Damage Modifier | Special-Fire Chance | Special-Fire Delay
+Magnetism (1)
+     1x  Magnetism Friction | Magnetism Adhesion
+Run Speed (1)
+     1x  Run Speed | Run Acceleration
+Sneak Speed (1)
+     1x  Sneak Speed | Sneak Acceleration
+Homing (Charged) (1)
+     1x  Guided Angular Velocity | Guided Projectile (Outer Range) Error Radius
+Charged Projectile (1)
+     1x  Maximum Range | Velocity
+Per Round (Charged) (1)
+     1x  Heat Generated Per Round | Age Generated Per Round | Charged Drain Rate
+Energy Use (1)
+     1x  Per Kill Or Hit Aging Amount | Energy Per Kill (live)
+Charging Time (1)
+     1x  Charging Time | Charged Time
+Plasma Timer (1)
+     1x  Timer | Timer Max | Fuse
+Airstrike (1)
+     1x  Charges | Shots Per Strike | Cooldown | Warmup | Duration | Marker Time | Launch Radius | Strike Pattern x | Strike Pattern y
+Arming Timer (1)
+     1x  Timer | Timer Max | Arming Time
+More Shooting (Scoped) (1)
+     1x  Rounds Per Second | Shots Per Fire | Rounds Per Shot
+Charged Shot Range (1)
+     1x  Range | Velocity
+Sprint Wind-Up (1)
+     1x  Seconds to Full Speed | Decay Rate
+Damage Burn (1)
+     1x  Threshold Energy Burned | Energy Adjustment
+Camo Break (1)
+     1x  Movement Speed Domain | Awareness Time
+Shimmer (1)
+     1x  Shimmer Decrease Rate | Shimmer Bullet Ping
+Warmup Time (1)
+     1x  Warmup Time | Cooldown Time
+Shield Strength (1)
+     1x  Shield Damage To Energy Scale | Visual Activation Time
+Vision Range (1)
+     1x  Maximum Tell Distance | Motion Sensor Tell Blip Ticks
+Thrust (1)
+     1x  Speed Multiplier | Danger Radius
+Durability (1)
+     1x  Maximum Vitality | Maximum Shield Vitality
+Powerdrain (1)
+     1x  Radius | Damage
+Maximum Firing Distance (1)
+     1x  Maximum Firing Range | Normal Combat Range Max | Timid Combat Range Max | Aggressive Combat Range Max
+Turret Drain (1)
+     1x  Turret Idle Equipment Drain Multiplier | Turret Inactive Equipment Drain Multiplier
+Orbit (1)
+     1x  Orbit Range | Orbit Rate
+Chase Speed (1)
+     1x  Maximum Range | Maximum Velocity | Maximum Acceleration
+Deploy Time (1)
+     1x  Spawn In Time | Turret Halt Engage Time
+AI Base Accuracy (1)
+     1x  Accuracy Bounds | Accuracy Time
+AI Base Melee Behavior (1)
+     1x  Melee Attack Delay Timer | Melee Attack Timeout | Melee Chance
+Grenade Scales (1)
+     1x  Grenade Chance Scale | Grenade Timer Scale
+Placement Properties (1)
+     1x  Few Upgrade Chance | Normal Upgrade Chance | Many Upgrade Chance
+Grenade Properties (1)
+     1x  Grenade Velocity | Grenade Ideal Velocity | Grenade Ranges | Grenade Ranges Max | Collateral Damage Radius
+Hunter Fuel Rod Rounds per Second (1)
+     1x  Rounds Per Second | Rounds Per Second Max | Shots Per Fire | Shots Per Fire Max
+Projectile Range Hunter Fuel Rod (1)
+     1x  Range | Velocity | Gravity Scale
+Kamikaze (1)
+     1x  Broken Kamikaze Chance | Maximum Kamikaze Count
+Panic (1)
+     1x  Friend Killed Panic Chance | Leader Killed Panic Chance | Flee Time
+Movement Switching (1)
+     1x  Initial Crouch Chance | Crouch Time | Run Time
+Combatform Berserk (1)
+     1x  Berserk Chance | Berserk Distance | Maximum Berserk Count | Minimum Berserk Count
+Infestation Speed (1)
+     1x  Infection Time | Infection Time Max
+Stealth Morphs (1)
+     1x  Stealth Morph Distance Threshold | Stealth Morph Damage Threshold
+Tank Form (1)
+     1x  Distance Damage Outer Radius | Distance Damage Inner Radius | Distance Damage Time | Distance Damage Reset Time | Throttle Distance | Throttle Distance Max | Protect Damage Amount | Protect Time | Spew Chance | Spew Frequency | Spew Frequency Max
+Stalker Form (1)
+     1x  Stealth Morph Distance Threshold | Stealth Morph Damage Threshold | Stalk Range | Stalk Range Max | Stalk Range Hard Maximum | Stalk Charge Chance
+Ranged Form (1)
+     1x  Ranged Proximity Distance | Turtle Damage Threshold | Turtle Time | Turtle Time Max | Turtle Distance | Turtle Abort Distance
+Projectile Range Sentinel Beam (1)
+     1x  Range | Velocity | Gravity Scale
+Shield down Berserk (1)
+     1x  Shield-Down Berserk Chance | Shield-Down Berserk Ranges Max | Shield-Down Berserk Chance Max | Shield-Down Berserk Ranges
+More Berserking (1)
+     1x  Beserk Cooldown | Berserk Count
+Leader Charge (1)
+     1x  Leader Abandoned Berserk Chance | Perimeter Range
+Deployable Shield Use (1)
+     1x  Vitality Fraction Shield Equipment | Vitality Fraction Bubbleshield | Recent Damage Shield Equipment
+Equipment Use Chance (1)
+     1x  Easy/Normal | Legendary
+Hologram (1)
+     1x  Hologram Cover Wait Time | Hologram Cover Wait Time Max | Hologram Cooldown Delay
+Death (1)
+     1x  Death Height | Death Rise Time | Death Detonation Time | Detonation Body Vitality
+Shield Boost (1)
+     1x  Shield Boost Radius Maximum | Shield Boost Period | Shield Boost Strength
+Head Gun Rate of Fire (1)
+     1x  Rounds Per Second | Rounds Per Second Max
+Head Gun Accuracy (1)
+     1x  Error Angle | Error Angle Max | Minimum Error
+Fight Circle (1)
+     1x  Strafe Time | Extra Firing Time | Maximum Angle From Threat Axis | Nearby Inner Angle | Nearby Outer Angle
+Shield (1)
+     1x  Lifetime | Recharge Time | Warmup Time
+Grenade Catch (1)
+     1x  Chance To Collect | Maximum Collect Range | Attack Speed | Strength
+Turret Rate of Fire (1)
+     1x  Rounds Per Second | Rounds Per Second Max
+Projectile Range (1)
+     1x  Range | Velocity | Gravity Scale
+Gravity Cannon (1)
+     1x  Rounds Per Second | Rounds Per Second Max | Shots Per Fire | Shots Per Fire Max | Projectiles Per Shot
+Gravity Cannon Projectile (1)
+     1x  Range | Velocity
+Gravity Throne (1)
+     1x  Maximum Forward Speed | Maximum Reverse Speed | Speed Acceleration | Speed Deceleration | Maximum Left Turn | Maximum Right Turn (Negative) | Turn Rate
+Hologram Target Tracking & Leading (1)
+     1x  Target Tracking | Target Leading
+Beam Rate of Fire (1)
+     1x  Rounds Per Second | Rounds Per Second Max
+Beam Range (1)
+     1x  Range | Velocity
+Beam (1)
+     1x  Rounds Per Second | Rounds Per Second Max | Shots Per Fire | Shots Per Fire Max | Projectiles Per Shot
+Beam Projectile (1)
+     1x  Range | Velocity
+Needler (1)
+     1x  Rounds Per Second | Rounds Per Second Max | Shots Per Fire | Shots Per Fire Max | Projectiles Per Shot
+Needler Projectile (1)
+     1x  Range | Velocity
+Rocket (1)
+     1x  Rounds Per Second | Rounds Per Second Max | Shots Per Fire | Shots Per Fire Max | Projectiles Per Shot
+Rocket Projectile (1)
+     1x  Range | Velocity
+Rocket Damage (1)
+     1x  Damage | Radius
+Enforcer Chassis (1)
+     1x  Maximum Forward Speed | Maximum Reverse Speed | Speed Acceleration | Speed Deceleration | Maximum Left Turn | Maximum Right Turn (Negative) | Turn Rate
+Gravity Jump (1)
+     1x  Cooldown | Trigger Distance | Jump Target Height | Float Time | Descend Gravity | Target Attractor | Retreat Radius

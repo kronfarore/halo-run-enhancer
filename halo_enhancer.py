@@ -4690,6 +4690,28 @@ class MagnitudeEditorDialog(QDialog):
         v = self._shown_value(target, v)        # stored -> the units shown/typed
         return f"{round(v, 4)}" if isinstance(v, float) else str(v)
 
+    def _stacked_op(self, eff, t, txt):
+        """The op this row applies for the card's pick count (halo_patch.stack_op).
+        The zoom ladder needs the field's vanilla value, read only when it has one."""
+        vanilla = None
+        if t.get('from_zero'):
+            # `zero_field` names the field that says whether the weapon zooms at all:
+            # Range and Max ship at 1 on a zoomless gun, only Levels is 0.
+            vanilla = self._vanilla_num(target_tag(eff, t), t.get('zero_field') or t['field'],
+                                        None if t.get('zero_field') else t.get('block'),
+                                        0 if t.get('zero_field') else (t.get('nth', 0) or 0))
+        return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'))
+
+    def _stack_hint(self, eff, t, txt):
+        n = max(1, int(eff.get('count') or 1))
+        txt = (txt or '').strip()
+        if not txt and not t.get('from_zero'):
+            return 'picked %dx' % n
+        try:
+            return 'picked %dx -> %s' % (n, self._stacked_op(eff, t, txt) or 'nothing')
+        except Exception:
+            return 'picked %dx' % n
+
     def _vanilla_num(self, tag, field, block=None, nth=0):
         """Numeric vanilla value of a field (first matching tag), or None."""
         m = self._read_source()
@@ -6382,6 +6404,17 @@ class MagnitudeEditorDialog(QDialog):
                                           "on the previous game. Patch to keep it, or "
                                           "clear it to leave the field alone."
                                           % src_game)
+                    if not le.text().strip() and (t.get('step') or t.get('from_zero')):
+                        # card-stacking: nothing remembered for this field, so the
+                        # halo.json default per pick. Shown in the default colour;
+                        # type over it to override, clear it to leave the field alone.
+                        le.setText(str(t.get('step') or ''))
+                        le.setStyleSheet("color: #8fb3c8;")
+                        le.setToolTip("Default per pick, from halo.json. Applied once for "
+                                      "every time this card was drawn."
+                                      + ("  A weapon without a zoom follows its own "
+                                         "ladder instead: %s." % ', '.join(t['from_zero'])
+                                         if t.get('from_zero') else ''))
             if hasattr(le, 'isReadOnly') and not le.isReadOnly():
                 # #7: rewrite shorthand into its canonical form once the field is left,
                 # so '*.5' reads back as '*0.5' (and is remembered, and shared, that
@@ -6389,6 +6422,18 @@ class MagnitudeEditorDialog(QDialog):
                 le.editingFinished.connect(
                     lambda ed=le: ed.setText(self._hp.hm.normalize_op_text(ed.text())))
             inrow.addWidget(le)
+            if (hasattr(le, 'textChanged') and not derived and t.get('set') is None
+                    and not t.get('choice')):
+                # card-stacking: what the patch will actually apply for this many picks
+                picks = QLabel()
+                picks.setStyleSheet("color: #9a9a9a; font-size: 11px;")
+                picks.setMinimumWidth(110)
+
+                def _upd(_=None, lab=picks, ed=le, tt=t, ef=eff):
+                    lab.setText(self._stack_hint(ef, tt, ed.text()))
+                le.textChanged.connect(_upd)
+                _upd()
+                inrow.addWidget(picks)
             eh = le.sizeHint().height()   # keep row-adornment buttons the input's height
             # #1: debug-only per-field patch — write just this one field to the map.
             if (CONFIG.get('debug_mode') and not derived
@@ -7411,6 +7456,11 @@ class MagnitudeEditorDialog(QDialog):
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
             # come back from a fallback next time). Only a non-empty input adds an op.
             self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+            if not txt and not t.get('from_zero'):
+                continue
+            # card-stacking: the remembered value is ONE pick's op; apply it once per
+            # time the card was drawn (linear), or the zoom ladder on a zoomless gun.
+            txt = self._stacked_op(eff, t, txt)
             if not txt:
                 continue
             key = (eff['tag'], eff['name'])
@@ -7787,6 +7837,12 @@ class MagnitudeEditorDialog(QDialog):
                     self._shared_path = exporter()
 
         self._show_results(results, backup)
+        # card-stacking: a card whose every field now sits at its bound can go no
+        # further -- offer to blacklist it so it stops being drawn.
+        try:
+            self._offer_saturated_blacklist(results)
+        except Exception:
+            pass        # never let the offer break a finished patch
 
     def done(self, r):
         # #2: keep the magnitudes typed here, on EVERY close including Cancel.
@@ -7868,6 +7924,95 @@ class MagnitudeEditorDialog(QDialog):
             lines.append(f"  FAIL  {r['effect']}: {r.get('field')}  ({r.get('reason')}){tag}")
         self.results.setPlainText("\n".join(lines))
 
+    @staticmethod
+    def _at_bound(v, lo, hi):
+        eps = 1e-6
+        return ((lo is not None and v <= float(lo) + eps)
+                or (hi is not None and v >= float(hi) - eps))
+
+    def _saturated_effects(self, results):
+        """Effects of this patch whose EVERY field has reached its bound (user,
+        2026-09-27: all fields, not any). A field is at its bound when every write it
+        made landed on its min or max, or its zoom ladder is used up. A field with no
+        min, max or ladder can always move, so its card never saturates."""
+        by_effect = {}
+        for r in results or []:
+            if r.get('ok') and not r.get('skip') and isinstance(r.get('new'), (int, float)):
+                by_effect.setdefault(r.get('effect'), []).append(r)
+        out, seen = [], set()
+        for eff in self.effects:
+            key = (str(eff.get('tag')), eff.get('name'))
+            if key in seen:
+                continue
+            seen.add(key)
+            rows = [(t, le) for e, t, le in self.rows if e is eff]
+            fields = []
+            for t, le in rows:
+                txt = row_value(le).strip()
+                if not txt and not t.get('from_zero'):
+                    continue                     # left alone: not part of this card now
+                fields.append(t)
+            if not fields:
+                continue
+            ok = True
+            for t in fields:
+                n = max(1, int(eff.get('count') or 1))
+                lad = t.get('from_zero')
+                if lad and n >= len(lad) and self._stacked_op(eff, t, '') == str(lad[-1]):
+                    continue                     # the ladder's last rung
+                lo, hi = t.get('min'), t.get('max')
+                if lo is None and hi is None:
+                    ok = False
+                    break
+                mine = [r for r in by_effect.get(eff.get('name'), [])
+                        if str(r.get('field', '')).startswith(str(t['field']))
+                        and self._result_is_mine(r, eff, t)]
+                if not mine or not all(self._at_bound(r['new'], lo, hi) for r in mine):
+                    ok = False
+                    break
+            if ok:
+                out.append(eff)
+        return out
+
+    @staticmethod
+    def _result_is_mine(r, eff, t):
+        """Does result row `r` come from this effect's tag? Card names repeat across
+        weapons and enemies (every weapon has a Zoom), so the name alone mixes them."""
+        import fnmatch
+        tag = str(t.get('tag') or eff.get('tag') or '')
+        cls, _, rest = tag.partition(' ')
+        rcls, _, rpath = str(r.get('tag', '')).partition(' ')
+        if cls and rcls and cls != rcls:
+            return False
+        rpath = rpath.lower()
+        return any(fnmatch.fnmatch(rpath, p.strip().lower()) for p in rest.split('&') if p.strip())
+
+    def _offer_saturated_blacklist(self, results):
+        sat = self._saturated_effects(results)
+        gui = self.parent_gui
+        rs = getattr(gui, 'run_state', None)
+        db = getattr(gui, 'db', None)
+        if not sat or rs is None or db is None:
+            return
+        labels = [db.get_mod_label(e) for e in sat]
+        labels = [l for l in labels if l not in rs.blacklist]
+        if not labels:
+            return
+        box = QMessageBox(QMessageBox.Question, "Cards at their limit",
+                          "These cards have pushed every field they edit to its limit, so "
+                          "drawing them again would change nothing:\n\n"
+                          + '\n'.join('  • ' + l for l in labels)
+                          + "\n\nBlacklist them so they are no longer drawn?",
+                          parent=self)
+        yes = box.addButton("Blacklist", QMessageBox.AcceptRole)
+        box.addButton("Keep them", QMessageBox.RejectRole)
+        box.exec()
+        if box.clickedButton() is yes:
+            for l in labels:
+                rs.blacklist.add(l)
+            if hasattr(gui, 'update_status'):
+                gui.update_status("Blacklisted %d saturated card(s)" % len(labels))
+
     def _apply_single(self, eff, t, le):
         """#1 (debug): patch just this one field into the current map, using the
         operator currently in its box. Skips the starting/weapon/zoom passes."""
@@ -7880,6 +8025,8 @@ class MagnitudeEditorDialog(QDialog):
             QMessageBox.information(self, "Nothing to apply",
                                    "Enter an operator for this field first.")
             return
+        per_pick = txt
+        txt = self._stacked_op(eff, t, txt) or txt     # card-stacking: once per pick
         op = {'field': t['field'], 'block': t.get('block'), **_diff_flavor(t),
               'index': t.get('index', 0), 'op_str': txt, 'negate': t.get('negate'),
               'nth': t.get('nth', 0) or 0}
@@ -7896,7 +8043,7 @@ class MagnitudeEditorDialog(QDialog):
         except Exception as e:
             QMessageBox.critical(self, "Patch failed", _patch_error_text(e))
             return
-        self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+        self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = per_pick
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
         self._srcmap = None  # map changed on disk; re-read vanilla next time

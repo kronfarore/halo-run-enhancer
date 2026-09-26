@@ -275,9 +275,44 @@ def preset_key(tag, name, field, game=None):
     same effect can have different remembered values per game — most tags
     already differ by game (naturally separating the cache), but a few (e.g.
     matg-based effects) share the same tag/field in both games, and the right
-    magnitude for the same field can still differ in scale between engines."""
+    magnitude for the same field can still differ in scale between engines.
+
+    card-stacking: a remembered magnitude is now the op ONE pick applies, and the
+    patcher applies it once per pick (stack_op). Keys end in `||step` so the old
+    cumulative values, typed by hand for the whole run so far, are never read as
+    per-pick steps -- they would be multiplied again. They stay in the file."""
     base = f"{tag}||{name}||{field}"
-    return f"{base}||{game}" if game else base
+    return (f"{base}||{game}" if game else base) + '||step'
+
+
+def stack_op(text, count, vanilla=None, from_zero=None):
+    """The op a card picked `count` times applies, from its per-pick op `text`.
+
+    LINEAR (user, 2026-09-27): *1.2 picked 3 times is *1.6 (1 + 3 x 0.2), *0.8 three
+    times is *0.4, never below 0; +1 three times is +3; a set (=n) is a set however
+    often it is picked. `from_zero` is a per-pick ladder of ops used instead when the
+    field's vanilla value is 0 (Zoom on a weapon that ships without one): pick k uses
+    entry k, and past its end the last entry holds. Returns the op text, or '' for no
+    edit. `count` below 1 is treated as 1 (a card in the list was picked at least once).
+    """
+    n = max(1, int(count or 1))
+    if from_zero and vanilla is not None and float(vanilla) == 0.0:
+        return str(from_zero[min(n, len(from_zero)) - 1])
+    parsed = hm.parse_operator(text)
+    if not parsed:
+        return (text or '').strip()
+    op, val = parsed
+    if n == 1:
+        return hm.normalize_op_text(text)
+    if op == 'mul':
+        return '*' + _fmt_num(max(0.0, 1.0 + (val - 1.0) * n))
+    if op in ('add', 'sub'):
+        return ('+' if op == 'add' else '-') + _fmt_num(val * n)
+    return hm.normalize_op_text(text)            # set: the same however often
+
+
+def _fmt_num(x):
+    return ('%.6f' % x).rstrip('0').rstrip('.') or '0'
 
 
 # Set by load_presets() when the presets file EXISTS but could not be read; the patcher
