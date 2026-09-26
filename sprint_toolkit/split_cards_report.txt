@@ -1,0 +1,330 @@
+AI Base Accuracy
+    General modifiers: -> "AI Base Accuracy Bounds", "AI Base Accuracy Time"
+AI Base Melee Behavior
+    General modifiers: -> "AI Base Melee Timing", "AI Base Melee Chance"
+Accuracy
+    Auto Turret: -> "Accuracy Bounds", "Accuracy Time"
+    General modifiers: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Elite: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Hunter: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Grunt: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Jackal: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Flood Combat Form: SKIPPED -- nothing to split (0 part)
+    Specific Enemy modifier / Flood Infection Form: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
+    Specific Enemy modifier / Flood Carrier Form: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
+    Specific Enemy modifier / Flood Pure Form: -> "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Bugger: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
+    Specific Enemy modifier / Brute: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
+Accuracy Penalties
+    Specific Weapon Modifier / Assault Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Pistol: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Plasma Pistol: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Plasma Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Needler: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Sniper Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Rocket Launcher: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Shotgun: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Flak Cannon: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Spike Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Gravity Hammer: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Spartan Laser: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Concussion Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / DMR: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Focus Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Grenade Launcher: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Needle Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Plasma Launcher: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Plasma Repeater: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Target Locator: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Storm Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / SAW: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Scattershot: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Suppressor: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Boltshot: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Railgun: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Sticky Detonator: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Binary Rifle: -> "Accuracy Penalties"
+    Specific Weapon Modifier / Incineration Cannon: -> "Accuracy Penalties"
+Airstrike
+    Specific Weapon Modifier / Target Locator: -> "Airstrike Charges", "Airstrike Shots", "Airstrike Cooldown", "Airstrike Timing", "Airstrike Radius", "Airstrike Pattern"
+Armor Lock
+    Specific Enemy modifier / Elite: -> "Armor Lock Chance", "Armor Lock Duration"
+    Specific Enemy modifier / Brute: -> "Armor Lock Chance", "Armor Lock Duration"
+    Specific Enemy modifier / Knight: -> "Armor Lock Chance", "Armor Lock Duration"
+Beam Projectile
+    Hero enemy modifier / Sentinel Enforcer: -> "Beam Projectile Range", "Beam Projectile Velocity"
+Beam Range
+    Boss enemy modifier / 343 Guilty Spark: -> "Beam Range", "Beam Velocity"
+Beam Rate of Fire
+    Boss enemy modifier / 343 Guilty Spark: -> "Beam Rate of Fire"
+Berserk
+    Specific Enemy modifier / Hunter: -> "Berserk Cooldown", "Berserk Perimeter Range", "Berserk Count"
+    Specific Enemy modifier / Knight: -> "Berserk Cooldown", "Berserk Count", "Berserk Special Chances"
+Body Recharge
+    Specific Enemy modifier / Jackal: -> "Body Recharge Amount", "Body Recharge Delay", "Body Recharge Time"
+    Specific Enemy modifier / Flood Pure Form: -> "Body Recharge Amount", "Body Recharge Delay", "Body Recharge Time"
+    Specific Enemy modifier / Brute: -> "Body Recharge Amount", "Body Recharge Delay", "Body Recharge Time"
+    Specific Enemy modifier / Skirmisher: -> "Body Recharge Amount", "Body Recharge Delay", "Body Recharge Time"
+    Hero enemy modifier / Jackal Ranger: SKIPPED -- nothing to split (1 part)
+    Hero enemy modifier / Jackal Sniper: SKIPPED -- nothing to split (1 part)
+Camo Break
+    Active Camouflage: -> "Camo Break Speed", "Camo Break Awareness"
+Charged Projectile
+    Specific Weapon Modifier / Plasma Pistol: -> "Charged Projectile Range", "Charged Projectile Velocity"
+Charged Shot Range
+    Specific Weapon Modifier / Boltshot: -> "Charged Shot Range", "Charged Shot Velocity"
+Combatform Berserk
+    Specific Enemy modifier / Flood Combat Form: -> "Berserk Chance", "Berserk Distance", "Berserk Count"
+Cover Properties
+    General modifiers: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Elite: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Grunt: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Jackal: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Flood Pure Form: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Sentinel: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Bugger: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Brute: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Skirmisher: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Engineer: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Knight: -> "Hide Behind Cover", "Cover Threshold"
+    Specific Enemy modifier / Crawler: -> "Hide Behind Cover", "Cover Threshold"
+    Boss enemy modifier / Tartarus: -> "Hide Behind Cover", "Cover Threshold"
+Death
+    Specific Enemy modifier / Engineer: -> "Death Height", "Death Detonation Time", "Detonation Body Vitality"
+Deployable Shield Use
+    Specific Enemy modifier / Brute: -> "Shield Use Vitality", "Shield Use Recent Damage"
+Enforcer Chassis
+    Hero enemy modifier / Sentinel Enforcer: -> "Enforcer Chassis Speed", "Enforcer Chassis Acceleration", "Enforcer Chassis Turn"
+Equipment Explosion
+    Power Drain: -> "Explosion Radius", "Explosion Damage"
+    Trip Mine: -> "Explosion Radius", "Explosion Damage"
+Fight Circle
+    Specific Enemy modifier / Crawler: -> "Fight Circle Strafe Time", "Fight Circle Firing Time", "Fight Circle Angles"
+Firing Positions
+    Specific Enemy modifier / Elite: -> "Guard Position Time", "Combat Position Time", "Position Avoid Distance"
+    Specific Enemy modifier / Hunter: -> "Guard Position Time", "Combat Position Time", "Position Avoid Distance"
+    Specific Enemy modifier / Grunt: -> "Guard Position Time", "Combat Position Time", "Position Avoid Distance"
+    Specific Enemy modifier / Jackal: -> "Guard Position Time", "Combat Position Time", "Position Avoid Distance"
+    Specific Enemy modifier / Sentinel: -> "Guard Position Time", "Combat Position Time", "Position Avoid Distance"
+Gravity Cannon Projectile
+    Boss enemy modifier / Prophet Regret: -> "Gravity Cannon Projectile Range", "Gravity Cannon Projectile Velocity"
+Gravity Jump
+    Hero enemy modifier / Knight Commander: -> "Gravity Jump Cooldown", "Gravity Jump Trigger Distance", "Gravity Jump Height", "Gravity Jump Float Time", "Gravity Jump Descend Gravity", "Gravity Jump Target Attractor", "Gravity Jump Retreat Radius"
+Gravity Throne
+    Boss enemy modifier / Prophet Regret: -> "Gravity Throne Speed", "Gravity Throne Acceleration", "Gravity Throne Turn"
+Grenade Catch
+    Specific Enemy modifier / Watcher: -> "Grenade Catch Chance", "Grenade Catch Range", "Grenade Catch Attack Speed", "Grenade Catch Strength"
+Grenade Properties
+    General modifiers: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+Grenade Scales
+    General modifiers: -> "Grenade Chance Scale", "Grenade Timer Scale"
+Grenades
+    Specific Enemy modifier / Elite: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Grunt: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Flood Combat Form: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Flood Pure Form: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Bugger: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Brute: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+    Specific Enemy modifier / Knight: -> "Grenade Velocity", "Grenade Range", "Grenade Collateral"
+Grenades Chance
+    Specific Enemy modifier / Elite: -> "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout"
+    Specific Enemy modifier / Grunt: -> "Grenade Chance", "Anti-Vehicle Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Throw Delay"
+    Specific Enemy modifier / Brute: -> "Grenade Chance", "Anti-Vehicle Grenade Chance"
+Head Gun Accuracy
+    Specific Enemy modifier / Crawler: -> "Head Gun Accuracy"
+Head Gun Rate of Fire
+    Specific Enemy modifier / Crawler: -> "Head Gun Rate of Fire"
+Heat Recovery
+    Specific Weapon Modifier / Plasma Pistol: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Plasma Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Brute Plasma Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Beam Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Sentinel Beam: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Sentinel Eliminator Beam: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Spike Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Spartan Laser: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Focus Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Plasma Launcher: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Plasma Repeater: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Storm Rifle: -> "Heat Threshold", "Heat Loss"
+    Specific Weapon Modifier / Railgun: -> "Heat Threshold", "Heat Loss"
+Hologram
+    Specific Enemy modifier / Skirmisher: -> "Hologram Wait Time", "Hologram Cooldown"
+Hologram Target Tracking & Leading
+    Boss enemy modifier / Heretic Leader: -> "Hologram Target Tracking", "Hologram Target Leading"
+Homing
+    Specific Weapon Modifier / Plasma Pistol: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+    Specific Weapon Modifier / Needler: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+    Specific Weapon Modifier / Rocket Launcher: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+    Specific Weapon Modifier / Flak Cannon: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+    Specific Weapon Modifier / Plasma Launcher: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+    Specific Weapon Modifier / Incineration Cannon: -> "Homing Leading", "Homing Turn Rate", "Homing Accuracy"
+Homing (Charged)
+    Specific Weapon Modifier / Plasma Pistol: -> "Homing Turn Rate (Charged)", "Homing Accuracy (Charged)"
+Hunter Berserk
+    Specific Enemy modifier / Hunter: -> "Berserk Damage", "Berserk Grenade"
+    Specific Enemy modifier / Flood Combat Form: -> "Berserk Damage", "Berserk Grenade"
+Infestation Speed
+    Specific Enemy modifier / Flood Infection Form: -> "Infestation Speed"
+Kamikaze
+    Specific Enemy modifier / Grunt: -> "Kamikaze Chance", "Kamikaze Count"
+Leader Charge
+    Specific Enemy modifier / Brute: -> "Leader Charge Chance", "Leader Charge Range"
+Melee Behavior
+    Specific Enemy modifier / Elite: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Hunter: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Flood Combat Form: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Flood Infection Form: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Flood Carrier Form: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Flood Pure Form: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Bugger: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Brute: -> "Melee Timing", "Melee Chance"
+    Specific Enemy modifier / Knight: -> "Melee Timing", "Melee Chance"
+    Boss enemy modifier / Tartarus: -> "Melee Timing", "Melee Chance"
+    Hero enemy modifier / Elite Honor Guard: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+    Hero enemy modifier / Brute Chieftain: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+    Hero enemy modifier / Elite Specops Commander: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+    Hero enemy modifier / Knight Commander: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+    Hero enemy modifier / Elite General: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+    Hero enemy modifier / Elite Zealot: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+More Berserking
+    Specific Enemy modifier / Brute: -> "Berserk Cooldown", "Berserk Count"
+Movement Switching
+    Specific Enemy modifier / Flood Combat Form: -> "Crouch Chance", "Run Time"
+Needle Timer
+    Specific Weapon Modifier / Needler: -> "Needle Timer", "Supercombine Timer", "Supercombine Needle Count", "Needle Fuse"
+    Specific Weapon Modifier / Needle Rifle: -> "Needle Timer", "Supercombine Timer", "Supercombine Needle Count", "Needle Fuse"
+Panic
+    Specific Enemy modifier / Jackal: -> "Panic Chance", "Flee Time"
+Pellet Spread
+    Specific Weapon Modifier / Shotgun: -> "Pellet Count", "Pellet Spread"
+    Specific Weapon Modifier / Mauler: -> "Pellet Count", "Pellet Spread"
+Per Round
+    Specific Weapon Modifier / Plasma Pistol: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Plasma Rifle: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Brute Plasma Rifle: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Beam Rifle: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Sentinel Beam: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Sentinel Eliminator Beam: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Spike Rifle: SKIPPED -- nothing to split (1 part)
+    Specific Weapon Modifier / Spartan Laser: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Flamethrower: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Focus Rifle: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Plasma Launcher: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Plasma Repeater: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Target Locator: SKIPPED -- nothing to split (1 part)
+    Specific Weapon Modifier / Storm Rifle: -> "Heat Per Round", "Age Per Round"
+    Specific Weapon Modifier / Railgun: -> "Heat Per Round", "Age Per Round"
+Per Round (Charged)
+    Specific Weapon Modifier / Plasma Pistol: -> "Heat Per Round (Charged)", "Age Per Round (Charged)", "Charged Drain Rate"
+Placement Properties
+    General modifiers: -> "Few Upgrade Chance", "Normal Upgrade Chance", "Many Upgrade Chance"
+Powerdrain
+    Power Drain: -> "Powerdrain Radius", "Powerdrain Damage"
+Projectile
+    Specific Weapon Modifier / Assault Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Pistol: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Plasma Pistol: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Plasma Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Needler: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Sniper Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Rocket Launcher: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Shotgun: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / SMG: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Brute Plasma Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Battle Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Brute Shot: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Beam Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Covenant Carbine: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Flak Cannon: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Sentinel Beam: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Sentinel Eliminator Beam: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Mauler: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Spike Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Flamethrower: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Machine Gun: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Plasma Cannon: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Missile Pod: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Concussion Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / DMR: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Focus Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Grenade Launcher: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Needle Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Plasma Launcher: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Plasma Repeater: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Target Locator: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Storm Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / SAW: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Scattershot: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / LightRifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Suppressor: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Boltshot: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Sticky Detonator: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time", "Projectile Gravity"
+    Specific Weapon Modifier / Binary Rifle: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+    Specific Weapon Modifier / Incineration Cannon: -> "Projectile Range", "Projectile Velocity", "Projectile Lead Time"
+Projectile Range
+    Specific Enemy modifier / Watcher: -> "Projectile Range Range", "Projectile Range Velocity", "Projectile Range Gravity"
+Projectile Range Hunter Fuel Rod
+    Specific Enemy modifier / Hunter: -> "Fuel Rod Range", "Fuel Rod Velocity", "Fuel Rod Gravity"
+Ranged Form
+    Specific Enemy modifier / Flood Pure Form: -> "Ranged Distance", "Turtle Threshold", "Turtle Time", "Turtle Distance"
+Rocket Damage
+    Hero enemy modifier / Sentinel Enforcer: -> "Rocket Damage", "Rocket Radius"
+Rocket Projectile
+    Hero enemy modifier / Sentinel Enforcer: -> "Rocket Projectile Range", "Rocket Projectile Velocity"
+Run Speed
+    General Modifiers: merged with ['Sneak Speed'] into "Speed and Acceleration"
+Search Tactics
+    Specific Enemy modifier / Elite: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Hunter: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Grunt: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Jackal: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Sentinel: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Bugger: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Brute: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Skirmisher: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Knight: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Crawler: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
+    Specific Enemy modifier / Watcher: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Guard", "Search: Investigate"
+Shield Boost
+    Specific Enemy modifier / Engineer: -> "Shield Boost Radius", "Shield Boost Period", "Shield Boost Strength"
+Shield down Berserk
+    Specific Enemy modifier / Brute: -> "Shield-Down Berserk Chance", "Shield-Down Berserk Range"
+Special-Case Firing
+    Specific Enemy modifier / Grunt: -> "Special Damage", "Special-Fire Chance", "Special-Fire Delay"
+    Specific Enemy modifier / Jackal: -> "Special Damage", "Special-Fire Chance", "Special-Fire Delay"
+Sprint Wind-Up
+    Sprint: -> "Sprint Wind-Up", "Sprint Decay"
+Stalker Form
+    Specific Enemy modifier / Flood Pure Form: "Morph Distance" already made by Stealth Morphs -- identical, dropped
+    Specific Enemy modifier / Flood Pure Form: "Morph Damage" already made by Stealth Morphs -- identical, dropped
+    Specific Enemy modifier / Flood Pure Form: -> "Stalk Range", "Stalk Charge"
+Stealth Morphs
+    Specific Enemy modifier / Flood Pure Form: -> "Morph Distance", "Morph Damage"
+Tank Form
+    Specific Enemy modifier / Flood Pure Form: -> "Distance Damage Radius", "Distance Damage Time", "Throttle Distance", "Protect Damage Amount", "Protect Time", "Spew Chance", "Spew Frequency"
+Target Tracking & Leading
+    General modifiers: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Elite: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Hunter: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Jackal: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Flood Combat Form: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Sentinel: -> "Target Tracking", "Target Leading"
+    Specific Enemy modifier / Watcher: -> "Target Tracking", "Target Leading"
+    Boss enemy modifier / Prophet Regret: -> "Target Tracking", "Target Leading"
+Turret Rate of Fire
+    Specific Enemy modifier / Watcher: -> "Turret Rate of Fire"
+Upgrade Chance
+    Specific Enemy modifier / Elite: -> "Few Upgrade Chance", "Normal Upgrade Chance", "Many Upgrade Chance"
+    Specific Enemy modifier / Grunt: -> "Few Upgrade Chance", "Normal Upgrade Chance", "Many Upgrade Chance"
+Vision
+    General modifiers: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Elite: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Hunter: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Grunt: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Jackal: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Flood Combat Form: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Flood Infection Form: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Flood Carrier Form: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Flood Pure Form: -> "Vision", "Peripheral Vision"
+    Specific Enemy modifier / Sentinel: -> "Vision", "Peripheral Vision"

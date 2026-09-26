@@ -94,7 +94,7 @@ def main():
         t = json.loads(text[s:e])
         card = card_at(path)
         label = ' / '.join(str(p) for p in path[1:])
-        if 'field' not in t or 'step' in t or any(t.get(k) not in (None, False) for k in SKIP_KEYS):
+        if 'field' not in t or any(t.get(k) not in (None, False) for k in SKIP_KEYS):
             report['skipped'] += 1
             continue
         side_player = path[0] in PLAYER_SIDE
@@ -146,7 +146,11 @@ def main():
         else:
             step = '*' + fmt(1 + pct if up else 1 - pct)
             form = 'rule %d%%' % round(pct * 100)
-        edits.append((s, step))
+        have = t.get('step')
+        if have is None:
+            edits.append((s, step))
+        elif have != step:
+            form += ' (kept %s)' % have
         report[how] += 1
         lines.append('%-6s %-9s %-11s %-62s %-40s %s' % (
             how, step, form, label[:62], str(t['field'])[:40],

@@ -1960,6 +1960,10 @@ EFFECT_RENAMES = {
     'Defensive': 'Cover Properties',
     'Projectile Error': 'Accuracy',
     'Effective Range?': 'Projectile',   # merged into Projectile
+    # card-stacking (2026-09-27): the two speed cards became one. Split families are
+    # rebuilt from their pieces instead (HaloGUI._rebuild_split_card).
+    'Run Speed': 'Speed and Acceleration',
+    'Sneak Speed': 'Speed and Acceleration',
 }
 
 # The four difficulty flavors halo_patch.apply_difficulty understands. A plan op
@@ -2398,6 +2402,12 @@ class ModifierDatabase:
             'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
             # Enemy colour drift group (aggressive / defensive / utility), see enemy_colors.
             'color': mod_data.get('color'),
+            # card-stacking: cards split from one family that must not BOTH be drafted
+            # for the same source (Search Tactics, Kamikaze). Drawing one blacklists the
+            # others -- HaloGUI._blacklist_exclusive_siblings.
+            'exclusive': mod_data.get('exclusive'),
+            # the card family this card was split from (a pre-split run names it)
+            'split_from': mod_data.get('split_from'),
             # An Options gate. `requires_config` names a CONFIG key (and may be
             # per-game, resolved like `tag`); `requires_config_in` optionally lists the
             # values that count as on, for a setting that is a choice rather than a
@@ -12161,6 +12171,7 @@ class HaloGUI(QMainWindow):
                 'enemy1': p1_enemy, 'enemy2': p2_enemy,
                 'wildcard': None, 'boss1': None, 'boss2': None,
             })
+            self._blacklist_exclusive_siblings(self.run_state.rounds[-1])
         self._p1_start_enemy = None
         self.run_state.phase = 'player1_turn'
         self.run_state.current_turn = 'player1'
@@ -12395,6 +12406,7 @@ class HaloGUI(QMainWindow):
                 'enemy2': res2['enemy'] if res2 else None,
                 'wildcard': None, 'boss1': None, 'boss2': None,
             })
+            self._blacklist_exclusive_siblings(self.run_state.rounds[-1])
             self.run_state.phase = 'complete'
             self.run_state.current_turn = 'player1'
             self._sync_save_button()
@@ -13178,6 +13190,7 @@ class HaloGUI(QMainWindow):
                         'player1' if pk == 'exhaust1' else 'player2'] = True
                 round_data[pk] = ex
             self.run_state.rounds.append(round_data)
+            self._blacklist_exclusive_siblings(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
 
             self._sync_save_button()
@@ -13356,6 +13369,36 @@ class HaloGUI(QMainWindow):
 
     def update_status(self, msg):
         self.status_label.setText(msg)
+
+    def _blacklist_exclusive_siblings(self, round_data):
+        """A drafted card with an `exclusive` family blacklists the family's other
+        cards for the same weapon / enemy / boss (user, 2026-09-27: picking one Search
+        Tactics card for a species blocks the rest; the two Kamikaze cards block each
+        other). Called wherever a round is recorded."""
+        mods = []
+        for k in ('player1', 'player2'):
+            m = (round_data.get(k) or {}).get('mod')
+            if isinstance(m, dict):
+                mods.append(m)
+        for k in ('enemy1', 'enemy2', 'wildcard', 'boss1', 'boss2'):
+            if isinstance(round_data.get(k), dict):
+                mods.append(round_data[k])
+        added = []
+        for m in mods:
+            fam = m.get('exclusive')
+            if not fam:
+                continue
+            src = m.get('weapon') or m.get('enemy') or m.get('boss')
+            pool = (self.db.weapon_mods.get(src) or self.db.enemy_mods.get(src)
+                    or self.db.boss_mods.get(src) or [])
+            for sib in pool:
+                if sib.get('exclusive') == fam and sib.get('name') != m.get('name'):
+                    label = self.db.get_mod_label(sib)
+                    if label not in self.run_state.blacklist:
+                        self.run_state.blacklist.add(label)
+                        added.append(sib.get('name'))
+        if added:
+            self.update_status('Blocked for the rest of the run: %s' % ', '.join(added))
 
     def set_last_patch_code(self, code, map_path=None, difficulty=None):
         """Record the signature of a patch just applied, and show it.
@@ -13795,10 +13838,61 @@ class HaloGUI(QMainWindow):
                         'affected_by_skull', 'color'):
                 if key in fresh:
                     mod[key] = copy.deepcopy(fresh[key])
+        elif self._rebuild_split_card(mod):
+            mod.pop('_missing_in_db', None)
         else:
             # The effect no longer exists in halo.json (removed/renamed away). Keep the
             # frozen snapshot but flag it so the patcher can warn.
             mod['_missing_in_db'] = True
+
+    @staticmethod
+    def _row_fields(targets):
+        out = set()
+        lists = targets.values() if isinstance(targets, dict) else [targets]
+        for lst in lists:
+            for t in lst or []:
+                if not isinstance(t, dict):
+                    continue
+                f = t.get('field')
+                if isinstance(f, str):
+                    out.add(f)
+                elif isinstance(f, dict):
+                    out |= {x for x in f.values() if isinstance(x, str)}
+        return out
+
+    def _rebuild_split_card(self, mod):
+        """A card drafted before card-stacking split its family (Projectile, Melee
+        Behavior, Search Tactics...) has a name halo.json no longer has. Rebuild it
+        from the new cards of the same source: same tag, and fields that the old card
+        held. Their targets are concatenated -- each carrying its new per-pick step --
+        so the old pick keeps editing everything it did. True if rebuilt."""
+        src = mod.get('weapon') or mod.get('enemy') or mod.get('boss')
+        if src:
+            pool = (self.db.weapon_mods.get(src) or self.db.enemy_mods.get(src)
+                    or self.db.boss_mods.get(src) or [])
+        else:
+            pool = (self.db.positive_pool + self.db.negative_pool
+                    + self.db.wildcard_pool)
+        # The family a card was split from is recorded on each piece (`split_from`,
+        # written by sprint_toolkit/split_cards.py). Matching by name rather than by
+        # fields: a run drafted weeks earlier holds OLDER fields than today's cards.
+        old_name = mod.get('name')
+        names = {old_name, EFFECT_RENAMES.get(old_name)}
+        parts = [c for c in pool if c.get('split_from') in names and c.get('split_from')]
+        if not parts:
+            return False
+        if all(isinstance(c.get('targets'), list) for c in parts):
+            mod['targets'] = [copy.deepcopy(t) for c in parts for t in c['targets']]
+        else:
+            merged = {}
+            for c in parts:
+                tg = c.get('targets')
+                if isinstance(tg, dict):
+                    for g, lst in tg.items():
+                        merged.setdefault(g, []).extend(copy.deepcopy(lst or []))
+            mod['targets'] = merged
+        mod['_split_into'] = [c.get('name') for c in parts]
+        return True
 
     @staticmethod
     def _combine_heretic_tag(tag):

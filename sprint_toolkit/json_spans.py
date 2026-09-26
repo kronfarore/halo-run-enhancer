@@ -22,6 +22,12 @@ def _value(t, i, path, in_targets, out):
     if c == '{':
         start = i
         i = _skip(t, i + 1)
+        # A per-game `targets` map ({"Halo 1": [...], "Halo 3": [...]}) is not a target:
+        # its values are the target lists. Parse it as a container of those.
+        game_map = False
+        if in_targets and t[i] == '"':
+            k0, _ = _dec.raw_decode(t, i)
+            game_map = isinstance(k0, str) and (k0.startswith('Halo') or k0 == 'default')
         if t[i] == '}':
             end = i + 1
         else:
@@ -30,7 +36,8 @@ def _value(t, i, path, in_targets, out):
                 key, i = _dec.raw_decode(t, i)
                 i = _skip(t, i)
                 assert t[i] == ':', (i, t[i - 20:i + 20])
-                i = _value(t, i + 1, path + [key], key == 'targets', out)
+                i = _value(t, i + 1, path + [key] if not game_map else path,
+                           key == 'targets' or game_map, out)
                 i = _skip(t, i)
                 if t[i] == ',':
                     i += 1
@@ -38,7 +45,7 @@ def _value(t, i, path, in_targets, out):
                 assert t[i] == '}', (i, t[i - 20:i + 20])
                 end = i + 1
                 break
-        if in_targets:
+        if in_targets and not game_map:
             out.append((tuple(path[:-1]) if path and path[-1] == 'targets' else tuple(path),
                         start, end))
         elif _CARDS is not None and '"targets"' in t[start:end]:
