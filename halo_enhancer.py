@@ -370,6 +370,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud', 'clear_profile_equipment', 'clear_profile_grenades',
+               'spawn_starting_grenades',
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
@@ -875,6 +876,9 @@ CONFIG = {
     # games whose profile has one), and separately the starting grenades (every game).
     "clear_profile_equipment": False,
     "clear_profile_grenades": False,
+    # Place each player's drafted grenade types where their starting weapons are
+    # dropped, stacked exactly on the marker, as many as the type's Maximum Count.
+    "spawn_starting_grenades": False,
     # Off by default so a user on STOCK maps keeps the full halo.json list. On, the
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
@@ -6406,19 +6410,16 @@ class MagnitudeEditorDialog(QDialog):
             row.addWidget(leftw)
             # #1/#2: variant values on the right, one line per distinct value, plus
             # every difficulty's value where the field has one per difficulty.
-            # A group shows the first member that holds a real value: Error Angle's
-            # first member is Minimum Error, 0 on nearly every Halo 4 weapon, so the
-            # row read "0.0" although the spread it scales is not zero. The preset
-            # key stays on the first member; this only picks what is displayed.
-            _shown = t
+            # A group lists EVERY member's values, one line each, so tuning later can
+            # see all of them (user, 2026-09-26). Showing only the first member read
+            # "0.0" for Error Angle on Halo 4, whose first member (Minimum Error) is 0.
             if len(_members) > 1:
-                for _mt in _members:
-                    _nv = self._vanilla_num(target_tag(eff, _mt), _mt['field'],
-                                            _mt.get('block'), _mt.get('nth', 0) or 0)
-                    if _nv:
-                        _shown = _mt
-                        break
-            _vals = self._variant_values_str(target_tag(eff, _shown), _shown, eff)
+                _vals = '\n'.join(
+                    '%s: %s' % (_mt.get('label') or _mt['field'],
+                                self._variant_values_str(target_tag(eff, _mt), _mt, eff))
+                    for _mt in _members)
+            else:
+                _vals = self._variant_values_str(target_tag(eff, t), t, eff)
             _diffs = self._difficulty_values_str(eff['tag'], t)
             variants = QLabel(_vals + ('\n' + _diffs if _diffs else ''))
             variants.setStyleSheet("color: #7aa0c0; font-size: 12px; font-family: monospace;")
@@ -6987,6 +6988,38 @@ class MagnitudeEditorDialog(QDialog):
             return None
         return {'groups': groups,
                 'radius': float(CONFIG.get('reach_placement_radius', 0.25))}
+
+    def _spawn_grenades_spec(self):
+        """{'groups': [[Grenades block index, ...] per player]} for the drafted grenade
+        types, or None. The index is the one the grenade's own Maximum Count card
+        writes, so halo.json stays the single place grenades are matched per game."""
+        if not CONFIG.get('spawn_starting_grenades'):
+            return None
+        rs = getattr(self.parent_gui, 'run_state', None)
+        db = getattr(self.parent_gui, 'db', None)
+        if rs is None or db is None:
+            return None
+
+        def indices(names):
+            out = []
+            for w in (names or []):
+                if not db.is_grenade(w):
+                    continue
+                for mod in db.get_weapon_modifiers(w):
+                    if mod.get('name') != 'Maximum Count' or not db._game_ok(mod, self.game):
+                        continue
+                    for t in mod.get('targets') or []:
+                        ix = resolve_gamed(t.get('index'), self.game)
+                        if isinstance(ix, int) and ix not in out:
+                            out.append(ix)
+            return out
+
+        slot1, slot2 = self._player_slots()
+        p1 = indices(getattr(rs, slot1 + '_weapons', None))
+        p2 = indices(getattr(rs, slot2 + '_weapons', None))
+        groups = ([p1, p2] if bool(CONFIG.get('two_player_coop', True))
+                  else [p1 + [x for x in p2 if x not in p1]])
+        return {'groups': groups} if any(groups) else None
 
     def _spawn_equipment_spec(self):
         """Halo 3 starting equipment: the equipment each player carries, appended as
@@ -7598,6 +7631,7 @@ class MagnitudeEditorDialog(QDialog):
                 h4_keep_loadout=bool(CONFIG.get('h4_keep_loadout', True)),
                 clear_profile_equipment=bool(CONFIG.get('clear_profile_equipment')),
                 clear_profile_grenades=bool(CONFIG.get('clear_profile_grenades')),
+                spawn_grenades=self._spawn_grenades_spec(),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
@@ -9310,8 +9344,8 @@ class OptionsDialog(QDialog):
             "you. Reach and Halo 4 are the only games whose starting profiles carry "
             "one (Reach's sprint and jetpack, Halo 4's hologram, Promethean Vision and "
             "Hardlight Shield); elsewhere it does nothing.\n\n"
-            "Careful: Reach's Exodus hands out the jetpack through a profile, and "
-            "Infinity's rally point hands out Promethean Vision, which the level's "
+            "Exodus keeps its jetpack: the level's jetpack section needs it. "
+            "Careful: Infinity's rally point hands out Promethean Vision, which the level's "
             "training sequence waits for.")
         allform.addRow("Starting equipment:", self.clear_profile_equipment_cb)
 
@@ -9321,6 +9355,17 @@ class OptionsDialog(QDialog):
             "Sets every starting profile's grenade counts to 0, respawn profiles "
             "included. Grenades picked up in the level are unaffected.")
         allform.addRow("Starting grenades:", self.clear_profile_grenades_cb)
+
+        self.spawn_grenades_cb = QCheckBox("Place drafted grenades at the starting-weapon marker")
+        self.spawn_grenades_cb.setChecked(bool(CONFIG.get('spawn_starting_grenades')))
+        self.spawn_grenades_cb.setToolTip(
+            "Each grenade type a player has drafted is placed where their starting "
+            "weapons are dropped, stacked exactly on the marker, as many as that type's "
+            "Maximum Count (the most a player can carry -- a shared value, so a Maximum "
+            "Count card changes it). Reach and Halo 4 use the enhancer marker; Halo 3 "
+            "and ODST the spot their starting equipment goes. Not built for Halo 1 and "
+            "Halo 2 yet.")
+        allform.addRow("", self.spawn_grenades_cb)
 
         self.par_time_scale = QDoubleSpinBox()
         self.par_time_scale.setRange(0.1, 10.0)
@@ -10603,6 +10648,7 @@ class OptionsDialog(QDialog):
             'keep_title_hud': self.keep_title_hud_cb.isChecked(),
             'clear_profile_equipment': self.clear_profile_equipment_cb.isChecked(),
             'clear_profile_grenades': self.clear_profile_grenades_cb.isChecked(),
+            'spawn_starting_grenades': self.spawn_grenades_cb.isChecked(),
             'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
             'par_time_scale': self.par_time_scale.value(),

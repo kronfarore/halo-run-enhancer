@@ -1398,6 +1398,11 @@ _PROFILE_GRENADES = {'Halo 1': (0x50, 4), 'Halo 2': (0x40, 4), 'Halo 3': (0x50, 
                      'Halo 4': (0x58, 8)}
 
 
+# Equipment the "remove starting equipment" option leaves in place (tag leaf names):
+# Reach's Exodus hands out the jetpack through profile_jetpack for its jetpack section.
+KEEP_PROFILE_EQUIPMENT = ('jet_pack',)
+
+
 def _clear_profile_loadout(m, game, registry, equipment=False, grenades=False):
     """Empty what the level's OWN starting profiles hand out: the armour ability /
     equipment ref (Reach and Halo 4 are the only games whose profile has one) and the
@@ -1421,14 +1426,19 @@ def _clear_profile_loadout(m, game, registry, equipment=False, grenades=False):
     lay = _STARTING_SLOTS.get(game) or {}
     eq = lay.get('equipment') if equipment else None
     gr = _PROFILE_GRENADES.get(game) if grenades else None
-    n_eq = n_gr = 0
+    n_eq = n_gr = kept = 0
     for i in range(count):
         poff = m.follow(scnr_base, [boff], [esize], i)
         if poff is None:
             continue
         if eq is not None:
             ro = poff + eq
-            if struct.unpack_from('<I', m.data, ro + lay['id_at'])[0] != 0xFFFFFFFF:
+            rid = struct.unpack_from('<I', m.data, ro + lay['id_at'])[0]
+            et = m.tag(rid & 0xFFFF) if rid != 0xFFFFFFFF else None
+            keep = bool(et) and str(et.get('name', '')).lower().rsplit(
+                chr(92), 1)[-1] in KEEP_PROFILE_EQUIPMENT
+            kept += keep              # Exodus's jetpack section needs its jetpack
+            if rid != 0xFFFFFFFF and not keep:
                 struct.pack_into('<I', m.data, ro, 0xFFFFFFFF)
                 struct.pack_into('<II', m.data, ro + 4, 0, 0)
                 struct.pack_into('<I', m.data, ro + lay['id_at'], 0xFFFFFFFF)
@@ -1446,7 +1456,8 @@ def _clear_profile_loadout(m, game, registry, equipment=False, grenades=False):
         else:
             out.append({'effect': 'clear loadout', 'field': 'starting equipment',
                         'ok': True, 'old': 'vanilla',
-                        'new': 'emptied on %d of %d profile(s)' % (n_eq, count)})
+                        'new': 'emptied on %d of %d profile(s)%s' % (
+                            n_eq, count, ', jetpack kept on %d' % kept if kept else '')})
     if grenades:
         out.append({'effect': 'clear loadout', 'field': 'starting grenades',
                     'ok': True, 'old': 'vanilla',
@@ -4170,6 +4181,102 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
     return out
 
 
+def grenade_supply(m, game, registry, index):
+    """(Maximum Count, eqip tag path) of the Grenades block element `index` -- the
+    SHARED per-type maximum a player can carry, and the pickup that gives it. Halo 4
+    keeps the block in globals/grenade_list (gggl) and has a PvE equipment, preferred.
+    None when the game or map does not carry it."""
+    game = str(game).strip()
+    if game == 'Halo 4':
+        cls, path = 'gggl', 'globals' + chr(92) + 'grenade_list'
+    else:
+        cls, path = 'matg', 'globals' + chr(92) + 'globals'
+    plug = registry.get(cls) if registry is not None else None
+    tags = m.find_tags(cls, path) if plug is not None else []
+    if not tags:
+        return None
+    base = tags[0][1]
+    mc = plug.find('Maximum Count', 'Grenades')
+    if not mc:
+        return None
+    boff, esize = mc['block_offsets'][-1], mc['block_sizes'][-1]
+    if not 0 <= index < m.i32(base + boff):
+        return None
+    e = m.follow(base, [boff], [esize], index)
+    if e is None:
+        return None
+    count = struct.unpack_from('<h', m.data, e + mc['offset'])[0]
+    tag = None
+    for off in _GRENADE_EQUIPMENT_REF.get(game, ()):
+        rid = m.u32(e + off + 0xC)
+        nm = _tag_name_by_id(m, rid) if rid != 0xFFFFFFFF else None
+        if isinstance(nm, str):
+            tag = nm
+            break
+    return (count, tag) if tag else None
+
+
+# The Grenades element's Equipment tagRef (16-byte, ident at +0xC), per MCC plugin; the
+# plugin lookup skips tagRefs. Halo 4's PvE equipment first.
+_GRENADE_EQUIPMENT_REF = {'Halo 3': (0x14,), 'Halo 3: ODST': (0x14,),
+                          'Halo Reach': (0x18,), 'Halo 4': (0x58, 0x38)}
+
+
+def _apply_spawn_grenades(m, game, registry, spec):
+    """Place each player's drafted grenade types at their starting weapons' drop point,
+    stacked EXACTLY on it, as many as the type's Maximum Count (a shared value, the
+    most any player can carry). `spec` = {'groups': [[Grenades block index, ...] per
+    player]}. Reach and Halo 4 drop on the player's enhancer marker; Halo 3 and ODST
+    where their starting equipment goes (curated anchor, spawn or insertion start)."""
+    game = str(game).strip()
+    groups = spec.get('groups') or []
+    if not any(groups):
+        return []
+    if game not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
+        return [{'effect': 'starting grenades', 'ok': True, 'skip': True,
+                 'reason': 'not built for %s yet (Halo 3, ODST, Reach, Halo 4 only)'
+                           % game}]
+    out, tag_groups = [], []
+    for g in groups:
+        tg = []
+        for idx in g:
+            sup = grenade_supply(m, game, registry, idx)
+            if not sup or sup[0] <= 0:
+                out.append({'effect': 'starting grenades', 'field': 'grenade %d' % idx,
+                            'ok': True, 'skip': True,
+                            'reason': 'no grenade of that type on this map'})
+                continue
+            count, tag = sup
+            tg += [tag] * count
+            out.append({'effect': 'starting grenades',
+                        'field': tag.rsplit(chr(92), 1)[-1], 'ok': True,
+                        'old': 'none',
+                        'new': '%d on the marker (the Maximum Count)' % count})
+        tag_groups.append(tg)
+    points = None
+    if game in MARKER_GAMES:
+        named = reach_named_markers(m, game)
+        E = _MAP_EQUIPMENT[game]
+        eoff, ees = E['items']
+        scnr = _scnr_base(m)
+        ebase = _block_base(m, scnr + eoff)
+        points = []
+        for gi in range(len(tag_groups)):
+            idx = named.get('%s%d' % (REACH_MARKER_PREFIX, gi + 1))
+            if idx is None:
+                points.append(None)
+                continue
+            e = ebase + idx * ees
+            points.append((struct.unpack_from('<fff', m.data, e + _EQ_POS),
+                           _mask_get(m, e, game)))
+        if not any(points):
+            return out + [{'effect': 'starting grenades', 'ok': False,
+                           'reason': 'this map carries no enhancer markers'}]
+    placed = _apply_spawn_equipment(m, game, {'groups': tag_groups, 'points': points,
+                                              'stack': True})
+    return out + [r for r in placed if not r.get('ok')]
+
+
 def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     """Grant Halo 3 starting equipment by APPENDING placements at the player start.
 
@@ -4207,7 +4314,9 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # only route that works at all for an ability the vanilla cache cannot spawn (see
     # reach_equipment_markers). Anything with no marker falls through to the append
     # path below, which is what still serves Halo 3 and ODST.
-    if str(game).strip() in MARKER_GAMES:
+    points = spec.get('points')         # [(pos, mask) or None per group]: fixed drops
+    stack = bool(spec.get('stack'))     # every item exactly ON its point, no ring
+    if str(game).strip() in MARKER_GAMES and not points:
         # A prepared Reach map ships one inert equipment placement per ability, put
         # where the designer wants it, and two of them are NAMED as the players'
         # positions. Three passes, most specific first, and each remembers what it
@@ -4318,7 +4427,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
             pal[nm.replace('/', '\\').lower()] = i
 
     spawns = h3_player_spawns(m, game)
-    if not spawns:
+    if not spawns and not points:
         return [{'effect': 'starting equipment', 'ok': False,
                  'reason': 'no player starting locations'}]
 
@@ -4341,7 +4450,8 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     # in Halo 3 and one in ODST. Reach starts most missions from a cinematic or a
     # vehicle, so the scenario's Player Starting Location is frequently not where the
     # player is put down -- which is why equipment dropped there was never found.
-    if (not anchor and str(game).strip() in ('Halo 3: ODST', 'Halo Reach', 'Halo 4')
+    if (not anchor and not points
+            and str(game).strip() in ('Halo 3: ODST', 'Halo Reach', 'Halo 4')
             and _spawn_is_dead(m, spawns[0][0], game)):
         # anchored on the starting location, not on block order
         spot = _live_equipment_spot(m, game, near=spawns[0][0])
@@ -4401,7 +4511,7 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     odst = str(game).strip() == 'Halo 3: ODST'
     starts = None                   # [(pos, bsp) per player] at insertion 0
     extra = []                      # additional (pos, bsp) drops, shared by all players
-    if odst and not anchor:
+    if odst and not anchor and not points:
         by_ip = odst_player_starts(m, game)
         starts = by_ip.get(ODST_START_INSERTION) or None
         if starts:
@@ -4432,7 +4542,11 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
     for si, items in enumerate(groups):
         if not items:
             continue
-        if anchor:
+        if points and si < len(points) and points[si]:
+            targets = [('point%d' % si, points[si][0], points[si][1])]
+        elif points:
+            continue                    # this player has no marker: nothing to stack on
+        elif anchor:
             targets = [('anchor', anchor, anchor_mask)]
         elif starts is not None:
             # Player si's own start, plus whatever `extra` earned a shared drop. A
@@ -4507,6 +4621,8 @@ def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
                     # Halo 4 takes Reach's spacing: same scale of level and the same
                     # habit of putting pickups inside weapon racks and cases.
                     rad = 2.0 if str(game).strip() in MARKER_GAMES else 0.8
+                    if stack:
+                        rad = 0.0         # grenades: all exactly on the marker
                     p = (base_pos[0] + rad * math.cos(ang),
                          base_pos[1] + rad * math.sin(ang), base_pos[2])
                     plan.append((pi, p, base_mask, label, bkey, added, 'start'))
@@ -5186,11 +5302,45 @@ def _h4_scope_sids(m, names):
     want = [tbl.get(n) for n in _H4_SCOPE_NAMES]
     if None in want:
         return None
+    d = _h4_sid_offset(m, want)
+    if d is not None:
+        if all((w - d) in names for w in want):
+            return {n: w - d for n, w in zip(_H4_SCOPE_NAMES, want)}
+        return None
     for s in names:
         d = want[0] - s
         if all((w - d) in names for w in want[1:]):
             return {n: w - d for n, w in zip(_H4_SCOPE_NAMES, want)}
     return None
+
+
+def _h4_sid_offset(m, want):
+    """The map's stringID -> string-table offset, voted over EVERY weapon HUD screen.
+
+    Calibrating on one screen alone is ambiguous: the sniper and DMR screens fit up to
+    fourteen offsets by coincidence (Dawn), and the first fit won -- so those screens
+    decoded as nonsense, read as having no donatable scope, and the donor list on the
+    extended maps shrank to the battle rifle and the magnum (user, 2026-09-26). The true
+    offset (6841 on every campaign map) is the one all screens share."""
+    cached = getattr(m, '_h4_sid_off', False)
+    if cached is not False:
+        return cached
+    import collections
+    C, U = _H4_CUSC, _H4_COMP.unpack
+    votes = collections.Counter()
+    seen = set()
+    for _name, b in m.find_tags('weap', '*'):
+        hud = _h4_tag_at(m, b + _H4_HUD_REF)
+        if not hud or hud[1] in seen:
+            continue
+        seen.add(hud[1])
+        names = {U(r)[1] for r in _h4_rows(m, hud[1], *C['components'])
+                 if not U(r)[1] >> 17}
+        for d in {want[0] - s for s in names
+                  if all((w - (want[0] - s)) in names for w in want[1:])}:
+            votes[d] += 1
+    m._h4_sid_off = votes.most_common(1)[0][0] if votes else None
+    return m._h4_sid_off
 
 
 def _h4_scope_plan(m, tgt, don):
@@ -5336,6 +5486,9 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
             # all the time, zoomed or not, on every machine gun variant -- the zoom
             # binding the graft copies does not follow a turret's zoom. The Zoom
             # itself still works (first person, magnification); only the overlay goes.
+            # HALO 4 ONLY: this is _apply_h4_scope. The other games' turrets still get
+            # their scope through _apply_zoom_ui; if the overlay gets in the way there
+            # as well, filter turret HUDs out in that function the same way.
             out.append(dict(row, ok=True, skip=True,
                             reason='turret HUD: zooms without a scope overlay (a '
                                    'grafted one showed while not zoomed)'))
@@ -7112,7 +7265,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               keep_title_hud=False, keep_loadout=False, skip_space=False,
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
               h4_keep_loadout=False, clear_profile_equipment=False,
-              clear_profile_grenades=False,
+              clear_profile_grenades=False, spawn_grenades=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -7441,6 +7594,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # codebase: fix one path, leave the other. Both are checked here, once, after both
     # have run. Every H3 and ODST map carries the turret's tags (the rebuilds brought
     # them in everywhere), so wherever it can turn up, this can correct it.
+    if spawn_grenades:
+        # After the abilities: those claim the named markers' own placements first.
+        results.extend(_apply_spawn_grenades(m, game, registry, spawn_grenades))
+
     if _run_grants_autoturret(spawn_equipment, equipment_swaps):
         results.extend(_fix_autoturret_team(m, game, registry))
 
