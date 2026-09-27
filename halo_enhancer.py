@@ -1964,6 +1964,8 @@ EFFECT_RENAMES = {
     # rebuilt from their pieces instead (HaloGUI._rebuild_split_card).
     'Run Speed': 'Speed and Acceleration',
     'Sneak Speed': 'Speed and Acceleration',
+    # the same setting, renamed after Halo 1 -- merged into one card (2026-09-27)
+    'Encounter Grenade Timeout': 'Grenade Throw Delay',
 }
 
 # The four difficulty flavors halo_patch.apply_difficulty understands. A plan op
@@ -3586,6 +3588,8 @@ class RunState:
         # patcher: (tag, name) of every effect already applied to a map — anything not
         # in here is "new" (highlighted / optionally shown first) until the next patch.
         self.patched_effect_keys = set()
+        # card-stacking: 'up'/'down' chosen for ask_direction rows, for the whole run
+        self.card_directions = {}
         # #5: a player who picked an Exhaust gets one no-negative choice next round.
         self.free_negative_pending = {'player1': False, 'player2': False}
         # #8: the signature of the most recent patch, kept on the RUN rather than
@@ -3657,6 +3661,7 @@ class RunState:
             "special_counters": dict(self.special_counters),
             "free_negative_pending": dict(self.free_negative_pending),
             "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
+            "card_directions": dict(getattr(self, 'card_directions', {}) or {}),
             "last_patch": self.last_patch,
             "rounds": self.rounds
         }
@@ -3697,6 +3702,7 @@ class RunState:
         state.player2_weapons = p2data.get('weapons') or ([state.player2_weapon] if state.player2_weapon else [])
         state.rounds = data.get('rounds', [])
         state.patched_effect_keys = {tuple(k) for k in data.get('patched_effect_keys', [])}
+        state.card_directions = dict(data.get('card_directions') or {})
         lp = data.get('last_patch')
         state.last_patch = lp if isinstance(lp, dict) else None
 
@@ -4710,7 +4716,39 @@ class MagnitudeEditorDialog(QDialog):
             vanilla = self._vanilla_num(target_tag(eff, t), t.get('zero_field') or t['field'],
                                         None if t.get('zero_field') else t.get('block'),
                                         0 if t.get('zero_field') else (t.get('nth', 0) or 0))
+        if t.get('ask_direction') and txt:
+            # the typed step's SIZE, pointed the way chosen for this run
+            parsed = self._hp.hm.parse_operator(txt)
+            d = self._asked_direction(eff, t)
+            if parsed and d:
+                op, val = parsed
+                if op == 'mul':
+                    size = abs(val - 1.0)
+                    txt = '*%g' % (1.0 + size if d == 'up' else max(0.0, 1.0 - size))
+                elif op in ('add', 'sub'):
+                    txt = ('+' if d == 'up' else '-') + '%g' % abs(val)
         return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'))
+
+    def _asked_direction(self, eff, t):
+        """'up' / 'down' for an `ask_direction` row, asked the first time the card is
+        patched in a run and remembered for the whole run (user, 2026-09-27: Danger
+        Radius has a case either way)."""
+        rs = getattr(self.parent_gui, 'run_state', None)
+        store = getattr(rs, 'card_directions', None) if rs is not None else None
+        if store is None:
+            return None
+        key = '%s||%s||%s' % (eff.get('weapon') or eff.get('enemy') or eff.get('equipment') or '',
+                              eff.get('name'), t.get('field'))
+        if key not in store:
+            box = QMessageBox(QMessageBox.Question, "Which way?",
+                              "%s: %s\n\nThis card can go either way. Which direction "
+                              "should it move for the rest of this run?"
+                              % (eff.get('name'), t.get('field')), parent=self)
+            up = box.addButton("Increase", QMessageBox.AcceptRole)
+            box.addButton("Decrease", QMessageBox.RejectRole)
+            box.exec()
+            store[key] = 'up' if box.clickedButton() is up else 'down'
+        return store[key]
 
     def _stack_hint(self, eff, t, txt):
         n = max(1, int(eff.get('count') or 1))
@@ -7562,7 +7600,8 @@ class MagnitudeEditorDialog(QDialog):
             if key in plan_map:
                 plan_map[key]['ops'].append({'field': t['field'], 'block': t.get('block'),
                                              'index': t.get('index', 0), 'nth': t.get('nth', 0) or 0,
-                                             **_diff_flavor(t), 'set': t['set']})
+                                             **_diff_flavor(t), 'set': t['set'],
+                                             'set_bit': t.get('set_bit')})
         plan = list(plan_map.values())
         plan = self._odst_shield_into_health(plan)
         plan = self._strip_vehicle_zoom(plan)

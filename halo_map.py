@@ -21,6 +21,9 @@ TYPE_FMT = {
     'int8': ('<b', 1), 'uint8': ('<B', 1), 'byte': ('<B', 1), 'sbyte': ('<b', 1),
     'degree': ('<f', 4), 'angle': ('<f', 4),  # angles stored as float radians
     'enum16': ('<H', 2), 'enum8': ('<B', 1), 'enum32': ('<I', 4),  # option index (see Plugin._walk)
+    # flags: the whole bitfield as one integer; its bit names are kept on the field
+    # (Plugin._walk) so a card can switch ONE flag on by name (halo_patch set_bit)
+    'flags8': ('<B', 1), 'flags16': ('<H', 2), 'flags32': ('<I', 4),
 }
 
 FLOAT_TYPES = {'float32', 'float', 'real'}
@@ -262,6 +265,17 @@ class Plugin:
                                 pass
                     if opts:
                         fld['options'] = opts
+                if t.startswith('flags'):
+                    # bit names, so a card can switch ONE flag on by name (set_bit)
+                    bits = {}
+                    for b in ch:
+                        if b.tag.lower() == 'bit' and b.get('name') is not None:
+                            try:
+                                bits[b.get('name').strip().lower()] = int(b.get('index', '0'))
+                            except ValueError:
+                                pass
+                    if bits:
+                        fld['bits'] = bits
                 self.fields.append(fld)
             elif off is not None and name is not None and t in RANGE_TYPES:
                 # Two leaves, named by the type's own suffixes: '' / ' Max' for a

@@ -7567,6 +7567,34 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 # edits to the sources are already in the in-memory image.
                 results.extend(_apply_derived(m, cls, path, item['name'], op, plugin))
                 continue
+            if op.get('set_bit'):
+                # Switch ONE named flag on and leave the field's other bits alone
+                # (Auto Turret "Turret Follows Player" rides with Orbit / Chase Speed).
+                field = op['field']
+                fld = plugin.find(field, op.get('block'), op.get('nth', 0) or 0)
+                bit = ((fld or {}).get('bits') or {}).get(str(op['set_bit']).strip().lower())
+                if bit is None:
+                    results.append({**base, 'ok': False,
+                                    'reason': 'no flag %r on %s' % (op['set_bit'], field)})
+                    continue
+                tags = m.find_tags(cls, path)
+                if not tags:
+                    results.append({**base, 'ok': False, 'reason': 'not present in this map'})
+                    continue
+                for tpath, tbase in tags:
+                    cur = m.read_tag_field(tbase, field, plugin, op.get('block'),
+                                           op.get('index', 0) or 0)
+                    if cur is None:
+                        results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
+                                        'ok': False, 'reason': 'flags unreadable'})
+                        continue
+                    new = int(cur) | (1 << bit)
+                    m.write_tag_field(tbase, field, new, plugin, op.get('block'),
+                                      op.get('index', 0) or 0)
+                    results.append({**base, 'tag': f"{cls} {tpath}", 'field': field,
+                                    'effect': item['name'], 'ok': True,
+                                    'old': int(cur), 'new': '%d (%s on)' % (new, op['set_bit'])})
+                continue
             if op.get('set') is not None:
                 # Fixed set: force the field to a constant regardless of magnitude
                 # (e.g. an enum enabler like Special-Fire Mode -> Overcharge). The

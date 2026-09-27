@@ -246,6 +246,34 @@ SPEC = {
     # 104 / 113
     'Gravity Throne': {'split': CHASSIS},
     'Enforcer Chassis': {'split': CHASSIS},
+    # --- second pass (2026-09-27) ---
+    'Melee Seeking': {'split': [('Melee Seeking Angles', ['Damage Pyramid Angles']),
+                                ('Melee Seeking Depth', ['Damage Pyramid Depth'])]},
+    # Rounds Total Maximum from Halo 2 on is DERIVED (inventory + loaded) and is
+    # recomputed from the map after the ops, so both cards carry it.
+    'Magazine': {'carry_derived': True, 'split': [
+        ('Ammo Inventory', ['Rounds Total Initial', 'Rounds Inventory Maximum', 'Rounds Total Maximum']),
+        ('Ammo Loaded', ['Rounds Loaded Maximum', 'Rounds Reloaded'])]},
+    'Retreat': {'split': [('Cower Time', ['Forced Cower Time']),
+                          ('Retreat Chance', ['Retreat Chance', 'Friend Killed Panic Chance',
+                                              'Leader Killed Panic Chance']),
+                          ('Flee Timeout', ['Flee Timeout', 'Flee Time'])]},
+    'Shield Recharge': {'split': [('Shield Recharge Delay', ['Shield Recharge Delay Time']),
+                                  ('Shield Recharge Time', ['Shield Recharge Time'])]},
+    'Melee Leap': {'split': [('Melee Leap Range', ['Melee Leap Range', 'Balling Melee Leap Attack Range']),
+                             ('Melee Leap Velocity', ['Leap Velocity', 'Melee Leap Velocity', 'Melee Leap Ballistic']),
+                             ('Melee Leap Chance', ['Melee Leap Chance', 'Balling Melee Leap Chance',
+                                                    'Melee Leap Prediction Time'])]},
+    'Needler Projectile': {'split': [('Needler Projectile Range', ['Range']),
+                                     ('Needler Projectile Velocity', ['Velocity'])]},
+    'Projectile Range Sentinel Beam': {'split': [('Sentinel Beam Range', ['Range']),
+                                                 ('Sentinel Beam Velocity', ['Velocity']),
+                                                 ('Sentinel Beam Gravity', ['Gravity Scale'])]},
+    'Thrust': {'split': [('Thrust Speed', ['Speed Multiplier']), ('Danger Radius', ['Danger Radius'])]},
+    'Damage Burn': {'split': [('Threshold Energy Burned', ['Threshold Energy Burned']),
+                              ('Energy Adjustment', ['Energy Adjustment'])]},
+    'Shield': {'split': [('Shield Projector Duration', ['Lifetime']),
+                         ('Shield Projector Recharge', ['Recharge Time', 'Warmup Time'])]},
     # 114
     'Gravity Jump': {'split': [('Gravity Jump Cooldown', ['Cooldown']),
                                ('Gravity Jump Trigger Distance', ['Trigger Distance']),
@@ -282,7 +310,22 @@ def dump_card(card, ind):
     keys = list(card)
     for i, k in enumerate(keys):
         comma = ',' if i < len(keys) - 1 else ''
-        if k == 'targets':
+        if k == 'targets' and isinstance(card[k], dict):
+            # per-game target lists: {"Halo 1": [...], ...} -- iterating the dict as
+            # a list wrote only its game names (the first pass's bug)
+            lines.append('%s\t"targets": {' % ind)
+            games = list(card[k])
+            for gi, g in enumerate(games):
+                gc = ',' if gi < len(games) - 1 else ''
+                lines.append('%s\t\t%s: [' % (ind, json.dumps(g)))
+                lst = card[k][g] or []
+                for j, t in enumerate(lst):
+                    tc = ',' if j < len(lst) - 1 else ''
+                    lines.append('%s\t\t\t%s%s' % (ind, json.dumps(t, ensure_ascii=False)
+                                                   .replace('{"', '{ "').replace('}', ' }'), tc))
+                lines.append('%s\t\t]%s' % (ind, gc))
+            lines.append('%s\t}%s' % (ind, comma))
+        elif k == 'targets':
             lines.append('%s\t"targets": [' % ind)
             for j, t in enumerate(card[k]):
                 tc = ',' if j < len(card[k]) - 1 else ''
@@ -322,8 +365,9 @@ def rewrite(card, name, spec, siblings, nested=False):
             lists = {}
             for g, parts in per.items():
                 hit = [c for pn, c in parts if pn == n]
-                if hit:
-                    lists[g] = hit[0]['targets']
+                # a game with no rows for this card gets an explicit empty list, or
+                # it would fall back to `default` / an earlier game's rows
+                lists[g] = hit[0]['targets'] if hit else []
             c = dict(next(c for g, parts in per.items() for pn, c in parts if pn == n))
             c['targets'] = lists
             c['split_from'] = name
@@ -340,7 +384,8 @@ def rewrite(card, name, spec, siblings, nested=False):
                     t['group'] = gname
             out.append(t)
         return [(name, dict(card, targets=out))]
-    carry = [t for t in tg if row_names(t) & set(spec.get('carry') or ())]
+    carry = [t for t in tg if row_names(t) & set(spec.get('carry') or ())
+             or (spec.get('carry_derived') and t.get('derived'))]
     rest = [t for t in tg if t not in carry]
     parts, used = [], set()
     for new, rows in spec['split']:
@@ -353,7 +398,7 @@ def rewrite(card, name, spec, siblings, nested=False):
     left = [t for t in rest if id(t) not in used and 'field' in t]
     if left:
         return 'rows not placed: %s' % sorted({x for t in left for x in row_names(t)})
-    if len(parts) < 2:
+    if len(parts) < 2 and not nested:   # one game's list may feed only one card
         return 'nothing to split (%d part)' % len(parts)
     out = []
     for new, rows in parts:
@@ -482,7 +527,22 @@ def main():
         key_end = text.index(':', key_start)
         text = (text[:key_start] + json.dumps(res[0][0]) + text[key_end:s]
                 + (',\n').join(pieces) + text[e:])
-    json.loads(text)
+    check = json.loads(text)
+    bad = []
+
+    def scan(n, p):
+        if isinstance(n, dict):
+            if 'targets' in n and 'tag' in n:
+                tg = n['targets']
+                lists = tg.values() if isinstance(tg, dict) else [tg]
+                if any(not isinstance(t, dict) for lst in lists for t in (lst or [])):
+                    bad.append(' / '.join(map(str, p)))
+                return
+            for k, v in n.items():
+                scan(v, p + [k])
+    scan(check, [])
+    if bad:
+        raise SystemExit('refusing to write, non-object targets in: %s' % bad[:10])
     io.open(HALO_JSON, 'w', encoding='utf-8', newline='').write(text)
     print('written')
 

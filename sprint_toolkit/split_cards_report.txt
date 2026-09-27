@@ -5,13 +5,13 @@ AI Base Melee Behavior
 Accuracy
     Auto Turret: -> "Accuracy Bounds", "Accuracy Time"
     General modifiers: -> "Accuracy Bounds", "Accuracy Time"
-    Specific Enemy modifier / Elite: -> "Accuracy Bounds", "Accuracy Time"
-    Specific Enemy modifier / Hunter: -> "Accuracy Bounds", "Accuracy Time"
-    Specific Enemy modifier / Grunt: -> "Accuracy Bounds", "Accuracy Time"
-    Specific Enemy modifier / Jackal: -> "Accuracy Bounds", "Accuracy Time"
-    Specific Enemy modifier / Flood Combat Form: SKIPPED -- nothing to split (0 part)
-    Specific Enemy modifier / Flood Infection Form: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
-    Specific Enemy modifier / Flood Carrier Form: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
+    Specific Enemy modifier / Elite: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Hunter: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Grunt: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Jackal: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Flood Combat Form: SKIPPED -- nothing to split (1 part)
+    Specific Enemy modifier / Flood Infection Form: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
+    Specific Enemy modifier / Flood Carrier Form: -> "Projectile Error", "Accuracy Bounds", "Accuracy Time"
     Specific Enemy modifier / Flood Pure Form: -> "Accuracy Bounds", "Accuracy Time"
     Specific Enemy modifier / Bugger: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
     Specific Enemy modifier / Brute: -> "Accuracy Bounds", "Accuracy Time", "Projectile Error"
@@ -89,6 +89,8 @@ Cover Properties
     Specific Enemy modifier / Knight: -> "Hide Behind Cover", "Cover Threshold"
     Specific Enemy modifier / Crawler: -> "Hide Behind Cover", "Cover Threshold"
     Boss enemy modifier / Tartarus: -> "Hide Behind Cover", "Cover Threshold"
+Damage Burn
+    Armor Lock: -> "Threshold Energy Burned", "Energy Adjustment"
 Death
     Specific Enemy modifier / Engineer: -> "Death Height", "Death Detonation Time", "Detonation Body Vitality"
 Deployable Shield Use
@@ -170,6 +172,35 @@ Kamikaze
     Specific Enemy modifier / Grunt: -> "Kamikaze Chance", "Kamikaze Count"
 Leader Charge
     Specific Enemy modifier / Brute: -> "Leader Charge Chance", "Leader Charge Range"
+Magazine
+    Specific Weapon Modifier / Assault Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Pistol: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Needler: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Sniper Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Rocket Launcher: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Shotgun: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / SMG: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Battle Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Brute Shot: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Covenant Carbine: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Flak Cannon: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Mauler: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Spike Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Machine Gun: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Plasma Cannon: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Missile Pod: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Concussion Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / DMR: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Grenade Launcher: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Needle Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / SAW: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Scattershot: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / LightRifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Suppressor: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Boltshot: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Sticky Detonator: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Binary Rifle: -> "Ammo Inventory", "Ammo Loaded"
+    Specific Weapon Modifier / Incineration Cannon: -> "Ammo Inventory", "Ammo Loaded"
 Melee Behavior
     Specific Enemy modifier / Elite: -> "Melee Timing", "Melee Chance"
     Specific Enemy modifier / Hunter: -> "Melee Timing", "Melee Chance"
@@ -187,6 +218,59 @@ Melee Behavior
     Hero enemy modifier / Knight Commander: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
     Hero enemy modifier / Elite General: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
     Hero enemy modifier / Elite Zealot: -> "Melee Timing", "Melee Chance", "Melee Leap Range"
+Melee Leap
+    Specific Enemy modifier / Flood Combat Form: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Specific Enemy modifier / Flood Infection Form: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Specific Enemy modifier / Flood Carrier Form: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Specific Enemy modifier / Bugger: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Specific Enemy modifier / Brute: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Specific Enemy modifier / Knight: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+    Boss enemy modifier / Tartarus: -> "Melee Leap Range", "Melee Leap Velocity", "Melee Leap Chance"
+Melee Seeking
+    Specific Weapon Modifier / Assault Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Pistol: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Plasma Pistol: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Plasma Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Needler: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Sniper Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Rocket Launcher: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Shotgun: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / SMG: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Brute Plasma Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Battle Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Brute Shot: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Beam Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Covenant Carbine: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Flak Cannon: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Sentinel Beam: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Sentinel Eliminator Beam: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Energy Blade: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Mauler: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Spike Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Gravity Hammer: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Spartan Laser: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Flamethrower: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Machine Gun: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Plasma Cannon: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Missile Pod: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Concussion Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / DMR: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Focus Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Grenade Launcher: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Needle Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Plasma Launcher: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Plasma Repeater: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Target Locator: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Storm Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / SAW: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Scattershot: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / LightRifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Suppressor: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Boltshot: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Railgun: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Sticky Detonator: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Binary Rifle: -> "Melee Seeking Angles", "Melee Seeking Depth"
+    Specific Weapon Modifier / Incineration Cannon: -> "Melee Seeking Angles", "Melee Seeking Depth"
 More Berserking
     Specific Enemy modifier / Brute: -> "Berserk Cooldown", "Berserk Count"
 Movement Switching
@@ -194,6 +278,8 @@ Movement Switching
 Needle Timer
     Specific Weapon Modifier / Needler: -> "Needle Timer", "Supercombine Timer", "Supercombine Needle Count", "Needle Fuse"
     Specific Weapon Modifier / Needle Rifle: -> "Needle Timer", "Supercombine Timer", "Supercombine Needle Count", "Needle Fuse"
+Needler Projectile
+    Hero enemy modifier / Sentinel Enforcer: -> "Needler Projectile Range", "Needler Projectile Velocity"
 Panic
     Specific Enemy modifier / Jackal: -> "Panic Chance", "Flee Time"
 Pellet Spread
@@ -266,8 +352,18 @@ Projectile Range
     Specific Enemy modifier / Watcher: -> "Projectile Range Range", "Projectile Range Velocity", "Projectile Range Gravity"
 Projectile Range Hunter Fuel Rod
     Specific Enemy modifier / Hunter: -> "Fuel Rod Range", "Fuel Rod Velocity", "Fuel Rod Gravity"
+Projectile Range Sentinel Beam
+    Specific Enemy modifier / Sentinel: -> "Sentinel Beam Range", "Sentinel Beam Velocity", "Sentinel Beam Gravity"
 Ranged Form
     Specific Enemy modifier / Flood Pure Form: -> "Ranged Distance", "Turtle Threshold", "Turtle Time", "Turtle Distance"
+Retreat
+    General modifiers: -> "Cower Time", "Retreat Chance"
+    Specific Enemy modifier / Grunt: -> "Retreat Chance", "Flee Timeout", "Cower Time"
+    Specific Enemy modifier / Jackal: -> "Cower Time", "Retreat Chance", "Flee Timeout"
+    Specific Enemy modifier / Skirmisher: -> "Cower Time", "Retreat Chance", "Flee Timeout"
+    Specific Enemy modifier / Engineer: -> "Cower Time", "Retreat Chance", "Flee Timeout"
+    Specific Enemy modifier / Crawler: -> "Cower Time", "Retreat Chance", "Flee Timeout"
+    Specific Enemy modifier / Watcher: -> "Cower Time", "Flee Timeout"
 Rocket Damage
     Hero enemy modifier / Sentinel Enforcer: -> "Rocket Damage", "Rocket Radius"
 Rocket Projectile
@@ -286,8 +382,17 @@ Search Tactics
     Specific Enemy modifier / Knight: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
     Specific Enemy modifier / Crawler: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Leap On Cover", "Search: Destroy Cover", "Search: Guard", "Search: Investigate"
     Specific Enemy modifier / Watcher: -> "Search: Suppressing Fire", "Search: Uncover", "Search: Guard", "Search: Investigate"
+Shield
+    Specific Enemy modifier / Watcher: -> "Shield Projector Duration", "Shield Projector Recharge"
 Shield Boost
     Specific Enemy modifier / Engineer: -> "Shield Boost Radius", "Shield Boost Period", "Shield Boost Strength"
+Shield Recharge
+    Specific Enemy modifier / Elite: -> "Shield Recharge Delay", "Shield Recharge Time"
+    Specific Enemy modifier / Jackal: -> "Shield Recharge Delay", "Shield Recharge Time"
+    Specific Enemy modifier / Knight: -> "Shield Recharge Delay", "Shield Recharge Time"
+    Boss enemy modifier / Heretic Leader: -> "Shield Recharge Delay", "Shield Recharge Time"
+    Hero enemy modifier / Knight Commander: -> "Shield Recharge Delay", "Shield Recharge Time"
+    Hero enemy modifier / Elite General: -> "Shield Recharge Delay", "Shield Recharge Time"
 Shield down Berserk
     Specific Enemy modifier / Brute: -> "Shield-Down Berserk Chance", "Shield-Down Berserk Range"
 Special-Case Firing
@@ -312,6 +417,9 @@ Target Tracking & Leading
     Specific Enemy modifier / Sentinel: -> "Target Tracking", "Target Leading"
     Specific Enemy modifier / Watcher: -> "Target Tracking", "Target Leading"
     Boss enemy modifier / Prophet Regret: -> "Target Tracking", "Target Leading"
+Thrust
+    Jet Pack: SKIPPED -- default: rows not placed: ['Grounded Acceleration Magnitude', 'Landing Anticipation Time', 'Negative Velocity Acceleration Scale', 'Thrust Attack Time', 'Thrust Decay Time']
+    Thruster Pack: -> "Thrust Speed", "Danger Radius"
 Turret Rate of Fire
     Specific Enemy modifier / Watcher: -> "Turret Rate of Fire"
 Upgrade Chance
