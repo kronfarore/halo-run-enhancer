@@ -41,7 +41,8 @@ sys.path.insert(0, HERE)
 import h3tag                                                   # noqa: E402
 
 B = os.sep
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 TAGS = os.path.join(EK, 'tags')
 EXT = '.chud_definition'
 

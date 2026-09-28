@@ -38,7 +38,8 @@ sys.path.insert(0, HERE)
 import h3tag                                                   # noqa: E402
 
 B = os.sep
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 TAGS = os.path.join(EK, 'tags')
 TOOL = os.path.join(EK, 'tool.exe')
 SAW = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw', 'saw.weapon')

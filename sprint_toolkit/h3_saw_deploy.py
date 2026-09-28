@@ -29,7 +29,8 @@ import halo3_reload as hr       # noqa: E402
 
 B = os.sep
 GAME = 'Halo 3'
-EK_MAPS = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK', 'maps')
+import h3_kit                                              # noqa: E402
+EK_MAPS = os.path.join(h3_kit.EK, 'maps')
 SAW = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
 AR = B.join(['objects', 'weapons', 'rifle', 'assault_rifle', 'assault_rifle'])
 SAW_CHUD = B.join(['ui', 'chud', 'saw'])

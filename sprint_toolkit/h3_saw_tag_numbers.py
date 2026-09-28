@@ -19,7 +19,8 @@ Fields are located by searching for their VALUE RUN, cross-checked against
 import argparse, os, struct, sys
 
 B = os.sep
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 TAGS = os.path.join(EK, 'tags')
 SAW = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw')
 

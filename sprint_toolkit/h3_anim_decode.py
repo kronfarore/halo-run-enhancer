@@ -68,7 +68,8 @@ Only the default pose is quantised: its rotations are 8-byte int16 quaternions
 import argparse, io, os, re, struct, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-EK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 AR_FP = os.path.join(EK, 'tags', 'objects', 'characters', 'masterchief', 'fp', 'weapons',
                      'rifle', 'fp_assault_rifle', 'fp_assault_rifle.model_animation_graph')
 SECTIONS = ('static_node_flags', 'animated_node_flags', 'movement_data',

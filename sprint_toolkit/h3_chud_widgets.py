@@ -27,7 +27,8 @@ import h3tag                    # noqa: E402
 
 B = os.sep
 GAME = 'Halo 3'
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 WEAPONS = ('assault_rifle', 'smg', 'battle_rifle', 'sniper_rifle', 'shotgun',
            'needler', 'rocket_launcher', 'magnum', 'saw')
 MAGAZINE = {'assault_rifle': 32, 'smg': 60, 'battle_rifle': 36, 'sniper_rifle': 4,

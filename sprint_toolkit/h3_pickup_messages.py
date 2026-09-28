@@ -18,7 +18,8 @@ tag's own definitions before concluding a field is absent.
 """
 import os, re, subprocess, sys, tempfile
 
-EK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 TOOL = os.path.join(EK, 'tool.exe')
 WEAPONS = os.path.join(EK, 'tags', 'objects', 'weapons')
 FIELDS = ('pickup message', 'pickup message (dual)', 'swap message',

@@ -22,7 +22,8 @@ sys.path.insert(0, HERE)
 import h3tag                                                    # noqa: E402
 
 B = os.sep
-H3EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+H3EK = h3_kit.EK
 HCEEK_BITMAPS = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'HCEEK',
                              'data', 'weapons', 'saw', 'bitmaps')
 DATA_DIR = os.path.join(H3EK, 'data', 'objects', 'weapons', 'rifle', 'saw', 'bitmaps')

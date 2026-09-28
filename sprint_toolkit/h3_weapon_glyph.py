@@ -42,7 +42,8 @@ import h3_font_codec as fc                                      # noqa: E402
 import h3_font_add as fa                                        # noqa: E402
 
 B = os.sep
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 MODEL_XML = os.path.join(EK, 'saw_3p_rm.xml')
 BACKUP = os.path.join('E:' + B, 'HaloBackups', 'h3_live_fonts')
 PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',

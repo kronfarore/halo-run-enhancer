@@ -18,7 +18,8 @@ sys.path.insert(0, HERE)
 import h3tag                                                    # noqa: E402
 
 B = os.sep
-TAGS = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK', 'tags')
+import h3_kit                                              # noqa: E402
+TAGS = h3_kit.TAGS
 AR_FP = B.join(['objects', 'weapons', 'rifle', 'assault_rifle', 'fp_assault_rifle',
                 'fp_assault_rifle'])
 BUILT = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])

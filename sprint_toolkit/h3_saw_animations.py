@@ -34,7 +34,8 @@ import h3_anim_decode as dec                                   # noqa: E402
 import h3_anim_retime as ret                                   # noqa: E402
 
 B = os.sep
-EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+EK = h3_kit.EK
 TAGS = os.path.join(EK, 'tags')
 TOOL = os.path.join(EK, 'tool.exe')
 EXT = '.model_animation_graph'

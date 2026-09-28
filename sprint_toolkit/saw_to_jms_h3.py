@@ -28,7 +28,8 @@ from reclaimer.model.jms import JmsModel, JmsNode, JmsMarker
 from reclaimer.model.jms.file import write_jms
 
 B = os.sep
-H3EK = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK')
+import h3_kit                                              # noqa: E402
+H3EK = h3_kit.EK
 OUT_SUB = 'saw'          # folder under data/objects/weapons/rifle that holds render/
 UNITS = 100.0            # JMS units per world unit
 

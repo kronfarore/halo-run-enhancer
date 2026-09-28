@@ -21,7 +21,8 @@ import halo_enhancer as he      # noqa: E402
 import halo_patch as hp         # noqa: E402
 
 B = os.sep
-EK_MAPS = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK', 'maps')
+import h3_kit                                              # noqa: E402
+EK_MAPS = os.path.join(h3_kit.EK, 'maps')
 GAME = 'Halo 3'
 
 

@@ -26,8 +26,8 @@ sys.path.insert(0, HERE)
 import h3tag                                                   # noqa: E402
 
 B = os.sep
-CHUD = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H3EK',
-                    'tags', 'ui', 'chud')
+import h3_kit                                              # noqa: E402
+CHUD = os.path.join(h3_kit.TAGS, 'ui', 'chud')
 SEQ_OFF = 0x58
 ELEM = 84          # one Bitmap Widgets element
 
