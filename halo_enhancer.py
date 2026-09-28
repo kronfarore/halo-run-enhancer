@@ -9854,16 +9854,16 @@ class OptionsDialog(QDialog):
         h4form.addRow("Travel sections:", self.h4_keep_loadout_cb)
 
         self.h4_ability_vis_combo = QComboBox()
-        for label, val in (("Off (vanilla)", ''), ("Bigger icon, visible further", 'icon'),
-                           ("Diagnostic: icon hidden", 'icon_hide')):
+        # 'icon' / 'icon_hide' (resizing the hologram) are gone: Halo 4 never draws it.
+        for label, val in (("Off (vanilla)", ''), ("Forerunner ground glow", 'ground_fx')):
             self.h4_ability_vis_combo.addItem(label, val)
         _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
         self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
         self.h4_ability_vis_combo.setToolTip(
-            "TEST: Halo 4 abilities lying on the ground are hard to see.  Bigger icon: the "
-            "floating hologram x8 overall and x4 per particle, visible to 300 units.  "
-            "Diagnostic: the hologram at size 0 -- if a dropped ability looks the same, "
-            "the hologram is not what you see and resizing it cannot help.")
+            "TEST: Halo 4 abilities lying on the ground are hard to see. Forerunner ground "
+            "glow gives every ability the glow a Forerunner rifle has while it lies on the "
+            "ground. Skipped for an ability the glow is not loaded everywhere with (it "
+            "would crash where the ability is picked up).")
         h4form.addRow("Ability visibility (test):", self.h4_ability_vis_combo)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
