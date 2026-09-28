@@ -28,10 +28,17 @@ HCEEK_BITMAPS = os.path.join('F:' + B, 'SteamLibrary', 'steamapps', 'common', 'H
                              'data', 'weapons', 'saw', 'bitmaps')
 DATA_DIR = os.path.join(H3EK, 'data', 'objects', 'weapons', 'rifle', 'saw', 'bitmaps')
 TAG_DIR = B.join(['objects', 'weapons', 'rifle', 'saw', 'bitmaps'])
-SHADER_DIR = os.path.join(H3EK, 'tags', 'objects', 'weapons', 'rifle', 'saw', 'shaders')
-
 AR_DIFFUSE = B.join(['objects', 'weapons', 'rifle', 'assault_rifle', 'bitmaps',
                      'assault_rifle'])
+#: A JMS material resolves to `<model folder>\shaders\<material>.shader`, and where no
+#: such tag exists `tool` substitutes `shaders\invalid` and the model renders untextured
+#: -- reporting only "unable to find shader 'saw_body' anywhere" in a wall of progress
+#: bars. BOTH model folders need the pair: the first-person one and the world one, which
+#: is a second `tool render` on its own directory. This was a hand step in Halo 3.
+AR_SHADER = os.path.join(H3EK, 'tags', 'objects', 'weapons', 'rifle', 'assault_rifle',
+                         'shaders', 'assault_rifle.shader')
+SHADER_DIRS = [os.path.join(H3EK, 'tags', 'objects', 'weapons', 'rifle', sub, 'shaders')
+               for sub in ('saw', 'saw_3p')]
 # (source TIF, imported name -- length chosen so the tag path matches AR_DIFFUSE, shader)
 JOBS = [('saw_diff.tif', 'saw_diffuse_from_halo_4', 'saw_body.shader'),
         ('saw_display.tif', 'saw_display_from_halo_4', 'saw_display.shader')]
@@ -52,6 +59,17 @@ def main():
         print('   %-56s %d%s' % (tag, len(tag), '' if same else '   <== MUST MATCH'))
     if not ok:
         raise SystemExit('name lengths differ')
+
+    print('\nshaders (a missing one renders untextured, and says so only in passing):')
+    for d in SHADER_DIRS:
+        for _tif, _name, shader in JOBS:
+            p = os.path.join(d, shader)
+            rel = os.path.relpath(p, os.path.join(H3EK, 'tags'))
+            print('   %-58s %s' % (rel, 'present' if os.path.exists(p)
+                                   else 'seed from the Assault Rifle'))
+            if a.write and not os.path.exists(p):
+                os.makedirs(d, exist_ok=True)
+                shutil.copy2(AR_SHADER, p)
 
     print('\nimporting textures:')
     for tif, name, _sh in JOBS:
@@ -79,16 +97,19 @@ def main():
         print('   %-30s %s' % (name, 'imported' if os.path.exists(tag) else 'NOT CREATED'))
 
     print('\nrepointing the shaders:')
-    for _tif, name, shader in JOBS:
-        p = os.path.join(SHADER_DIR, shader)
-        t = h3tag.Tag(p)
-        before = len(t.data)
-        n = t.repoint_in_place(AR_DIFFUSE, TAG_DIR + B + name, group='bitm')
-        if len(t.data) != before:
-            raise SystemExit('file size changed -- not an in-place overwrite')
-        t.save()
-        print('   %-22s %d reference(s) -> %s' % (shader, n, name))
-    print('\nNow rebuild 010_jungle.')
+    for d in SHADER_DIRS:
+        for _tif, name, shader in JOBS:
+            p = os.path.join(d, shader)
+            t = h3tag.Tag(p)
+            before = len(t.data)
+            n = t.repoint_in_place(AR_DIFFUSE, TAG_DIR + B + name, group='bitm')
+            if len(t.data) != before:
+                raise SystemExit('file size changed -- not an in-place overwrite')
+            t.save()
+            print('   %-46s %d reference(s) -> %s'
+                  % (os.path.relpath(p, os.path.join(H3EK, 'tags')), n, name))
+    print('\nRe-render both models, then build the map: a shader that arrived AFTER a '
+          'render is not in that render.')
 
 
 if __name__ == '__main__':
