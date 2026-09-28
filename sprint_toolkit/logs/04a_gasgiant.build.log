@@ -1,0 +1,217 @@
+Ignoring flag 'compress', it cannot currently be used without also specifying 'resource_sharing'
+starting to build cache file language= english minor version= 0
+solo map, players are [dervish/]
+WARNING: shader 'scenarios\skies\solo\alphagasgiant\shaders\storm_inner' could not resolve bitmap 'specular_map'
+WARNING: bitmap 'rasterizer\linear_corner_fade' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING model 'scenarios\objects\forerunner\industrial\wall_insertions\channel_curcuit_a\channel_curcuit_a' collision model region 'default' has no corresponding model region (will not be collideable)
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\special\pathfinding\pathfinding_tiny'
+WARNING: bitmap 'scenarios\objects\solo\alphagasgiant\holo_drone\bitmaps\holo_drone_illum' format 'high-color' will be replaced with 'true-color'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\solo\alphagasgiant\holo_drone\holo_drone'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\solo\alphagasgiant\honor_guard\honor_guard'
+### WARNING object 'objects\vehicles\phantom\cinematics\phantom_interior' has a bounding sphere radius much less than its model (5.200000 vs 6.572800)
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\weapons\melee\gravity_hammer\gravity_hammer'
+### ERROR geometry 'scenarios\objects\special\null_up\null_up' shader 'scenarios\objects\special\shaders\invisible' is transparent but was imported as opaque
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\special\null_up\null_up'
+### WARNING object 'scenarios\objects\special\null_up\null_up' has no bounding radius
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\halo_destroyed_03\halo_destroyed_03'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\threshold_space\threshold_space'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\gas_giant_structure_top\gas_giant_structure_top'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\gas_giant_exterior\gas_giant_exterior'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\gas_giant_structure\gas_giant_structure'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\matte_paintings\high_charity_exterior\high_charity_exterior'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\forerunner\industrial\doors\door_cargo_hangar_scenery\door_cargo_hangar_scenery'
+WARNING: bitmap 'shaders\default_bitmaps\bitmaps\clouds_256' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'incompetent\default_object'
+tags: missing tag (ffffffff)objects\weapons\pistol\plasma_pistol\plasma_pistol.scenery replaced by (e34f01d9)incompetent\default_object.scenery
+WARNING: bitmap 'incompetent\bitmaps\clouds_256' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'scenarios\bitmaps\covenant\military\tech\machine_strip_b_illum' format 'high-color' will be replaced with 'true-color'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\weapons\rifle\smg\garbage\magazine\magazine'
+WARNING: bitmap 'rasterizer\plasma_shield_noise' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\bitmaps\energy\spark_c_flak' format 'high-color with 1-bit alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'objects\characters\brute\garbage\brute_helmet\brute_helmet' has a bounding sphere radius much less than its model (0.050000 vs 0.079948)
+### WARNING model 'objects\characters\brute\brute' variant 'tartarus' region 'hair' cannot find permutation 'tartarus'
+### WARNING model 'objects\characters\brute\brute' variant 'skull' region 'hair' cannot find permutation 'tartarus'
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\metal' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\bitmaps\sparks\sparks_animated' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\stone' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+tags: missing tag (ffffffff)objects\weapons\rifle\smg\damage_effects\smg_empty.damage_effect replaced by (ed9a0c24)globals\global_missing_damage_effect.damage_effect
+### WARNING object 'objects\characters\prophet\truth\prophet_truth' has a bounding sphere radius much less than its model (0.400000 vs 0.625304)
+### WARNING object 'objects\characters\prophet\mercy\prophet_mercy' has a bounding sphere radius much less than its model (0.400000 vs 0.625304)
+WARNING: bitmap 'effects\bitmaps\lens_flares\soft_flare_large' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING model 'objects\characters\heretic\heretic_leader\heretic_leader_hologram' variant 'holo_her_no_jets' region 'fins' permutation '' state 'destroyed' cannot find permutation 'destroyed'
+WARNING: bitmap 'effects\bitmaps\lens_flares\light_volume' format 'high-color' will be replaced with 'true-color'
+### ERROR geometry 'objects\weapons\support_high\flak_cannon\projectiles\flak_projectile' shader 'objects\weapons\support_high\flak_cannon\shaders\flak_bolt_luminous' is transparent but was imported as opaque
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift_brake' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'special_material' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift_vehicle' (''), using default material
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\ice' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'objects\vehicles\gravity_throne\gravity_throne_no_flare' has a bounding sphere radius much less than its model (0.300000 vs 0.450972)
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\impact_scratch' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\bitmaps\flares\ring' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'objects\weapons\rifle\covenant_carbine\bitmaps\covenant_carbine_display_illum' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'objects\weapons\rifle\covenant_carbine\bitmaps\covenant_carbine_switch_illum' format 'high-color' will be replaced with 'true-color'
+### WARNING: looping sound 'sound_remastered\ambience\alphagasgiant\alphagas_exterior\alphagas_exterior_scenery' detail 'distant_lightning' has a period bound of [0.0, 0.0], resetting to [16.21, 16.21]
+### WARNING: looping sound 'sound_remastered\ambience\alphagasgiant\alphagas_exterior\alphagas_exterior_scenery' detail 'wind_whistle' has a period bound of [0.0, 0.0], resetting to [4.28, 4.28]
+tags: missing tag (ffffffff)objects\weapons\pistol\plasma_pistol\plasma_pistol.scenery replaced by (e34f01d9)incompetent\default_object.scenery
+### WARNING physics model 'objects\characters\ambient_life\reach_moa\reach_moa' couldn't resolve material 'reach_moa' (''), using default material
+### WARNING model 'objects\characters\ambient_life\reach_moa\reach_moa' material 'reach_moa_collision' ('') couldn't find a global material named 'reach_moa_collision'
+### WARNING: looping sound 'sound_remastered\ambience\alphagasgiant\alphagas_exterior\alphagas_exterior' detail 'wind_whistle' has a period bound of [0.0, 0.0], resetting to [4.28, 4.28]
+### the creature 'objects\characters\ambient_life\space_blimps\space_blimps' has no 'head' marker
+### the creature 'objects\characters\ambient_life\space_blimps\space_blimps' has no 'body' marker
+WARNING: shader 'effects\screen_effects\blur' could not resolve bitmap 'identity'
+### WARNING 'scenario_scenery_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_scenery_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_crate_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_crate_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_biped_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_bipeds_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_biped_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_bipeds_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_vehicle_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_vehicles_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_vehicle_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_vehicles_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_equipment_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_equipment_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_equipment_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_equipment_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_weapon_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_weapons_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_weapon_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_weapons_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_sound_scenery_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_sound_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_sound_scenery_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_sound_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_light_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_lights_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_light_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_lights_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_control_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'device_group_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_machine_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_machine_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_control_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_cutscene_flag_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cinematics_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_trigger_volume_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_trigger_volumes_resource' that is about to be stomped over isn't empty!
+### WARNING 'structure_bsp_background_sound_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'structure_bsp_sound_environment_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'structure_bsp_weather_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_atmospheric_fog_palette' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_cluster_data_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'editor_comment_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_comments_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_creature_palette_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_creature_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_structure_bsp_spherical_harmonic_lighting_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_structure_lighting_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_decorator_set_palette_entry_block' referenced by resource 'scenarios\solo\04a_gasgiant\resources\04a_gasgiant.scenario_decorators_resource' that is about to be stomped over isn't empty!
+tags: missing tag (ffffffff)objects\weapons\pistol\plasma_pistol\plasma_pistol.scenery replaced by (e34f01d9)incompetent\default_object.scenery
+loaded script 'global_scripts'
+loaded script '04a_gasgiant_cinematics'
+loaded script '04a_gasgiant_mission'
+loaded script '04a_gasgiant_prediction'
+loaded script '04a_gasgiant_teleport'
+WARNING: bitmap 'rasterizer\distance_attenuation' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'rasterizer\glow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\default_arrow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\dead_friendly_arrow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_flag' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_bomb' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_ball' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topright' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topcenter' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topleft' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_center' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topright' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topcenter' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topleft' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_center' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+tags: missing tag (ffffffff)ui\hud\bitmaps\hud_msg_icons_sm.bitmap replaced by (f89a170d)rasterizer\invalid.bitmap
+compiling scripts...                                                           scripts successfully compiled.
+                                                                               WARNING: bitmap 'scenarios\bitmaps\solo\alphagasgiant\gas_intake_a_alpha' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'scenarios\bitmaps\solo\alphagasgiant\gas_intake_b_alpha' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING structure bsp 'scenarios\solo\04a_gasgiant\alphagasgiant' has 19 nonconvex surfaces
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 12529     Initial edges: 24088
+PATHFINDING: Bsp 0: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 0: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 0: Stitching in pathfindable environment objects...  0% /     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 20% -     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 40% \     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 60% |     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 80% /     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 99% -                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% \                                       PATHFINDING: Optimizing sectors... 100% |                                                                                                                     Final surfaces: 14511     Final edges: 31060		Final vertices: 16418
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% /             PATHFINDING: Creating collision-surface -> sector mapping... 95% -                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces... 13% |                         PATHFINDING: Flood-filling untouched surfaces... 34% /                         PATHFINDING: Flood-filling untouched surfaces... 55% -                         PATHFINDING: Flood-filling untouched surfaces... 80% \                                                                                                        building havok representation for bsp...                                                                                                                      placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 88     Initial edges: 162
+PATHFINDING: Bsp 1: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 1: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 1: Stitching in pathfindable environment objects...  0% |     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 20% /     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 40% -     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 60% \     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 80% |                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% /                                       PATHFINDING: Optimizing sectors... 100% -                                                                                                                     Final surfaces: 84     Final edges: 158		Final vertices: 84
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% \                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                                                                                                              building havok representation for bsp...                                                                                                                      WARNING: bitmap 'scenarios\bitmaps\covenant\military\lights\light_vertstrip_a_illum' format 'high-color' will be replaced with 'true-color'
+WARNING: bitmap 'scenarios\bitmaps\covenant\military\lights\light_floorstrip_illum' format 'high-color' will be replaced with 'true-color'
+WARNING: 43 of 73 clusters in structure_bsp scenarios\solo\07a_highcharity\high_4_cinematic have no background sound or sound environment.
+### WARNING structure bsp 'scenarios\solo\07a_highcharity\high_4_cinematic' has 15 nonconvex surfaces
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 18927     Initial edges: 34943
+PATHFINDING: Bsp 2: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 2: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 2: Stitching in pathfindable environment objects...  0% /     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 20% -     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 40% \     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 60% |     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 80% /                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% -                                       PATHFINDING: Optimizing sectors... 100% \                                                                                                                     Final surfaces: 11362     Final edges: 24522		Final vertices: 12765
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% |             PATHFINDING: Creating collision-surface -> sector mapping... 99% /                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  0% \                         PATHFINDING: Flood-filling untouched surfaces... 20% |                         PATHFINDING: Flood-filling untouched surfaces... 40% /                         PATHFINDING: Flood-filling untouched surfaces... 60% -                         PATHFINDING: Flood-filling untouched surfaces... 80% \                                                                                                        building havok representation for bsp...                                                                                                                      ### WARNING structure bsp 'scenarios\solo\04a_gasgiant\production_arm' has 7 nonconvex surfaces
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 13521     Initial edges: 26639
+PATHFINDING: Bsp 3: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 3: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 3: Stitching in pathfindable environment objects...  0% |     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 20% /     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 40% -     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 60% \     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 80% |                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% /                                       PATHFINDING: Optimizing sectors... 100% -                                                                                                                     Final surfaces: 13648     Final edges: 29809		Final vertices: 16084
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% \             PATHFINDING: Creating collision-surface -> sector mapping... 97% |                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  1% -                         PATHFINDING: Flood-filling untouched surfaces... 22% \                         PATHFINDING: Flood-filling untouched surfaces... 95% |                                                                                                        building havok representation for bsp...                                                                                                                      placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 88     Initial edges: 162
+PATHFINDING: Bsp 4: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 4: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 4: Stitching in pathfindable environment objects...  0% /     PATHFINDING: Bsp 4: Stitching in pathfindable environment objects... 20% -     PATHFINDING: Bsp 4: Stitching in pathfindable environment objects... 40% \     PATHFINDING: Bsp 4: Stitching in pathfindable environment objects... 60% |     PATHFINDING: Bsp 4: Stitching in pathfindable environment objects... 80% /                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% -                                       PATHFINDING: Optimizing sectors... 100% \                                                                                                                     Final surfaces: 84     Final edges: 158		Final vertices: 84
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% |                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                                                                                                              building havok representation for bsp...                                                                                                                      done culling animations
+*** original animation tag data 22462468 bytes
+*** cached animation tag data 19238800 bytes
+*** model animation graph tags reduced by 3223668 bytes
+*** writing animation compression stats...
+*** finished writing animation compression stats..
+stripping debug geometry...
+	saved 7275kb...done
+Cache file will not use shared resources for localization
+============ LOCALIZATION SECTION ================
+
+Done en (shared: 0.00M other: 45.47M)
+skipping japanese, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping german, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping french, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping spanish, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping italian, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping korean, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping chinese, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping portuguese, language did not ship with audio support.
+Done (3860 sound permutations for 45.47M)
+adding sounds...
+adding sounds done (12654 sound permutations for 298.30M)
+mark sampling bitmaps...
+adding geometry...
+added 2839 for 38.95M
+marked region at offset 341625600 length 40915712 for fast geometry load
+...packing languages...
+...writing language packs to cache...
+english: #of strings: 2170 string data size: 58327
+japanese: #of strings: 2170 string data size: 80899
+german: #of strings: 2170 string data size: 72041
+french: #of strings: 2170 string data size: 69297
+spanish: #of strings: 2167 string data size: 66729
+italian: #of strings: 2170 string data size: 66655
+korean: #of strings: 2170 string data size: 73270
+chinese: #of strings: 2168 string data size: 56212
+portuguese: #of strings: 0 string data size: 0
+adding bitmaps...
+adding bitmaps...added 2652 for 75.10M. standard:2652 (75.10M) medium:0 (0.00M)
+tag headers and names are 0.11M
+streaming tags.....................................................................done
+writing tags...
+	done (6915 tags for 40.00M)
+total tag size is 40.00M
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (mainmenu)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (shared)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (campaign_shared)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (textures)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_neutral)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_multilingual)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_remastered)'
+resource database using 42% [ 13328,  32000] in 'duplicate resource database'
+resource database using 11% [ 20599, 192000] in 'shared tag blocks'
+NOT compressing 480.87M...
+	realtime data checksum is 0xF803F0C4...
+	final size is 480.87M...
+	done
+successfully built cache file.
+total time 42.547001

@@ -173,7 +173,14 @@ def main():
         return
 
     draw(tag.data, at, W, 0, x0, y0, sw, sh, full)
-    draw(tag.data, at, W // 2, BASE, x0 // 2, y0 // 2, sw // 2, sh // 2, half)
+    # THE MIP IS NOT ALWAYS THERE. Halo 3's sheet is base + one mip (524288 + 131072);
+    # ODST's blob is exactly the base, with no mip at all. Writing one anyway would run
+    # off the end of the pixel blob and into whatever the tag keeps after it.
+    if blob >= BASE + (W // 2) * (H // 2):
+        draw(tag.data, at, W // 2, BASE, x0 // 2, y0 // 2, sw // 2, sh // 2, half)
+        print('mip level updated')
+    else:
+        print('no mip in this blob (%d == base), so only the base image is written' % blob)
     ok, cov, tot = tag.check()
     print('after: parses %s (%d/%d)' % (ok, cov, tot))
     if not ok:

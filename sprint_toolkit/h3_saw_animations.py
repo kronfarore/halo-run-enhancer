@@ -41,14 +41,22 @@ TOOL = os.path.join(EK, 'tool.exe')
 EXT = '.model_animation_graph'
 
 SAW_WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
-GRAPHS = [
-    (B.join(['objects', 'characters', 'masterchief', 'fp', 'weapons', 'rifle',
-             'fp_assault_rifle', 'fp_assault_rifle']),
-     B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', 'fp_saw_masterchief'])),
-    (B.join(['objects', 'characters', 'dervish', 'fp', 'weapons', 'rifle',
-             'fp_assault_rifle', 'fp_assault_rifle']),
-     B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', 'fp_saw_dervish'])),
-]
+
+
+def _graph(species):
+    return (B.join(['objects', 'characters', species, 'fp', 'weapons', 'rifle',
+                    'fp_assault_rifle', 'fp_assault_rifle']),
+            B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', 'fp_saw_' + species]))
+
+
+#: WHICH GRAPHS THE WEAPON NAMES, which is not the same question in the two games.
+#: Halo 3's Assault Rifle names two -- the Master Chief's and the Dervish's, one per
+#: playable species -- and fixing one leaves the other shared. ODST has one playable
+#: species and names `odst_recon` TWICE, in the same two slots, so there is a single
+#: graph to clone and the repoint below rewrites both references to it.
+#: Read off the weapon tag rather than assumed; do the same before adding a third game.
+GRAPHS = ([_graph('odst_recon')] if h3_kit.IS_ODST
+          else [_graph('masterchief'), _graph('dervish')])
 #: what each animation becomes, in frames -- the Halo 4 SAW's own counts
 TARGET = {'first_person:reload_empty': 128,
           'first_person:reload_full': 128,

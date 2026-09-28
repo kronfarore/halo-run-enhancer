@@ -37,6 +37,12 @@ TARGET = {
     'Halo 3': dict(folder='halo3', mission='010_jungle',
                    donor=B.join(['objects', 'characters', '*', 'fp', 'weapons', 'rifle',
                                  'fp_assault_rifle', 'fp_assault_rifle'])),
+    # ODST's Assault Rifle names ONE species graph, odst_recon, where Halo 3's names two.
+    # The wildcard covers either, so the same pattern reads both games -- but note the
+    # per-graph detail is one row here and two there, and the TOTAL is what differs.
+    'Halo 3: ODST': dict(folder='halo3odst', mission='sc100',
+                         donor=B.join(['objects', 'characters', '*', 'fp', 'weapons',
+                                       'rifle', 'fp_assault_rifle', 'fp_assault_rifle'])),
     'Halo 1': dict(folder='halo1', mission='b30',
                    donor=B.join(['weapons', 'assault rifle', 'fp', 'fp'])),
 }

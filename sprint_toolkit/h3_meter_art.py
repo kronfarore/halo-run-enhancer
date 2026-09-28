@@ -73,7 +73,13 @@ def sprite_bounds(xml, index):
             continue
         out.append(tuple(float(g(n)) for n in ('left', 'right', 'top', 'bottom')))
     l, r, t, bo = out[index]
-    return int(l * W), int(r * W), int(t * H), int(bo * H)
+    # ROUND, do not truncate. Every one of these is a pixel count over the sheet size,
+    # so 308/1024 prints as "0.300781" and 0.300781 * 1024 is 307.99974 -- truncating
+    # loses the last column and the last row of the sprite. Those pixels then keep blue
+    # 0, which the HUD reads as "still loaded", and a zero cell inside the sprite is
+    # exactly the outlined-tick artefact this file's comments are about.
+    return (int(round(l * W)), int(round(r * W)),
+            int(round(t * H)), int(round(bo * H)))
 
 
 def groups(vals, thr=80):

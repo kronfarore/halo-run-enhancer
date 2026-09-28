@@ -1,0 +1,228 @@
+Ignoring flag 'compress', it cannot currently be used without also specifying 'resource_sharing'
+starting to build cache file language= english minor version= 0
+solo map, players are [/chief]
+WARNING: bitmap 'rasterizer\linear_corner_fade' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\cinematics\human\inamberclad\inamberclad'
+WARNING: bitmap 'scenarios\objects\covenant\military\scarab\bitmaps\scarab_hull_int' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+### WARNING physics model 'scenarios\objects\covenant\military\scarab\scarab' couldn't resolve material 'physics_ref_phantom' (''), using default material
+### WARNING physics model 'scenarios\objects\covenant\military\scarab\scarab' couldn't resolve material 'attractor' (''), using default material
+### WARNING model 'scenarios\objects\covenant\military\scarab\scarab' material 'scarab_bloom_int' ('') couldn't find a global material named 'scarab_bloom_int'
+WARNING: bitmap 'effects\bitmaps\sparks\sparks_animated' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\human\military\spotting_scope\spotting_scope'
+WARNING: shader 'objects\weapons\rifle\battle_rifle\shaders\tens' could not resolve bitmap 'zero'
+WARNING: shader 'objects\weapons\rifle\battle_rifle\shaders\ones' could not resolve bitmap 'zero'
+### ERROR geometry 'scenarios\objects\special\null_up\null_up' shader 'scenarios\objects\special\shaders\invisible' is transparent but was imported as opaque
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\special\null_up\null_up'
+### WARNING object 'scenarios\objects\covenant\military\cov_recharge_station\cov_recharge_station' has a bounding sphere radius much less than its model (1.300000 vs 1.723440)
+### WARNING physics model 'scenarios\objects\solo\earthcity\road_objects\garage_door\garage_door' couldn't resolve material 'h_um_matte_grey_edge_rusty' (''), using default material
+### WARNING object 'objects\cinematics\human\inamberclad_bridge\inamberclad_bridge' has a bounding sphere radius much less than its model (2.500000 vs 3.266184)
+WARNING: bitmap 'effects\bitmaps\lens_flares\soft_flare_large' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'effects\scenery\skies\human_and_cov_firing' has no bounding radius
+WARNING: bitmap 'shaders\default_bitmaps\bitmaps\clouds_256' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'effects\cinematics\c01_outro\human_and_cov_firing_cine' has no bounding radius
+### ERROR model 'objects\characters\marine\marine' could not find variant 'sailor_nrl' to strip
+### ERROR model 'objects\characters\marine\marine' could not find variant 'sailor_cky' to strip
+### ERROR model 'objects\characters\marine\marine' could not find variant 'sailor_tmd' to strip
+### ERROR model 'objects\characters\marine\marine' could not find variant 'sailor_ntz' to strip
+### WARNING model 'objects\characters\marine\marine' variant 'johnson_combat' cannot find region 'arms'
+###PERF WARNING: Model:objects\characters\marine\marine, Region:head Perm:johnson LOD:1 uses render-only node #19 (eye_left)
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'objects\weapons\rifle\smg\garbage\magazine\magazine'
+WARNING: bitmap 'rasterizer\plasma_shield_noise' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\bitmaps\energy\spark_c_flak' format 'high-color with 1-bit alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\meters\shield_meter' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\metal' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\stone' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING sound 'sound_remastered\materials\particles\shell_casings\concrete\browning' last promotion rule 2 has a maximum play count of 3, resetting to 0
+damage info postprocess: model 'objects\vehicles\warthog\warthog' couldn't find a physics model constraint with name: hinge02
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\ice' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'objects\vehicles\ghost\garbage\seat\seat' has a bounding sphere radius much less than its model (0.120000 vs 0.364857)
+### WARNING object 'objects\vehicles\ghost\garbage\l_wing_shell\l_wing_shell' has a bounding sphere radius much less than its model (0.080000 vs 0.285048)
+### WARNING object 'objects\vehicles\ghost\garbage\r_wing_shell\r_wing_shell' has a bounding sphere radius much less than its model (0.120000 vs 0.264751)
+WARNING: bitmap 'effects\bitmaps\lens_flares\light_volume' format 'high-color' will be replaced with 'true-color'
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift_brake' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'special_material' (''), using default material
+### WARNING physics model 'objects\vehicles\phantom\phantom' couldn't resolve material 'gravity_lift_vehicle' (''), using default material
+### WARNING sound 'sound_remastered\materials\particles\shell_casings\concrete\308' last promotion rule 1 has a maximum play count of 3, resetting to 0
+### WARNING sound 'sound_remastered\materials\particles\shell_casings\dirt\308' promotion rules do not reference all pitch ranges
+tags: missing tag (ffffffff)objects\weapons\rifle\smg\damage_effects\smg_empty.damage_effect replaced by (f9e4186e)globals\global_missing_damage_effect.damage_effect
+### WARNING sound 'sound_remastered\materials\particles\shell_casings\concrete\50cal' last promotion rule 2 has a maximum play count of 5, resetting to 0
+### WARNING shader pass 'shaders\shader_passes\texture_camera\scope' texture #0 (implementation #0) has source extern - ignoring parameter name "scope"
+WARNING: bitmap 'effects\decals\bullet_holes\bitmaps\impact_scratch' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'incompetent\bitmaps\clouds_256' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'effects\bitmaps\flares\ring' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+### WARNING object 'scenarios\objects\covenant\military\scarab\scarab' has a bounding sphere radius much less than its model (12.500000 vs 16.304300)
+### WARNING physics model 'scenarios\objects\covenant\military\cov_watchtower\cov_watchtower_base\cov_watchtower_base' couldn't resolve material 'lower_lift_player' (''), using default material
+### WARNING physics model 'scenarios\objects\covenant\military\cov_watchtower\cov_watchtower_base\cov_watchtower_base' couldn't resolve material 'lower_lift' (''), using default material
+### WARNING physics model 'scenarios\objects\covenant\military\cov_watchtower\cov_watchtower_pod\cov_watchtower_pod' couldn't resolve material 'upper_lift' (''), using default material
+### WARNING collision model 'objects\gear\covenant\military\battery\battery' has 1 nonconvex surfaces
+### ERROR geometry 'objects\vehicles\civilian\uberchassis\uberchassis' shader 'objects\vehicles\civilian\uberchassis\shaders\uberchassis_glass_dead' is opaque but was imported as transparent
+### ERROR geometry 'objects\vehicles\civilian\uberchassis\uberchassis' shader 'objects\vehicles\civilian\uberchassis\shaders\uberchassis_glass_dead' is opaque but was imported as transparent
+### ERROR geometry 'objects\vehicles\civilian\uberchassis\uberchassis' shader 'objects\vehicles\civilian\uberchassis\shaders\uberchassis_glass_dead' is opaque but was imported as transparent
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis_tire\uberchassis_tire' material 'uberchassis_wheels_dead' ('') couldn't find a global material named 'uberchassis_wheels_dead'
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis_tire\uberchassis_tire' collision model region 'tire' has no corresponding model region (will not be collideable)
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis' variant 'destroyed' cannot find region 'wheel_fr'
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis' variant 'destroyed' cannot find region 'wheel_fl'
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis' variant 'destroyed' cannot find region 'wheel_bl'
+### WARNING model 'objects\vehicles\civilian\uberchassis\uberchassis' variant 'destroyed' cannot find region 'wheel_br'
+### WARNING object 'objects\vehicles\civilian\uberchassis\uberchassis' has a bounding sphere radius much less than its model (0.750000 vs 0.971937)
+### WARNING model 'objects\weapons\rifle\brute_plasma_rifle\brute_plasma_rifle' collision model region 'default' has no corresponding model region (will not be collideable)
+### WARNING effect 'effects\impact\explosion_small\brute_shot\detonation' part 'effects\impact\explosion_small\brute_shot\detonation' was not found
+### WARNING physics model 'scenarios\objects\human\urban\air\air' couldn't resolve material 'airshader' (''), using default material
+### WARNING object 'scenarios\objects\human\urban\air\ai_cap' has a bounding sphere radius much less than its model (0.100000 vs 0.521992)
+### WARNING model didn't have begin fade or max draw distances set and defaults cannot be built without 'model object data' block data: 'scenarios\objects\human\urban\dumpter\dumpster'
+### WARNING physics model 'objects\characters\ambient_life\reach_moa\reach_moa' couldn't resolve material 'reach_moa' (''), using default material
+### WARNING model 'objects\characters\ambient_life\reach_moa\reach_moa' material 'reach_moa_collision' ('') couldn't find a global material named 'reach_moa_collision'
+WARNING: shader 'effects\screen_effects\blur' could not resolve bitmap 'identity'
+### WARNING 'scenario_scenery_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_scenery_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_crate_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_crate_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_biped_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_bipeds_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_biped_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_bipeds_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_vehicle_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_vehicles_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_vehicle_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_vehicles_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_equipment_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_equipment_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_equipment_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_equipment_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_weapon_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_weapons_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_weapon_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_weapons_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_sound_scenery_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_sound_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_sound_scenery_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_sound_scenery_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_light_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_lights_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_light_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_lights_resource' that is about to be stomped over isn't empty!
+### WARNING 'device_group_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_machine_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_machine_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_devices_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_cutscene_camera_point_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cinematics_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_cutscene_flag_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cinematics_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_trigger_volume_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_trigger_volumes_resource' that is about to be stomped over isn't empty!
+### WARNING 'structure_bsp_background_sound_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'structure_bsp_sound_environment_palette_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_atmospheric_fog_palette' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_cluster_data_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_cluster_data_resource' that is about to be stomped over isn't empty!
+### WARNING 'editor_comment_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_comments_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_structure_bsp_spherical_harmonic_lighting_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_structure_lighting_resource' that is about to be stomped over isn't empty!
+### WARNING 'scenario_decorator_set_palette_entry_block' referenced by resource 'scenarios\solo\03a_oldmombasa\resources\03a_oldmombasa.scenario_decorators_resource' that is about to be stomped over isn't empty!
+loaded script 'global_scripts'
+loaded script '03a_oldmombasa_cinematics'
+loaded script '03a_oldmombasa_mission'
+loaded script '03a_oldmombasa_prediction'
+### WARNING object 'objects\characters\bugger\bugger' has a bounding sphere radius much less than its model (0.380000 vs 0.670935)
+### WARNING sound 'sound\materials\particles\flesh_particles' last promotion rule 1 has a maximum play count of 3, resetting to 0
+### the creature 'objects\characters\ambient_life\seagull\seagull' has no 'head' marker
+### WARNING object 'objects\characters\ambient_life\seagull\seagull' has a bounding sphere radius much less than its model (0.200000 vs 0.250794)
+WARNING: bitmap 'rasterizer\distance_attenuation' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'rasterizer\glow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\hud_waypoints' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\default_arrow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\dead_friendly_arrow' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_flag' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_bomb' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\reset_ball' format 'separate alpha-intensity' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topright' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topcenter' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_topleft' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\h_center' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topright' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topcenter' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_topleft' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+WARNING: bitmap 'ui\hud\bitmaps\new_hud\player_training\c_center' format 'high-color with alpha' will be replaced with 'true-color with alpha'
+tags: missing tag (ffffffff)ui\hud\bitmaps\hud_msg_icons_sm.bitmap replaced by (8207207a)rasterizer\invalid.bitmap
+compiling scripts...                                                           scripts successfully compiled.
+                                                                               ### WARNING structure bsp 'scenarios\solo\03a_oldmombasa\earthcity_1' has 52 nonconvex surfaces
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 17286     Initial edges: 32105
+PATHFINDING: Bsp 0: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 0: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 0: Stitching in pathfindable environment objects...  0% /     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 20% -     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 40% \     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 60% |     PATHFINDING: Bsp 0: Stitching in pathfindable environment objects... 80% /                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% -                                       PATHFINDING: Optimizing sectors... 100% \                                                                                                                     Final surfaces: 15180     Final edges: 32470		Final vertices: 17652
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% |             PATHFINDING: Creating collision-surface -> sector mapping... 98% /                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  1% \                         PATHFINDING: Flood-filling untouched surfaces... 21% |                         PATHFINDING: Flood-filling untouched surfaces... 41% /                         PATHFINDING: Flood-filling untouched surfaces... 62% -                         PATHFINDING: Flood-filling untouched surfaces... 82% \                                                                                                        building havok representation for bsp...                                                                                                                      'scenarios\objects\solo\earthcity\oldmombasa\hunter_door\hunter_door.device_machine' will occlude but does not have a valid occlusion range [0.00, 0.00]
+### WARNING structure 'scenarios\solo\03a_oldmombasa\earthcity_2' material #61 shader 'scenarios\shaders\solo\earthcity\blending_for_infinite_water_plane' has no material name
+WARNING: 1 of 80 clusters in structure_bsp scenarios\solo\03a_oldmombasa\earthcity_2 have no background sound or sound environment.
+### WARNING structure bsp 'scenarios\solo\03a_oldmombasa\earthcity_2' has 14 nonconvex surfaces
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 6401     Initial edges: 11335
+PATHFINDING: Bsp 1: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 1: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 1: Stitching in pathfindable environment objects...  0% |     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 20% /     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 40% -     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 60% \     PATHFINDING: Bsp 1: Stitching in pathfindable environment objects... 80% |                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% /                                       PATHFINDING: Optimizing sectors... 100% -                                                                                                                     Final surfaces: 7776     Final edges: 16422		Final vertices: 8676
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% \             PATHFINDING: Creating collision-surface -> sector mapping... 97% |                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  0% -                         PATHFINDING: Flood-filling untouched surfaces... 20% \                         PATHFINDING: Flood-filling untouched surfaces... 40% |                         PATHFINDING: Flood-filling untouched surfaces... 60% /                         PATHFINDING: Flood-filling untouched surfaces... 80% -                                                                                                        building havok representation for bsp...                                                                                                                      placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 12434     Initial edges: 23473
+PATHFINDING: Bsp 2: Replicating collision bsp...                                                                                                              PATHFINDING: Bsp 2: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 2: Stitching in pathfindable environment objects...  0% \     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 20% |     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 40% /     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 60% -     PATHFINDING: Bsp 2: Stitching in pathfindable environment objects... 80% \                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% |                                       PATHFINDING: Optimizing sectors... 100% /                                                                                                                     Final surfaces: 11260     Final edges: 23895		Final vertices: 12746
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% -             PATHFINDING: Creating collision-surface -> sector mapping... 99% \                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  0% /                         PATHFINDING: Flood-filling untouched surfaces... 26% -                         PATHFINDING: Flood-filling untouched surfaces... 46% \                         PATHFINDING: Flood-filling untouched surfaces... 67% |                         PATHFINDING: Flood-filling untouched surfaces... 88% /                                                                                                        building havok representation for bsp...                                                                                                                      ### WARNING structure 'scenarios\solo\03a_oldmombasa\earthcity_cine_intro_bsp' material #39 shader 'scenarios\shaders\ui\mainmenu\nm_arial_water' has no material name
+### WARNING structure 'scenarios\solo\03a_oldmombasa\earthcity_cine_intro_bsp' material #205 shader 'scenarios\shaders\solo\earthcity\cinematic\nm_arial_city' has no material name
+placing objects on bsp...                                                                                                                                     Creating pathfinding data ...
+Initial surfaces: 28     Initial edges: 56
+PATHFINDING: Bsp 3: Replicating collision bsp...                                                                                                              ### WARNING model 'scenarios\objects\solo\earthcity\road_objects\vent_wall_a\vent_wall_a' unknown variant name 'damaged'
+### WARNING model 'scenarios\objects\solo\earthcity\road_objects\vent_wall_a\vent_wall_a' unknown variant name 'damaged'
+### WARNING model 'scenarios\objects\solo\earthcity\road_objects\junction_box_lg\junction_box_lg' unknown variant name 'damaged'
+PATHFINDING: Bsp 3: Stitching in pathfindable environment objects...           PATHFINDING: Bsp 3: Stitching in pathfindable environment objects...  0% -     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 20% \     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 40% |     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 60% /     PATHFINDING: Bsp 3: Stitching in pathfindable environment objects... 80% -                                                                                    PATHFINDING: Optimizing sectors...                                             PATHFINDING: Optimizing sectors...  0% \                                       PATHFINDING: Optimizing sectors... 100% |                                                                                                                     Final surfaces: 3151     Final edges: 6325		Final vertices: 3226
+PATHFINDING: Creating collision-surface -> sector mapping...                   PATHFINDING: Creating collision-surface -> sector mapping...  0% /             PATHFINDING: Creating collision-surface -> sector mapping... 93% -                                                                                            PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)...  PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 2PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 4PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 6PATHFINDING: Creating collision-surface -> sector mapping (bsp2d creation)... 8                                                                               PATHFINDING: Flood-filling untouched surfaces...                               PATHFINDING: Flood-filling untouched surfaces...  0% |                         PATHFINDING: Flood-filling untouched surfaces... 21% /                                                                                                        building havok representation for bsp...                                                                                                                      done culling animations
+*** original animation tag data 16937936 bytes
+*** cached animation tag data 14726820 bytes
+*** model animation graph tags reduced by 2211116 bytes
+*** writing animation compression stats...
+*** finished writing animation compression stats..
+stripping debug geometry...
+	saved 10736kb...done
+Cache file will not use shared resources for localization
+============ LOCALIZATION SECTION ================
+
+Done en (shared: 0.00M other: 110.39M)
+skipping japanese, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping german, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping french, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping spanish, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping italian, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping korean, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping chinese, you did not specify the 'multilingual_sounds' flag, only english sounds will be used.
+skipping portuguese, language did not ship with audio support.
+Done (9003 sound permutations for 110.39M)
+adding sounds...
+adding sounds done (19113 sound permutations for 331.12M)
+mark sampling bitmaps...
+adding geometry...
+added 5064 for 68.50M
+marked region at offset 445431168 length 71837184 for fast geometry load
+...packing languages...
+...writing language packs to cache...
+english: #of strings: 2138 string data size: 56388
+japanese: #of strings: 2138 string data size: 78653
+german: #of strings: 2138 string data size: 69960
+french: #of strings: 2138 string data size: 67254
+spanish: #of strings: 2135 string data size: 64546
+italian: #of strings: 2138 string data size: 64703
+korean: #of strings: 2138 string data size: 70879
+chinese: #of strings: 2136 string data size: 54557
+portuguese: #of strings: 0 string data size: 0
+adding bitmaps...
+adding bitmaps...added 3283 for 102.90M. standard:3283 (102.90M) medium:0 (0.00M)
+tag headers and names are 0.14M
+streaming tags............................................................................................done
+writing tags...
+	done (9223 tags for 39.14M)
+total tag size is 39.14M
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (mainmenu)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (shared)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (campaign_shared)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (textures)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_neutral)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_multilingual)'
+resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_remastered)'
+resource database using 50% [ 15971,  32000] in 'duplicate resource database'
+resource database using 13% [ 25638, 192000] in 'shared tag blocks'
+NOT compressing 636.91M...
+	realtime data checksum is 0xF2FFDE5F...
+	final size is 636.91M...
+	done
+successfully built cache file.
+total time 59.104000
