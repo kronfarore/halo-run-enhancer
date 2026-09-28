@@ -776,8 +776,8 @@ CONFIG = {
     # Per-pair chance that a card offers a piece of equipment / an ability instead
     # (rolled on the pairs that did not get a new weapon).
     "new_equipment_chance": 0.0,
-    # Hold both players level: nobody is offered another weapon (or piece of
-    # equipment) while holding more of that kind than the other player.
+    # Hold both players level: nobody is offered another item while holding more
+    # items (weapons + equipment, one count) than the other player.
     "balance_item_counts": False,
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
@@ -9542,8 +9542,8 @@ class OptionsDialog(QDialog):
         self.balance_items_cb = QCheckBox("Keep both players' item counts level")
         self.balance_items_cb.setChecked(bool(CONFIG.get('balance_item_counts')))
         self.balance_items_cb.setToolTip(
-            "A player who holds more weapons than the other is not offered another weapon "
-            "until the other catches up -- and the same for equipment. Applies to the "
+            "A player who holds more items (weapons and equipment counted together) than "
+            "the other is not offered another until the other catches up. Applies to the "
             "new-weapon / new-equipment cards, not to the NEW ITEM button.")
         rform.addRow("", self.balance_items_cb)
 
@@ -14392,16 +14392,16 @@ class RunEnhancer:
         chance = CONFIG.get('new_weapon_chance', 0) or 0
         echance = CONFIG.get('new_equipment_chance', 0) or 0
         epool = self._new_equipment_pool(for_player) if echance > 0 else []
-        # Balanced items (option): a player holding MORE weapons (or equipment) than
-        # the other is not offered another of that kind until the other catches up.
+        # Balanced items (option): a player holding MORE items (weapons and equipment
+        # together) than the other is not offered another until the other catches up.
         # Each player then rolls for themselves -- copying player 1's count, as below,
         # would keep the player who is behind from ever catching up.
         balance = bool(CONFIG.get('balance_item_counts'))
         other = 'player2' if for_player == 'player1' else 'player1'
-        mine_w, mine_e = self._item_counts(for_player)
-        theirs_w, theirs_e = self._item_counts(other)
-        w_open = not (balance and mine_w > theirs_w)
-        e_open = not (balance and mine_e > theirs_e)
+        # ONE combined count (user, 2026-09-28): weapons and equipment together.
+        mine = sum(self._item_counts(for_player))
+        theirs = sum(self._item_counts(other))
+        w_open = e_open = not (balance and mine > theirs)
         if balance:
             flags = [bool(wpool) and w_open and random.random() < chance for _ in range(3)]
             eflags = [not flags[i] and bool(epool) and e_open and random.random() < echance
