@@ -903,7 +903,7 @@
 				"Projectile Lead Time": {
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"},
 					"split_from": "Projectile",
 					"targets": [
@@ -913,7 +913,7 @@
 				"Projectile Gravity": {
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo 1", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"},
 					"split_from": "Projectile",
 					"targets": [
@@ -1234,6 +1234,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"},
@@ -1243,6 +1244,7 @@
 					]
 				},
 				"Projectile Gravity": {
+					"game": ["Halo 1", "Halo Reach", "Halo 4"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"},
@@ -1428,7 +1430,7 @@
 				"Homing Accuracy": {
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "Everything homing on the Plasma Pistol lives on the CHARGED bolt, and no card named that tag -- the weapon's Projectile card points at the ordinary bolt, which is why the whole set read as absent. Measured on the charged bolt: `Guided Angular Velocity` 2.0 lower and upper, At Rest 50.0, Outer Range Error Radius 0.5, identical in Halo 3, ODST, Reach and Halo 4. Halo 2 carries only the pair, at **80.0** -- forty times the later games, which is why a Halo 2 charged bolt turns so much harder.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
 					"split_from": "Homing",
 					"targets": [
@@ -1597,7 +1599,7 @@
 				"Homing Accuracy (Charged)": {
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"},
 					"split_from": "Homing (Charged)",
 					"targets": [
@@ -1656,6 +1658,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
@@ -1665,6 +1668,7 @@
 					]
 				},
 				"Projectile Gravity": {
+					"game": ["Halo 1", "Halo 4"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"},
@@ -1868,6 +1872,8 @@
 					]
 				},
 				"Charged Drain Rate": {
+					"skip_games": ["Halo 3: ODST"],
+					"game": ["Halo 3", "Halo 4"],
 					"desc": "Charged Drain Rate",
 					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
 					"split_from": "Per Round (Charged)",
@@ -2103,6 +2109,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\plasma rifle\\bolt", "Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo Reach": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"},
@@ -2238,7 +2245,7 @@
 				"Fire Recovery Time": {
 					"desc": "Forces a pause between shots. Set a value to turn an automatic weapon semi-automatic.",
 					"debug_desc": "The cooldown on trigger input, not the rate of fire itself. Automatic weapons ship this at 0, so multiplying does nothing — SET a value instead.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo Reach"],
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
 						"Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle",
@@ -2459,7 +2466,7 @@
 				"Homing Accuracy": {
 					"desc": "Guided Projectile (Outer Range) Error Radius",
 					"debug_desc": "The projectile's `Guided Angular Velocity` pair (plus At Rest, and the Outer Range Error Radius) -- how sharply a round already in flight can steer. This is NOT the lock-on: acquiring the target is `Target Tracking` on the weapon, its own card in Reach.\n\nReach keeps these fields exactly where Halo 3 had them, so it only needed adding to the card -- but its tag paths differ (Halo 3 nests needler_shard and flak_bolt one folder deeper), which is why Reach carries its own tag rather than inheriting.\n\nHigher steers harder. Push it far enough and shots curve around cover.\n\nLEADING is a separate row and a separate idea: `Targeted Leading Fraction` is how far AHEAD of a moving target the round aims, where the angular velocities above are how sharply it can turn once it is flying. Shipped 0.75 on the Flak Cannon from Halo 3 on, 0.5 on the Needler in Halo 2 and 1.0 from Halo 3, 1.0 on Reach's Plasma Launcher, and 0.5 rising to 1.0 on the Plasma Pistol's charged bolt. The Rocket Launcher and Incineration Cannon ship 0, so the row is inert on those two until something raises it. Halo 1 has no such field, and no Homing card reaches it.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
 					"split_from": "Homing",
 					"targets": [
@@ -2516,6 +2523,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
@@ -2535,6 +2543,7 @@
 					]
 				},
 				"Supercombine Timer": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Super Detonation Time",
 					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
 					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
@@ -2544,6 +2553,7 @@
 					]
 				},
 				"Supercombine Needle Count": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Super Detonation Projectile Count",
 					"tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"},
 					"constraints": [{"field": "Timer Max", "of": "Timer", "not_below": true}],
@@ -2889,6 +2899,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"},
@@ -3227,6 +3238,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"},
@@ -3534,6 +3546,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"},
@@ -3543,6 +3556,7 @@
 					]
 				},
 				"Projectile Gravity": {
+					"game": ["Halo 1", "Halo 4"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"},
@@ -3843,7 +3857,7 @@
 				"Projectile Lead Time": {
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
+					"game": ["Halo 3"],
 					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"},
 					"split_from": "Projectile",
 					"targets": [
@@ -4091,6 +4105,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"ignore": true,
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"game": "Halo 2",
@@ -4392,7 +4407,7 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
@@ -4652,13 +4667,14 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade", "Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"},
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 3"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
 					]
 				},
 				"Projectile Gravity": {
+					"skip_games": ["Halo 3: ODST"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade", "Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"},
@@ -4945,7 +4961,7 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
@@ -5230,7 +5246,7 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 4": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
@@ -5542,17 +5558,18 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
 					]
 				},
 				"Projectile Gravity": {
+					"skip_games": ["Halo 3: ODST"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Air Gravity Scale", "group": "Gravity Scale", "min": 0, "games": ["Halo 3", "Halo 4"] },
@@ -5828,7 +5845,7 @@
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
 					"tag": {"Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"},
-					"game": ["Halo 2", "Halo 3", "Halo 4"],
+					"game": ["Halo 3", "Halo 4"],
 					"split_from": "Projectile",
 					"targets": [
 						{ "step": "*1.2", "field": "Autoaim Leading Maximum Lead Time", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] }
@@ -6074,6 +6091,7 @@
 					]
 				},
 				"Projectile Lead Time": {
+					"ignore": true,
 					"desc": "Autoaim Leading Maximum Lead Time",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.\n\nUPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
 					"game": "Halo 2",
@@ -6892,9 +6910,10 @@
 					]
 				},
 				"Projectile Gravity": {
+					"skip_games": ["Halo 3: ODST"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": "Halo 3",
+					"game": ["Halo 3"],
 					"tag": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard",
 					"split_from": "Projectile",
 					"targets": [
@@ -7567,9 +7586,10 @@
 					]
 				},
 				"Projectile Gravity": {
+					"skip_games": ["Halo 3: ODST"],
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"debug_desc": "`Maximum Range` and the velocity pair are the shot's reach and speed. The four damage-range fields are one row: Air and Water Damage Range are the same question asked of two media, and splitting them only invites setting them inconsistently.\n\nGRAVITY. A second row appears wherever the projectile sets `Air Gravity Scale`. That matters most for the weapons which set it and NO air damage range at all -- measured, exactly the arcing launchers: Brute Shot (Halo 2 and 3), and Reach's Concussion Rifle, Grenade Launcher and Plasma Launcher. Their shot is a lobbed grenade whose flight gravity governs rather than a range falloff, so a Damage Range row alone would have given them a card that does nothing. Some ordinary weapons set air gravity too (Halo 1's pistol and shotgun at 1.0, Reach's magnum at 0.005) and get the row as well. Lower gravity flattens the arc and throws further.",
-					"game": "Halo 3",
+					"game": ["Halo 3"],
 					"tag": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream",
 					"split_from": "Projectile",
 					"targets": [
@@ -15336,7 +15356,7 @@
 				"color": "defensive",
 				"desc": "Cover Vitality Threshold",
 				"debug_desc": "The species Cover Properties cards, aimed at the shared base instead: `Hide Behind Cover Time` (a range, 3..5s on ai\\generic from Halo 2 on, 1s in ODST) and `Cover Vitality Threshold` (1.0; 0 in ODST), clamped to 0..1. It reaches every character that has no cover block of its own -- in Halo 4 that is the Hunter, the Sentinel and the rest of the inheriting cast, whose species cards were gated out because their own block is empty.\\n\\nAimed at the shared `ai\\generic` base, so it moves every character that inherits these fields rather than defining its own -- and that includes the player's allies (in Halo 4, 12 of 13 ally tags inherit them). Halo 1 keeps the hide time on each `actr` (1.5..4s), so its row targets every actor, and it has no vitality threshold.",
-				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+				"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 				"tag": {"Halo 1": "actr *", "default": "char ai\\generic"},
 				"split_from": "Cover Properties",
 				"targets": {
@@ -15610,6 +15630,7 @@
 					]
 				},
 				"Melee Chance": {
+					"game": ["Halo 2", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Chance",
 					"tag": {"Halo 1": "actr characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major", "Halo 3": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
@@ -15727,7 +15748,7 @@
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Projectile Error",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 1"],
 					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -15743,7 +15764,7 @@
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -15760,7 +15781,7 @@
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Time",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -15938,6 +15959,7 @@
 					]
 				},
 				"Melee Radius": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Radius from Elite",
 					"tag": {
@@ -16474,6 +16496,7 @@
 					]
 				},
 				"Fuel Rod Gravity": {
+					"game": ["Halo 1", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Air Gravity Scale, Water Gravity Scale",
 					"tag": {"Halo 1": "proj weapons\\fuel rod gun\\fuel rod", "Halo 2": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_component", "Halo 3": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary", "Halo 3: ODST": "proj objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_primary & objects\\characters\\hunter\\hunter_particle_cannon\\projectiles\\particle_cannon_secondary & objects\\characters\\hunter\\hunter_flak_cannon\\projectiles\\flak_bolt", "Halo Reach": "proj objects\\characters\\hunter\\hunter_fuel_rod\\projectiles\\hunter_fuel_rod_bolt", "Halo 4": "proj objects\\characters\\storm_hunter\\hunter_fuel_rod\\projectiles\\storm_hunter_fuel_rod_bolt"},
@@ -16484,6 +16507,7 @@
 					]
 				},
 				"Projectile Error": {
+					"game": ["Halo 1"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Projectile Error",
@@ -16500,6 +16524,7 @@
 					}
 				},
 				"Accuracy Bounds": {
+					"game": ["Halo 2", "Halo 3"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
@@ -16517,6 +16542,7 @@
 					}
 				},
 				"Accuracy Time": {
+					"game": ["Halo 2", "Halo 3"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4", "Halo Reach"],
 					"desc": "Accuracy Time",
@@ -16606,6 +16632,7 @@
 					]
 				},
 				"Melee Chance": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Chance",
 					"tag": {"Halo 1": "actr characters\\hunter\\*", "Halo 2": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 3": "char objects\\characters\\hunter\\ai\\hunter*", "Halo 4": "char objects\\characters\\storm_hunter\\ai\\storm_hunter*"},
@@ -17001,6 +17028,7 @@
 					}
 				},
 				"Cover Threshold": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "defensive",
 					"desc": "Cover Vitality Threshold",
 					"tag": {"Halo 1": "actr characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
@@ -17108,6 +17136,7 @@
 					}
 				},
 				"Projectile Error": {
+					"game": ["Halo 1"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Projectile Error",
@@ -17124,6 +17153,7 @@
 					}
 				},
 				"Accuracy Bounds": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
@@ -17141,6 +17171,7 @@
 					}
 				},
 				"Accuracy Time": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Time",
@@ -17229,6 +17260,7 @@
 					]
 				},
 				"Anti-Vehicle Grenade Chance": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Anti-Vehicle Grenade Chance",
 					"debug_desc": "Anti-Vehicle Grenade Chance and Grenade Throw Delay were allow-listed to Halo 2 until 2026-08-31, though the grunt tags define both in Halo 3 and ODST (0.5 and 12.0). `games` is a literal allow list with no ODST-inherits-Halo-3 fallback, which is why ODST has to be named outright.",
@@ -17239,6 +17271,7 @@
 					]
 				},
 				"Grenade Check Time": {
+					"game": ["Halo 1"],
 					"color": "aggressive",
 					"desc": "Grenade Check Time",
 					"debug_desc": "Anti-Vehicle Grenade Chance and Grenade Throw Delay were allow-listed to Halo 2 until 2026-08-31, though the grunt tags define both in Halo 3 and ODST (0.5 and 12.0). `games` is a literal allow list with no ODST-inherits-Halo-3 fallback, which is why ODST has to be named outright.",
@@ -17348,6 +17381,7 @@
 					}
 				},
 				"Flee Timeout": {
+					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "defensive",
 					"desc": "Retreat Time, Retreat Time Max",
 					"debug_desc": "Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured: Halo 3/ODST 2-20 s, Reach and Halo 4 4 s. Halo 1's counterpart is the actr Retreat Time range (how long they retreat from an unopposable enemy, 8-20 s on grunts).",
@@ -17367,6 +17401,7 @@
 					}
 				},
 				"Cower Time": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "defensive",
 					"desc": "Forced Cower Time Bounds, Forced Cower Time Bounds Max",
 					"debug_desc": "Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured: Halo 3/ODST 2-20 s, Reach and Halo 4 4 s. Halo 1's counterpart is the actr Retreat Time range (how long they retreat from an unopposable enemy, 8-20 s on grunts).",
@@ -17386,6 +17421,7 @@
 					}
 				},
 				"Grunt Damage": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Damage of Grunt Obstacle Smash and their Backpack Explosion",
@@ -17401,6 +17437,7 @@
 					]
 				},
 				"Grunt Radius": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Radius of Grunt Obstacle Smash and their Backpack Explosion",
@@ -18061,6 +18098,7 @@
 					"debug_desc": "\\n\\nHalo 1 aims at the jackal ACTOR tag; Reach aims at the jackal char tags, which define their own firing pattern at 3.0. The two games are the only ones this card claims -- Halo 2 through ODST leave the Jackal inheriting, where the general Firing Patterns card already reaches it."
 				},
 				"Projectile Error": {
+					"game": ["Halo 1"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Projectile Error",
@@ -18077,6 +18115,7 @@
 					}
 				},
 				"Accuracy Bounds": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
@@ -18094,6 +18133,7 @@
 					}
 				},
 				"Accuracy Time": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "aggressive",
 					"skip_games": ["Halo 4"],
 					"desc": "Accuracy Time",
@@ -18248,7 +18288,7 @@
 					"color": "defensive",
 					"desc": "Flee Timeout",
 					"debug_desc": "The Jackals' own Retreat Properties -- defined on every Halo 2, Halo 3 and ODST level that fields them, which is why the general **Retreat** card never reached them. They had no Retreat card at all until 2026-08-31. Flee Timeout (Halo 3 on) caps how long a fleeing enemy keeps running before it turns back to fight -- shorter is harder. 0 would mean NO timeout, so the card never goes below 0.1. Only offered where this enemy really ships a value (behaviour_census, every map, 2026-09-17). Measured 2 s in Reach and Halo 4; the Halo 3/ODST Jackals ship none.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"split_from": "Retreat",
 					"targets": [
@@ -18524,6 +18564,7 @@
 					]
 				},
 				"Melee Chance": {
+					"game": ["Halo 2", "Halo 3"],
 					"color": "aggressive",
 					"skip_games": ["Halo Reach"],
 					"desc": "Melee Chance",
@@ -18972,6 +19013,7 @@
 					}
 				},
 				"Melee Chance": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Chance",
 					"debug_desc": "In Halo 2 this edits the shared AI base, so it also moves every enemy that inherits it: Buggers and Flood Infection Forms.",
@@ -19126,7 +19168,7 @@
 					"color": "aggressive",
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
 					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char ai\\generic"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -19143,7 +19185,7 @@
 					"color": "aggressive",
 					"desc": "Accuracy Time",
 					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char ai\\generic"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -19225,6 +19267,7 @@
 					]
 				},
 				"Melee Chance": {
+					"game": ["Halo 2", "Halo 3"],
 					"color": "aggressive",
 					"skip_games": ["Halo Reach"],
 					"desc": "Melee Chance",
@@ -19344,7 +19387,7 @@
 					"color": "aggressive",
 					"desc": "Accuracy Bounds, Accuracy Bounds Max",
 					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char ai\\generic"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -19361,7 +19404,7 @@
 					"color": "aggressive",
 					"desc": "Accuracy Time",
 					"debug_desc": "Halo 1 uses projectile error; Halo 2 uses accuracy bounds/time plus projectile error. In Halo 2 this edits the shared AI base, so it also moves Brutes, Buggers, Heretics, Sentinel Enforcers and the Flood forms.",
-					"game": ["Halo 1", "Halo 2"],
+					"game": ["Halo 2"],
 					"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char ai\\generic"},
 					"harder_when": {"Halo 1": "decreased", "Halo 2": "increased"},
 					"split_from": "Accuracy",
@@ -19922,6 +19965,7 @@
 					}
 				},
 				"Cover Threshold": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"color": "defensive",
 					"skip_games": ["Halo 4"],
 					"desc": "Cover Vitality Threshold",
@@ -20468,6 +20512,7 @@
 					]
 				},
 				"Melee Damage": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Damage from Bugger",
 					"tag": {
@@ -20481,6 +20526,7 @@
 					]
 				},
 				"Melee Radius": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Radius from Bugger",
 					"tag": {
@@ -20814,6 +20860,7 @@
 					]
 				},
 				"Melee Damage": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Damage from Brutes",
 					"tag": {
@@ -20827,6 +20874,7 @@
 					]
 				},
 				"Melee Radius": {
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"color": "aggressive",
 					"desc": "Melee Radius from Brutes",
 					"tag": {
@@ -20941,6 +20989,7 @@
 					]
 				},
 				"Grenade Velocity": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Grenade Velocity, Grenade Ideal Velocity",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
@@ -20953,6 +21002,7 @@
 					]
 				},
 				"Grenade Range": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Grenade Ranges, Grenade Ranges Max",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
@@ -20965,6 +21015,7 @@
 					]
 				},
 				"Grenade Collateral": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Collateral Damage Radius",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
@@ -20976,6 +21027,7 @@
 					]
 				},
 				"Grenade Chance": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Grenade Chance",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, so ODST is excluded outright; there they inherit `ai\\\\generic` and the general **Grenade Scales** dial is the handle.",
@@ -20987,6 +21039,7 @@
 					]
 				},
 				"Anti-Vehicle Grenade Chance": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Anti-Vehicle Grenade Chance",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, so ODST is excluded outright; there they inherit `ai\\\\generic` and the general **Grenade Scales** dial is the handle.",
@@ -21143,9 +21196,10 @@
 					]
 				},
 				"Leader Charge Chance": {
+					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
 					"desc": "Leader Abandoned Berserk Chance",
-					"game": ["Halo 3", "Halo Reach"],
+					"game": ["Halo 3"],
 					"tag": "char objects\\characters\\brute\\ai\\brute*",
 					"split_from": "Leader Charge",
 					"targets": [
@@ -21918,7 +21972,7 @@
 				"Shield Boost Strength": {
 					"color": "defensive",
 					"desc": "Shield Boost Strength",
-					"game": ["Halo 3: ODST", "Halo Reach"],
+					"game": ["Halo 3: ODST"],
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"split_from": "Shield Boost",
 					"targets": [

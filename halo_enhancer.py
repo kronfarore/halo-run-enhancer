@@ -370,7 +370,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'turrets_are_weapons',
                'combine_heretic_hologram', 'remove_h3_cutscenes',
                'keep_title_hud', 'clear_profile_equipment', 'clear_profile_grenades',
-               'spawn_starting_grenades',
+               'spawn_starting_grenades', 'step_strength',
                'reach_pools_from_map', 'h4_pools_from_map',
                'reach_spawn_starting_weapons', 'reach_spawn_all_weapons',
                'reach_placement_radius',
@@ -879,6 +879,10 @@ CONFIG = {
     # Place each player's drafted grenade types where their starting weapons are
     # dropped, stacked exactly on the marker, as many as the type's Maximum Count.
     "spawn_starting_grenades": False,
+    # card-stacking: how strongly the halo.json DEFAULT steps apply, in percent. 100 is
+    # the steps as written; 150 turns *1.2 into *1.3 and +1 into +1.5. Values typed or
+    # remembered in the patcher are the user's own and are not scaled.
+    "step_strength": 100,
     # Off by default so a user on STOCK maps keeps the full halo.json list. On, the
     # offer pool is narrowed to what the map itself can grant, which is what a rebuilt
     # Reach map makes worth doing.
@@ -4525,6 +4529,22 @@ def is_operator_box(widget):
     return widget is not None and hasattr(widget, 'isReadOnly') and not widget.isReadOnly()
 
 
+def scaled_step(text, pct=None):
+    """A halo.json default step at the Options strength (step_strength, percent).
+    *a -> *(1 + (a-1)k), +a/-a -> +/-(a k), a set is unchanged."""
+    import halo_map
+    k = float(CONFIG.get('step_strength', 100) if pct is None else pct) / 100.0
+    parsed = halo_map.parse_operator(text) if text else None
+    if not parsed or k == 1.0:
+        return text
+    op, val = parsed
+    if op == 'mul':
+        return '*%g' % round(max(0.0, 1.0 + (val - 1.0) * k), 6)
+    if op in ('add', 'sub'):
+        return ('+' if op == 'add' else '-') + '%g' % round(val * k, 6)
+    return text
+
+
 class MagnitudeEditorDialog(QDialog):
     def _enemy_colors_for_patch(self):
         """This game's colour overrides for apply_run: the player's picks (Enemy
@@ -4705,6 +4725,16 @@ class MagnitudeEditorDialog(QDialog):
             return self._why_unreadable(m, cls, path, field, plugin, target)
         v = self._shown_value(target, v)        # stored -> the units shown/typed
         return f"{round(v, 4)}" if isinstance(v, float) else str(v)
+
+    @staticmethod
+    def _is_default_step(t, txt):
+        """Is `txt` exactly this row's halo.json default at the current strength?"""
+        step = t.get('step')
+        if not step:
+            return False
+        import halo_map
+        norm = lambda x: halo_map.normalize_op_text(str(x))
+        return norm(txt) == norm(scaled_step(str(step)))
 
     def _stacked_op(self, eff, t, txt):
         """The op this row applies for the card's pick count (halo_patch.stack_op).
@@ -5484,7 +5514,11 @@ class MagnitudeEditorDialog(QDialog):
                 continue                      # derived/fixed rows carry no user value
             key = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
             txt = row_value(le).strip()
-            if txt:
+            if txt and self._is_default_step(t, txt):
+                # still showing the halo.json default: remember nothing, so the Options
+                # step strength keeps applying to it
+                self.presets.pop(key, None)
+            elif txt:
                 if self.presets.get(key) != txt:
                     written += 1
                 self.presets[key] = txt
@@ -6456,10 +6490,11 @@ class MagnitudeEditorDialog(QDialog):
                         # card-stacking: nothing remembered for this field, so the
                         # halo.json default per pick. Shown in the default colour;
                         # type over it to override, clear it to leave the field alone.
-                        le.setText(str(t.get('step') or ''))
+                        le.setText(scaled_step(str(t.get('step') or '')))
                         le.setStyleSheet("color: #8fb3c8;")
-                        le.setToolTip("Default per pick, from halo.json. Applied once for "
-                                      "every time this card was drawn."
+                        le.setToolTip("Default per pick, from halo.json (at the Options step "
+                                      "strength, %d%%). Applied once for every time this "
+                                      "card was drawn." % int(CONFIG.get('step_strength', 100))
                                       + ("  A weapon without a zoom follows its own "
                                          "ladder instead: %s." % ', '.join(t['from_zero'])
                                          if t.get('from_zero') else ''))
@@ -7503,7 +7538,11 @@ class MagnitudeEditorDialog(QDialog):
             # #11: remember the input as-is, including an empty one — an empty entry is
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
             # come back from a fallback next time). Only a non-empty input adds an op.
-            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
+            _k = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+            if txt and self._is_default_step(t, txt):
+                self.presets.pop(_k, None)    # the default: re-derived next time
+            else:
+                self.presets[_k] = txt
             if not txt and not t.get('from_zero'):
                 continue
             # card-stacking: the remembered value is ONE pick's op; apply it once per
@@ -9573,6 +9612,27 @@ class OptionsDialog(QDialog):
             "Halo 2 yet.")
         allform.addRow("", self.spawn_grenades_cb)
 
+        strength_row = QHBoxLayout()
+        self.step_strength_slider = QSlider(Qt.Horizontal)
+        self.step_strength_slider.setRange(25, 300)
+        self.step_strength_slider.setSingleStep(5)
+        self.step_strength_slider.setPageStep(25)
+        self.step_strength_slider.setValue(int(CONFIG.get('step_strength', 100)))
+        self.step_strength_label = QLabel()
+        self.step_strength_label.setMinimumWidth(170)
+
+        def _show_strength(v):
+            self.step_strength_label.setText("%d%%  (*1.2 -> %s, +1 -> %s)"
+                                             % (v, scaled_step('*1.2', v), scaled_step('+1', v)))
+        self.step_strength_slider.valueChanged.connect(_show_strength)
+        _show_strength(self.step_strength_slider.value())
+        self.step_strength_slider.setToolTip(
+            "How strongly the default per-pick steps from halo.json apply. 100% is the "
+            "steps as written. A value you type in the patcher is yours and is not scaled.")
+        strength_row.addWidget(self.step_strength_slider, 1)
+        strength_row.addWidget(self.step_strength_label)
+        allform.addRow("Default step strength:", strength_row)
+
         self.par_time_scale = QDoubleSpinBox()
         self.par_time_scale.setRange(0.1, 10.0)
         self.par_time_scale.setSingleStep(0.1)
@@ -10871,6 +10931,7 @@ class OptionsDialog(QDialog):
             'clear_profile_equipment': self.clear_profile_equipment_cb.isChecked(),
             'clear_profile_grenades': self.clear_profile_grenades_cb.isChecked(),
             'spawn_starting_grenades': self.spawn_grenades_cb.isChecked(),
+            'step_strength': self.step_strength_slider.value(),
             'reach_equipment_drop': self.reach_equipment_drop_cb.isChecked(),
             'reach_keep_loadout': self.reach_keep_loadout_cb.isChecked(),
             'par_time_scale': self.par_time_scale.value(),
