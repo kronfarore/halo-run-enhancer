@@ -43,6 +43,26 @@ def unit_factor(src, dst, field):
     return 1.0
 
 
+
+def _listed(game, games):
+    """Is this game covered by a card's `game` list -- directly, or by INHERITANCE?
+
+    `CONFIG['game_inherits']` makes ODST a later Halo 3 build, so every Halo 3 card is
+    offered there with no ODST entry of its own (halo_enhancer.ModifierDatabase._game_ok
+    is the authority; this mirrors it for the raw halo.json rows read here). Without
+    this an ODST port measures nothing at all: the Assault Rifle's cards name Halo 3 and
+    not ODST, so every single row came back "no donor target".
+    """
+    if game in games:
+        return True
+    parent = he.CONFIG.get('game_inherits', {}).get(game)
+    while parent:
+        if parent in games:
+            return True
+        parent = he.CONFIG.get('game_inherits', {}).get(parent)
+    return False
+
+
 def read_targets(weapon, game, db):
     """{card: [(target index, field, block, value), ...]} for one weapon in one game."""
     folder, mission = bc.MAPS[game]
@@ -57,7 +77,7 @@ def read_targets(weapon, game, db):
         if not isinstance(c, dict) or str(c.get('ignore', '')).lower() in ('yes', 'true'):
             continue
         games = c.get('game')
-        if games and game not in (games if isinstance(games, list) else [games]):
+        if games and not _listed(game, games if isinstance(games, list) else [games]):
             continue
         if game in (c.get('skip_games') or []):
             continue

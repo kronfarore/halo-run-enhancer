@@ -1,0 +1,1181 @@
+{
+ "ported": "SAW",
+ "source": "Halo 4",
+ "target": "Halo 1",
+ "donor": "Assault Rifle",
+ "hops": [
+  [
+   "Assault Rifle",
+   "Assault Rifle",
+   "Halo 4",
+   "Halo 1"
+  ]
+ ],
+ "rows": [
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Angle",
+   "dst_field": "Magnetism Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 9.99999970909292,
+   "donor_dst": 12.000000333930423,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Magnetism Angle",
+     "value_from": 9.99999970909292,
+     "field_to": "Magnetism Angle",
+     "value_to": 12.000000333930423
+    }
+   ],
+   "donor_src": 9.99999970909292,
+   "original": 9.99999970909292,
+   "ratio": 1.2000000683018939,
+   "balanced": 12.000000333930423
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Range",
+   "dst_field": "Magnetism Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 25.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Magnetism Range",
+     "value_from": 16.0,
+     "field_to": "Magnetism Range",
+     "value_to": 25.0
+    }
+   ],
+   "donor_src": 16.0,
+   "original": 16.0,
+   "ratio": 1.5625,
+   "balanced": 25.0
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Near Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Magnetism",
+   "field": "Magnetism Near Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Angle",
+   "dst_field": "Autoaim Angle",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 4.99999985454646,
+   "donor_dst": 6.000000166965211,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Autoaim Angle",
+     "value_from": 4.99999985454646,
+     "field_to": "Autoaim Angle",
+     "value_to": 6.000000166965211
+    }
+   ],
+   "donor_src": 4.99999985454646,
+   "original": 4.99999985454646,
+   "ratio": 1.2000000683018939,
+   "balanced": 6.000000166965211
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Range",
+   "dst_field": "Autoaim Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 16.0,
+   "donor_dst": 25.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Autoaim Range",
+     "value_from": 16.0,
+     "field_to": "Autoaim Range",
+     "value_to": 25.0
+    }
+   ],
+   "donor_src": 16.0,
+   "original": 16.0,
+   "ratio": 1.5625,
+   "balanced": 25.0
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Autoaim",
+   "field": "Autoaim Falloff Range",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Weapon Swap Speed",
+   "field": "Ready / Put Away Animation",
+   "dst_field": "Ready / Put Away Animation",
+   "dst_block": null,
+   "dst_class": "antr",
+   "dst_tag": "weapons\\assault rifle\\fp\\fp",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Ready / Put Away Animation",
+     "value_from": null,
+     "field_to": "Ready / Put Away Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Accuracy Penalties",
+   "field": "Reload Penalty",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Accuracy Penalties",
+   "field": "Switch Penalty",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Function",
+   "dst_field": "Distribution Function",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Distribution Function",
+     "value_from": 0,
+     "field_to": "Distribution Function",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Distribution Function",
+   "field": "Distribution Angle",
+   "dst_field": "Distribution Angle",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Distribution Angle",
+     "value_from": 0.0,
+     "field_to": "Distribution Angle",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Firing Noise",
+   "dst_field": "Firing Noise",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": "all",
+   "ported_src": 4,
+   "donor_dst": 2,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Firing Noise",
+     "value_from": 4,
+     "field_to": "Firing Noise",
+     "value_to": 2
+    }
+   ],
+   "donor_src": 4,
+   "original": 4.0,
+   "ratio": 0.5,
+   "balanced": 2.0
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Impact Noise",
+   "dst_field": "Impact Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Impact Noise",
+     "value_from": null,
+     "field_to": "Impact Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Firing Noise",
+   "field": "Detonation Noise",
+   "dst_field": "Detonation Noise",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Detonation Noise",
+     "value_from": null,
+     "field_to": "Detonation Noise",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Maximum Range",
+   "dst_field": "Maximum Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 75.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Maximum Range",
+     "value_from": 100.0,
+     "field_to": "Maximum Range",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 100.0,
+   "original": 75.0,
+   "ratio": 0.4,
+   "balanced": 30.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range",
+   "dst_field": "Air Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 5.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Air Damage Range",
+     "value_from": 0.0,
+     "field_to": "Air Damage Range",
+     "value_to": 5.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 5.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Air Damage Range Max",
+   "dst_field": "Air Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 40.0,
+   "donor_dst": 15.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Air Damage Range Max",
+     "value_from": 40.0,
+     "field_to": "Air Damage Range Max",
+     "value_to": 15.0
+    }
+   ],
+   "donor_src": 40.0,
+   "original": 40.0,
+   "ratio": 0.375,
+   "balanced": 15.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range",
+   "dst_field": "Water Damage Range",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 5.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Water Damage Range",
+     "value_from": 5.0,
+     "field_to": "Water Damage Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 5.0,
+   "original": 5.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Projectile Range",
+   "field": "Water Damage Range Max",
+   "dst_field": "Water Damage Range Max",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 10.0,
+   "donor_dst": 5.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Water Damage Range Max",
+     "value_from": 10.0,
+     "field_to": "Water Damage Range Max",
+     "value_to": 5.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 10.0,
+   "ratio": 0.5,
+   "balanced": 5.0
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Initial Velocity",
+   "dst_field": "Initial Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 300.0,
+   "donor_dst": 10.800000190734863,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Initial Velocity",
+     "value_from": 1500.0,
+     "field_to": "Initial Velocity",
+     "value_to": 10.800000190734863
+    }
+   ],
+   "donor_src": 1500.0,
+   "original": 10.0,
+   "ratio": 0.007200000127156576,
+   "balanced": 2.160000038146973
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Final Velocity",
+   "dst_field": "Final Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 300.0,
+   "donor_dst": 10.800000190734863,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Final Velocity",
+     "value_from": 1500.0,
+     "field_to": "Final Velocity",
+     "value_to": 10.800000190734863
+    }
+   ],
+   "donor_src": 1500.0,
+   "original": 10.0,
+   "ratio": 0.007200000127156576,
+   "balanced": 2.160000038146973
+  },
+  {
+   "card": "Projectile Velocity",
+   "field": "Minimum Velocity",
+   "dst_field": "Minimum Velocity",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Minimum Velocity",
+     "value_from": 0.0,
+     "field_to": "Minimum Velocity",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Projectile Lead Time",
+   "field": "Autoaim Leading Maximum Lead Time",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Projectile Gravity",
+   "field": "Air Gravity Scale",
+   "dst_field": "Air Gravity Scale",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 1.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Air Gravity Scale",
+     "value_from": 1.0,
+     "field_to": "Air Gravity Scale",
+     "value_to": 1.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 0.0,
+   "ratio": 1.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Projectile Gravity",
+   "field": "Water Gravity Scale",
+   "dst_field": "Water Gravity Scale",
+   "dst_block": null,
+   "dst_class": "proj",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.20000000298023224,
+   "donor_dst": 0.4000000059604645,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Water Gravity Scale",
+     "value_from": 0.20000000298023224,
+     "field_to": "Water Gravity Scale",
+     "value_to": 0.4000000059604645
+    }
+   ],
+   "donor_src": 0.20000000298023224,
+   "original": 0.20000000298023224,
+   "ratio": 2.0,
+   "balanced": 0.4000000059604645
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Lower Bound",
+     "value_from": 7.5,
+     "field_to": "Damage Lower Bound",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": 1.3333333333333333,
+   "balanced": 10.0
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Upper Bound",
+     "value_from": 7.5,
+     "field_to": "Damage Upper Bound",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": 1.3333333333333333,
+   "balanced": 10.0
+  },
+  {
+   "card": "Bullet Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\bullet",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 7.5,
+   "donor_dst": 10.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 7.5,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 10.0
+    }
+   ],
+   "donor_src": 7.5,
+   "original": 7.5,
+   "ratio": 1.3333333333333333,
+   "balanced": 10.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Lower Bound",
+   "dst_field": "Damage Lower Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 40.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Lower Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Lower Bound",
+     "value_to": 40.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.5714285714285714,
+   "balanced": 40.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound",
+   "dst_field": "Damage Upper Bound",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 50.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Upper Bound",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound",
+     "value_to": 50.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.7142857142857143,
+   "balanced": 50.0
+  },
+  {
+   "card": "Melee Damage",
+   "field": "Damage Upper Bound Max",
+   "dst_field": "Damage Upper Bound Max",
+   "dst_block": null,
+   "dst_class": "jpt!",
+   "dst_tag": "weapons\\assault rifle\\melee",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 70.0,
+   "donor_dst": 60.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Damage Upper Bound Max",
+     "value_from": 70.0,
+     "field_to": "Damage Upper Bound Max",
+     "value_to": 60.0
+    }
+   ],
+   "donor_src": 70.0,
+   "original": 70.0,
+   "ratio": 0.8571428571428571,
+   "balanced": 60.0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Levels",
+   "dst_field": "Magnification Levels",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0,
+   "donor_dst": 0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Magnification Levels",
+     "value_from": 0,
+     "field_to": "Magnification Levels",
+     "value_to": 0
+    }
+   ],
+   "donor_src": 0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range",
+   "dst_field": "Magnification Range",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Magnification Range",
+     "value_from": 1.0,
+     "field_to": "Magnification Range",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Zoom",
+   "field": "Magnification Range Max",
+   "dst_field": "Magnification Range Max",
+   "dst_block": null,
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Magnification Range Max",
+     "value_from": 1.0,
+     "field_to": "Magnification Range Max",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 1.0,
+   "original": 1.0,
+   "ratio": 0.0,
+   "balanced": 0.0
+  },
+  {
+   "card": "Zoom Time",
+   "field": "Weapon Zoom Time",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Total Initial",
+   "dst_field": "Rounds Total Initial",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 216,
+   "donor_dst": 240,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Total Initial",
+     "value_from": 160,
+     "field_to": "Rounds Total Initial",
+     "value_to": 240
+    }
+   ],
+   "donor_src": 160,
+   "original": 216.0,
+   "ratio": 1.5,
+   "balanced": 324.0
+  },
+  {
+   "card": "Ammo Inventory",
+   "field": "Rounds Inventory Maximum",
+   "dst_field": "Rounds Total Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 216,
+   "donor_dst": 600,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Inventory Maximum",
+     "value_from": 224,
+     "field_to": "Rounds Total Maximum",
+     "value_to": 600
+    }
+   ],
+   "donor_src": 224,
+   "original": 216.0,
+   "ratio": 2.6785714285714284,
+   "balanced": 578.5714285714286
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Loaded Maximum",
+   "dst_field": "Rounds Loaded Maximum",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72,
+   "donor_dst": 60,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Loaded Maximum",
+     "value_from": 32,
+     "field_to": "Rounds Loaded Maximum",
+     "value_to": 60
+    }
+   ],
+   "donor_src": 32,
+   "original": 72.0,
+   "ratio": 1.875,
+   "balanced": 135.0
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Reloaded",
+   "dst_field": "Rounds Reloaded",
+   "dst_block": "Magazines",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 72,
+   "donor_dst": 60,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Reloaded",
+     "value_from": 32,
+     "field_to": "Rounds Reloaded",
+     "value_to": 60
+    }
+   ],
+   "donor_src": 32,
+   "original": 72.0,
+   "ratio": 1.875,
+   "balanced": 135.0
+  },
+  {
+   "card": "Ammo Loaded",
+   "field": "Rounds Total Maximum",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Reload Time",
+   "field": "Reload Animation",
+   "dst_field": "Reload Animation",
+   "dst_block": null,
+   "dst_class": "antr",
+   "dst_tag": "weapons\\assault rifle\\fp\\fp",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": null,
+   "donor_dst": null,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Reload Animation",
+     "value_from": null,
+     "field_to": "Reload Animation",
+     "value_to": null
+    }
+   ],
+   "donor_src": null
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second",
+   "dst_field": "Rounds Per Second",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 20.0,
+   "donor_dst": 15.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Per Second",
+     "value_from": 10.0,
+     "field_to": "Rounds Per Second",
+     "value_to": 15.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 20.0,
+   "ratio": 1.5,
+   "balanced": 30.0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Rounds Per Second Max",
+   "dst_field": "Rounds Per Second Max",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 20.0,
+   "donor_dst": 15.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Per Second Max",
+     "value_from": 10.0,
+     "field_to": "Rounds Per Second Max",
+     "value_to": 15.0
+    }
+   ],
+   "donor_src": 10.0,
+   "original": 20.0,
+   "ratio": 1.5,
+   "balanced": 30.0
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Shots Per Fire",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Salvo Shooting",
+   "field": "Shots Per Fire Max",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Fire Recovery Time",
+   "field": "Fire Recovery Time",
+   "note": "Assault Rifle card has no target in Halo 1"
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Projectiles Per Shot",
+   "dst_field": "Projectiles Per Shot",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Projectiles Per Shot",
+     "value_from": 1,
+     "field_to": "Projectiles Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Projectiles Per Shot",
+   "field": "Rounds Per Shot",
+   "dst_field": "Rounds Per Shot",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 1,
+   "donor_dst": 1,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Rounds Per Shot",
+     "value_from": 1,
+     "field_to": "Rounds Per Shot",
+     "value_to": 1
+    }
+   ],
+   "donor_src": 1,
+   "original": 1.0,
+   "ratio": 1.0,
+   "balanced": 1.0
+  },
+  {
+   "card": "Error Angle",
+   "field": "Minimum Error",
+   "dst_field": "Minimum Error",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.0,
+   "donor_dst": 0.0,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Minimum Error",
+     "value_from": 0.0,
+     "field_to": "Minimum Error",
+     "value_to": 0.0
+    }
+   ],
+   "donor_src": 0.0,
+   "original": 0.0,
+   "ratio": null,
+   "balanced": 0
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle",
+   "dst_field": "Error Angle",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 0.29999999767609,
+   "donor_dst": 1.9999999845072665,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Error Angle",
+     "value_from": 0.149999998838045,
+     "field_to": "Error Angle",
+     "value_to": 1.9999999845072665
+    }
+   ],
+   "donor_src": 0.149999998838045,
+   "original": 0.29999999767609,
+   "ratio": 13.333333333333332,
+   "balanced": 3.999999969014533
+  },
+  {
+   "card": "Error Angle",
+   "field": "Error Angle Max",
+   "dst_field": "Error Angle Max",
+   "dst_block": "Triggers",
+   "dst_class": "weap",
+   "dst_tag": "weapons\\assault rifle\\assault rifle",
+   "dst_nth": 0,
+   "dst_index": 0,
+   "ported_src": 2.750000005377918,
+   "donor_dst": 6.499999896287763,
+   "legs": [
+    {
+     "donor": "Assault Rifle",
+     "frm": "Halo 4",
+     "to": "Halo 1",
+     "field_from": "Error Angle Max",
+     "value_from": 2.39999998140872,
+     "field_to": "Error Angle Max",
+     "value_to": 6.499999896287763
+    }
+   ],
+   "donor_src": 2.39999998140872,
+   "original": 2.750000005377918,
+   "ratio": 2.7083333110996444,
+   "balanced": 7.447916620089217
+  }
+ ]
+}
