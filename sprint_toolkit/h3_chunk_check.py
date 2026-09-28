@@ -34,10 +34,16 @@ def main():
     ap.add_argument('map', nargs='?', default='010_jungle')
     ap.add_argument('--game', default='Halo 3')
     ap.add_argument('needles', nargs='*', default=['saw', 'assault_rifle'])
+    ap.add_argument('--built', help='an Editing Kit maps folder to read from when the map is not installed yet')
     a = ap.parse_args()
     he.load_settings()
-    folder = {'Halo 3': 'halo3'}.get(a.game, 'halo3')
+    folder = {'Halo 3': 'halo3', 'Halo 3: ODST': 'halo3odst'}.get(a.game, 'halo3')
     live = os.path.join(he.mcc_root(), folder, 'maps', a.map + '.map')
+    # A map that is BUILT but not installed yet is the normal case for this check: the
+    # whole point is to look before spending a launch, and installing first would mean
+    # testing the thing you were about to verify.
+    if a.built and not os.path.exists(live):
+        live = os.path.join(a.built, a.map + '.map')
     with contextlib.redirect_stdout(io.StringIO()):
         m = hp.open_map(live, a.game)
 

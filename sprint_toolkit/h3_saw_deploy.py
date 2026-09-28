@@ -28,16 +28,21 @@ import halo_patch as hp         # noqa: E402
 import halo3_reload as hr       # noqa: E402
 
 B = os.sep
-GAME = 'Halo 3'
 import h3_kit                                              # noqa: E402
+#: both the game the map plugins are read for and the folder it installs into follow
+#: the kit, so a Halo 3 build can never be checked against ODST's map or the reverse
+GAME = h3_kit.GAME
+MCC_GAME = h3_kit.MCC_GAME
 EK_MAPS = os.path.join(h3_kit.EK, 'maps')
-SAW = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
+SAW = h3_kit.SAW_WEAPON
 AR = B.join(['objects', 'weapons', 'rifle', 'assault_rifle', 'assault_rifle'])
 SAW_CHUD = B.join(['ui', 'chud', 'saw'])
 AR_CHUD = B.join(['ui', 'chud', 'assault_rifle'])
 SAW_FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', 'fp_saw_*'])
 AR_FP = B.join(['objects', 'characters', '*', 'fp', 'weapons', 'rifle',
                 'fp_assault_rifle', 'fp_assault_rifle'])
+#: ODST's own test level; Halo 3's is the one the port was placed on in Sapien
+DEFAULT_MAP = 'sc150' if h3_kit.IS_ODST else '010_jungle'
 PROBE = 99
 
 
@@ -60,13 +65,22 @@ def check(path):
 
     plugin = reg.get('chdt')
     if m.find_tags('chdt', SAW_CHUD) and plugin is not None:
-        f = 'Low Ammo Loaded Threshold'
+        # SAME FIELD, SAME OFFSET (12), DIFFERENT NAME. Assembly's ODST chdt plugin calls
+        # the low-ammo warning `Low Clip Cutoff` where Halo 3's calls it `Low Ammo Loaded
+        # Threshold`, and its blocks are `HUD Widgets` where Halo 3's are `Widget
+        # Collections`. Asking for the Halo 3 name in ODST returns None for BOTH weapons,
+        # and None == None reads as "the clone owns its blocks" -- a dedup check that
+        # silently always passes is worse than no check at all.
+        f = 'Low Clip Cutoff' if h3_kit.IS_ODST else 'Low Ammo Loaded Threshold'
         before = {t: m.read_first('chdt', t, f, plugin, None) for t in (AR_CHUD, SAW_CHUD)}
         print('\n   low ammo threshold: assault_rifle %s, saw %s'
               % (before[AR_CHUD], before[SAW_CHUD]))
         # in-memory probe; the map is never saved here
         m.apply_field('chdt', SAW_CHUD, f, 'set', PROBE, plugin, None, 0)
         after = m.read_first('chdt', AR_CHUD, f, plugin, None)
+        if any(v is None for v in before.values()):
+            raise SystemExit('   cannot read %r in %s -- the dedup check would pass '
+                             'vacuously, so it is refused' % (f, GAME))
         if after != before[AR_CHUD]:
             print('   SHARED -- writing the port\'s chud moved the Assault Rifle\'s too;'
                   '\n   the threshold must differ in the TAG before the build')
@@ -77,8 +91,8 @@ def check(path):
 
 def install(mission, baseline):
     import shutil
-    live = os.path.join(he.mcc_root(), 'halo3', 'maps', mission + '.map')
-    base = he.baseline_source(hp.default_map_path(he.mcc_root(), 'halo3', mission), GAME)
+    live = os.path.join(he.mcc_root(), MCC_GAME, 'maps', mission + '.map')
+    base = he.baseline_source(hp.default_map_path(he.mcc_root(), MCC_GAME, mission), GAME)
     built = os.path.join(EK_MAPS, mission + '.map')
     if not os.path.exists(built):
         raise SystemExit('no built map at %s' % built)
@@ -94,7 +108,7 @@ def install(mission, baseline):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--map', default='010_jungle')
+    ap.add_argument('--map', default=DEFAULT_MAP)
     ap.add_argument('--check', action='store_true')
     ap.add_argument('--install', action='store_true')
     ap.add_argument('--baseline', action='store_true')
@@ -102,7 +116,7 @@ def main():
     he.load_settings()
     if a.install:
         install(a.map, a.baseline)
-    target = (os.path.join(he.mcc_root(), 'halo3', 'maps', a.map + '.map')
+    target = (os.path.join(he.mcc_root(), MCC_GAME, 'maps', a.map + '.map')
               if a.install else os.path.join(EK_MAPS, a.map + '.map'))
     if a.check or a.install:
         check(target)

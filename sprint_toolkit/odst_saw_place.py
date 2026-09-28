@@ -146,7 +146,21 @@ def main():
     got = refs(d)
     prof = profile_slots(bytes(d))
     all_hits = [off for off, path in got if path == a.donor]
-    hits = [off for off in all_hits if off in prof]
+    # BOTH, and the first build proved why. A profile slot alone brought every TAG in --
+    # weapon, both models, the animation graph, the projectile, the HUD -- and NOT ONE
+    # chunk of raw geometry, which is the "no geometry" state h3-import-weapon-recipe
+    # describes: the weapon exists, and there is nothing to draw.
+    #
+    # The evidence for the palette came out of that same map. sc150's cut weapons (plain
+    # SMG, magnum, battle rifle, energy blade, sentinel gun) sit only in profile rows and
+    # DO carry geometry, so profiles are not useless -- but the ball, whose profile row
+    # had just been taken, still carried its own, and the only thing left pointing at it
+    # was its WEAPON PALETTE entry. So the palette is what was still feeding it.
+    #
+    # Repointing a palette entry is safe in a way that removing one is not: the palette
+    # is indexed BY POSITION, so an in-place path swap changes what an index means and
+    # renumbers nothing. Any placement using that index draws the port instead.
+    hits = all_hits
     have = [off for off, path in got if path == a.port]
     print('   %s: %d weapon references, %d of them profile slots'
           % (a.level, len(got), len(prof)))
@@ -157,8 +171,8 @@ def main():
     if have and not hits:
         print('\nalready placed')
         return
-    if len(hits) != 1:
-        raise SystemExit('expected exactly one %s reference, found %d' % (a.donor, len(hits)))
+    if not hits:
+        raise SystemExit('no %s reference to take' % a.donor)
 
     if not a.write:
         print('\n(dry run -- pass --write)')
@@ -167,17 +181,19 @@ def main():
         shutil.copy2(p, backup)
         print('   kept the pristine scenario as %s' % os.path.basename(backup))
     before = len(d)
-    d[hits[0]:hits[0] + len(a.port)] = a.port.encode('latin1')
+    for off in hits:
+        d[off:off + len(a.port)] = a.port.encode('latin1')
     if len(d) != before:
         raise SystemExit('the file changed length -- that was not an in-place overwrite')
     after = refs(bytes(d))
     back = profile_slots(bytes(d))
     if not any(path == a.port and off in back for off, path in after):
         raise SystemExit('the new path does not read back as a profile slot')
-    if any(path == a.donor and off in back for off, path in after):
-        raise SystemExit('the donor still occupies a profile slot')
-    # Its PALETTE entry is left alone on purpose: the palette is indexed by position, so
-    # removing an entry would renumber every placement after it. Only the profile moves.
+    if any(path == a.donor for _o, path in after):
+        raise SystemExit('the donor is still referenced somewhere')
+    print('   took %d reference(s): %s'
+          % (len(hits), ', '.join('%#x %s' % (o, 'profile' if o in prof else 'palette')
+                                  for o in hits)))
     open(p, 'wb').write(bytes(d))
     print('   wrote %s (%d bytes, unchanged)' % (os.path.basename(p), len(d)))
     print('\nNow build: PORT_EK=odst python odst_ek_build.py --build %s' % a.level)
