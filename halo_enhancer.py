@@ -10113,15 +10113,17 @@ class OptionsDialog(QDialog):
 
         self.h4_ability_vis_combo = QComboBox()
         # 'icon' / 'icon_hide' (resizing the hologram) are gone: Halo 4 never draws it.
-        for label, val in (("Off (vanilla)", ''), ("Forerunner ground glow", 'ground_fx')):
+        # Halo 4 draws no attachment on equipment on the ground (hologram, ground glow:
+        # both tested, no change), so the modes change the pickup's own materials.
+        for label, val in (("Off (vanilla)", ''), ("Brighter case lights", 'emissive'),
+                           ("Whole case lit", 'emissive_body')):
             self.h4_ability_vis_combo.addItem(label, val)
         _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
         self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
         self.h4_ability_vis_combo.setToolTip(
-            "TEST: Halo 4 abilities lying on the ground are hard to see. Forerunner ground "
-            "glow gives every ability the glow a Forerunner rifle has while it lies on the "
-            "ground. Skipped for an ability the glow is not loaded everywhere with (it "
-            "would crash where the ability is picked up).")
+            "TEST: every Halo 4 ability except the jet pack lies in the same equipment case. "
+            "Brighter case lights: its self-lit light strips x4. Whole case lit: the case "
+            "body is drawn with the light-strip material too, so the whole pickup glows.")
         h4form.addRow("Ability visibility (test):", self.h4_ability_vis_combo)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box

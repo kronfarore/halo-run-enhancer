@@ -4390,9 +4390,75 @@ def _h4_ground_fx(m):
     return out
 
 
+# Round 5 (2026-09-28): the ground glow changed nothing either -- Halo 4 does not draw
+# attachments on equipment lying on the ground. Every ability except the jet pack is
+# drawn with ONE model, objects\equipment\storm_equipment_pack, so its MATERIALS are the
+# lever. Only the compiled Postprocess constants exist at runtime (the authored
+# parameter list is empty): the UNSC light strip (srf_char_blinn_selfillum) carries
+# (0.612, 0.752, 0.752, 50) -- colour and self-illum intensity -- and the Forerunner
+# lights (srf_char_constant) (1.0, 0.011, 0.0, 100). Two modes to compare:
+#   'emissive'       those intensities x EMISSIVE_SCALE
+#   'emissive_body'  also draw the case BODY with the light-strip material, so the
+#                    whole pickup self-illuminates (a material ref swap inside the
+#                    model; the material is already loaded with it, nothing grows)
+# In-place edits only; both materials are shared by every ability using the pack.
+EMISSIVE_SCALE = 4.0
+_H4_EQ_PACK = 'objects\\equipment\\storm_equipment_pack\\'
+_H4_MAT_POST, _H4_POST_FLOATS = 0x1C, 0x18
+_H4_MODE_MATERIALS = (0x48, 0x2C)
+
+
+def _h4_emissive(m, body=False):
+    out = []
+    S = chr(92)
+    lights = [t for t in m.tags if t.get('class') == 'mat ' and t.get('base') is not None
+              and str(t.get('name', '')).lower().startswith(_H4_EQ_PACK)
+              and ('light' in str(t['name']).lower())]
+    n = 0
+    for t in lights:
+        b = t['base']
+        if m.i32(b + _H4_MAT_POST) <= 0:
+            continue
+        pb = _block_base(m, b + _H4_MAT_POST)
+        fc = m.i32(pb + _H4_POST_FLOATS)
+        fb = _block_base(m, pb + _H4_POST_FLOATS) if fc > 0 else None
+        for j in range(fc if fb else 0):
+            w = fb + j * 0x10 + 0xC
+            v = struct.unpack_from('<f', m.data, w)[0]
+            if v >= 20.0:                    # the intensity term (50 / 100 shipped)
+                struct.pack_into('<f', m.data, w, v * EMISSIVE_SCALE)
+                n += 1
+    out.append({'effect': 'ability visibility', 'field': 'equipment pack lights',
+                'ok': bool(n), 'old': 'x1', 'new': 'self-illum x%g on %d constant(s)'
+                % (EMISSIVE_SCALE, n), 'reason': None if n else 'no equipment pack lights here'})
+    if body:
+        light = next((t for t in lights if 'unsc_light' in str(t['name']).lower()), None)
+        swapped = 0
+        for name, b in m.find_tags('mode', '*'):
+            if not str(name).lower().startswith(_H4_EQ_PACK) or light is None:
+                continue
+            k = m.i32(b + _H4_MODE_MATERIALS[0])
+            eb = _block_base(m, b + _H4_MODE_MATERIALS[0]) if k > 0 else None
+            for i in range(k if eb else 0):
+                e = eb + i * _H4_MODE_MATERIALS[1]
+                cur = m.tag(m.u32(e + 0xC) & 0xFFFF) or {}
+                cn = str(cur.get('name', '')).lower()
+                if cur.get('class') == 'mat ' and cn.startswith(_H4_EQ_PACK) and 'light' not in cn:
+                    # the tagRef keeps its class, only the ident moves to the light
+                    struct.pack_into('<I', m.data, e + 0xC, light['ident'])
+                    swapped += 1
+        out.append({'effect': 'ability visibility', 'field': 'equipment pack body',
+                    'ok': bool(swapped), 'old': 'unlit case',
+                    'new': '%d material(s) drawn with the self-lit light strip' % swapped,
+                    'reason': None if swapped else 'equipment pack model not found'})
+    return out
+
+
 def _h4_ability_visibility(m, mode):
     out = []
     S = chr(92)
+    if mode in ('emissive', 'emissive_body'):
+        return _h4_emissive(m, body=(mode == 'emissive_body'))
     if mode == 'ground_fx':
         return _h4_ground_fx(m)
     if mode in ('icon', 'icon_hide'):
