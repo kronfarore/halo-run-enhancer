@@ -2826,11 +2826,20 @@ def _h3_reserve(m, sizes):
                     cur, moved = (b + 15) & ~15, True
         return cur
 
+    # HALO 4: a SHORT zero run is often live data -- a zeroed field, or the zone tag's
+    # residency bit arrays, where 0 means "not loaded here". Taking any run just big
+    # enough put the scope graft's blocks 32 bytes into the zone tag (Shutdown), and
+    # picking up the grafted Concussion Rifle crashed Composer. Use find_slack's rule,
+    # confirmed in game: runs of _SLACK_INTERIOR_MIN or more, entered only after
+    # _SLACK_MARGIN and leaving it free at the end. Other games are unchanged.
+    h4 = type(m).__name__ == 'Halo4Map'
+    run_min = max(total + 2 * _SLACK_MARGIN, _SLACK_INTERIOR_MIN) if h4 else total + 16
     for la, psz, fb in m.partitions:
         if fb is None or not psz or fb + psz > len(m.data):
             continue
-        for mo in re.finditer(rb'\x00{%d,}' % (total + 16), bytes(m.data[fb:fb + psz])):
-            offs, cur, ok = [], fb + mo.start(), True
+        for mo in re.finditer(rb'\x00{%d,}' % run_min, bytes(m.data[fb:fb + psz])):
+            offs, cur, ok = [], fb + mo.start() + (_SLACK_MARGIN if h4 else 0), True
+            run_end = fb + mo.end() - (_SLACK_MARGIN if h4 else 0)
             for sz in sizes:
                 cur = _clear((cur + 15) & ~15, sz)
                 # The same round trip find_slack and _addressable demand, not just "is
@@ -2840,7 +2849,7 @@ def _h3_reserve(m, sizes):
                 # plausible address that resolves somewhere else. ReachMap.off2data used
                 # to return exactly that -- a wrapped u32 rather than None -- for any
                 # address below its bias, and a None-only check let it through.
-                d = None if cur + sz > fb + mo.end() else m.off2data(cur)
+                d = None if cur + sz > run_end else m.off2data(cur)
                 if d is None or m.data2off(d) != cur:
                     ok = False
                     break
@@ -4281,9 +4290,111 @@ _H4_PSYS_LOD_OUT = 0x5C
 _H4_GLDF_FUNCS = {'intensity': 0x38, 'size': 0x5C}      # dataRefs; floats at +4/+8
 
 
+# Round 4 (2026-09-28): the user reports Halo 4 draws NO hologram over an ability at
+# all -- the equipment_icon attachment is carried but never shown, so no size change
+# can help. 'ground_fx' instead ATTACHES an effect Halo 4 visibly draws on the ground:
+# the Forerunner rifle's `fx\ground` glow (the light a Forerunner weapon gives off
+# while lying there). On the rifle it is gated by the object function `ground`, which
+# an equipment tag does not have, so the copy is ungated (a held ability is not drawn
+# in Halo 4) and sits at the object origin. Added only where the effect's whole tag
+# chain is loaded wherever the ability is (the scope graft's crash lesson).
+_H4_OBJ_ATTACH = (0x118, 0x20)                   # weap/eqip Attachments block
+_H4_GROUND_FX = ('objects\\weapons\\rifle\\storm_forerunner_rifle\\fx\\ground',
+                 'objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\fx\\ground')
+
+
+def _h4_closure_gap(m, owner_name, ident):
+    """Zone-set pools that load `owner_name` but not every pool-loaded tag of the
+    closure of `ident` (0 = safe). -1 when the pool reader cannot read the map."""
+    try:
+        import sys as _sys
+        tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+        if tk not in _sys.path:
+            _sys.path.insert(0, tk)
+        import h4_pools as P
+        cache = getattr(m, '_h4_zone_cache', None)
+        if cache is None:
+            zb = P.zone_base(m)
+            cache = m._h4_zone_cache = {'sets': P.zone_sets(m, zb), 'clo': P.Closure(m, zb),
+                                        'idx': {t['name']: t['index'] for t in m.tags
+                                                if t.get('name')}}
+        oi = cache['idx'].get(owner_name)
+        if oi is None:
+            return -1
+        need = {lab for lab, _o in P.tag_sets(m, cache['sets'], oi)}
+        tags, _p = cache['clo'].of(ident)
+        missing = set()
+        for t in tags:
+            have = {lab for lab, _o in P.tag_sets(m, cache['sets'], t['index'])}
+            if have:
+                missing |= need - have
+        return len(missing)
+    except BaseException:
+        return -1
+
+
+def _h4_ground_fx(m):
+    out = []
+    S = chr(92)
+    fx = next((t for p in _H4_GROUND_FX for t in m.tags
+               if t.get('class') == 'effe' and str(t.get('name', '')).lower() == p), None)
+    rifle_row = None
+    if fx is not None:
+        for wname, wb in m.find_tags('weap', '*'):
+            n = m.i32(wb + _H4_OBJ_ATTACH[0])
+            eb = _block_base(m, wb + _H4_OBJ_ATTACH[0]) if n > 0 else None
+            for i in range(n if eb else 0):
+                e = eb + i * _H4_OBJ_ATTACH[1]
+                if (m.u32(e + 0xC) & 0xFFFF) == fx['index']:
+                    rifle_row = bytes(m.data[e:e + _H4_OBJ_ATTACH[1]])
+                    break
+            if rifle_row:
+                break
+    if fx is None or rifle_row is None:
+        return [{'effect': 'ability visibility', 'field': 'ground glow', 'ok': False,
+                 'reason': 'this map has no Forerunner ground glow to borrow'}]
+    row = bytearray(rifle_row)
+    struct.pack_into('<I', row, 0x10, 0)          # marker: the object origin
+    struct.pack_into('<I', row, 0x18, 0)          # primary scale: no `ground` gate
+    struct.pack_into('<I', row, 0x1C, 0)
+    done, gaps = 0, []
+    for name, b in m.find_tags('eqip', '*'):
+        nl = str(name).lower()
+        if not nl.startswith('objects' + S + 'equipment' + S):
+            continue
+        rows = []
+        n = m.i32(b + _H4_OBJ_ATTACH[0])
+        eb = _block_base(m, b + _H4_OBJ_ATTACH[0]) if n > 0 else None
+        for i in range(n if eb else 0):
+            rows.append(bytes(m.data[eb + i * _H4_OBJ_ATTACH[1]:eb + (i + 1) * _H4_OBJ_ATTACH[1]]))
+        if not rows or any((struct.unpack_from('<I', r, 0xC)[0] & 0xFFFF) == fx['index']
+                           for r in rows):
+            continue                 # no attachments at all (not a pickup) / already done
+        gap = _h4_closure_gap(m, name, fx['ident'])
+        if gap != 0:
+            gaps.append('%s (%s)' % (nl.rsplit(S, 1)[-1], 'unreadable' if gap < 0 else gap))
+            continue
+        blob = b''.join(rows) + bytes(row)
+        got = _h3_reserve(m, [len(blob)])
+        if got is None:
+            out.append({'effect': 'ability visibility', 'field': nl.rsplit(S, 1)[-1],
+                        'ok': False, 'reason': 'no free space to grow the attachments'})
+            continue
+        m.data[got[0]:got[0] + len(blob)] = blob
+        struct.pack_into('<iI', m.data, b + _H4_OBJ_ATTACH[0], len(rows) + 1, m.off2data(got[0]))
+        done += 1
+    out.append({'effect': 'ability visibility', 'field': 'ground glow', 'ok': True,
+                'old': 'none', 'new': 'Forerunner ground glow on %d equipment tag(s)%s' % (
+                    done, ('; skipped, not loaded everywhere the ability is: %s'
+                           % ', '.join(gaps)) if gaps else '')})
+    return out
+
+
 def _h4_ability_visibility(m, mode):
     out = []
     S = chr(92)
+    if mode == 'ground_fx':
+        return _h4_ground_fx(m)
     if mode in ('icon', 'icon_hide'):
         hide = mode == 'icon_hide'
         n = 0
