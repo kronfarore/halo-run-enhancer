@@ -10111,18 +10111,15 @@ class OptionsDialog(QDialog):
 
         self.h4_ability_vis_combo = QComboBox()
         for label, val in (("Off (vanilla)", ''), ("Bigger icon, visible further", 'icon'),
-                           ("Stronger glow", 'glow'), ("Lifted at the markers", 'lift')):
+                           ("Diagnostic: icon hidden", 'icon_hide')):
             self.h4_ability_vis_combo.addItem(label, val)
         _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
         self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
         self.h4_ability_vis_combo.setToolTip(
-            "TEST: Halo 4 abilities lying on the ground are hard to see. Pick one fix per "
-            "map to compare them in game:\n"
-            "  Bigger icon -- the floating hologram x3 size, visible to 150 units "
-            "instead of fading out past 20.\n"
-            "  Stronger glow -- the ability's lights x3 radius and brightness.\n"
-            "  Lifted -- abilities placed at the enhancer markers sit 0.5 units higher. "
-            "Only affects placed abilities, not ones dropped on death.")
+            "TEST: Halo 4 abilities lying on the ground are hard to see.  Bigger icon: the "
+            "floating hologram x8 overall and x4 per particle, visible to 300 units.  "
+            "Diagnostic: the hologram at size 0 -- if a dropped ability looks the same, "
+            "the hologram is not what you see and resizing it cannot help.")
         h4form.addRow("Ability visibility (test):", self.h4_ability_vis_combo)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box

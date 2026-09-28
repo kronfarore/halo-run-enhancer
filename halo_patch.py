@@ -4263,9 +4263,18 @@ _GRENADE_EQUIPMENT_REF = {'Halo 3': (0x14,), 'Halo 3: ODST': (0x14,),
 # icon particle is small and its particle system fades out past 20 units (LOD Out
 # Distance 20, feather 5), and the lights are 0.5 / 0.05 radius at intensity 1. Three
 # candidate fixes, one per mode, so each can be judged on its own map:
-#   'icon'  every ability's equipment_icon effect x3 size, visible to 150 units
-#   'glow'  every equipment_light gldf x3 radius and x3 intensity
-#   'lift'  ability placements at the enhancer markers raised 0.5 units
+#   'icon'       every ability's equipment_icon effect x8 Global Size Scale AND x4 on
+#                each particle system's own Size Scale, visible to 300 units
+#   'icon_hide'  DIAGNOSTIC: the icon effect at size 0 -- if a dropped ability looks
+#                the same in game, this effect is not what is drawn at all
+# Round 2 (2026-09-28, in game): x8 Global Size Scale looked no bigger, and the glow
+# (gldf x6 radius / x10 intensity) lit the whole level up -- the glow mode is gone.
+# First round (x3 / x3, and a 'lift' of the marker placements) was judged in game on
+# 2026-09-27: not big / not bright enough, and lifting misses the real case -- an
+# ability DROPPED later in the level, which no placement edit reaches.
+ICON_SCALE, ICON_LOD_OUT, ICON_PSYS_SCALE = 8.0, 300.0, 4.0
+_H4_PSYS_SIZE = 0x30
+GLOW_RADIUS, GLOW_INTENSITY = 6.0, 10.0
 _H4_EFFE_GLOBAL_SIZE, _H4_EFFE_EVENTS = 0x18, (0x34, 0x44)
 _H4_EFFE_PSYS = (0x38, 0x7C)
 _H4_PSYS_LOD_OUT = 0x5C
@@ -4275,15 +4284,16 @@ _H4_GLDF_FUNCS = {'intensity': 0x38, 'size': 0x5C}      # dataRefs; floats at +4
 def _h4_ability_visibility(m, mode):
     out = []
     S = chr(92)
-    if mode == 'icon':
+    if mode in ('icon', 'icon_hide'):
+        hide = mode == 'icon_hide'
         n = 0
         for name, b in m.find_tags('effe', '*'):
             nl = str(name).lower()
             if not (nl.startswith('objects' + S + 'equipment' + S)
                     and nl.endswith(S + 'fx' + S + 'equipment_icon')):
                 continue
-            struct.pack_into('<f', m.data, b + _H4_EFFE_GLOBAL_SIZE,
-                             struct.unpack_from('<f', m.data, b + _H4_EFFE_GLOBAL_SIZE)[0] * 3.0)
+            struct.pack_into('<f', m.data, b + _H4_EFFE_GLOBAL_SIZE, 0.0 if hide else
+                             struct.unpack_from('<f', m.data, b + _H4_EFFE_GLOBAL_SIZE)[0] * ICON_SCALE)
             for ei in range(max(0, m.i32(b + _H4_EFFE_EVENTS[0]))):
                 ev = m.follow(b, [_H4_EFFE_EVENTS[0]], [_H4_EFFE_EVENTS[1]], ei)
                 if ev is None:
@@ -4291,28 +4301,36 @@ def _h4_ability_visibility(m, mode):
                 for pi in range(max(0, m.i32(ev + _H4_EFFE_PSYS[0]))):
                     ps = m.follow(ev, [_H4_EFFE_PSYS[0]], [_H4_EFFE_PSYS[1]], pi)
                     if ps is not None:
-                        struct.pack_into('<f', m.data, ps + _H4_PSYS_LOD_OUT, 150.0)
+                        struct.pack_into('<f', m.data, ps + _H4_PSYS_LOD_OUT, ICON_LOD_OUT)
+                        cur = struct.unpack_from('<f', m.data, ps + _H4_PSYS_SIZE)[0]
+                        struct.pack_into('<f', m.data, ps + _H4_PSYS_SIZE,
+                                         0.0 if hide else (cur or 1.0) * ICON_PSYS_SCALE)
             n += 1
         out.append({'effect': 'ability visibility', 'field': 'equipment_icon', 'ok': bool(n),
-                    'old': 'x1, fades at 20', 'new': 'x3 size, visible to 150 on %d effect(s)' % n,
+                    'old': 'x1, fades at 20',
+                    'new': ('HIDDEN (size 0) on %d effect(s)' % n) if hide else
+                           'x%g global, x%g particle size, visible to %g on %d effect(s)'
+                           % (ICON_SCALE, ICON_PSYS_SCALE, ICON_LOD_OUT, n),
                     'reason': None if n else 'no ability icon effects on this map'})
-    elif mode == 'glow':
+    elif mode == 'glow_removed':
         n = 0
         for name, b in m.find_tags('gldf', '*'):
             nl = str(name).lower()
             if not (nl.startswith('objects' + S + 'equipment' + S) and 'equipment_light' in nl):
                 continue
-            for off in _H4_GLDF_FUNCS.values():
+            for which, off in _H4_GLDF_FUNCS.items():
+                mult = GLOW_INTENSITY if which == 'intensity' else GLOW_RADIUS
                 size, ptr = m.i32(b + off), m.u32(b + off + 0xC)
                 a = m.data2off(ptr) if ptr and size >= 12 else None
                 if not a:
                     continue
                 for k in (4, 8):
                     struct.pack_into('<f', m.data, a + k,
-                                     struct.unpack_from('<f', m.data, a + k)[0] * 3.0)
+                                     struct.unpack_from('<f', m.data, a + k)[0] * mult)
             n += 1
         out.append({'effect': 'ability visibility', 'field': 'equipment_light', 'ok': bool(n),
-                    'old': 'x1', 'new': 'x3 radius and intensity on %d light(s)' % n,
+                    'old': 'x1', 'new': 'x%g radius, x%g intensity on %d light(s)'
+                                        % (GLOW_RADIUS, GLOW_INTENSITY, n),
                     'reason': None if n else 'no ability lights on this map'})
     elif mode == 'lift':
         game = 'Halo 4'
