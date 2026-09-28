@@ -32,7 +32,7 @@ SAW_DIR = B.join(['objects', 'weapons', 'rifle', 'saw'])
 RENDER_DIR = B.join(['objects', 'weapons', 'rifle', 'saw_3p'])          # where tool renders
 SAW_MODEL = SAW_DIR + B + 'saw_h4_original_numbers'                     # the hlmt, 49
 SAW_RENDER = SAW_DIR + B + 'saw_world_model_h4_port'                    # the mode, 49
-WEAPON = SAW_DIR + B + 'saw'
+WEAPON = h3_kit.SAW_WEAPON
 
 
 def main():

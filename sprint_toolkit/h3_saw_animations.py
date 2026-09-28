@@ -40,7 +40,7 @@ TAGS = os.path.join(EK, 'tags')
 TOOL = os.path.join(EK, 'tool.exe')
 EXT = '.model_animation_graph'
 
-SAW_WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
+SAW_WEAPON = h3_kit.SAW_WEAPON
 
 
 def _graph(species):

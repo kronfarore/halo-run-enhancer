@@ -26,7 +26,7 @@ SAW = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw')
 
 # (file, signature, [(offset in the run, format, new value, label)])
 EDITS = [
-    (os.path.join(SAW, 'saw.weapon'),
+    (os.path.join(TAGS, h3_kit.SAW_WEAPON + '.weapon'),
      struct.pack('<hhh', 96, 384, 32),                       # initial, maximum, loaded
      [(0, '<h', 216, 'rounds total initial'),
       (2, '<h', 288, 'rounds total maximum'),

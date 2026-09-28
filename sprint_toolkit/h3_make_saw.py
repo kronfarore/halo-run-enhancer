@@ -36,7 +36,8 @@ AR_PROJ = AR_DIR + B + 'projectiles' + B + 'assault_rifle_bullet'
 AR_DMG = AR_DIR + B + 'damage_effects' + B + 'assault_rifle_bullet'
 
 # Same length as what each replaces, so a repoint never changes a chunk's size.
-SAW_WEAPON = SAW_DIR + B + 'saw'                               # free: nothing points at it
+SAW_WEAPON = h3_kit.SAW_WEAPON   # free in Halo 3; in ODST its LENGTH is fixed by the
+                                 # scenario reference it replaces -- see h3_kit
 SAW_PROJ = SAW_DIR + B + 'projectiles' + B + 'saw_bullet_h4_original_numbers'
 SAW_DMG = SAW_DIR + B + 'damage_effects' + B + 'saw_bullet_h4_original_numbers'
 

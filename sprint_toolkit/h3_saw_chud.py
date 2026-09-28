@@ -48,7 +48,7 @@ EXT = '.chud_definition'
 
 AR_CHUD = B.join(['ui', 'chud', 'assault_rifle'])
 SAW_CHUD = B.join(['ui', 'chud', 'saw'])
-SAW_WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
+SAW_WEAPON = h3_kit.SAW_WEAPON
 
 AR_LOADED, AR_MAGAZINE = 8, 32
 SAW_MAGAZINE = 72

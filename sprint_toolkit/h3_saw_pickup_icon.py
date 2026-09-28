@@ -42,7 +42,7 @@ import h3_kit                                              # noqa: E402
 EK = h3_kit.EK
 TAGS = os.path.join(EK, 'tags')
 TOOL = os.path.join(EK, 'tool.exe')
-SAW = os.path.join(TAGS, 'objects', 'weapons', 'rifle', 'saw', 'saw.weapon')
+SAW = os.path.join(TAGS, h3_kit.SAW_WEAPON + '.weapon')
 UNIC = os.path.join(TAGS, 'ui', 'hud', 'hud_messages.multilingual_unicode_string_list')
 #: the Assault Rifle's, which the port inherited -> the automag's, which Halo 3 never uses.
 #: ALL FIVE of them. A weapon names five messages, not two: `pickup message` and

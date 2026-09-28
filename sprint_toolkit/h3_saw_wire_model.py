@@ -25,7 +25,7 @@ AR_FP = B.join(['objects', 'weapons', 'rifle', 'assault_rifle', 'fp_assault_rifl
 BUILT = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
 SAW_FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp_saw_port',
                  'fp_saw_port_h4_original_numbers'])
-WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
+WEAPON = h3_kit.SAW_WEAPON
 
 
 def main():
