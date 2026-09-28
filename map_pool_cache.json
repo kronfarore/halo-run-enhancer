@@ -1,281 +1,5 @@
 {
  "entries": {
-  "Halo 3: ODST|h100|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    732319744,
-    "ed52b73868e4c79ff5b143a2e2e31738e31eaf37888ed0fc2cb4c49979545652"
-   ]
-  },
-  "Halo 3: ODST|l200|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    712413184,
-    "eca5b3704ef3bb683eaebda987d149338cdc44324ad2fbe5bb7c77dcf293edc3"
-   ]
-  },
-  "Halo 3: ODST|l300|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    632741888,
-    "e91b8270c43fe0ef18ec6677d02920802ae9a4bceed6fbad0a049fc8aa81cbb8"
-   ]
-  },
-  "Halo 3: ODST|sc100|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    521719808,
-    "5223d21bcb89a03409a04dfc4d58c55063fb5c5e9d20fa39d6f13114edddbabf"
-   ]
-  },
-  "Halo 3: ODST|sc110|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    550227968,
-    "888f912283b53f07745ebe1deb4d1f459a6272b0b734497ec59eebdcd4bd5532"
-   ]
-  },
-  "Halo 3: ODST|sc120|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    495529984,
-    "1d2abb7cd63c3b5171806bcf78ef953463179a25306ec4b363d0790302ad6b2f"
-   ]
-  },
-  "Halo 3: ODST|sc130|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    514473984,
-    "39e7d35f84d3e576aeff86989f2a45086677075c561b0f8f303f32627f7a3461"
-   ]
-  },
-  "Halo 3: ODST|sc140|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    491876352,
-    "59e11a16be9169e0a2a311e576e28a5815d0005b2c061100abb0b6d9184d29e0"
-   ]
-  },
-  "Halo 3: ODST|sc150|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Auto Magnum",
-    "Battle Rifle",
-    "Beam Rifle",
-    "Brute Shot",
-    "Covenant Carbine",
-    "Energy Blade",
-    "Mauler",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Magnum",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "SMG",
-    "Silenced SMG",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    434155520,
-    "03425d82c82b6143d2d2112da06a4fcfecec18733ec1ad8a66540b7eab0a5abc"
-   ]
-  },
-  "Halo 4|m020|equipment": {
-   "names": [
-    "Active Camouflage",
-    "Hardlight Shield",
-    "Auto Turret",
-    "Hologram",
-    "Jet Pack",
-    "Promethean Vision",
-    "Thruster Pack"
-   ],
-   "stamp": [
-    1306279936,
-    "74e6a6866ba8db824f07be608f0a024c591229234669f3c7493661b5d2bede34"
-   ]
-  },
   "Halo 4|m020|weapons": {
    "names": [
     "Assault Rifle",
@@ -287,7 +11,6 @@
     "Flak Cannon",
     "Magnum",
     "Needler",
-    "Plasma Pistol",
     "Rocket Launcher",
     "SAW",
     "Shotgun",
@@ -321,6 +44,7 @@
     "Hologram",
     "Jet Pack",
     "Promethean Vision",
+    "Regeneration Field",
     "Sprint",
     "Thruster Pack"
    ],
@@ -339,7 +63,6 @@
     "Energy Blade",
     "Magnum",
     "Needler",
-    "Plasma Pistol",
     "Storm Rifle",
     "Binary Rifle",
     "Boltshot",
@@ -367,33 +90,39 @@
     "801fcd3080dd658cddff2cdde18833ffccfe2a83a8e47250e2f057495973d4ce"
    ]
   },
-  "Halo 4|m30_cryptum|equipment": {
-   "names": [],
-   "stamp": [
-    1265684480,
-    "f1b5c91849c9141d40f3ebc4abeb27ec29123e671886dcd9752fb1e15f343258"
-   ]
-  },
   "Halo 4|m30_cryptum|weapons": {
-   "names": [],
-   "stamp": [
-    1265684480,
-    "f1b5c91849c9141d40f3ebc4abeb27ec29123e671886dcd9752fb1e15f343258"
-   ]
-  },
-  "Halo 4|m40_invasion|equipment": {
    "names": [
-    "Hardlight Shield",
-    "Jet Pack",
-    "Active Camouflage",
-    "Auto Turret",
-    "Hologram",
-    "Promethean Vision",
-    "Thruster Pack"
+    "Assault Rifle",
+    "Boltshot",
+    "Covenant Carbine",
+    "Flak Cannon",
+    "Incineration Cannon",
+    "LightRifle",
+    "Magnum",
+    "Needler",
+    "Storm Rifle",
+    "Suppressor",
+    "Battle Rifle",
+    "Beam Rifle",
+    "Binary Rifle",
+    "Concussion Rifle",
+    "DMR",
+    "Energy Blade",
+    "Gravity Hammer",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Railgun",
+    "Rocket Launcher",
+    "SAW",
+    "Scattershot",
+    "Shotgun",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Sticky Detonator"
    ],
    "stamp": [
-    1319800832,
-    "52508c040f26dff4d84296ca0856cbec4365139a13a6a643650956af22fdfee5"
+    1265684480,
+    "c92603b7737e6391d32498c8299825676c60440b135ed09acf88a2769ffd5875"
    ]
   },
   "Halo 4|m40_invasion|weapons": {
@@ -408,7 +137,6 @@
     "LightRifle",
     "Magnum",
     "Needler",
-    "Plasma Pistol",
     "Rocket Launcher",
     "Sniper Rifle",
     "Storm Rifle",
@@ -433,21 +161,6 @@
     "52508c040f26dff4d84296ca0856cbec4365139a13a6a643650956af22fdfee5"
    ]
   },
-  "Halo 4|m60_rescue|equipment": {
-   "names": [
-    "Hologram",
-    "Promethean Vision",
-    "Active Camouflage",
-    "Auto Turret",
-    "Hardlight Shield",
-    "Jet Pack",
-    "Thruster Pack"
-   ],
-   "stamp": [
-    1596772352,
-    "c4dd62a0f69650a3b04437e741f82d930c312917edd0fce61edf2daf468ef4a9"
-   ]
-  },
   "Halo 4|m60_rescue|weapons": {
    "names": [
     "Assault Rifle",
@@ -458,7 +171,6 @@
     "LightRifle",
     "Magnum",
     "Needler",
-    "Plasma Pistol",
     "Railgun",
     "Rocket Launcher",
     "Scattershot",
@@ -484,21 +196,6 @@
     "c4dd62a0f69650a3b04437e741f82d930c312917edd0fce61edf2daf468ef4a9"
    ]
   },
-  "Halo 4|m70_liftoff|equipment": {
-   "names": [
-    "Active Camouflage",
-    "Thruster Pack",
-    "Auto Turret",
-    "Hardlight Shield",
-    "Hologram",
-    "Jet Pack",
-    "Promethean Vision"
-   ],
-   "stamp": [
-    1112117248,
-    "18ed3e1093a53ce9f156c7064ae008024f6e67aaff5fdd10ee4f2a9f253ed868"
-   ]
-  },
   "Halo 4|m70_liftoff|weapons": {
    "names": [
     "Assault Rifle",
@@ -510,7 +207,6 @@
     "Gravity Hammer",
     "LightRifle",
     "Needler",
-    "Plasma Pistol",
     "Railgun",
     "SAW",
     "Scattershot",
@@ -536,46 +232,54 @@
    ]
   },
   "Halo 4|m80_delta|equipment": {
-   "names": [],
+   "names": [
+    "Active Camouflage",
+    "Auto Turret",
+    "Thruster Pack",
+    "Hardlight Shield",
+    "Hologram",
+    "Jet Pack",
+    "Promethean Vision",
+    "Regeneration Field"
+   ],
    "stamp": [
     1292787712,
-    "5d17178293d713f2cb6e86b59d5993b4e158f241569156ffda9264e091f4a927"
+    "ca50fd4c98ef264d63b2b83670ca3f73a0920bc3a6c01cabb1bfc4531a757cd1"
    ]
   },
   "Halo 4|m80_delta|weapons": {
-   "names": [],
-   "stamp": [
-    1292787712,
-    "5d17178293d713f2cb6e86b59d5993b4e158f241569156ffda9264e091f4a927"
-   ]
-  },
-  "Halo 4|m90_sacrifice|equipment": {
-   "names": [],
-   "stamp": [
-    1141772288,
-    "e2a3a4539822a25f0e9ca6c3c5b7fc92d168573734fe252977d473bb97b11a62"
-   ]
-  },
-  "Halo 4|m90_sacrifice|equipment|crash": {
    "names": [
-    "Auto Turret",
-    "Hardlight Shield",
-    "Promethean Vision",
-    "Active Camouflage",
-    "Hologram",
-    "Jet Pack",
-    "Thruster Pack"
+    "Assault Rifle",
+    "Beam Rifle",
+    "Concussion Rifle",
+    "Covenant Carbine",
+    "DMR",
+    "Energy Blade",
+    "Flak Cannon",
+    "Magnum",
+    "Needler",
+    "Shotgun",
+    "Spartan Laser",
+    "Sticky Detonator",
+    "Storm Rifle",
+    "Battle Rifle",
+    "Binary Rifle",
+    "Boltshot",
+    "Gravity Hammer",
+    "Incineration Cannon",
+    "LightRifle",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Railgun",
+    "Rocket Launcher",
+    "SAW",
+    "Scattershot",
+    "Sniper Rifle",
+    "Suppressor"
    ],
    "stamp": [
-    1141903360,
-    "f148b8f3fc5f32090b3517351de04bd7b3711126cfdf9718be97e3bf8601ea62"
-   ]
-  },
-  "Halo 4|m90_sacrifice|weapons": {
-   "names": [],
-   "stamp": [
-    1141772288,
-    "31b0332249910f178b5290e2a62a2098ecb97fcdb8e38663ee5badd860c1d79a"
+    1292787712,
+    "ca50fd4c98ef264d63b2b83670ca3f73a0920bc3a6c01cabb1bfc4531a757cd1"
    ]
   },
   "Halo 4|m90_sacrifice|weapons|crash": {
@@ -611,456 +315,6 @@
    "stamp": [
     1141903360,
     "f148b8f3fc5f32090b3517351de04bd7b3711126cfdf9718be97e3bf8601ea62"
-   ]
-  },
-  "Halo Reach|m10|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Active Camouflage",
-    "Hologram",
-    "Jet Pack",
-    "Sprint"
-   ],
-   "stamp": [
-    882106368,
-    "0119e69ab5d354272dddf70f18a0721f3f6f760c205458cf53c8702de0994a64"
-   ]
-  },
-  "Halo Reach|m10|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Shotgun",
-    "Sniper Rifle",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Plasma Launcher",
-    "Rocket Launcher",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Target Locator"
-   ],
-   "stamp": [
-    882106368,
-    "0119e69ab5d354272dddf70f18a0721f3f6f760c205458cf53c8702de0994a64"
-   ]
-  },
-  "Halo Reach|m20|equipment": {
-   "names": [
-    "Armor Lock",
-    "Sprint",
-    "Active Camouflage",
-    "Drop Shield",
-    "Hologram",
-    "Jet Pack"
-   ],
-   "stamp": [
-    842117120,
-    "5f402b33119a08580319e0b2f163556ad6a3033ab680fde38bebcb2821b7ece8"
-   ]
-  },
-  "Halo Reach|m20|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Target Locator",
-    "Focus Rifle",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Plasma Repeater",
-    "Spike Rifle"
-   ],
-   "stamp": [
-    842117120,
-    "5f402b33119a08580319e0b2f163556ad6a3033ab680fde38bebcb2821b7ece8"
-   ]
-  },
-  "Halo Reach|m30|equipment": {
-   "names": [
-    "Active Camouflage",
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Jet Pack",
-    "Sprint"
-   ],
-   "stamp": [
-    782356480,
-    "3ba61e2149f9953343f42dd75080999b7fe0406c751b005d4277520f3a47839d"
-   ]
-  },
-  "Halo Reach|m30|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Target Locator"
-   ],
-   "stamp": [
-    782356480,
-    "3ba61e2149f9953343f42dd75080999b7fe0406c751b005d4277520f3a47839d"
-   ]
-  },
-  "Halo Reach|m35|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Jet Pack",
-    "Sprint",
-    "Active Camouflage"
-   ],
-   "stamp": [
-    894132224,
-    "cc402edc6439c7a5d96e39a7bac85b12f297dc81e8a5a54cab40c39939b7fd21"
-   ]
-  },
-  "Halo Reach|m35|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Grenade Launcher",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Rifle",
-    "Gravity Hammer",
-    "Machine Gun",
-    "Pistol",
-    "Plasma Cannon",
-    "Plasma Repeater",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Target Locator"
-   ],
-   "stamp": [
-    894132224,
-    "cc402edc6439c7a5d96e39a7bac85b12f297dc81e8a5a54cab40c39939b7fd21"
-   ]
-  },
-  "Halo Reach|m45|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Jet Pack",
-    "Sprint",
-    "Active Camouflage"
-   ],
-   "stamp": [
-    952922112,
-    "d356e9a4c33a7a0692b86ed808db040842e389b6f6231e651d33a70ca21069a0"
-   ]
-  },
-  "Halo Reach|m45|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Target Locator"
-   ],
-   "stamp": [
-    952922112,
-    "d356e9a4c33a7a0692b86ed808db040842e389b6f6231e651d33a70ca21069a0"
-   ]
-  },
-  "Halo Reach|m50|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Jet Pack",
-    "Sprint",
-    "Active Camouflage",
-    "Hologram"
-   ],
-   "stamp": [
-    836009984,
-    "e4121f68d05234cf0e10dff472490cc642e927df396a50fafe382ba2584aba70"
-   ]
-  },
-  "Halo Reach|m50|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Gravity Hammer",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Energy Blade",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Plasma Rifle",
-    "Target Locator"
-   ],
-   "stamp": [
-    836009984,
-    "e4121f68d05234cf0e10dff472490cc642e927df396a50fafe382ba2584aba70"
-   ]
-  },
-  "Halo Reach|m52|equipment": {
-   "names": [
-    "Active Camouflage",
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Jet Pack",
-    "Sprint"
-   ],
-   "stamp": [
-    774356992,
-    "07c44a66097ac4b8f5e20195b61a782eadbcd929f6a5f15864a544ffb2b4d7df"
-   ]
-  },
-  "Halo Reach|m52|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Spike Rifle",
-    "Energy Blade",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Plasma Launcher",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Target Locator"
-   ],
-   "stamp": [
-    774356992,
-    "07c44a66097ac4b8f5e20195b61a782eadbcd929f6a5f15864a544ffb2b4d7df"
-   ]
-  },
-  "Halo Reach|m60|equipment": {
-   "names": [
-    "Active Camouflage",
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Sprint",
-    "Jet Pack"
-   ],
-   "stamp": [
-    1022033920,
-    "4e6831723275af08040d45d8fffc6d847970f47d1e20eb62586b3b5e628e35c9"
-   ]
-  },
-  "Halo Reach|m60|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Grenade Launcher",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Gravity Hammer",
-    "Machine Gun",
-    "Pistol",
-    "Plasma Cannon",
-    "Plasma Launcher",
-    "Target Locator"
-   ],
-   "stamp": [
-    1022033920,
-    "4e6831723275af08040d45d8fffc6d847970f47d1e20eb62586b3b5e628e35c9"
-   ]
-  },
-  "Halo Reach|m70_bonus|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Jet Pack",
-    "Active Camouflage",
-    "Hologram",
-    "Sprint"
-   ],
-   "stamp": [
-    558284800,
-    "3b2c12efbb0dd5c50ba73e515c3f8a041386cff99b117353525e436f23aa281b"
-   ]
-  },
-  "Halo Reach|m70_bonus|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Focus Rifle",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Target Locator",
-    "Machine Gun",
-    "Plasma Cannon"
-   ],
-   "stamp": [
-    558284800,
-    "3b2c12efbb0dd5c50ba73e515c3f8a041386cff99b117353525e436f23aa281b"
-   ]
-  },
-  "Halo Reach|m70|equipment": {
-   "names": [
-    "Armor Lock",
-    "Drop Shield",
-    "Hologram",
-    "Sprint",
-    "Active Camouflage",
-    "Jet Pack"
-   ],
-   "stamp": [
-    914649088,
-    "2f0a129c58b11f114c7af6101396deaf6f4edaa5e32186e8e601de280190a779"
-   ]
-  },
-  "Halo Reach|m70|weapons": {
-   "names": [
-    "Assault Rifle",
-    "Concussion Rifle",
-    "DMR",
-    "Energy Blade",
-    "Flak Cannon",
-    "Gravity Hammer",
-    "Grenade Launcher",
-    "Magnum",
-    "Needle Rifle",
-    "Needler",
-    "Plasma Launcher",
-    "Plasma Pistol",
-    "Plasma Repeater",
-    "Plasma Rifle",
-    "Rocket Launcher",
-    "Shotgun",
-    "Sniper Rifle",
-    "Spartan Laser",
-    "Spike Rifle",
-    "Focus Rifle",
-    "Machine Gun",
-    "Plasma Cannon",
-    "Target Locator"
-   ],
-   "stamp": [
-    914649088,
-    "2f0a129c58b11f114c7af6101396deaf6f4edaa5e32186e8e601de280190a779"
    ]
   },
   "baseline|Halo 1|Impossible": {
@@ -1101,8 +355,8 @@
   },
   "baseline|Halo 3|Impossible": {
    "stamp": [
-    548282368,
-    "c1e58bbf544c11cf90ff7e7317a240bf44b6544684e30d08078fef9b493ae417"
+    549126144,
+    "ca7a5d3c86229a7833739e0a694457b2c10a7aee262782f39dd18bda7cb198df"
    ],
    "value": {
     "damage": 1.600000023841858,
@@ -1136,5 +390,5 @@
    }
   }
  },
- "version": 3
+ "version": 4
 }
