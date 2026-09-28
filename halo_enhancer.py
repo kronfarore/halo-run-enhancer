@@ -407,7 +407,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
-               'remove_superseded_vitality_cards',
+               'starting_vitality_cards',
                'remove_superflare_jammer', 'remove_invincibility_invisibility',
                'denied_equipment_as_enemy_mods', 'weapon_swap_cards',
                'ammo_display_follows_magazine',
@@ -782,11 +782,10 @@ CONFIG = {
     # the person sitting at player 2 drafted the arsenal player 1 is holding.
     "swap_player_loadouts": False,
     # Drop the cards the real Player Health / Player Shield ones supersede.
-    # Starting Health/Shield Modifier write the scenario profile MULTIPLIER and
-    # Enemy Damage Reduction is a third way to say the same thing; with the pool
-    # itself now editable they mostly muddy the draft. Off by default — they are
-    # not broken, just redundant.
-    "remove_superseded_vitality_cards": False,
+    # Starting Health/Shield Modifier write the scenario profile MULTIPLIER; with the
+    # pool itself editable (Player Health / Player Shield) they mostly muddy the draft.
+    # An opt-IN since 2026-09-28 (user): off = never offered, on = offered.
+    "starting_vitality_cards": False,
     # Halo 2 only. Extra actors to add to a named AI squad, per mission:
     # {mission id: {squad name: how many MORE than the level ships}}. Halo 2
     # spawns min(difficulty count, starting locations) actors for `ai_place`,
@@ -3334,8 +3333,7 @@ class ModifierDatabase:
     # Cards the Player Health / Player Shield pair supersedes. Starting Health and
     # Starting Shield Modifier scale the scenario profile rather than the pool, and
     # Enemy Damage Reduction is a third route to the same felt outcome.
-    SUPERSEDED_VITALITY_CARDS = ('Starting Health Modifier', 'Starting Shield Modifier',
-                                 'Enemy Damage Reduction')
+    SUPERSEDED_VITALITY_CARDS = ('Starting Health Modifier', 'Starting Shield Modifier')
 
     def _config_ok(self, mod, game=None):
         """The `requires_config` gate: is the Options setting this card needs on?
@@ -3379,8 +3377,8 @@ class ModifierDatabase:
         return base in fielded or self.resolve_weapon(base) in fielded
 
     def filter_blacklisted(self, mods, blacklist, game=None):
-        drop = (set(self.SUPERSEDED_VITALITY_CARDS)
-                if CONFIG.get('remove_superseded_vitality_cards') else ())
+        drop = (() if CONFIG.get('starting_vitality_cards')
+                else set(self.SUPERSEDED_VITALITY_CARDS))
         fielded = (self._fielded_weapons(game)
                    if game and any(m.get('weapon') for m in mods) else None)
         return [m for m in mods
@@ -7292,6 +7290,7 @@ class MagnitudeEditorDialog(QDialog):
             scoped = set(self._hp.scoped_weapons(m, self.game))
         except Exception:
             scoped = set()
+        self._scoped_paths = scoped
         order = ZOOM_DONOR_WEAPONS.get(self.game, [])
         names = sorted(dict.fromkeys(onmap),
                        key=lambda w: (order.index(w) if w in order else len(order), w))
@@ -7320,6 +7319,12 @@ class MagnitudeEditorDialog(QDialog):
         w = eff.get('weapon')
         cands = [c for c in self._zoom_donor_candidates() if c != w]
         if not w or not cands:
+            return None
+        # A weapon that ships with a scope keeps its own; the patcher never grafts
+        # onto it, so a donor choice would do nothing.
+        tag = str(eff.get('tag', ''))
+        paths = [p.strip() for p in tag.split(' ', 1)[-1].split('&') if p.strip()]
+        if paths and any(p in (getattr(self, '_scoped_paths', None) or ()) for p in paths):
             return None
         row = QHBoxLayout()
         row.addWidget(QLabel("Scope copied from:"))
@@ -8523,16 +8528,13 @@ class OptionsDialog(QDialog):
                                        "Boss mods off, since bosses are game-specific.")
         form.addRow("Cross-game only:", self.single_game_cb)
 
-        self.no_vit_cards_cb = QCheckBox("Hide the cards Player Health/Shield replaced")
-        self.no_vit_cards_cb.setChecked(bool(CONFIG.get('remove_superseded_vitality_cards')))
+        self.no_vit_cards_cb = QCheckBox("Offer the Starting Health / Starting Shield cards")
+        self.no_vit_cards_cb.setChecked(bool(CONFIG.get('starting_vitality_cards')))
         self.no_vit_cards_cb.setToolTip(
-            "Stop offering Starting Health Modifier, Starting Shield Modifier and "
-            "Enemy Damage Reduction. The first two scale the scenario profile rather "
-            "than the health pool itself, and Enemy Damage Reduction is a third way "
-            "to say the same thing — with Player Health and Player Shield editing the "
-            "pool directly they mostly muddy the draft. They still work; this only "
-            "stops them being drawn.")
-        form.addRow("Superseded cards:", self.no_vit_cards_cb)
+            "Off (default): Starting Health Modifier and Starting Shield Modifier are "
+            "never drawn. They scale the level's starting profile rather than your "
+            "health pool, which Player Health and Player Shield edit directly.")
+        form.addRow("Starting Health/Shield cards:", self.no_vit_cards_cb)
 
         # ---- Difficulty baseline ----
         # These four live in `matg globals\globals` -> Difficulty and scale EVERY enemy
@@ -11043,7 +11045,7 @@ class OptionsDialog(QDialog):
                 **{k: [a.value(), b.value()] for k, (a, b) in self._ecd_spins.items()}),
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
             'swap_player_loadouts': self.swap_players_cb.isChecked(),
-            'remove_superseded_vitality_cards': self.no_vit_cards_cb.isChecked(),
+            'starting_vitality_cards': self.no_vit_cards_cb.isChecked(),
             'h2_extra_squads': {'08b': {'boss_johnson': self.h2_johnson_spin.value()}},
             'zoom_ui_on_scopeless': self.zoom_ui_cb.isChecked(),
             'turret_zoom_first_person': self.turret_zoom_cb.isChecked(),
