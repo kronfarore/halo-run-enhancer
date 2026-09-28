@@ -187,6 +187,106 @@ format and its three traps.
 
 ---
 
+## Halo 3: ODST
+
+ODST is the same engine and measures out almost identically to Halo 3: the Assault
+Rifle's first-person and world **skeletons are byte-identical** between the two kits
+(node list, default transforms, every marker), its projectile and damage effect tags are
+byte-identical files, and its reload is the same 58 frames. So the whole Halo 3 pipeline
+runs against it — `h3_kit.py` selects the kit from `PORT_EK`, and every tool asks it:
+
+    set PORT_EK=odst
+
+and the balance comes out the same to the last decimal (velocity 75, magazine 72,
+reload ×0.851562). That is not a copy: ODST is measured from its own tags and lands
+there because its Assault Rifle is Halo 3's.
+
+### THE STEP THAT GETS IT INTO THE MAP
+
+**Place the weapon in Sapien AND give it a Player Starting Profile. The placement alone
+is not enough — confirmed in game.** The first rebuild, with a Sapien placement only,
+produced no geometry; adding the profile produced all of it.
+
+This is the single most expensive thing to rediscover, because **a build that gathers no
+geometry still produces every tag and reads as success**: the weapon, both render models,
+the animation graph, the projectile and the HUD are all present and correct in the map,
+and there is simply nothing to draw. `tool` says nothing about it — no error, no warning,
+not one mention of the tag in a 134 KB log.
+
+So always, before spending a launch:
+
+    h3_chunk_check.py sc150 --game "Halo 3: ODST" "rifle\saw"
+
+Nine rows, all backed (fp model, world model, animation graph, 2 bitmaps, 4 shaders).
+No rows means the scenario edit did not reach the build, whatever the build reported.
+
+Residency then needs nothing: `tool` marks the port `X` in GLOBAL by itself, exactly as
+it does for a stock weapon, so there is no `--load-always` fold.
+
+### Editing the scenario by hand does NOT work, and here is why
+
+Three headless routes were tried and all three produced tags with zero geometry — a
+profile slot, a real weapon-palette entry, and a real placement pointed at it. Each was a
+valid edit that parsed and read back. What Sapien and Guerilla write is evidently more
+than a path: the equipment work reached the same conclusion in its own words, that a
+hand-made entry lacks "the position, BSP attachment, folder and unique ID" Sapien writes.
+
+**And the scenario tag's weapon palette is not the one that counts.** `tool` states it:
+
+    WARNING (group_postprocessing 'levels\atlas\sc150\sc150.scenario')
+    'scenario_weapon_block' referenced by resource
+    'levels\atlas\sc150\resources\sc150.scenario_weapons_resource'
+    that is about to be stomped over isn't empty!
+
+Fifteen blocks — weapons, vehicles, equipment, scenery, decals, trigger volumes and more
+— live in `resources\<level>.scenario_*_resource` and STOMP the copy inside the
+`.scenario` at build time. sc150's scenario tag lists 23 weapons; the resource lists the
+17 the map really has. This is very likely what `h3-import-weapon-recipe` recorded as a
+Guerilla palette entry getting "neither geometry nor residency": the edit was discarded
+before it could do anything. `odst_saw_place.py` reads the real palette and placements.
+
+### What ODST does NOT share with Halo 3
+
+* **One animation graph, not two.** Halo 3's Assault Rifle names the Master Chief's and
+  the Dervish's; ODST's names `odst_recon` twice, so there is one graph to clone and the
+  repoint rewrites both references to it.
+* **The HUD sheets have no free slots.** `ballistic_meters` has 18 sequences with one
+  free (a two-row box) and `weapon_scematics` has 27 whose three spare ones are 8x8
+  stubs. Halo 3 took the automag's schematic, which is free there because the automag
+  never appears in Halo 3 — in ODST it is the starting pistol.
+  Both sheets stop using canvas around y=400 and no sequence covers the ~100 blank rows
+  below, so `h3_sprite_box.py` gives a spare sequence a REAL box down there. Nothing is
+  taken from a weapon that is in the game. Two traps: the sprite records are **not
+  4-aligned**, and while an edge is a pixel count over the sheet size and can be rebuilt
+  exactly, a **registration point can be a half pixel**, so it must be read from the tag.
+* **Five fonts, not four.** ODST inserted `fixedsys-pda13`, so its HUD font is index 3
+  where Halo 3's is 2 (both have 144 glyphs, which is how to tell). Its packages are also
+  ~50 KB larger and packed differently, so Halo 3's codepoint sorts into a full ODST
+  block. The port takes **0xE04A**, one of only six that fit.
+* **Assembly's ODST `chdt` plugin renames things.** `Low Ammo Loaded Threshold` is
+  `Low Clip Cutoff` (same offset), and `Widget Collections` is `HUD Widgets`. Asking for
+  the Halo 3 name returns None for both weapons, and `None == None` reads as "the clone
+  owns its blocks" — a deduplication check that silently always passes.
+* **ODST has ammo pickups** where Halo 3 has none: its Assault Rifle references
+  `objects\powerups\assault_rifle_ammo`, so the port inherits one as built.
+
+### Step 8 is INCOMPLETE in ODST: the pickup prompt
+
+The prompt reads its icon from a character inside a message string, and ODST has **no
+free message set to take**. All 149 prompt-shaped ids were read out of its
+`hud_messages`: every one carrying English text belongs to a weapon that is in the game.
+The only unreferenced weapon-shaped set, `gc_*` (the golf club), has no English strings
+at all and no `swap_ai` member. `magnum` and `smg` look free because ODST cut them — but
+those are exactly the weapons the ODST feature restores on a rebuilt map.
+
+`h3_saw_pickup_icon.py` and `h3_mcc_localization.py` both REFUSE to run against ODST
+rather than do the Halo 3 thing, which would put the port's icon on the starting pistol's
+prompt for the whole game. The port's glyph IS in ODST's font packages, ready for the day
+a set frees up or a new localization entry can be added.
+
+
+---
+
 ## Halo 2
 
 The donor is `objects\weapons\rifle\gpmg`, a **cut** Bungie LMG that is in no scenario's
@@ -694,9 +794,18 @@ about the render_model XML cost time every time they are rediscovered:
 
 ## Open, and deliberately so
 
+* **The ODST pickup prompt still draws the Assault Rifle's icon.** Everything else about
+  the port is its own and its glyph is already in ODST's font packages; what is missing is
+  a message set to point at. See the ODST section for the search that came up empty. The
+  two candidate fixes, neither attempted: grow the localization file rather than editing it
+  in place (its 16-byte header carries the payload size twice, so a longer file may be
+  legal -- the "never change the length" rule was written for in-place edits), or take the
+  set of a weapon ODST never gives the player, which needs checking against what the
+  enhancer OFFERS in ODST, not just against the campaign.
 * **The crosshair is not ported in Halo 1 or Halo 3 yet.** Only Halo 2's is. The method is
   game-agnostic -- H4EK specifies the layout, so the same read applies -- but both earlier
-  ports still wear their donor's reticle.
+  ports still wear their donor's reticle. ODST inherits Halo 3's, so it is in the same
+  position.
 * **Codecs 4, 6 and 8 of the Halo 2 animation format** are undecoded, so `ready`,
   `put_away`, `sprint` and `throw_grenade` cannot be retimed. Codec 3, which every reload
   uses, is done.
