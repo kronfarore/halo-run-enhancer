@@ -33,7 +33,7 @@ These packages are the LIVE ones the game reads, so a change shows up without a 
     python h3_weapon_glyph.py --write
     python h3_weapon_glyph.py --restore             # put the shipped glyphs back
 """
-import argparse, io, os, re, struct, sys
+import argparse, io, os, re, shutil, struct, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -45,7 +45,7 @@ B = os.sep
 import h3_kit                                              # noqa: E402
 EK = h3_kit.EK
 MODEL_XML = os.path.join(EK, 'saw_3p_rm.xml')
-BACKUP = os.path.join('E:' + B, 'HaloBackups', 'h3_live_fonts')
+BACKUP = os.path.join('E:' + B, 'HaloBackups', h3_kit.SHORT + '_live_fonts')
 PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
             'font_package_icon_x3.bin')
 #: The port's OWN codepoint, taken from nobody. It is not the first free one: a new entry
@@ -53,8 +53,16 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 #: into is full in the x2 and x3 packages -- 344 bytes free against the 1768 a glyph needs.
 #: 0xE06A is free in all three and sorts into a block with room in all three, which is the
 #: whole requirement. The old value, 0xE128, was a shipped icon the SAW borrowed.
-GLYPH = 0xE06A
-FONT = 2                        # iconixedsys-hud, which draws the pickup prompt
+#: The two games need DIFFERENT codepoints, and a different FONT INDEX to put them in.
+#: Halo 3's packages hold four fonts and the HUD one is index 2; ODST's hold FIVE, having
+#: inserted `fixedsys-pda13`, so its HUD font is index 3 -- both have 144 glyphs, which is
+#: how to tell which is which. Pointed at ODST's index 2 the search finds no usable
+#: codepoint at all, because that is a 29-glyph font sitting in one nearly full block.
+#: ODST's packages are also ~50 KB larger and packed differently, so Halo 3's 0xE06A
+#: sorts into an ODST block with 120 bytes free against the 1748 it needs. Its HUD font
+#: leaves exactly six workable codepoints, 0xE04A..0xE04F; this takes the first.
+GLYPH = 0xE04A if h3_kit.IS_ODST else 0xE06A
+FONT = 3 if h3_kit.IS_ODST else 2                      # iconixedsys-hud, which draws the pickup prompt
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
 RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
        'font_package_icon_x3.bin': 3}
@@ -280,7 +288,6 @@ def main():
     a = ap.parse_args()
 
     if a.restore:
-        import shutil
         for name in PACKAGES:
             src = os.path.join(BACKUP, name)
             if not os.path.exists(src):
@@ -328,6 +335,15 @@ def main():
         im.putdata([(r * 17, gg * 17, b * 17, al * 17) for al, r, gg, b in px])
         shots.append(im)
         if a.write:
+            # A PRISTINE COPY FIRST, ALWAYS. These are the live files the game reads and
+            # nothing else regenerates them: without a backup `--restore` has nothing to
+            # put back and only a game reinstall does. Written once and never overwritten,
+            # so re-running on an already-edited package cannot destroy the original.
+            keep = os.path.join(BACKUP, name)
+            if not os.path.exists(keep):
+                os.makedirs(BACKUP, exist_ok=True)
+                shutil.copyfile(path, keep)
+                print('   kept the shipped %s in %s' % (name, BACKUP))
             if new_cp:
                 out = fa.add(d, a.glyph, font, pay, (W, H))
                 io.open(path, 'wb').write(out)

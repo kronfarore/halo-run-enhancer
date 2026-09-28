@@ -56,6 +56,31 @@ MOVE = {'ar_pickup': 'am_pickup', 'ar_swap': 'am_swap',
 DEFAULT_GLYPH = 0xE128          # unclaimed by any Halo 3 or ODST weapon, 123x39
 AUTOMAG_GLYPH = 0xE144
 
+#: HALO 3 ONLY, AND THE GUARD BELOW IS NOT OPTIONAL.
+#:
+#: The whole method rests on the automag never appearing in the Halo 3 campaign, so its
+#: five messages can be taken without anyone noticing. In ODST the automag is the weapon
+#: you START WITH, so running this there would put the SAW's icon on the pistol's prompt
+#: for the entire game -- the exact collateral this file's own comment calls "a real
+#: trade" and the recipe forbids.
+#:
+#: ODST HAS NO FREE SET, and it was searched properly rather than assumed:
+#:   * all 149 prompt-shaped message ids were read out of ODST's hud_messages, and every
+#:     one that carries English text is referenced by some ODST weapon tag;
+#:   * the only unreferenced weapon-shaped set, `gc_*` (the golf club), has NO English
+#:     strings at all, so pointing at it would give no prompt rather than a better one --
+#:     and it has no `swap_ai` member either;
+#:   * `magnum` and `smg` look free, because ODST cut both -- but those are precisely the
+#:     weapons the ODST feature RESTORES on a rebuilt map, so they are the worst choice
+#:     available, not the best.
+#: The glyph is drawn and in ODST's font packages either way (h3_weapon_glyph), so the
+#: day a set comes free -- or a new message id can be added to the localization file --
+#: this is one edit.
+ODST_NOTE = """ODST has no free message set: every prompt string with English text
+belongs to a weapon that is in the game, and the automag this method takes in Halo 3 is
+ODST's starting pistol. The port keeps the Assault Rifle's prompt, so picking it up shows
+an Assault Rifle icon. Its own glyph IS in ODST's font packages, ready for a set."""
+
 
 def strings(scratch):
     """{string id: english offset} from the message list."""
@@ -89,6 +114,9 @@ def main():
     ap.add_argument('--glyph', type=lambda v: int(v, 0), default=DEFAULT_GLYPH)
     ap.add_argument('--scratch', default=os.environ.get('TEMP', '.'))
     a = ap.parse_args()
+    if h3_kit.IS_ODST:
+        raise SystemExit('this is Halo 3 only -- refusing to run against %s.\n\n%s'
+                         % (h3_kit.banner(), ODST_NOTE))
 
     w = h3tag.Tag(SAW)
     have = [p for _o, g, p in w.references()]

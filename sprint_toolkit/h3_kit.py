@@ -52,6 +52,12 @@ DATA = os.path.join(EK, 'data')
 TOOL = os.path.join(EK, 'tool.exe')
 GAME = GAMES.get(os.path.basename(EK), 'Halo 3')
 IS_ODST = GAME == 'Halo 3: ODST'
+#: The installed game folder under the MCC root, which is where the LIVE font packages
+#: and the localization files live. ODST has its own, and they are NOT the same files:
+#: its font_package_icon.bin is 294912 bytes against Halo 3's 245760.
+MCC_GAME = 'halo3odst' if IS_ODST else 'halo3'
+#: Halo 3's short tag, for anything that keeps per-game copies on disk.
+SHORT = 'odst' if IS_ODST else 'h3'
 
 
 def banner():

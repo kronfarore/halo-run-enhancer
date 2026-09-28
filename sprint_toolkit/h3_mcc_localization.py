@@ -122,6 +122,14 @@ def main():
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--restore', action='store_true')
     a = ap.parse_args()
+    # THE GAME IS NOT A FREE PARAMETER HERE. `--game Halo3ODST` would find the automag's
+    # glyph in ODST's file and swap it -- and in ODST the automag is the starting pistol,
+    # not a weapon that never appears. The donor is a Halo 3 fact, so the file is too.
+    # See h3_saw_pickup_icon.ODST_NOTE for why ODST has no set to take instead.
+    if a.game != 'Halo3' and not a.restore:
+        raise SystemExit('the donor (U+%04X, %s) is a Halo 3 choice, so --game %s would '
+                         'rewrite a weapon that IS in that game.\nRestoring is allowed '
+                         'for any game.' % (DONOR_GLYPH, DONOR_NAME.decode(), a.game))
 
     files = sorted(f for f in os.listdir(LOC) if f.endswith('_%s.bin' % a.game))
     if not files:

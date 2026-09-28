@@ -20,8 +20,12 @@ Format, as far as it is needed here:
 import argparse, io, os, struct, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+import h3_kit                                                   # noqa: E402
 MCC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-FONTS = os.path.join(os.path.dirname(MCC), 'halo3', 'maps', 'fonts')
+#: Per game: ODST ships its OWN packages, ~50 KB larger than Halo 3's at every
+#: resolution, so a glyph added to Halo 3's is not in ODST and vice versa.
+FONTS = os.path.join(os.path.dirname(MCC), h3_kit.MCC_GAME, 'maps', 'fonts')
 PKG = 'font_package_icon.bin'
 ENTRY = 8
 
