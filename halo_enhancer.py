@@ -134,8 +134,9 @@ SETTINGS_FILE = 'settings.json'
 POOL_CACHE_FILE = 'map_pool_cache.json'
 # Bumped when the stamp changes meaning; a file from an older scheme is discarded
 # rather than reinterpreted, because a stale stamp that happens to match would hand
-# back names for a different map.
-POOL_CACHE_VERSION = 3
+# back names for a different map. Also bumped when the NAME MATCHING changes (4:
+# eqip_tag_for picks the majority tag, so Regeneration Field now matches its pool entry).
+POOL_CACHE_VERSION = 4
 _POOL_DISK = None
 #: Digests of map files this machine has already hashed, so the hash is paid once per
 #: file rather than once per question. Keyed by path, size and mtime -- mtime is used
@@ -914,7 +915,7 @@ CONFIG = {
     "h4_keep_loadout": True,
     # TEST (2026-09-27): make Halo 4 abilities on the ground easier to see. '' off,
     # 'icon' bigger hologram visible further, 'glow' stronger lights, 'lift' raised.
-    "h4_ability_visibility": '',
+    "h4_ability_visibility": 'emissive_body',   # confirmed in game 2026-09-28: very visible
     # Weapon names never offered in Halo 4 (see get_level_weapons).
     "h4_never_offer": ["Sentinel Beam", "Sentinel Eliminator Beam", "Target Locator"],
     # Campaign par time, every game: 1.0 = shipped. Scales the patched mission's
@@ -2688,7 +2689,11 @@ class ModifierDatabase:
         while parent and parent not in lineage:
             lineage.append(parent)
             parent = CONFIG.get('game_inherits', {}).get(parent)
-        fallback = None
+        # Without a game-keyed tag, the tag MOST cards name. Not the first one: a card
+        # may edit something the equipment SPAWNS -- Regeneration Field's Field Duration
+        # names `healing_field`, and taking it first meant the dz_enhancer pool entry
+        # `storm_regen_field` never matched, so the ability was never offered.
+        plain = []
         for mod in self.equipment_mods.get(self.resolve_equipment(name), []):
             if game is not None and not self._game_ok(mod, game):
                 continue
@@ -2698,9 +2703,10 @@ class ModifierDatabase:
                 continue
             if isinstance(raw, dict) and any(g in raw for g in lineage):
                 return tag
-            if fallback is None:
-                fallback = tag
-        return fallback
+            plain.append(tag)
+        if not plain:
+            return None
+        return max(plain, key=lambda t: (plain.count(t), -plain.index(t)))
 
     def get_weapon_modifiers(self, weapon_name):
         """Mods for a weapon slot. `dual_only` effects are offered only when
@@ -10121,10 +10127,10 @@ class OptionsDialog(QDialog):
         _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
         self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
         self.h4_ability_vis_combo.setToolTip(
-            "TEST: every Halo 4 ability except the jet pack lies in the same equipment case. "
+            "Every Halo 4 ability except the jet pack lies in the same equipment case. "
             "Brighter case lights: its self-lit light strips x4. Whole case lit: the case "
             "body is drawn with the light-strip material too, so the whole pickup glows.")
-        h4form.addRow("Ability visibility (test):", self.h4_ability_vis_combo)
+        h4form.addRow("Ability visibility:", self.h4_ability_vis_combo)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
