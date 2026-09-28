@@ -794,14 +794,24 @@ about the render_model XML cost time every time they are rediscovered:
 
 ## Open, and deliberately so
 
-* **The ODST pickup prompt still draws the Assault Rifle's icon.** Everything else about
-  the port is its own and its glyph is already in ODST's font packages; what is missing is
-  a message set to point at. See the ODST section for the search that came up empty. The
-  two candidate fixes, neither attempted: grow the localization file rather than editing it
-  in place (its 16-byte header carries the payload size twice, so a longer file may be
-  legal -- the "never change the length" rule was written for in-place edits), or take the
-  set of a weapon ODST never gives the player, which needs checking against what the
-  enhancer OFFERS in ODST, not just against the campaign.
+* **The ODST pickup prompt still draws the Assault Rifle's icon -- and the fix is
+  identified, verified, and not yet applied.** Take the SENTINEL BEAM's message set.
+  Measured 2026-09-28: all five ids exist (`sen_b_pickup/swap/picked_up/switch_to/
+  swap_ai`), its glyph U+E132 carries all four prompt strings in EN_Halo3ODST.bin, ODST
+  has no Sentinels anywhere, and the enhancer's own ODST mission lists offer 22 weapons
+  of which it is not one. So nothing in the game loses a prompt, which is what ruled out
+  every other set.
+  Two differences from the Halo 3 method, both already solved elsewhere:
+  `ar_pickup` (9) and `sen_b_pickup` (12) are DIFFERENT LENGTHS, so the rename needs
+  `h3tag.rename_stringid`, which grows the chunk and every ancestor, rather than the
+  in-place byte swap Halo 3 uses; and the localization edit stays in place, because
+  U+E132 and the port's U+E04A are both three bytes in UTF-8.
+  `h3_saw_pickup_icon.py` and `h3_mcc_localization.py` currently REFUSE on ODST; both
+  guards should become "use the sentinel beam set" rather than "there is none".
+  The route NOT to take: growing the localization file. Its 16-byte header declares the
+  payload size twice and there is no slack, but the container has a second header at 0x40
+  whose trailing table holds values LARGER than the file, so the string index is not
+  reachable from it. That is a reversing project, and this is not.
 * **The crosshair is not ported in Halo 1 or Halo 3 yet.** Only Halo 2's is. The method is
   game-agnostic -- H4EK specifies the layout, so the same read applies -- but both earlier
   ports still wear their donor's reticle. ODST inherits Halo 3's, so it is in the same
