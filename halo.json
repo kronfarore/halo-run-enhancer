@@ -942,9 +942,9 @@
 						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -1271,9 +1271,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -1726,9 +1726,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma pistol\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Heat Threshold": {
@@ -2135,9 +2135,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\plasma rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Heat Threshold": {
@@ -2606,9 +2606,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\needler\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -2925,9 +2925,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\sniper rifle\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee_response", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -3272,9 +3272,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\rocket launcher\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -3583,9 +3583,9 @@
 					},
 					"tag": {"Halo 1": "jpt! weapons\\shotgun\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					]
 				},
 				"Zoom": {
@@ -4002,9 +4002,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				}
@@ -4271,9 +4271,9 @@
 						"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": "Halo 2"
 				}
@@ -4538,9 +4538,9 @@
 						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				}
@@ -4718,9 +4718,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\slice_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -4993,9 +4993,9 @@
 						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5377,9 +5377,9 @@
 						"Halo 4": "jpt! globals\\damage_effects\\strike_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				}
@@ -5604,9 +5604,9 @@
 						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach"]
 				},
@@ -5878,9 +5878,9 @@
 						"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -6565,9 +6565,9 @@
 						"Halo 3": "jpt! objects\\weapons\\damage_effects\\cut_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3"]
 				},
@@ -6868,9 +6868,9 @@
 						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3", "Halo Reach"]
 				},
@@ -7156,9 +7156,9 @@
 						"Halo Reach": "jpt! globals\\damage_effects\\crush_melee & globals\\damage_effects\\hammer_to_gun_clang_melee & globals\\damage_effects\\hammer_to_melee_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3", "Halo 4", "Halo Reach"]
 				},
@@ -7345,9 +7345,9 @@
 						"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"
 					},
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
 					"game": ["Halo 3", "Halo 4", "Halo Reach"]
 				},
@@ -8490,9 +8490,9 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -8756,9 +8756,9 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -9052,9 +9052,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -9286,9 +9286,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -9555,9 +9555,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -9859,9 +9859,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -10209,9 +10209,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -10542,9 +10542,9 @@
 					"game": ["Halo Reach"],
 					"tag": {"Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -10927,9 +10927,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Heat Threshold": {
@@ -11205,9 +11205,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -11479,9 +11479,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -11832,9 +11832,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\sword_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				}
 			},
@@ -11994,9 +11994,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -12305,9 +12305,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -12529,9 +12529,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Beam Damage": {
@@ -12636,9 +12636,9 @@
 					"game": ["Halo 4"],
 					"tag": {"Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee"},
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Magnetism": {
@@ -13050,9 +13050,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -13335,9 +13335,9 @@
 					"game": ["Halo 4"],
 					"tag": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee",
 					"targets": [
-						{ "step": "*1.2","field": "Damage Lower Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound", "group": "Damage"},
-						{ "step": "*1.2","field": "Damage Upper Bound Max", "group": "Damage"}
+						{ "step": "*1.1","field": "Damage Lower Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound", "group": "Damage"},
+						{ "step": "*1.1","field": "Damage Upper Bound Max", "group": "Damage"}
 					]
 				},
 				"Zoom": {
@@ -15234,7 +15234,7 @@
 				"tag": "char ai\\generic",
 				"split_from": "Grenade Properties",
 				"targets": [
-					{ "step": "*0.9", "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
+					{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all" }
 				]
 			},
 			"Firing Patterns": {
@@ -15825,7 +15825,7 @@
 					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of the 13 levels that field them and ODST on 8 of 8. Halo 3 has it on ONE, Floodgate (050) of 8 -- worth carding, but expect it to do nothing on the others.",
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
 					]
 				},
 				"Grenade Chance": {
@@ -17243,7 +17243,7 @@
 					"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": { "Halo 1": null, "Halo 2": "Grenades Properties" } }
 					]
 				},
 				"Grenade Chance": {
@@ -18892,7 +18892,7 @@
 					"tag": {"Halo 2": "char objects\\characters\\floodcombat*", "Halo 3": "char objects\\characters\\floodcombat*"},
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
 					]
 				},
 				"Evasion Properties": {
@@ -19832,7 +19832,7 @@
 					"tag": {"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"},
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
 					]
 				},
 				"Rate of Fire": {
@@ -20459,7 +20459,7 @@
 					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "min": 0 }
 					]
 				},
 				"Flanking": {
@@ -21045,7 +21045,7 @@
 					"tag": {"Halo 2": "char objects\\characters\\brute\\ai\\brute*", "Halo 3": "char objects\\characters\\brute\\ai\\brute*"},
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties", "index": "all", "skip_games": ["Halo 3: ODST"] }
 					]
 				},
 				"Grenade Chance": {
@@ -22223,7 +22223,7 @@
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
 					"split_from": "Grenades",
 					"targets": [
-						{ "step": "*0.8", "field": "Collateral Damage Radius", "block": "Grenades Properties" }
+						{ "step": "*0.5", "steps": ["*0.5", "=0.1"], "field": "Collateral Damage Radius", "block": "Grenades Properties" }
 					]
 				},
 				"Body Vitality": {

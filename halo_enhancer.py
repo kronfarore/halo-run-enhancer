@@ -4761,7 +4761,11 @@ class MagnitudeEditorDialog(QDialog):
                     txt = '*%g' % (1.0 + size if d == 'up' else max(0.0, 1.0 - size))
                 elif op in ('add', 'sub'):
                     txt = ('+' if d == 'up' else '-') + '%g' % abs(val)
-        return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'))
+        # An irregular `steps` ladder applies while the row still shows its default; a
+        # value typed over it is the user's and stacks linearly like any other.
+        steps = t.get('steps') if (t.get('steps') and (not txt or self._is_default_step(t, txt))) else None
+        return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
+                                 steps=steps)
 
     def _asked_direction(self, eff, t):
         """'up' / 'down' for an `ask_direction` row, asked the first time the card is
@@ -7966,7 +7970,10 @@ class MagnitudeEditorDialog(QDialog):
         # already-scoped scope, weapon that rounds/trims to 0, an H2-only field on
         # an H1 map), and Failed (an edit that should have landed but didn't).
         applied = [r for r in results if r.get('ok') and not r.get('skip')]
-        skipped = [r for r in results if r.get('skip')]
+        # "inherits from base" skips (a variant reading its parent's block, correctly
+        # left alone) are noise here; the patch log file still records them.
+        skipped = [r for r in results if r.get('skip')
+                   and r.get('reason') != 'inherits from base']
         failed = [r for r in results if not r.get('ok') and not r.get('skip')]
         lines = [f"Applied {len(applied)}   ·   Skipped {len(skipped)}   ·   Failed {len(failed)}"]
         # #10: a short code standing for what was written, so two players can check
@@ -10117,20 +10124,16 @@ class OptionsDialog(QDialog):
             "loadout.")
         h4form.addRow("Travel sections:", self.h4_keep_loadout_cb)
 
-        self.h4_ability_vis_combo = QComboBox()
-        # 'icon' / 'icon_hide' (resizing the hologram) are gone: Halo 4 never draws it.
         # Halo 4 draws no attachment on equipment on the ground (hologram, ground glow:
-        # both tested, no change), so the modes change the pickup's own materials.
-        for label, val in (("Off (vanilla)", ''), ("Brighter case lights", 'emissive'),
-                           ("Whole case lit", 'emissive_body')):
-            self.h4_ability_vis_combo.addItem(label, val)
-        _i = self.h4_ability_vis_combo.findData(CONFIG.get('h4_ability_visibility') or '')
-        self.h4_ability_vis_combo.setCurrentIndex(max(0, _i))
-        self.h4_ability_vis_combo.setToolTip(
-            "Every Halo 4 ability except the jet pack lies in the same equipment case. "
-            "Brighter case lights: its self-lit light strips x4. Whole case lit: the case "
-            "body is drawn with the light-strip material too, so the whole pickup glows.")
-        h4form.addRow("Ability visibility:", self.h4_ability_vis_combo)
+        # both tested, no change); lighting the case's own material is what worked.
+        self.h4_ability_vis_cb = QCheckBox("Light up the ability case")
+        self.h4_ability_vis_cb.setChecked(CONFIG.get('h4_ability_visibility', 'emissive_body')
+                                          == 'emissive_body')
+        self.h4_ability_vis_cb.setToolTip(
+            "Every Halo 4 ability except the jet pack lies in the same equipment case, "
+            "which is hard to spot on the ground. On: the whole case is drawn with its "
+            "self-lit light-strip material, so the pickup glows.")
+        h4form.addRow("Ability visibility:", self.h4_ability_vis_cb)
 
         self._opt_page("Patching").addWidget(patch_all_g, 45)   # above the Halo 2 box
         self._opt_page("Patching").addWidget(patch_h1_g, 50)
@@ -10945,7 +10948,7 @@ class OptionsDialog(QDialog):
             'reach_skip_space': self.reach_skip_space_cb.isChecked(),
             'h4_skip_flight': self.h4_skip_flight_cb.isChecked(),
             'h4_keep_loadout': self.h4_keep_loadout_cb.isChecked(),
-            'h4_ability_visibility': self.h4_ability_vis_combo.currentData() or '',
+            'h4_ability_visibility': 'emissive_body' if self.h4_ability_vis_cb.isChecked() else '',
             'h4_equipment_drop': self.h4_equipment_drop_cb.isChecked(),
             'h4_hostile_sentinels': self.h4_hostile_sentinels_cb.isChecked(),
             'h3_spawn_starting_weapons': self.h3_spawn_weapons_cb.isChecked(),

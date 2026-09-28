@@ -285,7 +285,7 @@ def preset_key(tag, name, field, game=None):
     return (f"{base}||{game}" if game else base) + '||step'
 
 
-def stack_op(text, count, vanilla=None, from_zero=None):
+def stack_op(text, count, vanilla=None, from_zero=None, steps=None):
     """The op a card picked `count` times applies, from its per-pick op `text`.
 
     LINEAR (user, 2026-09-27): *1.2 picked 3 times is *1.6 (1 + 3 x 0.2), *0.8 three
@@ -298,6 +298,10 @@ def stack_op(text, count, vanilla=None, from_zero=None):
     n = max(1, int(count or 1))
     if from_zero and vanilla is not None and float(vanilla) == 0.0:
         return str(from_zero[min(n, len(from_zero)) - 1])
+    if steps:
+        # IRREGULAR steps (user, 2026-09-28): entry k is the op for k picks, applied to
+        # vanilla -- Grenade Collateral ["*0.5", "=0.1"]: halved, then 0.1 for good.
+        return str(steps[min(n, len(steps)) - 1])
     parsed = hm.parse_operator(text)
     if not parsed:
         return (text or '').strip()
@@ -3567,6 +3571,17 @@ def h4_designer_zone(m, name=H4_ENHANCER_ZONE):
     if not b or not n:
         return None
     sids = [m.u32(b + k * es) for k in range(n)]
+    # The map-wide offset first (_h4_sid_offset, voted over every weapon HUD). The
+    # per-zoneset calibration below picked a coincidental offset on Forerunner: it
+    # returned `cin_m31_dz` (index 10) for dz_enhancer (index 11), so a correctly
+    # rebuilt map read as "dz_enhancer not switched on in zone set 0".
+    want = [rows.get(x) for x in _H4_SCOPE_NAMES]
+    voted = _h4_sid_offset(m, want) if None not in want else None
+    if voted is not None:
+        hit = next((k for k, sid in enumerate(sids)
+                    if not sid >> 17 and (sid & 0xFFFFFF) + voted == target), None)
+        if hit is not None:
+            return hit
     name_at = {i: s for s, i in rows.items()}
 
     def zoneish(i):
