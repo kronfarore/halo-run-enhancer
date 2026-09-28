@@ -5565,6 +5565,43 @@ def _h4_scope_commit(m, tgt, plan):
     return True
 
 
+def _h4_scope_residency_gap(m, hud_name, template_row):
+    """How many zone-set pools load the target HUD but NOT every pool-loaded tag of
+    the donor scope's template closure (the template screen and its art). 0 = safe.
+    Zone data is read once per map. A map the pool reader cannot read returns 0, so
+    the graft behaves as before rather than silently vanishing."""
+    try:
+        import sys as _sys
+        tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+        if tk not in _sys.path:
+            _sys.path.insert(0, tk)
+        import h4_pools as P
+        cache = getattr(m, '_h4_zone_cache', None)
+        if cache is None:
+            zb = P.zone_base(m)
+            cache = m._h4_zone_cache = {'sets': P.zone_sets(m, zb),
+                                        'clo': P.Closure(m, zb),
+                                        'idx': {t['name']: t['index'] for t in m.tags
+                                                if t.get('name')}}
+        sets = cache['sets']
+        hi = cache['idx'].get(hud_name)
+        if hi is None:
+            return 0
+        need = {lab for lab, _o in P.tag_sets(m, sets, hi)}
+        rid = struct.unpack_from('<I', template_row, 0xC)[0]
+        tags, _pages = cache['clo'].of(rid)
+        missing = set()
+        for t in tags:
+            have = {lab for lab, _o in P.tag_sets(m, sets, t['index'])}
+            if have:                        # a tag in no pool is not pool-loaded
+                missing |= need - have
+        return len(missing)
+    except SystemExit:
+        return 0
+    except Exception:
+        return 0
+
+
 def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
     """Halo 4 zoom UI: give each target weapon's HUD a scope grafted from a scoped
     weapon's HUD on the same map. Rows mirror _apply_zoom_ui's."""
@@ -5632,6 +5669,7 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
                                    % str(hud[0]).rsplit(chr(92), 1)[-1]))
             continue
         reason = 'no scoped weapon HUD on this map to copy from'
+        unsafe = []
         for dn, db in donors_for(name):
             if db == hud[1]:
                 continue
@@ -5640,6 +5678,17 @@ def _apply_h4_scope(m, targets, prefer_donor=None, donor_huds=None):
                 reason = plan
                 if plan in ('already scoped', 'this HUD has no scope container'):
                     break
+                continue
+            gap = _h4_scope_residency_gap(m, hud[0], plan['template'])
+            if gap:
+                # The scope's template screen (and its art) must be loaded wherever
+                # this weapon's HUD is, or building the HUD on pickup crashes Halo 4:
+                # Composer loads the battle rifle scope in 5 of the 50 zone sets that
+                # load the concussion rifle's HUD, and picking that rifle up crashed.
+                unsafe.append('%s (%d)' % (str(dn).rsplit(chr(92), 1)[-1], gap))
+                reason = ('no scoped weapon here is loaded everywhere this one is, so a '
+                          'grafted scope would crash on pickup -- zooms without an '
+                          'overlay. Zone sets missing: %s' % ', '.join(unsafe))
                 continue
             if not _h4_scope_commit(m, hud[1], plan):
                 reason = 'no free space to grow the HUD screen'
