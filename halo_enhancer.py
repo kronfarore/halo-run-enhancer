@@ -363,7 +363,8 @@ def is_valid_run(data):
 
 
 OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods',
-               'new_weapon_chance', 'include_grenades',
+               'new_weapon_chance', 'new_equipment_chance', 'balance_item_counts',
+               'include_grenades',
                'weapon_choice_negatives', 'special_rate_factor', 'set_starting_weapons',
                'two_player_coop', 'coop_no_starting_weapons', 'null_coop_starting_equipment',
                'zoom_ui_on_scopeless', 'turret_zoom_first_person', 'vehicle_turret_zoom',
@@ -556,6 +557,9 @@ def baseline_args(game):
 
 
 _SRC_PRELOAD = {}
+# The last map the patcher read shipped values from, held for the session: one map,
+# read-only, re-read when its size or mtime changes. See preload_source.
+_SRC_KEEP = {}
 
 
 def preload_source(map_path, game):
@@ -571,12 +575,24 @@ def preload_source(map_path, game):
         import halo_patch                 # imported lazily, as everywhere else here
         src = baseline_source(map_path, game)
         key = (os.path.normcase(os.path.abspath(src)), str(game))
+        # Kept across patcher openings (user, 2026-09-28: reopening with nothing
+        # changed took as long as the first time). The patcher only READS this map;
+        # size + mtime catch any rewrite of the file, so a stale copy is never used.
+        st = os.stat(src)
+        stamp = key + (st.st_size, int(st.st_mtime))
+        if _SRC_KEEP.get('stamp') == stamp and _SRC_KEEP.get('map') is not None:
+            _SRC_PRELOAD.clear()
+            _SRC_PRELOAD.update(key=key, map=_SRC_KEEP['map'])
+            return
         if _SRC_PRELOAD.get('key') != key:
             _SRC_PRELOAD.clear()
+            _SRC_KEEP.clear()             # drop the previous map before reading the next
             _SRC_PRELOAD['map'] = halo_patch.open_map(src, game)
             _SRC_PRELOAD['key'] = key
+            _SRC_KEEP.update(stamp=stamp, map=_SRC_PRELOAD['map'])
     except Exception:
         _SRC_PRELOAD.clear()
+        _SRC_KEEP.clear()
 
 
 def baseline_source(map_path, game):
@@ -757,6 +773,12 @@ CONFIG = {
     "wildcard_chance": 0.1,
     "exhaust_chance": 0.1,
     "new_weapon_chance": 0.0,
+    # Per-pair chance that a card offers a piece of equipment / an ability instead
+    # (rolled on the pairs that did not get a new weapon).
+    "new_equipment_chance": 0.0,
+    # Hold both players level: nobody is offered another weapon (or piece of
+    # equipment) while holding more of that kind than the other player.
+    "balance_item_counts": False,
     # Scales how often 'special' (escalating-odds) player effects surface; <1 makes
     # them rarer. ~0.67 = about a third less often.
     "special_rate_factor": 0.67,
@@ -3592,6 +3614,7 @@ class RunState:
         self.blacklist = set()
         self.rounds = []
         self.new_weapon_count = 0   # #4: how many new-weapon pairs P1 was offered
+        self.new_equipment_count = 0   # ...and new-equipment pairs
         self.special_counters = {}  # special effect name -> rounds since last picked
         # patcher: (tag, name) of every effect already applied to a map — anything not
         # in here is "new" (highlighted / optionally shown first) until the next patch.
@@ -4016,7 +4039,8 @@ class PairCard(QGroupBox):
 
         def _new_heading(player_label):
             nw = self.pair.get('new_weapon')
-            tag = "🎒 NEW EQUIPMENT" if (db and db.is_equipment(nw)) else "🔫 NEW WEAPON"
+            is_eq = bool(db and db.is_equipment(nw)) or bool(ability_of_item(nw))
+            tag = "🎒 NEW EQUIPMENT" if is_eq else "🔫 NEW WEAPON"
             return f"{player_label} - {tag}"
 
         if self.show_player1:
@@ -9504,6 +9528,25 @@ class OptionsDialog(QDialog):
                                           "same number of new-weapon cards. 0 disables.")
         rform.addRow("New-weapon chance:", self.new_weapon_chance)
 
+        self.new_equipment_chance = QDoubleSpinBox()
+        self.new_equipment_chance.setRange(0.0, 1.0)
+        self.new_equipment_chance.setSingleStep(0.05)
+        self.new_equipment_chance.setDecimals(2)
+        self.new_equipment_chance.setValue(float(CONFIG.get('new_equipment_chance', 0.0)))
+        self.new_equipment_chance.setToolTip(
+            "Per-pair chance that a card offers a piece of equipment or an ability from "
+            "this level instead of a player card. Rolled on the pairs that did not get a "
+            "new weapon. 0 = never.")
+        rform.addRow("New-equipment chance:", self.new_equipment_chance)
+
+        self.balance_items_cb = QCheckBox("Keep both players' item counts level")
+        self.balance_items_cb.setChecked(bool(CONFIG.get('balance_item_counts')))
+        self.balance_items_cb.setToolTip(
+            "A player who holds more weapons than the other is not offered another weapon "
+            "until the other catches up -- and the same for equipment. Applies to the "
+            "new-weapon / new-equipment cards, not to the NEW ITEM button.")
+        rform.addRow("", self.balance_items_cb)
+
         # What an automatic new-weapon card may draw beyond the level's plain weapon
         # pool. The New Weapon BUTTON always offers duals and upgrades; without these
         # the automatic rolls silently could not.
@@ -10982,6 +11025,8 @@ class OptionsDialog(QDialog):
             'other_skull_enabled': self.other_weight_boxes['skull'][0].isChecked(),
             'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
+            'new_equipment_chance': round(self.new_equipment_chance.value(), 2),
+            'balance_item_counts': self.balance_items_cb.isChecked(),
             'include_grenades': self.grenades_cb.isChecked(),
             'grenades_need_weapon': self.grenades_need_weapon_cb.isChecked(),
             'brute_chieftain_bosses': self.chieftain_boss_cb.isChecked(),
@@ -12755,7 +12800,48 @@ class HaloGUI(QMainWindow):
             QPushButton:hover { background-color: #63407a; }
         """)
         self.new_anything_btn.clicked.connect(self.on_new_anything_button)
-        button_layout.addWidget(self.new_anything_btn)
+        # One button with a menu instead of three side by side (user, 2026-09-28: save
+        # the space). The three buttons stay as objects -- the rest of the window
+        # enables and disables them -- and each menu entry mirrors its button's state
+        # when the menu opens, so the rules live in one place as before.
+        self.new_item_btn = QToolButton()
+        self.new_item_btn.setText("🎁 NEW ITEM ▾")
+        self.new_item_btn.setToolTip("Draw a new weapon, a piece of equipment, or anything "
+                                     "this level can still hand out.")
+        self.new_item_btn.setPopupMode(QToolButton.InstantPopup)
+        self.new_item_btn.setStyleSheet("""
+            QToolButton {
+                background-color: #3a4a2a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QToolButton:hover { background-color: #4a6a3a; }
+            QToolButton::menu-indicator { image: none; }
+        """)
+        menu = QMenu(self.new_item_btn)
+        menu.setStyleSheet("""
+            QMenu { background-color: #2b2b2b; color: white; border: 1px solid #555; }
+            QMenu::item { padding: 6px 18px; }
+            QMenu::item:selected { background-color: #3a5a8a; }
+            QMenu::item:disabled { color: #777; }
+        """)
+        self._new_item_actions = []
+        for btn, text in ((self.new_weapon_btn, "🔫 New Weapon"),
+                          (self.new_equipment_btn, "🎒 New Equipment"),
+                          (self.new_anything_btn, "🎁 New Anything")):
+            act = menu.addAction(text)
+            act.setToolTip(btn.toolTip())
+            act.triggered.connect(btn.click)
+            self._new_item_actions.append((act, btn))
+        menu.setToolTipsVisible(True)
+        menu.aboutToShow.connect(lambda: [a.setEnabled(b.isEnabled())
+                                          for a, b in self._new_item_actions])
+        self.new_item_btn.setMenu(menu)
+        button_layout.removeWidget(self.new_weapon_btn)
+        button_layout.removeWidget(self.new_equipment_btn)
+        for b in (self.new_weapon_btn, self.new_equipment_btn, self.new_anything_btn):
+            b.setParent(self)
+            b.hide()
+        button_layout.addWidget(self.new_item_btn)
 
         self.save_btn = QPushButton("💾 SAVE SELECTION")
         self.save_btn.setToolTip("Write this run (picks, weapons, history, options) to a save file "
@@ -13388,6 +13474,8 @@ class HaloGUI(QMainWindow):
     @staticmethod
     def _selected_summary(pair, player, primary_weapon):
         if pair.get('new_weapon'):
+            if ability_of_item(pair['new_weapon']):
+                return f"🎒 NEW EQUIPMENT: {pair['new_weapon']}"
             return f"🔫 NEW WEAPON: {pair['new_weapon']}"
         mod = pair.get(f'{player}_mod')
         if mod:
@@ -14153,6 +14241,34 @@ class RunEnhancer:
         self.db = db
         self.run_state = run_state
 
+    def _new_equipment_pool(self, player):
+        """Equipment and abilities the automatic New Equipment rolls may offer this
+        player: the level's equipment plus the ability pool, through the same gates as
+        the weapon pool (blacklist, owned, taken by the other player, denied)."""
+        owned = set(self.run_state.weapons_for(player))
+        bl = self.run_state.blacklist
+        game = self.db.get_game_for_mission(self.run_state.mission_id)
+        pool = []
+        if has_equipment(game):
+            pool += list(self.db.level_equipment(self.run_state.mission_id))
+        pool = [w for w in pool if w not in owned and self.db.weapon_label(w) not in bl]
+        pool = strip_denied_equipment(self.db, pool)
+        pool = drop_weapons_taken(self.db, pool, self.run_state)
+        pool = gate_offer_pool(self.db, pool, self.run_state, player)
+        pool += [w for w in ability_offer_pool(self.db, game, self.run_state, player)
+                 if w not in owned and self.db.weapon_label(w) not in bl and w not in pool]
+        return pool
+
+    def _item_counts(self, player):
+        """(weapons, equipment) this player holds -- abilities count as equipment."""
+        w = e = 0
+        for it in self.run_state.weapons_for(player) or []:
+            if self.db.is_equipment(it) or ability_of_item(it):
+                e += 1
+            else:
+                w += 1
+        return w, e
+
     def _new_weapon_pool(self, player):
         owned = set(self.run_state.weapons_for(player))
         bl = self.run_state.blacklist
@@ -14274,21 +14390,57 @@ class RunEnhancer:
         # #4: roll each of the 3 pairs independently for "new weapon" status.
         # Player 1 sets the count; Player 2 is guaranteed the SAME count.
         chance = CONFIG.get('new_weapon_chance', 0) or 0
-        if for_player == 'player1':
+        echance = CONFIG.get('new_equipment_chance', 0) or 0
+        epool = self._new_equipment_pool(for_player) if echance > 0 else []
+        # Balanced items (option): a player holding MORE weapons (or equipment) than
+        # the other is not offered another of that kind until the other catches up.
+        # Each player then rolls for themselves -- copying player 1's count, as below,
+        # would keep the player who is behind from ever catching up.
+        balance = bool(CONFIG.get('balance_item_counts'))
+        other = 'player2' if for_player == 'player1' else 'player1'
+        mine_w, mine_e = self._item_counts(for_player)
+        theirs_w, theirs_e = self._item_counts(other)
+        w_open = not (balance and mine_w > theirs_w)
+        e_open = not (balance and mine_e > theirs_e)
+        if balance:
+            flags = [bool(wpool) and w_open and random.random() < chance for _ in range(3)]
+            eflags = [not flags[i] and bool(epool) and e_open and random.random() < echance
+                      for i in range(3)]
+        elif for_player == 'player1':
             flags = [bool(wpool) and random.random() < chance for _ in range(3)]
             self.run_state.new_weapon_count = sum(flags)
+            eflags = [not flags[i] and bool(epool) and random.random() < echance
+                      for i in range(3)]
+            self.run_state.new_equipment_count = sum(eflags)
         else:
             count = min(self.run_state.new_weapon_count, 3) if wpool else 0
             chosen = set(random.sample(range(3), count)) if count else set()
             flags = [i in chosen for i in range(3)]
+            free = [i for i in range(3) if not flags[i]]
+            ecount = min(getattr(self.run_state, 'new_equipment_count', 0) or 0,
+                         len(free)) if epool else 0
+            echosen = set(random.sample(free, ecount)) if ecount else set()
+            eflags = [i in echosen for i in range(3)]
 
-        # Distinct weapons for the new-weapon pairs where the pool allows.
-        n_new = sum(flags)
-        if n_new and wpool:
-            offered = (random.sample(wpool, n_new) if len(wpool) >= n_new
-                       else [random.choice(wpool) for _ in range(n_new)])
-        else:
-            offered = []
+        def _distinct(pool, n):
+            if not n or not pool:
+                return []
+            return random.sample(pool, n) if len(pool) >= n else [random.choice(pool) for _ in range(n)]
+
+        # Distinct weapons for the new-weapon pairs where the pool allows; equipment
+        # rides the same pair slot (it is granted the same way).
+        offered = _distinct(wpool, sum(flags))
+        eoffered = _distinct(epool, sum(eflags))
+        if eoffered:
+            it = iter(eoffered)
+            merged, wi2 = [], iter(offered)
+            flags = [f or e for f, e in zip(flags, eflags)]
+            for i in range(3):
+                if eflags[i]:
+                    merged.append(next(it))
+                elif flags[i]:
+                    merged.append(next(wi2))
+            offered = merged
 
         # #5: exhausts draw from negatives not already active, so there's never
         # an overlap to unwind. Recomputed per generate (active set is stable
