@@ -1225,7 +1225,7 @@
    "balance": [
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnetism Angle",
      "block": null,
      "value": 10.0,
@@ -1234,7 +1234,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnetism Range",
      "block": null,
      "value": 20.0,
@@ -1243,7 +1243,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Autoaim Angle",
      "block": null,
      "value": 5.0,
@@ -1252,7 +1252,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Autoaim Range",
      "block": null,
      "value": 15.0,
@@ -1261,7 +1261,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Distribution Function",
      "block": "Barrels",
      "value": 0,
@@ -1271,7 +1271,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Distribution Angle",
      "block": "Barrels",
      "value": 0,
@@ -1281,7 +1281,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Firing Noise",
      "block": "Barrels",
      "value": 2.0,
@@ -1399,7 +1399,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnification Levels",
      "block": null,
      "value": 0,
@@ -1408,7 +1408,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnification Range",
      "block": null,
      "value": 0.0,
@@ -1417,7 +1417,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnification Range Max",
      "block": null,
      "value": 0.0,
@@ -1426,7 +1426,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Weapon Zoom Time",
      "block": null,
      "value": 0,
@@ -1435,7 +1435,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Total Initial",
      "block": "Magazines",
      "value": 129.6,
@@ -1444,7 +1444,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Inventory Maximum",
      "block": "Magazines",
      "value": 339.428571,
@@ -1453,7 +1453,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Loaded Maximum",
      "block": "Magazines",
      "value": 72.0,
@@ -1462,7 +1462,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Reloaded",
      "block": "Magazines",
      "value": 72.0,
@@ -1471,7 +1471,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Per Second",
      "block": "Barrels",
      "value": 20.0,
@@ -1480,7 +1480,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Per Second Max",
      "block": "Barrels",
      "value": 20.0,
@@ -1489,7 +1489,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Shots Per Fire",
      "block": "Barrels",
      "value": 0,
@@ -1498,7 +1498,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Shots Per Fire Max",
      "block": "Barrels",
      "value": 0,
@@ -1507,7 +1507,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Fire Recovery Time",
      "block": "Barrels",
      "value": 0.0,
@@ -1516,7 +1516,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Projectiles Per Shot",
      "block": "Barrels",
      "value": 1.0,
@@ -1525,7 +1525,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Per Shot",
      "block": "Barrels",
      "value": 1.0,
@@ -1534,7 +1534,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Minimum Error",
      "block": "Barrels",
      "value": 0.1,
@@ -1544,7 +1544,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Error Angle",
      "block": "Barrels",
      "value": 0.2,
@@ -1554,7 +1554,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Error Angle Max",
      "block": "Barrels",
      "value": 3.4375,
@@ -1604,7 +1604,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Autoaim Falloff Range",
      "block": null,
      "value": 7.5,
@@ -1614,7 +1614,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Magnetism Falloff Range",
      "block": null,
      "value": 10.0,
@@ -1624,7 +1624,7 @@
     },
     {
      "class": "weap",
-     "tag": "objects\\weapons\\rifle\\saw\\saw_h4_port",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
      "field": "Rounds Total Maximum",
      "block": "Magazines",
      "value": 411.428571,

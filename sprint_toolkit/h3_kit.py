@@ -59,16 +59,13 @@ MCC_GAME = 'halo3odst' if IS_ODST else 'halo3'
 #: Halo 3's short tag, for anything that keeps per-game copies on disk.
 SHORT = 'odst' if IS_ODST else 'h3'
 
-#: THE PORT'S WEAPON TAG, and why the two games spell it differently.
+#: The port's weapon tag, the same path in both games.
 #:
-#: Halo 3's port was placed in Sapien, so its path was free and it is simply `saw\saw`.
-#: ODST's is placed by overwriting a scenario tag reference IN PLACE -- the only way to
-#: edit a 6.9 MB scenario without walking its chunk tree -- and an in-place overwrite
-#: demands the SAME LENGTH as the reference it replaces. The reference it takes is
-#: `objects\weapons\multiplayer\ball\ball`, 37 characters, so the tag is named to 37.
-#: See odst_saw_place.py for why that reference and not another.
-SAW_WEAPON = os.sep.join(['objects', 'weapons', 'rifle', 'saw',
-                          'saw_h4_port' if IS_ODST else 'saw'])
+#: It was briefly PADDED in ODST to 61 characters, to fit an in-place overwrite of a
+#: weapon palette entry. That route is abandoned: it puts the tag in the map and gathers
+#: none of its geometry (see odst_saw_place.py), so the padding bought nothing and the
+#: name is back to matching Halo 3's.
+SAW_WEAPON = os.sep.join(['objects', 'weapons', 'rifle', 'saw', 'saw'])
 
 
 def banner():

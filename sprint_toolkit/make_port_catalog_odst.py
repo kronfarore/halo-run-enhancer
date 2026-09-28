@@ -31,9 +31,7 @@ SAW = B.join(['objects', 'weapons', 'rifle', 'saw'])
 
 # donor tag -> the port's own tag (as h3_make_saw.py created it)
 PORT_TAGS = {
-    # the port's weapon tag is named to the LENGTH of the scenario reference it
-    # replaces, which is why it is not simply `saw` here -- see odst_saw_place.py
-    ('weap', AR + B + 'assault_rifle'): SAW + B + 'saw_h4_port',
+    ('weap', AR + B + 'assault_rifle'): SAW + B + 'saw',
     ('proj', AR + B + 'projectiles' + B + 'assault_rifle_bullet'):
         SAW + B + 'projectiles' + B + 'saw_bullet_h4_original_numbers',
     ('proj', MG + B + 'projectiles' + B + 'machinegun_turret_bullet'):
