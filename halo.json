@@ -14722,7 +14722,6 @@
 		"Regeneration Field": {
 			"Healing": {
 				"desc": "How fast the field restores shields.",
-				"ignore": "yes",
 				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. `Tree of Life Shield Regen Modifier` 0.66 on that damage effect (tooltip: overrides any shield recharge rate trait when not 1.0). The only other users are the Watcher and Sentinel beams' friendly second barrel (-0.2), not touched here.",
 				"game": ["Halo 4"],
 				"tag": "jpt! objects\\equipment\\storm_regen_field\\fx\\healing",
@@ -14732,7 +14731,6 @@
 			},
 			"Field Duration": {
 				"desc": "How long the healing field stays on the ground.",
-				"ignore": "yes",
 				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. `healing_field` self-destructs after 10 s (Proximity Mine Self Destruct Time) and counts down 10 s (Countdown Time In Seconds); grouped so they move together.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_regen_field\\healing_field\\healing_field",
@@ -14743,7 +14741,6 @@
 			},
 			"Activation Energy": {
 				"desc": "How much meter you need banked before you can drop it.",
-				"ignore": "yes",
 				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Minimum Activation Energy 1.0 -- a full meter.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
@@ -14753,7 +14750,6 @@
 			},
 			"Recharge": {
 				"desc": "How quickly the meter comes back.",
-				"ignore": "yes",
 				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Inactive Energy Rate 0.033 per second (about 30 s from empty).",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
@@ -14763,7 +14759,6 @@
 			},
 			"Warmup Time": {
 				"desc": "How long it takes to deploy.",
-				"ignore": "yes",
 				"debug_desc": "Halo 4's Regeneration Field ability (storm_regen_field). NOT in any shipped campaign map -- it reaches campaign only through a rebuilt map's dz_enhancer zone. Chain (read 2026-09-17): the ability's Deactivate Effect `fx\\discharge_large` spawns the `healing_field` equipment, whose attached effect `fx\\healing` applies the `healing` damage effect with 'Apply Tree Of Life' set -- 'as if a tree of life was near the victim'. Warmup Time 0.5 s.",
 				"game": ["Halo 4"],
 				"tag": "eqip objects\\equipment\\storm_regen_field\\storm_regen_field*",
@@ -15232,7 +15227,7 @@
 			},
 			"Grenade Collateral": {
 				"color": "aggressive",
-				"desc": "Collateral Damage Radius",
+				"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 				"debug_desc": "The exception list is per game, and Brutes are only on it in Halo 2. From Halo 3 on their own Grenades block is empty on every brute char tag, so they inherit this one and this card is the ONLY way to tune their grenades. Measured on ODST: 9 of 72 char tags populate Grenades Properties — `ai\\generic`, `elite_specops`, `grunt`, `grunt_ultra` and the four flood forms.",
 				"desc_overrides": {"Halo 2": "General grenade behaviour — velocity, range, collateral. Exceptions: Brutes, Grunts, Marines, SpecOps Elites and the Flood Combat forms."},
 				"game": ["Halo 2", "Halo 3"],
@@ -15823,7 +15818,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major", "Halo 3: ODST": "char objects\\characters\\elite\\ai\\elite*", "Halo 3": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
 					"init_defaults": {"Halo 1": {"tag": "actv characters\\elite\\*", "source": "actv characters\\grunt\\grunt minor plasma pistol", "only_if_zero": "Grenade Stimulus", "copy": ["Grenade Type", "Trajectory Type", "Minimum Enemy Count", "Grenade Velocity", "Grenade Ranges", "Grenade Ranges Max", "Grenade Chance", "Grenade Check Time", "Encounter Grenade Timeout", "Grenade Count", "Grenade Count Max", "Dont Drop Grenades Chance"], "set": {"Grenade Stimulus": "Visible Target"}}},
@@ -17243,7 +17238,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "Grunts carry their own Grenades block in every game, so this touches nothing else. Grenade Ideal Velocity was allow-listed to Halo 2 until 2026-08-31 even though the grunt tags define it in Halo 3 and ODST too (3.0).",
 					"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"split_from": "Grenades",
@@ -18509,7 +18504,7 @@
 					"split_from": "Search Tactics",
 					"exclusive": "Search Tactics",
 					"targets": [
-						{ "step": "*1.2", "field": "Investigate Weight", "block": "Pre-Search Properties", "index": "all", "min": 0 }
+						{ "step": "*2.0", "field": "Investigate Weight", "block": "Pre-Search Properties", "index": "all", "min": 0 }
 					]
 				},
 				"Suppress": {
@@ -18891,7 +18886,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The combat forms carry their own Grenades block on every level that fields them, in all three games, so the general **Grenade Properties** card never reached them.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": {"Halo 2": "char objects\\characters\\floodcombat*", "Halo 3": "char objects\\characters\\floodcombat*"},
@@ -19831,7 +19826,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The pure forms carry their own Grenades block on every Halo 3 and ODST level that fields them. They first appear in Halo 3, so there is no earlier game to inherit from.",
 					"game": "Halo 3",
 					"tag": {"Halo 3": "char objects\\characters\\flood*\\ai\\flood_pureform*"},
@@ -20458,7 +20453,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The grenade group on the Bugger's own tags. In the older games the Bugger inherited these from `ai\\\\generic` and the shared card covered it; in Reach the bugger tag defines the block itself, with the same numbers generic ships (velocity 5.5, ideal 3.0, ranges 3.0-12.0, collateral radius 2.0), so the shared edit no longer reaches it.",
 					"game": ["Halo Reach"],
 					"tag": "char objects\\characters\\bugger\\ai\\bugger*",
@@ -21044,7 +21039,7 @@
 				"Grenade Collateral": {
 					"skip_games": ["Halo 3: ODST"],
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "Halo 2's Brutes carry their own Grenades block on all 5 levels that field them. Halo 3 has it on ONE -- Sierra 117 (010) of 6 -- and ODST on none of its 9, which is why ODST is excluded outright: everywhere else the block is empty and they inherit `ai\\generic`, which the general **Grenade Properties** card edits.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {"Halo 2": "char objects\\characters\\brute\\ai\\brute*", "Halo 3": "char objects\\characters\\brute\\ai\\brute*"},
@@ -22222,7 +22217,7 @@
 				},
 				"Grenade Collateral": {
 					"color": "aggressive",
-					"desc": "Collateral Damage Radius",
+					"desc": "Won't throw a grenade, if there is an ally within this radius around the target",
 					"debug_desc": "The Elites carry their own Grenades block, so the general **Grenade Properties** card has never reached them here. Halo 2 defines it on 9 of the 13 levels that field them and ODST on 8 of 8. Halo 3 has it on ONE, Floodgate (050) of 8 -- worth carding, but expect it to do nothing on the others.",
 					"game": ["Halo 4"],
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
