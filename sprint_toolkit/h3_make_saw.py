@@ -31,15 +31,22 @@ TAGS = os.path.join(EK, 'tags')
 AR_DIR = B.join(['objects', 'weapons', 'rifle', 'assault_rifle'])
 SAW_DIR = B.join(['objects', 'weapons', 'rifle', 'saw'])
 
+#: WHERE THE DAMAGE EFFECT LIVES, which is not the same in every kit. Halo 3 and ODST
+#: keep it in its own `damage_effects` folder; Reach keeps it BESIDE the projectile, same
+#: basename, different extension. Nothing else about the clone changes, and the port's
+#: name stays 30 characters either way so every repoint is still an in-place overwrite.
+DMG_SUB = h3_kit.per_kit(h3='damage_effects', odst='damage_effects', reach='projectiles',
+                         what="the folder the Assault Rifle keeps its damage_effect in")
+
 AR_WEAPON = AR_DIR + B + 'assault_rifle'
 AR_PROJ = AR_DIR + B + 'projectiles' + B + 'assault_rifle_bullet'
-AR_DMG = AR_DIR + B + 'damage_effects' + B + 'assault_rifle_bullet'
+AR_DMG = AR_DIR + B + DMG_SUB + B + 'assault_rifle_bullet'
 
 # Same length as what each replaces, so a repoint never changes a chunk's size.
 SAW_WEAPON = h3_kit.SAW_WEAPON   # free in Halo 3; in ODST its LENGTH is fixed by the
                                  # scenario reference it replaces -- see h3_kit
 SAW_PROJ = SAW_DIR + B + 'projectiles' + B + 'saw_bullet_h4_original_numbers'
-SAW_DMG = SAW_DIR + B + 'damage_effects' + B + 'saw_bullet_h4_original_numbers'
+SAW_DMG = SAW_DIR + B + DMG_SUB + B + 'saw_bullet_h4_original_numbers'
 
 CLONES = [  # (source tag, destination tag, extension)
     (AR_WEAPON, SAW_WEAPON, '.weapon'),
@@ -104,21 +111,28 @@ def main():
         print('      tree still spans the file: %s (%d of %d)' % (ok, covered, total))
 
     print('\nverify -- every reference of every new tag must resolve to a real file:')
+    # Through the PARSER, not a regex over the bytes. The regex this replaces looked for
+    # a path beginning `objects|globals|sound|effects|ui` and so anchored inside
+    # `fx\material_effects\weapons\assault_rifle`, taking the four characters before
+    # "effects" as a group 4cc and reporting a tag that is right there on disk as
+    # MISSING. A check that cries wolf is worse than none, and h3tag already walks the
+    # chunk tree and decodes every reference exactly.
     for _src, dst, ext in CLONES:
         p = full(dst, ext)
-        d = open(p, 'rb').read()
         bad = 0
-        for m in re.finditer(rb'([a-z!_ ]{4})((?:objects|globals|sound|effects|ui)[ -~]{5,}?)frgt', d):
-            grp, path = m.group(1).decode()[::-1].strip(), m.group(2).decode()
-            hits = [f for f in os.listdir(os.path.dirname(full(path)))
+        for _off, grp, path in h3tag.Tag(p).references():
+            if not path:
+                continue
+            folder = os.path.dirname(full(path))
+            hits = [f for f in os.listdir(folder)
                     if f.startswith(os.path.basename(path) + '.')] \
-                if os.path.isdir(os.path.dirname(full(path))) else []
+                if os.path.isdir(folder) else []
             if not hits:
                 bad += 1
                 print('      MISSING  %-6s %s' % (grp, path))
         print('   %-52s %s' % (os.path.basename(p), 'all references resolve' if not bad
                                else '%d missing' % bad))
-    print('\nNext: place %s in Sapien on 010_jungle, then build the map.' % SAW_WEAPON)
+    print('\nNext: place %s in Sapien, then build the map.' % SAW_WEAPON)
 
 
 if __name__ == '__main__':

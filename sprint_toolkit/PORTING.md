@@ -883,6 +883,53 @@ both games' AR models carry zero variants. The check is the stock region NAME.) 
 one look the first time a SAW is dropped in front of an ally, but there is nothing to do
 up front.
 
+### The pipeline so far, and it is short
+
+    set PORT_EK=reach
+
+    h3_make_saw.py --write        weapon, projectile, damage effect      (step 3)
+    tool export-tag-to-xml        the AR's render_model, ABSOLUTE paths
+    saw_to_jms_h3.py <xml> <lmg_rm.xml> 1.0     ONE JMS, the world skeleton  (step 1)
+    tool render objects\weapons\rifle\saw final
+    <clone two shaders>           saw_body, saw_display                   (step 2, part)
+    tool render ... final         AGAIN: a shader that arrives after a render is not in it
+    reach_saw_wire_model.py --write   hlmt + BOTH mode refs               (step 1)
+
+Four tags, every chunk tree spanning its file, every reference resolving:
+
+    saw.weapon       37051 bytes, 24 refs      saw.model      23789, 10 refs
+    ...bullet.projectile 24411, 10 refs        ...damage_effect 6850, 4 refs
+
+THREE THINGS THE HALO 3 TOOLS DID NOT SURVIVE UNCHANGED, all now handled:
+
+* **`h3tag` reads Reach tags as they are.** The chunk format is identical -- the
+  Assault Rifle's weapon parses 37111 of 37111 bytes and decodes all 24 references. That
+  is the whole tag-editing layer carried over for free.
+* **The XML export is a DIFFERENT SCHEMA.** Halo 3 wraps a block's elements in
+  `<block name="nodes" value="node,5">`; Reach has no `<block>` tag anywhere in the
+  file and instead writes a self-closing `<field name="nodes" value="5" type="block"/>`
+  with the elements following as SIBLINGS. Read as Halo 3 this yields nothing, and the
+  skeleton comes back empty.
+* **Block indices are NAMES.** Halo 3 writes `node,3`, Reach writes `b_ophandle`, and
+  `NONE` for no link -- so an index has to be resolved against the names already read.
+
+And one that would have been silent: Reach's nodes are `b_`-prefixed, so the H4 bone map
+keyed on `gun` and `magazine` matched nothing and fell back to node 0, welding the
+magazine to the body. It raises now instead.
+
+All 16 marker groups come across, per-species hands included. 10736 verts, 13836 tris.
+
+### What is NOT done
+
+Step 2 is half done: the model wears the Assault Rifle's textures, because the two
+shaders were cloned but the H4 diffuse is not swapped in yet. Reach's bitmap is
+`assault_rifle_diffuse` where Halo 3's is `assault_rifle`, so the equal-length naming
+trick `h3_saw_textures.py` relies on needs different names here -- or `repoint`, which
+`reach_saw_wire_model.py` already uses rather than inventing a padded path.
+
+Steps 4 to 9 are untouched. The chud is still `ui\chud\assault_rifle` and both jmad
+graphs are still the Assault Rifle's.
+
 ### The unknown still worth measuring
 
 1. residency. Reach is the one game where a placed weapon can be inert because its tag's
@@ -1105,6 +1152,14 @@ about the render_model XML cost time every time they are rediscovered:
 * `raw indices` is a triangle **STRIP**; read as a list it draws a discus.
 
 `extract-import-info` fails on H4 tags — there are no original source files to recover.
+
+**The source tag is `objects\weapons\rifle\storm_lmg\storm_lmg.render_model` in H4EK.**
+The SAW is called the storm_lmg there, which is not guessable, and every port's geometry
+comes out of it — all four converters take that export as `lmg_rm.xml`, and it has been
+living in `%TEMP%`, one cleanup away from being the next thing rescued out of a
+scratchpad. It is reproducible in one command:
+
+    tool export-tag-to-xml <H4EK>\tags\objects\weapons\rifle\storm_lmg\storm_lmg.render_model %TEMP%\lmg_rm.xml
 
 ---
 
