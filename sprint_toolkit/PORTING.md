@@ -1628,3 +1628,41 @@ This is the same shape as the region-name trap in Halo 3: `tool` rewrites a NAME
 way in, the tag is otherwise perfect, and only the thing that looks the name up notices.
 Whenever a ported model is silently wrong, compare its node and region names against the
 donor's FIRST -- it is one export and a diff, and it is the cheapest check there is.
+
+---
+
+## THE WORLD MODEL: what has been ELIMINATED
+
+After the `b_` fix, first person works and its animations look right. The WORLD model
+still draws nothing -- on the ground and in an ally's hands. Both go through the same
+render model, and the only thing between them is the model tag, so the search space is
+small and most of it is now closed. Recorded so none of it is checked twice:
+
+* **residency** -- `reach_pools.py m20 --audit`: 34 palette entries, 0 HALF-loaded, 0 not
+  resident at start. The FULL CLOSURE is live, not just the weapon;
+* **the geometry in the map** -- `h3_chunk_check`: `mode saw` 1 chunk, 1 backed, same as
+  the Assault Rifle, plus both bitmaps and `saw_body`;
+* **the model tag** -- `saw.model` exported to XML is IDENTICAL to the Assault Rifle's in
+  all 99 fields except the render-model reference. Not the LOD distances, not the
+  imposter policy, not the checksums;
+* **the region and permutation names** -- both `default`/`default`, and every other field
+  of the regions block matches: mesh index, mesh count, all four instance masks, the L1
+  and L2 section group indices. This is where Halo 3's identical symptom lived, and it is
+  not where Reach's does. `default` is universal across Reach's stock weapons;
+* **the mesh format** -- same vertex type (skinned), same rigid node index (-1), same
+  index buffer type (triangle strip), same mesh count, same runtime flags;
+* **the compression bounds** -- same axis convention, comparable scale (1.05 m).
+
+One real difference remains and its significance is unknown: **`tool render` emits the
+nodes in a different ORDER than the donor's.** The Assault Rifle reads b_gun, b_switch,
+b_safety, b_magazine, b_ophandle; the port reads b_gun, b_magazine, b_ophandle, b_safety,
+b_switch -- alphabetical after the prefix strip. The hierarchy is equivalent (every node
+is a child of b_gun, with a valid sibling chain) and the JMS declares the donor's own
+links, so this is tool's own traversal, not lost data. It would matter only if a graph
+addressed nodes by INDEX -- and the first-person graph is a clone of the donor's and
+animates correctly, which argues it resolves by name.
+
+The next step is the bisect Halo 3 used: point `saw.model`'s `mode` back at the Assault
+Rifle's render model and rebuild. If a dropped weapon then draws as an Assault Rifle the
+fault is inside the port's render model; if it still draws nothing the fault is in the
+weapon or the model tag, and neither of those differs from the donor.
