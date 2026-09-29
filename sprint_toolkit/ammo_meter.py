@@ -159,6 +159,8 @@ def main(*sizes_then_base):
         prev = Image.new('RGB', (W, H * 2 + 8), (40, 60, 90))
         prev.paste(Image.fromarray(static_a).convert('RGB'), (0, 0))
         prev.paste(Image.fromarray(meter_l).convert('RGB'), (0, H + 8), Image.fromarray(meter_a))
+        # derived preview only; the directory is not in the repo (see make_icon.py)
+        os.makedirs(os.path.join(HERE, 'h1mp'), exist_ok=True)
         prev.save(os.path.join(HERE, 'h1mp', 'ammo_%d.png' % n))
         print('N=%d rows %d x %d scale %.2f -> %d ticks of %d round(s), '
               'sequence %d, multiplier %d, step %d'

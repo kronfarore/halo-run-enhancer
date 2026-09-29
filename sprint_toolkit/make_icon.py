@@ -65,6 +65,11 @@ def main(jms_path, out, height=132):
     line_rgba = Image.new('RGBA', (W, H), (235, 235, 235, 230))
     img.paste(line_rgba, (0, 0), lines)
     img = img.resize((W // SS, H // SS), Image.LANCZOS)
+    # h1mp holds nothing but DERIVED art -- this icon, its preview, and the ammo meter
+    # previews -- so it is not in the repo, and a machine that has never run the Halo 1
+    # build does not have it. PIL will not create a missing parent, so saw_build.py died
+    # here on its FIRST step with a FileNotFoundError that reads like a missing input.
+    os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)
     img.save(out)
     prev = Image.new('RGBA', (img.width * 2, img.height * 2), (40, 60, 90, 255))
     prev.alpha_composite(img.resize(prev.size))
