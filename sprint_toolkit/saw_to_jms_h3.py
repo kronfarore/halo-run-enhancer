@@ -55,6 +55,23 @@ GUN, MAG = h3_kit.per_kit(h3=('gun', 'magazine'), odst=('gun', 'magazine'),
 #: Halo 3 and ODST have unprefixed skeletons, so there is nothing to protect there.
 NODE_PREFIX = h3_kit.per_kit(h3='', odst='', reach='b_',
                              what='what tool render will strip off a node name')
+
+#: AND IT SORTS WHAT IS LEFT, ALPHABETICALLY. Measured: `b_b_switch` comes out
+#: `b_switch` while `a_b_gun` is untouched, so the strip is exactly a leading `b_`, and
+#: the emitted order is alphabetical on the stripped name whatever the JMS declares.
+#:
+#: That matters because the WORLD animation graph carries its own 5-node skeleton and
+#: its animation data indexes INTO it. The donor's order is gun, switch, safety,
+#: magazine, ophandle; alphabetical is gun, magazine, ophandle, safety, switch. A held
+#: or dropped weapon is posed through that graph, so the transforms land on the wrong
+#: nodes. First person is unaffected because its graph is the 52-node ARMS skeleton and
+#: the weapon hangs off it by MARKER, not by node index.
+#:
+#: So the order is steered with a one-character sort key that is renamed away in the
+#: tag afterwards -- `b_a_gun` renders as `a_gun`, sorts first, and reach_node_names.py
+#: renames it to `b_gun`. Every rename is one character for one character, so it is an
+#: in-place byte swap with no chunk length to correct.
+ORDER_KEYS = 'abcdefghijklmnopqrstuvwxyz'
 UNITS = 100.0            # JMS units per world unit
 
 
@@ -159,7 +176,13 @@ def template_from_xml(path):
     for f in raw:
         rot = [float(x) for x in f.get('default rotation', '0,0,0,1').split(',')]
         pos = [float(x) for x in f.get('default translation', '0,0,0').split(',')]
-        nodes.append(JmsNode(NODE_PREFIX + f.get('name', ''),
+        base = f.get('name', '')
+        if NODE_PREFIX and base.startswith('b_'):
+            # b_gun -> b_<key>_gun, so the strip leaves <key>_gun and the sort obeys
+            base = 'b_%s_%s' % (ORDER_KEYS[len(nodes)], base[2:])
+        else:
+            base = NODE_PREFIX + base
+        nodes.append(JmsNode(base,
                              _block_index(f.get('first child node'), names),
                              _block_index(f.get('next sibling node'), names),
                              rot[0], rot[1], rot[2], rot[3],
@@ -213,12 +236,21 @@ def main():
     h1.MARKER_FROM = {'muzzle_flash': 'muzzle_flash', 'primary_trigger': 'primary_trigger',
                       'primary_ejection': 'primary_ejection', 'flashlight': 'flashlight'}
     # the H4 SAW's two skinned bones -> the Halo 3 nodes that move the same parts
-    gun, mag = NODE_PREFIX + GUN, NODE_PREFIX + MAG
-    if gun not in by_name:
-        raise SystemExit('this skeleton has no node called %r -- it has %s.\n'
-                         'Mapping would fall back to node 0 and weld every bone '
-                         'together.' % (gun, sorted(by_name)))
-    node_map = {0: by_name[gun], 1: by_name.get(mag, by_name[gun])}
+    # The names now carry a sort key (b_a_gun), so a lookup on the donor's own name has
+    # to match on the STEM. Getting this wrong falls back to node 0 and welds the bones.
+    def node_of(want):
+        if want in by_name:
+            return by_name[want]
+        stem = want[2:] if want.startswith('b_') else want
+        for k, v in by_name.items():
+            if k == stem or k.endswith('_' + stem):
+                return v
+        return None
+    gi, mi = node_of(GUN), node_of(MAG)
+    if gi is None:
+        raise SystemExit('this skeleton has no node for %r -- it has %s.'
+                         % (GUN, sorted(by_name)))
+    node_map = {0: gi, 1: mi if mi is not None else gi}
     jm = h1.convert(rm, tmpl, node_map)
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, REGION + '.jms')

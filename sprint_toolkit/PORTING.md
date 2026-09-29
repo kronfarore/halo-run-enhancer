@@ -1631,6 +1631,37 @@ donor's FIRST -- it is one export and a diff, and it is the cheapest check there
 
 ---
 
+## `tool render` ALSO SORTS THE NODES, and the world graph indexes into them
+
+The second half of the same trap, and it is what the eliminations below were closing in
+on. Measured: `b_b_switch` comes out `b_switch` while `a_b_gun` is left alone, so the
+strip is exactly a leading `b_` -- and the order that comes out is ALPHABETICAL on the
+stripped name, whatever the JMS declares.
+
+    donor        b_gun, b_switch, b_safety, b_magazine, b_ophandle
+    alphabetical b_gun, b_magazine, b_ophandle, b_safety, b_switch
+
+**The world animation graph carries its own 5-node skeleton and its animation data
+indexes INTO it**, so a port whose nodes came out sorted has indices 1..4 permuted
+against the graph that poses it. That is the whole of it:
+
+    placed by the scenario   bind pose, no graph          DRAWS
+    first person             the 52-node ARMS graph, and the weapon hangs off it by
+                             MARKER rather than by node index               DRAWS
+    held by an ally, dropped posed through the world graph                  NOTHING
+
+Order cannot be asked for, so it is bought with a sort key and the key is renamed away.
+`saw_to_jms_h3.py` emits `b_a_gun`, `b_b_switch`, `b_c_safety`, `b_d_magazine`,
+`b_e_ophandle`; `tool` strips the `b_` and sorts on `a_gun`, `b_switch`, ... which IS the
+donor's order; `reach_node_names.py` then renames `a_gun` to `b_gun` and so on. Every
+rename is one character for one character, so each is an in-place byte swap with no chunk
+length to propagate -- unlike Halo 3's region rename, which grows the file.
+
+Run it after EVERY `tool render`, like the region rename in Halo 3. The port's nodes now
+read b_gun, b_switch, b_safety, b_magazine, b_ophandle -- the donor's names in the
+donor's order.
+
+---
 ## THE WORLD MODEL: what has been ELIMINATED
 
 After the `b_` fix, first person works and its animations look right. The WORLD model
