@@ -312,7 +312,7 @@ before it could do anything. `odst_saw_place.py` reads the real palette and plac
 ### What is NOT done in ODST
 
 **Step 6, the ammo-pickup choice.** ODST HAS ammo pickups where Halo 3 has none -- its
-Assault Rifle references `objects\powerupsssault_rifle_ammo`, and the port inherits
+Assault Rifle references `objects\powerups\assault_rifle_ammo`, and the port inherits
 that item as built, so it does top up. What it lacks is the catalog `ammo` block that
 gives the Weapon ports page a dropdown to point it at a different item. Halo 1 is the
 only game with that wired. Everything else on the checklist is complete.
