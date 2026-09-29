@@ -1030,35 +1030,28 @@ what confirms the triple is (loaded, reserve, battery) rather than a coincidence
 
 Done: `ui\chud\saw` holds 18, the Assault Rifle still holds 8, and the weapon is repointed.
 
-### Step 8: the glyph is RIGHT and the insertion is NOT SAFE YET
+### Step 8: DONE -- the glyph is in, and the port has its own lines
 
-The icon renders cleanly from the port's own mesh at all three resolutions (155x44,
-310x88, 465x132) and the codec is Halo 3's, unchanged.
+The icon renders from the port's own mesh at all three resolutions (155x44, 310x88,
+465x132) and the codec is Halo 3's, unchanged. It did not FIT anywhere, which is what
+`h3_font_grow.py` exists for; see the glyph-ceiling section. Reach's codepoint is
+**0xE150**, above the 0xE143 its HUD font tops out at in all three packages, because an
+appended block goes at the END of the file.
 
-**Choosing the codepoint is a three-way constraint, not a free-slot search.** The glyph
-must sort into a run of THIS FONT that has room, in ALL THREE packages at once, and their
-block boundaries are completely different -- x1 splits font 3 across three blocks, x2
-across seven, x3 across thirteen. Intersecting the roomy runs leaves 41 codepoints, 25 of
-them unused; **0xE052** is the first. (0xE09A was tried first because it is free and sits
-in x1's roomy run. x2 sorts it into a block with 480 bytes free against 1768 needed, and
-the tool REFUSES -- correctly.)
+**The glyph is LIVE.** The packages are loose files in `haloreach\maps\fonts`, so it is
+already there with no rebuild. The MESSAGES are in the map's string list and are not.
 
-**But the multi-package write is not safe to re-run.** A second `--write` against Reach
-left x1 with 120 entries gone and font 4 emptied, after the first had already placed the
-glyph. All three packages were restored from copies taken beforehand and verified
-byte-identical: 353 glyphs decode, zero failures, neither test codepoint present. The
-E: backups `h3_weapon_glyph` keeps were also checked against pristine and match, so
-`--restore` is safe.
+`h3_port_messages.py` ran against HREK unchanged -- same three verbs, same list path.
+**Reach has SEVEN lines where Halo 3 and ODST have five**, adding `saw_switch_to` ("Out
+of ammo / Press ... to switch to") and `saw_swap_ai` (taking an ally's weapon). All
+eleven non-English languages got them, 4 localized and 3 English fallback each -- the
+same split as ODST, because the prompts carry only an icon while the confirmation and the
+two ammo lines name the weapon.
 
-Until that write path is understood, Reach's glyph stays unbuilt and the packages stay
-shipped. `h3_port_messages.py` therefore stays blocked too, which is the right order: a
-message pointing at a codepoint with no glyph is a blank box.
-
-**Pre-existing, and not ours:** Reach's shipped package reports `icon\fixedsys_ui-16` as
-98 glyphs when its tables hold 96 (28 + 68 across two blocks). That is in Bungie's file,
-it survives a restore, and it makes `h3_font_package`'s global "adds up" check report a
-MISMATCH on a perfectly good Reach package -- so that check alone must not be read as
-damage. Diff against a pristine copy instead.
+The list went 298,702 -> 319,253 bytes and the weapon's five message ids are repointed.
+**The CRLF trap did not fire**, and the proof is two numbers: `tool` reported 702 english
+strings rather than a small delta, and the count of unpointed (-1) words came out at TWO,
+below the THREE the shipped list already carries.
 ### What is NOT done
 
 Step 7 (above), step 8's glyph placement and its messages, and step 9's retiming. The
