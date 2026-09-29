@@ -691,11 +691,11 @@ by every install of that game.
 
 The Editing Kits could do this all along. The verbs, per kit:
 
-| kit | extract | import |
-|---|---|---|
-| H3EK, H3ODSTEK | `extract-unicode-strings <list>` | `strings <dir>` + `strings-localized <dir>` |
-| H2EK | `extract-unicode-strings <list>` | `new-strings <dir>` |
-| HCEEK | — | `unicode-strings <dir>` |
+| game | extract | import | tool |
+|---|---|---|---|
+| Halo 3, ODST | `extract-unicode-strings <list>` | `strings <dir>` **+** `strings-localized <dir>` | `h3_port_messages.py` |
+| Halo 2 | `extract-unicode-strings <list>` | `new-strings <dir>` (all languages at once) | `h2_port_messages.py` |
+| Halo 1 | — (Reclaimer reads the tag) | — (Reclaimer writes it) | `h1_port_messages.py` |
 
 The source is UTF-16, a `[Strings]` header and one `name = "text"` per line, with icons
 as NAMED MACROS (`&assault_rifle`, `&button_action_weapon_primary`). There are 39 macros
@@ -733,17 +733,27 @@ any of the twelve languages.
 
 ### Where each game stands
 
-* **Halo 3: ODST -- DONE and confirmed in game.** Its own glyph on three prompts,
-  "Picked up a SAW" on the confirmation, 487 entries, all languages.
-* **Halo 3 -- DONE in the tags, needs a map rebuild.** 475 entries, all languages, the
-  weapon repointed from `am_*` to `saw_*`, and `h3_mcc_localization --restore` has given
-  the automag its glyph back in the live `EN_Halo3.bin`.
-* **Halo 2 -- STILL BORROWING.** `h2_saw_messages.py` blanks the cut GPMG's three lines
-  rather than rewording them. H2EK has `extract-unicode-strings` and `new-strings`, so
-  the same conversion is available and has not been done.
-* **Halo 1 -- icon already OWNED, text not checked.** `add_msg_icon.py` appends a NEW
-  sequence (25) to the shared `hud_msg_icons` sheet with stock indices untouched, so
-  nothing is taken. HCEEK's import verb is `unicode-strings`.
+**All four now own their lines.** None takes anything from a live weapon, and the two
+edits that reached OUTSIDE the map -- into localization files shared by every install of
+their game -- have both been undone.
+
+* **Halo 3: ODST** — done and confirmed in game. 487 entries, all twelve languages.
+* **Halo 3** — done in the tags, needs a map rebuild. 475 entries, all twelve languages;
+  repointed `am_*` → `saw_*`, and `h3_mcc_localization --restore` gave the automag its
+  glyph back.
+* **Halo 2** — done in the tags, needs a map rebuild. 332 → 339 entries in all NINE
+  languages (its `new-strings` does every language in one pass); repointed `gpmg_*` →
+  `saw2_*`, and `h2_saw_messages --restore` gave the cut GPMG its three lines back.
+  **The prefix is four characters because H2 POOLS these ids with no terminators**, so a
+  rename must not change length — the same trap `h2_tagref` documents for tag paths. The
+  weapon comes out at exactly 3971 bytes, unchanged.
+* **Halo 1** — done in the tags, needs a map rebuild. Its ICON was always owned (a new
+  sequence appended to the shared sheet); the text was not. The engine reads the index
+  AND the one after it, so a port needs a PAIR: appended at 47/48, weapon repointed from
+  4. **Halo 1 is the only one where appending is trivially safe** — its list is addressed
+  BY POSITION, so nothing before a new entry can move.
+
+Each needs its map rebuilt before the change shows, ODST excepted.
 
 ### The localization .bin, for the record
 
@@ -877,11 +887,6 @@ about the render_model XML cost time every time they are rediscovered:
 
 ## Open, and deliberately so
 
-* **Halo 2 and Halo 1 still BORROW their pickup text**, where Halo 3 and ODST now own
-  theirs. Halo 2 blanks the cut GPMG's three lines rather than rewording them; Halo 1's
-  ICON is already its own (a new sequence appended to the shared sheet) but its text was
-  not checked. Both kits have the verbs -- H2EK `extract-unicode-strings` + `new-strings`,
-  HCEEK `unicode-strings` -- so this is a conversion, not a research problem.
 * **The port's non-English confirmation lines are English.** The four prompt lines are
   properly localized in all twelve languages; `picked_up` and the two ammo lines fall back
   to English, because a weapon name cannot be substituted into a translated sentence
