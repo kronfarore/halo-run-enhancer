@@ -46,7 +46,13 @@ BULLET = SAW + B + 'projectiles' + B + 'saw_bullet_h4_original_numbers'
 EDITS = [
     (SAW + B + 'saw.weapon',
      struct.pack('<hhh', 160, 320, 32),        # initial, total maximum, loaded maximum
+     # `rounds total maximum` is the RESERVE PLUS THE MAGAZINE, which is why the tag and
+     # the plugin appear to disagree and do not: Reach's Assault Rifle reads 320 in the
+     # tag while the plugin's "Rounds Inventory Maximum" reads 288, and 288 + 32 = 320.
+     # So the port's is its own 216 + 72 = 288 -- the same number h3_saw_tag_numbers.py
+     # writes for Halo 3, arrived at from the other end.
      [(0, '<h', 216, 'rounds total initial'),
+      (2, '<h', 288, 'rounds total maximum'),
       (4, '<h', 72, 'rounds loaded maximum'),
       (14, '<h', 72, 'rounds reloaded')]),
     (BULLET + '.projectile',

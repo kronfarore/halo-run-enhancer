@@ -1771,5 +1771,427 @@
     ]
    }
   }
+ ],
+ "Halo Reach": [
+  {
+   "weapon": "SAW",
+   "source": "Halo 4",
+   "donor": "Assault Rifle",
+   "default_on": true,
+   "desc": "SAW carried from Halo 4 into Halo Reach, built on the Assault Rifle. Bullet speed is measured against the Assault Rifle, which Reach runs at exactly twice Halo 4's. It shares the Assault Rifle's first-person animations, so its timing is not retuned.",
+   "balance": [
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Angle",
+     "block": null,
+     "value": 10.0,
+     "card": "Magnetism",
+     "original": 9.99999970909292
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Range",
+     "block": null,
+     "value": 16.0,
+     "card": "Magnetism",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Falloff Range",
+     "block": null,
+     "value": 8.0,
+     "card": "Magnetism",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnetism Near Falloff Range",
+     "block": null,
+     "value": 1.0,
+     "card": "Magnetism",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Angle",
+     "block": null,
+     "value": 5.0,
+     "card": "Autoaim",
+     "original": 4.99999985454646
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Range",
+     "block": null,
+     "value": 16.0,
+     "card": "Autoaim",
+     "original": 16.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Autoaim Falloff Range",
+     "block": null,
+     "value": 8.0,
+     "card": "Autoaim",
+     "original": 8.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Reload Penalty",
+     "block": "Barrels",
+     "value": 3.5,
+     "card": "Accuracy Penalties",
+     "original": 3.5,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Switch Penalty",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Accuracy Penalties",
+     "original": 1.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Distribution Function",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Distribution Angle",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Distribution Function",
+     "original": 0.0,
+     "index": "all"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Firing Noise",
+     "block": "Barrels",
+     "value": 4.0,
+     "card": "Firing Noise",
+     "original": 4.0,
+     "index": "all"
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Maximum Range",
+     "block": null,
+     "value": 75.0,
+     "card": "Projectile Range",
+     "original": 75.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Damage Range",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Range",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Damage Range Max",
+     "block": null,
+     "value": 40.0,
+     "card": "Projectile Range",
+     "original": 40.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Damage Range",
+     "block": null,
+     "value": 5.0,
+     "card": "Projectile Range",
+     "original": 5.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Damage Range Max",
+     "block": null,
+     "value": 10.0,
+     "card": "Projectile Range",
+     "original": 10.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Initial Velocity",
+     "block": null,
+     "value": 600.0,
+     "card": "Projectile Velocity",
+     "original": 300.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Final Velocity",
+     "block": null,
+     "value": 600.0,
+     "card": "Projectile Velocity",
+     "original": 300.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Minimum Velocity",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Velocity",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Autoaim Leading Maximum Lead Time",
+     "block": null,
+     "value": 0,
+     "card": "Projectile Lead Time",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Air Gravity Scale",
+     "block": null,
+     "value": 0.0,
+     "card": "Projectile Gravity",
+     "original": 0.0
+    },
+    {
+     "class": "proj",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Water Gravity Scale",
+     "block": null,
+     "value": 0.2,
+     "card": "Projectile Gravity",
+     "original": 0.20000000298023224
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 5.834,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 5.834,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "jpt!",
+     "tag": "objects\\weapons\\rifle\\saw\\projectiles\\saw_bullet_h4_original_numbers",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 6.788,
+     "card": "Bullet Damage",
+     "original": 7.5
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Levels",
+     "block": null,
+     "value": 0,
+     "card": "Zoom",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Range",
+     "block": null,
+     "value": 0.0,
+     "card": "Zoom",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Magnification Range Max",
+     "block": null,
+     "value": 0.0,
+     "card": "Zoom",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Weapon Zoom Time",
+     "block": null,
+     "value": 0,
+     "card": "Zoom Time",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Total Initial",
+     "block": "Magazines",
+     "value": 216.0,
+     "card": "Ammo Inventory",
+     "original": 216.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Inventory Maximum",
+     "block": "Magazines",
+     "value": 277.714286,
+     "card": "Ammo Inventory",
+     "original": 216.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Loaded Maximum",
+     "block": "Magazines",
+     "value": 72.0,
+     "card": "Ammo Loaded",
+     "original": 72.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Reloaded",
+     "block": "Magazines",
+     "value": 72.0,
+     "card": "Ammo Loaded",
+     "original": 72.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Second",
+     "block": "Barrels",
+     "value": 20.0,
+     "card": "Salvo Shooting",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Second Max",
+     "block": "Barrels",
+     "value": 20.0,
+     "card": "Salvo Shooting",
+     "original": 20.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Shots Per Fire",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Shots Per Fire Max",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Salvo Shooting",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Fire Recovery Time",
+     "block": "Barrels",
+     "value": 0.05,
+     "card": "Fire Recovery Time",
+     "original": 0.06666667014360428
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Projectiles Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Per Shot",
+     "block": "Barrels",
+     "value": 1.0,
+     "card": "Projectiles Per Shot",
+     "original": 1.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Minimum Error",
+     "block": "Barrels",
+     "value": 0,
+     "card": "Error Angle",
+     "original": 0.0
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Error Angle",
+     "block": "Barrels",
+     "value": 0.6,
+     "card": "Error Angle",
+     "original": 0.29999999767609
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Error Angle Max",
+     "block": "Barrels",
+     "value": 2.864583,
+     "card": "Error Angle",
+     "original": 2.750000005377918
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 349.714286,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
+    }
+   ]
+  }
  ]
 }

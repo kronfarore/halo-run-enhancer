@@ -949,17 +949,36 @@ from -- HREK ships no `objects\weapons\boneyard` folder at all. `tool render` do
 complain and the model builds. Inherited, not introduced; do not go looking for it
 twice.
 
+### Step 5, the catalog: the simplest of the four
+
+`make_port_catalog_reach.py` -- 45 balance rows, none of them pointing at a donor or a
+shared tag. Reach needs less special handling than any other game:
+
+* **no Machine Gun detour.** Bullet speed is measured against the Assault Rifle, which
+  Reach runs at exactly twice Halo 4's, so there is no `_mgvel` table.
+* **no `MEASURED` step.** ODST needs six rows read straight off the donor's tags for
+  fields no card can reach there; all six are card-reachable in Reach.
+* **one PORT_TAGS entry serves two classes**, because the damage effect shares the
+  projectile's path.
+
+Dropped: the three MELEE rows, which point at `globals\damage_effects\strike_melee` and
+would retune the whole sandbox. `anims` ships ABSENT, as Halo 3's does and unlike
+ODST's -- the port shares the Assault Rifle's graphs, so retiming would retime the
+Assault Rifle for both species.
+
+**The 320 / 288 question is answered, and it was arithmetic.** The tag's `rounds total
+maximum` is the RESERVE PLUS THE MAGAZINE: Reach's Assault Rifle reads 320 in the tag,
+288 through the plugin's "Rounds Inventory Maximum" and 32 loaded, and 288 + 32 = 320.
+So the port's is 216 + 72 = 288 -- which is the number `h3_saw_tag_numbers.py` writes
+for Halo 3, reached from the other end. The catalog derives the balanced total the
+same way, because nothing in Reach recomputes it.
+
 ### What is NOT done
 
-Steps 5 to 9. There is no `make_port_catalog_reach.py` yet, so the patcher has no
-balance rows to apply even though the table exists. The chud is still
-`ui\chud\assault_rifle`, there is no meter, no icon, no messages, and both jmad graphs
-are still the Assault Rifle's -- and Reach needs BOTH retimed.
-
-One judgement to revisit in game: `rounds total maximum` is left at the Assault
-Rifle's 320. The kit tag says 320 where the plugin's "Rounds Inventory Maximum" reads
-288 off the shipped map, so they are not the same field and the table's 216 could not
-be assigned to either without guessing.
+Steps 6 to 9. No ammo pickup (Reach has the nested magazine block ODST has, so it is
+available -- the offsets are simply not measured yet), no meter, no icon, no messages.
+The chud is still `ui\chud\assault_rifle` and both jmad graphs are still the Assault
+Rifle's; Reach needs BOTH retimed, which means giving the port its own clones first.
 
 ### The unknown still worth measuring
 
