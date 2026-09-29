@@ -44,6 +44,17 @@ REGION = h3_kit.per_kit(h3='standard', odst='standard', reach='default',
 GUN, MAG = h3_kit.per_kit(h3=('gun', 'magazine'), odst=('gun', 'magazine'),
                           reach=('b_gun', 'b_magazine'),
                           what='the skeleton nodes the H4 bones map onto')
+
+#: TOOL RENDER STRIPS A LEADING `b_`, and Reach's skeleton is entirely b_-prefixed.
+#: So a JMS that honestly declares `b_gun` produces a render model whose node is called
+#: `gun`, and then NOTHING THAT ANIMATES THE WEAPON CAN FIND ITS NODES. The statically
+#: placed weapon still draws at bind pose, which is what made this look like a
+#: rendering fault instead of a naming one, while first person was EMPTY and a dropped
+#: weapon VANISHED. Declaring `b_b_gun` leaves `b_gun` after the strip.
+#:
+#: Halo 3 and ODST have unprefixed skeletons, so there is nothing to protect there.
+NODE_PREFIX = h3_kit.per_kit(h3='', odst='', reach='b_',
+                             what='what tool render will strip off a node name')
 UNITS = 100.0            # JMS units per world unit
 
 
@@ -148,7 +159,7 @@ def template_from_xml(path):
     for f in raw:
         rot = [float(x) for x in f.get('default rotation', '0,0,0,1').split(',')]
         pos = [float(x) for x in f.get('default translation', '0,0,0').split(',')]
-        nodes.append(JmsNode(f.get('name', ''),
+        nodes.append(JmsNode(NODE_PREFIX + f.get('name', ''),
                              _block_index(f.get('first child node'), names),
                              _block_index(f.get('next sibling node'), names),
                              rot[0], rot[1], rot[2], rot[3],
@@ -202,11 +213,12 @@ def main():
     h1.MARKER_FROM = {'muzzle_flash': 'muzzle_flash', 'primary_trigger': 'primary_trigger',
                       'primary_ejection': 'primary_ejection', 'flashlight': 'flashlight'}
     # the H4 SAW's two skinned bones -> the Halo 3 nodes that move the same parts
-    if GUN not in by_name:
+    gun, mag = NODE_PREFIX + GUN, NODE_PREFIX + MAG
+    if gun not in by_name:
         raise SystemExit('this skeleton has no node called %r -- it has %s.\n'
                          'Mapping would fall back to node 0 and weld every bone '
-                         'together.' % (GUN, sorted(by_name)))
-    node_map = {0: by_name[GUN], 1: by_name.get(MAG, by_name[GUN])}
+                         'together.' % (gun, sorted(by_name)))
+    node_map = {0: by_name[gun], 1: by_name.get(mag, by_name[gun])}
     jm = h1.convert(rm, tmpl, node_map)
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, REGION + '.jms')

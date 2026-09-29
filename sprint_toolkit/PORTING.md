@@ -1597,3 +1597,34 @@ So the ceiling is not 1, and it is not unbounded either:
 
 The middle row needs no new format understanding. The bottom row needs a real repacker
 and is the one that reaches 140.
+
+---
+
+## `tool render` STRIPS A LEADING `b_` FROM NODE NAMES
+
+Reach only, and it is the whole of the empty first-person model and the weapon that
+vanished when dropped.
+
+Reach's skeleton is entirely b_-prefixed -- `b_gun`, `b_magazine`, `b_ophandle`,
+`b_safety`, `b_switch`. The JMS declared exactly those, because the converter reads them
+out of the Assault Rifle's own export. `tool render` then wrote a render model whose
+nodes are called `gun`, `magazine`, `ophandle`, `safety`, `switch`.
+
+    assault_rifle   parent node  NONE, b_gun, b_gun     first child  b_ophandle
+    saw (before)    parent node  NONE, gun, gun         first child  magazine
+
+**So nothing that ANIMATES the weapon could find its nodes.** The statically placed
+weapon still drew, because bind pose needs no graph -- which is exactly what made this
+look like a rendering fault rather than a naming one. First person was empty and a
+dropped weapon vanished, and residency, the region name, the model wiring, the geometry
+chunks and the compression bounds were all checked and all innocent.
+
+The fix is to declare `b_b_gun` and let the strip leave `b_gun`. Confirmed: the render
+model now reads b_gun / b_magazine / b_ophandle / b_safety / b_switch, all parented to
+b_gun with a valid sibling chain. `saw_to_jms_h3.py` carries it as `NODE_PREFIX`, per
+kit, because Halo 3 and ODST have unprefixed skeletons and there is nothing to protect.
+
+This is the same shape as the region-name trap in Halo 3: `tool` rewrites a NAME on the
+way in, the tag is otherwise perfect, and only the thing that looks the name up notices.
+Whenever a ported model is silently wrong, compare its node and region names against the
+donor's FIRST -- it is one export and a diff, and it is the cheapest check there is.
