@@ -1,23 +1,23 @@
-"""One command for a SAW test build in Halo 1 (a10), start to finish:
+"""One command for a SAW test build in Halo 1, start to finish (a10 by default):
 
   1. tool bitmaps weapons\\saw\\bitmaps          (TIF sources already in HCEEK data)
   2. saw_shaders.py                              (shader_model tags)
   3. saw_to_jms.py at --scale                    (fp + 3p JMS on the AR skeleton)
   4. tool model weapons\\saw\\fp and weapons\\saw  (gbxmodels)
   5. make_icon.py + add_msg_icon.py + saw_weapon.py  (prompt icon, HUD interface, weapon)
-  6. saw_scenario.py                             (SAW into a10's spawn profiles)
-  7. tool build-cache-file levels\\a10\\a10 classic none 1   (self-contained classic)
+  6. saw_scenario.py --map <map>                 (SAW into that map's spawn profiles)
+  7. tool build-cache-file levels\\<map>\\<map> classic none 1 (self-contained classic)
   8. saw_scenario.py --restore                   (always, even when the build fails)
-  9. deploy HCEEK\\maps\\a10.map to the game (the original stays in a10.map.before_saw)
+  9. deploy HCEEK\\maps\\<map>.map to the game (original kept as <map>.map.before_saw)
 
-    python saw_build.py --scale 1.0 [--skip-bitmaps] [--no-deploy]
+    python saw_build.py [--map a10] --scale 1.0 [--skip-bitmaps] [--no-deploy]
 """
 import argparse, os, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HCEEK = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK')
-GAME_A10 = os.path.join('C:' + os.sep, 'Program Files (x86)', 'Steam', 'steamapps', 'common',
-                        'Halo The Master Chief Collection', 'halo1', 'maps', 'a10.map')
+GAME_MAPS = os.path.join('C:' + os.sep, 'Program Files (x86)', 'Steam', 'steamapps',
+                         'common', 'Halo The Master Chief Collection', 'halo1', 'maps')
 XML = os.path.join(os.environ['TEMP'], 'lmg_rm.xml')
 B = os.sep
 
@@ -44,6 +44,9 @@ def tool(*args, check_text=None):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument('--map', default='a10',
+                    help='the level to build the test on; saw_scenario.py must know '
+                         'which of its starting profiles are spawns')
     ap.add_argument('--scale', type=float, default=1.0)
     ap.add_argument('--skip-bitmaps', action='store_true')
     ap.add_argument('--no-deploy', action='store_true')
@@ -70,21 +73,24 @@ def main():
     # up an assault rifle". Running this first would be silently undone, and the port
     # would announce itself as an Assault Rifle again.
     py('h1_port_messages.py', '--write')
-    py('saw_port_values.py')            # the port's own H4 numbers into its H1 tags
-    py('saw_scenario.py')
+    # --write, because it is a dry run by default: it verifies every path and unit
+    # factor against the Assault Rifle first and refuses if one no longer holds.
+    py('saw_port_values.py', '--write')  # the port's own H4 numbers into its H1 tags
+    py('saw_scenario.py', '--map', a.map)
     try:
-        tool('build-cache-file', 'levels' + B + 'a10' + B + 'a10', 'classic', 'none', '1',
+        tool('build-cache-file', 'levels' + B + a.map + B + a.map, 'classic', 'none', '1',
              check_text='successfully built')
     finally:
-        py('saw_scenario.py', '--restore')
+        py('saw_scenario.py', '--map', a.map, '--restore')
     if a.no_deploy:
         print('built, not deployed')
         return
-    bak = os.path.join(HERE, 'a10.map.before_saw')
+    live = os.path.join(GAME_MAPS, a.map + '.map')
+    bak = os.path.join(HERE, a.map + '.map.before_saw')
     if not os.path.exists(bak):
-        shutil.copy2(GAME_A10, bak)
-    shutil.copy2(os.path.join(HCEEK, 'maps', 'a10.map'), GAME_A10)
-    print('deployed a10 (scale %.2f); original kept at %s' % (a.scale, bak))
+        shutil.copy2(live, bak)
+    shutil.copy2(os.path.join(HCEEK, 'maps', a.map + '.map'), live)
+    print('deployed %s (scale %.2f); original kept at %s' % (a.map, a.scale, bak))
 
 
 if __name__ == '__main__':

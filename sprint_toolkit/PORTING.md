@@ -60,7 +60,7 @@ ammo pickups at all.
 Everything runs through `saw_build.py`, which does the whole thing and always restores
 the scenario even when the build fails:
 
-    python saw_build.py --scale 1.0 [--skip-bitmaps] [--no-deploy]
+    python saw_build.py [--map a10] --scale 1.0 [--skip-bitmaps] [--no-deploy]
 
 What it chains, and what each piece is for:
 
@@ -76,12 +76,24 @@ What it chains, and what each piece is for:
    skeleton**, so the donor's animations drive it. See *Reading H4 geometry* below.
 4. `tool model weapons\saw\fp` and `weapons\saw` — gbxmodels.
 5. `make_icon.py` + `add_msg_icon.py` + `saw_weapon.py` — see step 8 below.
-6. `saw_scenario.py` — puts the weapon in the test map's spawn profiles. On a10 use only
-   the three spawn profiles; the others drive mechanisms.
-7. `tool build-cache-file levels\a10\a10 classic none 1` — **must be `classic`**;
+6. `saw_port_values.py --write` — **step 4**: the port's own Halo 4 numbers into its
+   Halo 1 tags, so the map ships the SAW and the patcher applies the balance on top.
+   Both halves read the same `balance_SAW_Halo4_to_Halo1.json`, one taking `original`
+   and the other `balanced`, so they cannot drift. **Assembly's units are not
+   Reclaimer's**: angles are degrees in the table and RADIANS in the tag, velocities
+   are units per tick in the table and per SECOND in the tag. The tool proves every
+   path and factor against the Assault Rifle before it writes, and refuses if one
+   stops reproducing the donor — which is how the velocity factor was caught
+   inverted during its reconstruction.
+7. `saw_scenario.py --map <map>` — puts the weapon in that map's spawn profiles.
+   **Only the spawns.** a10 has six profiles and three of them drive mechanisms (the
+   sprint mod's invisible weapon, the bridge pistols, a weapon insert); handing one
+   the SAW breaks the level. That cannot be read off the tag, so it is recorded per
+   map and an unknown map is REFUSED with its profiles printed.
+8. `tool build-cache-file levels\<map>\<map> classic none 1` — **must be `classic`**;
    read_write/remastered corrupts, and a human weapon forces classic anyway.
-8. `saw_scenario.py --restore` — always.
-9. deploy; the original stays as `a10.map.before_saw`.
+9. `saw_scenario.py --restore` — always.
+10. deploy; the original stays as `<map>.map.before_saw`.
 
 **Step 7, the ammo meter.** `ammo_meter.py <N> <tag base>` renders the tick art for any
 magazine. The readout is two `weapon_hud_interface` elements on loaded ammo: a STATIC
