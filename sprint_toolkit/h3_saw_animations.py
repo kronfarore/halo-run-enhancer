@@ -62,6 +62,11 @@ def _graph(species):
 GRAPHS = h3_kit.per_kit(
     h3=[_graph('masterchief'), _graph('dervish')],
     odst=[_graph('odst_recon')],
+    # Reach names one per PLAYABLE SPECIES, and the path shape is identical to Halo
+    # 3's, so _graph builds them unchanged. Both must be cloned: a port that fixed
+    # only the Spartan's would still share the Elite's, which Firefight and m70_bonus
+    # both use.
+    reach=[_graph('spartans'), _graph('elite')],
     what='which first-person animation graphs the weapon names')
 #: what each animation becomes, in frames -- the Halo 4 SAW's own counts
 TARGET = {'first_person:reload_empty': 128,
@@ -107,11 +112,18 @@ def recompress(tag_rel):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--clone-only', action='store_true',
+                    help="clone the graphs and repoint the weapon, but do NOT retime: "
+                         "un-shares the donor's animations without needing the frame "
+                         "data decoded. Reach needs this -- its animation layout is not "
+                         "Halo 3's and h3_anim_decode over-reads it.")
     ap.add_argument('--scratch', default=os.environ.get('TEMP', '.'))
     ap.add_argument('--split', action='store_true',
                     help='retime ONLY reload_full, to isolate retiming from cloning')
     a = ap.parse_args()
 
+    if a.clone_only:
+        print('CLONE ONLY: the graphs are un-shared but keep the donor timing.\n')
     targets = SPLIT if a.split else TARGET
     if a.split:
         print('SPLIT BUILD: only reload_full is retimed; reload_empty and ready stay '
@@ -138,6 +150,9 @@ def main():
 
         os.makedirs(os.path.dirname(dp), exist_ok=True)
         shutil.copyfile(sp, dp)
+        if a.clone_only:
+            print('      cloned, NOT retimed (--clone-only)')
+            continue
         xml = export_xml(dst, os.path.join(a.scratch, 'clone.xml'))
         if not xml:
             print('   could not export the clone -- skipped')

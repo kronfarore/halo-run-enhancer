@@ -2191,7 +2191,31 @@
      "original": null,
      "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
     }
-   ]
+   ],
+   "ammo": {
+    "class": "weap",
+    "tag": "objects\\weapons\\rifle\\saw\\saw",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 4,
+    "item_class": "eqip",
+    "default": "objects\\gear\\human\\military\\ammo_box\\ammo_box",
+    "maps_total": 10,
+    "choices": [
+     {
+      "tag": "objects\\gear\\human\\military\\ammo_box\\ammo_box",
+      "label": "Ammo Box"
+     },
+     {
+      "tag": "objects\\gear\\human\\military\\rocket_launcher_ammo\\rocket_launcher_ammo",
+      "label": "Rocket Launcher Ammo"
+     },
+     {
+      "tag": "objects\\gear\\human\\military\\sniper_rifle_ammo\\sniper_rifle_ammo",
+      "label": "Sniper Rifle Ammo"
+     }
+    ]
+   }
   }
  ]
 }

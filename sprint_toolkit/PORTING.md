@@ -973,12 +973,79 @@ So the port's is 216 + 72 = 288 -- which is the number `h3_saw_tag_numbers.py` w
 for Halo 3, reached from the other end. The catalog derives the balanced total the
 same way, because nothing in Reach recomputes it.
 
+### Step 6, the ammo pickup: DONE, and Reach has THREE where ODST has eight
+
+MEASURED on a built m20, not assumed: the Magazines/Magazines element is 20 bytes with
+`Rounds` i16 at +0 and the equipment reference's 4CC ('piqe') at +4, so `ref_offset` is
+4 and the patcher writes the datum at +0xC from there -- identical to ODST.
+
+Reach consolidated its pickups. Reading every eqip tag off all ten missions gives one
+generic `ammo_box` plus `rocket_launcher_ammo` and `sniper_rifle_ammo`, and all three are
+on ALL TEN missions -- so unlike Halo 1 and ODST there is no per-map `maps` key to carry.
+Everything else in Reach's eqip list is an armour ability, a grenade or a health pack.
+
+### Step 9: the graphs are UN-SHARED, the retiming is not done
+
+`h3_saw_animations.py --write --clone-only` clones both species graphs to
+`objects\weapons\rifle\saw\fp\fp_saw_{spartans,elite}` and repoints the weapon. The path
+shape is identical to Halo 3's, so `_graph()` builds them unchanged.
+
+**Retiming fails, and this is the real cost of Reach's step 9.** `h3_anim_decode` reads
+Reach's frame data past the end of the buffer:
+
+    struct.error: unpack_from requires a buffer of at least 7784 bytes ...
+                  (actual buffer size is 7704)
+
+So Reach's animation layout is NOT Halo 3's, and decoding it is its own job -- the same
+size as the Halo 3 and Halo 2 codec work. `--clone-only` exists for exactly this: the
+port keeps the Assault Rifle's timing but no longer SHARES it, so whenever the format is
+cracked the retime cannot reach a live weapon.
+
+### Step 7: deliberately NOT done, because a clone would be worse
+
+Reach's chud has no meter at all -- `low ammo loaded threshold` (8) and nothing else,
+because Reach draws ammo as a NUMBER. So there is no tick meter to build and step 7
+reduces to cloning the chud and scaling that threshold to the port's 72 (18, as ODST).
+
+The threshold could not be located: it is a `long integer` whose value 8 appears 85 times
+in the tag, `(8, 0, 0)` with the two thresholds after it still matches 45 times, and no
+`tgst` chunk starts with those four longs, so the chunk tree does not isolate it either.
+
+**And a chud clone with nothing changed in it is worse than none**: the cache builder
+DEDUPLICATES identical block data, so a byte-identical clone would share the Assault
+Rifle's blocks and writing the SAW's threshold would move the Assault Rifle's. That is
+the same trap `h3_saw_tag_numbers.py` documents. Clone and edit together, or not at all.
+
+### Step 8: the glyph RENDERS and does not yet FIT
+
+The icon itself is fine. `h3_weapon_glyph.py` renders a clean SAW silhouette from the
+port's own mesh at all three resolutions (155x44, 310x88, 465x132) and the codec is
+Halo 3's, unchanged.
+
+**The insertion corrupts the package, and the reason is that the blocks OVERLAP.** 0xE09A
+was chosen as the first free codepoint inside the LAST block's range, expecting it to land
+in the block with 24,208 spare bytes. It did not: the blocks' codepoint ranges are not
+disjoint -- block 2 spans 0x002F..0xE12B and also contains 0xE09A -- so the glyph sorted
+into a block with **888** free bytes and needed 726 plus 8 of table growth. The package's
+own check then reported `fixedsys_ui-16` holding 96 entries against a header saying 98,
+and said so itself: "no longer adds up; restore it".
+
+Restored and verified: 353 glyphs decode with zero failures and 0xE09A is gone, which is
+exactly the session's opening measurement. `x2` and `x3` were never written.
+
+The fix is to choose by BLOCK OCCUPANCY rather than by codepoint range, or to teach the
+inserter to place a glyph in a block that has room. Until then step 8's glyph is unbuilt.
+
+**Pre-existing, and not ours:** Reach's shipped package already reports
+`icon\fixedsys_ui-16` as 98 glyphs when its tables hold 96. That mismatch is in the file
+Bungie shipped and survives a restore; `--bounds` will keep printing it.
+
 ### What is NOT done
 
-Steps 6 to 9. No ammo pickup (Reach has the nested magazine block ODST has, so it is
-available -- the offsets are simply not measured yet), no meter, no icon, no messages.
-The chud is still `ui\chud\assault_rifle` and both jmad graphs are still the Assault
-Rifle's; Reach needs BOTH retimed, which means giving the port its own clones first.
+Step 7 (above), step 8's glyph placement and its messages, and step 9's retiming. The
+messages themselves are untried: `h3_port_messages.py` refuses until the glyph codepoint
+is settled, which is correct -- a message pointing at a codepoint with no glyph is a
+blank box.
 
 ### The unknown still worth measuring
 

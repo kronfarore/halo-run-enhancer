@@ -68,6 +68,35 @@ DST_GAME = 'Halo Reach'
 DERIVED = [('Rounds Total Maximum', 'Magazines', 'weap',
             ['Rounds Inventory Maximum', 'Rounds Loaded Maximum'])]
 
+#: STEP 6, the ammo pickup. MEASURED on a built m20, not assumed: the plugin puts the
+#: Magazines/Magazines element at 20 bytes with `Rounds` i16 at +0, and the equipment tag
+#: reference's 4CC ('piqe', eqip backwards) sits at +4 -- so `ref_offset` is 4 and the
+#: patcher writes the datum at ref_offset + 0xC, exactly as in ODST.
+#:
+#: REACH HAS THREE, where ODST has eight. It consolidated ammo into one generic box and
+#: kept specials only for the two weapons that need them, so there is no assault-rifle or
+#: pistol ammo to choose -- and no per-map `maps` key either, because all three are on all
+#: ten missions.
+AMMO_BLOCK = 'Magazines/Magazines'
+AMMO_ANCHOR = 'Rounds'
+AMMO_REF_OFFSET = 4
+GEAR = B.join(['objects', 'gear', 'human', 'military'])
+AMMO_DEFAULT = GEAR + B + 'ammo_box' + B + 'ammo_box'
+AMMO_CHOICES = [
+    (AMMO_DEFAULT, 'Ammo Box'),
+    (GEAR + B + 'rocket_launcher_ammo' + B + 'rocket_launcher_ammo', 'Rocket Launcher Ammo'),
+    (GEAR + B + 'sniper_rifle_ammo' + B + 'sniper_rifle_ammo', 'Sniper Rifle Ammo'),
+]
+AMMO_MISSIONS = 10
+
+
+def ammo_block():
+    return {'class': 'weap', 'tag': PORT_TAGS[('weap', AR + B + 'assault_rifle')],
+            'block': AMMO_BLOCK, 'anchor_field': AMMO_ANCHOR,
+            'ref_offset': AMMO_REF_OFFSET, 'item_class': 'eqip',
+            'default': AMMO_DEFAULT, 'maps_total': AMMO_MISSIONS,
+            'choices': [{'tag': t, 'label': l} for t, l in AMMO_CHOICES]}
+
 
 def derived_rows(rows):
     have = {r['field']: r['value'] for r in rows if r.get('block') == 'Magazines'}
@@ -127,7 +156,8 @@ def main():
                      'runs at exactly twice Halo 4\'s. It shares the Assault Rifle\'s '
                      'first-person animations, so its timing is not retuned.'
                      % (t['ported'], t['source']),
-             'balance': rows}
+             'balance': rows,
+             'ammo': ammo_block()}
 
     print('\n%d balance row(s)' % len(rows))
     by_tag = {}
