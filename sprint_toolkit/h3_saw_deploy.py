@@ -91,6 +91,12 @@ def check(path):
 
 def install(mission, baseline):
     import shutil
+    # The same guard h3_build_map carries, and for the same reason: with PORT_EK left at
+    # the wrong kit, --install silently targets the OTHER game's map folder. Its default
+    # map follows the kit too, so `h3_saw_deploy --install` after a Halo 3 build under
+    # PORT_EK=odst reaches for ODST's sc150 and reports "installed" about it.
+    import h3_build_map
+    h3_build_map.check_kit(mission)
     live = os.path.join(he.mcc_root(), MCC_GAME, 'maps', mission + '.map')
     base = he.baseline_source(hp.default_map_path(he.mcc_root(), MCC_GAME, mission), GAME)
     built = os.path.join(EK_MAPS, mission + '.map')
@@ -116,8 +122,15 @@ def main():
     he.load_settings()
     if a.install:
         install(a.map, a.baseline)
-    target = (os.path.join(he.mcc_root(), MCC_GAME, 'maps', a.map + '.map')
-              if a.install else os.path.join(EK_MAPS, a.map + '.map'))
+    live = os.path.join(he.mcc_root(), MCC_GAME, 'maps', a.map + '.map')
+    built = os.path.join(EK_MAPS, a.map + '.map')
+    # Prefer the EK build -- checking BEFORE installing is the whole point -- but fall
+    # back to the installed map when it is gone, because odst_ek_build --install PRUNES
+    # the build to reclaim ~400 MB. Without this, --check after a successful install dies
+    # on FileNotFoundError and reads like the port being broken.
+    target = live if (a.install or not os.path.exists(built)) else built
+    if target is live and not a.install:
+        print('(the EK build is gone -- reading the INSTALLED map instead)')
     if a.check or a.install:
         check(target)
 

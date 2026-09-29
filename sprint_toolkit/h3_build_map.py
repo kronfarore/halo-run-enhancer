@@ -28,7 +28,33 @@ EK = h3_kit.EK
 OK = 'successfully built cache file'
 
 
+#: Which maps belong to which kit. ODST's kit SHIPS HALO 3'S SOLO LEVELS as well as its
+#: own, so `build-cache-file levels\solo\010_jungle` succeeds there and produces a HYBRID
+#: -- Halo 3's level against ODST's tag set, 514 MB of nothing anyone wants, dropped in
+#: the ODST kit's maps folder. It happened: PORT_EK was left at `odst` in the shell from
+#: an earlier command, and the build looked like a success for seven minutes.
+H3_MAPS = ('005_intro', '010_jungle', '020_base', '030_outskirts', '040_voi', '050_floodvoi',
+           '070_waste', '100_citadel', '110_hc', '120_halo')
+ODST_MAPS = ('c100', 'c200', 'h100', 'l200', 'l300', 'sc100', 'sc110', 'sc120', 'sc130',
+             'sc140', 'sc150')
+
+
+def check_kit(name):
+    """Refuse a map that does not belong to the selected kit."""
+    want = ODST_MAPS if h3_kit.IS_ODST else H3_MAPS
+    other = H3_MAPS if h3_kit.IS_ODST else ODST_MAPS
+    if name in want:
+        return
+    hint = ''
+    if name in other:
+        hint = ('\n%s is a %s map. Set the kit first:\n    set PORT_EK=%s'
+                % (name, 'Halo 3' if h3_kit.IS_ODST else 'Halo 3: ODST',
+                   'h3' if h3_kit.IS_ODST else 'odst'))
+    raise SystemExit('%s is not a map of %s.%s' % (name, h3_kit.banner(), hint))
+
+
 def build(name, log=None):
+    check_kit(name)
     # BACKSLASHES. tool derives the report directory from this string, and given forward
     # slashes it fails to open reports\<map>\cache_file_loaded_tags.txt and asserts
     # g_cache_file_loaded_tags_report_file_ready before it has built anything.
