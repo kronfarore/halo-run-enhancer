@@ -815,11 +815,50 @@ m70_bonus) holds a differently-timed weapon.
 `build_fonts_icon.bat` would rebuild the icon package as BLANKS -- never run it. Edit the
 package in place the way `h3_weapon_glyph.py` does, which moves no offsets.
 
-### The unknowns still worth measuring
+### Step 1, the model: JMS WORKS, and it is the Halo 3 JMS
 
-1. whether Reach's `render` accepts the JMS the Halo 3 path produces, or wants the FBX
-   `import <sidecar-file>` route -- `objects\test\test_fbx_weapons` suggests both exist;
-2. residency. Reach is the one game where a placed weapon can be inert because its tag's
+**Resolved 2026-09-29 by rendering one.** Reach's `tool render` accepts a **version 8200
+JMS** -- the exact file the Halo 3 port already produces. The Halo 3 SAW's own
+`saw\render\saw.jms` was dropped into HREK unchanged and rendered, and it produced a
+1,199,333-byte `jmstest.render_model` with 5 nodes, 5 marker groups, compression info and
+real geometry. The only complaints were `unable to find shader 'saw_body'`, because the
+shaders were not copied with it.
+
+So step 1 is a KIT SWITCH, not a new importer. FBX and the `import <sidecar-file>` route
+exist -- seven `*.sidecar.xml` tests ship under `data\objects\test` -- and are not needed.
+
+Three things about the Reach toolchain that the test turned up:
+
+* **`tool.exe` wants ABSOLUTE paths** for `export-tag-to-xml`, and says
+  "Input tag path is not located in the tags directory structure" for the relative path
+  H3EK accepts. `render` takes the relative source directory as usual.
+* **Reach's skeleton nodes are prefixed `b_`** -- `b_gun`, `b_magazine`, `b_ophandle`,
+  `b_safety`, `b_switch` where Halo 3 has `gun`, `magazine`, `ophandle`, `safety`,
+  `switch`. Same five, same shape. The JMS template is built FROM the exported skeleton,
+  so the names come along on their own; this matters only if one is ever hardcoded.
+* **Sixteen marker groups, and the hands are per species**: `left_hand_spartan_fp`,
+  `left_hand_elite_fp`, `left_hand_spartan`, `left_hand_elite`, `left_hand_marine`, and
+  the right-hand set. The port's model must carry all of them or a Marine or an Elite
+  holds it wrong. Halo 3's AR has five marker groups.
+
+#### The region-name trap does NOT apply to Reach
+
+`h3_region_name.py` exists because `tool render` names the region and permutation
+**'default'** while every Halo 3 stock weapon says **'standard'**, and the mismatch makes
+the world model render as thin air. Measured, both ends of that comparison:
+
+    Halo 3   assault_rifle.render_model   region 'standard' / permutation 'standard'
+    Reach    assault_rifle.render_model   region 'default'  / permutation 'default'
+
+Reach's stock convention is the one `tool render` already writes, so the names match and
+the rename step drops out. (Variant COUNT is not the mechanism and is not the check --
+both games' AR models carry zero variants. The check is the stock region NAME.) Worth
+one look the first time a SAW is dropped in front of an ally, but there is nothing to do
+up front.
+
+### The unknown still worth measuring
+
+1. residency. Reach is the one game where a placed weapon can be inert because its tag's
    bit is clear in the first zone set's pool. A fresh EK build pools what the scenario
    references, so this should be a no-op for a built map -- but it is the standing HALF /
    LATE audit in `reach_pools.py`, and it is the first thing to check if the SAW spawns
