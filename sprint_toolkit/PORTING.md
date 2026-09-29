@@ -1001,45 +1001,64 @@ size as the Halo 3 and Halo 2 codec work. `--clone-only` exists for exactly this
 port keeps the Assault Rifle's timing but no longer SHARES it, so whenever the format is
 cracked the retime cannot reach a live weapon.
 
-### Step 7: deliberately NOT done, because a clone would be worse
+### Step 7, the HUD: DONE, and it CANNOT wait for the rebuild
 
-Reach's chud has no meter at all -- `low ammo loaded threshold` (8) and nothing else,
-because Reach draws ammo as a NUMBER. So there is no tick meter to build and step 7
-reduces to cloning the chud and scaling that threshold to the port's 72 (18, as ODST).
+Reach's chud has no meter -- it draws ammo as a NUMBER -- so step 7 is only the
+`low ammo loaded threshold`, 8 of 32 on the Assault Rifle, which a port holding 72 would
+inherit and cry low at a ninth of its magazine. A quarter of 72 is **18**.
 
-The threshold could not be located: it is a `long integer` whose value 8 appears 85 times
-in the tag, `(8, 0, 0)` with the two thresholds after it still matches 45 times, and no
-`tgst` chunk starts with those four longs, so the chunk tree does not isolate it either.
+**It must happen BEFORE the build, not after.** The cache builder deduplicates identical
+block data, so a byte-identical chud clone comes out of the build SHARING the Assault
+Rifle's blocks -- Halo 3 measured exactly that, and writing one moved the other. Writing
+the threshold into the TAG is what makes the two differ and keeps them apart. Deferring
+it until after a rebuild does not work: it would need another rebuild.
 
-**And a chud clone with nothing changed in it is worse than none**: the cache builder
-DEDUPLICATES identical block data, so a byte-identical clone would share the Assault
-Rifle's blocks and writing the SAW's threshold would move the Assault Rifle's. That is
-the same trap `h3_saw_tag_numbers.py` documents. Clone and edit together, or not at all.
+`h3_saw_chud.py` already had the locator and it works on Reach unchanged: the chud's root
+struct is the FIRST `bdat`, and the threshold triple sits at its `tgbl` payload + 0x14.
+A raw byte search does not work (8 appears 85 times as a long; `(8,0,0)` still matches 45
+times, and no `tgst` chunk starts with those longs) -- which is why the chunk-tree route
+is the answer and not a nicety.
 
-### Step 8: the glyph RENDERS and does not yet FIT
+Validated across Reach's own weapons, and the last two are the proof:
 
-The icon itself is fine. `h3_weapon_glyph.py` renders a clean SAW silhouette from the
-port's own mesh at all three resolutions (155x44, 310x88, 465x132) and the codec is
-Halo 3's, unchanged.
+    assault_rifle (8,0,0)   dmr (3,0,0)     magnum (3,0,0)    shotgun (2,0,0)
+    sniper_rifle  (1,0,0)   needle_rifle (5,0,0)   spike_rifle (10,0,0)
+    plasma_rifle  (0,0,20)  focus_rifle  (0,0,20)   <- BATTERY weapons
 
-**The insertion corrupts the package, and the reason is that the blocks OVERLAP.** 0xE09A
-was chosen as the first free codepoint inside the LAST block's range, expecting it to land
-in the block with 24,208 spare bytes. It did not: the blocks' codepoint ranges are not
-disjoint -- block 2 spans 0x002F..0xE12B and also contains 0xE09A -- so the glyph sorted
-into a block with **888** free bytes and needed 726 plus 8 of table growth. The package's
-own check then reported `fixedsys_ui-16` holding 96 entries against a header saying 98,
-and said so itself: "no longer adds up; restore it".
+The third member is `low battery threshold` and only the energy weapons use it, which is
+what confirms the triple is (loaded, reserve, battery) rather than a coincidence.
 
-Restored and verified: 353 glyphs decode with zero failures and 0xE09A is gone, which is
-exactly the session's opening measurement. `x2` and `x3` were never written.
+Done: `ui\chud\saw` holds 18, the Assault Rifle still holds 8, and the weapon is repointed.
 
-The fix is to choose by BLOCK OCCUPANCY rather than by codepoint range, or to teach the
-inserter to place a glyph in a block that has room. Until then step 8's glyph is unbuilt.
+### Step 8: the glyph is RIGHT and the insertion is NOT SAFE YET
 
-**Pre-existing, and not ours:** Reach's shipped package already reports
-`icon\fixedsys_ui-16` as 98 glyphs when its tables hold 96. That mismatch is in the file
-Bungie shipped and survives a restore; `--bounds` will keep printing it.
+The icon renders cleanly from the port's own mesh at all three resolutions (155x44,
+310x88, 465x132) and the codec is Halo 3's, unchanged.
 
+**Choosing the codepoint is a three-way constraint, not a free-slot search.** The glyph
+must sort into a run of THIS FONT that has room, in ALL THREE packages at once, and their
+block boundaries are completely different -- x1 splits font 3 across three blocks, x2
+across seven, x3 across thirteen. Intersecting the roomy runs leaves 41 codepoints, 25 of
+them unused; **0xE052** is the first. (0xE09A was tried first because it is free and sits
+in x1's roomy run. x2 sorts it into a block with 480 bytes free against 1768 needed, and
+the tool REFUSES -- correctly.)
+
+**But the multi-package write is not safe to re-run.** A second `--write` against Reach
+left x1 with 120 entries gone and font 4 emptied, after the first had already placed the
+glyph. All three packages were restored from copies taken beforehand and verified
+byte-identical: 353 glyphs decode, zero failures, neither test codepoint present. The
+E: backups `h3_weapon_glyph` keeps were also checked against pristine and match, so
+`--restore` is safe.
+
+Until that write path is understood, Reach's glyph stays unbuilt and the packages stay
+shipped. `h3_port_messages.py` therefore stays blocked too, which is the right order: a
+message pointing at a codepoint with no glyph is a blank box.
+
+**Pre-existing, and not ours:** Reach's shipped package reports `icon\fixedsys_ui-16` as
+98 glyphs when its tables hold 96 (28 + 68 across two blocks). That is in Bungie's file,
+it survives a restore, and it makes `h3_font_package`'s global "adds up" check report a
+MISMATCH on a perfectly good Reach package -- so that check alone must not be read as
+damage. Diff against a pristine copy instead.
 ### What is NOT done
 
 Step 7 (above), step 8's glyph placement and its messages, and step 9's retiming. The

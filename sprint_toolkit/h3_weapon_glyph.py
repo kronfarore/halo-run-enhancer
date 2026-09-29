@@ -61,11 +61,15 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 #: ODST's packages are also ~50 KB larger and packed differently, so Halo 3's 0xE06A
 #: sorts into an ODST block with 120 bytes free against the 1748 it needs. Its HUD font
 #: leaves exactly six workable codepoints, 0xE04A..0xE04F; this takes the first.
-#: Reach's 0xE09A is the FIRST free codepoint inside the last block's range
-#: (0xE093..0xE143), which is the block with 24,208 bytes of slack -- so the glyph
-#: sorts in without crowding anything. 103 of that range are free and 389 are free
-#: across 0xE000..0xE1FF; none of them is claimed by the HUD font's existing 102.
-GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE09A,
+#: REACH'S CODEPOINT IS CHOSEN BY BLOCK OCCUPANCY, not by what is free. A free
+#: codepoint is the easy half; the hard half is that it must sort into a run of THIS
+#: FONT that has room, in ALL THREE packages at once, and their block boundaries are
+#: completely different -- x1 splits font 3 in three, x2 in seven, x3 in thirteen.
+#: 0xE09A was tried first because it is free and sits in x1's roomy run; x2 sorts it
+#: into a block with 480 bytes free against the 1768 it needs, and the tool refuses.
+#: Intersecting the roomy runs of all three leaves 41 codepoints, 25 of them free.
+#: 0xE052 is the first.
+GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE052,
                        what="the pickup glyph's codepoint")
 #: the font that draws the pickup prompt -- icon\fixedsys-hud in Halo 3, and NOT the
 #: same index in every kit, so it is measured once in h3_kit rather than guessed here
