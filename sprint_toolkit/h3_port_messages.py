@@ -28,12 +28,20 @@ glyph on three prompts and "Picked up a SAW" on the confirmation -- so the game 
 the map's strings, and a port really can bring its own line. But every MCC-era icon in the
 rest of the UI disappeared with it.
 
-THE MECHANISM, measured rather than guessed: adding entries makes MCC stop using
-`<LANG>_<Game>.bin` for this string list and fall back to the map wholesale. 62 icon
-codepoints exist in the .bin and in NO map string -- E034..E046 (skull descriptions),
-E100..E10C (the menu "Select / Back / Friends" hints), E066, E06A, E080 and more -- all
-strings MCC added on top of Bungie's 480. The map is a SUBSET, so falling back to it
-loses every one of them. Our E04A survives because it is in the map.
+WHAT BROKE IS NOT YET ESTABLISHED, and an earlier claim here was WRONG. It said 62 icon
+codepoints exist in the .bin and in no map string. That number came from comparing the
+.bin against `hud_messages` ALONE, and the .bin covers the whole game while a map carries
+many string lists. Compared against all 118 lists in the kit, 109 of the .bin's 112 icons
+are present and only SIXTEEN are absent (E06A, E0C6, E34C, E45F, E504, E513, E900, E901,
+EBB8, EC66, EC8E, EE22, EE43, F36D, F6B5, F720). The weapon prompts also use the same
+codepoint families in both sources -- button E45E, weapons E1xx -- so the map's own
+prompts are not obviously wrong.
+
+So "the map is a subset and MCC fell back to it" is a hypothesis that the numbers do not
+support as stated, and the next step is an OBSERVATION, not another theory: which icons
+went missing, and where -- pickup prompts, the pause menu, skull descriptions, the
+scoreboard? That one answer separates a per-list fallback from a whole-file one, and
+costs nothing.
 
 Neither the string tag nor the font packages are damaged, and both were checked before
 blaming anything: the tag still holds every vanilla line ("Picked up an Assault Rifle" is
