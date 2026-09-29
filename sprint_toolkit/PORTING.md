@@ -883,7 +883,7 @@ both games' AR models carry zero variants. The check is the stock region NAME.) 
 one look the first time a SAW is dropped in front of an ally, but there is nothing to do
 up front.
 
-### The pipeline so far, and it is short
+### The pipeline so far
 
     set PORT_EK=reach
 
@@ -894,11 +894,33 @@ up front.
     <clone two shaders>           saw_body, saw_display                   (step 2, part)
     tool render ... final         AGAIN: a shader that arrives after a render is not in it
     reach_saw_wire_model.py --write   hlmt + BOTH mode refs               (step 1)
+    reach_saw_textures.py --write     the H4 skin into both shaders       (step 2)
+    tool render ... final             a THIRD time, for the same reason
+    balance_port.py SAW "Assault Rifle" "Halo 4" "Halo Reach"           (the table)
+    reach_saw_tag_numbers.py --write  the H4 numbers into the tags        (step 4)
 
-Four tags, every chunk tree spanning its file, every reference resolving:
+Six tags, every chunk tree spanning its file, every reference resolving:
 
-    saw.weapon       37051 bytes, 24 refs      saw.model      23789, 10 refs
-    ...bullet.projectile 24411, 10 refs        ...damage_effect 6850, 4 refs
+    saw.weapon       37051 bytes, 24 refs      saw.model         23789, 10 refs
+    ...bullet.projectile 24411, 10 refs        ...damage_effect   6850,  4 refs
+    saw_body.shader  13596, 7 refs             saw_display.shader 9293,  4 refs
+
+**Steps 1, 2, 3 and 4 are done.** The port has its own geometry, its own skin, its own
+bullet and damage effect, and its own numbers: magazine 72, 216 carried, velocity 300,
+damage 7.5, against the Assault Rifle's 32 / 160 / 3000 / 5.834.
+
+The balance table came straight out of `balance_port.py` on ONE hop, because the Assault
+Rifle exists in both games -- 53 rows, 47 balanced, only 2 with no target. Reach's
+Assault Rifle is exactly TWICE Halo 4's on velocity (3000 against 1500), a clean game
+scale, so Reach needs no `_mgvel` anchor the way Halo 3 did.
+
+There is no XML IMPORTER -- HREK exports tags and cannot read them back -- so step 4 is
+byte edits found by a signature of adjacent values that must match exactly once. What
+makes that safe is that `export-tag-to-xml` names every field, so each tag is exported
+again afterwards and the named fields read back. Two things it caught immediately: a
+rounded float literal (6.788) packs to different bytes than the stored one and matched
+NOTHING, and `damage upper bound` is a `real bounds` field that exports as one value,
+`7.5,7.5`, so its halves are read by index.
 
 THREE THINGS THE HALO 3 TOOLS DID NOT SURVIVE UNCHANGED, all now handled:
 
@@ -919,16 +941,25 @@ magazine to the body. It raises now instead.
 
 All 16 marker groups come across, per-species hands included. 10736 verts, 13836 tris.
 
+### A dangling reference that is REACH'S, not the port's
+
+`saw_body.shader` points at `objects\weapons\boneyard\battle_rifle\bitmaps\battle_rifle_illum`,
+which does not exist. So does the STOCK `assault_rifle_composite.shader` it was cloned
+from -- HREK ships no `objects\weapons\boneyard` folder at all. `tool render` does not
+complain and the model builds. Inherited, not introduced; do not go looking for it
+twice.
+
 ### What is NOT done
 
-Step 2 is half done: the model wears the Assault Rifle's textures, because the two
-shaders were cloned but the H4 diffuse is not swapped in yet. Reach's bitmap is
-`assault_rifle_diffuse` where Halo 3's is `assault_rifle`, so the equal-length naming
-trick `h3_saw_textures.py` relies on needs different names here -- or `repoint`, which
-`reach_saw_wire_model.py` already uses rather than inventing a padded path.
+Steps 5 to 9. There is no `make_port_catalog_reach.py` yet, so the patcher has no
+balance rows to apply even though the table exists. The chud is still
+`ui\chud\assault_rifle`, there is no meter, no icon, no messages, and both jmad graphs
+are still the Assault Rifle's -- and Reach needs BOTH retimed.
 
-Steps 4 to 9 are untouched. The chud is still `ui\chud\assault_rifle` and both jmad
-graphs are still the Assault Rifle's.
+One judgement to revisit in game: `rounds total maximum` is left at the Assault
+Rifle's 320. The kit tag says 320 where the plugin's "Rounds Inventory Maximum" reads
+288 off the shipped map, so they are not the same field and the table's 216 could not
+be assigned to either without guessing.
 
 ### The unknown still worth measuring
 
