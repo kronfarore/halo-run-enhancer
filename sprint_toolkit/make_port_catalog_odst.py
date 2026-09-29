@@ -171,6 +171,79 @@ def derived_rows(rows):
     return out
 
 
+#: STEP 6, the ammo pickup. ODST has these where Halo 3 has none, so the port can offer
+#: the same dropdown Halo 1 does. The layout was measured, not assumed: a magazine element
+#: is 20 bytes -- Rounds i16 at +0, then the equipment tag reference at +4 (its group 4CC
+#: reads 'piqe', eqip backwards), whose DATUM sits at +0x10. So `ref_offset` is 4, and the
+#: patcher writes at ref_offset + 0xC as it does everywhere.
+ACRONYMS = {'smg', 'br', 'saw'}
+AMMO_BLOCK = 'Magazines/Magazines'
+AMMO_ANCHOR = 'Rounds'
+AMMO_REF_OFFSET = 4
+AMMO_DEFAULT = B.join(['objects', 'powerups', 'assault_rifle_ammo', 'assault_rifle_ammo'])
+#: Every eqip item some ODST weapon's magazine accepts, read off a built map.
+AMMO_CHOICES = [
+    ('assault_rifle_ammo', 'assault_rifle_ammo'),
+    ('battle_rifle_ammo', 'br_ammo'),
+    ('needler_ammo', 'needler_ammo'),
+    ('pistol_ammo', 'pistol_ammo'),
+    ('rocket_launcher_ammo', 'rocket_launcher_ammo'),
+    ('shotgun_ammo', 'shotgun_ammo'),
+    ('smg_ammo', 'smg_ammo'),
+    ('sniper_rifle_ammo', 'sniper_rifle_ammo'),
+]
+
+
+def ammo_block():
+    """The catalog's `ammo` entry: which pickup item tops the port up, and the choices.
+
+    Pickup items are PER MAP -- Halo 1's a10 carries neither rocket nor shotgun ammo --
+    so each choice records the missions that actually have it, and the UI can say "N of
+    M missions". A choice a mission lacks is not an error: halo_patch falls back to the
+    item the port was built with.
+    """
+    import contextlib, io as _io, glob, os as _os, sys as _sys
+    _sys.path.insert(0, TOOL)
+    _os.chdir(TOOL)
+    _os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
+    import halo_enhancer as he
+    import halo_patch as hp
+    he.load_settings()
+    folder = _os.path.join(he.mcc_root(), 'halo3odst', 'maps')
+    want = {B.join(['objects', 'powerups', d, f]): d for d, f in AMMO_CHOICES}
+    seen, missions = {k: [] for k in want}, []
+    for mp in sorted(glob.glob(_os.path.join(folder, '*.map'))):
+        name = _os.path.basename(mp)[:-4]
+        if name in ('shared', 'campaign', 'single_player_shared', 'mainmenu'):
+            continue
+        try:
+            with contextlib.redirect_stdout(_io.StringIO()):
+                m = hp.open_map(mp, 'Halo 3: ODST')
+            have = {t.get('name') for t in m.tags if t.get('class') == 'eqip'}
+            del m
+        except Exception:
+            continue
+        missions.append(name)
+        for tag in want:
+            if tag in have:
+                seen[tag].append(name)
+    choices = []
+    for tag, d in want.items():
+        # .title() lowercases acronyms -- 'smg_ammo' becomes 'Smg Ammo'
+        label = ' '.join(w.upper() if w in ACRONYMS else w.title()
+                         for w in d.split('_'))
+        row = {'tag': tag, 'label': label}
+        if missions and len(seen[tag]) < len(missions):
+            row['maps'] = seen[tag]
+        choices.append(row)
+    print('   %d mission(s) read; per item: %s'
+          % (len(missions), {want[t]: len(seen[t]) for t in want}))
+    return {'class': 'weap', 'tag': PORT_TAGS[('weap', AR + B + 'assault_rifle')],
+            'block': AMMO_BLOCK, 'anchor_field': AMMO_ANCHOR,
+            'ref_offset': AMMO_REF_OFFSET, 'item_class': 'eqip',
+            'default': AMMO_DEFAULT, 'maps_total': len(missions), 'choices': choices}
+
+
 def main():
     write = '--write' in sys.argv
     t = json.load(open(TABLE, encoding='utf-8'))
@@ -206,6 +279,8 @@ def main():
              'balance': rows,
              'fp_animations': FP_ANIMATIONS,
              'anims': {'reload': RELOAD_MULT}}
+    print('\nstep 6, the ammo pickup:')
+    entry['ammo'] = ammo_block()
     print('\nfields the cards cannot reach, measured from the donor tags:')
     rows.extend(measured_rows())
     print('\nderived totals (nothing else recomputes these in ODST):')

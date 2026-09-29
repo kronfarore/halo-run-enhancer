@@ -7378,8 +7378,21 @@ def _apply_sprint(m, game, registry, cfg):
 
 
 def _tag_id_by_name(m, cls, path):
-    """A tag's datum (what a tag reference stores), by group and path. Halo 1 index
-    entry: group @0x00, tag id @0x0C, name pointer @0x10, meta @0x14."""
+    """A tag's datum (what a tag reference stores), by group and path.
+
+    Halo 3 and later parse their tag table up front and each entry already carries its
+    `ident` -- (salt << 16) | index -- so ask that first. Only Halo 1 needs the index
+    walk below, and it is the only game whose map object has `tag_count` at all: reaching
+    for it on an ODST map raises AttributeError, which is what made the ammo-pickup step
+    Halo-1-only without anyone noticing.
+
+    Halo 1 index entry: group @0x00, tag id @0x0C, name pointer @0x10, meta @0x14.
+    """
+    for t in getattr(m, 'tags', None) or ():
+        if t.get('class') == cls and t.get('name') == path and t.get('ident') is not None:
+            return t['ident']
+    if not hasattr(m, 'tag_count'):
+        return None
     for i in range(m.tag_count):
         b = m.tag_array_off + i * 32
         if bytes(m.data[b:b + 4][::-1]).decode('latin1') != cls:

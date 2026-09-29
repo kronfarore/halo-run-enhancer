@@ -1636,6 +1636,139 @@
    "fp_animations": "objects\\weapons\\rifle\\saw\\fp\\fp_saw_*",
    "anims": {
     "reload": 0.851562
+   },
+   "ammo": {
+    "class": "weap",
+    "tag": "objects\\weapons\\rifle\\saw\\saw",
+    "block": "Magazines/Magazines",
+    "anchor_field": "Rounds",
+    "ref_offset": 4,
+    "item_class": "eqip",
+    "default": "objects\\powerups\\assault_rifle_ammo\\assault_rifle_ammo",
+    "maps_total": 11,
+    "choices": [
+     {
+      "tag": "objects\\powerups\\assault_rifle_ammo\\assault_rifle_ammo",
+      "label": "Assault Rifle Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\battle_rifle_ammo\\br_ammo",
+      "label": "Battle Rifle Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\needler_ammo\\needler_ammo",
+      "label": "Needler Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\pistol_ammo\\pistol_ammo",
+      "label": "Pistol Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\rocket_launcher_ammo\\rocket_launcher_ammo",
+      "label": "Rocket Launcher Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\shotgun_ammo\\shotgun_ammo",
+      "label": "Shotgun Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\smg_ammo\\smg_ammo",
+      "label": "SMG Ammo",
+      "maps": [
+       "L200",
+       "c200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     },
+     {
+      "tag": "objects\\powerups\\sniper_rifle_ammo\\sniper_rifle_ammo",
+      "label": "Sniper Rifle Ammo",
+      "maps": [
+       "L200",
+       "h100",
+       "l300",
+       "sc100",
+       "sc110",
+       "sc120",
+       "sc130",
+       "sc140",
+       "sc150"
+      ]
+     }
+    ]
    }
   }
  ]

@@ -309,13 +309,24 @@ before it could do anything. `odst_saw_place.py` reads the real palette and plac
 * **ODST has ammo pickups** where Halo 3 has none: its Assault Rifle references
   `objects\powerups\assault_rifle_ammo`, so the port inherits one as built.
 
-### What is NOT done in ODST
+### Step 6, the ammo pickup: DONE, and it is the second game to have it
 
-**Step 6, the ammo-pickup choice.** ODST HAS ammo pickups where Halo 3 has none -- its
-Assault Rifle references `objects\powerups\assault_rifle_ammo`, and the port inherits
-that item as built, so it does top up. What it lacks is the catalog `ammo` block that
-gives the Weapon ports page a dropdown to point it at a different item. Halo 1 is the
-only game with that wired. Everything else on the checklist is complete.
+ODST HAS ammo pickups where Halo 3 has none, so the port gets the same dropdown Halo 1
+has. The layout was MEASURED rather than assumed: a magazine element is 20 bytes --
+`Rounds` i16 at +0, then the equipment tag reference at **+4** (its group 4CC reads
+`piqe`, eqip backwards), whose datum sits at +0x10. So `ref_offset` is 4 and the patcher
+writes at `ref_offset + 0xC` as it does everywhere.
+
+Eight items, read off a built map: assault rifle, battle rifle, needler, pistol, rocket
+launcher, shotgun, SMG and sniper rifle ammo. Each records which of the 11 missions
+carries it, because pickup items are PER MAP; a mission that lacks one is not an error,
+the patcher falls back to the item the port was built with.
+
+**One patcher bug had to be fixed for this to work anywhere but Halo 1.**
+`_tag_id_by_name` walked Halo 1's tag index and reached for `m.tag_count`, which no
+Halo 3-era map object has -- so it raised AttributeError rather than returning a datum,
+and the ammo step was quietly Halo-1-only. Halo 3 and later already carry each tag's
+`ident` in the parsed tag table, so it asks that first.
 
 ### Step 8 in ODST: DONE, and it owns its lines
 
