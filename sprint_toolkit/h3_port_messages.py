@@ -236,6 +236,14 @@ def main():
         n = 0
         for k in sorted(entries(s, DONOR)):
             new = PORT + k[len(DONOR):]
+            # The Halo 3 port was built by HIJACKING the automag's ids, so the tag there
+            # carries am_* and not ar_*. Rename whichever donor prefix is actually in it,
+            # so the same command converts a hijacking port to an owning one.
+            for pre in (DONOR, 'am'):
+                cur = pre + k[len(DONOR):]
+                if cur.encode() in bytes(t.data):
+                    k = cur
+                    break
             # LENGTH CHANGES here (ar_pickup 9 -> saw_pickup 10), so this cannot be the
             # in-place byte swap Halo 3 uses: rename_stringid grows the chunk and every
             # ancestor with it.
