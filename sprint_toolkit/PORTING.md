@@ -788,9 +788,9 @@ So `h3_weapon_glyph.py` should reach Reach on a kit switch rather than a rewrite
 **The HUD font is index 3 -- measured, not deduced.** The package header NAMES its fonts,
 which settles a question that cost time in Halo 3 and ODST. Reach's six, in order:
 
-    0  iconixedsys-9            3  iconixedsys_hud-15     <- the HUD font
-    1  iconixedsys_ui-title     4  iconixedsys_ui-15
-    2  iconixedsys_hud-number   5  iconixedsys_ui-16
+    0  icon\fixedsys-9            3  icon\fixedsys_hud-15     <- the HUD font
+    1  icon\fixedsys_ui-title     4  icon\fixedsys_ui-15
+    2  icon\fixedsys_hud-number   5  icon\fixedsys_ui-16
 
 Halo 3's four are `fixedsys-9`, `fixedsys-ui`, `fixedsys-hud`, `fixedsys-term`, so its HUD
 font is 2 -- and Reach's index 2 is `hud-number`, a SEPARATE face for the ammo counter that
