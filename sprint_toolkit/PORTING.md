@@ -1697,3 +1697,55 @@ The next step is the bisect Halo 3 used: point `saw.model`'s `mode` back at the 
 Rifle's render model and rebuild. If a dropped weapon then draws as an Assault Rifle the
 fault is inside the port's render model; if it still draws nothing the fault is in the
 weapon or the model tag, and neither of those differs from the donor.
+
+---
+
+## THE BISECT ANSWERED: the fault is INSIDE the port's render model
+
+With `saw.model` pointed at the DONOR's render model and everything else the port's own,
+the result in game was:
+
+    in your hands      the SAW      (first person reads the weapon's own `first person
+                                    model`, which still points at the port's)
+    dropped, on allies the ASSAULT RIFLE
+
+So **the world path works and renders** -- it just will not render THIS render model,
+while the first-person path renders the same tag happily. That halves the problem and
+rules out the weapon tag, the model tag and how the object is built.
+
+### What tool itself says about it
+
+The port's render model carries three entries in its `errors` block that the donor's does
+not. The first is the interesting one:
+
+    no region/permutation found in material names, model will be a single region
+
+and the string it comes from spells out why:
+
+    'identical material/shader names found - assuming legacy parsing mode
+     (single default region/permutation)'
+
+Our materials are `saw_body` and `saw_display`, and the shaders are called `saw_body` and
+`saw_display`, so `tool` decides this is an OLD JMS, gives up on parsing regions out of
+the material names, and synthesises one. The donor gets no such comment: Bungie's models
+came through the FBX/SIDECAR pipeline, where regions are a face collection -- the sample
+sidecar in `data\objects\test` carries exactly that, a `regions` FaceCollection whose one
+entry is `default`.
+
+Both end up with one region called `default`, so it is not yet proven that legacy parsing
+is the FAULT -- but it is the only difference `tool` itself flags, and it is the only
+thing left that distinguishes how the two models were built.
+
+### What the material syntax is NOT
+
+`(default default) saw_body`, by analogy with the marker format that tool does document
+(`marker '%s' has bad format - must be '(permutation region) name'`), is WRONG for
+materials: the shader then fails to resolve entirely, the material comes out `invalid`,
+and the legacy comment stays. Tried and reverted.
+
+The other strings around it are the map to the real syntax, and they say a MAX material
+name yields a `region_name` and a `permutation_name`, that a material name may contain a
+material TYPE which can override one found in the shader name, and that the punctuation
+set in play is `%#?!@*$^-&=.;)><|~({}[`. Reading those out properly is the next move,
+and the alternative is to stop fighting the JMS path and use the sidecar importer the
+donor was built with.
