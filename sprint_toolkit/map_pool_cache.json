@@ -1,0 +1,50 @@
+{
+ "entries": {
+  "Halo Reach|m20|equipment": {
+   "names": [
+    "Armor Lock",
+    "Sprint",
+    "Active Camouflage",
+    "Drop Shield",
+    "Hologram",
+    "Jet Pack"
+   ],
+   "stamp": [
+    843460608,
+    "61aac9e52a5d29da2a97972fe431f911635a2ce363cc4f9f6b8aaa7ecf1b67e9"
+   ]
+  },
+  "Halo Reach|m20|weapons": {
+   "names": [
+    "Assault Rifle",
+    "Concussion Rifle",
+    "DMR",
+    "Energy Blade",
+    "Flak Cannon",
+    "Magnum",
+    "Needle Rifle",
+    "Needler",
+    "Plasma Launcher",
+    "Plasma Pistol",
+    "Plasma Rifle",
+    "Rocket Launcher",
+    "Shotgun",
+    "Sniper Rifle",
+    "Spartan Laser",
+    "Target Locator",
+    "Focus Rifle",
+    "Gravity Hammer",
+    "Grenade Launcher",
+    "Machine Gun",
+    "Plasma Cannon",
+    "Plasma Repeater",
+    "Spike Rifle"
+   ],
+   "stamp": [
+    843460608,
+    "61aac9e52a5d29da2a97972fe431f911635a2ce363cc4f9f6b8aaa7ecf1b67e9"
+   ]
+  }
+ },
+ "version": 4
+}

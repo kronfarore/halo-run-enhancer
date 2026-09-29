@@ -37,7 +37,13 @@ def main():
     ap.add_argument('--built', help='an Editing Kit maps folder to read from when the map is not installed yet')
     a = ap.parse_args()
     he.load_settings()
-    folder = {'Halo 3': 'halo3', 'Halo 3: ODST': 'halo3odst'}.get(a.game, 'halo3')
+    # Defaulting to halo3 for an unknown game sends this looking for m20 in Halo 3's
+    # maps folder and reporting it missing, which reads like the map was never built.
+    FOLDERS = {'Halo 3': 'halo3', 'Halo 3: ODST': 'halo3odst',
+               'Halo Reach': 'haloreach', 'Halo 4': 'halo4'}
+    if a.game not in FOLDERS:
+        raise SystemExit('unknown game %r -- one of %s' % (a.game, sorted(FOLDERS)))
+    folder = FOLDERS[a.game]
     live = os.path.join(he.mcc_root(), folder, 'maps', a.map + '.map')
     # A map that is BUILT but not installed yet is the normal case for this check: the
     # whole point is to look before spending a launch, and installing first would mean

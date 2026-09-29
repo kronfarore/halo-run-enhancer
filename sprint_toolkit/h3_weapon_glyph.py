@@ -41,6 +41,7 @@ import h3_font_package as fp                                    # noqa: E402
 import h3_font_codec as fc                                      # noqa: E402
 import h3_font_add as fa                                        # noqa: E402
 import h3_font_grow as fg                                       # noqa: E402
+import h3_font_place as fpl                                     # noqa: E402
 
 B = os.sep
 import h3_kit                                              # noqa: E402
@@ -385,8 +386,19 @@ def main():
                     # Halo 3 ships four, so the walk IS the format.
                     if 'roomier' not in str(e):
                         raise
-                    print('   no room in that block -- appending one')
-                    out = fg.grow(d, a.glyph, font, pay, (W, H))
+                    # Prefer an EXISTING block that comes after this font's last
+                    # run: it keeps the file the same size, and the engine is
+                    # already reading it. Growing is the last resort, because the
+                    # first in-game test of a grown package left the text intact
+                    # and the new glyph undrawn -- consistent with the engine
+                    # reading a fixed number of blocks.
+                    try:
+                        out = fpl.place(d, a.glyph, font, pay, (W, H))
+                        print('   no room where it sorts -- put it in a later '
+                              'block that has some')
+                    except SystemExit:
+                        print('   no room in any existing block -- appending one')
+                        out = fg.grow(d, a.glyph, font, pay, (W, H))
                 # VERIFIED BEFORE IT IS WRITTEN. This used to write first and check
                 # after, so a failed check left the damage on disk and only told you
                 # to restore it -- and it checked fp.bounds, which is False on
