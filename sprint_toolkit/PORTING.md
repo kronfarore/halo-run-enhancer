@@ -1381,3 +1381,74 @@ purpose: it is the record that they existed.
 
 `port_backup.py` now NAMES a shortfall instead of printing `31 of 39`, which is the
 thing that would have caught this the day it happened.
+
+---
+
+## SCALE: it is 140 ports, and the pipeline is built for one
+
+Counted 2026-09-29 with `port_matrix.py`, off the weapon spreadsheet, whose answer is in
+the cell COLOURS and not in its text.
+
+    56 weapons in the sheet
+    45 SOURCEABLE -- they exist in at least one MCC game
+    11 exist in no MCC game at all (Halo 5 / Infinite) and cannot be ported from anywhere
+
+    Halo: CE       12 has, 33 missing      Halo 3: ODST   22 has, 23 missing
+    Halo 2         18 has, 27 missing      Halo: Reach    23 has, 22 missing
+    Halo 3         26 has, 19 missing      Halo 4         29 has, 16 missing
+
+    140 port jobs to fill every gap.
+
+**"MP only" counts as HAS IT.** If the tags are already in the game, a campaign
+appearance is a placement and residency problem -- no geometry, no shaders, no
+animations. Lumping those in with real ports overstates the work, so the matrix keeps
+them apart.
+
+### What the SAW cost, and why that does not multiply
+
+One weapon into four games took the whole of this document. At that rate 140 is not a
+project, it is a decade. But most of what it cost was PER GAME, not per weapon, and that
+half is now done and amortises across every future port in that game:
+
+* the kit selector, and `per_kit` refusing to guess;
+* the tag format -- `h3tag` reads H3, ODST and Reach unchanged;
+* the JMS version, and the two XML schemas the exporters use;
+* the string verbs and the CRLF trap;
+* the font package format, its codec, and the block-occupancy rule;
+* the chud threshold locator;
+* the balance machinery -- `balance_port.py` already derives a table for ANY weapon pair
+  from the games' own tags, which is the one part that was general from the start.
+
+### What actually multiplies, and therefore what has to become DATA
+
+**77 of the 215 tools mention `saw` by name.** That is the whole problem in one number:
+there is a SAW pipeline, not a port pipeline. Everything below is per WEAPON and is
+currently a constant in a script:
+
+    the donor            which weapon's skeleton and animations it inherits
+    the source geometry  which H4/H3/H2 render_model, and its bone -> node map
+    the markers          which of the donor's the port keeps and which it moves
+    the tag names        saw, saw_bullet_h4_original_numbers, fp_saw_<species>
+    the numbers          magazine, reserve, velocity, damage
+    the icon             its codepoint, per game, per package
+    the messages         its prefix and its lines
+
+So the next step is a **port manifest**: one file per (weapon, target game) carrying
+exactly those, and tools that read it instead of holding constants. Nothing about the
+method changes -- the nine steps are right, and each one has now been proven in three
+engines -- it is the same steps driven by data.
+
+### The leverage, which is not evenly spread
+
+    in 1 game: 16 weapons   <- 5 targets each, 80 of the 140 jobs
+    in 2 games: 8      in 3: 5      in 4: 6      in 5: 1      in 6: 9
+
+**Sixteen weapons account for more than half the work**, because a weapon that exists in
+one game is missing from five. Extracting ONE of those well -- geometry, textures,
+numbers -- pays off five times, and the Halo 4 set is most of them. That is the opposite
+of the SAW's shape, which was one source and four targets, and it is the argument for
+making the SOURCE side of the pipeline data-driven first.
+
+The other end is nearly free: the nine weapons already in all six games need no ports at
+all, and the H3 to ODST direction is byte-identical territory where a port is mostly a
+copy.
