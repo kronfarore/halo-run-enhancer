@@ -40,6 +40,7 @@ sys.path.insert(0, HERE)
 import h3_font_package as fp                                    # noqa: E402
 import h3_font_codec as fc                                      # noqa: E402
 import h3_font_add as fa                                        # noqa: E402
+import h3_font_grow as fg                                       # noqa: E402
 
 B = os.sep
 import h3_kit                                              # noqa: E402
@@ -61,15 +62,11 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 #: ODST's packages are also ~50 KB larger and packed differently, so Halo 3's 0xE06A
 #: sorts into an ODST block with 120 bytes free against the 1748 it needs. Its HUD font
 #: leaves exactly six workable codepoints, 0xE04A..0xE04F; this takes the first.
-#: REACH'S CODEPOINT IS CHOSEN BY BLOCK OCCUPANCY, not by what is free. A free
-#: codepoint is the easy half; the hard half is that it must sort into a run of THIS
-#: FONT that has room, in ALL THREE packages at once, and their block boundaries are
-#: completely different -- x1 splits font 3 in three, x2 in seven, x3 in thirteen.
-#: 0xE09A was tried first because it is free and sits in x1's roomy run; x2 sorts it
-#: into a block with 480 bytes free against the 1768 it needs, and the tool refuses.
-#: Intersecting the roomy runs of all three leaves 41 codepoints, 25 of them free.
-#: 0xE052 is the first.
-GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE052,
+#: Reach's is ABOVE every codepoint its HUD font draws (0xE143 in all three packages),
+#: because its glyph does not fit any existing block and has to go in an APPENDED one
+#: -- and a new block lands at the END of the file, so it can only carry codepoints
+#: that sort after everything already there. See h3_font_grow.py.
+GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE150,
                        what="the pickup glyph's codepoint")
 #: the font that draws the pickup prompt -- icon\fixedsys-hud in Halo 3, and NOT the
 #: same index in every kit, so it is measured once in h3_kit rather than guessed here
@@ -288,6 +285,29 @@ def splice(path, cp, payload, box=None):
     io.open(path, 'wb').write(bytes(d))
 
 
+def verify(before, after, cp, name):
+    """Refuse to write a package that lost anything, gained more than the glyph, or
+    holds a glyph that will not decode. This is what `fp.bounds` cannot do on a file
+    whose shipped header already disagrees with its own tables."""
+    old, new = fp.glyphs(before), fp.glyphs(after)
+    lost = sorted(set(old) - set(new))
+    gained = sorted(set(new) - set(old))
+    if lost:
+        raise SystemExit('%s: %d codepoint(s) would be LOST (%s...) -- not written'
+                         % (name, len(lost), ', '.join('%04X' % c for c in lost[:6])))
+    if gained != [cp]:
+        raise SystemExit('%s: expected to gain only %04X, would gain %s -- not written'
+                         % (name, cp, ['%04X' % c for c in gained]))
+    for c, (_f, w, h, size, at) in new.items():
+        try:
+            px = fc.decode(after[at + 16:at + 16 + size], w, h)
+            assert len(px) == w * h
+        except Exception:
+            raise SystemExit('%s: glyph %04X would not decode -- not written'
+                             % (name, c))
+    return True
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--glyph', type=lambda s: int(s, 0), default=GLYPH)
@@ -356,10 +376,24 @@ def main():
                 shutil.copyfile(path, keep)
                 print('   kept the shipped %s in %s' % (name, BACKUP))
             if new_cp:
-                out = fa.add(d, a.glyph, font, pay, (W, H))
+                try:
+                    out = fa.add(d, a.glyph, font, pay, (W, H))
+                except SystemExit as e:
+                    # No room in the block this codepoint sorts into. GROW the
+                    # package rather than give up: the block count is stored
+                    # nowhere and ODST already ships a five-block package where
+                    # Halo 3 ships four, so the walk IS the format.
+                    if 'roomier' not in str(e):
+                        raise
+                    print('   no room in that block -- appending one')
+                    out = fg.grow(d, a.glyph, font, pay, (W, H))
+                # VERIFIED BEFORE IT IS WRITTEN. This used to write first and check
+                # after, so a failed check left the damage on disk and only told you
+                # to restore it -- and it checked fp.bounds, which is False on
+                # Reach's SHIPPED package (its ui-16 header claims 98 glyphs where
+                # the tables hold 96), so every Reach write wrote and then raised.
+                verify(d, out, a.glyph, name)
                 io.open(path, 'wb').write(out)
-                if not fp.bounds(out):
-                    raise SystemExit('%s no longer adds up; restore it' % name)
             else:
                 splice(path, a.glyph, pay, (W, H))
 

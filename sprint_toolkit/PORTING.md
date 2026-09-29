@@ -1504,6 +1504,45 @@ the rule.
 the one that actually ends the problem. (1) is the fallback that unblocks porting
 immediately if the others take time.
 
+### (4) IS BUILT: `h3_font_grow.py`, and the ceiling is gone
+
+Appending a block works. Done to all three of Reach's live packages, each gaining exactly
+one block and exactly one codepoint:
+
+    x1   245,760 -> 294,912 bytes    4 -> 5 blocks
+    x2   589,824 -> 638,976         11 -> 12
+    x3 1,130,496 -> 1,179,648       22 -> 23
+
+    353 -> 354 entries in each, all 354 decode, nothing lost, font 3 still ascending.
+
+**The best evidence is not that test -- it is ODST.** Halo 3 ships a FOUR-block,
+245,760-byte x1; ODST ships a FIVE-block, 294,912-byte one. Same engine, same format,
+and a grown Reach x1 is byte-for-byte that shape. The block count is stored nowhere: every
+reader derives it by walking the file in 0xC000 steps and accepting what validates as a
+block header. The walk IS the format.
+
+**A new block goes at the END of the file**, and a font is one ascending list read across
+the blocks in file order, so it can only carry codepoints above that font's highest.
+Reach's HUD font tops out at 0xE143 in all three packages, so Reach's glyph is **0xE150**.
+`grow()` refuses anything lower and `ordered()` proves the result.
+
+Still needs ONE BOOT to trust: nothing in the bytes proves the ENGINE sizes the package
+the way the readers do. If it does, there is no glyph ceiling in any of these games and
+a port costs 48 KB of font package.
+
+### The two bugs that were damaging packages, both fixed
+
+The write path **wrote the file and then checked it**, so a failed check left the damage
+on disk and only said "restore it". And it checked `fp.bounds`, which is FALSE on Reach's
+SHIPPED package -- its `ui-16` header claims 98 glyphs where the tables hold 96 -- so
+every Reach write wrote and then raised. That is what emptied x1 earlier, not the
+insertion.
+
+`h3_weapon_glyph.verify()` now runs BEFORE the write: nothing lost, exactly one codepoint
+gained, and every glyph in the result decodes. A global "adds up" check cannot do that on
+a file whose shipped header disagrees with its own tables -- diff against a pristine copy
+instead.
+
 ### Two games still unmeasured
 
 * **Halo 2** edits eight fonts in place under `h2_fonts` rather than using a package
