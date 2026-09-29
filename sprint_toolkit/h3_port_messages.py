@@ -23,14 +23,37 @@ for every port and every game that has these verbs.
     PORT_EK=odst python h3_port_messages.py --write         # add them and re-import
     PORT_EK=odst python h3_port_messages.py --repoint       # point the weapon at them
 
-STILL TO CONFIRM IN GAME, and it is the one thing this cannot answer offline: MCC reads
-HUD strings from `data\UI\Localization\<LANG>_<Game>.bin`, NOT from the map (see
-`mcc-localization-overrides-tags`). These ids exist only in the map, so the game either
-falls back to the map's copy for an id the .bin does not carry -- in which case this is
-the finished answer for every port -- or shows nothing, in which case the .bin's own
-index has to be cracked. The .bin cannot be appended to blindly: its 16-byte header
-declares the payload twice with no slack, and the tag's own string offsets do NOT index
-it (measured: 4% of 468 ids land on a string start, which is noise).
+TESTED IN GAME 2026-09-29, AND IT HALF WORKS. The port's own prompt is right -- its
+glyph on three prompts and "Picked up a SAW" on the confirmation -- so the game DOES read
+the map's strings, and a port really can bring its own line. But every MCC-era icon in the
+rest of the UI disappeared with it.
+
+THE MECHANISM, measured rather than guessed: adding entries makes MCC stop using
+`<LANG>_<Game>.bin` for this string list and fall back to the map wholesale. 62 icon
+codepoints exist in the .bin and in NO map string -- E034..E046 (skull descriptions),
+E100..E10C (the menu "Select / Back / Friends" hints), E066, E06A, E080 and more -- all
+strings MCC added on top of Bungie's 480. The map is a SUBSET, so falling back to it
+loses every one of them. Our E04A survives because it is in the map.
+
+Neither the string tag nor the font packages are damaged, and both were checked before
+blaming anything: the tag still holds every vanilla line ("Picked up an Assault Rifle" is
+there, "Hold " went 168 -> 202 occurrences) and all three font packages validate at 323
+entries with every glyph header matching its table, across all five fonts.
+(`extract-unicode-strings` reporting only 8 entries afterwards is the extractor printing
+the DELTA, not evidence of loss -- that misread cost a detour.)
+
+SO THE CHOICE IS:
+  * crack the .bin's index and put the port's strings THERE, which keeps MCC's own
+    strings authoritative. Its 16-byte header declares the payload twice with no slack,
+    and the tag's string offsets do NOT index it (4% of 468 land on a string start), so
+    this is a real reversing job on the container's second header at 0x40; or
+  * give the map every string the .bin has, which needs the ids MCC used for its 62
+    extra icons -- and those ids exist nowhere in the map, so they cannot be recovered
+    from it; or
+  * accept the donor's icon on the prompt, which is where Halo 3 and Halo 1 already are.
+
+DO NOT simply revert to hijacking a set on this evidence: the hijack has the same
+problem in reverse (the .bin wins, so the text never changes) and it does not generalise.
 """
 import argparse
 import io
