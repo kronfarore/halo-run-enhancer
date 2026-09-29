@@ -42,3 +42,8 @@ sprint_toolkit/_pools_backup/
 
 # derived art from the Halo 1 build (make_icon.py, ammo_meter.py previews)
 sprint_toolkit/h1mp/
+
+# Restore points the Halo 1 build makes beside itself (stock copies, per machine)
+sprint_toolkit/*.scenario.before_saw
+sprint_toolkit/*.map.before_saw
+sprint_toolkit/*.bitmap.stock
