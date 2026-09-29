@@ -163,6 +163,11 @@ Glyph and schematic are drawn from the port's **own geometry**, not by hand — 
 `h3_weapon_glyph.py`, which documents the model-XML traps. The glyph box **is** the
 on-screen size; borrow a shipped glyph's exact dimensions.
 
+**THE TEXT RULE BELOW IS SUPERSEDED for Halo 3 and ODST** -- both ports now bring
+their own lines (see **Step 8, the text**), so nothing is borrowed and nothing has to
+be blanked. It still describes Halo 2 and Halo 1, which have not been converted, and
+it remains the right rule for any line a port does NOT own.
+
 **The rule for the TEXT: blank it, do not rename it.** A port has no lines of its own, so
 rewording one means taking a live weapon's — and that weapon is then wrong for the rest of
 the game. The lines that matter carry a SYMBOL rather than a name (the pickup prompt is
@@ -270,20 +275,18 @@ before it could do anything. `odst_saw_place.py` reads the real palette and plac
 * **ODST has ammo pickups** where Halo 3 has none: its Assault Rifle references
   `objects\powerups\assault_rifle_ammo`, so the port inherits one as built.
 
-### Step 8 is INCOMPLETE in ODST: the pickup prompt
+### Step 8 in ODST: DONE, and it owns its lines
 
-The prompt reads its icon from a character inside a message string, and ODST has **no
-free message set to take**. All 149 prompt-shaped ids were read out of its
-`hud_messages`: every one carrying English text belongs to a weapon that is in the game.
-The only unreferenced weapon-shaped set, `gc_*` (the golf club), has no English strings
-at all and no `swap_ai` member. `magnum` and `smg` look free because ODST cut them — but
-those are exactly the weapons the ODST feature restores on a rebuilt map.
+The port brings its own five messages rather than taking a weapon's -- see
+**Step 8, the text** below, which is the general method for every game. Confirmed in
+game: its own glyph on three prompts and "Picked up a SAW" on the confirmation, in all
+twelve languages.
 
-`h3_saw_pickup_icon.py` and `h3_mcc_localization.py` both REFUSE to run against ODST
-rather than do the Halo 3 thing, which would put the port's icon on the starting pistol's
-prompt for the whole game. The port's glyph IS in ODST's font packages, ready for the day
-a set frees up or a new localization entry can be added.
-
+Its GLYPH is its own too, at **0xE04A**. ODST needs a different codepoint AND a
+different font index from Halo 3: its packages hold FIVE fonts (it inserted
+`fixedsys-pda13`), so the HUD font is index 3 rather than 2, and they are ~50 KB larger
+and packed differently, so Halo 3's 0xE06A sorts into a full block. Six codepoints fit;
+this takes the first.
 
 ---
 
@@ -675,6 +678,86 @@ exist.
 
 ---
 
+## Step 8, the text: A PORT BRINGS ITS OWN LINES
+
+**This replaces every borrow, and it is the general answer.** Read it before the
+per-game notes below, which now only record what each game still needs.
+
+The old method took a live weapon's five message ids and edited its text. It never
+generalised: the donor has to be a weapon that never appears, Halo 3 only had one
+(the automag, which is ODST's STARTING PISTOL), and every remaining candidate is itself
+a future port. Hijacking also reaches OUTSIDE the map, into a localization file shared
+by every install of that game.
+
+The Editing Kits could do this all along. The verbs, per kit:
+
+| kit | extract | import |
+|---|---|---|
+| H3EK, H3ODSTEK | `extract-unicode-strings <list>` | `strings <dir>` + `strings-localized <dir>` |
+| H2EK | `extract-unicode-strings <list>` | `new-strings <dir>` |
+| HCEEK | — | `unicode-strings <dir>` |
+
+The source is UTF-16, a `[Strings]` header and one `name = "text"` per line, with icons
+as NAMED MACROS (`&assault_rifle`, `&button_action_weapon_primary`). There are 39 macros
+and no `&saw`, because the table lives inside `tool` rather than in a tag -- which does
+not matter, because a **literal private-use character** works in its place.
+
+So: clone the donor's lines, rename the prefix, swap its icon macro for the port's own
+codepoint, re-import. `h3_port_messages.py` does it, and `--repoint` renames whichever
+donor prefix the weapon actually carries, so one command converts a hijacking port into
+an owning one.
+
+### THE THREE TRAPS, all of which bit
+
+* **CRLF.** The extracted source is CRLF and reading it in TEXT mode collapses that to
+  LF. Written back, `tool` reads the whole vanilla body as ONE malformed entry, imports
+  only the lines you appended, and leaves every pre-existing string with **english offset
+  -1** -- text still in the blob, no pointer to it. In game that is every weapon's pickup
+  prompt showing NO TEXT AT ALL, while the port's shows correctly. Measured: 479 of 487.
+  Read with `newline=''`.
+* **`extract-unicode-strings` reports only the DELTA after an import.** Re-extracting
+  returns 8 entries and looks exactly like catastrophic data loss. It is not.
+* **Do not delete the tag first.** It does make every string "new", and it discards the
+  eleven other languages. It was only ever a workaround for the CRLF bug.
+
+### Languages
+
+`--languages` clones the port's lines into each `data_XX` source. The split is the icon
+and it falls out of the data: the four PROMPT lines carry the icon macro and name no
+weapon, so the localized text is cloned verbatim with only the icon swapped -- right in
+every language, no translation. `picked_up` and the two ammo lines DO name the weapon,
+and a name cannot be substituted into a translated sentence safely (the differing span
+between two weapons' lines comes out as `'assau`, `n Assault`, half a Chinese word), so
+those three take the English line. Result on both Halo 3 and ODST: no missing offset in
+any of the twelve languages.
+
+### Where each game stands
+
+* **Halo 3: ODST -- DONE and confirmed in game.** Its own glyph on three prompts,
+  "Picked up a SAW" on the confirmation, 487 entries, all languages.
+* **Halo 3 -- DONE in the tags, needs a map rebuild.** 475 entries, all languages, the
+  weapon repointed from `am_*` to `saw_*`, and `h3_mcc_localization --restore` has given
+  the automag its glyph back in the live `EN_Halo3.bin`.
+* **Halo 2 -- STILL BORROWING.** `h2_saw_messages.py` blanks the cut GPMG's three lines
+  rather than rewording them. H2EK has `extract-unicode-strings` and `new-strings`, so
+  the same conversion is available and has not been done.
+* **Halo 1 -- icon already OWNED, text not checked.** `add_msg_icon.py` appends a NEW
+  sequence (25) to the shared `hud_msg_icons` sheet with stock indices untouched, so
+  nothing is taken. HCEEK's import verb is `unicode-strings`.
+
+### The localization .bin, for the record
+
+It is no longer on the critical path -- the map's strings win once the list changes --
+but it is not the black box the ODST notes first called it. **Its index is a table of
+(hash, offset) pairs**, 7506 in Halo 2's English file, offsets monotonic; that is how
+`h2_saw_messages.py` edits it safely. Its length must never change: shortened lines are
+padded back with SPACES, never NULs, because a NUL ends the string early and everything
+after it becomes a new entry -- which is how 21 phantom entries once turned Halo 3's
+assault rifle pickup line into "CARNAGE REPORT".
+
+
+---
+
 ## The icon supply, and why it has to grow
 
 A port needs a pickup glyph, and taking a shipped weapon's is only tolerable once. There
@@ -794,24 +877,15 @@ about the render_model XML cost time every time they are rediscovered:
 
 ## Open, and deliberately so
 
-* **The ODST pickup prompt still draws the Assault Rifle's icon -- and the fix is
-  identified, verified, and not yet applied.** Take the SENTINEL BEAM's message set.
-  Measured 2026-09-28: all five ids exist (`sen_b_pickup/swap/picked_up/switch_to/
-  swap_ai`), its glyph U+E132 carries all four prompt strings in EN_Halo3ODST.bin, ODST
-  has no Sentinels anywhere, and the enhancer's own ODST mission lists offer 22 weapons
-  of which it is not one. So nothing in the game loses a prompt, which is what ruled out
-  every other set.
-  Two differences from the Halo 3 method, both already solved elsewhere:
-  `ar_pickup` (9) and `sen_b_pickup` (12) are DIFFERENT LENGTHS, so the rename needs
-  `h3tag.rename_stringid`, which grows the chunk and every ancestor, rather than the
-  in-place byte swap Halo 3 uses; and the localization edit stays in place, because
-  U+E132 and the port's U+E04A are both three bytes in UTF-8.
-  `h3_saw_pickup_icon.py` and `h3_mcc_localization.py` currently REFUSE on ODST; both
-  guards should become "use the sentinel beam set" rather than "there is none".
-  The route NOT to take: growing the localization file. Its 16-byte header declares the
-  payload size twice and there is no slack, but the container has a second header at 0x40
-  whose trailing table holds values LARGER than the file, so the string index is not
-  reachable from it. That is a reversing project, and this is not.
+* **Halo 2 and Halo 1 still BORROW their pickup text**, where Halo 3 and ODST now own
+  theirs. Halo 2 blanks the cut GPMG's three lines rather than rewording them; Halo 1's
+  ICON is already its own (a new sequence appended to the shared sheet) but its text was
+  not checked. Both kits have the verbs -- H2EK `extract-unicode-strings` + `new-strings`,
+  HCEEK `unicode-strings` -- so this is a conversion, not a research problem.
+* **The port's non-English confirmation lines are English.** The four prompt lines are
+  properly localized in all twelve languages; `picked_up` and the two ammo lines fall back
+  to English, because a weapon name cannot be substituted into a translated sentence
+  safely. Fixing it needs a real translation per language, which is a content job.
 * **The crosshair is not ported in Halo 1 or Halo 3 yet.** Only Halo 2's is. The method is
   game-agnostic -- H4EK specifies the layout, so the same read applies -- but both earlier
   ports still wear their donor's reticle. ODST inherits Halo 3's, so it is in the same
