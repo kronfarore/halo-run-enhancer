@@ -783,10 +783,18 @@ cracked codec. Reach needs none of it:
 * there is room: **24,208 free bytes** in the last block and **229 unused private-use
   codepoints** below 0xE160 (Reach uses 0xE006..0xE143 across 6 fonts).
 
-So `h3_weapon_glyph.py` should reach Reach on a kit switch rather than a rewrite. The one
-thing NOT yet measured is **which font index is the HUD font** -- Halo 3's is 2, ODST's 3,
-and Reach has six fonts where `font_table_icon.txt` names only six unique faces across
-eleven slots. Measure it; do not carry ODST's 3 across.
+So `h3_weapon_glyph.py` should reach Reach on a kit switch rather than a rewrite.
+
+**The HUD font is index 3 -- measured, not deduced.** The package header NAMES its fonts,
+which settles a question that cost time in Halo 3 and ODST. Reach's six, in order:
+
+    0  iconixedsys-9            3  iconixedsys_hud-15     <- the HUD font
+    1  iconixedsys_ui-title     4  iconixedsys_ui-15
+    2  iconixedsys_hud-number   5  iconixedsys_ui-16
+
+Halo 3's four are `fixedsys-9`, `fixedsys-ui`, `fixedsys-hud`, `fixedsys-term`, so its HUD
+font is 2 -- and Reach's index 2 is `hud-number`, a SEPARATE face for the ammo counter that
+Halo 3 does not have. Carrying Halo 3's 2 across would put the glyph in the digits font.
 
 **Step 8's text half ports outright.** HREK has the same three verbs as H3EK and H3ODSTEK
 -- `extract-unicode-strings`, `strings`, `strings-localized` -- and the same string list
@@ -807,12 +815,11 @@ m70_bonus) holds a differently-timed weapon.
 `build_fonts_icon.bat` would rebuild the icon package as BLANKS -- never run it. Edit the
 package in place the way `h3_weapon_glyph.py` does, which moves no offsets.
 
-### The unknowns worth measuring before committing to a plan
+### The unknowns still worth measuring
 
-1. which font index is the HUD font (above);
-2. whether Reach's `render` accepts the JMS the Halo 3 path produces, or wants the FBX
+1. whether Reach's `render` accepts the JMS the Halo 3 path produces, or wants the FBX
    `import <sidecar-file>` route -- `objects\test\test_fbx_weapons` suggests both exist;
-3. residency. Reach is the one game where a placed weapon can be inert because its tag's
+2. residency. Reach is the one game where a placed weapon can be inert because its tag's
    bit is clear in the first zone set's pool. A fresh EK build pools what the scenario
    references, so this should be a no-op for a built map -- but it is the standing HALF /
    LATE audit in `reach_pools.py`, and it is the first thing to check if the SAW spawns
