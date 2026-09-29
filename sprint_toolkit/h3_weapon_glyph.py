@@ -63,11 +63,19 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 #: ODST's packages are also ~50 KB larger and packed differently, so Halo 3's 0xE06A
 #: sorts into an ODST block with 120 bytes free against the 1748 it needs. Its HUD font
 #: leaves exactly six workable codepoints, 0xE04A..0xE04F; this takes the first.
-#: Reach's is ABOVE every codepoint its HUD font draws (0xE143 in all three packages),
-#: because its glyph does not fit any existing block and has to go in an APPENDED one
-#: -- and a new block lands at the END of the file, so it can only carry codepoints
-#: that sort after everything already there. See h3_font_grow.py.
-GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE150,
+#: REACH'S MUST BE INSIDE THE FONT'S NATIVE RANGE. 0xE150 was tried first, above the
+#: 0xE143 its HUD font tops out at, and the message drew a BOX in game -- while
+#: "Picked up a SAW" on the same line was correct, so the text worked and only the
+#: glyph lookup failed. It failed in an appended block AND in an existing one, so the
+#: block was never the problem: the codepoint was out of range.
+#:
+#: Both precedents agree. Halo 3's package runs to 0xE150 natively and took 0xE06A;
+#: ODST's runs to 0xE150 and took 0xE04A; both INSIDE. Reach's stops at 0xE143.
+#:
+#: 0xE052 is free, inside the range, and -- the part that is not obvious -- sorts into
+#: a block WITH ROOM in all three packages at once, whose boundaries differ completely.
+#: Intersecting the roomy runs of x1, x2 and x3 leaves 41 codepoints, 25 of them free.
+GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A, reach=0xE052,
                        what="the pickup glyph's codepoint")
 #: the font that draws the pickup prompt -- icon\fixedsys-hud in Halo 3, and NOT the
 #: same index in every kit, so it is measured once in h3_kit rather than guessed here

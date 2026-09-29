@@ -1548,3 +1548,52 @@ instead.
 **This is a restrictor, not a detail.** Nine steps can be automated and a manifest can
 make the pipeline generic, and none of that matters if the eleventh weapon in a game has
 nowhere to put its icon.
+
+---
+
+## THE CODEPOINT MUST BE INSIDE THE FONT'S NATIVE RANGE
+
+Measured in game, Reach, 2026-09-29, and it corrects the glyph-ceiling plan.
+
+The port's prompt drew a BOX while **"Picked up a SAW" on the same screen was correct**.
+That one detail settles a lot: the string list, the weapon's message ids, the import and
+the twelve languages all work, and ONLY the glyph lookup failed.
+
+It failed at 0xE150 in an APPENDED block, and it failed at 0xE150 in an EXISTING block
+that the engine was already reading. **So the block was never the problem.** What is wrong
+with 0xE150 is that it is above 0xE143, where Reach's HUD font natively stops:
+
+    halo3      HUD font 0xE006..0xE150 natively   added 0xE06A   INSIDE   works
+    halo3odst  HUD font 0xE006..0xE150 natively   added 0xE04A   INSIDE   works
+    haloreach  HUD font 0xE008..0xE143 natively   added 0xE150   ABOVE    box
+
+Both precedents agree and neither was chosen on purpose -- they happened to be free in a
+range that also happened to be inside. The font header's top-codepoint bound updates
+correctly (0xE144 -> 0xE151) and the entry decodes, so nothing in the FILE is wrong. The
+engine simply does not resolve an icon above the font's shipped top.
+
+Reach's glyph is now **0xE052**: free, inside the range, and sorting into a block with
+room in all three packages, whose boundaries differ completely. The packages are back to
+their shipped sizes and block counts, 354 of 354 entries decode, and the messages were
+re-imported so the tag holds 48 occurrences of U+E052 and none of U+E150.
+
+### What this does to the ceiling
+
+**A naive append cannot add a usable icon.** A font is one ascending list read across the
+blocks in file order, so an appended block can only carry codepoints ABOVE the font's top
+-- and those are exactly the ones the engine will not resolve. Growing the file is safe
+(the text was undisturbed) and useless on its own.
+
+What growth needs is a REPACK: rebuild the package with N+1 blocks and redistribute every
+run, so the new block holds a mid-range slice and the ascending order still reads. Then
+the binding constraint stops being bytes and becomes free IN-RANGE codepoints -- of which
+Reach has 103 free in 0xE093..0xE143 alone and 229 below 0xE160.
+
+So the ceiling is not 1, and it is not unbounded either:
+
+    today, no repack        Halo 3 4, ODST 1, Reach 1
+    repacked in place       Halo 3 8, ODST 22, Reach 12
+    repacked AND grown      limited by free in-range codepoints, which is ~100+
+
+The middle row needs no new format understanding. The bottom row needs a real repacker
+and is the one that reaches 140.
