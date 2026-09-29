@@ -731,6 +731,103 @@ exist.
 
 ---
 
+## Halo Reach
+
+**Scoped 2026-09-29, nothing built yet.** Reach was expected to be ODST-adjacent. It is
+not: it is the *Halo 2* shape of first person laid over a Halo 3 era toolchain, and the
+two halves of the port that usually cost the most -- the models and the icon -- move in
+opposite directions. Everything below is measured from HREK and the live game, not
+assumed from the other kits.
+
+### The kit
+
+`F:\SteamLibrary\steamapps\common\HREK` is a full kit: `tool.exe`, `sapien.exe`,
+`Foundation.exe` (Guerilla's replacement), 305 verbs. It already has a build/install
+pipeline in `reach_ek_build.py`, and `reach_place.py` already knows how to append
+placements and grow a palette -- both confirmed in game on m20.
+
+Two verb signatures differ from Halo 3 and will silently do the wrong thing:
+
+    build-cache-file <scenario> <platform> <target-language> ...   (Halo 3: two args)
+    render <source-directory> <final-or-draft>                     (Halo 3: one arg)
+
+Missions are `m10 m20 m30 m35 m45 m50 m52 m60 m70 m70_bonus`. The kit also carries `m05`
+and `m70_a`, which the game does not run -- the same trap `reach_ek_build.py` already
+avoids by taking its list from halo.json.
+
+### What is CHEAPER than ODST
+
+**One render model, not two.** Reach has no per-weapon first-person render model. There
+is a single shared arms model, `objects\characters\spartans\fp\fp.render_model`, and the
+weapon's `first person` block pairs the weapon's OWN WORLD MODEL with a per-species
+animation graph. Read straight out of the Assault Rifle's tag references:
+
+    model  objects\weapons\rifle\assault_rifle\assault_rifle
+    jmad   objects\characters\spartans\fp\weapons\rifle\fp_assault_rifle
+    model  objects\weapons\rifle\assault_rifle\assault_rifle      <- the SAME model
+    jmad   objects\characters\elite\fp\weapons\rifle\fp_assault_rifle
+
+So step 1 builds one model instead of fp + world, and the whole `h3_saw_wire_model.py` /
+`h3_saw_world_model.py` split collapses. It also means the region-name trap
+(`'default'` vs `'standard'`) applies to ONE model, not four.
+
+**The icon is nearly free, and that is the surprise.** Step 8's glyph half cost Halo 3 a
+cracked codec. Reach needs none of it:
+
+* `haloreach\maps\fonts\font_package_icon*.bin` ships LOOSE in the game folder, exactly
+  as Halo 3's does -- so a glyph shows up with **no map rebuild**;
+* the format is identical. `h3_font_package.py`'s block reader parses all four 0xC000
+  regions of Reach's package with every bound sane, and **`h3_font_codec.decode` decodes
+  all 353 Reach glyphs with zero failures** (Halo 3: 291, also zero). The opcode stream is
+  the same one.
+* there is room: **24,208 free bytes** in the last block and **229 unused private-use
+  codepoints** below 0xE160 (Reach uses 0xE006..0xE143 across 6 fonts).
+
+So `h3_weapon_glyph.py` should reach Reach on a kit switch rather than a rewrite. The one
+thing NOT yet measured is **which font index is the HUD font** -- Halo 3's is 2, ODST's 3,
+and Reach has six fonts where `font_table_icon.txt` names only six unique faces across
+eleven slots. Measure it; do not carry ODST's 3 across.
+
+**Step 8's text half ports outright.** HREK has the same three verbs as H3EK and H3ODSTEK
+-- `extract-unicode-strings`, `strings`, `strings-localized` -- and the same string list
+at the same path, `tags\ui\hud\hud_messages.multilingual_unicode_string_list`. So
+`h3_port_messages.py` applies, **including the CRLF trap**, which will empty every other
+pickup prompt in the game if the source is read in text mode. Read it with `newline=''`.
+
+### What is MORE EXPENSIVE than ODST
+
+**Step 9 doubles.** Two first-person animation graphs, Spartan and Elite, living in the
+CHARACTER tree rather than the weapon's, and they are not interchangeable -- the same
+split Halo 2 has, where a species whose graph will not retime keeps the donor's length
+and cannot borrow the other's. Both must be retimed, or the Elite rig (Firefight, and
+m70_bonus) holds a differently-timed weapon.
+
+**The kit ships no model or icon SOURCE.** `data\objects\weapons\` is empty, and the
+`data\ui\font_icons\*` folders the font settings name are empty too. So
+`build_fonts_icon.bat` would rebuild the icon package as BLANKS -- never run it. Edit the
+package in place the way `h3_weapon_glyph.py` does, which moves no offsets.
+
+### The unknowns worth measuring before committing to a plan
+
+1. which font index is the HUD font (above);
+2. whether Reach's `render` accepts the JMS the Halo 3 path produces, or wants the FBX
+   `import <sidecar-file>` route -- `objects\test\test_fbx_weapons` suggests both exist;
+3. residency. Reach is the one game where a placed weapon can be inert because its tag's
+   bit is clear in the first zone set's pool. A fresh EK build pools what the scenario
+   references, so this should be a no-op for a built map -- but it is the standing HALF /
+   LATE audit in `reach_pools.py`, and it is the first thing to check if the SAW spawns
+   as nothing.
+
+### Where it goes in
+
+Reach has no equivalent of ODST's "placement alone is not enough" finding yet, because
+the ODST result came from a starting profile and Reach's starting profiles are a
+different shape -- named per difficulty, per co-op and per area, with the armor-ability
+reference at +0x54 marking a player profile. Expect to place it in Sapien AND wire a
+profile, and expect that to be the step that costs a rebuild to learn.
+
+---
+
 ## Step 8, the text: A PORT BRINGS ITS OWN LINES
 
 **This replaces every borrow, and it is the general answer.** Read it before the
