@@ -28,40 +28,31 @@ glyph on three prompts and "Picked up a SAW" on the confirmation -- so the game 
 the map's strings, and a port really can bring its own line. But every MCC-era icon in the
 rest of the UI disappeared with it.
 
-WHAT BROKE IS NOT YET ESTABLISHED, and an earlier claim here was WRONG. It said 62 icon
-codepoints exist in the .bin and in no map string. That number came from comparing the
-.bin against `hud_messages` ALONE, and the .bin covers the whole game while a map carries
-many string lists. Compared against all 118 lists in the kit, 109 of the .bin's 112 icons
-are present and only SIXTEEN are absent (E06A, E0C6, E34C, E45F, E504, E513, E900, E901,
-EBB8, EC66, EC8E, EE22, EE43, F36D, F6B5, F720). The weapon prompts also use the same
-codepoint families in both sources -- button E45E, weapons E1xx -- so the map's own
-prompts are not obviously wrong.
+SOLVED 2026-09-29, and the bug was MINE, not the kit's. The first build lost the pickup
+text for every weapon but the port -- no prompt on the ground, no confirmation line, while
+menus, subtitles and button glyphs were untouched.
 
-So "the map is a subset and MCC fell back to it" is a hypothesis that the numbers do not
-support as stated, and the next step is an OBSERVATION, not another theory: which icons
-went missing, and where -- pickup prompts, the pause menu, skull descriptions, the
-scoreboard? That one answer separates a per-list fallback from a whole-file one, and
-costs nothing.
+Cause: the extracted source is CRLF, and reading it in TEXT mode collapses that to LF.
+Written back, `tool` saw the whole 480-line vanilla body as one malformed entry and
+imported only the CRLF-terminated lines that had been appended. It said so plainly --
+"imported 8 new english strings", then "not adding text for string_id 'ps_swap', no
+english language text exists for it" -- and the damage was measurable in the tag: 479 of
+487 entries with english offset -1, their text still in the blob with no pointer to it.
+Hence empty prompts rather than missing icons.
 
-Neither the string tag nor the font packages are damaged, and both were checked before
-blaming anything: the tag still holds every vanilla line ("Picked up an Assault Rifle" is
-there, "Hold " went 168 -> 202 occurrences) and all three font packages validate at 323
-entries with every glyph header matching its table, across all five fonts.
-(`extract-unicode-strings` reporting only 8 entries afterwards is the extractor printing
-the DELTA, not evidence of loss -- that misread cost a detour.)
+So `source()` reads with newline='' and the writer refuses a source with mixed endings.
+With that, tool reports "imported 487 new english strings" and every offset is written.
 
-SO THE CHOICE IS:
-  * crack the .bin's index and put the port's strings THERE, which keeps MCC's own
-    strings authoritative. Its 16-byte header declares the payload twice with no slack,
-    and the tag's string offsets do NOT index it (4% of 468 land on a string start), so
-    this is a real reversing job on the container's second header at 0x40; or
-  * give the map every string the .bin has, which needs the ids MCC used for its 62
-    extra icons -- and those ids exist nowhere in the map, so they cannot be recovered
-    from it; or
-  * accept the donor's icon on the prompt, which is where Halo 3 and Halo 1 already are.
+TWO WRONG TURNS ON THE WAY, both worth not repeating:
+  * `extract-unicode-strings` after an import reports only the DELTA. Reading that as
+    "479 strings were lost" sent me looking for damage that was not there.
+  * Deleting the tag first DOES make every string new -- and throws away the eleven other
+    languages. It was only ever a workaround for the line endings. Import onto the
+    existing tag.
 
-DO NOT simply revert to hijacking a set on this evidence: the hijack has the same
-problem in reverse (the .bin wins, so the text never changes) and it does not generalise.
+RESULT: 487 entries, every english offset valid, all languages preserved (210811 ->
+236739 bytes). The port's 7 ids carry English only, so the other five languages show no
+prompt for it until those lines are added to the data_XX sources too.
 """
 import argparse
 import io
@@ -102,7 +93,13 @@ def source():
         out = run('extract-unicode-strings', LIST)
         if not os.path.exists(SRC):
             raise SystemExit('extract-unicode-strings produced nothing:\n' + out[-800:])
-    return io.open(SRC, encoding='utf-16').read()
+    # newline='' MATTERS: the file is CRLF, and reading it in text mode
+    # collapses that to LF. Written back, `tool` then sees the whole vanilla
+    # body as one malformed entry, imports only the CRLF-terminated lines that
+    # were appended, and leaves every pre-existing string with english offset
+    # -1 -- text still in the blob, no pointer to it. In game that is every
+    # weapon's pickup prompt with no text at all. Measured: 479 of 487.
+    return io.open(SRC, encoding='utf-16', newline='').read()
 
 
 def entries(s, prefix):
@@ -152,12 +149,17 @@ def main():
             io.open(SRC, 'w', encoding='utf-16', newline='').write(body)
         tag = os.path.join(h3_kit.TAGS, LIST + '.multilingual_unicode_string_list')
         keep = tag + '.before_saw'
+        import shutil
         if not os.path.exists(keep):
-            import shutil
             shutil.copy2(tag, keep)
             print('   kept the shipped list as %s' % os.path.basename(keep))
         before = os.path.getsize(tag)
+        # The tag is NOT removed. Deleting it does make every string "new", but it also
+        # throws away the eleven other languages, and it was only ever a workaround for
+        # the line-ending bug above -- with CRLF preserved, tool reports "imported 487
+        # new english strings" against the existing tag and every offset is written.
         out = run('strings', B.join(['ui', 'hud']))
+
         for line in out.splitlines():
             if 'WARNING' in line or 'ERROR' in line or 'english' in line:
                 print('      %s' % line.strip()[:110])
