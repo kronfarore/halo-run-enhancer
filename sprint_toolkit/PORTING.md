@@ -1452,3 +1452,67 @@ making the SOURCE side of the pipeline data-driven first.
 The other end is nearly free: the nine weapons already in all six games need no ports at
 all, and the H3 to ODST direction is byte-identical territory where a port is mostly a
 copy.
+
+---
+
+## THE GLYPH CEILING: the first hard limit on how many weapons a game can take
+
+Measured with `glyph_capacity.py`. A ported weapon needs a pickup icon, and from Halo 3
+on that icon goes into `maps\fonts\font_package_icon*.bin`, which are FIXED SIZE. So
+"how many weapons can this game accept" has a hard answer, and it is far below the
+number of weapons there are to port:
+
+    game        icons that still fit      weapons missing (port_matrix.py)
+    Halo 3              4                         19
+    Halo 3: ODST        1                         23
+    Halo Reach          1                         22
+
+**The space is not where it looks.** A package is a series of 0xC000 blocks, and each
+font's glyphs are spread across them as ascending RUNS. A new glyph sorts into the run
+its codepoint extends, so the only free space it can use is the tail of THAT block --
+not the package's total. Reach's x1 has 25,616 free bytes and exactly 1,408 of them are
+reachable by the HUD font. That is the difference between twelve more icons and one.
+
+And **all three resolutions must take it**, so the ceiling is the smallest of them. x1 is
+usually the binding one because it is the smallest file.
+
+### Halo 1 has no ceiling, and that is the shape to copy
+
+Halo 1 has no font package at all. Its pickup icon is a sequence in the shared
+`hud_msg_icons` BITMAP, and `add_msg_icon.py` APPENDS a bitmap and a sequence, growing
+the tag. Unbounded, and already proven. The later games' packages are the exception, not
+the rule.
+
+### Four ways out, cheapest and least risky first
+
+1. **ONE SHARED GLYPH for every port.** A single "ported weapon" icon costs one slot in
+   total instead of one per weapon, works today in every game, and needs no new format
+   understanding. It is the only option that is free right now. The cost is that every
+   port shows the same picture in its prompt.
+2. **REPACK THE BLOCKS.** Redistribute each font's runs so the free space is reachable.
+   Uses only the format already decoded and proven, no engine assumptions. Takes
+   Halo 3 to 8, ODST to 22, Reach to 12.
+3. **SMALLER ICON ART.** The SAW costs 726 bytes at x1 for 155x44. Halving that takes
+   Halo 3 to 17 repacked, ODST to 19, Reach to 14 -- and it composes with (2).
+4. **GROW THE PACKAGE.** The block count is not stored anywhere: every reader derives it
+   from the FILE SIZE, and the shipped packages already vary from 4 blocks to 22. So
+   appending a block is plausible and would remove the ceiling entirely. It is also the
+   only option that needs an in-game test to trust, because nothing proves the engine
+   sizes it the same way.
+
+(2) and (3) together look sufficient for ODST and Reach and marginal for Halo 3; (4) is
+the one that actually ends the problem. (1) is the fallback that unblocks porting
+immediately if the others take time.
+
+### Two games still unmeasured
+
+* **Halo 2** edits eight fonts in place under `h2_fonts` rather than using a package
+  (`h2_font_add.py`), so its ceiling is a different measurement.
+* **Halo 4's packages are not 0xC000-blocked** -- 327,680 is not a multiple of it, and
+  the x3 tables do not sit where the others' do. It has FOUR resolution tiers rather than
+  three. It needs its own reader before its ceiling can be stated, and it is a port
+  target for 16 weapons.
+
+**This is a restrictor, not a detail.** Nine steps can be automated and a manifest can
+make the pipeline generic, and none of that matters if the eleventh weapon in a game has
+nowhere to put its icon.
