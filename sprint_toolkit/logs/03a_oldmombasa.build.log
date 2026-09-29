@@ -195,15 +195,15 @@ added 5064 for 68.50M
 marked region at offset 445431168 length 71837184 for fast geometry load
 ...packing languages...
 ...writing language packs to cache...
-english: #of strings: 2138 string data size: 56388
-japanese: #of strings: 2138 string data size: 78653
-german: #of strings: 2138 string data size: 69960
-french: #of strings: 2138 string data size: 67254
-spanish: #of strings: 2135 string data size: 64546
-italian: #of strings: 2138 string data size: 64703
-korean: #of strings: 2138 string data size: 70879
-chinese: #of strings: 2136 string data size: 54557
-portuguese: #of strings: 0 string data size: 0
+english: #of strings: 2145 string data size: 56573
+japanese: #of strings: 2145 string data size: 78894
+german: #of strings: 2145 string data size: 70197
+french: #of strings: 2145 string data size: 67478
+spanish: #of strings: 2142 string data size: 64750
+italian: #of strings: 2145 string data size: 64927
+korean: #of strings: 2145 string data size: 71079
+chinese: #of strings: 2143 string data size: 54747
+portuguese: #of strings: 339 string data size: 10013
 adding bitmaps...
 adding bitmaps...added 3283 for 102.90M. standard:3283 (102.90M) medium:0 (0.00M)
 tag headers and names are 0.14M
@@ -220,9 +220,9 @@ resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource dat
 resource database using  0% [     0,  32000] (UNCHANGED) in 'shared resource database (sounds_remastered)'
 resource database using 50% [ 15971,  32000] in 'duplicate resource database'
 resource database using 13% [ 25638, 192000] in 'shared tag blocks'
-NOT compressing 636.91M...
-	realtime data checksum is 0xF2FFDE5F...
-	final size is 636.91M...
+NOT compressing 636.92M...
+	realtime data checksum is 0xFB61FAE2...
+	final size is 636.92M...
 	done
 successfully built cache file.
-total time 59.104000
+total time 265.614990

@@ -42,7 +42,8 @@ SAW_FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', 'fp_saw_*'])
 AR_FP = B.join(['objects', 'characters', '*', 'fp', 'weapons', 'rifle',
                 'fp_assault_rifle', 'fp_assault_rifle'])
 #: ODST's own test level; Halo 3's is the one the port was placed on in Sapien
-DEFAULT_MAP = 'sc150' if h3_kit.IS_ODST else '010_jungle'
+DEFAULT_MAP = h3_kit.per_kit(h3='010_jungle', odst='sc150', reach='m20',
+                             what='the default test map')
 PROBE = 99
 
 
@@ -71,7 +72,8 @@ def check(path):
         # Collections`. Asking for the Halo 3 name in ODST returns None for BOTH weapons,
         # and None == None reads as "the clone owns its blocks" -- a dedup check that
         # silently always passes is worse than no check at all.
-        f = 'Low Clip Cutoff' if h3_kit.IS_ODST else 'Low Ammo Loaded Threshold'
+        f = h3_kit.per_kit(h3='Low Ammo Loaded Threshold', odst='Low Clip Cutoff',
+                           what="the chud's low-ammo field name")
         before = {t: m.read_first('chdt', t, f, plugin, None) for t in (AR_CHUD, SAW_CHUD)}
         print('\n   low ammo threshold: assault_rifle %s, saw %s'
               % (before[AR_CHUD], before[SAW_CHUD]))

@@ -87,7 +87,7 @@ def build(images):
 
 
 def cleanup():
-    """Undo everything a probe build leaves behind, including the part that bites.
+    r"""Undo everything a probe build leaves behind, including the part that bites.
 
     `windows-font-from-settings` writes the .font tag it builds into "your working
     folder", which for this pipeline means maps\fonts\icon\ -- a directory that does not

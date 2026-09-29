@@ -33,23 +33,34 @@ OK = 'successfully built cache file'
 #: -- Halo 3's level against ODST's tag set, 514 MB of nothing anyone wants, dropped in
 #: the ODST kit's maps folder. It happened: PORT_EK was left at `odst` in the shell from
 #: an earlier command, and the build looked like a success for seven minutes.
-H3_MAPS = ('005_intro', '010_jungle', '020_base', '030_outskirts', '040_voi', '050_floodvoi',
-           '070_waste', '100_citadel', '110_hc', '120_halo')
-ODST_MAPS = ('c100', 'c200', 'h100', 'l200', 'l300', 'sc100', 'sc110', 'sc120', 'sc130',
-             'sc140', 'sc150')
+MAPS = {
+    'h3': ('005_intro', '010_jungle', '020_base', '030_outskirts', '040_voi',
+           '050_floodvoi', '070_waste', '100_citadel', '110_hc', '120_halo'),
+    'odst': ('c100', 'c200', 'h100', 'l200', 'l300', 'sc100', 'sc110', 'sc120',
+             'sc130', 'sc140', 'sc150'),
+    # Reach builds through reach_ek_build.py, which takes its list from halo.json and
+    # so leaves out m05 and m70_a -- in the kit, not in the game.
+    'reach': ('m10', 'm20', 'm30', 'm35', 'm45', 'm50', 'm52', 'm60', 'm70',
+              'm70_bonus'),
+}
+#: names a kit carries that the game never runs, refused by name and with the reason
+NOT_MISSIONS = {'reach': ('m05', 'm70_a')}
+GAME_OF = {'h3': 'Halo 3', 'odst': 'Halo 3: ODST', 'reach': 'Halo Reach'}
+KIT_OF = {name: short for short, names in MAPS.items() for name in names}
 
 
 def check_kit(name):
     """Refuse a map that does not belong to the selected kit."""
-    want = ODST_MAPS if h3_kit.IS_ODST else H3_MAPS
-    other = H3_MAPS if h3_kit.IS_ODST else ODST_MAPS
-    if name in want:
+    if name in MAPS[h3_kit.SHORT]:
         return
+    if name in NOT_MISSIONS.get(h3_kit.SHORT, ()):
+        raise SystemExit('%s ships in %s but the game never runs it -- building it is '
+                         'an hour of nothing.' % (name, h3_kit.banner()))
     hint = ''
-    if name in other:
+    owner = KIT_OF.get(name)
+    if owner:
         hint = ('\n%s is a %s map. Set the kit first:\n    set PORT_EK=%s'
-                % (name, 'Halo 3' if h3_kit.IS_ODST else 'Halo 3: ODST',
-                   'h3' if h3_kit.IS_ODST else 'odst'))
+                % (name, GAME_OF[owner], owner))
     raise SystemExit('%s is not a map of %s.%s' % (name, h3_kit.banner(), hint))
 
 

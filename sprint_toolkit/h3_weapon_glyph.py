@@ -61,8 +61,11 @@ PACKAGES = ('font_package_icon.bin', 'font_package_icon_x2.bin',
 #: ODST's packages are also ~50 KB larger and packed differently, so Halo 3's 0xE06A
 #: sorts into an ODST block with 120 bytes free against the 1748 it needs. Its HUD font
 #: leaves exactly six workable codepoints, 0xE04A..0xE04F; this takes the first.
-GLYPH = 0xE04A if h3_kit.IS_ODST else 0xE06A
-FONT = 3 if h3_kit.IS_ODST else 2                      # iconixedsys-hud, which draws the pickup prompt
+GLYPH = h3_kit.per_kit(h3=0xE06A, odst=0xE04A,
+                       what="the pickup glyph's codepoint")
+#: the font that draws the pickup prompt -- icon\fixedsys-hud in Halo 3, and NOT the
+#: same index in every kit, so it is measured once in h3_kit rather than guessed here
+FONT = h3_kit.HUD_FONT
 FILL, EDGE = 10, 15             # body and outline alpha, both on the level table
 RES = {'font_package_icon.bin': 1, 'font_package_icon_x2.bin': 2,
        'font_package_icon_x3.bin': 3}

@@ -55,8 +55,14 @@ def _graph(species):
 #: species and names `odst_recon` TWICE, in the same two slots, so there is a single
 #: graph to clone and the repoint below rewrites both references to it.
 #: Read off the weapon tag rather than assumed; do the same before adding a third game.
-GRAPHS = ([_graph('odst_recon')] if h3_kit.IS_ODST
-          else [_graph('masterchief'), _graph('dervish')])
+#: Reach names two as well -- `spartans` and `elite` -- but its weapon reaches them
+#: through a `first person` block that pairs each with the weapon's own WORLD model,
+#: and nothing here has been run against it yet. per_kit refuses rather than handing
+#: Reach Halo 3's two graph names, which do not exist in that kit.
+GRAPHS = h3_kit.per_kit(
+    h3=[_graph('masterchief'), _graph('dervish')],
+    odst=[_graph('odst_recon')],
+    what='which first-person animation graphs the weapon names')
 #: what each animation becomes, in frames -- the Halo 4 SAW's own counts
 TARGET = {'first_person:reload_empty': 128,
           'first_person:reload_full': 128,

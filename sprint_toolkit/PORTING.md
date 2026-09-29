@@ -741,6 +741,15 @@ assumed from the other kits.
 
 ### The kit
 
+    set PORT_EK=reach
+
+`h3_kit.py` knows HREK, so the Halo 3 tools resolve against it -- tags, data, tool,
+the `haloreach` game folder for the live font packages, and the HUD font index. Anything
+that genuinely DIFFERS per kit now goes through `h3_kit.per_kit()`, which **refuses** for
+a kit whose value has not been measured instead of quietly handing back Halo 3's. That is
+deliberate: a silent fallback is how the ODST balance table returned nothing, how the
+ammo step became Halo 1 only, and how a HUD check passed by comparing None to None.
+
 `F:\SteamLibrary\steamapps\common\HREK` is a full kit: `tool.exe`, `sapien.exe`,
 `Foundation.exe` (Guerilla's replacement), 305 verbs. It already has a build/install
 pipeline in `reach_ek_build.py`, and `reach_place.py` already knows how to append
@@ -804,11 +813,17 @@ pickup prompt in the game if the source is read in text mode. Read it with `newl
 
 ### What is MORE EXPENSIVE than ODST
 
-**Step 9 doubles.** Two first-person animation graphs, Spartan and Elite, living in the
-CHARACTER tree rather than the weapon's, and they are not interchangeable -- the same
-split Halo 2 has, where a species whose graph will not retime keeps the donor's length
-and cannot borrow the other's. Both must be retimed, or the Elite rig (Firefight, and
-m70_bonus) holds a differently-timed weapon.
+**Step 9 doubles -- against ODST, not against Halo 3.** Reach names TWO first-person
+animation graphs, Spartan and Elite, and they are not interchangeable: a species whose
+graph will not retime keeps the donor's length and cannot borrow the other's. Both must
+be retimed or the Elite rig (Firefight, and m70_bonus) holds a differently-timed weapon.
+
+Halo 3 is the same shape -- it names the Master Chief's and the Dervish's -- so this is
+ODST, naming `odst_recon` twice and needing one clone, that is the outlier. **All three
+games keep these graphs in the CHARACTER tree**, at
+`objects\characters\<who>\fp\weapons\rifle\fp_assault_rifle`; that is not a Reach
+difference. What Reach does not have is the per-weapon fp RENDER MODEL that sits beside
+the world one in Halo 3 and ODST.
 
 **The kit ships no model or icon SOURCE.** `data\objects\weapons\` is empty, and the
 `data\ui\font_icons\*` folders the font settings name are empty too. So
