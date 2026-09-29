@@ -123,11 +123,53 @@ def port_lines(s, glyph):
     return out
 
 
+#: Where the other eleven languages' sources live, beside `data`.
+LANG_GLOB = 'data_*'
+
+
+def lang_sources():
+    """[(folder, path)] for every localized copy of the message source."""
+    import glob
+    out = []
+    for d in sorted(glob.glob(os.path.join(h3_kit.EK, LANG_GLOB))):
+        p = os.path.join(d, 'ui', 'hud', 'hud_messages.txt')
+        if os.path.isdir(d) and os.path.exists(p):
+            out.append((os.path.basename(d), p))
+    return out
+
+
+def localized_lines(path, glyph, english):
+    """The port's lines for ONE language.
+
+    THE SPLIT IS THE ICON, and it falls out of the data rather than being imposed: the
+    four PROMPT lines carry `&assault_rifle` and name no weapon, so the localized text can
+    be cloned verbatim with only the icon swapped -- correct in every language, no
+    translation involved. `picked_up` and the two ammo lines DO name the weapon, and there
+    is no way to substitute a name into a translated sentence safely: the differing span
+    between two weapons' confirmation lines comes out as "'assau", "n Assault", or a
+    partial Chinese word. Those three take the ENGLISH line instead, which is a correct
+    sentence rather than a mangled one -- and "SAW" is not translated anyway.
+    """
+    s = io.open(path, encoding='utf-16', newline='').read()
+    out, localized, fell_back = [], 0, 0
+    for k, v in entries(s, DONOR).items():
+        name = PORT + k[len(DONOR):]
+        if DONOR_ICON in v:
+            out.append('%s = %s' % (name, v.replace(DONOR_ICON, chr(glyph))))
+            localized += 1
+        elif name in english:
+            out.append('%s = %s' % (name, english[name]))
+            fell_back += 1
+    return out, localized, fell_back
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--glyph', type=lambda v: int(v, 0), default=wg.GLYPH)
     ap.add_argument('--write', action='store_true',
                     help='add the lines and re-import the string list')
+    ap.add_argument('--languages', action='store_true',
+                    help="write the port's lines into the other languages' sources too")
     ap.add_argument('--repoint', action='store_true',
                     help="point the port's weapon tag at them")
     a = ap.parse_args()
@@ -159,6 +201,22 @@ def main():
         # the line-ending bug above -- with CRLF preserved, tool reports "imported 487
         # new english strings" against the existing tag and every offset is written.
         out = run('strings', B.join(['ui', 'hud']))
+        if a.languages:
+            english = dict(l.split(' = ', 1) for l in lines)
+            for folder, lp in lang_sources():
+                ls = io.open(lp, encoding='utf-16', newline='').read()
+                if entries(ls, PORT):
+                    print('      %-10s already has them' % folder)
+                    continue
+                add, loc, fell = localized_lines(lp, a.glyph, english)
+                eol = '\r\n'
+                body = ls.rstrip(eol) + eol + eol.join(add) + eol
+                if body.count('\n') != body.count(eol):
+                    raise SystemExit('%s: mixed line endings' % folder)
+                io.open(lp, 'w', encoding='utf-16', newline='').write(body)
+                print('      %-10s +%d line(s): %d localized, %d English fallback'
+                      % (folder, len(add), loc, fell))
+            out += run('strings-localized', B.join(['ui', 'hud']))
 
         for line in out.splitlines():
             if 'WARNING' in line or 'ERROR' in line or 'english' in line:
