@@ -206,6 +206,40 @@ and the balance comes out the same to the last decimal (velocity 75, magazine 72
 reload ×0.851562). That is not a copy: ODST is measured from its own tags and lands
 there because its Assault Rifle is Halo 3's.
 
+### The pipeline, end to end
+
+Every tool takes the kit from `PORT_EK`, so set it once:
+
+    set PORT_EK=odst
+
+    h3_make_saw.py          clone the weapon, projectile, damage effect   (step 3)
+    saw_to_jms_h3.py        the JMS, from ODST's OWN skeleton XML x2      (step 1)
+    tool render <dir> final both models -- fp and saw_3p
+    h3_saw_textures.py      bitmaps + shaders, BOTH model folders         (step 2)
+    tool render <dir> final AGAIN: a shader that arrives after a render is not in it
+    h3_saw_world_model.py   world model, hlmt, weapon -> hlmt             (step 1)
+    h3_saw_wire_model.py    fp model                                      (step 1)
+    h3_region_name.py       'default' -> 'standard' on all FOUR models -- LAST, because
+                            the two wiring steps re-render
+    h3_saw_tag_numbers.py   the port's own H4 numbers into its tags       (step 4)
+    h3_saw_chud.py          clone the chud, low-ammo 18                   (step 7)
+    h3_sprite_box.py        give a spare sprite a REAL box on blank canvas (steps 7, 8)
+    h3_meter_art.py         the 72-tick meter, sprite 1                   (step 7)
+    h3_chud_sequence.py     point the chud at meter 1 and schematic 10
+    h3_weapon_schematic.py  the schematic, sprite 10                      (step 8)
+    h3_weapon_glyph.py      the pickup glyph, 0xE04A                      (step 8)
+    h3_port_messages.py     its own messages, all languages, --repoint    (step 8)
+    h3_saw_animations.py    retime reload/ready on the odst_recon graph   (step 9)
+    make_port_catalog_odst.py --write                                     (step 5)
+    <place it in Sapien AND give it a starting profile>
+    odst_ek_build.py --build sc150
+    h3_chunk_check.py       NINE chunks, all backed -- before any launch
+    h3_saw_deploy.py --install [--baseline]
+
+Scale is **1.0**, and the two skeleton XMLs come from ODST's own Assault Rifle
+(`fp_assault_rifle.render_model` and `assault_rifle.render_model`) -- byte-identical to
+Halo 3's, but export them from the kit you are building in.
+
 ### THE STEP THAT GETS IT INTO THE MAP
 
 **Place the weapon in Sapien AND give it a Player Starting Profile. The placement alone
@@ -274,6 +308,14 @@ before it could do anything. `odst_saw_place.py` reads the real palette and plac
   owns its blocks" — a deduplication check that silently always passes.
 * **ODST has ammo pickups** where Halo 3 has none: its Assault Rifle references
   `objects\powerups\assault_rifle_ammo`, so the port inherits one as built.
+
+### What is NOT done in ODST
+
+**Step 6, the ammo-pickup choice.** ODST HAS ammo pickups where Halo 3 has none -- its
+Assault Rifle references `objects\powerupsssault_rifle_ammo`, and the port inherits
+that item as built, so it does top up. What it lacks is the catalog `ammo` block that
+gives the Weapon ports page a dropdown to point it at a different item. Halo 1 is the
+only game with that wired. Everything else on the checklist is complete.
 
 ### Step 8 in ODST: DONE, and it owns its lines
 

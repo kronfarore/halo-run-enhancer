@@ -65,6 +65,11 @@ def main():
     py('ammo_meter.py', '72', '135',
        'weapons' + B + 'saw' + B + 'bitmaps' + B + 'saw_ammo')
     py('saw_weapon.py')
+    # AFTER saw_weapon, never before: saw_weapon builds the port's tag FROM the Assault
+    # Rifle's, so it resets item_attrs.message_index to 4 -- the Assault Rifle's "Picked
+    # up an assault rifle". Running this first would be silently undone, and the port
+    # would announce itself as an Assault Rifle again.
+    py('h1_port_messages.py', '--write')
     py('saw_port_values.py')            # the port's own H4 numbers into its H1 tags
     py('saw_scenario.py')
     try:
