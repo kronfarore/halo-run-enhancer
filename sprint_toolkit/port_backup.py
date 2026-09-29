@@ -171,10 +171,22 @@ def main():
         n = copy_one(src, os.path.join(out, rel.replace('/', B)))
         print('  %-34s %s' % (rel, 'ok' if n else 'MISSING: ' + src))
         total += n
-    n = 0
+    # NAME the ones that are not there. This list is the only record of what a port's
+    # tooling consists of, and for a while it quietly ran nine short: the Halo 1 tools
+    # were rescued out of a session scratchpad, saw_port_values.py was missed, and the
+    # build stayed broken until someone ran it. "31 of 39" reads like a number rather
+    # than a loss, so a shortfall now says which files and refuses to be background.
+    n, gone = 0, []
     for s in scripts:
-        n += copy_one(os.path.join(HERE, s), os.path.join(out, 'scripts', s))
+        got = copy_one(os.path.join(HERE, s), os.path.join(out, 'scripts', s))
+        n += got
+        if not got:
+            gone.append(s)
     print('  %-34s %d of %d script(s)' % ('scripts/', n, len(scripts)))
+    if gone:
+        print('  %-34s %s' % ('  NOT IN THE TOOLKIT:', ', '.join(gone)))
+        print('  %-34s %s' % ('', 'the manifest names them and they do not exist -- '
+                              'either rescue them or drop them from SCRIPTS'))
     total += n
     size = sum(os.path.getsize(os.path.join(b, f))
                for b, _d, fs in os.walk(out) for f in fs)

@@ -1152,3 +1152,41 @@ values, and damage moves by the same ratio.
 
 `port_env.py` puts the vendored Reclaimer stack under `pylibs/` on `sys.path` — pure
 Python, no compiler. Import it before anything from `reclaimer`.
+
+---
+
+## What deploys, and what the toolkit is missing
+
+Audited 2026-09-29, after a build died on a script that had never been in the repo.
+
+### Only Halo 1 deploys on its own
+
+    saw_build.py          DEPLOYS BY DEFAULT      --no-deploy to stop it
+    h2_saw_place.py       only with --deploy
+    h3_saw_deploy.py      only with --install     (Halo 3 and ODST, kit-switched)
+    odst_ek_build.py      only with --install
+    reach_ek_build.py     only with --install
+
+Halo 1 is the odd one out: it is the oldest chain and predates the others. Everything
+that writes a live map elsewhere -- the H4 test tools, `reach_place.py`,
+`reach_keep_hud.py`, `h1_weapon_ring.py`, `h2_saw_glyph.py` -- backs the file up first
+and is gated behind `--write`, `--deploy` or `--install`.
+
+### Nine tools were lost with a scratchpad; one mattered
+
+`port_backup.py`'s `SCRIPTS` list is the manifest of what a port's tooling consists of,
+and it is the only record of what the session scratchpad held before df48675 promoted
+21 tools out of it. It ran NINE names short and said so only as a count:
+
+    saw_port_values.py      REBUILT -- it was step 4, and saw_build.py called it
+    ammo_pickups_scan.py    h3_weapon_census.py     h3_tagtable_probe.py
+    check_families.py       h3_verify_magazine.py   jms_add_colour.py
+    saw_h3_bench.py         tagvals.py
+
+Every one of the remaining eight is referenced by **nothing but the manifest** -- no
+build chain calls any of them, so they were surveys, probes and benchmarks rather than
+steps, and the four chains are complete without them. They are left in the manifest on
+purpose: it is the record that they existed.
+
+`port_backup.py` now NAMES a shortfall instead of printing `31 of 39`, which is the
+thing that would have caught this the day it happened.
