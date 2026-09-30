@@ -2007,8 +2007,23 @@ What does NOT work, and why: importing the graph with no armature in the scene i
 nothing ("No armature found"); importing the WEAPON tag crashes in Foundry's material
 node layout (`arrange`), which appears to need a live UI.
 
-**Open for the next session:** the arms armature has 47 bones and the graph animates 52
-nodes. The missing five are almost certainly the weapon's own b_ nodes, and a retimed
-graph must be exported against the full skeleton -- so the first job is merging the
-SAW's bones onto the arms rig, then scaling reload 59 -> 128 and ready -> 24 frames (the
-Halo 4 SAW's counts), then exporting both species graphs.
+**DONE -- `reach_foundry_fp_retime.py`** (run inside the F: Blender, once per species,
+`-- spartans --write` / `-- elite --write`). It imports the arms, adds the five weapon
+b_ bones read from the graph's own skeleton (b_gun under r_hand), imports the graph onto
+that rig, scales keys + handles about frame_start (reload_full/empty 128, ready 24), and
+exports ALL animations -- the export rebuilds the graph from the scene, so exporting
+one leaves a graph of one.
+
+Three traps, all measured:
+  * Foundry names the asset after the .blend's FOLDER: two species saved side by side in
+    `sawp` both came out as `sawpp`. Each species gets its own folder,
+    `sawp_saw_<sp>p_saw_<sp>`, and the weapon's jmad refs are repointed there.
+  * Exported into NOTHING, the graph comes out with 0 sound references and its events in
+    a separate frame_event_list. So the new path is SEEDED with the original graph first;
+    the export then merges and keeps sounds/effects inline.
+  * ...but the merge ALSO keeps the seed's inline event FRAMES: reload_full was 128 frames
+    with its primary keyframe still at 34. `fix_events()` (also `--events` alone) sets
+    them through Foundry's ManagedBlam AnimationTag, computed from the ORIGINAL graph so
+    reruns cannot compound. Result, both species: reload_full 34/52/fx40 -> 74/113/87,
+    reload_empty 34/62/fx30,48 -> 64/117/56,90. Sound events sit at 0 and stay there.
+The originals stay in `sawp\` (plus `.before_retime` copies of them and of saw.weapon).
