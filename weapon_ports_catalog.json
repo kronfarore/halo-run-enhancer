@@ -2226,16 +2226,16 @@
   {
    "weapon": "Focus Rifle",
    "source": "Halo Reach",
-   "donor": "Plasma Pistol",
+   "donor": "Sniper Rifle",
    "default_on": true,
-   "desc": "Focus Rifle carried from Halo Reach into Halo 4: its own model, the Beam Rifle's first-person animations and HUD, the Sentinel Beam's beam. Numbers scaled through the Plasma Pistol.",
+   "desc": "Focus Rifle carried from Halo Reach into Halo 4: its own model, the Beam Rifle's first-person animations and HUD, the Sentinel Beam's beam. Numbers scaled through the Sniper Rifle.",
    "balance": [
     {
      "class": "weap",
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Magnetism Angle",
      "block": null,
-     "value": 4.0,
+     "value": 10.0,
      "card": "Magnetism",
      "original": 3.999999969014533
     },
@@ -2244,7 +2244,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Magnetism Range",
      "block": null,
-     "value": 10.0,
+     "value": 7.0,
      "card": "Magnetism",
      "original": 10.0
     },
@@ -2253,7 +2253,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Magnetism Falloff Range",
      "block": null,
-     "value": 5.0,
+     "value": 4.666667,
      "card": "Magnetism",
      "original": 5.0
     },
@@ -2262,7 +2262,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Magnetism Near Falloff Range",
      "block": null,
-     "value": 1.0,
+     "value": 0.0,
      "card": "Magnetism",
      "original": 1.0
     },
@@ -2271,7 +2271,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Autoaim Angle",
      "block": null,
-     "value": 2.0,
+     "value": 2.5,
      "card": "Autoaim",
      "original": 1.9999999845072665
     },
@@ -2280,7 +2280,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Autoaim Range",
      "block": null,
-     "value": 10.0,
+     "value": 5.0,
      "card": "Autoaim",
      "original": 10.0
     },
@@ -2289,7 +2289,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Autoaim Falloff Range",
      "block": null,
-     "value": 5.0,
+     "value": 3.333333,
      "card": "Autoaim",
      "original": 5.0
     },
@@ -2346,7 +2346,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Magnification Range Max",
      "block": null,
-     "value": 9.5,
+     "value": 8.55,
      "card": "Zoom",
      "original": 9.5
     },
@@ -2382,7 +2382,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Fire Recovery Time",
      "block": "Barrels",
-     "value": 0.625,
+     "value": 0.511111,
      "card": "Fire Recovery Time",
      "original": 0.5
     },
@@ -2400,54 +2400,9 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Rounds Per Shot",
      "block": "Barrels",
-     "value": 0,
+     "value": 0.0,
      "card": "Projectiles Per Shot",
      "original": 0.0
-    },
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-     "field": "Heat Recovery Threshold",
-     "block": null,
-     "value": 0.1,
-     "card": "Heat Threshold",
-     "original": 0.10000000149011612
-    },
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-     "field": "Heat Loss Per Second",
-     "block": null,
-     "value": 0.35,
-     "card": "Heat Loss",
-     "original": 0.3499999940395355
-    },
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-     "field": "Overheated Heat Loss Per Second",
-     "block": null,
-     "value": 0.23,
-     "card": "Heat Loss",
-     "original": 0.23000000417232513
-    },
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-     "field": "Heat Generated Per Round",
-     "block": "Barrels",
-     "value": 0.032143,
-     "card": "Heat Per Round",
-     "original": 0.02500000037252903
-    },
-    {
-     "class": "weap",
-     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
-     "field": "Age Generated Per Round",
-     "block": "Barrels",
-     "value": 0.003225,
-     "card": "Age Per Round",
-     "original": 0.0016125000547617674
     },
     {
      "class": "proj",
@@ -2481,7 +2436,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Water Damage Range",
      "block": null,
-     "value": 0.0,
+     "value": 0,
      "card": "Projectile Range",
      "original": 0.0
     },
@@ -2499,7 +2454,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Initial Velocity",
      "block": null,
-     "value": 4000.0,
+     "value": 1866.0,
      "card": "Projectile Velocity",
      "original": 4000.0
     },
@@ -2508,7 +2463,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Final Velocity",
      "block": null,
-     "value": 4000.0,
+     "value": 1866.0,
      "card": "Projectile Velocity",
      "original": 4000.0
     },
@@ -2526,7 +2481,7 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Autoaim Leading Maximum Lead Time",
      "block": null,
-     "value": 0.0,
+     "value": 0,
      "card": "Projectile Lead Time",
      "original": 0.0
     },
@@ -2535,30 +2490,80 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Damage Lower Bound",
      "block": null,
-     "value": 2.625,
+     "value": 3.0,
      "card": "Beam Damage",
      "original": 3.0,
-     "note": "measured: Plasma Pistol bolt 16 (Reach) -> 14 (Halo 4)"
+     "note": "measured: sniper round 80 (Reach) -> 80 (Halo 4)"
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Damage Upper Bound",
      "block": null,
-     "value": 2.625,
+     "value": 3.0,
      "card": "Beam Damage",
      "original": 3.0,
-     "note": "measured: Plasma Pistol bolt 16 (Reach) -> 14 (Halo 4)"
+     "note": "measured: sniper round 80 (Reach) -> 80 (Halo 4)"
     },
     {
      "class": "jpt!",
      "tag": "objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam",
      "field": "Damage Upper Bound Max",
      "block": null,
-     "value": 2.625,
+     "value": 3.0,
      "card": "Beam Damage",
      "original": 3.0,
-     "note": "measured: Plasma Pistol bolt 16 (Reach) -> 14 (Halo 4)"
+     "note": "measured: sniper round 80 (Reach) -> 80 (Halo 4)"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+     "field": "Heat Recovery Threshold",
+     "block": null,
+     "value": 0.1,
+     "card": "Heat Threshold",
+     "original": 0.1,
+     "note": "the port's own; the donor has none"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+     "field": "Heat Loss Per Second",
+     "block": null,
+     "value": 0.35,
+     "card": "Heat Loss",
+     "original": 0.35,
+     "note": "the port's own; the donor has none"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+     "field": "Overheated Heat Loss Per Second",
+     "block": null,
+     "value": 0.23,
+     "card": "Heat Loss",
+     "original": 0.23,
+     "note": "the port's own; the donor has none"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+     "field": "Heat Generated Per Round",
+     "block": "Barrels",
+     "value": 0.025,
+     "card": "Heat Per Round",
+     "original": 0.025,
+     "note": "the port's own; the donor has none"
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
+     "field": "Age Generated Per Round",
+     "block": "Barrels",
+     "value": 0.0016125,
+     "card": "Age Per Round",
+     "original": 0.0016125,
+     "note": "the port's own; the donor has none"
     }
    ]
   }

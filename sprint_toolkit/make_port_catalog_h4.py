@@ -1,32 +1,33 @@
 r"""Build the Halo 4 entry of weapon_ports_catalog.json -- the H4 port kit's step 4/5.
 
-First weapon: Reach's Focus Rifle, balanced through the PLASMA PISTOL (the one Covenant
-energy weapon in both Reach and Halo 4 with heat AND battery age, which are the Focus
-Rifle's defining numbers; the Concussion Rifle was tried and carries neither):
+First weapon: Reach's Focus Rifle, balanced through the SNIPER RIFLE -- the user's call
+after the first boot: balance-wise the Focus Rifle is a sniper that happens to be a laser.
+(The Plasma Pistol was tried first for its heat and battery; the Concussion Rifle carries
+neither.) The Sniper Rifle is in both games and scales zoom, rate and velocity:
 
-    python balance_port.py "Focus Rifle" "Halo Reach" "Halo 4" --hop "Plasma Pistol:Halo Reach>Halo 4"
+    python balance_port.py "Focus Rifle" "Halo Reach" "Halo 4" --hop "Sniper Rifle:Halo Reach>Halo 4"
     python make_port_catalog_h4.py [--write]
 
 REDIRECTION. The table's rows name the donor's Halo 4 tags; each is moved onto the port's
 own (h4_make_port_weapon.py made them):
-    weap storm_plasma_pistol          -> focus_rifle\focus_rifle
-    proj storm_plasma_pistol_bolt     -> focus_rifle\projectiles\focus_rifle_beam
+    weap storm_sniper_rifle           -> focus_rifle\focus_rifle
+    proj storm_sniper_rifle_bullet    -> focus_rifle\projectiles\focus_rifle_beam
 
-KEPT AS THE PORT'S OWN where the donor has nothing to scale by. A ratio needs a donor
-reading on both sides; the Plasma Pistol has no zoom (0 and 0), so the table converts the
-Focus Rifle's two zoom levels and zoom time to 0. The port is built on the Beam Rifle,
-which HAS a scope, so those rows keep the Focus Rifle's own values -- zoom is the same
-unit in both games.
+THE PORT'S OWN, where the donor has nothing to scale by. The Sniper Rifle has no heat and
+no battery, so those rows are absent from the table -- and they are the Focus Rifle's
+defining numbers. They are carried as its own Reach values (OWN below): heat is a
+fraction and age a fraction per round in both games, so no unit changes. Rows whose donor
+reads 0 on both sides keep the port's own value too.
 
-MEASURED: BEAM DAMAGE. The table has no Beam Damage rows (the Plasma Pistol's damage sits
-under a different card), and it matters: the copied Sentinel "friendly" beam deals ZERO
-in Halo 4, so without these rows the port does nothing. Scale by the same donor, read from
-both kits' tags: Plasma Pistol bolt 16 in Reach, 14 in Halo 4 -> x0.875, and the Focus
-Rifle's 3 per round becomes 2.625.
+MEASURED: BEAM DAMAGE. The table has no Beam Damage rows, and it matters: the copied
+Sentinel "friendly" beam deals ZERO in Halo 4, so without these rows the port does
+nothing. Scaled by the same donor, read from both kits' tags: the sniper round is 80 in
+Reach and 80 in Halo 4 -> x1.0, so the Focus Rifle's 3 per round stays 3.
 
-DROPPED: melee (globals\damage_effects\strike_melee is the whole sandbox's) and the fp
+DROPPED: melee (globals\damage_effects\strike_melee is the whole sandbox's), the fp
 animation row (the port shares fp_beam_rifle with the Beam Rifle, so retiming it would
-retime the Beam Rifle). No ammo pickup: an energy weapon.
+retime the Beam Rifle), and Shots Per Fire (Reach 0 = Halo 4's minimum 1). No ammo
+pickup: an energy weapon.
 """
 import json
 import os
@@ -38,13 +39,13 @@ TABLE = os.path.join(HERE, 'balance_Focus_Rifle_HaloReach_to_Halo4.json')
 OUT = os.path.join(TOOL, 'weapon_ports_catalog.json')
 B = os.sep
 
-PP = B.join(['objects', 'weapons', 'pistol', 'storm_plasma_pistol'])
+SN = B.join(['objects', 'weapons', 'rifle', 'storm_sniper_rifle'])
 FR = B.join(['objects', 'weapons', 'rifle', 'focus_rifle'])
 PORT_WEAPON = FR + B + 'focus_rifle'
 PORT_BEAM = FR + B + 'projectiles' + B + 'focus_rifle_beam'
 PORT_TAGS = {
-    ('weap', PP + B + 'storm_plasma_pistol'): PORT_WEAPON,
-    ('proj', PP + B + 'projectiles' + B + 'storm_plasma_pistol_bolt'): PORT_BEAM,
+    ('weap', SN + B + 'storm_sniper_rifle'): PORT_WEAPON,
+    ('proj', SN + B + 'projectiles' + B + 'storm_sniper_rifle_bullet'): PORT_BEAM,
 }
 SHARED = {('jpt!', B.join(['globals', 'damage_effects', 'strike_melee']))}
 SKIP_CLASS = {'jmad': 'the port shares fp_beam_rifle with the Beam Rifle'}
@@ -53,15 +54,27 @@ SKIP_CLASS = {'jmad': 'the port shares fp_beam_rifle with the Beam Rifle'}
 SKIP_FIELDS = {'Shots Per Fire': 'Reach 0 = Halo 4 minimum 1; the tag keeps 1',
                'Shots Per Fire Max': 'Reach 0 = Halo 4 minimum 1; the tag keeps 1'}
 
-#: Plasma Pistol bolt damage, Reach 16 -> Halo 4 14, read from both kits' tags
-DAMAGE_SCALE = 14.0 / 16.0
+#: sniper round damage, Reach 80 -> Halo 4 80, read from both kits' tags
+DAMAGE_SCALE = 80.0 / 80.0
 FOCUS_DAMAGE = 3.0                    # Reach focus_rifle_beam.damage_effect, both bounds
 MEASURED = [
     {'class': 'jpt!', 'tag': PORT_BEAM, 'field': f, 'block': None,
      'value': round(FOCUS_DAMAGE * DAMAGE_SCALE, 6), 'card': 'Beam Damage',
      'original': FOCUS_DAMAGE,
-     'note': 'measured: Plasma Pistol bolt 16 (Reach) -> 14 (Halo 4)'}
+     'note': 'measured: sniper round 80 (Reach) -> 80 (Halo 4)'}
     for f in ('Damage Lower Bound', 'Damage Upper Bound', 'Damage Upper Bound Max')
+]
+
+#: the Focus Rifle's own heat and battery (Reach), which the Sniper Rifle cannot scale
+OWN = [
+    {'class': 'weap', 'tag': PORT_WEAPON, 'field': f, 'block': blk, 'value': v,
+     'card': card, 'original': v, 'note': "the port's own; the donor has none"}
+    for card, f, blk, v in (
+        ('Heat Threshold', 'Heat Recovery Threshold', None, 0.1),
+        ('Heat Loss', 'Heat Loss Per Second', None, 0.35),
+        ('Heat Loss', 'Overheated Heat Loss Per Second', None, 0.23),
+        ('Heat Per Round', 'Heat Generated Per Round', 'Barrels', 0.025),
+        ('Age Per Round', 'Age Generated Per Round', 'Barrels', 0.0016125))
 ]
 
 DST_GAME = 'Halo 4'
@@ -107,12 +120,13 @@ def main():
             row['index'] = r['dst_index']
         rows.append(row)
     rows.extend(MEASURED)
+    rows.extend(OWN)
 
     entry = {'weapon': t['ported'], 'source': t['source'], 'donor': t['donor'],
              'default_on': True,
              'desc': '%s carried from %s into Halo 4: its own model, the Beam Rifle\'s '
                      'first-person animations and HUD, the Sentinel Beam\'s beam. Numbers '
-                     'scaled through the Plasma Pistol.' % (t['ported'], t['source']),
+                     'scaled through the Sniper Rifle.' % (t['ported'], t['source']),
              'balance': rows}
 
     print('%d balance row(s)' % len(rows))

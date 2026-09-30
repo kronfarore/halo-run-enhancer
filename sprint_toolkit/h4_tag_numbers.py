@@ -37,6 +37,7 @@ KEY = 'bl_ext.user_default.io_scene_foundry'
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG = os.path.join(os.path.dirname(HERE), 'weapon_ports_catalog.json')
 WEAPON = 'Focus Rifle'
+H4EK_TAGS = r'F:\SteamLibrary\steamapps\common\H4EK\tags'
 EXT = {'weap': 'weapon', 'proj': 'projectile', 'jpt!': 'damage_effect'}
 
 
@@ -100,6 +101,9 @@ def read(field, comp=None):
 
 
 def set_value(field, comp, value):
+    # integer fields refuse "2.0" and keep their old value; the catalog stores 2.0
+    if isinstance(value, float) and value.is_integer():
+        value = int(value)
     if not hasattr(field, 'GetStringData'):
         field.Value = int(value)
         return str(field.Value)
@@ -113,8 +117,23 @@ def set_value(field, comp, value):
 
 
 def main(write):
-    bpy.context.scene.nwo.scene_project = 'Halo 4'
     mb = importlib.import_module(KEY + '.managed_blam')
+    # BIND H4EK FIRST, from an absolute path inside it: mb_init switches the scene to the
+    # project that owns the file. Setting scene_project by hand started ManagedBlam for
+    # the PREVIOUS project (HREK) when launched from another process, and ManagedBlam
+    # cannot change kits within a process.
+    # AND MAKE SURE THIS PROCESS KNOWS H4EK. Launched from the Microsoft Store Python,
+    # Blender sees a VIRTUALISED %APPDATA% -- a different copy of Foundry's project list,
+    # one without H4EK -- so the switch above silently stays on HREK. Registering it here
+    # is harmless when it is already listed.
+    u = importlib.import_module(KEY + '.utils')
+    kit = os.path.dirname(H4EK_TAGS)
+    have = u.read_projects_list() or []
+    if kit.lower() not in [h.rstrip('\/').lower() for h in have]:
+        u.write_projects_list(have + [kit])
+        u.setup_projects_list()
+    if not mb.mb_active:
+        mb.mb_init(os.path.join(H4EK_TAGS, 'globals', 'globals.globals'))
 
     class T(mb.Tag):
         pass
@@ -129,7 +148,11 @@ def main(write):
     for (cls, rel), rows in sorted(by_tag.items()):
         path = rel + '.' + EXT[cls]
         print('\n%s  (%d rows)' % (path, len(rows)))
-        with T(path=path) as t:
+        # absolute: binds H4EK's ManagedBlam whoever launched this (see h4_weapon_refs.py)
+        with T(path=os.path.join(H4EK_TAGS, path)) as t:
+            kit = str(getattr(mb, 'mb_path', '') or '')
+            if 'h4ek' not in kit.lower():
+                raise SystemExit('ManagedBlam is bound to %r, not H4EK' % kit)
             changed = False
             for r in rows:
                 value = r['original'] if r.get('original') is not None else r['value']

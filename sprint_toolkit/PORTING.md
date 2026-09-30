@@ -2133,20 +2133,25 @@ lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`,
                              diffuse + normal + a control map built from Reach's diffuse
                              alpha; the glowing surfaces borrow the Beam Rifle's scope
                              material as a first pass. All 8 resolve in the render model.
-    3 own tags        DONE   h4_make_port_weapon.py: the BEAM RIFLE's weapon tag (the
-                             Sentinel Beam's has no model ref, a pistol fp graph, no HUD),
-                             model + fp model -> the port, the port's OWN copy of the
-                             Sentinel "friendly" beam projectile + damage effect; the
-                             model's dangling imposter ref cleared (empty tgrf)
-    4 numbers         DONE   balance_port.py via the PLASMA PISTOL (heat + battery age in
-                             both games); h4_tag_numbers.py bakes the Focus Rifle's own
-                             numbers into the tags BY NAME through ManagedBlam, read back.
-                             The copied friendly beam dealt ZERO damage: now 3.
-    5 catalog         DONE   make_port_catalog_h4.py: 36 rows; zoom kept as the port's own
-                             (the donor has none); Beam Damage MEASURED x0.875 (PP bolt 16
-                             -> 14); Shots Per Fire dropped (Reach 0 = H4 minimum 1)
+    3 own tags        DONE   h4_make_port_weapon.py, v2 on the SENTINEL BEAM (first boot
+                             of the Beam-Rifle-based tag: model fine, the weapon DID NOT
+                             FIRE -- a single-shot sniper barrel fed a continuous beam).
+                             Barrels -> the port's own beam copy; model, fp model, fp
+                             graph and HUD set BY FIELD NAME through ManagedBlam
+                             (h4_weapon_refs.py). The Sentinel Beam's tag actually names
+                             the Focus Rifle's Reach paths -- in Halo 4 it IS the Focus
+                             Rifle's weapon tag, missing its model.
+    4 numbers         DONE   balance_port.py via the SNIPER RIFLE (user: a sniper that is a
+                             laser); h4_tag_numbers.py bakes them by name, read back. The
+                             copied friendly beam dealt ZERO damage: now 3.
+    5 catalog         DONE   make_port_catalog_h4.py: 36 rows; heat + battery carried as the
+                             port's own (the sniper has neither); Beam Damage MEASURED x1.0
+                             (sniper round 80 in both); Shots Per Fire dropped (Reach 0 =
+                             H4 minimum 1)
     6 ammo pickup     n/a    energy weapon
-    7 HUD             BORROWED  the Beam Rifle's cusc screen + scope, as referenced
+    7 HUD             BORROWED  the PLASMA PISTOL's cui_screen (battery % + heat); the
+                             Beam Rifle's showed 10 shots for a 620-round battery. Scope UI
+                             by the enhancer's graft at patch time
     8 icon + text     -      pickup message is still the Beam Rifle's (be_pickup); H4 font
                              packages are NOT 0xC000-blocked: a reader is needed
     9 animations      BORROWED  fp_beam_rifle, shared -- so no retime (it would retime
@@ -2158,6 +2163,16 @@ rebuild, install -- and copy the build to `E:\HaloBaselines\halo4\maps` or the n
 enhancer patch rebuilds from the old one.
 
 ### Foundry across kits: the traps
+
+* **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
+  Blender launched from it reads a DIFFERENT copy of Foundry's project list -- one without
+  H4EK -- so ManagedBlam silently binds HREK, parses H4 tags with Reach's definitions
+  (Reach paths as 'before' values, `hud screen reference` not found) and fails with "not
+  rooted under the current directory". h4_weapon_refs.py / h4_tag_numbers.py register
+  H4EK in whatever list their process sees, bind through an ABSOLUTE H4EK path, and
+  refuse unless ManagedBlam is H4EK's.
+* **Integer fields refuse "2.0"** and silently keep their value: whole numbers go in as
+  integers.
 
 * **One kit per Blender PROCESS.** Foundry binds one kit's ManagedBlam and needs a restart
   to switch, so import runs in the source kit and export in H4EK -- two processes.

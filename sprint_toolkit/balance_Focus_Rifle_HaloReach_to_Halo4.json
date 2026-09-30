@@ -2,11 +2,11 @@
  "ported": "Focus Rifle",
  "source": "Halo Reach",
  "target": "Halo 4",
- "donor": "Plasma Pistol",
+ "donor": "Sniper Rifle",
  "hops": [
   [
-   "Plasma Pistol",
-   "Plasma Pistol",
+   "Sniper Rifle",
+   "Sniper Rifle",
    "Halo Reach",
    "Halo 4"
   ]
@@ -25,7 +25,7 @@
    "donor_dst": 70.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Damage Lower Bound",
@@ -52,7 +52,7 @@
    "donor_dst": 70.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Damage Upper Bound",
@@ -79,7 +79,7 @@
    "donor_dst": 70.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Damage Upper Bound Max",
@@ -99,26 +99,26 @@
    "dst_field": "Magnetism Angle",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 3.999999969014533,
-   "donor_dst": 7.999999938029066,
+   "donor_dst": 3.999999969014533,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnetism Angle",
-     "value_from": 7.999999938029066,
+     "value_from": 1.5999999876058133,
      "field_to": "Magnetism Angle",
-     "value_to": 7.999999938029066
+     "value_to": 3.999999969014533
     }
    ],
-   "donor_src": 7.999999938029066,
+   "donor_src": 1.5999999876058133,
    "original": 3.999999969014533,
-   "ratio": 1.0,
-   "balanced": 3.999999969014533
+   "ratio": 2.5,
+   "balanced": 9.999999922536333
   },
   {
    "card": "Magnetism",
@@ -126,26 +126,26 @@
    "dst_field": "Magnetism Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 10.0,
-   "donor_dst": 20.0,
+   "donor_dst": 14.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnetism Range",
      "value_from": 20.0,
      "field_to": "Magnetism Range",
-     "value_to": 20.0
+     "value_to": 14.0
     }
    ],
    "donor_src": 20.0,
    "original": 10.0,
-   "ratio": 1.0,
-   "balanced": 10.0
+   "ratio": 0.7,
+   "balanced": 7.0
   },
   {
    "card": "Magnetism",
@@ -153,26 +153,26 @@
    "dst_field": "Magnetism Falloff Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 5.0,
-   "donor_dst": 10.0,
+   "donor_dst": 7.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnetism Falloff Range",
-     "value_from": 10.0,
+     "value_from": 7.5,
      "field_to": "Magnetism Falloff Range",
-     "value_to": 10.0
+     "value_to": 7.0
     }
    ],
-   "donor_src": 10.0,
+   "donor_src": 7.5,
    "original": 5.0,
-   "ratio": 1.0,
-   "balanced": 5.0
+   "ratio": 0.9333333333333333,
+   "balanced": 4.666666666666667
   },
   {
    "card": "Magnetism",
@@ -180,26 +180,26 @@
    "dst_field": "Magnetism Near Falloff Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 1.0,
-   "donor_dst": 1.0,
+   "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnetism Near Falloff Range",
      "value_from": 1.0,
      "field_to": "Magnetism Near Falloff Range",
-     "value_to": 1.0
+     "value_to": 0.0
     }
    ],
    "donor_src": 1.0,
    "original": 1.0,
-   "ratio": 1.0,
-   "balanced": 1.0
+   "ratio": 0.0,
+   "balanced": 0.0
   },
   {
    "card": "Autoaim",
@@ -207,26 +207,26 @@
    "dst_field": "Autoaim Angle",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 1.9999999845072665,
-   "donor_dst": 3.999999969014533,
+   "donor_dst": 0.9999999922536332,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Autoaim Angle",
-     "value_from": 3.999999969014533,
+     "value_from": 0.7999999938029067,
      "field_to": "Autoaim Angle",
-     "value_to": 3.999999969014533
+     "value_to": 0.9999999922536332
     }
    ],
-   "donor_src": 3.999999969014533,
+   "donor_src": 0.7999999938029067,
    "original": 1.9999999845072665,
-   "ratio": 1.0,
-   "balanced": 1.9999999845072665
+   "ratio": 1.25,
+   "balanced": 2.499999980634083
   },
   {
    "card": "Autoaim",
@@ -234,26 +234,26 @@
    "dst_field": "Autoaim Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 10.0,
-   "donor_dst": 20.0,
+   "donor_dst": 10.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Autoaim Range",
      "value_from": 20.0,
      "field_to": "Autoaim Range",
-     "value_to": 20.0
+     "value_to": 10.0
     }
    ],
    "donor_src": 20.0,
    "original": 10.0,
-   "ratio": 1.0,
-   "balanced": 10.0
+   "ratio": 0.5,
+   "balanced": 5.0
   },
   {
    "card": "Autoaim",
@@ -261,26 +261,26 @@
    "dst_field": "Autoaim Falloff Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 5.0,
-   "donor_dst": 10.0,
+   "donor_dst": 5.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Autoaim Falloff Range",
-     "value_from": 10.0,
+     "value_from": 7.5,
      "field_to": "Autoaim Falloff Range",
-     "value_to": 10.0
+     "value_to": 5.0
     }
    ],
-   "donor_src": 10.0,
+   "donor_src": 7.5,
    "original": 5.0,
-   "ratio": 1.0,
-   "balanced": 5.0
+   "ratio": 0.6666666666666666,
+   "balanced": 3.333333333333333
   },
   {
    "card": "Weapon Swap Speed",
@@ -288,14 +288,14 @@
    "dst_field": "Ready / Put Away Animation",
    "dst_block": null,
    "dst_class": "jmad",
-   "dst_tag": "*fp_plasma_pistol*",
+   "dst_tag": "*fp_sniper_rifle*",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": null,
    "donor_dst": null,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Ready / Put Away Animation",
@@ -312,14 +312,14 @@
    "dst_field": "Distribution Function",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": "all",
    "ported_src": 0,
    "donor_dst": 0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Distribution Function",
@@ -339,14 +339,14 @@
    "dst_field": "Distribution Angle",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": "all",
    "ported_src": 0.0,
    "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Distribution Angle",
@@ -366,14 +366,14 @@
    "dst_field": "Firing Noise",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": "all",
    "ported_src": 3,
    "donor_dst": 4,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Firing Noise",
@@ -393,14 +393,14 @@
    "dst_field": "Impact Noise",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": null,
    "donor_dst": null,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Impact Noise",
@@ -417,14 +417,14 @@
    "dst_field": "Detonation Noise",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": null,
    "donor_dst": null,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Detonation Noise",
@@ -441,26 +441,26 @@
    "dst_field": "Magnification Levels",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 2,
-   "donor_dst": 0,
+   "donor_dst": 2,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnification Levels",
-     "value_from": 0,
+     "value_from": 2,
      "field_to": "Magnification Levels",
-     "value_to": 0
+     "value_to": 2
     }
    ],
-   "donor_src": 0,
+   "donor_src": 2,
    "original": 2.0,
-   "ratio": null,
-   "balanced": 0
+   "ratio": 1.0,
+   "balanced": 2.0
   },
   {
    "card": "Zoom",
@@ -468,25 +468,25 @@
    "dst_field": "Magnification Range",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 3.5,
-   "donor_dst": 1.0,
+   "donor_dst": 4.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnification Range",
-     "value_from": 0.0,
+     "value_from": 4.0,
      "field_to": "Magnification Range",
-     "value_to": 1.0
+     "value_to": 4.0
     }
    ],
-   "donor_src": 0.0,
+   "donor_src": 4.0,
    "original": 3.5,
-   "ratio": null,
+   "ratio": 1.0,
    "balanced": 3.5
   },
   {
@@ -495,26 +495,26 @@
    "dst_field": "Magnification Range Max",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 9.5,
-   "donor_dst": 1.0,
+   "donor_dst": 9.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Magnification Range Max",
-     "value_from": 0.0,
+     "value_from": 10.0,
      "field_to": "Magnification Range Max",
-     "value_to": 1.0
+     "value_to": 9.0
     }
    ],
-   "donor_src": 0.0,
+   "donor_src": 10.0,
    "original": 9.5,
-   "ratio": null,
-   "balanced": 9.5
+   "ratio": 0.9,
+   "balanced": 8.55
   },
   {
    "card": "Zoom Time",
@@ -522,26 +522,26 @@
    "dst_field": "Weapon Zoom Time",
    "dst_block": null,
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.20000000298023224,
-   "donor_dst": 0.0,
+   "donor_dst": 0.20000000298023224,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Weapon Zoom Time",
-     "value_from": 0.0,
+     "value_from": 0.20000000298023224,
      "field_to": "Weapon Zoom Time",
-     "value_to": 0.0
+     "value_to": 0.20000000298023224
     }
    ],
-   "donor_src": 0.0,
+   "donor_src": 0.20000000298023224,
    "original": 0.20000000298023224,
-   "ratio": null,
-   "balanced": 0
+   "ratio": 1.0,
+   "balanced": 0.20000000298023224
   },
   {
    "card": "Salvo Shooting",
@@ -549,14 +549,14 @@
    "dst_field": "Rounds Per Second",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 30.0,
    "donor_dst": 30.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Rounds Per Second",
@@ -576,14 +576,14 @@
    "dst_field": "Rounds Per Second Max",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 30.0,
    "donor_dst": 30.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Rounds Per Second Max",
@@ -603,14 +603,14 @@
    "dst_field": "Shots Per Fire",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0,
    "donor_dst": 1,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Shots Per Fire",
@@ -630,14 +630,14 @@
    "dst_field": "Shots Per Fire Max",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0,
    "donor_dst": 1,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Shots Per Fire Max",
@@ -657,26 +657,26 @@
    "dst_field": "Fire Recovery Time",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.5,
-   "donor_dst": 0.10000000894069672,
+   "donor_dst": 0.7666667103767395,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Fire Recovery Time",
-     "value_from": 0.07999999821186066,
+     "value_from": 0.75,
      "field_to": "Fire Recovery Time",
-     "value_to": 0.10000000894069672
+     "value_to": 0.7666667103767395
     }
    ],
-   "donor_src": 0.07999999821186066,
+   "donor_src": 0.75,
    "original": 0.5,
-   "ratio": 1.2500001396983893,
-   "balanced": 0.6250000698491947
+   "ratio": 1.0222222805023193,
+   "balanced": 0.5111111402511597
   },
   {
    "card": "Projectiles Per Shot",
@@ -684,14 +684,14 @@
    "dst_field": "Projectiles Per Shot",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 1,
    "donor_dst": 1,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Projectiles Per Shot",
@@ -711,166 +711,56 @@
    "dst_field": "Rounds Per Shot",
    "dst_block": "Barrels",
    "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0,
-   "donor_dst": 0,
+   "donor_dst": 1,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Rounds Per Shot",
-     "value_from": 0,
+     "value_from": 1,
      "field_to": "Rounds Per Shot",
-     "value_to": 0
+     "value_to": 1
     }
    ],
-   "donor_src": 0,
+   "donor_src": 1,
    "original": 0.0,
-   "ratio": null,
-   "balanced": 0
+   "ratio": 1.0,
+   "balanced": 0.0
   },
   {
    "card": "Heat Threshold",
    "field": "Heat Recovery Threshold",
-   "dst_field": "Heat Recovery Threshold",
-   "dst_block": null,
-   "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
-   "dst_nth": 0,
-   "dst_index": 0,
-   "ported_src": 0.10000000149011612,
-   "donor_dst": 0.10000000149011612,
-   "legs": [
-    {
-     "donor": "Plasma Pistol",
-     "frm": "Halo Reach",
-     "to": "Halo 4",
-     "field_from": "Heat Recovery Threshold",
-     "value_from": 0.10000000149011612,
-     "field_to": "Heat Recovery Threshold",
-     "value_to": 0.10000000149011612
-    }
-   ],
-   "donor_src": 0.10000000149011612,
-   "original": 0.10000000149011612,
-   "ratio": 1.0,
-   "balanced": 0.10000000149011612
+   "note": "Sniper Rifle has no Heat Recovery Threshold target in Halo Reach"
   },
   {
    "card": "Heat Loss",
    "field": "Heat Loss Per Second",
-   "dst_field": "Heat Loss Per Second",
-   "dst_block": null,
-   "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
-   "dst_nth": 0,
-   "dst_index": 0,
-   "ported_src": 0.3499999940395355,
-   "donor_dst": 0.6000000238418579,
-   "legs": [
-    {
-     "donor": "Plasma Pistol",
-     "frm": "Halo Reach",
-     "to": "Halo 4",
-     "field_from": "Heat Loss Per Second",
-     "value_from": 0.6000000238418579,
-     "field_to": "Heat Loss Per Second",
-     "value_to": 0.6000000238418579
-    }
-   ],
-   "donor_src": 0.6000000238418579,
-   "original": 0.3499999940395355,
-   "ratio": 1.0,
-   "balanced": 0.3499999940395355
+   "note": "Sniper Rifle has no Heat Loss Per Second target in Halo Reach"
   },
   {
    "card": "Heat Loss",
    "field": "Overheated Heat Loss Per Second",
-   "dst_field": "Overheated Heat Loss Per Second",
-   "dst_block": null,
-   "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
-   "dst_nth": 0,
-   "dst_index": 0,
-   "ported_src": 0.23000000417232513,
-   "donor_dst": 0.44999998807907104,
-   "legs": [
-    {
-     "donor": "Plasma Pistol",
-     "frm": "Halo Reach",
-     "to": "Halo 4",
-     "field_from": "Overheated Heat Loss Per Second",
-     "value_from": 0.44999998807907104,
-     "field_to": "Overheated Heat Loss Per Second",
-     "value_to": 0.44999998807907104
-    }
-   ],
-   "donor_src": 0.44999998807907104,
-   "original": 0.23000000417232513,
-   "ratio": 1.0,
-   "balanced": 0.23000000417232513
+   "note": "Sniper Rifle has no Overheated Heat Loss Per Second target in Halo Reach"
   },
   {
    "card": "Heat Per Round",
    "field": "Heat Generated Per Round",
-   "dst_field": "Heat Generated Per Round",
-   "dst_block": "Barrels",
-   "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
-   "dst_nth": 0,
-   "dst_index": 0,
-   "ported_src": 0.02500000037252903,
-   "donor_dst": 0.18000000715255737,
-   "legs": [
-    {
-     "donor": "Plasma Pistol",
-     "frm": "Halo Reach",
-     "to": "Halo 4",
-     "field_from": "Heat Generated Per Round",
-     "value_from": 0.14000000059604645,
-     "field_to": "Heat Generated Per Round",
-     "value_to": 0.18000000715255737
-    }
-   ],
-   "donor_src": 0.14000000059604645,
-   "original": 0.02500000037252903,
-   "ratio": 1.2857143313300852,
-   "balanced": 0.03214285876221804
+   "note": "Sniper Rifle has no Heat Generated Per Round target in Halo Reach"
   },
   {
    "card": "Age Per Round",
    "field": "Age Generated Per Round",
-   "dst_field": "Age Generated Per Round",
-   "dst_block": "Barrels",
-   "dst_class": "weap",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol",
-   "dst_nth": 0,
-   "dst_index": 0,
-   "ported_src": 0.0016125000547617674,
-   "donor_dst": 0.019999999552965164,
-   "legs": [
-    {
-     "donor": "Plasma Pistol",
-     "frm": "Halo Reach",
-     "to": "Halo 4",
-     "field_from": "Age Generated Per Round",
-     "value_from": 0.009999999776482582,
-     "field_to": "Age Generated Per Round",
-     "value_to": 0.019999999552965164
-    }
-   ],
-   "donor_src": 0.009999999776482582,
-   "original": 0.0016125000547617674,
-   "ratio": 2.0,
-   "balanced": 0.0032250001095235348
+   "note": "Sniper Rifle has no Age Generated Per Round target in Halo Reach"
   },
   {
    "card": "Age Per Round",
    "field": "Campaign Age Generated Per Round",
-   "note": "Plasma Pistol has no Campaign Age Generated Per Round target in Halo Reach"
+   "note": "Sniper Rifle has no Campaign Age Generated Per Round target in Halo Reach"
   },
   {
    "card": "Projectile Range",
@@ -878,23 +768,23 @@
    "dst_field": "Maximum Range",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 120.0,
-   "donor_dst": 40.0,
+   "donor_dst": 500.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Maximum Range",
-     "value_from": 40.0,
+     "value_from": 500.0,
      "field_to": "Maximum Range",
-     "value_to": 40.0
+     "value_to": 500.0
     }
    ],
-   "donor_src": 40.0,
+   "donor_src": 500.0,
    "original": 120.0,
    "ratio": 1.0,
    "balanced": 120.0
@@ -905,14 +795,14 @@
    "dst_field": "Air Damage Range",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.0,
    "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Air Damage Range",
@@ -932,23 +822,23 @@
    "dst_field": "Air Damage Range Max",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 120.0,
-   "donor_dst": 40.0,
+   "donor_dst": 120.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Air Damage Range Max",
-     "value_from": 40.0,
+     "value_from": 120.0,
      "field_to": "Air Damage Range Max",
-     "value_to": 40.0
+     "value_to": 120.0
     }
    ],
-   "donor_src": 40.0,
+   "donor_src": 120.0,
    "original": 120.0,
    "ratio": 1.0,
    "balanced": 120.0
@@ -959,26 +849,26 @@
    "dst_field": "Water Damage Range",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.0,
-   "donor_dst": 5.0,
+   "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Water Damage Range",
-     "value_from": 5.0,
+     "value_from": 0.0,
      "field_to": "Water Damage Range",
-     "value_to": 5.0
+     "value_to": 0.0
     }
    ],
-   "donor_src": 5.0,
+   "donor_src": 0.0,
    "original": 0.0,
-   "ratio": 1.0,
-   "balanced": 0.0
+   "ratio": null,
+   "balanced": 0
   },
   {
    "card": "Projectile Range",
@@ -986,23 +876,23 @@
    "dst_field": "Water Damage Range Max",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 20.0,
-   "donor_dst": 10.0,
+   "donor_dst": 20.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Water Damage Range Max",
-     "value_from": 10.0,
+     "value_from": 20.0,
      "field_to": "Water Damage Range Max",
-     "value_to": 10.0
+     "value_to": 20.0
     }
    ],
-   "donor_src": 10.0,
+   "donor_src": 20.0,
    "original": 20.0,
    "ratio": 1.0,
    "balanced": 20.0
@@ -1013,26 +903,26 @@
    "dst_field": "Initial Velocity",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 4000.0,
-   "donor_dst": 20.0,
+   "donor_dst": 2799.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Initial Velocity",
-     "value_from": 20.0,
+     "value_from": 6000.0,
      "field_to": "Initial Velocity",
-     "value_to": 20.0
+     "value_to": 2799.0
     }
    ],
-   "donor_src": 20.0,
+   "donor_src": 6000.0,
    "original": 4000.0,
-   "ratio": 1.0,
-   "balanced": 4000.0
+   "ratio": 0.4665,
+   "balanced": 1866.0
   },
   {
    "card": "Projectile Velocity",
@@ -1040,26 +930,26 @@
    "dst_field": "Final Velocity",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 4000.0,
-   "donor_dst": 30.0,
+   "donor_dst": 2799.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Final Velocity",
-     "value_from": 30.0,
+     "value_from": 6000.0,
      "field_to": "Final Velocity",
-     "value_to": 30.0
+     "value_to": 2799.0
     }
    ],
-   "donor_src": 30.0,
+   "donor_src": 6000.0,
    "original": 4000.0,
-   "ratio": 1.0,
-   "balanced": 4000.0
+   "ratio": 0.4665,
+   "balanced": 1866.0
   },
   {
    "card": "Projectile Velocity",
@@ -1067,14 +957,14 @@
    "dst_field": "Minimum Velocity",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.0,
    "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Minimum Velocity",
@@ -1094,41 +984,41 @@
    "dst_field": "Autoaim Leading Maximum Lead Time",
    "dst_block": null,
    "dst_class": "proj",
-   "dst_tag": "objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt",
+   "dst_tag": "objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet",
    "dst_nth": 0,
    "dst_index": 0,
    "ported_src": 0.0,
-   "donor_dst": 1.0,
+   "donor_dst": 0.0,
    "legs": [
     {
-     "donor": "Plasma Pistol",
+     "donor": "Sniper Rifle",
      "frm": "Halo Reach",
      "to": "Halo 4",
      "field_from": "Autoaim Leading Maximum Lead Time",
-     "value_from": 1.0,
+     "value_from": 0.0,
      "field_to": "Autoaim Leading Maximum Lead Time",
-     "value_to": 1.0
+     "value_to": 0.0
     }
    ],
-   "donor_src": 1.0,
+   "donor_src": 0.0,
    "original": 0.0,
-   "ratio": 1.0,
-   "balanced": 0.0
+   "ratio": null,
+   "balanced": 0
   },
   {
    "card": "Beam Damage",
    "field": "Damage Lower Bound",
-   "note": "Plasma Pistol has no Damage Lower Bound target in Halo Reach"
+   "note": "Sniper Rifle has no Damage Lower Bound target in Halo Reach"
   },
   {
    "card": "Beam Damage",
    "field": "Damage Upper Bound",
-   "note": "Plasma Pistol has no Damage Upper Bound target in Halo Reach"
+   "note": "Sniper Rifle has no Damage Upper Bound target in Halo Reach"
   },
   {
    "card": "Beam Damage",
    "field": "Damage Upper Bound Max",
-   "note": "Plasma Pistol has no Damage Upper Bound Max target in Halo Reach"
+   "note": "Sniper Rifle has no Damage Upper Bound Max target in Halo Reach"
   }
  ]
 }

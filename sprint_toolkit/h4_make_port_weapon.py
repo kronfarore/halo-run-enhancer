@@ -1,29 +1,28 @@
 r"""Halo 4 port, step 3: the port's OWN weapon tag, in H4EK.
 
-Built the way the SAW was built in every other game: copy a DONOR that is already fully
-wired, then repoint. The donor is the Beam Rifle, not the Sentinel Beam, measured:
+DONOR: THE SENTINEL BEAM (user's call after the first boot, 2026-09-30). The first build
+copied the Beam Rifle's weapon tag because it was fully wired -- and in game the weapon
+did NOT FIRE: a single-shot sniper trigger and barrel fed a continuous beam. The Sentinel
+Beam is the Focus Rifle's functional twin -- a continuous plasma beam with heat, and it
+is itself Focus-Rifle-derived (it names fx\reach\material_effects\weapons\focus_rifle
+and the Focus Rifle's overheat sound) -- so its trigger, barrels and heat are the right
+ones. What it lacks is exactly why it is never a pickup in Halo 4: its model, first-person
+model and HUD references are NULL.
 
-    storm_sentinel_beam.weapon   NO model reference at all (hlmt null), first-person graph
-                                 fp_plasma_pistol, no HUD screen, no soundbank -- the
-                                 reason it can never be a pickup in Halo 4
-    storm_beam_rifle.weapon      model, first-person model, fp_beam_rifle, its cusc HUD
-                                 screen, its soundbank: everything a pickup needs
+TWO KINDS OF EDIT:
+  * references the donor HAS are repointed in bytes (h3tag): both barrels' projectiles
+    -> the port's OWN copy of the Sentinel "friendly" beam + damage effect (so step 4's
+    numbers never retune the Sentinel Beam), and the model's dangling imposter reference
+    is cleared (an H4 null reference is an empty `tgrf` chunk);
+  * references the donor has as NULL have no bytes to repoint, so they are SET BY FIELD
+    NAME through H4EK's ManagedBlam, in a Blender process (h4_weapon_refs.py, run from
+    here): `model`, `first person`[0] `first person model` + `first person animations`,
+    `hud screen reference`. Field names read from the Beam Rifle's XML.
 
-What the port takes from each:
-    Focus Rifle (this port)   hlmt + first-person render model -> the Foundry export
-    Sentinel Beam             the beam PROJECTILE (copied as the port's own, with its
-                              damage effect) and its firing effect -- the Sentinel Beam
-                              is itself Focus-Rifle-derived: it still names
-                              fx\reach\material_effects\weapons\focus_rifle and the Focus
-                              Rifle's overheat sound, and so does the port
-    Beam Rifle                everything else: fp graph, HUD, scope, soundbank, feedback
-The firing NUMBERS (rate, heat, damage) are step 4's, from Reach's Focus Rifle.
+First-person animations stay the Beam Rifle's: a rifle hold (the Sentinel Beam's is the
+plasma pistol's). The HUD is the Plasma Pistol's (battery percentage + heat).
 
-THE MODEL TAG too: Foundry's export names an imposter model that it never builds, and a
-dangling reference is a build error waiting. It is CLEARED -- an H4 null reference is a
-`tgrf` chunk with an empty payload (93 of them in the Sentinel Beam's weapon tag).
-
-Nothing is written unless every reference the new tags hold resolves to a file in H4EK.
+RUN h4_tag_numbers.py AFTER THIS: the weapon is re-copied from the donor every time.
 
     python h4_make_port_weapon.py [--write]
 """
@@ -31,6 +30,7 @@ import argparse
 import glob
 import os
 import shutil
+import subprocess
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -38,27 +38,36 @@ sys.path.insert(0, HERE)
 import h3tag                                                   # noqa: E402
 
 H4EK = r'F:\SteamLibrary\steamapps\common\H4EK'
+BLENDER = r'F:\Tools\blender-5.2.2-windows-x64\blender.exe'
 TAGS = os.path.join(H4EK, 'tags')
 PORT = 'objects\\weapons\\rifle\\focus_rifle\\focus_rifle'
-DONOR = 'objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle'
 SB = 'objects\\weapons\\pistol\\storm_sentinel_beam\\'
+DONOR = SB + 'storm_sentinel_beam'
+BR = 'objects\\weapons\\rifle\\storm_beam_rifle\\'
 
 #: The port's OWN beam: a copy of the Sentinel Beam's friendly projectile and its damage
-#: effect. Step 4 writes the Focus Rifle's numbers into these, and writing them into the
+#: effect. Step 4 writes the Focus Rifle's numbers into these; writing them into the
 #: Sentinel Beam's own would retune that weapon too -- the shared-tag trap.
 SB_BEAM = SB + 'projectiles\\storm_sentinel_beam_beam_friendly'
 OWN_PROJ = 'objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam'
 
-#: (group, donor path, port path) on the copied weapon
+#: (group, donor path, port path): references the donor HAS
 REPOINT = [
-    ('hlmt', DONOR, PORT),
-    ('mode', DONOR, PORT),                                    # the first-person model
-    ('proj', 'objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam',
-     OWN_PROJ),
-    ('effe', 'objects\\weapons\\rifle\\storm_beam_rifle\\fx\\firing',
-     SB + 'fx\\friendly_beam\\firing'),
-    ('foot', 'fx\\material_effects\\weapons\\sniper_rifle',
-     'fx\\reach\\material_effects\\weapons\\focus_rifle'),
+    ('proj', SB_BEAM, OWN_PROJ),
+    ('proj', SB + 'projectiles\\storm_sentinel_beam_beam_enemy', OWN_PROJ),
+]
+
+#: (field path, tag path WITH extension): references the donor has as NULL
+SET_REFS = [
+    ('model', PORT + '.model'),
+    ('first person[0]/first person model', PORT + '.render_model'),
+    ('first person[0]/first person animations',
+     'objects\\characters\\storm_fp\\weapons\\rifle\\fp_beam_rifle\\'
+     'storm_fp_beam_rifle.model_animation_graph'),
+    # the PLASMA PISTOL's HUD: battery as a percentage + overheat. The Beam Rifle's (first
+    # boot) counts 10 shots, which a 620-round battery cannot show. No scope overlay: zoom
+    # itself is the weapon's, and the enhancer grafts the scope UI at patch time.
+    ('hud screen reference', 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol.cui_screen'),
 ]
 
 
@@ -91,37 +100,35 @@ def main():
     a = ap.parse_args()
 
     model = h3tag.Tag(os.path.join(TAGS, PORT + '.model'))
-    cleared = clear_ref(model, 'impo', PORT)
-    print('model: imposter reference cleared %d time(s)' % cleared)
+    print('model: imposter reference cleared %d time(s)' % clear_ref(model, 'impo', PORT))
 
     weap = h3tag.Tag(os.path.join(TAGS, DONOR + '.weapon'))
     for group, old, new in REPOINT:
         n = weap.repoint(old, new, group)
-        print('weapon: %-4s %-70s x%d' % (group, new, n))
+        print('weapon: %-4s %-66s x%d' % (group, new, n))
         if n < 1:
             raise SystemExit('the donor has no %s reference to %s' % (group, old))
+    for field, path in SET_REFS:
+        if not os.path.exists(os.path.join(TAGS, path)):
+            raise SystemExit('%s -> %s does not exist' % (field, path))
 
-    # the port's own projectile + damage effect (written first: the weapon names them)
-    beam = {}
-    for ext in ('projectile', 'damage_effect'):
-        dst = os.path.join(TAGS, OWN_PROJ + '.' + ext)
-        if a.write:
+    # the port's own beam, copied fresh from the donor's
+    if a.write:
+        for ext in ('projectile', 'damage_effect'):
+            dst = os.path.join(TAGS, OWN_PROJ + '.' + ext)
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copyfile(os.path.join(TAGS, SB_BEAM + '.' + ext), dst)
-        beam[ext] = dst
-    if a.write:
-        proj = h3tag.Tag(beam['projectile'])
+        proj = h3tag.Tag(os.path.join(TAGS, OWN_PROJ + '.projectile'))
         if proj.repoint(SB_BEAM, OWN_PROJ, 'jpt!') != 1:
             raise SystemExit('the beam projectile does not name its damage effect once')
         proj.save()
         print('own beam: %s.{projectile,damage_effect}' % OWN_PROJ)
 
-    # a dry run has not copied the port's own beam yet; everything else must resolve
     bad = [b for b in unresolved(model) + unresolved(weap) if a.write or b[1] != OWN_PROJ]
     if bad:
         raise SystemExit('unresolved references, nothing written:\n  ' +
                          '\n  '.join('%s %s' % b for b in bad))
-    print('every reference resolves (%d in the weapon)' % len(weap.references()))
+    print('every existing reference resolves (%d in the weapon)' % len(weap.references()))
     if not a.write:
         print('(dry run -- pass --write)')
         return
@@ -132,6 +139,18 @@ def main():
         if not h3tag.Tag(f).check()[0]:
             raise SystemExit('%s no longer spans its file' % f)
     print('wrote', out)
+
+    # the NULL references, by field name, in an H4EK Blender process
+    args = [BLENDER, '--background', '--python', os.path.join(HERE, 'h4_weapon_refs.py'),
+            '--', PORT + '.weapon']
+    for field, path in SET_REFS:
+        args += [field, path]
+    r = subprocess.run(args, capture_output=True, text=True, encoding='utf-8', errors='replace')
+    lines = [l for l in r.stdout.splitlines() if l.startswith(('   ', 'REFS'))]
+    print('\n'.join(lines) or r.stdout[-2000:])
+    if not any(l.startswith('REFS OK') for l in lines):
+        print(r.stdout[-1500:], r.stderr[-1500:])
+        raise SystemExit('setting the null references failed')
 
 
 if __name__ == '__main__':
