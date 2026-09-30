@@ -1953,3 +1953,35 @@ What that retires, kept in the repo only as the record of how it was found:
     8 icon + text     DONE   glyph 0xE052 inside the font's native range, 7 lines x 12
     9 animations      HALF   both species graphs are the port's own; retiming blocked on
                              decoding Reach's animation layout
+
+---
+
+## REACH STEP 7, THE REST: the HUD icon is TEXT, and the meter gets its own sheet
+
+### The weapon icon
+
+Reach's chud does not draw the weapon schematic from a bitmap. The `shematic` and
+`shematic_backpack` widgets are TEXT widgets in the full-screen HUD message font, with
+input string `assault_rifle` -- which is a line in `hud_messages`,
+`assault_rifle = "&assault_rifle"`, expanded by tool to the Assault Rifle's glyph. So
+`h3_port_messages.py` adds `saw = "<U+E052>"` (the same glyph the pickup prompt already
+draws), to all twelve languages since it carries no words, and `h3_saw_chud.py` renames
+both input strings to `saw`. The HUD and the backpack icon are then the SAW's.
+
+### The ammo meter
+
+The `meter` bitmap widget reads the raw `weapon ammo loaded` and draws
+`ui\chud\bitmaps\ballistic_meters_2_rows`: ONE 320x48 a8r8g8b8 image plus a 160x24
+mip, no sequences, Halo 3's encoding exactly -- blue is the per-tick threshold counting
+down column by column (40/39, 38/37, ...), red 48 and green 2 on every tick, alpha the
+shape. It is a 40-round meter: the Spike Rifle uses it whole, the Assault Rifle crops it
+with manual texture coordinates 0,34,24,160. The shipped TGA exporter fails on it
+(`rasterizer\invalid`); the pixels are RAW in the tag's 76,800-byte `tgda`, level 0
+then the mip.
+
+`reach_meter_art.py` writes a NEW tag, `saw_ballistic_meter`, cloned from the sheet so
+format and mip chain are the shipped ones, and redraws its pixels in place: 72 ticks as
+24 columns of 3, thresholds 72 -> 1 in the same column order, the shipped tick shape
+scaled to the smaller cell. It points ONLY the SAW's meter widget at it and sets its
+texture coordinates to 0,0,0,0 like the Spike Rifle's. The shared sheet and every other
+chud are untouched.
