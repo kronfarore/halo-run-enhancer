@@ -1778,7 +1778,7 @@
    "source": "Halo 4",
    "donor": "Assault Rifle",
    "default_on": true,
-   "desc": "SAW carried from Halo 4 into Halo Reach, built on the Assault Rifle. Bullet speed is measured against the Assault Rifle, which Reach runs at exactly twice Halo 4's. It shares the Assault Rifle's first-person animations, so its timing is not retuned.",
+   "desc": "SAW carried from Halo 4 into Halo Reach, built on the Assault Rifle. Bullet speed is measured against the Assault Rifle, which Reach runs at exactly twice Halo 4's. It has its own first-person animations, so its reload can be retimed.",
    "balance": [
     {
      "class": "weap",
@@ -2215,6 +2215,10 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "fp_animations": "objects\\weapons\\rifle\\saw\\fp_saw_*",
+   "anims": {
+    "reload": 1.0
    }
   }
  ]

@@ -15,10 +15,9 @@ WHAT IS DROPPED, and why each is right:
   * the MELEE rows, which point at `globals\damage_effects\strike_melee`. Every weapon in
     the game shares it. A ported weapon has no business retuning the whole sandbox's
     melee, so the three rows go.
-  * the ANIMATION rows. The port still uses the Assault Rifle's two first-person graphs
-    -- Reach names one per species and the port has not been given clones -- so retiming
-    would retime the Assault Rifle, for both Spartan and Elite. `anims` therefore ships
-    ABSENT, exactly as Halo 3's does and unlike ODST's, which owns its graph.
+  * the ANIMATION row. The table cannot compute it (it carries no value), so the reload
+    comes from FP_ANIMATIONS / RELOAD_MULT below instead, as in ODST: the port owns both
+    species' graphs (step 9), so retiming them cannot reach the Assault Rifle.
 
 WHAT REACH DOES NOT NEED. ODST's catalog carries six `MEASURED` rows for fields no card
 can reach there -- Air/Water Gravity Scale, Impact/Detonation Noise, Autoaim/Magnetism
@@ -53,7 +52,19 @@ PORT_TAGS = {
 #: tags the whole sandbox shares -- never written by a port
 SHARED = {('jpt!', B.join(['globals', 'damage_effects', 'strike_melee']))}
 #: classes this catalog does not carry at all, with the reason printed once
-SKIP_CLASS = {'jmad': 'the port still shares the Assault Rifle\'s two species graphs'}
+SKIP_CLASS = {'jmad': 'no value in the table -- carried by FP_ANIMATIONS/RELOAD_MULT'}
+
+#: The port's OWN first-person graphs, one per species, as reach_foundry_fp_retime.py
+#: wrote them: saw\fp_saw_spartans\fp_saw_spartans and saw\fp_saw_elite\fp_saw_elite.
+#: The '*' matches both and NOT the Assault Rifle-timed originals left in saw\fp\.
+FP_ANIMATIONS = SAW + B + 'fp_saw_*'
+
+#: The reload is BUILT at the Halo 4 SAW's 128 frames. Balanced = the Reach AR's reload
+#: x (H4 SAW / H4 AR) = 68 x 128/68 = 128: Reach's Assault Rifle reloads in exactly Halo
+#: 4's 68 frames (reload_empty; reload_full 59), so the multiplier is 1.0 and the port
+#: ships at its built timing. It is still carried so the reload and swap CARDS reach the
+#: port's own graphs. Only reload: the ready (24 built) has no measured H4 AR count.
+RELOAD_MULT = round(68.0 * 128.0 / 68.0 / 128.0, 6)
 
 DST_GAME = 'Halo Reach'
 
@@ -153,11 +164,13 @@ def main():
              'default_on': True,
              'desc': '%s carried from %s into Halo Reach, built on the Assault Rifle. '
                      'Bullet speed is measured against the Assault Rifle, which Reach '
-                     'runs at exactly twice Halo 4\'s. It shares the Assault Rifle\'s '
-                     'first-person animations, so its timing is not retuned.'
+                     'runs at exactly twice Halo 4\'s. It has its own first-person '
+                     'animations, so its reload can be retimed.'
                      % (t['ported'], t['source']),
              'balance': rows,
-             'ammo': ammo_block()}
+             'ammo': ammo_block(),
+             'fp_animations': FP_ANIMATIONS,
+             'anims': {'reload': RELOAD_MULT}}
 
     print('\n%d balance row(s)' % len(rows))
     by_tag = {}
