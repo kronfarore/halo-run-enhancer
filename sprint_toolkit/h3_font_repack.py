@@ -272,6 +272,21 @@ def growth_test_layout(d, hud_font):
     return out, shipped, len(blocks), first_hud
 
 
+def shift_test_layout(d):
+    """Same block COUNT as shipped, every boundary moved: first-fit with the largest
+    per-block reserve that still fits. Separates a block-count cap (this works) from a
+    layout field not yet understood (this breaks too)."""
+    header, ents, split = entries(d)
+    n, best = len(split), 0
+    for r in range(0, 0x4000, 16):
+        if len(layout(ents, reserve=r)) == n:
+            best = r
+    out = assemble(header, layout(ents, reserve=best))
+    if not check_index(out)[0] or len(out) != len(d):
+        raise SystemExit('shift-test package is bad; refusing')
+    return out, n, best
+
+
 def selftest():
     ok = True
     for game in GAMES:
@@ -304,6 +319,8 @@ def main():
     ap.add_argument('--growth-test', metavar='GAME',
                     help='write the one-boot growth test into the live packages of GAME')
     ap.add_argument('--undo-growth-test', metavar='GAME')
+    ap.add_argument('--shift', action='store_true',
+                    help='with --growth-test: keep the block count, move the boundaries')
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args()
     if a.growth_test or a.undo_growth_test:
@@ -319,6 +336,16 @@ def main():
             d = open(p, 'rb').read()
             if os.path.exists(k):
                 d = open(k, 'rb').read()          # always build from the pre-test file
+            if a.shift:
+                out, shipped, res = shift_test_layout(d)
+                print('%-26s %2d blocks kept, every boundary moved (reserve %d)'
+                      % (name, shipped, res))
+                if a.write:
+                    os.makedirs(keep, exist_ok=True)
+                    if not os.path.exists(k):
+                        open(k, 'wb').write(d)
+                    open(p, 'wb').write(out)
+                continue
             out, shipped, now, first = growth_test_layout(d, hud)
             print('%-26s %2d -> %2d blocks; the HUD font starts in block %d (0-based), '
                   'past the shipped %d' % (name, shipped, now, first, shipped))
