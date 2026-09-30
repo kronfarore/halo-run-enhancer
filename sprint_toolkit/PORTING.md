@@ -1557,6 +1557,38 @@ nowhere to put its icon.
 
 ---
 
+## THE BLOCK INDEX -- and why "native range" was the wrong rule (2026-09-30)
+
+**Supersedes the section below.** Right after the font headers, in the header region,
+every icon package carries one pair of u32 keys PER BLOCK -- the first and last entry the
+block holds -- with key = `font << 16 | codepoint`. It matches every block of all nine
+shipped packages (Halo 3, ODST, Reach x x1/x2/x3) exactly, and nothing follows it. The
+package is ONE list ascending by that key, cut first-fit into 0xC000 blocks; the index is
+how the engine picks the block to search.
+
+`h3_font_repack.py --selftest` rebuilds all nine shipped packages from their glyphs,
+first-fit, and gets every file back BYTE FOR BYTE -- so this is exactly what the kits'
+`tool font-package` does, and a package rebuilt with a new glyph sorted in is what the
+official tool would have written.
+
+What it re-explains:
+  * Reach 0xE150 in an APPENDED block: the index did not list the block -> box.
+  * Reach 0xE150 placed in block 4: block 4's range is font 5 only -> box. The "above
+    the font's native top" explanation below was a coincidence of both.
+  * Halo 3's 0xE06A and ODST's 0xE04A each became the LAST entry of an x2 block with the
+    index left one codepoint short, so they could not draw at x2. FIXED with
+    `h3_font_repack.py --fix-index --write`; all nine live indices now check.
+  * h3_font_add / place / grow never touched the index. `h3_font_repack.add_glyph` is
+    their replacement: rebuild around the new glyph, grow by whole blocks, rewrite the
+    index. The capacity question then becomes the index's room in the header region
+    (thousands of blocks) and free codepoints -- not bytes.
+
+**Growth test, Reach, written to the live packages:** fonts 0-2 spread over the SHIPPED
+block count, so the ENTIRE HUD font (every weapon icon, the SAW's included) sits in
+blocks the package never had -- x1 4->7, x2 11->21, x3 22->41, every record identical.
+Icons normal = the engine reads grown packages. Every weapon icon broken = it caps at the
+shipped count. Undo: `h3_font_repack.py --undo-growth-test haloreach`.
+
 ## THE CODEPOINT MUST BE INSIDE THE FONT'S NATIVE RANGE
 
 Measured in game, Reach, 2026-09-29, and it corrects the glyph-ceiling plan.
