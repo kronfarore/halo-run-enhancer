@@ -1557,6 +1557,18 @@ nowhere to put its icon.
 
 ---
 
+## GLYPH CAPACITY, ALL FIVE GAMES: NO CEILING (2026-09-30)
+
+    Halo 1   the icon is a sequence in the hud_msg_icons BITMAP; add_msg_icon.py appends
+    Halo 2   one font per file; h2_font_add.py appends a record + payload (+2,288 bytes per
+             icon per font, 8 fonts). halo2.dll opens each font with CreateFileA (random
+             access, 0x6f41e1) and reads glyphs by offset on demand -- no whole-file
+             buffer, so no size cap. The only limit is 12 font FILES (the scan at
+             0x6f3f70); ports add none. Already past the largest shipped size
+             (handel_gothic-24 644,684 > 642,396) with the SAW drawing.
+    Halo 3 / ODST / Reach   h3_font_repack.add_glyph: packages grow by whole blocks,
+             confirmed in game on Reach (the section below).
+
 ## THE BLOCK INDEX -- and why "native range" was the wrong rule (2026-09-30)
 
 **Supersedes the section below.** Right after the font headers, in the header region,
