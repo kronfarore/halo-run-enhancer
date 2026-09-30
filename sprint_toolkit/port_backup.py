@@ -8,7 +8,7 @@ means rebuilding it from scratch:
   * the built cache file, which is the only artifact co-op partners can be given, and
   * the build scripts and the catalog the patcher reads.
 
-    python port_backup.py --game h2 [--label saw-h2] [--no-maps]
+    python port_backup.py --game h2|reach [--label saw-h2] [--no-maps]
 
 `--game` picks which port is backed up; `--no-maps` skips the cache files, which are
 the slow part and are only worth keeping when a built map exists.
@@ -119,11 +119,57 @@ H2_SCRIPTS = ('saw_to_jms_h2.py', 'h2_jms.py', 'h2_jms_preview.py', 'h2_tagref.p
               'h4_bitmap.py', 'h4_rm.py', 'h3_weapon_glyph.py',
               'make_port_catalog_h2.py', 'port_backup.py', 'PORTING.md')
 
+# Reach, through HREK. The render model and both species' first-person graphs are
+# FOUNDRY exports: the .blend files and sidecars under data\ are the source, so the data
+# tree is kept whole. The shared tags the port edits in place are the chud, the new meter
+# sheet, and hud_messages (tag and its .txt source); the icon lives in the LIVE font
+# packages in the game folder, kept next to their pre-port copies from E:.
+HREK = os.path.join(F, 'SteamLibrary', 'steamapps', 'common', 'HREK')
+SAWR = os.path.join('objects', 'weapons', 'rifle', 'saw')
+REACH_TREES = [
+    (os.path.join(HREK, 'tags', SAWR), 'tags/objects/weapons/rifle/saw', True),
+    (os.path.join(HREK, 'data', SAWR), 'data/objects/weapons/rifle/saw', True),
+    (os.path.join(GAME, 'haloreach', 'maps', 'fonts'), 'shared/fonts_live', True),
+    (os.path.join(E_BACKUPS, 'reach_live_fonts'), 'shared/fonts.stock', True),
+]
+REACH_SHARED = [
+    (os.path.join(HREK, 'tags', 'ui', 'chud', 'saw.chud_definition'),
+     'tags/ui/chud/saw.chud_definition'),
+    (os.path.join(HREK, 'tags', 'ui', 'chud', 'bitmaps', 'saw_ballistic_meter.bitmap'),
+     'tags/ui/chud/bitmaps/saw_ballistic_meter.bitmap'),
+    (os.path.join(HREK, 'tags', 'ui', 'hud', 'hud_messages.multilingual_unicode_string_list'),
+     'tags/ui/hud/hud_messages.multilingual_unicode_string_list'),
+    (os.path.join(HREK, 'data', 'ui', 'hud', 'hud_messages.txt'), 'data/ui/hud/hud_messages.txt'),
+    # the SAW is PLACED in m20 by hand in Sapien -- the only copy of that work
+    (os.path.join(HREK, 'tags', 'levels', 'solo', 'm20', 'm20.scenario'),
+     'tags/levels/solo/m20/m20.scenario'),
+]
+REACH_FILES = [
+    (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
+    (os.path.join(HERE, 'balance_SAW_Halo4_to_HaloReach.json'),
+     'catalog/balance_SAW_Halo4_to_HaloReach.json'),
+    (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md'),
+]
+REACH_MAPS = [
+    (os.path.join(GAME, 'haloreach', 'maps', 'm20.map'), 'maps/m20.map'),
+]
+REACH_SCRIPTS = ('h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
+                 'saw_port_values.py', 'reach_ek_build.py', 'reach_saw_wire_model.py',
+                 'reach_saw_textures.py', 'reach_saw_tag_numbers.py',
+                 'make_port_catalog_reach.py', 'h3_saw_chud.py', 'reach_meter_art.py',
+                 'h3_port_messages.py', 'h3_weapon_glyph.py', 'h3_font_package.py',
+                 'h3_font_codec.py', 'h3_font_repack.py', 'h3_saw_animations.py',
+                 'foundry_setup.py', 'reach_foundry_saw.py', 'reach_foundry_fp_probe.py',
+                 'reach_foundry_fp_retime.py', 'reach_node_names.py', 'reach_donor_mesh.py',
+                 'reach_saw_bisect.py', 'port_backup.py', 'PORTING.md')
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},
     'h2': {'trees': H2_TREES, 'shared': H2_SHARED, 'files': H2_FILES, 'maps': [],
            'scripts': H2_SCRIPTS, 'label': 'saw-h2'},
+    'reach': {'trees': REACH_TREES, 'shared': REACH_SHARED, 'files': REACH_FILES,
+              'maps': REACH_MAPS, 'scripts': REACH_SCRIPTS, 'label': 'saw-reach'},
 }
 
 

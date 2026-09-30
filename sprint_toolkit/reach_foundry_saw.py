@@ -2,6 +2,7 @@ r"""Build the Reach SAW's render model through Foundry, Bungie's sidecar route.
 
 Run INSIDE Blender (the portable 5.2 on F:, with the Foundry extension):
 
+    blender --background --python reach_foundry_saw.py -- --scaffold  # AR model -> scaffold
     blender --background --python reach_foundry_saw.py -- --build     # make saw.blend
     blender --background --python reach_foundry_saw.py -- --export    # + export tags
 
@@ -95,7 +96,30 @@ def stem(name):
     return name
 
 
+DONOR_MODEL = os.path.join(EK, 'tags', 'objects', 'weapons', 'rifle', 'assault_rifle',
+                           'assault_rifle.model')
+
+
+def scaffold():
+    """Import the donor's model tag (render + markers only) and save it as the scaffold
+    `build()` opens. Run automatically when the scaffold is missing -- it lived in a session
+    scratchpad once, which is exactly how a build step goes missing."""
+    for ob in list(bpy.data.objects):
+        bpy.data.objects.remove(ob, do_unlink=True)
+    res = bpy.ops.nwo.foundry_import(filepath=DONOR_MODEL,
+                                     directory=os.path.dirname(DONOR_MODEL),
+                                     files=[{'name': os.path.basename(DONOR_MODEL)}],
+                                     tag_render=True, tag_markers=True, tag_collision=False,
+                                     tag_physics=False, tag_animation=False,
+                                     build_blender_materials=False)
+    print('scaffold import', res)
+    bpy.ops.wm.save_as_mainfile(filepath=SCAFFOLD)
+    print('saved', SCAFFOLD)
+
+
 def build():
+    if not os.path.exists(SCAFFOLD):
+        scaffold()
     bpy.ops.wm.open_mainfile(filepath=SCAFFOLD)
     nodes, mats, markers, verts, tris = read_jms(JMS)
     print('JMS: %d nodes, %d materials, %d markers, %d verts, %d tris'
@@ -199,6 +223,8 @@ def export():
 
 if __name__ == '__main__':
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
+    if '--scaffold' in argv:
+        scaffold()
     if '--build' in argv:
         build()
     if '--export' in argv:

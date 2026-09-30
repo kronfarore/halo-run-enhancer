@@ -1381,6 +1381,10 @@ purpose: it is the record that they existed.
 `port_backup.py` now NAMES a shortfall instead of printing `31 of 39`, which is the
 thing that would have caught this the day it happened.
 
+**RECOVERED 2026-09-30.** All eight were in the 2026-09-21 backups under
+`F:\HaloPortBackups\*\scripts\` (one version each across every backup) and are back in
+the toolkit. The manifest now checks complete for h1, h2 and reach.
+
 ---
 
 ## SCALE: it is 140 ports, and the pipeline is built for one
