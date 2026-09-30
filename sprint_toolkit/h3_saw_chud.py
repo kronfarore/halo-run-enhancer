@@ -50,6 +50,10 @@ AR_CHUD = B.join(['ui', 'chud', 'assault_rifle'])
 SAW_CHUD = B.join(['ui', 'chud', 'saw'])
 SAW_WEAPON = h3_kit.SAW_WEAPON
 
+#: the text-widget string id the HUD weapon icon is drawn from (Reach only)
+SCHEMATIC_ID = h3_kit.per_kit(h3=None, odst=None, reach=('assault_rifle', 'saw'),
+                              what='the string id the chud draws the weapon icon from')
+
 AR_LOADED, AR_MAGAZINE = 8, 32
 SAW_MAGAZINE = 72
 
@@ -94,6 +98,18 @@ def main():
     was = struct.unpack_from('<i', clone.data, at)[0]
     struct.pack_into('<i', clone.data, at, want)
     print('threshold at %#x: %d -> %d' % (at, was, want))
+    # REACH DRAWS THE WEAPON ICON AS TEXT. The `shematic` and `shematic_backpack`
+    # widgets are text widgets whose input string is `assault_rifle` -- a line in
+    # hud_messages that expands to the Assault Rifle's glyph. So the clone keeps showing
+    # the Assault Rifle, on the HUD and on your back, until both inputs name the port's
+    # own line (h3_port_messages writes `saw = "<glyph>"`). Halo 3 and ODST draw the
+    # schematic from a bitmap sheet instead -- see h3_weapon_schematic.py.
+    if SCHEMATIC_ID:
+        old, new = SCHEMATIC_ID
+        n = clone.rename_stringid(old, new)
+        print('icon input string %r -> %r: %d widget(s)' % (old, new, n))
+        if n != 2:
+            raise SystemExit('expected the HUD icon and the backpack icon, found %d' % n)
     ok, covered, total = clone.check()
     if not ok:
         raise SystemExit('clone no longer spans the file -- not saved')

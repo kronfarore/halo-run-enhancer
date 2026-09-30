@@ -112,6 +112,36 @@ def entries(s, prefix):
     return out
 
 
+#: THE HUD WEAPON ICON, in Reach. Reach's chud draws the weapon schematic as TEXT -- a
+#: text widget with font "full screen hud message font" and input string `assault_rifle`
+#: -- and that id is a line in this same list, `assault_rifle = "&assault_rifle"`, which
+#: tool expands to the Assault Rifle's icon glyph. So the port's HUD icon is one more
+#: line, `saw = "<its glyph>"`, and the chud's input string pointed at it. The line is
+#: nothing but the glyph, so it is the same in every language. Halo 3 and ODST draw the
+#: schematic from a bitmap sheet and need no such line.
+SCHEMATIC = h3_kit.per_kit(h3=None, odst=None, reach=('assault_rifle', 'saw'),
+                           what='the string id the HUD weapon icon is drawn from')
+
+
+def schematic_line(s, glyph):
+    """`saw = "<glyph>"`, cloned from the donor's schematic line, or None."""
+    if not SCHEMATIC:
+        return None
+    donor, port = SCHEMATIC
+    # \r? because the source is CRLF and is read with newline='' -- see source()
+    m = re.search(r'^%s = (".*")\r?$' % re.escape(donor), s, re.M)
+    if not m or DONOR_ICON not in m.group(1):
+        raise SystemExit('no `%s = "%s"` line to clone the HUD icon from'
+                         % (donor, DONOR_ICON))
+    return '%s = %s' % (port, m.group(1).replace(DONOR_ICON, chr(glyph)))
+
+
+def missing_lines(s, lines):
+    """The lines whose id the source does not have yet."""
+    return [l for l in lines
+            if not re.search(r'^%s = ' % re.escape(l.split(' = ', 1)[0]), s, re.M)]
+
+
 def port_lines(s, glyph):
     """The port's own lines, cloned from the donor's."""
     out = []
@@ -120,6 +150,9 @@ def port_lines(s, glyph):
                  .replace(DONOR_NAME, PORT_NAME)
                  .replace(*AMMO_NAME))
         out.append('%s = %s' % (PORT + k[len(DONOR):], text))
+    extra = schematic_line(s, glyph)
+    if extra:
+        out.append(extra)
     return out
 
 
@@ -160,6 +193,10 @@ def localized_lines(path, glyph, english):
         elif name in english:
             out.append('%s = %s' % (name, english[name]))
             fell_back += 1
+    extra = schematic_line(s, glyph)
+    if extra:
+        out.append(extra)
+        localized += 1
     return out, localized, fell_back
 
 
@@ -186,9 +223,14 @@ def main():
         print('      %s' % l.replace(chr(a.glyph), '<glyph>')[:96])
 
     if a.write:
-        if not have:
-            body = s.rstrip('\r\n') + '\r\n' + '\r\n'.join(lines) + '\r\n'
+        # BY ID, not all-or-nothing. This used to skip the file whenever ANY port line was
+        # already there, so a line added to the port later -- Reach's HUD icon string --
+        # would never have landed, in English or in any language, and nothing said so.
+        new = missing_lines(s, lines)
+        if new:
+            body = s.rstrip('\r\n') + '\r\n' + '\r\n'.join(new) + '\r\n'
             io.open(SRC, 'w', encoding='utf-16', newline='').write(body)
+            print('   english: +%d line(s): %s' % (len(new), [l.split(' = ')[0] for l in new]))
         tag = os.path.join(h3_kit.TAGS, LIST + '.multilingual_unicode_string_list')
         keep = tag + '.before_saw'
         import shutil
@@ -205,10 +247,11 @@ def main():
             english = dict(l.split(' = ', 1) for l in lines)
             for folder, lp in lang_sources():
                 ls = io.open(lp, encoding='utf-16', newline='').read()
-                if entries(ls, PORT):
+                add, loc, fell = localized_lines(lp, a.glyph, english)
+                add = missing_lines(ls, add)
+                if not add:
                     print('      %-10s already has them' % folder)
                     continue
-                add, loc, fell = localized_lines(lp, a.glyph, english)
                 eol = '\r\n'
                 body = ls.rstrip(eol) + eol + eol.join(add) + eol
                 if body.count('\n') != body.count(eol):
