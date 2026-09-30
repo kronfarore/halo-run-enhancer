@@ -1,4 +1,7 @@
-r"""Put a glyph in an EXISTING block that has room, instead of appending a new one.
+r"""SUPERSEDED (2026-09-30) by h3_font_repack.py -- this never updated the block index,
+the fonts' block ranges or the block count at +0x414. Kept for the record; do not use.
+
+Put a glyph in an EXISTING block that has room, instead of appending a new one.
 
 THE EXPERIMENT THIS IS FOR. `h3_font_grow.py` appends a block, and the first in-game test
 of that said something useful and incomplete: Reach's text and every stock icon were

@@ -1,4 +1,7 @@
-r"""Append a BLOCK to a font package, so a game can take more weapon icons than it ships
+r"""SUPERSEDED (2026-09-30) by h3_font_repack.py -- this never updated the block index,
+the fonts' block ranges or the block count at +0x414. Kept for the record; do not use.
+
+Append a BLOCK to a font package, so a game can take more weapon icons than it ships
 room for.
 
 THE CEILING THIS EXISTS TO REMOVE. `glyph_capacity.py` measures how many more icons each

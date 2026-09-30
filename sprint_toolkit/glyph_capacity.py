@@ -1,4 +1,7 @@
-r"""How many more weapon icons each game can actually take -- the porting ceiling.
+r"""SUPERSEDED (2026-09-30) by h3_font_repack.py -- this never updated the block index,
+the fonts' block ranges or the block count at +0x414. Kept for the record; do not use.
+
+How many more weapon icons each game can actually take -- the porting ceiling.
 
 A ported weapon needs a pickup glyph, and from Halo 3 on that glyph goes into
 `maps\fonts\font_package_icon*.bin`. Those packages are FIXED SIZE, so the question

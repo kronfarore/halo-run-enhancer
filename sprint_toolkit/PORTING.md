@@ -1586,7 +1586,7 @@ What it re-explains:
 **Growth test, Reach, written to the live packages:** fonts 0-2 spread over the SHIPPED
 block count, so the ENTIRE HUD font (every weapon icon, the SAW's included) sits in
 blocks the package never had -- x1 4->7, x2 11->21, x3 22->41, every record identical.
-FIRST BOOT: every weapon icon broke -- the test had left each font's OWN block range alone: the third u32 of a font's header triple is (blocks spanned << 16) | first block (all fonts, all nine packages). assemble() now rewrites it; test rewritten. SECOND BOOT: most icons GONE; a same-count --shift test then DREW -- so a count cap. The count is IN the file: header +0x410 = index offset, +0x414 = block count (all nine packages), read by haloreach.dll's glyph lookup at 0xcca68, which bsearches that many 8-byte index entries (blocks are then paged through an 8-slot cache). assemble() now writes +0x414. Third test: the real growth again, counts 7/21/41. Icons normal = the engine reads grown packages. Every weapon icon broken = it caps at the
+FIRST BOOT: every weapon icon broke -- the test had left each font's OWN block range alone: the third u32 of a font's header triple is (blocks spanned << 16) | first block (all fonts, all nine packages). assemble() now rewrites it; test rewritten. SECOND BOOT: most icons GONE; a same-count --shift test then DREW -- so a count cap. The count is IN the file: header +0x410 = index offset, +0x414 = block count (all nine packages), read by haloreach.dll's glyph lookup at 0xcca68, which bsearches that many 8-byte index entries (blocks are then paged through an 8-slot cache). assemble() now writes +0x414. Third test: the real growth again, counts 7/21/41. **THIRD BOOT: ALL ICONS DRAW -- GROWTH CONFIRMED.** h3_weapon_glyph now calls h3_font_repack.add_glyph (any free codepoint, grows by whole blocks); add/place/grow and glyph_capacity are superseded. Checked in memory: 40 heavy icons took Reach x1 from 4 to 24 blocks, verify() clean. Icons normal = the engine reads grown packages. Every weapon icon broken = it caps at the
 shipped count. Undo: `h3_font_repack.py --undo-growth-test haloreach`.
 
 ## THE CODEPOINT MUST BE INSIDE THE FONT'S NATIVE RANGE
@@ -1995,9 +1995,8 @@ What that retires, kept in the repo only as the record of how it was found:
     9 animations      DONE   reach_foundry_fp_retime.py: reload 128, ready 24, events scaled
 
 **Still open for Reach, as scaling work rather than SAW work:**
-  * **Glyph capacity.** The HUD font has little free room inside its native range; ~45
-    weapons need a repack of the font package, not an append (h3_font_grow/place are the
-    fallbacks, glyph_capacity.py measures it).
+  * ~~Glyph capacity~~ SOLVED 2026-09-30: packages grow (h3_font_repack.py, confirmed in
+    game); see THE BLOCK INDEX.
   * **The Foundry scripts are SAW-specific** (paths, moved markers, frame targets). They
     are generalised with the NEXT port, which needs its own marker placement anyway.
   * **Starting profiles** never gave a Reach weapon; a non-issue, weapons are SPAWNED now.

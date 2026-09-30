@@ -1,4 +1,7 @@
-r"""Add a NEW codepoint to a Halo 3 font package, instead of overwriting somebody's.
+r"""SUPERSEDED (2026-09-30) by h3_font_repack.py -- this never updated the block index,
+the fonts' block ranges or the block count at +0x414. Kept for the record; do not use.
+
+Add a NEW codepoint to a Halo 3 font package, instead of overwriting somebody's.
 
 This is the ceiling coming off the port pipeline. Until now a ported weapon took a
 shipped icon's codepoint, which is fine exactly once -- the second port fights the first

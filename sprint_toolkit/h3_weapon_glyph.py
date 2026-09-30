@@ -39,9 +39,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3_font_package as fp                                    # noqa: E402
 import h3_font_codec as fc                                      # noqa: E402
-import h3_font_add as fa                                        # noqa: E402
-import h3_font_grow as fg                                       # noqa: E402
-import h3_font_place as fpl                                     # noqa: E402
+import h3_font_repack as fr                                     # noqa: E402
 
 B = os.sep
 import h3_kit                                              # noqa: E402
@@ -385,28 +383,12 @@ def main():
                 shutil.copyfile(path, keep)
                 print('   kept the shipped %s in %s' % (name, BACKUP))
             if new_cp:
-                try:
-                    out = fa.add(d, a.glyph, font, pay, (W, H))
-                except SystemExit as e:
-                    # No room in the block this codepoint sorts into. GROW the
-                    # package rather than give up: the block count is stored
-                    # nowhere and ODST already ships a five-block package where
-                    # Halo 3 ships four, so the walk IS the format.
-                    if 'roomier' not in str(e):
-                        raise
-                    # Prefer an EXISTING block that comes after this font's last
-                    # run: it keeps the file the same size, and the engine is
-                    # already reading it. Growing is the last resort, because the
-                    # first in-game test of a grown package left the text intact
-                    # and the new glyph undrawn -- consistent with the engine
-                    # reading a fixed number of blocks.
-                    try:
-                        out = fpl.place(d, a.glyph, font, pay, (W, H))
-                        print('   no room where it sorts -- put it in a later '
-                              'block that has some')
-                    except SystemExit:
-                        print('   no room in any existing block -- appending one')
-                        out = fg.grow(d, a.glyph, font, pay, (W, H))
+                # REBUILT, not inserted: h3_font_repack sorts the glyph into the package's one
+                # key-ordered list, grows it by whole blocks when it must, and rewrites the
+                # block index, each font's block range and the block count (+0x414). Growth is
+                # CONFIRMED in game (Reach, 2026-09-30), so any free codepoint works and room is
+                # no longer the ceiling. The old add/place/grow never updated the index.
+                out = fr.add_glyph(d, a.glyph, font, pay, (W, H))
                 # VERIFIED BEFORE IT IS WRITTEN. This used to write first and check
                 # after, so a failed check left the damage on disk and only told you
                 # to restore it -- and it checked fp.bounds, which is False on
