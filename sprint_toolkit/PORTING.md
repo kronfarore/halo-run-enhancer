@@ -1864,3 +1864,57 @@ Three ways forward, recorded so the choice is not re-derived:
 * a hybrid inside the tag: keep the donor's Bungie-built render model and swap only its
   geometry for ours -- small if the cache builder rebuilds from the per-mesh raw blocks,
   and unproven that it does.
+
+---
+
+## REACH STEP 1, THE PROPER WAY: Foundry and the sidecar importer
+
+The JMS path was ruled out by a control: the Assault Rifle's own geometry, pushed through
+`tool render` from a JMS, draws nothing in the world either. Bungie's assets came through
+FBX -> Granny `.gr2` -> sidecar -> `tool import`, and `tool` cannot make a `.gr2` itself --
+with the sample's removed it finds no geometry at all. Foundry is the community exporter
+that writes one.
+
+### The install, on F:, with nothing on C:
+
+    F:\Tools\blender-5.2.2-windows-x64\            portable Blender 5.2.2 LTS, 913 MB
+        portable\                                settings live HERE, not in %APPDATA%
+        portable\extensions\user_default\io_scene_foundry    Foundry 1.9.19
+    F:\Tools\downloads\                           the two zips, both SHA-256 verified
+
+Foundry needs Blender 5.2 or newer. It found HREK by itself. **Its `allow_tool_patches`
+ships ON, which lets it modify HREK's tool.exe; it is switched OFF here**, and the export
+refuses to run if it finds it back on.
+
+### The pipeline
+
+    blender --background --python reach_foundry_saw.py -- --build --export
+
+Foundry imports the Assault Rifle's own MODEL TAG natively, which gives a scaffold it
+built itself: the armature with the five b_ bones in the donor's order, a mesh object
+carrying the region/permutation properties, all 20 markers, the scene set up as a model
+asset. The script keeps all of that and swaps ONLY the mesh data for the SAW's, read from
+the JMS `saw_to_jms_h3.py` already builds, then moves the four markers the SAW carries
+elsewhere. The scale is Blender metres, 3.048 x world units, so a JMS coordinate goes in
+x 0.03048.
+
+(Foundry's own JMS import hands off to a second community add-on that is not installed.
+Going through the donor's TAG avoids it, and gives a scaffold Foundry set up itself.)
+
+The result: nodes `b_gun, b_switch, b_safety, b_magazine, b_ophandle` NATIVELY, in the
+donor's order -- no strip, no sort, no rename trick -- region `default`, 16 marker groups,
+and a single cosmetic `degenerate triangle` error from zero-area triangles already in the
+source mesh.
+
+### Foundry rewrites the MODEL tag -- and must not
+
+Its export regenerates `saw.model` from what the scene holds, so it DROPS the collision,
+physics and world-animation references the port borrows from the Assault Rifle and points
+the imposter at a SAW imposter that does not exist. A dropped weapon on that model has no
+physics body. It also writes an unreferenced `saw.scenery`. The script keeps `saw.model`
+aside and puts it back after every export, and removes the scenery. What we take from
+Foundry is the render model only.
+
+The `.blend`, sidecar and `.gr2` files live in the kit beside the port's data:
+`data\objects\weapons\rifle\saw\saw.blend`, `saw.sidecar.xml`, `export\models\*.gr2`.
+Pre-Foundry tags are backed up at `E:\HaloBackups\reach_saw_prefoundry_20260930_0721`.
