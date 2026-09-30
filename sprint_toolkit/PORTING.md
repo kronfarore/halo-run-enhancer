@@ -2016,8 +2016,8 @@ one leaves a graph of one.
 
 Three traps, all measured:
   * Foundry names the asset after the .blend's FOLDER: two species saved side by side in
-    `sawp` both came out as `sawpp`. Each species gets its own folder,
-    `sawp_saw_<sp>p_saw_<sp>`, and the weapon's jmad refs are repointed there.
+    `saw\fp` both came out as `saw\fp\fp`. Each species gets its own folder,
+    `saw\fp_saw_<sp>\fp_saw_<sp>`, and the weapon's jmad refs are repointed there.
   * Exported into NOTHING, the graph comes out with 0 sound references and its events in
     a separate frame_event_list. So the new path is SEEDED with the original graph first;
     the export then merges and keeps sounds/effects inline.
