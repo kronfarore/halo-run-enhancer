@@ -745,7 +745,13 @@ exist.
 
 ## Halo Reach
 
-**Scoped 2026-09-29, nothing built yet.** Reach was expected to be ODST-adjacent. It is
+**COMPLETE 2026-09-30 -- all nine steps built and confirmed in game** on m20: world model
+held, dropped and ally-held; first person; own HUD icon and 72-tick meter with the low-ammo
+flash at 18; pickup icon on the ground and on trade; reload and ready retimed with their
+events; muzzle flash on the barrel. The status table and what stays open are at the end of
+the Reach sections ("Reach port status").
+
+*Scoped 2026-09-29:* Reach was expected to be ODST-adjacent. It is
 not: it is the *Halo 2* shape of first person laid over a Halo 3 era toolchain, and the
 two halves of the port that usually cost the most -- the models and the icon -- move in
 opposite directions. Everything below is measured from HREK and the live game, not
@@ -1942,17 +1948,27 @@ What that retires, kept in the repo only as the record of how it was found:
 
 ### Reach port status
 
-    1 geometry        DONE   through Foundry; first person, dropped and ally-held
+**COMPLETE -- every step confirmed in game (2026-09-30).**
+
+    1 geometry        DONE   through Foundry; first person, dropped and ally-held.
+                             Markers: subtract the parent bone's length (see step 9 notes)
     2 textures        DONE
     3 own tags        DONE
     4 numbers         DONE
-    5 catalog         DONE
+    5 catalog         DONE   45 rows, 3 ammo choices, fp_animations saw\fp_saw_* with
+                             reload x1.0 (Reach AR = H4 AR = 68 frames, so built = balanced)
     6 ammo pickup     DONE
-    7 HUD             HALF   low-ammo 18 done; the chud still carries the AR's weapon
-                             icon and meter art
+    7 HUD             DONE   own icon (text widget -> saw string), own 72-tick meter, low 18
     8 icon + text     DONE   glyph 0xE052 inside the font's native range, 7 lines x 12
-    9 animations      HALF   both species graphs are the port's own; retiming blocked on
-                             decoding Reach's animation layout
+    9 animations      DONE   reach_foundry_fp_retime.py: reload 128, ready 24, events scaled
+
+**Still open for Reach, as scaling work rather than SAW work:**
+  * **Glyph capacity.** The HUD font has little free room inside its native range; ~45
+    weapons need a repack of the font package, not an append (h3_font_grow/place are the
+    fallbacks, glyph_capacity.py measures it).
+  * **The Foundry scripts are SAW-specific** (paths, moved markers, frame targets). They
+    are generalised with the NEXT port, which needs its own marker placement anyway.
+  * **Starting profiles** never gave a Reach weapon; a non-issue, weapons are SPAWNED now.
 
 ---
 
