@@ -148,7 +148,14 @@ def build():
     for obj in bpy.data.objects:
         base = obj.name.split('.')[0]
         if obj.type == 'EMPTY' and base in placed:
-            obj.location = [c * SCALE for c in placed[base]]
+            loc = [c * SCALE for c in placed[base]]
+            # A BONE-parented object is placed from the bone's TAIL, one bone length
+            # along the bone's own Y. Setting the JMS position straight into .location
+            # shifted every moved marker 0.1524 m (b_gun's length) = 0.05 tag units
+            # sideways -- the muzzle flash hung off the side of the barrel in game.
+            if obj.parent_type == 'BONE' and obj.parent_bone:
+                loc[1] -= obj.parent.data.bones[obj.parent_bone].length
+            obj.location = loc
             print('marker %-18s -> %s' % (obj.name, tuple(round(c, 4) for c in obj.location)))
 
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
