@@ -1918,3 +1918,38 @@ Foundry is the render model only.
 The `.blend`, sidecar and `.gr2` files live in the kit beside the port's data:
 `data\objects\weapons\rifle\saw\saw.blend`, `saw.sidecar.xml`, `export\models\*.gr2`.
 Pre-Foundry tags are backed up at `E:\HaloBackups\reach_saw_prefoundry_20260930_0721`.
+
+---
+
+## CONFIRMED IN GAME, 2026-09-30: the Foundry render model fixes the world model
+
+First person still works, and the SAW now draws when dropped AND in an ally's hands. So
+the JMS importer really was the cause, and **for Reach, `tool render` from a JMS is dead as
+a route for any weapon that can be dropped or carried** -- which is every weapon.
+
+What that retires, kept in the repo only as the record of how it was found:
+
+* `reach_node_names.py` and the `b_<key>_` sort key in `saw_to_jms_h3.py` -- workarounds
+  for the JMS importer stripping `b_` and sorting nodes. Foundry emits the donor's names in
+  the donor's order natively.
+* `MATERIAL_SECOND_LINE` -- the `<none>` flag fix. Real, but not the cause.
+* `reach_saw_bisect.py` and `reach_donor_mesh.py` -- the two controls. The bisect proved
+  the fault was inside the render model; the donor-mesh control proved it was the JMS
+  PIPELINE rather than our data. Both are reusable the next time a port model misbehaves.
+
+`saw_to_jms_h3.py` still matters: it is how the H4 geometry gets out of Halo 4, and
+`reach_foundry_saw.py` reads its JMS. Only the `tool render` step is replaced.
+
+### Reach port status
+
+    1 geometry        DONE   through Foundry; first person, dropped and ally-held
+    2 textures        DONE
+    3 own tags        DONE
+    4 numbers         DONE
+    5 catalog         DONE
+    6 ammo pickup     DONE
+    7 HUD             HALF   low-ammo 18 done; the chud still carries the AR's weapon
+                             icon and meter art
+    8 icon + text     DONE   glyph 0xE052 inside the font's native range, 7 lines x 12
+    9 animations      HALF   both species graphs are the port's own; retiming blocked on
+                             decoding Reach's animation layout
