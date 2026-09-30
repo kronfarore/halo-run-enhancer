@@ -1749,3 +1749,50 @@ material TYPE which can override one found in the shader name, and that the punc
 set in play is `%#?!@*$^-&=.;)><|~({}[`. Reading those out properly is the next move,
 and the alternative is to stop fighting the JMS path and use the sidecar importer the
 donor was built with.
+
+---
+
+## THE LEGACY-REGION LEAD IS A RED HERRING
+
+`no region/permutation found in material names` is what `tool` says about ANY JMS-built
+model, including Halo 3's SAW, whose world model works. So it is a property of the JMS
+path, not a fault -- and switching to the FBX/sidecar importer is therefore not
+guaranteed to fix anything. Correcting the earlier recommendation.
+
+Three material-name syntaxes were tried and all fail. `(default default) saw_body`, by
+analogy with the marker format tool documents, and `saw_body default` both stop the
+shader resolving; `default saw_body` and `default default saw_body` keep it resolving
+(tool takes the LAST token as the shader) but the legacy comment stays. Whatever a
+"multi-part material" is, it is not space- or paren-separated region and permutation.
+
+## EVERY FIELD OF THE RENDER MODEL MATCHES THE DONOR
+
+The bisect proved the fault is inside the port's render model. Every field that
+`export-tag-to-xml` can show has now been compared against the Assault Rifle's and
+agrees: regions and permutations and their names, every field of the permutation block,
+node names, node order, node list checksum, marker groups and marker count, mesh count,
+vertex type, rigid node index, index buffer type and index, vertex buffer index, PRT
+vertex type, lighting policy, runtime flags, compression bounds, and the presence and
+absence of every block in the tag. The counts that differ follow from having 2 materials
+where the donor has 10.
+
+So the difference is in the DATA, not the shape of the tag, and the XML cannot show it.
+
+### The experiment that splits THAT in half
+
+`tool export-render-model-mesh <render-model> <out>` writes the donor's own geometry as a
+binary DirectX `.x` (2 MB for the Assault Rifle, plus its textures as DDS). Converting
+that into a JMS and rendering it AS THE PORT'S MODEL separates the two remaining
+suspects in one build:
+
+    the donor's geometry, through our JMS pipeline, still does not draw in the world
+      -> the JMS PIPELINE is the fault, and the FBX/sidecar importer is the answer
+
+    it draws
+      -> the pipeline is fine and OUR H4 GEOMETRY DATA is the fault -- tangents, normals
+         or the skinning -- and the fix is in the converter, not the importer
+
+That is worth doing before writing an FBX exporter, because it says whether the FBX
+exporter is needed at all. The `.x` is binary (`xof 0303bin`), so it needs a reader; that
+is a contained job against a documented format, unlike authoring binary FBX plus Bungie's
+per-node property JSON, which is what the sidecar route actually requires.
