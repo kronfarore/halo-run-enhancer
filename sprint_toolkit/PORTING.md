@@ -1832,3 +1832,35 @@ point at .max/.gr2 files that do not ship, so the importer invents a skeleton fr
 mesh objects and writes no markers. Re-running it overwrote the kit's own
 `test_fbx_assault_rifle.render_model` with that degraded version; it is a test asset no
 map references, and HREK.7z holds the original.
+
+---
+
+## WHERE THE REACH WORLD MODEL STANDS
+
+The material-flag fix removed every error tool reports on a JMS-built model except a
+tangent warning the stock model shares -- and the dropped / ally-held SAW still draws
+nothing. That was the last difference the XML could show. The JMS path itself produces
+something the world path rejects, and nothing visible says what.
+
+### The sidecar route needs a Granny file, and the kit cannot make one
+
+Measured: with the sample's `.gr2` removed, `tool import` reports "asset does not contain
+any render geometry" and writes nothing. It does NOT convert FBX itself; the FBX is only
+the artist's source, and the `.gr2` came from Bungie's Max/Maya exporter plugin, which
+does not ship. `bin\tools\bonobo` is Foundation's plugin system, not an exporter.
+
+What DOES ship is `granny2_x64.dll` with its full writer API (GrannyBeginMesh,
+GrannyBeginSkeleton, GrannyBeginFileDataTreeWriting, ...), so a `.gr2` can in principle be
+authored through ctypes. The importer also reads Bungie's per-node extended properties
+(`bungie_face_region`, `bungie_object_type`, ...) -- the `.json` beside the sample mirrors
+them -- so the file has to carry those too.
+
+Three ways forward, recorded so the choice is not re-derived:
+
+* author the `.gr2` ourselves against the kit's Granny DLL -- fully in the toolkit,
+  largest and least certain;
+* use the community Blender exporter that already writes Reach sidecar `.gr2` through that
+  same DLL -- proven route, but an outside install and a manual export step;
+* a hybrid inside the tag: keep the donor's Bungie-built render model and swap only its
+  geometry for ours -- small if the cache builder rebuilds from the per-mesh raw blocks,
+  and unproven that it does.
