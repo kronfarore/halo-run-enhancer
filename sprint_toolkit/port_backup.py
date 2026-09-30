@@ -175,10 +175,13 @@ H4_TREES = [
 ]
 H4_FILES = [
     (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
+    (os.path.join(HERE, 'balance_Focus_Rifle_HaloReach_to_Halo4.json'),
+     'catalog/balance_Focus_Rifle_HaloReach_to_Halo4.json'),
     (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md'),
 ]
 H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
-              'port_backup.py', 'PORTING.md')
+              'h4_make_port_weapon.py', 'h4_tag_numbers.py', 'balance_port.py',
+              'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,

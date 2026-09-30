@@ -2133,13 +2133,29 @@ lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`,
                              diffuse + normal + a control map built from Reach's diffuse
                              alpha; the glowing surfaces borrow the Beam Rifle's scope
                              material as a first pass. All 8 resolve in the render model.
-    3 own tags        next   weapon from storm_sentinel_beam, models pointed at the port
-    4 numbers         -      Reach Focus Rifle -> Halo 4 balance legs
-    5 catalog         -
-    6 ammo pickup     -      energy weapon: likely none
-    7 HUD             -      cusc screen + scope from the Beam Rifle
-    8 icon + text     -      H4 font packages are NOT 0xC000-blocked: a reader is needed
-    9 animations      -      fp_beam_rifle
+    3 own tags        DONE   h4_make_port_weapon.py: the BEAM RIFLE's weapon tag (the
+                             Sentinel Beam's has no model ref, a pistol fp graph, no HUD),
+                             model + fp model -> the port, the port's OWN copy of the
+                             Sentinel "friendly" beam projectile + damage effect; the
+                             model's dangling imposter ref cleared (empty tgrf)
+    4 numbers         DONE   balance_port.py via the PLASMA PISTOL (heat + battery age in
+                             both games); h4_tag_numbers.py bakes the Focus Rifle's own
+                             numbers into the tags BY NAME through ManagedBlam, read back.
+                             The copied friendly beam dealt ZERO damage: now 3.
+    5 catalog         DONE   make_port_catalog_h4.py: 36 rows; zoom kept as the port's own
+                             (the donor has none); Beam Damage MEASURED x0.875 (PP bolt 16
+                             -> 14); Shots Per Fire dropped (Reach 0 = H4 minimum 1)
+    6 ammo pickup     n/a    energy weapon
+    7 HUD             BORROWED  the Beam Rifle's cusc screen + scope, as referenced
+    8 icon + text     -      pickup message is still the Beam Rifle's (be_pickup); H4 font
+                             packages are NOT 0xC000-blocked: a reader is needed
+    9 animations      BORROWED  fp_beam_rifle, shared -- so no retime (it would retime
+                             the Beam Rifle)
+
+**First test: m30_cryptum** (user's choice). Add the Focus Rifle to m30's `dz_enhancer`,
+tick that zone in the zone sets where it is tested (m30 has it in only 4 of 24), place it,
+rebuild, install -- and copy the build to `E:\HaloBaselines\halo4\maps` or the next
+enhancer patch rebuilds from the old one.
 
 ### Foundry across kits: the traps
 
