@@ -2026,4 +2026,4 @@ Three traps, all measured:
     them through Foundry's ManagedBlam AnimationTag, computed from the ORIGINAL graph so
     reruns cannot compound. Result, both species: reload_full 34/52/fx40 -> 74/113/87,
     reload_empty 34/62/fx30,48 -> 64/117/56,90. Sound events sit at 0 and stay there.
-The originals stay in `sawp\` (plus `.before_retime` copies of them and of saw.weapon).
+The originals stay in `saw\fp\` (plus `.before_retime` copies of them and of saw.weapon).
