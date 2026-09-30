@@ -1586,7 +1586,7 @@ What it re-explains:
 **Growth test, Reach, written to the live packages:** fonts 0-2 spread over the SHIPPED
 block count, so the ENTIRE HUD font (every weapon icon, the SAW's included) sits in
 blocks the package never had -- x1 4->7, x2 11->21, x3 22->41, every record identical.
-Icons normal = the engine reads grown packages. Every weapon icon broken = it caps at the
+FIRST BOOT: every weapon icon broke -- the test had left each font's OWN block range alone: the third u32 of a font's header triple is (blocks spanned << 16) | first block (all fonts, all nine packages). assemble() now rewrites it; test rewritten. Icons normal = the engine reads grown packages. Every weapon icon broken = it caps at the
 shipped count. Undo: `h3_font_repack.py --undo-growth-test haloreach`.
 
 ## THE CODEPOINT MUST BE INSIDE THE FONT'S NATIVE RANGE

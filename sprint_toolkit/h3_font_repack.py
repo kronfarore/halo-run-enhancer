@@ -162,6 +162,16 @@ def assemble(header, blocks):
     for k, b in enumerate(blocks):
         struct.pack_into('<II', head, at + 8 * k,
                          key(b[0][0], b[0][1]), key(b[-1][0], b[-1][1]))
+    # THE FONT'S OWN BLOCK RANGE. The third u32 of each font's header triple is
+    # (blocks it spans << 16) | first block -- matched on every font of all nine shipped
+    # packages. The first growth test left it alone and EVERY weapon icon broke at once:
+    # the engine searched the HUD font's old blocks.
+    nf = struct.unpack_from('<I', head, 4)[0]
+    for f in range(nf):
+        where = [k for k, b in enumerate(blocks) if any(e[1] == f for e in b)]
+        if where:
+            struct.pack_into('<I', head, 8 + f * 12 + 8,
+                             (where[-1] - where[0] + 1) << 16 | where[0])
     return bytes(head) + b''.join(build_block(b) for b in blocks)
 
 
