@@ -1796,3 +1796,39 @@ That is worth doing before writing an FBX exporter, because it says whether the 
 exporter is needed at all. The `.x` is binary (`xof 0303bin`), so it needs a reader; that
 is a contained job against a documented format, unlike authoring binary FBX plus Bungie's
 per-node property JSON, which is what the sidecar route actually requires.
+
+---
+
+## THE CONTROL FAILED, AND THAT FOUND IT: `<none>` IS TWO MATERIAL FLAGS IN REACH
+
+The donor's OWN geometry, exported with `tool export-render-model-mesh` and wrapped on the
+port's skeleton by `reach_donor_mesh.py`, drew nothing in the world either. So the fault
+was never our H4 data: it was in how a JMS becomes a render model.
+
+Comparing three render models side by side -- stock, a sidecar import of the kit's FBX
+sample, and the JMS control -- one error appeared on BOTH JMS-built models and on
+NEITHER of the others: `*unexpected material flags`, with tool's own explanation
+`material 'none' is not a portal, but has flags that only make sense on portals`.
+
+A JMS material is two lines. The shared converter writes the Halo 1/2 convention: the
+shader name, then `<none>` for "no texture path". **Reach reads the second line as the MAX
+material name**, and `<` and `>` are both in its flag character set
+(`%#?!@*$^-&=.;)><|~({}[`, sitting next to portal, weatherpoly, seamsealer, soft_kill,
+slip_surface). So every material came out named `none` and carrying two spurious
+STRUCTURE flags.
+
+`saw_to_jms_h3.py` now writes the shader name on both lines for Reach
+(`MATERIAL_SECOND_LINE`), which is tool's benign legacy mode. Halo 1 keeps `<none>` --
+correct there -- and Halo 3 and ODST are unchanged. The port's render model now carries
+one error, a tangent warning of the same class as the stock model's; the flag errors AND
+the legacy-region comment are gone.
+
+### The sidecar route, measured on the way
+
+`tool import <sidecar>` works in this kit: the shipped FBX sample imported in 15 s and
+built a render model. It reads the GRANNY intermediate (.gr2), not the FBX directly. It is
+not usable as a control as shipped, because its skeleton and markers content objects
+point at .max/.gr2 files that do not ship, so the importer invents a skeleton from the
+mesh objects and writes no markers. Re-running it overwrote the kit's own
+`test_fbx_assault_rifle.render_model` with that degraded version; it is a test asset no
+map references, and HREK.7z holds the original.

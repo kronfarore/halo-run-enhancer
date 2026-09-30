@@ -72,6 +72,19 @@ NODE_PREFIX = h3_kit.per_kit(h3='', odst='', reach='b_',
 #: renames it to `b_gun`. Every rename is one character for one character, so it is an
 #: in-place byte swap with no chunk length to correct.
 ORDER_KEYS = 'abcdefghijklmnopqrstuvwxyz'
+
+#: THE SECOND MATERIAL LINE. A JMS material is two lines, and the shared converter writes
+#: the Halo 1/2 convention: the shader name, then `<none>` for "no texture path". Reach
+#: reads that second line as the MAX MATERIAL NAME, and `<` and `>` are both in its
+#: material-flag character set (%#?!@*$^-&=.;)><|~({}[ -- next to portal, weatherpoly,
+#: seamsealer, soft_kill, slip_surface). So every material came out as one called `none`
+#: carrying two spurious STRUCTURE flags: tool says "material 'none' is not a portal, but
+#: has flags that only make sense on portals" and files it as *unexpected material flags.
+#: The stock model and a sidecar-imported one carry neither. Writing the shader name
+#: again puts tool in its benign legacy mode ("identical material/shader names"), which
+#: is where every JMS-built model already lives.
+MATERIAL_SECOND_LINE = h3_kit.per_kit(h3=None, odst=None, reach='shader name',
+                                      what="what a JMS material's second line holds")
 UNITS = 100.0            # JMS units per world unit
 
 
@@ -252,6 +265,9 @@ def main():
                          % (GUN, sorted(by_name)))
     node_map = {0: gi, 1: mi if mi is not None else gi}
     jm = h1.convert(rm, tmpl, node_map)
+    if MATERIAL_SECOND_LINE == 'shader name':
+        for mat in jm.materials:
+            mat.tiff_path = mat.name
     os.makedirs(out_dir, exist_ok=True)
     out = os.path.join(out_dir, REGION + '.jms')
     write_jms(out, jm)
