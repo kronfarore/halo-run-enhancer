@@ -1985,3 +1985,30 @@ format and mip chain are the shipped ones, and redraws its pixels in place: 72 t
 scaled to the smaller cell. It points ONLY the SAW's meter widget at it and sets its
 texture coordinates to 0,0,0,0 like the Spike Rifle's. The shared sheet and every other
 chud are untouched.
+
+---
+
+## REACH STEP 9: the animations are COMPRESSED, and Foundry decodes them
+
+Why `h3_anim_decode` over-read: Halo 3 stores first-person frames RAW in the uncompressed
+block (16-byte quaternions), which is what made retiming arithmetic. Reach does not.
+Across all 23 members of the SAW's graph `default_data` is 0, the bulk is in the
+COMPRESSED block, and the uncompressed block is a flat 12 bytes per frame (108/9, 60/5,
+1200/100) -- probably root motion. So every Halo 3 invariant fails and the decoder was
+reading the wrong block. Retiming needs Reach's codec decoded.
+
+**Foundry already decodes it**, through the kit's own ManagedBlam. Importing the Spartan
+first-person arms (`objects\characters\spartans\fp\fp.render_model`) and then the graph
+onto that armature (`reach_foundry_fp_probe.py`) loads 25 actions -- reload_full 0..60,
+reload_empty 0..69, ready 0..21, put_away 0..6. So step 9 is a keyframe-scaling job in
+Blender plus a sidecar export, like step 1, and needs no codec work.
+
+What does NOT work, and why: importing the graph with no armature in the scene imports
+nothing ("No armature found"); importing the WEAPON tag crashes in Foundry's material
+node layout (`arrange`), which appears to need a live UI.
+
+**Open for the next session:** the arms armature has 47 bones and the graph animates 52
+nodes. The missing five are almost certainly the weapon's own b_ nodes, and a retimed
+graph must be exported against the full skeleton -- so the first job is merging the
+SAW's bones onto the arms rig, then scaling reload 59 -> 128 and ready -> 24 frames (the
+Halo 4 SAW's counts), then exporting both species graphs.
