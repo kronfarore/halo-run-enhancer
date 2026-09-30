@@ -159,6 +159,13 @@ def assemble(header, blocks):
         raise SystemExit('%d blocks need %d index bytes, the header has %d'
                          % (len(blocks), 8 * len(blocks), room))
     head[at:] = bytes(room)
+    # THE BLOCK COUNT. Header +0x410 is the index's offset and +0x414 the number of
+    # blocks -- read by the engine's glyph lookup (haloreach.dll 0xcca68), which binary-
+    # searches exactly that many index entries. The second growth test left the count
+    # at the shipped value and every icon past it was simply GONE.
+    if struct.unpack_from('<I', head, 0x410)[0] != at:
+        raise SystemExit('header +0x410 is not the index offset; unknown layout')
+    struct.pack_into('<I', head, 0x414, len(blocks))
     for k, b in enumerate(blocks):
         struct.pack_into('<II', head, at + 8 * k,
                          key(b[0][0], b[0][1]), key(b[-1][0], b[-1][1]))
