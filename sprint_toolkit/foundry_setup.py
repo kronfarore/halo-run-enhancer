@@ -4,6 +4,7 @@ Run inside the portable Blender on F: (Foundry 1.9.19 needs Blender 5.2+):
 
     blender --background --python foundry_setup.py            # report
     blender --background --python foundry_setup.py -- --fix   # switch tool patches OFF
+    blender --background --python foundry_setup.py -- --add F:\SteamLibrary\steamapps\common\H4EK
 
 What must hold:
   * a Foundry PROJECT pointing at HREK (F:\SteamLibrary\steamapps\common\HREK), current;
@@ -21,6 +22,23 @@ KEY = 'bl_ext.user_default.io_scene_foundry'
 EK = r'F:\SteamLibrary\steamapps\common\HREK'
 
 p = bpy.context.preferences.addons[KEY].preferences
+
+# ADD A KIT. Foundry's own operator ends in a UI redraw that has no area in background
+# mode, so its two list helpers are called directly. One kit per Blender PROCESS: Foundry
+# loads that kit's ManagedBlam and needs a restart to switch -- which is why a
+# cross-game port runs one process per kit (import in one, export in the other).
+if '--add' in sys.argv:
+    import importlib
+    prefs_mod = importlib.import_module(KEY + '.utils')
+    new = sys.argv[sys.argv.index('--add') + 1].rstrip('\/')
+    have = prefs_mod.read_projects_list() or []
+    if new.lower() not in [h.lower() for h in have]:
+        prefs_mod.write_projects_list(have + [new])
+        prefs_mod.setup_projects_list()
+        bpy.ops.wm.save_userpref()
+        print('added project', new)
+    else:
+        print('project already listed', new)
 found = False
 for i, pr in enumerate(p.projects):
     fields = {a: getattr(pr, a) for a in dir(pr)

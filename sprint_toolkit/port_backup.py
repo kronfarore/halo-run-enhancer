@@ -8,7 +8,7 @@ means rebuilding it from scratch:
   * the built cache file, which is the only artifact co-op partners can be given, and
   * the build scripts and the catalog the patcher reads.
 
-    python port_backup.py --game h2|reach [--label saw-h2] [--no-maps]
+    python port_backup.py --game h2|reach|h4 [--label saw-h2] [--no-maps]
 
 `--game` picks which port is backed up; `--no-maps` skips the cache files, which are
 the slow part and are only worth keeping when a built map exists.
@@ -163,6 +163,23 @@ REACH_SCRIPTS = ('h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
                  'reach_foundry_fp_retime.py', 'reach_node_names.py', 'reach_donor_mesh.py',
                  'reach_saw_bisect.py', 'port_backup.py', 'PORTING.md')
 
+# Halo 4 as the TARGET (the H4 port kit, first weapon Reach's Focus Rifle): the port's
+# tags and its Foundry source live under H4EK; the source textures Foundry extracted sit
+# in HREK's data folder.
+H4EK = os.path.join(F, 'SteamLibrary', 'steamapps', 'common', 'H4EK')
+FOCUS = os.path.join('objects', 'weapons', 'rifle', 'focus_rifle')
+H4_TREES = [
+    (os.path.join(H4EK, 'tags', FOCUS), 'tags/objects/weapons/rifle/focus_rifle', True),
+    (os.path.join(H4EK, 'data', FOCUS), 'data/objects/weapons/rifle/focus_rifle', True),
+    (os.path.join(HREK, 'data', FOCUS), 'source/hrek_data_focus_rifle', True),
+]
+H4_FILES = [
+    (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
+    (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md'),
+]
+H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
+              'port_backup.py', 'PORTING.md')
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},
@@ -170,6 +187,8 @@ PROFILES = {
            'scripts': H2_SCRIPTS, 'label': 'saw-h2'},
     'reach': {'trees': REACH_TREES, 'shared': REACH_SHARED, 'files': REACH_FILES,
               'maps': REACH_MAPS, 'scripts': REACH_SCRIPTS, 'label': 'saw-reach'},
+    'h4': {'trees': H4_TREES, 'shared': [], 'files': H4_FILES, 'maps': [],
+           'scripts': H4_SCRIPTS, 'label': 'focus-rifle-h4'},
 }
 
 

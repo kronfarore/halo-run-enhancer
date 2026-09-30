@@ -2090,3 +2090,64 @@ Three traps, all measured:
     reruns cannot compound. Result, both species: reload_full 34/52/fx40 -> 74/113/87,
     reload_empty 34/62/fx30,48 -> 64/117/56,90. Sound events sit at 0 and stay there.
 The originals stay in `saw\fp\` (plus `.before_retime` copies of them and of saw.weapon).
+
+---
+
+## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
+
+Every earlier port carried the Halo 4 SAW OUT of Halo 4. This kit ports INTO it. First
+weapon: **Reach's Focus Rifle**, chosen as an easy one. The master list of what each game
+lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`, Sheet2).
+
+### What H4EK is, measured
+
+* **Import is sidecar/Granny only**: `tool import <sidecar>` -- no JMS verb at all. So the
+  Foundry route the Reach SAW proved is not a workaround here, it is THE route.
+* **No legacy shaders**: H4EK has no .shader tags and no shader.render_method_definition.
+  Surfaces are `.material` tags on material shaders (`shaders\material_shaders\...`).
+* **Leftovers are not a weapon**: H4EK carries `rifle\focus_rifle` -- but only feedback and
+  impact effects, no weapon, model or graph. The same goes for other Reach-era folders
+  (needle_rifle, plasma_repeater, plasma_rifle, spike_rifle). Check before assuming.
+* **Weapons have no chud** (see halo4 scoping): the HUD is a `cusc` screen referenced from
+  weap 0x4E0. First-person graphs live at
+  `objects\characters\storm_fp\weapons\<cat>\fp_<name>\storm_fp_<name>`.
+* **Residency is designer zones**: a port must be in the map's `dz_enhancer`, ticked in
+  every zone set (Foundation), and an EK rebuild must be copied into
+  `E:\HaloBaselines\halo4\maps` or the next enhancer patch discards it.
+
+### The donors (first pass)
+
+    geometry            the Focus Rifle's own, from HREK, through Foundry
+    materials           the Beam Rifle's (Covenant, same family), bitmaps repointed
+    behaviour + fx      storm_sentinel_beam -- a continuous plasma beam with heat, like the
+                        Focus Rifle; H4EK ships its weapon, projectiles and fx, and only its
+                        MODELS are null (why it can never be a pickup today)
+    fp animation, HUD   the Beam Rifle (fp_beam_rifle, its cusc screen and scope). Reach's
+                        own fp graph is built on Reach's arm skeleton and does not carry over
+
+### Status
+
+    1 geometry        DONE   h4_foundry_port.py --import (HREK) / --export (H4EK): render,
+                             collision, physics, model; 14 nodes; 0 errors
+    2 materials       DONE   h4_port_materials.py: metal/shell/rubber on the port's own
+                             diffuse + normal + a control map built from Reach's diffuse
+                             alpha; the glowing surfaces borrow the Beam Rifle's scope
+                             material as a first pass. All 8 resolve in the render model.
+    3 own tags        next   weapon from storm_sentinel_beam, models pointed at the port
+    4 numbers         -      Reach Focus Rifle -> Halo 4 balance legs
+    5 catalog         -
+    6 ammo pickup     -      energy weapon: likely none
+    7 HUD             -      cusc screen + scope from the Beam Rifle
+    8 icon + text     -      H4 font packages are NOT 0xC000-blocked: a reader is needed
+    9 animations      -      fp_beam_rifle
+
+### Foundry across kits: the traps
+
+* **One kit per Blender PROCESS.** Foundry binds one kit's ManagedBlam and needs a restart
+  to switch, so import runs in the source kit and export in H4EK -- two processes.
+  `foundry_setup.py -- --add <kit>` registers a kit (Foundry's own operator needs a UI).
+* **Background mode divides by zero** laying out material node trees (UI scale 0). The
+  scripts replace `arrange` with a no-op at runtime; Foundry's files are untouched.
+* **`nwo.shader_to_material` cannot help**: it copies the Reach shaders into
+  `tags\_temp` and fails to load the first one (H4EK cannot read them). The copies must be
+  deleted afterwards -- they were.
