@@ -34,6 +34,7 @@ MAP = (r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
        r'\halo4\maps\m30_cryptum.map')
 PORT = r'objects\weapons\rifle\focus_rifle\focus_rifle'
 BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
+FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
 
 FLAGS, RADIUS, OFFSET = 0x1C, 0x20, 0x24
 CLASS, NAME, FP, READY = 0x4B4, 0x4B8, 0x4D4, 0x5EC
@@ -67,6 +68,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--fp-tracer', action='store_true',
+                    help='the original beam tracer: set "draw in first person pass"')
     ap.add_argument('--weapon-origin', action='store_true',
                     help='barrel flag: projectiles come out of the gun, not the camera')
     ap.add_argument('--beam-test', action='store_true',
@@ -86,7 +89,7 @@ def main():
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
-            a.weapon_origin):
+            a.weapon_origin or a.fp_tracer):
         return
 
     d = m.data
@@ -114,6 +117,19 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.fp_tracer:
+        # The Sentinel's (= the Focus Rifle's converted) first-person beam tracer carries
+        # only "point-to-point" (flags u32 at +0x0, bit 0; measured: 1 on both Sentinel
+        # tracers, 0 on the Beam Rifle's streak). Bit 1 is "draw in first person pass
+        # (dangerous)" -- without it a tracer is not drawn in first person at all, which
+        # is why the original beam never showed for the player (boots 2-8).
+        tr = m.find_tags('trac', FP_TRACER)
+        if not tr:
+            raise SystemExit('no %s in this map' % FP_TRACER)
+        tb = tr[0][1]
+        was = struct.unpack_from('<I', d, tb)[0]
+        struct.pack_into('<I', d, tb, was | 0x2)
+        print('fp tracer flags %#x -> %#x' % (was, was | 0x2))
     if a.weapon_origin:
         # Barrel flags (+0x0) bit 2 "Projectiles Use Weapon Origin": "instead of coming
         # out of the magic first person camera origin, the projectiles for this weapon

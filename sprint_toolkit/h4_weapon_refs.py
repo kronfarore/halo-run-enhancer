@@ -69,10 +69,14 @@ def resolve_any(tag, path):
     fields = tag.Fields
     parts = path.lower().split('/')
     for part in parts[:-1]:
-        f = find(fields, part)
-        if f is None or str(f.FieldType) != 'Struct':
-            raise SystemExit('no struct %r' % part)
-        fields = f.Elements[0].Fields
+        m = re.match(r'(.+)\[(\d+)\]$', part)
+        f = find(fields, m.group(1) if m else part)
+        if f is None or str(f.FieldType) not in ('Struct', 'Block'):
+            raise SystemExit('no struct or block %r' % part)
+        i = int(m.group(2)) if m else 0
+        if f.Elements.Count <= i:
+            raise SystemExit('no element %r' % part)
+        fields = f.Elements[i].Fields
     f = find(fields, parts[-1])
     if f is None:
         raise SystemExit('no field %r' % path)
@@ -152,6 +156,15 @@ def main(argv):
                 good = same_value(now_s, value)
                 ok &= bool(good)
                 print('   %-4s %-44s %s -> %s' % ('ok' if good else 'BAD', field, was_s, now_s))
+                continue
+            if field.startswith('set-flag:'):
+                f = resolve_any(t.tag, field[len('set-flag:'):])
+                was = f.TestBit(value)
+                f.SetBit(value, True)
+                good = f.TestBit(value)
+                ok &= good
+                print('   %-4s %-44s %s: %s -> %s' % ('ok' if good else 'BAD', field, value,
+                                                    was, f.TestBit(value)))
                 continue
             if field.startswith('clear-flag:'):
                 # 'clear-flag:<flags field path>' <flag name>: clear one bit by name
