@@ -116,6 +116,23 @@ def main(argv):
             raise SystemExit('ManagedBlam is bound to %r, not H4EK' % kit)
         ok = True
         for field, value in pairs:
+            if field == 'add-attachment':
+                # an object ATTACHMENT (block `attachments`, element field `type`) -- how
+                # a Halo 4 projectile carries its visible beam (the Beam Rifle's
+                # projectile: one attachment, its fx\projectile effect)
+                att = resolve_any(t.tag, 'attachments')
+                have = [t.get_path_str(att.Elements[i].SelectField('type').Path).lower()
+                        for i in range(att.Elements.Count)]
+                if value.lower() in have:
+                    print('   ok   add-attachment %s (already there)' % value)
+                    continue
+                e = att.AddElement()
+                e.SelectField('type').Path = t._TagPath_from_string(value)
+                got = t.get_path_str(e.SelectField('type').Path)
+                good = got.lower() == value.lower()
+                ok &= good
+                print('   %-4s add-attachment %s' % ('ok' if good else 'BAD', got))
+                continue
             if field.startswith('set:'):
                 # 'set:<field path>' <value>: a plain field -- number, string id or enum
                 f = resolve_any(t.tag, field[len('set:'):])

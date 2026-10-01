@@ -2219,6 +2219,16 @@ Ruled out at the desk, no boot: render-model geometry flags (the build sets 39 o
     Repointed to the friendly firing effect (1p + 3p tracers).
 Both need the eighth boot after a real rebuild.
 
+**Boot 8 (rebuild): the FIRST-PERSON MODEL DRAWS** -- the skeleton was it. The beam still
+did not. **Boot 9, poked (--beam-test): the port firing the Beam Rifle's projectile DREW
+a beam.** So the weapon and model can show one, and the Sentinel's first-person tracer is
+what never draws. Why: Halo 4 draws a player's beam from the PROJECTILE -- the Beam
+Rifle's firing effect is a sound and a light, and its projectile carries the beam as an
+object ATTACHMENT (fx\projectile). The Sentinel draws its beam as a 1p tracer in the
+firing effect, a path no player ever exercised. h4_make_port_weapon.py now gives the
+port's own projectile that attachment (h4_weapon_refs.py `add-attachment`). Recipe rule:
+**a donor's visuals must be the kind the PLAYER path draws.**
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

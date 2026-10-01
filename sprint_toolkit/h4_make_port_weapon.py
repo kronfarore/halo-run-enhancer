@@ -93,6 +93,18 @@ SET_REFS = [
 ]
 
 
+#: The VISIBLE BEAM. Halo 4 draws a player's beam from the PROJECTILE: the Beam Rifle's
+#: firing effect is only a sound and a light, and its projectile carries the beam as an
+#: object attachment (fx\projectile). The Sentinel's beam is a first-person TRACER in its
+#: firing effect instead -- a path no player ever exercised -- and it never drew: damage
+#: landed, nothing showed (boots 2-8). Boot 9, poked: the port firing the Beam Rifle's
+#: projectile DREW its beam. So the port's own projectile gets that attachment (the Beam
+#: Rifle's pink-purple plasma; a Focus Rifle look can replace it later).
+PROJ_REFS = [
+    ('add-attachment', BR + 'fx\\projectile.effect'),
+]
+
+
 def resolves(path):
     return bool(glob.glob(os.path.join(TAGS, glob.escape(path) + '.*')))
 
@@ -165,16 +177,23 @@ def main():
     print('wrote', out)
 
     # the NULL references, by field name, in an H4EK Blender process
+    by_name(PORT + '.weapon', SET_REFS)
+    by_name(OWN_PROJ + '.projectile', PROJ_REFS)
+
+
+def by_name(tag, pairs):
+    """Run h4_weapon_refs.py on one tag with (field, value) pairs; refuse on failure."""
     args = [BLENDER, '--background', '--python', os.path.join(HERE, 'h4_weapon_refs.py'),
-            '--', PORT + '.weapon']
-    for field, path in SET_REFS:
-        args += [field, path]
+            '--', tag]
+    for field, value in pairs:
+        args += [field, value]
     r = subprocess.run(args, capture_output=True, text=True, encoding='utf-8', errors='replace')
     lines = [l for l in r.stdout.splitlines() if l.startswith(('   ', 'REFS'))]
+    print('%s:' % tag.rsplit('\\', 1)[-1])
     print('\n'.join(lines) or r.stdout[-2000:])
     if not any(l.startswith('REFS OK') for l in lines):
         print(r.stdout[-1500:], r.stderr[-1500:])
-        raise SystemExit('setting the null references failed')
+        raise SystemExit('setting fields by name failed on %s' % tag)
 
 
 if __name__ == '__main__':
