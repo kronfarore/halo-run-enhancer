@@ -67,6 +67,10 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--unswap', action='store_true',
+                    help='point the fp model back at the own render model of the port')
+    ap.add_argument('--model-flags', action='store_true',
+                    help='render model 0x64 bit 5: do not use compressed vertex positions')
     a = ap.parse_args()
 
     m = halo_patch.open_map(a.map, 'Halo 4')
@@ -77,7 +81,7 @@ def main():
     pb, bb = port[0][1], beam[0][1]
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
-    if not (a.fix or a.swap_fp):
+    if not (a.fix or a.swap_fp or a.unswap or a.model_flags):
         return
 
     d = m.data
@@ -90,6 +94,20 @@ def main():
     if a.swap_fp:
         pf, bf = fp_element(m, pb), fp_element(m, bb)
         d[pf:pf + 0x10] = d[bf:bf + 0x10]                                   # fp model tagRef
+    if a.unswap:
+        own = next(t for t in m.tags if t['class'] == 'mode' and t['name'] == PORT)
+        pf = fp_element(m, pb)
+        struct.pack_into('<I', d, pf + 0xC, own['ident'])
+    if a.model_flags:
+        # The port's MESH stores raw positions (mesh flag 256 "doesn't use compressed
+        # position") while its geometry flags (0x64) say nothing about it -- 4, budgets
+        # only. The Beam Rifle's geometry carries 36 = budgets + bit 5 "Don't Use
+        # Compressed Vertex Positions". Swap test (boot 7): the Beam Rifle's model DRAWS
+        # in first person on the port's weapon, so the fault is in the port's model.
+        mb = m.find_tags('mode', PORT)[0][1]
+        was = struct.unpack_from('<I', d, mb + 0x64)[0]
+        struct.pack_into('<I', d, mb + 0x64, was | 0x20)
+        print('render model flags %d -> %d' % (was, was | 0x20))
     print('\nafter:')
     report(m, pb, 'focus rifle')
     m.save()
