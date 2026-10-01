@@ -575,7 +575,9 @@ class Halo3Map:
                 # Clamp in MEANING units, exactly as HaloMap does. These were added to
                 # Halo 1 and to the halo_patch call site but not here, so every Halo 3
                 # and ODST patch raised "unexpected keyword argument 'clamp_min'".
-                if clamp_min is not None:
+                # a multiplier never LIFTS a zero (see halo_map.apply_field)
+                if clamp_min is not None and not (op == 'mul' and clamp_min > 0
+                                                  and scale * old + offset == 0):
                     meaning = max(meaning, clamp_min)
                 if clamp_max is not None:
                     meaning = min(meaning, clamp_max)

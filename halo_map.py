@@ -465,7 +465,11 @@ class HaloMap:
                     # other way round. Clamping is silent by design: the point is a
                     # chance of 1.4 or -0.2 never reaching the map, and the summary
                     # already reports the value that was actually written.
-                    if clamp_min is not None:
+                    # ...except that a multiplier never LIFTS a zero: a weapon that
+                    # ships 0 Rounds Total Initial stays 0 under `min: 1`, which is
+                    # only there to stop a shrinking count reaching 0.
+                    if clamp_min is not None and not (op == 'mul' and clamp_min > 0
+                                                      and scale * old + offset == 0):
                         meaning = max(meaning, clamp_min)
                     if clamp_max is not None:
                         meaning = min(meaning, clamp_max)

@@ -328,7 +328,9 @@ class Halo2Map:
                 # bounds declared in halo.json applied to Halo 1 only, and passing them
                 # to this class raised "unexpected keyword argument 'clamp_min'" --
                 # which broke patching for Halo 2, Halo 3 and ODST outright.
-                if clamp_min is not None:
+                # a multiplier never LIFTS a zero (see halo_map.apply_field)
+                if clamp_min is not None and not (op == 'mul' and clamp_min > 0
+                                                  and scale * old + offset == 0):
                     meaning = max(meaning, clamp_min)
                 if clamp_max is not None:
                     meaning = min(meaning, clamp_max)

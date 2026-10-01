@@ -2441,6 +2441,10 @@ class ModifierDatabase:
             'harder_when': mod_data.get('harder_when'),  # 'increased'/'decreased' direction hint
             'easier_when': mod_data.get('easier_when'),  # ...and its opposite (all 4 uses are mod-level)
             'init_defaults': mod_data.get('init_defaults'),  # seed unset enemies (e.g. Elite grenades)
+            # inverted steps (MagnitudeEditorDialog._stacked_op): the card points its step
+            # the other way, and the multiplier an inverted step never stacks below
+            'invert_step': mod_data.get('invert_step'),
+            'inverse_floor': mod_data.get('inverse_floor'),
             # Enemy colour drift group (aggressive / defensive / utility), see enemy_colors.
             'color': mod_data.get('color'),
             # card-stacking: cards split from one family that must not BOTH be drafted
@@ -4603,11 +4607,6 @@ def is_operator_box(widget):
 # Map Presence, per pick: this share of the level's placements (0.1 = 10%).
 MAP_PRESENCE_STEP = '+0.1'
 
-# An inverted multiplier never stacks below this (user, 2026-10-01): *0.5 picked three
-# times would otherwise be *0 and empty whatever it scales.
-INVERTED_FLOOR = 0.1
-
-
 def scaled_step(text, pct=None):
     """A halo.json default step at the Options strength (step_strength, percent).
     *a -> *(1 + (a-1)k), +a/-a -> +/-(a k), a set is unchanged."""
@@ -4843,7 +4842,9 @@ class MagnitudeEditorDialog(QDialog):
         if self._step_inverted(eff):
             # A card's own `inverse_steps` ladder wins while the row shows its default
             # (Magazine: *0.75, *0.5, *0.25, then *0.1 at cap); otherwise the step is
-            # mirrored and stacked, never below INVERTED_FLOOR.
+            # mirrored and stacked. There is NO general floor (user, 2026-10-01): a
+            # card that needs one says so with `inverse_floor` (a multiplier, on the
+            # target or the card); counts that must not reach 0 carry `min: 1`.
             if t.get('inverse_steps') and (not txt or self._is_default_step(t, txt)):
                 return self._hp.stack_op('', eff.get('count') or 1,
                                          steps=t['inverse_steps'])
@@ -4851,9 +4852,10 @@ class MagnitudeEditorDialog(QDialog):
             steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
             op = self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
                                    steps=steps)
+            floor = t.get('inverse_floor', eff.get('inverse_floor'))
             parsed = self._hp.hm.parse_operator(op) if op else None
-            if parsed and parsed[0] == 'mul' and parsed[1] < INVERTED_FLOOR:
-                return '*%g' % INVERTED_FLOOR
+            if floor is not None and parsed and parsed[0] == 'mul' and parsed[1] < float(floor):
+                return '*%g' % float(floor)
             return op
         return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
                                  steps=steps)
@@ -14164,6 +14166,7 @@ class HaloGUI(QMainWindow):
                         'desc_overrides', 'debug_desc', 'skull',
                         'harder_when', 'easier_when',
                         'init_defaults', 'games', 'skip_games',
+                        'invert_step', 'inverse_floor',
                         'requires_config', 'requires_config_in', 'ignore',
                         'affected_by_skull', 'color'):
                 if key in fresh:
