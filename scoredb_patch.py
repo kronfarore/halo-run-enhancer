@@ -158,6 +158,9 @@ CATEGORIES = {
 }
 
 NAME_TO_CATEGORY = {n: c for c, names in CATEGORIES.items() for n in names}
+# General cards are named "General <card>" (2026-10-01); they score as the card they
+# were named after.
+NAME_TO_CATEGORY.update({'General ' + n: c for n, c in list(NAME_TO_CATEGORY.items())})
 
 
 def weight_of(effect_name, weights=None):

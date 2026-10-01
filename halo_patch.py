@@ -341,6 +341,87 @@ def keep_unreadable(path):
         return None
 
 
+# The whole-enemy-population cards were renamed "General <card>" (2026-10-01) so they
+# read apart from the per-enemy cards of the same name. Old name -> new, for saved runs
+# (halo_enhancer.effect_rename) and remembered magnitudes (load_presets). The two
+# "AI Base Accuracy ..." halves were MERGED into the Halo 2/3 cards of the same name.
+GENERAL_RENAMES = {
+    'AI Base I am not scared': 'General I am not scared',
+    'AI Base Target Tracking': 'General Tracking & Leading',
+    'AI Base Firing Range': 'General Firing Range',
+    'AI Base Grenade Chance': 'General Grenade Chance',
+    'AI Base Melee Timing': 'General Melee Timing',
+    'AI Base Melee Chance': 'General Melee Chance',
+    'Player Preference': 'General Player Preference',
+    'Fight Flank Chance': 'General Fight Flank Chance',
+    'Enemy damage': 'General Enemy damage',
+    'Enemy Vitality': 'General Enemy Vitality',
+    'Enemy Shield': 'General Enemy Shield',
+    'Enemy Recharge': 'General Enemy Recharge',
+    'Infection Forms': 'General Infection Forms',
+    'Rate of Fire': 'General Rate of Fire',
+    'Projectile Error': 'General Projectile Error',
+    'Burst Error': 'General Burst Error',
+    'New Target Delay': 'General New Target Delay',
+    'Burst Seperation': 'General Burst Seperation',
+    'Target Tracking': 'General Target Tracking',
+    'Target Leading': 'General Target Leading',
+    'Overcharge Chance': 'General Overcharge Chance',
+    'Special Fire Delay': 'General Special Fire Delay',
+    'Guidance Vs Player': 'General Guidance Vs Player',
+    'Melee Delay': 'General Melee Delay',
+    'Grenade Chance Scale': 'General Grenade Chance Scale',
+    'Grenade Timer Scale': 'General Grenade Timer Scale',
+    'Major Upgrades (Normal)': 'General Major Upgrades (Normal)',
+    'Major Upgrades (Few)': 'General Major Upgrades (Few)',
+    'Major Upgrades (Many)': 'General Major Upgrades (Many)',
+    'Player Vehicle Ram Chance': 'General Player Vehicle Ram Chance',
+    'Vision': 'General Vision',
+    'Peripheral Vision': 'General Peripheral Vision',
+    'Hearing Distance': 'General Hearing Distance',
+    'Perception': 'General Perception',
+    'Cower Time': 'General Cower Time',
+    'Retreat Chance': 'General Retreat Chance',
+    'Few Upgrade Chance': 'General Few Upgrade Chance',
+    'Normal Upgrade Chance': 'General Normal Upgrade Chance',
+    'Many Upgrade Chance': 'General Many Upgrade Chance',
+    'Grenade Velocity': 'General Grenade Velocity',
+    'Grenade Range': 'General Grenade Range',
+    'Grenade Collateral': 'General Grenade Collateral',
+    'Firing Patterns': 'General Firing Patterns',
+    'Accuracy Bounds': 'General Accuracy Bounds',
+    'Accuracy Time': 'General Accuracy Time',
+    'Maximum Firing Distance': 'General Maximum Firing Distance',
+    'AI Projectile Speed': 'General AI Projectile Speed',
+    'Surprise Behavior': 'General Surprise Behavior',
+    'Wildfire': 'General Wildfire',
+    'Hide Behind Cover': 'General Hide Behind Cover',
+    'Cover Threshold': 'General Cover Threshold',
+    'Melee Reach': 'General Melee Reach',
+    'Weapon Damage Modifier': 'General Weapon Damage Modifier',
+    'Bursting': 'General Bursting',
+    'AI Base Accuracy Bounds': 'General Accuracy Bounds',
+    'AI Base Accuracy Time': 'General Accuracy Time',
+    # split family of the merged AI Base accuracy pair
+    'AI Base Accuracy': 'Accuracy',
+}
+# preset keys are tag||name||field||game; only these tags are a General card's
+GENERAL_TAGS = ('char ai\\generic', 'matg globals\\globals', 'proj *')
+
+
+def _migrate_general_keys(data):
+    # The old key is KEPT as well: a per-enemy card can share the tag (Halo 2's Brute
+    # Accuracy Bounds edits ai\generic too) and still goes by the old name.
+    out = dict(data)
+    for k, v in data.items():
+        parts = k.split('||')
+        if (len(parts) >= 3 and parts[1] in GENERAL_RENAMES
+                and parts[0].startswith(GENERAL_TAGS)):
+            parts[1] = GENERAL_RENAMES[parts[1]]
+            out.setdefault('||'.join(parts), v)
+    return out
+
+
 def load_presets(path):
     """The remembered magnitudes, {preset key: operator text}.
 
@@ -358,7 +439,7 @@ def load_presets(path):
             data = json.load(f)
         if not isinstance(data, dict):
             raise ValueError('the top level is a %s, not an object' % type(data).__name__)
-        return data
+        return _migrate_general_keys(data)
     except Exception as e:
         PRESETS_LOAD_ERROR = '%s: %s' % (type(e).__name__, e)
         keep_unreadable(path)

@@ -1840,7 +1840,7 @@ FLOOD_ENEMIES = frozenset({
 # General (not enemy-specific) cards that only mean anything where the Flood are fielded.
 # "Infection Forms" edits the matg difficulty dial for them; with no `enemy` key it
 # slipped past the rule below and was offered in ODST, Reach and Halo 4.
-FLOOD_GENERAL_CARDS = frozenset({'Infection Forms'})
+FLOOD_GENERAL_CARDS = frozenset({'General Infection Forms'})
 
 
 def _is_absent_flood_mod(mod, game):
@@ -1993,6 +1993,19 @@ EFFECT_RENAMES = {
     # the same setting, renamed after Halo 1 -- merged into one card (2026-09-27)
     'Encounter Grenade Timeout': 'Grenade Throw Delay',
 }
+
+
+def effect_rename(name, mod):
+    """The current name of a renamed card, or None. A General card (no weapon, enemy,
+    boss or equipment) is looked up in halo_patch.GENERAL_RENAMES FIRST: several old
+    General names ('Rate of Fire', 'Projectile Error', 'Target Tracking') are also old
+    WEAPON card names in EFFECT_RENAMES, and must not turn into those."""
+    import halo_patch
+    if not any(mod.get(k) for k in ('weapon', 'enemy', 'boss', 'equipment')):
+        new = halo_patch.GENERAL_RENAMES.get(name)
+        if new:
+            return new
+    return EFFECT_RENAMES.get(name)
 
 # The four difficulty flavors halo_patch.apply_difficulty understands. A plan op
 # must carry whichever one its target declares, or the field name is looked up
@@ -6104,7 +6117,7 @@ class MagnitudeEditorDialog(QDialog):
             if mod.get('weapon') != weapon or mod.get('enemy') != enemy:
                 return False
             n = mod.get('name')
-            return n == name or EFFECT_RENAMES.get(n) == name
+            return n == name or effect_rename(n, mod) == name
 
         if QMessageBox.question(
                 self, "Remove effect",
@@ -9625,16 +9638,13 @@ class OptionsDialog(QDialog):
         self.keep_title_hud_cb = QCheckBox("Keep the HUD up through chapter titles")
         self.keep_title_hud_cb.setChecked(bool(CONFIG.get('keep_title_hud')))
         self.keep_title_hud_cb.setToolTip(
-            "Chapter and cinematic titles fade the HUD out and draw black bars. This "
-            "removes the HIDING half of each pair and keeps every restore, so the "
-            "title still appears but the HUD stays up and the bars do not.\n\n"
-            "Per game:\n"
-            "  Halo 1, Halo 2, Halo 3, ODST, Reach -- an in-map script edit on patch, "
-            "no editing kit, reversible: turn it off and re-patch. It survives a Steam "
-            "map wipe, since the next patch puts it back. Halo 1 / Halo 2 maps rebuilt "
-            "with h1/h2_keep_hud.py already carry it and are left as they are.\n"
-            "  Halo 4 -- the same edit on patch, in its hsdt script tags: the global "
-            "script container (where f_hud_chapter fades the HUD) and the level's own.")
+            "When a chapter title appears mid-mission (for example \"The Silent "
+            "Cartographer\"), the game normally hides your HUD and adds black bars "
+            "at the top and bottom of the screen for a few seconds, even though you "
+            "are still playing.\n\n"
+            "With this on, the title still shows, but your HUD (health, ammo, "
+            "radar) stays visible and the black bars are skipped.\n\n"
+            "Works in every game. Turn it off and patch again to go back to normal.")
         allform.addRow("Chapter titles:", self.keep_title_hud_cb)
 
         self.clear_profile_equipment_cb = QCheckBox(
@@ -14013,7 +14023,7 @@ class HaloGUI(QMainWindow):
         fresh = find_by_name(name)
         renamed_to = None
         if not fresh:
-            renamed_to = EFFECT_RENAMES.get(name)
+            renamed_to = effect_rename(name, mod)
             if renamed_to:
                 fresh = find_by_name(renamed_to)
         if fresh:
@@ -14074,7 +14084,7 @@ class HaloGUI(QMainWindow):
         # written by sprint_toolkit/split_cards.py). Matching by name rather than by
         # fields: a run drafted weeks earlier holds OLDER fields than today's cards.
         old_name = mod.get('name')
-        names = {old_name, EFFECT_RENAMES.get(old_name)}
+        names = {old_name, effect_rename(old_name, mod)}
         parts = [c for c in pool if c.get('split_from') in names and c.get('split_from')]
         if not parts:
             return False
