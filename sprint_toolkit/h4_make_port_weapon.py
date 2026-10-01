@@ -68,6 +68,12 @@ SET_REFS = [
     # boot) counts 10 shots, which a 620-round battery cannot show. No scope overlay: zoom
     # itself is the weapon's, and the enhancer grafts the scope UI at patch time.
     ('hud screen reference', 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol.cui_screen'),
+    # NOT A REFERENCE: the Sentinel Beam is flagged "extension of parent" -- its gun was
+    # part of the Sentinel's body. Held by the player, the weapon then draws as part of
+    # the player, whose body first person never draws: invisible, shadow still cast, and
+    # the beam on its markers hidden too, while the damage landed (boots 2-4). The Beam
+    # Rifle does not carry it.
+    ('clear-flag:item/object/flags', 'extension of parent'),
 ]
 
 
@@ -109,6 +115,8 @@ def main():
         if n < 1:
             raise SystemExit('the donor has no %s reference to %s' % (group, old))
     for field, path in SET_REFS:
+        if field.startswith('clear-flag:'):
+            continue
         if not os.path.exists(os.path.join(TAGS, path)):
             raise SystemExit('%s -> %s does not exist' % (field, path))
 

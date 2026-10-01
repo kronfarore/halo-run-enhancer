@@ -49,6 +49,21 @@ def resolve(tag, path):
     return f
 
 
+def resolve_any(tag, path):
+    """Like resolve(), for a field of any type (a flags field here)."""
+    fields = tag.Fields
+    parts = path.lower().split('/')
+    for part in parts[:-1]:
+        f = find(fields, part)
+        if f is None or str(f.FieldType) != 'Struct':
+            raise SystemExit('no struct %r' % part)
+        fields = f.Elements[0].Fields
+    f = find(fields, parts[-1])
+    if f is None:
+        raise SystemExit('no field %r' % path)
+    return f
+
+
 def main(argv):
     rel, pairs = argv[0], list(zip(argv[1::2], argv[2::2]))
     mb = importlib.import_module(KEY + '.managed_blam')
@@ -86,6 +101,16 @@ def main(argv):
             raise SystemExit('ManagedBlam is bound to %r, not H4EK' % kit)
         ok = True
         for field, value in pairs:
+            if field.startswith('clear-flag:'):
+                # 'clear-flag:<flags field path>' <flag name>: clear one bit by name
+                f = resolve_any(t.tag, field[len('clear-flag:'):])
+                was = f.TestBit(value)
+                f.SetBit(value, False)
+                good = not f.TestBit(value)
+                ok &= good
+                print('   %-4s %-44s %s: %s -> %s' % ('ok' if good else 'BAD', field, value,
+                                                    was, f.TestBit(value)))
+                continue
             f = resolve(t.tag, field)
             before = t.get_path_str(f.Path)
             f.Path = t._TagPath_from_string(value)

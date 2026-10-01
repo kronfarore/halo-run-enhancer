@@ -2185,6 +2185,14 @@ one (`default` -> region `default` -> permutation `default`). The ground object 
 render model directly; the first-person weapon and the effects on its markers go through
 the variant. --export now adds it (add_default_variant, ManagedBlam).
 
+**Fourth boot:** still invisible, still no beam -- the variant was not it either (kept: it
+matches every Bungie weapon). Diffing the WEAPON tags flag by flag (ManagedBlam flags by
+name) against the Beam Rifle's: the Sentinel Beam carries object flag **"extension of
+parent"** -- its gun was part of the Sentinel's body. Held by the player, it draws as part
+of the player, whose body first person never draws: invisible, shadow cast, beam effects
+on its markers hidden, damage landing. h4_make_port_weapon.py clears it (h4_weapon_refs.py
+`clear-flag:`). Lesson for every donor that was an NPC's built-in gun: diff the FLAGS.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
