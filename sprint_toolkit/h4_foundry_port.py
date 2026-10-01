@@ -115,6 +115,47 @@ def add_default_variant():
         print('model: default variant added (region default, permutation default)')
 
 
+ROOT_BONE = 'b_gun'
+
+
+def collapse_to_root_bone():
+    """Leave the armature with ROOT_BONE only: every vertex on it, every marker re-parented
+    to it at its world position.
+
+    WHY. The port's first-person model is animated by a DONOR's fp graph (the Beam
+    Rifle's), and Halo 4 does not draw a first-person model whose nodes do not all map
+    into that graph. Measured: all 14 of the Beam Rifle's render-model nodes are in
+    fp_beam_rifle; of the Focus Rifle's 14 only b_gun is. The swap test (boot 7) drew the
+    Beam Rifle's model on the port's weapon tag -- so the tag was fine and the model was
+    not. Halo 4 has no animation for the Focus Rifle's own moving parts anyway.
+    """
+    arm = next((o for o in bpy.data.objects if o.type == 'ARMATURE'), None)
+    if arm is None or ROOT_BONE not in arm.data.bones:
+        raise SystemExit('no armature with %s' % ROOT_BONE)
+    extra = [b.name for b in arm.data.bones if b.name != ROOT_BONE]
+    if not extra:
+        print('armature already has only %s' % ROOT_BONE)
+        return
+    for ob in bpy.data.objects:
+        if ob.type == 'MESH' and ob.vertex_groups:
+            root = ob.vertex_groups.get(ROOT_BONE) or ob.vertex_groups.new(name=ROOT_BONE)
+            root.add(range(len(ob.data.vertices)), 1.0, 'REPLACE')
+            for g in [g for g in ob.vertex_groups if g.name != ROOT_BONE]:
+                ob.vertex_groups.remove(g)
+        if ob.parent == arm and ob.parent_type == 'BONE' and ob.parent_bone != ROOT_BONE:
+            world = ob.matrix_world.copy()
+            ob.parent_bone = ROOT_BONE
+            ob.matrix_world = world
+    bpy.ops.object.select_all(action='DESELECT')
+    arm.select_set(True)
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode='EDIT')
+    for name in extra:
+        arm.data.edit_bones.remove(arm.data.edit_bones[name])
+    bpy.ops.object.mode_set(mode='OBJECT')
+    print('armature collapsed to %s (%d bones removed)' % (ROOT_BONE, len(extra)))
+
+
 def do_export():
     bpy.ops.wm.open_mainfile(filepath=BLEND)
     nwo = bpy.context.scene.nwo
@@ -145,6 +186,7 @@ def do_export():
                     print('   %s: face prop %r draw distance %s -> normal'
                           % (ob.name, fp.name, fp.draw_distance))
                     fp.draw_distance = 'normal'
+    collapse_to_root_bone()
     bpy.ops.wm.save_mainfile()
     print('export', bpy.ops.nwo.export_scene())
     add_default_variant()

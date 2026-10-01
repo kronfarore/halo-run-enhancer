@@ -55,6 +55,12 @@ OWN_PROJ = 'objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam'
 REPOINT = [
     ('proj', SB_BEAM, OWN_PROJ),
     ('proj', SB + 'projectiles\\storm_sentinel_beam_beam_enemy', OWN_PROJ),
+    # The RIGHT trigger fires barrel 0 -- the Sentinel's "enemy" barrel, whose firing
+    # effect bsh_firing carries only a THIRD-person tracer (bsh_projectile_3p): an NPC
+    # gun is never seen from inside. First person draws no 3p effect, so the beam was
+    # invisible while its damage landed (boots 2-7). The friendly firing effect has a
+    # 1p AND a 3p tracer.
+    ('effe', SB + 'fx\\bsh_firing', SB + 'fx\\friendly_beam\\firing'),
 ]
 
 #: (field path, tag path WITH extension): references the donor has as NULL

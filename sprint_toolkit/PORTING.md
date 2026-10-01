@@ -2201,6 +2201,24 @@ class `pistol` (the fp graph is the Beam Rifle's `csr`, a rifle). If the sixth b
 still invisible, the next test swaps the BEAM RIFLE's render model in as the fp model:
 model fault vs weapon-tag fault in one boot.
 
+**Boots 6-7 WITHOUT rebuilds** (h4_map_poke.py writes the built map in place): the
+leftovers changed nothing; then the SWAP TEST -- the Beam Rifle's render model as the fp
+model on the port's weapon -- DREW. So the weapon tag was fine and the model was not.
+Ruled out at the desk, no boot: render-model geometry flags (the build sets 39 on both).
+
+**THE TWO REAL CAUSES, found by data:**
+  * **First person: the skeleton must map into the fp graph.** The port is animated by the
+    DONOR's fp graph. All 14 of the Beam Rifle's render-model nodes are in fp_beam_rifle;
+    of the Focus Rifle's 14 only b_gun is -- and Halo 4 does not draw a first-person model
+    whose nodes do not map. --export now collapses the armature to b_gun (vertices to
+    b_gun, markers re-parented at their world positions). Recipe rule: **a port borrowing
+    an fp graph must use only node names that graph contains.**
+  * **The beam: first person draws no third-person effect.** The right trigger fires
+    barrel 0, the Sentinel's "enemy" barrel, whose firing effect bsh_firing has ONLY a 3p
+    tracer -- an NPC gun is never seen from inside. Its damage landed, nothing showed.
+    Repointed to the friendly firing effect (1p + 3p tracers).
+Both need the eighth boot after a real rebuild.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
