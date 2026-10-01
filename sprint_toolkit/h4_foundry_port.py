@@ -103,6 +103,18 @@ def do_export():
     if missing:
         raise SystemExit('no H4 material for %s -- run h4_port_materials.py --write first'
                          % missing)
+    # DRAW DISTANCE. The Reach import carries Reach's per-face "Draw Distance Mid", which
+    # exports as part flag "Draw Cull Distance Medium" (16) on the render model's parts.
+    # Halo 4 applies it to the FIRST-PERSON weapon too: first boot, the fp model was
+    # invisible while still casting a shadow, and the Beam Rifle's body parts carry no
+    # cull flag. Reset to normal.
+    for ob in bpy.data.objects:
+        if ob.type == 'MESH':
+            for fp in ob.data.nwo.face_props:
+                if fp.type == 'draw_distance' and fp.draw_distance != 'normal':
+                    print('   %s: face prop %r draw distance %s -> normal'
+                          % (ob.name, fp.name, fp.draw_distance))
+                    fp.draw_distance = 'normal'
     bpy.ops.wm.save_mainfile()
     print('export', bpy.ops.nwo.export_scene())
     scenery = os.path.join(H4EK, 'tags', PORT, NAME + '.scenery')

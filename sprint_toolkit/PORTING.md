@@ -2162,6 +2162,22 @@ tick that zone in the zone sets where it is tested (m30 has it in only 4 of 24),
 rebuild, install -- and copy the build to `E:\HaloBaselines\halo4\maps` or the next
 enhancer patch rebuilds from the old one.
 
+### Run order (every rebuild of the port)
+
+    blender --background --python h4_foundry_port.py -- --import    (HREK)
+    python h4_port_materials.py --write
+    blender --background --python h4_foundry_port.py -- --export    (H4EK)
+    python h4_make_port_weapon.py --write        re-copies the donor weapon every time
+    blender --background --python h4_tag_numbers.py -- --write      so this comes LAST
+
+**Second boot (2026-09-30):** ground model good, heat/overheat and battery WORK on the
+Sentinel base; first-person model invisible but casting a SHADOW; no beam seen. Measured
+against the Beam Rifle's render model: the port's parts carried part flag 16 "Draw Cull
+Distance Medium" -- Reach's per-face "Draw Distance Mid", kept through Foundry. Halo 4
+applies it to the first-person weapon; the Beam Rifle's body has none. --export now
+resets it (all part flags 0). The beam's firing effect hangs off the fp model's markers,
+so "no beam" may be the same cull -- the next boot separates that from a projectile fault.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
