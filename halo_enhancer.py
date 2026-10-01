@@ -4603,6 +4603,10 @@ def is_operator_box(widget):
 # Map Presence, per pick: this share of the level's placements (0.1 = 10%).
 MAP_PRESENCE_STEP = '+0.1'
 
+# An inverted multiplier never stacks below this (user, 2026-10-01): *0.5 picked three
+# times would otherwise be *0 and empty whatever it scales.
+INVERTED_FLOOR = 0.1
+
 
 def scaled_step(text, pct=None):
     """A halo.json default step at the Options strength (step_strength, percent).
@@ -4837,8 +4841,20 @@ class MagnitudeEditorDialog(QDialog):
         # value typed over it is the user's and stacks linearly like any other.
         steps = t.get('steps') if (t.get('steps') and (not txt or self._is_default_step(t, txt))) else None
         if self._step_inverted(eff):
+            # A card's own `inverse_steps` ladder wins while the row shows its default
+            # (Magazine: *0.75, *0.5, *0.25, then *0.1 at cap); otherwise the step is
+            # mirrored and stacked, never below INVERTED_FLOOR.
+            if t.get('inverse_steps') and (not txt or self._is_default_step(t, txt)):
+                return self._hp.stack_op('', eff.get('count') or 1,
+                                         steps=t['inverse_steps'])
             txt = self._hp.invert_step(txt)
             steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
+            op = self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
+                                   steps=steps)
+            parsed = self._hp.hm.parse_operator(op) if op else None
+            if parsed and parsed[0] == 'mul' and parsed[1] < INVERTED_FLOOR:
+                return '*%g' % INVERTED_FLOOR
+            return op
         return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
                                  steps=steps)
 
