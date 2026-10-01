@@ -47,3 +47,6 @@ sprint_toolkit/h1mp/
 sprint_toolkit/*.scenario.before_saw
 sprint_toolkit/*.map.before_saw
 sprint_toolkit/*.bitmap.stock
+
+# Stale test-folder settings export (to be deleted)
+settings_from_test_folder.json

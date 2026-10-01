@@ -325,7 +325,7 @@
 				"boss": "Mule",
 				"weapons": ["Assault Rifle", "Concussion Rifle", "DMR", "Energy Blade", "Flak Cannon", "Focus Rifle", "Magnum", "Needle Rifle", "Needler", "Plasma Launcher", "Plasma Pistol", "Plasma Repeater", "Plasma Rifle", "Rocket Launcher", "Shotgun", "Sniper Rifle"],
 				"grenades": ["Frag Grenade", "Plasma Grenade"],
-				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Health Pack", "Hologram", "Jet Pack", "Sprint"],
+				"equipment": ["Active Camouflage", "Armor Lock", "Drop Shield", "Hologram", "Jet Pack", "Sprint"],
 				"turrets": ["Plasma Cannon"]
 			},
 			"m35": {

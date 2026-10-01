@@ -273,10 +273,6 @@ def enemy_tag_patterns(db, enemy):
 # Add to this list rather than arguing with the audit output. Removing an entry turns
 # it back into a normal gap.
 OFFER_DEFERRED = {
-    ('Halo Reach', 'Health Pack'):
-        "USER'S CALL, repeatedly (last 2026-09-03): do not card it and do not keep "
-        "raising it. The eqip tag is real and carries 15 tunables, so this is a "
-        "decision and not a missing capability.",
     ('Halo 1', 'Flamethrower'):
         "USER'S CALL (2026-08-26): its card set is Halo 3 only. The flamethrower is "
         "not normally available in Halo 1, so it waits until every H1 weapon ships "
