@@ -9629,11 +9629,10 @@ class OptionsDialog(QDialog):
             "removes the HIDING half of each pair and keeps every restore, so the "
             "title still appears but the HUD stays up and the bars do not.\n\n"
             "Per game:\n"
-            "  Halo 1, Halo 2 -- applied at BUILD time by h1_keep_hud.py / "
-            "h2_keep_hud.py; the rebuilt maps carry it, and the patch log says whether "
-            "they are current (run either with --status).\n"
-            "  Halo 3, ODST, Reach -- an in-map script edit on patch, no editing kit, "
-            "reversible: turn it off and re-patch.\n"
+            "  Halo 1, Halo 2, Halo 3, ODST, Reach -- an in-map script edit on patch, "
+            "no editing kit, reversible: turn it off and re-patch. It survives a Steam "
+            "map wipe, since the next patch puts it back. Halo 1 / Halo 2 maps rebuilt "
+            "with h1/h2_keep_hud.py already carry it and are left as they are.\n"
             "  Halo 4 -- the same edit on patch, in its hsdt script tags: the global "
             "script container (where f_hud_chapter fades the HUD) and the level's own.")
         allform.addRow("Chapter titles:", self.keep_title_hud_cb)

@@ -53,7 +53,32 @@ SCRIPT_BLOCKS = {
     'Halo 3':       (0x49C, 0x3D8),
     'Halo 3: ODST': (0x4DC, 0x418),
     'Halo Reach':   (0x504, 0x41C),
+    'Halo 2':       (0x238, 0x1B0),
 }
+
+# HALO 2 stores function names as OPCODES (engine-wide, identical on all 13 maps), so
+# the name node's string is meaningless; these give it its verb back. The record is the
+# third-gen one 4 bytes narrower (no trailing pad), every field at the same offset.
+H2_OPCODES = {0x0274: 'hud_cinematic_fade', 0x0230: 'cinematic_show_letterbox',
+              0x0232: 'cinematic_set_title'}
+# HALO 1 has no expression tagblock: the nodes live in the Script Syntax Data blob
+# (dataRef at scnr+0x474, pointer at +0xC), a 56-byte header then 32767 nodes of 0x14
+# -- the Halo 2 record exactly. Opcodes read off the compiled title beats on the
+# deployed maps (sleep is 0x13): the beat is letterbox 1, show_hud 0, sleep 30,
+# set_title, sleep 150, show_hud 1, letterbox 0.
+H1_SYNTAX, H1_HEADER, H1_NODES = 0x474, 56, 32767
+H1_OPCODES = {0x0198: 'show_hud', 0x0156: 'cinematic_show_letterbox',
+              0x0157: 'cinematic_set_title', 0x0151: 'cinematic_start',
+              0x0152: 'cinematic_stop'}
+H1_HIDERS = {'show_hud': lambda v: v == 0.0,
+             'cinematic_show_letterbox': lambda v: v == 1.0}
+# Halo 1 puts title beats INLINE in huge mission scripts that also hide the HUD for
+# other reasons, so a hide counts only within this many statements of the title in
+# the same chain, and never between a cinematic_start and its stop (9 titles sit in
+# real cutscenes). h1_keep_hud.py's source rule, read off the tree.
+H1_WINDOW = 4
+H2_HIDERS = {'hud_cinematic_fade': lambda v: v == 0.0,
+             'cinematic_show_letterbox': lambda v: v == 1.0}
 EXPR_SIZE = 0x18
 F_NEXT, F_STR, F_VALUE = 0x8, 0xC, 0x10
 TERMINATOR = 0xFFFFFFFF
@@ -81,6 +106,8 @@ H4_BLOCKS = (0x48, 0x54)
 LAYOUTS = {
     'gen3': {'size': EXPR_SIZE, 'next': F_NEXT, 'str': F_STR, 'value': F_VALUE,
              'vtype': (0x4, '<H')},
+    'h2':   {'size': 0x14, 'next': F_NEXT, 'str': F_STR, 'value': F_VALUE,
+             'vtype': (0x4, '<H')},
     'h4':   {'size': 0x1C, 'next': 0x4, 'str': 0xC, 'value': 0x8,
              'vtype': (0x10, '<I')},
 }
@@ -93,19 +120,32 @@ class Tree:
     def __init__(self, m, game, block_base, scnr_base, container=None):
         self.m = m
         self.game = str(game).strip()
+        if self.game == 'Halo 1':
+            self.lay, self.size, self.blob, self.roots = LAYOUTS['h2'], 0x14, b'', []
+            ptr = m.u32(scnr_base + H1_SYNTAX + 0xC)
+            size = max(0, m.i32(scnr_base + H1_SYNTAX))
+            ok = ptr and size >= H1_HEADER + H1_NODES * 0x14
+            self.base = ((ptr - m.magic) & 0xFFFFFFFF) + H1_HEADER if ok else None
+            self.n = H1_NODES if ok else 0
+            return
         if container is not None:
             eoff, soff = H4_BLOCKS
             owner, self.lay = container, LAYOUTS['h4']
         else:
             eoff, soff = SCRIPT_BLOCKS[self.game]
-            owner, self.lay = scnr_base, LAYOUTS['gen3']
+            owner = scnr_base
+            self.lay = LAYOUTS['h2' if self.game == 'Halo 2' else 'gen3']
         self.size = self.lay['size']
         self.n = max(0, m.i32(owner + eoff))
         self.base = block_base(m, owner + eoff)
-        ptr = m.u32(owner + soff + 0xC)
-        sb = m.data2off(ptr) if ptr else None
-        ss = max(0, m.i32(owner + soff))
-        self.blob = bytes(m.data[sb:sb + ss]) if sb else b''
+        # Halo 2 needs no string blob (names are opcodes) and its map class has no
+        # data2off, so it is not read there.
+        self.blob = b''
+        if self.game != 'Halo 2':
+            ptr = m.u32(owner + soff + 0xC)
+            sb = m.data2off(ptr) if ptr else None
+            ss = max(0, m.i32(owner + soff))
+            self.blob = bytes(m.data[sb:sb + ss]) if sb else b''
         # Halo 4: a script's FIRST statement is entered from its Scripts element (root
         # expression datum at +0xC of the 0x20 element, block at hsdt+0xC), not from any
         # expression. That is exactly where the chapter-title fade lives: Dawn's
@@ -128,7 +168,7 @@ class Tree:
                    for o in self.roots)
 
     def ok(self):
-        return bool(self.base) and self.n > 0 and bool(self.blob)
+        return bool(self.base) and self.n > 0 and (bool(self.blob) or self.game in ('Halo 1', 'Halo 2'))
 
     def string(self, off):
         if not (0 <= off < len(self.blob)):
@@ -147,8 +187,16 @@ class Tree:
         nxt = struct.unpack_from('<I', d, e + L['next'])[0]
         soff = struct.unpack_from('<I', d, e + L['str'])[0]
         val = struct.unpack_from('<I', d, e + L['value'])[0]
+        if self.game == 'Halo 1' and salt == 0:
+            # an unused slot of the fixed-size node pool: zeros would read as a live
+            # node whose next is datum 0
+            return dict(i=i, salt=0, opcode=0, vtype=0xFFFF, next=TERMINATOR,
+                        string=None, value=TERMINATOR, child=0xFFFF)
+        name = self.string(soff)
+        if self.game in ('Halo 1', 'Halo 2') and vtype == T_FUNCNAME:
+            name = (H1_OPCODES if self.game == 'Halo 1' else H2_OPCODES).get(opcode)
         return dict(i=i, salt=salt, opcode=opcode, vtype=vtype,
-                    next=nxt, string=self.string(soff), value=val,
+                    next=nxt, string=name, value=val,
                     child=val & 0xFFFF)
 
     def number(self, r):
@@ -197,6 +245,62 @@ def _lift_if(t, group, pred, child_of):
     return owners[0] if owners else group
 
 
+def _chain_head(i, pred):
+    seen = set()
+    while i is not None and i in pred and i not in seen:
+        seen.add(i)
+        i = pred[i]
+    return i
+
+
+def _title_chains(t, pred, child_of):
+    """Heads of the statement chains that contain a cinematic_set_title call.
+
+    Halo 2 only. Its title beats are short dormant scripts -- fade 0, letterbox on,
+    sleep, set_title, sleep, fade 1, letterbox off -- all siblings in one block, and
+    real cutscenes hide the HUD the same way with no title among them. h2_keep_hud.py
+    scoped its source edit to exactly these scripts; this is the same scope read off
+    the compiled tree. Measured on vanilla 03a: 2 of 6 fades and 2 of 2 letterbox-ons
+    fall inside, which is exactly what the source edit removed."""
+    heads = set()
+    for i in range(t.n):
+        r = t.at(i)
+        if r['vtype'] != T_FUNCNAME or r['string'] != 'cinematic_set_title':
+            continue
+        groups = [p for p in child_of.get(i, []) if p != i and t.at(p)['child'] == i]
+        if groups:
+            heads.add(_chain_head(groups[0], pred))
+    return heads
+
+
+def _verb(t, group):
+    g = t.at(group)
+    c = t.at(g['child']) if g else None
+    return c['string'] if c and c['vtype'] == T_FUNCNAME else None
+
+
+def _h1_title_hides(t, heads):
+    """Halo 1: the hide statements that belong to a title beat (see H1_WINDOW)."""
+    out = set()
+    for h in heads:
+        chain, x = [], h
+        while x is not None and len(chain) < 4096:
+            chain.append(x)
+            r = t.at(x)
+            x = None if r['next'] == TERMINATOR else r['next'] & 0xFFFF
+        verbs = [_verb(t, g) for g in chain]
+        depth, open_at = 0, []
+        for v in verbs:
+            depth += (v == 'cinematic_start') - (v == 'cinematic_stop')
+            open_at.append(depth > 0)
+        titles = [k for k, v in enumerate(verbs) if v == 'cinematic_set_title']
+        for k, v in enumerate(verbs):
+            if (v in H1_HIDERS and not open_at[k]
+                    and any(abs(k - j) <= H1_WINDOW for j in titles)):
+                out.add(chain[k])
+    return out
+
+
 def survey(t):
     """[(verb, name index, group index, first arg, is_hide)] for every call site."""
     child_of, pred = {}, {}
@@ -205,10 +309,19 @@ def survey(t):
         child_of.setdefault(r['child'], []).append(i)
         if r['next'] != TERMINATOR:
             pred.setdefault(r['next'] & 0xFFFF, i)
+    hiders = {'Halo 1': H1_HIDERS, 'Halo 2': H2_HIDERS}.get(t.game, HIDERS)
+    # Halo 2's scope is decided ONCE, on the untouched tree: skipping a statement
+    # changes who precedes whom, so a chain head read in a later pass can be wrong.
+    old = t.game in ('Halo 1', 'Halo 2')
+    first = old and not hasattr(t, 'h2_scope')
+    if first:
+        t.h2_scope, titled = set(), _title_chains(t, pred, child_of)
+        if t.game == 'Halo 1':
+            t.h2_scope = _h1_title_hides(t, titled)
     out = []
     for i in range(t.n):
         r = t.at(i)
-        if r['vtype'] != T_FUNCNAME or (r['string'] not in HIDERS
+        if r['vtype'] != T_FUNCNAME or (r['string'] not in hiders
                                         and r['string'] not in HIDE_STRINGS):
             continue
         parents = [p for p in child_of.get(i, []) if p != i and t.at(p)['child'] == i]
@@ -222,8 +335,12 @@ def survey(t):
             out.append((r['string'], i, group, arg, hide))
             continue
         arg = t.number(a)
-        out.append((r['string'], i, group, arg,
-                    arg is not None and HIDERS[r['string']](arg)))
+        hide = arg is not None and hiders[r['string']](arg)
+        if hide and old:
+            if first and t.game == 'Halo 2' and _chain_head(group, pred) in titled:
+                t.h2_scope.add(group)
+            hide = group in t.h2_scope   # else a real cutscene's hide, not a title beat
+        out.append((r['string'], i, group, arg, hide))
     return out
 
 
@@ -329,7 +446,7 @@ def _strip_tree(t):
     # the live chain after it was already dealt with. One pass left exactly one call
     # still reachable on every Halo 3 and ODST map; re-surveying and repeating clears
     # it. The loop is bounded because each pass either unlinks something or stops.
-    removed, failed, passes = 0, 0, 0
+    done, failed, passes = set(), 0, 0
     while passes < 8:
         passes += 1
         live = []
@@ -343,12 +460,12 @@ def _strip_tree(t):
         moved = 0
         for group in live:
             if _skip(t, group):
-                removed += 1
+                done.add(group)      # a statement re-skipped in a later pass counts once
                 moved += 1
         if not moved:
             failed = len(live)
             break
-    return removed, kept, failed, len(rows), passes
+    return len(done), kept, failed, len(rows), passes
 
 
 def remove_title_hud_hiding(m, game, block_base, scnr_base):
@@ -374,7 +491,7 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
             return {'ok': True, 'skip': True,
                     'reason': 'no chapter-title HUD calls in any script tag'}
         return {'ok': True, **tot}
-    if g not in SCRIPT_BLOCKS:
+    if g not in SCRIPT_BLOCKS and g != 'Halo 1':
         state = build_time_state(g)
         if state:
             return {'ok': True, 'skip': True, 'reason': state}
@@ -400,7 +517,7 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
     # the live chain after it was already dealt with. One pass left exactly one call
     # still reachable on every Halo 3 and ODST map; re-surveying and repeating clears
     # it. The loop is bounded because each pass either unlinks something or stops.
-    removed, failed, passes = 0, 0, 0
+    done, failed, passes = set(), 0, 0
     while passes < 8:
         passes += 1
         live = []
@@ -414,10 +531,10 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
         moved = 0
         for group in live:
             if _skip(t, group):
-                removed += 1
+                done.add(group)      # a statement re-skipped in a later pass counts once
                 moved += 1
         if not moved:
             failed = len(live)
             break
-    return {'ok': True, 'removed': removed, 'kept': kept, 'failed': failed,
+    return {'ok': True, 'removed': len(done), 'kept': kept, 'failed': failed,
             'sites': len(rows), 'passes': passes}

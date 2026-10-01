@@ -8064,8 +8064,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if keep_title_hud:
         # Keep the HUD up through chapter/cinematic titles. An in-map script edit, so
         # unlike the h1/h2/h3_keep_hud tools it needs no editing kit and no rebuild --
-        # which is what makes it usable as a run option at all. Halo 1 and Halo 2
-        # report a skip: their scenarios use an older script format.
+        # which is what makes it usable as a run option at all. Halo 1 and Halo 2 are
+        # edited by opcode (hud_titles.H1_OPCODES / H2_OPCODES); a map rebuilt with
+        # h1/h2_keep_hud.py already lacks the hides and reports nothing to remove.
         import hud_titles
         rep = hud_titles.remove_title_hud_hiding(m, game, _block_base, _scnr_base(m))
         row = {'tag': 'scnr', 'field': 'chapter title HUD',
