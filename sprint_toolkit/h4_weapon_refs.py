@@ -49,6 +49,21 @@ def resolve(tag, path):
     return f
 
 
+def same_value(got, want):
+    """'0.3' == '0.3', '0.215,0,0' == '0.215,0,0' numerically, names exactly."""
+    a, b = [x.strip() for x in got.split(',')], [x.strip() for x in want.split(',')]
+    if len(a) != len(b):
+        return False
+    for x, y in zip(a, b):
+        try:
+            if abs(float(x) - float(y)) > 1e-5:
+                return False
+        except ValueError:
+            if x != y:
+                return False
+    return True
+
+
 def resolve_any(tag, path):
     """Like resolve(), for a field of any type (a flags field here)."""
     fields = tag.Fields
@@ -101,6 +116,26 @@ def main(argv):
             raise SystemExit('ManagedBlam is bound to %r, not H4EK' % kit)
         ok = True
         for field, value in pairs:
+            if field.startswith('set:'):
+                # 'set:<field path>' <value>: a plain field -- number, string id or enum
+                f = resolve_any(t.tag, field[len('set:'):])
+                ft = str(f.FieldType)
+                if 'Enum' in ft:
+                    names = [i.EnumName for i in f.Items]
+                    was = names[f.Value] if 0 <= f.Value < len(names) else f.Value
+                    f.Value = names.index(value)
+                    now = names[f.Value]
+                else:
+                    was = f.GetStringData()
+                    parts = value.split(',')
+                    f.SetStringData(parts if len(parts) > 1 else value)
+                    now = f.GetStringData()
+                now_s = now if isinstance(now, str) else ','.join(now)
+                was_s = was if isinstance(was, str) else (','.join(was) if hasattr(was, '__iter__') else str(was))
+                good = same_value(now_s, value)
+                ok &= bool(good)
+                print('   %-4s %-44s %s -> %s' % ('ok' if good else 'BAD', field, was_s, now_s))
+                continue
             if field.startswith('clear-flag:'):
                 # 'clear-flag:<flags field path>' <flag name>: clear one bit by name
                 f = resolve_any(t.tag, field[len('clear-flag:'):])

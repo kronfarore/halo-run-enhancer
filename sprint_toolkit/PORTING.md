@@ -2193,6 +2193,14 @@ of the player, whose body first person never draws: invisible, shadow cast, beam
 on its markers hidden, damage landing. h4_make_port_weapon.py clears it (h4_weapon_refs.py
 `clear-flag:`). Lesson for every donor that was an NPC's built-in gun: diff the FLAGS.
 
+**Fifth boot:** unchanged. A FULL field diff of the two weapon tags (not just flags) shows
+more NPC-gun leftovers, now set to the Beam Rifle's by h4_make_port_weapon.py (`set:`):
+object bounding radius 0 / offset 0 (Beam Rifle 0.3 / 0.215 -- the gun used its parent's
+bounds), weapon ready 1st person animation playback scale 0 (1), weapon name `bb` and
+class `pistol` (the fp graph is the Beam Rifle's `csr`, a rifle). If the sixth boot is
+still invisible, the next test swaps the BEAM RIFLE's render model in as the fp model:
+model fault vs weapon-tag fault in one boot.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

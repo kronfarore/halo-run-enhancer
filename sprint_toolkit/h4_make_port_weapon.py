@@ -74,6 +74,16 @@ SET_REFS = [
     # the beam on its markers hidden too, while the damage landed (boots 2-4). The Beam
     # Rifle does not carry it.
     ('clear-flag:item/object/flags', 'extension of parent'),
+    # NPC-gun leftovers, set to the Beam Rifle's (boot 5 found them by a full field diff):
+    # bounding radius 0 -- as part of its parent the gun used the Sentinel's bounds --
+    # can cull the held weapon and the effects on its markers; the ready animation at
+    # playback scale 0 freezes on its first, off-screen frame; and the weapon labels
+    # its animations as a pistol 'bb' where the fp graph is the Beam Rifle's 'csr'.
+    ('set:item/object/bounding radius', '0.3'),
+    ('set:item/object/bounding offset', '0.215,0,0'),
+    ('set:weapon ready 1st person animation playback scale', '1'),
+    ('set:weapon name', 'csr'),
+    ('set:weapon class', 'rifle'),
 ]
 
 
@@ -115,7 +125,7 @@ def main():
         if n < 1:
             raise SystemExit('the donor has no %s reference to %s' % (group, old))
     for field, path in SET_REFS:
-        if field.startswith('clear-flag:'):
+        if field.startswith(('clear-flag:', 'set:')):
             continue
         if not os.path.exists(os.path.join(TAGS, path)):
             raise SystemExit('%s -> %s does not exist' % (field, path))
