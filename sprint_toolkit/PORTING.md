@@ -2178,6 +2178,13 @@ applies it to the first-person weapon; the Beam Rifle's body has none. --export 
 resets it (all part flags 0). The beam's firing effect hangs off the fp model's markers,
 so "no beam" may be the same cull -- the next boot separates that from a projectile fault.
 
+**Third boot (2026-10-01):** unchanged -- fp invisible, no beam -- but DAMAGE LANDS, so the
+projectile is fine and only drawing fails. The cull flag was not it. Diffing the .model
+against the Beam Rifle's: Foundry wrote **zero variants** where every Bungie weapon has
+one (`default` -> region `default` -> permutation `default`). The ground object draws its
+render model directly; the first-person weapon and the effects on its markers go through
+the variant. --export now adds it (add_default_variant, ManagedBlam).
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

@@ -85,6 +85,36 @@ def do_import():
     print('saved', BLEND)
 
 
+def add_default_variant():
+    """Give the .model a `default` variant: region `default`, permutation `default`.
+
+    Foundry's export writes a model with ZERO variants. Every Bungie weapon has one (the
+    Beam Rifle: one variant, one region, one permutation, all `default`). Without it the
+    world object still draws -- the ground model was fine -- but the FIRST-PERSON weapon
+    did not, while still casting a shadow, and neither did the beam effect hanging off
+    its markers; the beam's damage landed (second boot, 2026-10-01). The runtime indices
+    are compiled by tool at build time.
+    """
+    mb = importlib.import_module(KEY + '.managed_blam')
+
+    class T(mb.Tag):
+        pass
+
+    with T(path=os.path.join(H4EK, 'tags', PORT, NAME + '.model')) as t:
+        variants = t.tag.SelectField('variants')
+        if variants.Elements.Count:
+            print('model already has %d variant(s)' % variants.Elements.Count)
+            return
+        v = variants.AddElement()
+        v.SelectField('name').SetStringData('default')
+        r = v.SelectField('regions').AddElement()
+        r.SelectField('region name').SetStringData('default')
+        p = r.SelectField('permutations').AddElement()
+        p.SelectField('permutation name').SetStringData('default')
+        t.tag_has_changes = True
+        print('model: default variant added (region default, permutation default)')
+
+
 def do_export():
     bpy.ops.wm.open_mainfile(filepath=BLEND)
     nwo = bpy.context.scene.nwo
@@ -117,6 +147,7 @@ def do_export():
                     fp.draw_distance = 'normal'
     bpy.ops.wm.save_mainfile()
     print('export', bpy.ops.nwo.export_scene())
+    add_default_variant()
     scenery = os.path.join(H4EK, 'tags', PORT, NAME + '.scenery')
     if os.path.exists(scenery):
         os.remove(scenery)
