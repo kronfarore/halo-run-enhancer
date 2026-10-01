@@ -67,6 +67,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--beam-test', action='store_true',
+                    help='barrel 0 fires the Beam Rifle projectile + firing effect')
     ap.add_argument('--unswap', action='store_true',
                     help='point the fp model back at the own render model of the port')
     ap.add_argument('--model-flags', action='store_true',
@@ -81,7 +83,7 @@ def main():
     pb, bb = port[0][1], beam[0][1]
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
-    if not (a.fix or a.swap_fp or a.unswap or a.model_flags):
+    if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test):
         return
 
     d = m.data
@@ -94,6 +96,21 @@ def main():
     if a.swap_fp:
         pf, bf = fp_element(m, pb), fp_element(m, bb)
         d[pf:pf + 0x10] = d[bf:bf + 0x10]                                   # fp model tagRef
+    if a.beam_test:
+        # Barrel 0 (right trigger) fires the BEAM RIFLE's projectile with the Beam Rifle's
+        # firing effect -- a beam known to draw from a player's weapon. Beam seen: the
+        # port's weapon + model can show one, and the Sentinel's 1p tracer is the fault.
+        # Not seen: something on the port blocks effects. weap.xml: Barrels 0x518
+        # (0x190 each), Projectile +0x110, Firing Effects +0x184 (0xF4), effect +0x4.
+        def barrel0(base):
+            count, ptr = struct.unpack_from('<iI', d, base + 0x518)
+            return m.data2off(ptr)
+        pb0, bb0 = barrel0(pb), barrel0(bb)
+        d[pb0 + 0x110:pb0 + 0x120] = d[bb0 + 0x110:bb0 + 0x120]
+        pfx = m.data2off(struct.unpack_from('<I', d, pb0 + 0x184 + 4)[0])
+        bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
+        d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
+        print('barrel 0: Beam Rifle projectile + firing effect')
     if a.unswap:
         own = next(t for t in m.tags if t['class'] == 'mode' and t['name'] == PORT)
         pf = fp_element(m, pb)
