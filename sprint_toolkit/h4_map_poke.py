@@ -67,6 +67,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--weapon-origin', action='store_true',
+                    help='barrel flag: projectiles come out of the gun, not the camera')
     ap.add_argument('--beam-test', action='store_true',
                     help='barrel 0 fires the Beam Rifle projectile + firing effect')
     ap.add_argument('--unswap', action='store_true',
@@ -83,7 +85,8 @@ def main():
     pb, bb = port[0][1], beam[0][1]
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
-    if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test):
+    if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
+            a.weapon_origin):
         return
 
     d = m.data
@@ -111,6 +114,19 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.weapon_origin:
+        # Barrel flags (+0x0) bit 2 "Projectiles Use Weapon Origin": "instead of coming
+        # out of the magic first person camera origin, the projectiles for this weapon
+        # actually come out of the gun". From the camera, the beam's projectile streak
+        # flies straight away from the eye -- seen end-on, "visible only when I move"
+        # (boot 10). From the gun it is seen from the side.
+        count, ptr = struct.unpack_from('<iI', d, pb + 0x518)
+        first = m.data2off(ptr)
+        for i in range(count):
+            at = first + i * 0x190
+            was = struct.unpack_from('<I', d, at)[0]
+            struct.pack_into('<I', d, at, was | 0x4)
+            print('barrel %d flags %#x -> %#x' % (i, was, was | 0x4))
     if a.unswap:
         own = next(t for t in m.tags if t['class'] == 'mode' and t['name'] == PORT)
         pf = fp_element(m, pb)
