@@ -315,6 +315,23 @@ def stack_op(text, count, vanilla=None, from_zero=None, steps=None):
     return hm.normalize_op_text(text)            # set: the same however often
 
 
+def invert_step(text):
+    """The same per-pick step pointed the OTHER way (user, 2026-10-01), mirrored the
+    way stack_op stacks: *1.1 <-> *0.9, *0.5 <-> *1.5, +n <-> -n. A set (=n) has no
+    direction and comes back unchanged, as does anything unparseable. Used by the
+    patcher when a card's step is inverted (the effect's `invert_step`, or the
+    per-card "Invert step" override)."""
+    parsed = hm.parse_operator(text) if text else None
+    if not parsed:
+        return text
+    op, val = parsed
+    if op == 'mul':
+        return '*' + _fmt_num(max(0.0, 2.0 - val))
+    if op in ('add', 'sub'):
+        return ('-' if op == 'add' else '+') + _fmt_num(val)
+    return text
+
+
 def _fmt_num(x):
     return ('%.6f' % x).rstrip('0').rstrip('.') or '0'
 

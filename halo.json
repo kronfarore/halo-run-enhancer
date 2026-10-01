@@ -971,8 +971,8 @@
 					"tag": {"Halo 1": "weap weapons\\assault rifle\\assault rifle", "Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -982,8 +982,8 @@
 					"tag": {"Halo 1": "weap weapons\\assault rifle\\assault rifle", "Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -1298,8 +1298,8 @@
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -1308,8 +1308,8 @@
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -2633,8 +2633,8 @@
 					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -2643,8 +2643,8 @@
 					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -2952,8 +2952,8 @@
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -2962,8 +2962,8 @@
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3299,8 +3299,8 @@
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3309,8 +3309,8 @@
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3610,8 +3610,8 @@
 					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3620,8 +3620,8 @@
 					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3888,8 +3888,8 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -3899,8 +3899,8 @@
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -4451,8 +4451,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -4462,8 +4462,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -4748,8 +4748,8 @@
 					"game": ["Halo 2", "Halo 3"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -4759,8 +4759,8 @@
 					"game": ["Halo 2", "Halo 3"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -5290,8 +5290,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -5301,8 +5301,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -5634,8 +5634,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -5645,8 +5645,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -6676,8 +6676,8 @@
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -6687,8 +6687,8 @@
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -6938,8 +6938,8 @@
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -6949,8 +6949,8 @@
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -7899,8 +7899,8 @@
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret", "Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun", "Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -7911,8 +7911,8 @@
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret", "Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun", "Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8163,8 +8163,8 @@
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated", "Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted", "Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8175,8 +8175,8 @@
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated", "Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted", "Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8387,7 +8387,7 @@
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Maximum", "block": "Magazines" }
+						{ "step": "*1.5", "field": "Rounds Total Maximum", "block": "Magazines" }
 					]
 				},
 				"Ammo Loaded": {
@@ -8396,7 +8396,7 @@
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" }
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" }
 					]
 				},
 				"Zoom": {
@@ -8626,8 +8626,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8637,8 +8637,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8889,8 +8889,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -8900,8 +8900,8 @@
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -9424,8 +9424,8 @@
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -9435,8 +9435,8 @@
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -9748,8 +9748,8 @@
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": { "Halo 1": "Rounds Total Maximum", "Halo 2": "Rounds Inventory Maximum" }, "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -9759,8 +9759,8 @@
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11234,8 +11234,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11245,8 +11245,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11508,8 +11508,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11519,8 +11519,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11761,8 +11761,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -11772,8 +11772,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12023,8 +12023,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12034,8 +12034,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12334,8 +12334,8 @@
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12345,8 +12345,8 @@
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12779,8 +12779,8 @@
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -12790,8 +12790,8 @@
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -13079,8 +13079,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -13090,8 +13090,8 @@
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -13364,8 +13364,8 @@
 					"tag": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Total Initial", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Inventory Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Total Initial", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Inventory Maximum", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -13375,8 +13375,8 @@
 					"tag": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
 					"split_from": "Magazine",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Loaded Maximum", "block": "Magazines" },
-						{ "step": "*1.2", "field": "Rounds Reloaded", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Loaded Maximum", "block": "Magazines" },
+						{ "step": "*1.5", "field": "Rounds Reloaded", "block": "Magazines" },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] }
 					]
 				},
@@ -14051,7 +14051,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\bubbleshield_equipment\\bubbleshield_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14097,7 +14097,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\instantcover_equipment\\instantcover_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14142,7 +14142,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\invincibility_equipment\\invincibility_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14179,7 +14179,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\jammer_equipment\\jammer_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14236,7 +14236,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\powerdrain_equipment\\powerdrain_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14324,7 +14324,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\regenerator_equipment\\regenerator_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14370,7 +14370,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\superflare_equipment\\superflare_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14416,7 +14416,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\gravlift_equipment\\gravlift_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Duration": {
@@ -14452,7 +14452,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\tripmine_equipment\\tripmine_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {
@@ -14519,7 +14519,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\autoturret_equipment\\autoturret_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Vitality": {
@@ -14687,7 +14687,7 @@
 				"game": "Halo 3",
 				"tag": "eqip objects\\equipment\\invisibility_equipment\\invisibility_equipment",
 				"targets": [
-					{ "field": "Map replacement %", "map_equip": true }
+					{ "step": "+0.1", "field": "Map replacement %", "map_equip": true }
 				]
 			},
 			"Brute Drop Chance": {

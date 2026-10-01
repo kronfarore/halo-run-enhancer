@@ -3459,7 +3459,27 @@ class ModifierDatabase:
             'desc_overrides': None, 'debug_desc': None, 'ignore': None,
             'harder_when': None, 'easier_when': None,
             'init_defaults': None,
-            'targets': [{'field': 'Map replacement %', 'map_swap': True}],
+            'targets': [{'field': 'Map replacement %', 'map_swap': True,
+                         'step': MAP_PRESENCE_STEP}],
+        }
+
+    def map_equip_mod(self, name, game):
+        """The equipment counterpart of map_swap_mod, for a game whose equipment has
+        no Map Presence card in halo.json (those exist for Halo 3's pieces only). The
+        swap itself works in every game; only the card was missing."""
+        tag = self.eqip_tag_for(name, game) if game else None
+        if not tag:
+            return None
+        return {
+            'name': 'Map Presence',
+            'desc': "Replace a share of the level's equipment placements with this piece.",
+            'tag': tag, 'games': [game], 'equipment': name,
+            'wildcard': False, 'special': False, 'dual_only': False, 'skull': None,
+            'affected_by_skull': None, 'desc_overrides': None, 'debug_desc': None,
+            'ignore': None, 'harder_when': None, 'easier_when': None,
+            'init_defaults': None,
+            'targets': [{'field': 'Map replacement %', 'map_equip': True,
+                         'step': MAP_PRESENCE_STEP}],
         }
 
     def get_weapon_modifiers_filtered(self, weapon_name, blacklist, game=None):
@@ -3565,7 +3585,13 @@ class ModifierDatabase:
         key = self.resolve_equipment(name)
         if not key:
             return []
-        return self.filter_blacklisted(self.equipment_mods[key], blacklist, game)
+        mods = list(self.equipment_mods[key])
+        if game and not any(m.get('name') == 'Map Presence' and self._game_ok(m, game)
+                            for m in mods):
+            extra = self.map_equip_mod(key, game)
+            if extra:
+                mods.append(extra)
+        return self.filter_blacklisted(mods, blacklist, game)
 
     def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None):
         mods = self.get_enemy_modifiers(mission_id)
@@ -3634,6 +3660,8 @@ class RunState:
         self.patched_effect_keys = set()
         # card-stacking: 'up'/'down' chosen for ask_direction rows, for the whole run
         self.card_directions = {}
+        # patcher override: cards whose step is inverted, keyed weapon/enemy||name
+        self.inverted_steps = []
         # #5: a player who picked an Exhaust gets one no-negative choice next round.
         self.free_negative_pending = {'player1': False, 'player2': False}
         # #8: the signature of the most recent patch, kept on the RUN rather than
@@ -3706,6 +3734,7 @@ class RunState:
             "free_negative_pending": dict(self.free_negative_pending),
             "patched_effect_keys": [list(k) for k in self.patched_effect_keys],
             "card_directions": dict(getattr(self, 'card_directions', {}) or {}),
+            "inverted_steps": list(getattr(self, 'inverted_steps', []) or []),
             "last_patch": self.last_patch,
             "rounds": self.rounds
         }
@@ -3747,6 +3776,7 @@ class RunState:
         state.rounds = data.get('rounds', [])
         state.patched_effect_keys = {tuple(k) for k in data.get('patched_effect_keys', [])}
         state.card_directions = dict(data.get('card_directions') or {})
+        state.inverted_steps = list(data.get('inverted_steps') or [])
         lp = data.get('last_patch')
         state.last_patch = lp if isinstance(lp, dict) else None
 
@@ -4570,6 +4600,10 @@ def is_operator_box(widget):
     return widget is not None and hasattr(widget, 'isReadOnly') and not widget.isReadOnly()
 
 
+# Map Presence, per pick: this share of the level's placements (0.1 = 10%).
+MAP_PRESENCE_STEP = '+0.1'
+
+
 def scaled_step(text, pct=None):
     """A halo.json default step at the Options strength (step_strength, percent).
     *a -> *(1 + (a-1)k), +a/-a -> +/-(a k), a set is unchanged."""
@@ -4609,6 +4643,7 @@ class MagnitudeEditorDialog(QDialog):
         import halo_patch
         self._hp = halo_patch
         self.parent_gui = parent    # gives the fallback-preset lookup access to .db
+        self._forced_saturated = set()    # "Is saturated" overrides, by _card_key
         self.game = game
         self.subdirs = subdirs
         self.map_subdir = map_subdir      # per-game maps folder, for re-finding on root change
@@ -4801,8 +4836,39 @@ class MagnitudeEditorDialog(QDialog):
         # An irregular `steps` ladder applies while the row still shows its default; a
         # value typed over it is the user's and stacks linearly like any other.
         steps = t.get('steps') if (t.get('steps') and (not txt or self._is_default_step(t, txt))) else None
+        if self._step_inverted(eff):
+            txt = self._hp.invert_step(txt)
+            steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
         return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
                                  steps=steps)
+
+    @staticmethod
+    def _card_key(eff):
+        return '%s||%s' % (eff.get('weapon') or eff.get('enemy') or eff.get('equipment') or '',
+                           eff.get('name'))
+
+    def _step_inverted(self, eff):
+        """Is this card's step pointed the other way? The effect's own `invert_step`
+        (reserved for a later feature) flipped by the per-card override, so the
+        override can also UN-invert such a card."""
+        rs = getattr(self.parent_gui, 'run_state', None)
+        over = self._card_key(eff) in (getattr(rs, 'inverted_steps', None) or [])
+        return bool(eff.get('invert_step')) != over
+
+    def _toggle_inverted(self, eff, on):
+        rs = getattr(self.parent_gui, 'run_state', None)
+        if rs is None:
+            return
+        lst = list(getattr(rs, 'inverted_steps', None) or [])
+        k = self._card_key(eff)
+        if on and k not in lst:
+            lst.append(k)
+        elif not on and k in lst:
+            lst.remove(k)
+        rs.inverted_steps = lst
+        for e, t, le in self.rows:              # refresh the "picked Nx ->" hints
+            if e is eff and hasattr(le, 'textChanged'):
+                le.textChanged.emit(le.text())
 
     def _asked_direction(self, eff, t):
         """'up' / 'down' for an `ask_direction` row, asked the first time the card is
@@ -4992,7 +5058,7 @@ class MagnitudeEditorDialog(QDialog):
         if target.get('map_equip'):
             try:
                 n = self._hp.map_equipment_placement_count(m, self.game)
-                return f'{n} equipment placements on this level  (enter e.g. =25 for 25%)'
+                return f'{n} equipment placements on this level  (+0.1 = 10% of them per pick)'
             except Exception:
                 return "percentage of the level's equipment placements"
         if target.get('map_swap'):
@@ -5000,7 +5066,7 @@ class MagnitudeEditorDialog(QDialog):
             # placements. Show how many there are so the % means something.
             try:
                 n = self._hp.map_weapon_placement_count(m, self.game)
-                return f'{n} weapon placements on this level  (enter e.g. =25 for 25%)'
+                return f'{n} weapon placements on this level  (+0.1 = 10% of them per pick)'
             except Exception:
                 return 'percentage of the level\'s weapon placements'
         if target.get('sword_drain'):
@@ -6644,13 +6710,34 @@ class MagnitudeEditorDialog(QDialog):
                     l2.textChanged.connect(upd)
             upd()
 
-        if CONFIG.get('debug_mode'):    # developer-only: add/override an arbitrary field
-            addbtn = QPushButton("＋ field")
-            addbtn.setMaximumWidth(120)
-            addbtn.setToolTip("Add / override the patch field for this effect")
-            addbtn.clicked.connect(lambda _=False, e=eff: self._add_custom_field(e))
-            v.addWidget(addbtn)
+        btns = QHBoxLayout()
+        sat = QPushButton("Is saturated")
+        sat.setCheckable(True)
+        sat.setChecked(self._card_key(eff) in self._forced_saturated)
+        sat.setMaximumWidth(130)
+        sat.setToolTip("Mark this card as maxed out: it is blacklisted after this patch, "
+                       "so it is no longer drawn. Use it when the card has stopped "
+                       "making a difference but the patcher cannot tell on its own.")
+        sat.toggled.connect(lambda on, e=eff: self._mark_saturated(e, on))
+        btns.addWidget(sat)
+        inv = QPushButton("Invert step")
+        inv.setCheckable(True)
+        inv.setChecked(self._step_inverted(eff) != bool(eff.get('invert_step')))
+        inv.setMaximumWidth(130)
+        inv.setToolTip("Point this card's step the other way for the rest of the run: "
+                       "*1.1 becomes *0.9, +2 becomes -2. Set values are unchanged.")
+        inv.toggled.connect(lambda on, e=eff: self._toggle_inverted(e, on))
+        btns.addWidget(inv)
+        btns.addStretch(1)
+        v.addLayout(btns)
         return box
+
+    def _mark_saturated(self, eff, on):
+        k = self._card_key(eff)
+        if on:
+            self._forced_saturated.add(k)
+        else:
+            self._forced_saturated.discard(k)
 
     def _add_custom_field(self, eff):
         text, ok = QInputDialog.getText(
@@ -7560,14 +7647,21 @@ class MagnitudeEditorDialog(QDialog):
             if not (t.get('map_swap') or t.get('map_equip')):
                 continue
             txt = row_value(le).strip()
-            self.presets[self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)] = txt
-            parsed = self._hp.hm.parse_operator(txt)
-            if not parsed:
+            _k = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+            if txt and self._is_default_step(t, txt):
+                self.presets.pop(_k, None)
+            else:
+                self.presets[_k] = txt
+            # card-stacking: the step is a SHARE of the level's placements per pick
+            # (+0.1 = 10%), stacked by pick count. A value above 1 is an old-style
+            # percentage (=25 meant 25%) and still reads that way.
+            parsed = self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '')
+            if not parsed or parsed[0] == 'sub':
                 continue
-            pct = parsed[1]
-            if pct > 0:
+            share = parsed[1] / 100.0 if parsed[1] > 1 else parsed[1]
+            if share > 0:
                 bucket = equip_swaps if t.get('map_equip') else card_swaps
-                bucket[eff['tag']] = bucket.get(eff['tag'], 0.0) + pct / 100.0
+                bucket[eff['tag']] = min(1.0, bucket.get(eff['tag'], 0.0) + share)
 
         # Sprint tuning rows fold into the sprint spec (_sprint_spec) rather than
         # becoming plan ops, so like the swap rows above they're skipped below — but
@@ -8135,7 +8229,20 @@ class MagnitudeEditorDialog(QDialog):
         gui = self.parent_gui
         rs = getattr(gui, 'run_state', None)
         db = getattr(gui, 'db', None)
-        if not sat or rs is None or db is None:
+        if rs is None or db is None:
+            return
+        # the user's "Is saturated" overrides: blacklisted straight away, no question
+        forced = [e for e in self.effects if self._card_key(e) in self._forced_saturated]
+        done = []
+        for e in forced:
+            lab = db.get_mod_label(e)
+            if lab not in rs.blacklist and lab not in done:
+                rs.blacklist.add(lab)
+                done.append(lab)
+        if done and hasattr(gui, 'update_status'):
+            gui.update_status("Blacklisted %d card(s) marked saturated" % len(done))
+        sat = [e for e in sat if e not in forced]
+        if not sat:
             return
         labels = [db.get_mod_label(e) for e in sat]
         labels = [l for l in labels if l not in rs.blacklist]
