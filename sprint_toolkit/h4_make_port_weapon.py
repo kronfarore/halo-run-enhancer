@@ -71,8 +71,9 @@ AR_FIRING = ('objects\\weapons\\rifle\\storm_assault_rifle\\feedback\\'
 # fx\firing was the stand-in that proved the slot draws (boot 18)
 # Boot 20: the Reach particles, re-enabled, drew NOTHING -- Bungie disabled them for a
 # reason (Reach-era particles that do not render in Halo 4). Back to the Storm Rifle's
-# flash, which does. A recoloured copy of it is the way to a Focus Rifle look.
-MUZZLE_FX = 'objects\\weapons\\rifle\\storm_assault_carbine\\fx\\firing.effect'
+# flash, which does. Boot 21: its OWN copy, recoloured to Reach's orange and without the
+# Storm Rifle's fire sound (h4_muzzle_recolor.py --write, run before this).
+MUZZLE_FX = 'objects\\weapons\\rifle\\focus_rifle\\fx\\muzzle\\firing.effect'
 PP_HUD = 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol'
 OWN_HUD = 'ui\\hud\\weapons\\covenant\\focus_rifle\\focus_rifle'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
@@ -237,6 +238,15 @@ def main():
             print(r.stdout[-1500:])
             raise SystemExit('could not point the HUD icon at focus_rifle_icon')
         print('own HUD icon: weapon_icon_text -> focus_rifle_icon')
+        # its scope: Reach's Focus Rifle scope as an own template (h4_reach_scope.py;
+        # boot 21). Needs the art from h4_reach_scope_art.py --write.
+        r = subprocess.run([BLENDER, '--background', '--python',
+                            os.path.join(HERE, 'h4_reach_scope.py'), '--', '--write'],
+                           capture_output=True, text=True, encoding='utf-8', errors='replace')
+        if 'REACHSCOPE OK' not in r.stdout:
+            print(r.stdout[-1500:])
+            raise SystemExit('could not give the HUD its Reach scope')
+        print('own HUD scope: focus_rifle_scope (Reach) wired in')
 
     bad = [b for b in unresolved(model) + unresolved(weap) if a.write or b[1] != OWN_PROJ]
     if bad:

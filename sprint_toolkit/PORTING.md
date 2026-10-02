@@ -2167,7 +2167,10 @@ enhancer patch rebuilds from the old one.
     blender --background --python h4_foundry_port.py -- --import    (HREK)
     python h4_port_materials.py --write
     blender --background --python h4_foundry_port.py -- --export    (H4EK)
+    python h4_reach_scope_art.py --write         scope bitmaps (once; boot 21)
+    python h4_muzzle_recolor.py --write          own orange muzzle effect (boot 21)
     python h4_make_port_weapon.py --write        re-copies the donor weapon every time
+                                                 (and the HUD: icon + Reach scope)
     blender --background --python h4_tag_numbers.py -- --write      so this comes LAST
 
 **Second boot (2026-09-30):** ground model good, heat/overheat and battery WORK on the
@@ -2366,6 +2369,48 @@ Muzzle: the re-enabled Reach particles drew NOTHING (Bungie disabled them for a 
 back to the Storm Rifle's flash. Scope: the graft is the H4 BEAM RIFLE's (vector polyart,
 19 assets); Reach's Focus Rifle scope is BITMAPS (scopes\beam_rifle_scope + meters +
 overheat border) -- recreating it means a new H4 scope template on imported Reach bitmaps.
+
+**Boot 21 -> the port's OWN Reach scope and an orange muzzle (kit, needs a rebuild):**
+
+* **Reticle drift = the Beam Rifle scope's PARALLAX** (user: "always moves to the right
+  ... returns to the centre when I don't move"). That template parks its art in four
+  parallax containers driven by parallax listener -> expression `0+(a*10)` ->
+  container prop_left/prop_top bindings. The port's own template has none of them.
+  (`h4_map_poke.py --fp-offset 0,0,0` was poked into the boot-21 map as a control test:
+  if the drift went with the old scope, the 0.03,-0.08,0 offset is innocent and stays.)
+* **Reach's scope, read from its chud definition** (HREK ui\chud\focus_rifle):
+  scope mask (a8, double sized, origin -1,-1, scale 1.2, mirrored both ways = the
+  lower-right QUADRANT of a 2:1 mask, black at the bitmap's alpha); heat meter right
+  (+435), battery meter left (-435), scale 1.19; meter frames (triple sized, origin 6.8,
+  mirrored); reticle hud_reticles sequence 22. Units: 1152x640 chud, centred; double
+  sized = 2 px a unit; ORIGIN is in half-extents of the bitmap. The meter bitmaps are
+  horizontal arcs but stand upright in the frames: a quarter turn.
+* **h4_reach_scope_art.py**: exports the Reach bitmaps (HREK `tool export-bitmap-tga`
+  works off its "save directly" fallback), bakes mask + frames + reticle into ONE
+  1920x1080 picture for the 1280x720 HUD, and turns the meters into Halo 4 meter bitmaps.
+  **Halo 4's hud_meter reads R = A = shape, G = B = fill threshold (255 top -> 0 bottom)**,
+  measured on the Beam Rifle's heat_bar/ammo_bar; Reach keeps the shape in A. Bitmap tags
+  start as copies of the Beam Rifle's (import settings kept by `tool bitmaps`).
+* **h4_reach_scope.py** (run by h4_make_port_weapon.py after each HUD copy): template =
+  the Beam Rifle's minus every parallax binding, polyart hidden (prop_visible 0), its
+  three bitmap widgets repointed (frame full screen, meters in the frames); then wires it
+  into the port's HUD the way the Beam Rifle's HUD carries its own: a `template
+  instantiations` row, one HUD component per template component (ti = that row) under an
+  own transformation container in scope_container, zoom_decision/zoom_on_off + their two
+  bindings + the "> 0" long comparison, the three sniper_zoom animations, and meter
+  bindings weapon_data_reader.prop_charge -> ammo_animator, prop_heat -> shader_heat_bar.
+  The HUD's own reticle fades out while zoomed (the Reach reticle is in the art).
+  **`component indices` is SORTED BY STRING ID NUMBER** (ManagedBlam GetRawData of the
+  name) and rebuilt. Cross-tag copies go field by field -- ManagedBlam's
+  CopyElement/PasteAppendElement use the Windows clipboard and failed once in a kit run.
+  The in-map graft (`--scope`) is no longer needed; it refuses an already-scoped HUD.
+* **Muzzle colour:** REACH'S FOCUS RIFLE MUZZLE IS ORANGE (its effect's particle tints,
+  read through HREK's ManagedBlam: (255,98,42) -> (255,92,0), sparks (255,200,72) ->
+  (238,83,31); the firing light stays blue-violet). `h4_muzzle_recolor.py` copies the
+  Storm Rifle flash and its 10 parts to focus_rifle\fx\muzzle, drops the Storm Rifle's
+  fire SOUND part, moves every colour to Reach's orange (colour functions: byte 2 = colour
+  count, a two-colour function's colours in u32 slots 0 and 3 -- Reach uses the same
+  layout) and gives the six palette bitmaps own recoloured copies.
 
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 

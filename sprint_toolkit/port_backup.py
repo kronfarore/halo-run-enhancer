@@ -176,6 +176,11 @@ H4_TREES = [
                   'fp_focus_rifle'), 'tags/objects/characters/storm_fp/fp_focus_rifle', True),
     (os.path.join(H4EK, 'data', 'objects', 'characters', 'storm_fp', 'weapons', 'rifle',
                   'fp_focus_rifle'), 'data/objects/characters/storm_fp/fp_focus_rifle', True),
+    # the port's own HUD screen, Reach scope template and scope bitmaps
+    (os.path.join(H4EK, 'tags', 'ui', 'hud', 'weapons', 'covenant', 'focus_rifle'),
+     'tags/ui/hud/weapons/covenant/focus_rifle', True),
+    (os.path.join(H4EK, 'data', 'ui', 'hud', 'weapons', 'covenant', 'focus_rifle'),
+     'data/ui/hud/weapons/covenant/focus_rifle', True),
 ]
 H4_FILES = [
     (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
@@ -187,7 +192,8 @@ H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_mat
               'h4_make_port_weapon.py', 'h4_weapon_refs.py', 'h4_tag_numbers.py', 'balance_port.py',
               'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py', 'h4_beam_look.py', 'h4_port_messages.py',
               'h4_mesh_dump.py', 'h4_weapon_glyph.py', 'h4_hud_icon.py', 'h3_font_repack.py', 'h3_font_codec.py',
-              'h3_weapon_glyph.py',
+              'h3_weapon_glyph.py', 'h4_reach_scope_art.py', 'h4_reach_scope.py',
+              'h4_muzzle_recolor.py', 'h4_muzzle_tags.py',
               'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
 PROFILES = {
