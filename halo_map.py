@@ -421,11 +421,11 @@ class HaloMap:
         off = self.tags.get((cls, path))
         out = [(path, off)] if off is not None else []
         if cls == 'actv':
-            # A weapon CLONE of a variant ('<path>~<weapon>', sprint_toolkit/
+            # A weapon CLONE of a variant ('<path> with <weapon>', sprint_toolkit/
             # h1_variants.py) is that same character, so an exact lookup -- the enemy
             # colour rows name variants exactly -- reaches it too.
             out += sorted((p, o) for (c, p), o in self.tags.items()
-                          if c == cls and p.startswith(path + '~'))
+                          if c == cls and p.startswith(path + ' with '))
         return out
 
     def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,

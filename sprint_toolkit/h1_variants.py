@@ -27,8 +27,8 @@ the clone minor's firing block, its major (or minor again) the clone major's.
 Firing block = 0x74-0x15F (ranges, rate, error, bursts, special fire) and
 0x1D8-0x1E3 (dropped-weapon ammo); neither holds a reference.
 
-NAMING. A clone is '<source path>~<weapon name>', e.g.
-'characters\grunt\grunt minor plasma pistol~assault rifle'. General cards on
+NAMING. A clone is '<source path> with <weapon name>', e.g.
+'characters\grunt\grunt minor plasma pistol with assault rifle'. General cards on
 'characters\grunt\*' reach it; weapon-specific ones ('*plasma pistol') rightly do not.
 
 SPAWNS. The minor clone is appended to the scenario Actor Palette (+0x420, elem 0x10)
@@ -65,7 +65,7 @@ S_PALETTE, S_PAL_SZ = 0x420, 0x10
 S_ENC, S_ENC_SZ = 0x42C, 0xB0
 SQ, SQ_SZ, SQ_TYPE = 0x80, 0xE8, 0x20
 SL, SL_SZ, SL_TYPE = 0xD0, 0x1C, 0x18
-CLONE_SEP = '~'
+CLONE_SEP = ' with '    # was '~' until 2026-10-02: avoided as an untested character
 
 
 # ----------------------------------------------------------------------------- tags

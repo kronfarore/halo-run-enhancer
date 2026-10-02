@@ -5,7 +5,7 @@ so clones are made where tags are SUPPOSED to be added: as .actor_variant files 
 kit, which the user puts in the scenario's Actor Palette in Sapien and builds with
 tool.exe. Everything else stays proven map-side: the antr label teaching
 (h1_teach_weapon.py) and the patcher's card/colour lookups (a clone is named
-'<source>~<weapon>', see h1_variants.py).
+'<source> with <weapon>', see h1_variants.py).
 
 Kit tag format (actv): 0x40-byte header ('actv' at 0x24, header size 0x40 at 0x2C,
 'blam' at 0x3C), then the 0x238-byte struct BIG-ENDIAN, then the tail: the path of
