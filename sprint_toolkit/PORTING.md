@@ -2338,6 +2338,24 @@ weak); muzzle flash = the Storm Rifle's firing effect in the optional secondary 
 (needs primary_trigger + fx_vent, both on the model) until the Focus Rifle's own Reach
 muzzle particles are ported.
 
+### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
+
+The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's
+OVERHEAT chain (overheating -> overheated -> o_h_exit), which plays only on a weapon with
+heat. Ballistic ports (the SAW in every game) never enter it. For any battery/heat port
+that borrows a donor's fp graph -- above all a donor that does NOT overheat in normal
+play (the Beam Rifle), whose overheat animations nobody ever saw:
+
+1. Read each overheat-chain animation's **Loop Frame Index** in the compiled graph
+   (`h4_map_poke.py` reads/pokes it: jmad Animations element +0x8). A NON-looping entry
+   animation (overheating) with loop frame 0 shows its FIRST frame for one frame when it
+   ends: a whole-rig pop. Set it to the last frame (h4_fp_graph.set_loop_frames).
+2. Compare against a donor whose overheat chain IS used in play (the Plasma Pistol: loop
+   frame 16, no pop) -- every compiled per-animation field, not just names and poses.
+3. Bisect in the built map, one field per boot, before any rebuild.
+4. Per-shot feedback at a heat weapon's fire rate (30/s for the Focus Rifle) multiplies:
+   pick a firing damage response built for automatic fire (the Assault Rifle's here).
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
