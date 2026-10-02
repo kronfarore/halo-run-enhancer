@@ -2301,6 +2301,15 @@ sides (Reach's own 1p beam was an n-gon), profile lifespan 0.35..1.0 -> 0.175..0
 forward, +y left, +z up) -- first-person only, unlike the gun-origin flag; starting guess
 0.13,-0.05,-0.05, tuned without rebuilds via `h4_map_poke.py --fp-offset x,y,z`.
 
+**Boot 16:** the pop SURVIVED dropping the vent set; the Plasma Pistol's overheat set also
+lacks `o_h_exit` (overheated goes straight back to idle), so that is left out too. The
+overheat damping is reverted (the user meant the shake WHILE FIRING). Offset tuned in game:
+**0.03,-0.08,0.00**. Firing shake + muzzle flash tested by poke first: the per-shot
+"Firing Damage" (barrel firing effect +0x54: camera shake + rumble + simulated input --
+Reach's Focus Rifle had all three too) nulled, and the Suppressor's muzzle-flash-only
+effect (storm_forerunner_smgxr_smg_firing_muzzle_flash, no shot sound) in each
+barrel's "Optional Secondary Firing Effect" (+0x44).
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

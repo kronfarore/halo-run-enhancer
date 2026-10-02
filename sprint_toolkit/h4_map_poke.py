@@ -71,6 +71,10 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--secondary-fx', metavar='EFFECT',
+                    help='a muzzle effect (tag name) in the secondary firing slot of each barrel')
+    ap.add_argument('--no-firing-shake', action='store_true',
+                    help='null the per-shot firing damage response (shake/rumble/recoil)')
     ap.add_argument('--fp-offset', metavar='X,Y,Z',
                     help='first person projectile offset: +x forward, +y left, +z up')
     ap.add_argument('--no-overheat-shake', action='store_true',
@@ -103,7 +107,8 @@ def main():
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
-            a.no_overheat_shake or a.graph_pp or a.fp_offset):
+            a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
+            a.no_firing_shake):
         return
 
     d = m.data
@@ -131,6 +136,29 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.secondary_fx or a.no_firing_shake:
+        # each barrel's firing-effects element 0 (barrel +0x184, 0xF4 each):
+        #   +0x44 Optional Secondary Firing Effect -- a MUZZLE FLASH beside the Sentinel's
+        #         firing effect (boot 16: "missing a muzzle firing effect")
+        #   +0x54 Firing Damage -- the per-shot damage response: camera shake + rumble +
+        #         simulated input at 30 shots a second (boot 16: "the shake while firing")
+        fx = None
+        if a.secondary_fx:
+            fx = next((t for t in m.tags if t['class'] == 'effe' and t['name'] == a.secondary_fx), None)
+            if fx is None:
+                raise SystemExit('no effect %s in this map' % a.secondary_fx)
+        count, ptr = struct.unpack_from('<iI', d, pb + 0x518)
+        first = m.data2off(ptr)
+        for i in range(count):
+            n, p2 = struct.unpack_from('<iI', d, first + i * 0x190 + 0x184)
+            el = m.data2off(p2)
+            if fx is not None:
+                d[el + 0x44:el + 0x48] = b'effe'[::-1]
+                struct.pack_into('<I', d, el + 0x44 + 0xC, fx['ident'])
+                print('barrel %d secondary firing effect -> %s' % (i, a.secondary_fx))
+            if a.no_firing_shake:
+                struct.pack_into('<I', d, el + 0x54 + 0xC, 0xFFFFFFFF)
+                print('barrel %d firing damage response -> null' % i)
     if a.fp_offset:
         # each barrel's "First Person Offset" block (weap.xml: barrel +0x100, 0xC per
         # point, +x forward, +z up, +y left) -- where the beam spawns in first person.

@@ -64,7 +64,7 @@ REPOINT = [
 ]
 
 #: (field path, tag path WITH extension): references the donor has as NULL
-FP_OFFSET = '0.13,-0.05,-0.05'
+FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
     ('model', PORT + '.model'),

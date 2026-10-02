@@ -122,7 +122,9 @@ def shift_to_join(src_anim, dst_anim):
 #: (vent_enter / vent_loop / vent_exit) the Plasma Pistol's lacks, and vent_enter's second
 #: frame steps 0.058 -- a mid-vent switch into it shows as exactly one odd frame. Left
 #: OUT of the port's graph (the export rebuilds the graph from what is exported).
-DROP = ('vent_enter', 'vent_loop', 'vent_exit')
+DROP = ('vent_enter', 'vent_loop', 'vent_exit', 'o_h_exit')
+#: boot 16: the pop SURVIVED dropping the vent set. The Plasma Pistol's overheat set also
+#: has NO o_h_exit -- the engine goes overheated -> idle -- so o_h_exit is left out too.
 #: THE SHAKE (user, boot 15: reduce it): overheating frames 27-37 alternate +-0.005 every
 #: frame -- the Beam Rifle's heat vibration, not the Focus Rifle's. Damped by a centred
 #: moving average (window 5) over frames 26..38: the alternation cancels, the slower
@@ -172,10 +174,8 @@ def main(write):
         fr = [x for x in jump.sample(arm, anim) if DAMP_FROM <= x[0] <= DAMP_TO]
         return max(max((b[k] - (a[k] + c[k]) * 0.5).length for k in jump.WATCH)
                    for (_x, a), (_y, b), (_z, c) in zip(fr, fr[1:], fr[2:]))
-    before = shake(anims[DAMP_ANIM])
-    n = damp(anims[DAMP_ANIM], DAMP_FROM, DAMP_TO, DAMP_WINDOW)
-    print('%s frames %d..%d damped (%d keys): worst shake %.4f -> %.4f'
-          % (DAMP_ANIM, DAMP_FROM, DAMP_TO, n, before, shake(anims[DAMP_ANIM])))
+    # (boot 16: the shake the user meant was WHILE FIRING, not this one -- the overheat
+    # shake is Bungie's and stays; damp() is kept for a firing animation if needed)
     c = shift_to_join(anims[SHIFT_FROM], anims[SHIFT_INTO])
     print('%s shifted to join %s: %d channels' % (SHIFT_INTO, SHIFT_FROM, c))
     sm = {n: jump.sample(arm, anims[n]) for n in (SHIFT_FROM, SHIFT_INTO, 'o_h_exit')}
