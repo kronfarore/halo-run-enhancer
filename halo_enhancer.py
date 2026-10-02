@@ -9982,20 +9982,44 @@ class OptionsDialog(QDialog):
         self.step_strength_slider.setSingleStep(5)
         self.step_strength_slider.setPageStep(25)
         self.step_strength_slider.setValue(int(CONFIG.get('step_strength', 100)))
+        # the % can be typed as well as dragged (user, 2026-10-02); the two stay in step
+        self.step_strength_spin = QSpinBox()
+        self.step_strength_spin.setRange(25, 300)
+        self.step_strength_spin.setSingleStep(5)
+        self.step_strength_spin.setSuffix(" %")
+        self.step_strength_spin.setValue(self.step_strength_slider.value())
+        self.step_strength_spin.setStyleSheet(
+            "QSpinBox { color: #f0f0f0; background-color: #1b1f27; "
+            "border: 1px solid #5a6a85; padding: 2px 4px; }")
         self.step_strength_label = QLabel()
-        self.step_strength_label.setMinimumWidth(170)
+        self.step_strength_label.setMinimumWidth(150)
+        self.step_strength_label.setStyleSheet("color: #c8d4e8; background: transparent;")
 
         def _show_strength(v):
-            self.step_strength_label.setText("%d%%  (*1.2 -> %s, +1 -> %s)"
-                                             % (v, scaled_step('*1.2', v), scaled_step('+1', v)))
+            self.step_strength_label.setText("*1.2 -> %s,  +1 -> %s"
+                                             % (scaled_step('*1.2', v), scaled_step('+1', v)))
+        self.step_strength_slider.valueChanged.connect(self.step_strength_spin.setValue)
+        self.step_strength_spin.valueChanged.connect(self.step_strength_slider.setValue)
         self.step_strength_slider.valueChanged.connect(_show_strength)
         _show_strength(self.step_strength_slider.value())
-        self.step_strength_slider.setToolTip(
-            "How strongly the default per-pick steps from halo.json apply. 100% is the "
-            "steps as written. A value you type in the patcher is yours and is not scaled.")
+        tip = ("How strongly the default per-pick steps from halo.json apply. 100% is the "
+               "steps as written. A value you type in the patcher is yours and is not scaled.")
+        self.step_strength_slider.setToolTip(tip)
+        self.step_strength_spin.setToolTip(tip)
         strength_row.addWidget(self.step_strength_slider, 1)
+        strength_row.addWidget(self.step_strength_spin)
         strength_row.addWidget(self.step_strength_label)
-        allform.addRow("Default step strength:", strength_row)
+        # its own tinted panel so the setting stands out on the page
+        strength_box = QFrame()
+        strength_box.setObjectName('stepStrengthBox')
+        strength_box.setStyleSheet(
+            "QFrame#stepStrengthBox { background-color: #24324a; border: 1px solid #4f6d9a; "
+            "border-radius: 5px; }")
+        strength_row.setContentsMargins(8, 6, 8, 6)
+        strength_box.setLayout(strength_row)
+        strength_lbl = QLabel("Default step strength:")
+        strength_lbl.setStyleSheet("color: #e6eefc; font-weight: bold;")
+        allform.addRow(strength_lbl, strength_box)
 
         self.par_time_scale = QDoubleSpinBox()
         self.par_time_scale.setRange(0.1, 10.0)
