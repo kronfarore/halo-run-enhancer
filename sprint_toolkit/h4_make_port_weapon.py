@@ -115,6 +115,13 @@ SET_REFS = [
     # Stand-in until the Focus Rifle's own Reach muzzle particles are ported.
     ('barrels[0]/firing effects[0]/optional secondary firing effect', MUZZLE_FX),
     ('barrels[1]/firing effects[0]/optional secondary firing effect', MUZZLE_FX),
+    # STEP 8 (text): the port's OWN pickup lines, fr_* in ui\strings\ingame
+    # (h4_port_messages.py) -- the Sentinel base carried the Beam Rifle's be_* set.
+    ('set:item/pickup message', 'fr_pickup'),
+    ('set:item/swap message', 'fr_swap'),
+    ('set:picked up msg', 'fr_picked_up'),
+    ('set:switch-to msg', 'fr_switch_to'),
+    ('set:switch-to from ai msg', 'fr_swap_ai'),
     ('set-point:barrels[0]/first person offset', FP_OFFSET),
     ('set-point:barrels[1]/first person offset', FP_OFFSET),
 ]
