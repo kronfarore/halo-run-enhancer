@@ -100,8 +100,25 @@ SET_REFS = [
 #: landed, nothing showed (boots 2-8). Boot 9, poked: the port firing the Beam Rifle's
 #: projectile DREW its beam. So the port's own projectile gets that attachment (the Beam
 #: Rifle's pink-purple plasma; a Focus Rifle look can replace it later).
+#
+#: THE LOOK (boot 11): the Beam Rifle's streak is an "aligned ribbon", one-sided and thin.
+#: The Focus Rifle's own beam survives in Halo 4 only as the Sentinel's tracers -- Bungie
+#: converted it there, H4 has no beam_system tags at all -- a "cross" (two ribbons),
+#: double-sided: thick from any angle. But as a POINT-TO-POINT tracer in the firing effect
+#: it never draws from the player's view (boots 2-8; "draw in first person pass" did not
+#: change that, boot 11). So the port gets its OWN copy of that tracer with point-to-point
+#: cleared -- it then trails its projectile like the Beam Rifle's -- inside its OWN copy
+#: of the Beam Rifle's projectile effect, attached to the port's projectile.
+OWN_FX = 'objects\\weapons\\rifle\\focus_rifle\\fx\\'
+OWN_TRACER = OWN_FX + 'beam'
+OWN_PROJ_FX = OWN_FX + 'beam_projectile'
+SB_TRACER = SB + 'fx\\friendly_beam\\projectile_3p'
+BR_PROJ_FX = BR + 'fx\\projectile'
 PROJ_REFS = [
-    ('add-attachment', BR + 'fx\\projectile.effect'),
+    ('add-attachment', OWN_PROJ_FX + '.effect'),
+]
+TRACER_REFS = [
+    ('clear-flag:tracer system flags', 'point-to-point'),
 ]
 
 
@@ -159,6 +176,17 @@ def main():
             raise SystemExit('the beam projectile does not name its damage effect once')
         proj.save()
         print('own beam: %s.{projectile,damage_effect}' % OWN_PROJ)
+        # the look: own tracer (the Sentinel's thick one) inside own projectile effect
+        os.makedirs(os.path.join(TAGS, OWN_FX), exist_ok=True)
+        shutil.copyfile(os.path.join(TAGS, SB_TRACER + '.tracer_system'),
+                        os.path.join(TAGS, OWN_TRACER + '.tracer_system'))
+        shutil.copyfile(os.path.join(TAGS, BR_PROJ_FX + '.effect'),
+                        os.path.join(TAGS, OWN_PROJ_FX + '.effect'))
+        fx = h3tag.Tag(os.path.join(TAGS, OWN_PROJ_FX + '.effect'))
+        if fx.repoint(BR_PROJ_FX, OWN_TRACER, 'trac') != 1:
+            raise SystemExit('the projectile effect does not name its tracer once')
+        fx.save()
+        print('own look: %s.effect -> %s.tracer_system' % (OWN_PROJ_FX, OWN_TRACER))
 
     bad = [b for b in unresolved(model) + unresolved(weap) if a.write or b[1] != OWN_PROJ]
     if bad:
@@ -178,6 +206,7 @@ def main():
 
     # the NULL references, by field name, in an H4EK Blender process
     by_name(PORT + '.weapon', SET_REFS)
+    by_name(OWN_TRACER + '.tracer_system', TRACER_REFS)
     by_name(OWN_PROJ + '.projectile', PROJ_REFS)
 
 
