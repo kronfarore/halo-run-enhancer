@@ -382,6 +382,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
+               'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
+               'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
                'debug_mode', 'card_width', 'card_height',
                'card_width_override', 'card_height_override', 'card_spacing',
@@ -952,6 +954,13 @@ CONFIG = {
     # profile cannot give every weapon -- a turret written into it never arrives.
     "h3_spawn_starting_weapons": False,
     "h1_spawn_starting_weapons": False,
+    # Halo 1 enemy weapons (h1_enemy_weapons.py): replace every enemy variant carrying a
+    # player's STARTING weapon; per-enemy switch and fallback weapon (None = Auto).
+    "h1_replace_first_weapons": False,
+    "h1_enemy_weapon_enabled": {},
+    "h1_enemy_weapon_fallback": {},
+    # ...and offer 'Armed: <weapon>' enemy cards (Marines through the Ally pool)
+    "h1_enemy_weapon_cards": True,
     "h1_spawn_all_weapons": False,
     "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
@@ -3476,7 +3485,7 @@ class ModifierDatabase:
             'name': 'Map Presence',
             'desc': f'Replace a share of the level\'s weapon placements with the '
                     f'{weapon_name}. Enter the percentage to swap.',
-            'tag': tag, 'games': [game] if game else [],
+            'tag': tag, 'games': [game] if game else [], 'synth': True,
             'weapon': weapon_name, 'wildcard': False, 'special': False,
             'dual_only': False, 'skull': None, 'affected_by_skull': None,
             'desc_overrides': None, 'debug_desc': None, 'ignore': None,
@@ -3485,6 +3494,49 @@ class ModifierDatabase:
             'targets': [{'field': 'Map replacement %', 'map_swap': True,
                          'step': MAP_PRESENCE_STEP}],
         }
+
+    # Halo 1 enemies that wield a weapon (h1_enemy_weapons.ENEMY_UNITS), and the share
+    # one 'Armed' card moves per pick.
+    H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Hunter', 'Sentinel')
+    ARMED_STEP = '+0.1'
+
+    def armed_card(self, enemy, weapon_name, ally=False):
+        """'Armed: <weapon>' -- each pick moves 10% more of `enemy`'s spawns onto a
+        variant carrying the weapon (h1_enemy_weapons.cards). Synthesized, like Map
+        Presence, so it follows the players' weapons."""
+        who = 'Marines' if ally else enemy + 's'
+        return {
+            'name': 'Armed: %s' % weapon_name,
+            'desc': '%s carry the %s more often.' % (who, weapon_name),
+            'debug_desc': 'Each pick moves 10%% of the level\'s %s onto a variant carrying '
+                          'the %s: an existing one, or an enhancer variant slot taught it '
+                          '(firing copied from the most similar enemy in the game that '
+                          'carries it). Above 100%% in total the weapons share by weight.'
+                          % (who, weapon_name),
+            'tag': 'scnr enemy weapons' + chr(92) + (enemy if not ally else 'Marine'),
+            'games': ['Halo 1'], 'synth': True,
+            'enemy': None if ally else enemy, 'ally_enemy': 'Marine' if ally else None,
+            'wildcard': bool(ally), 'special': False, 'dual_only': False, 'skull': None,
+            'affected_by_skull': None, 'desc_overrides': None, 'ignore': None,
+            'harder_when': None, 'easier_when': None, 'init_defaults': None,
+            'color': 'aggressive' if not ally else None,
+            'targets': [{'field': 'Weapon share %', 'enemy_weapon': weapon_name,
+                         'enemy_type': 'Marine' if ally else enemy, 'step': self.ARMED_STEP}],
+        }
+
+    def armed_cards(self, mission_id, weapons, game, ally=False):
+        """The Armed cards this level can offer for the players' `weapons`."""
+        if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
+            return []
+        names = []
+        for w in weapons or []:
+            if (w and w not in names and not self.is_grenade(w) and not self.is_equipment(w)
+                    and not is_sprint_item(w) and self.weap_tag_for(w, game)):
+                names.append(w)
+        if ally:
+            return [self.armed_card('Marine', w, ally=True) for w in names]
+        here = (self.mission_enemies.get(mission_id) or {}).get('enemies', [])
+        return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES if e in here for w in names]
 
     def map_equip_mod(self, name, game):
         """The equipment counterpart of map_swap_mod, for a game whose equipment has
@@ -3496,7 +3548,7 @@ class ModifierDatabase:
         return {
             'name': 'Map Presence',
             'desc': "Replace a share of the level's equipment placements with this piece.",
-            'tag': tag, 'games': [game], 'equipment': name,
+            'tag': tag, 'games': [game], 'equipment': name, 'synth': True,
             'wildcard': False, 'special': False, 'dual_only': False, 'skull': None,
             'affected_by_skull': None, 'desc_overrides': None, 'debug_desc': None,
             'ignore': None, 'harder_when': None, 'easier_when': None,
@@ -4669,6 +4721,44 @@ def scaled_step(text, pct=None):
 
 
 class MagnitudeEditorDialog(QDialog):
+    def _h1_enemy_weapons_spec(self, armed_picks):
+        """Halo 1 only: the starting-weapon replacement (Options) and the Armed cards
+        of this patch, as h1_enemy_weapons.apply wants them. None when neither is on."""
+        if self.game != 'Halo 1':
+            return None
+        replace = bool(CONFIG.get('h1_replace_first_weapons'))
+        if not replace and not armed_picks:
+            return None
+        db = getattr(self.parent_gui, 'db', None)
+        rs = getattr(self.parent_gui, 'run_state', None)
+        if db is None:
+            return None
+
+        def tag(w):
+            t = db.weap_tag_for(w, 'Halo 1') if w else None
+            t = t.split(' & ')[0] if t else None
+            return t[5:] if t and t.startswith('weap ') else None
+        first = [tag(getattr(rs, k, None)) for k in ('player1_weapon', 'player2_weapon')] if rs else []
+        folder = CONFIG.get('map_game_folder', {}).get('Halo 1', '')
+        levels = []
+        for mid, g in db.mission_games.items():
+            if g != 'Halo 1':
+                continue
+            live = self._hp.default_map_path(mcc_root(), folder, mid)
+            try:
+                base = self._hp.existing_baseline(live, CONFIG.get('baseline_root'), folder)
+            except Exception:
+                base = None
+            levels.append(base or live)
+        return {
+            'levels': levels,
+            'option1': replace,
+            'first_weapons': [w for w in first if w],
+            'enabled': dict(CONFIG.get('h1_enemy_weapon_enabled') or {}),
+            'fallback': {e: tag(w) for e, w in (CONFIG.get('h1_enemy_weapon_fallback') or {}).items() if w},
+            'cards': {e: {tag(w): sh for w, sh in ws.items() if tag(w)} for e, ws in armed_picks.items()},
+        }
+
     def _enemy_colors_for_patch(self):
         """This game's colour overrides for apply_run: the player's picks (Enemy
         colours options) plus, when enabled, the drift from the enemy / hero / boss
@@ -5124,6 +5214,9 @@ class MagnitudeEditorDialog(QDialog):
                 return f'{n} equipment placements on this level  (+0.1 = 10% of them per pick)'
             except Exception:
                 return "percentage of the level's equipment placements"
+        if target.get('enemy_weapon'):
+            return ('share of the level\'s %s moved onto the %s  (+0.1 = 10%% per pick)'
+                    % (target.get('enemy_type') or 'enemies', target['enemy_weapon']))
         if target.get('map_swap'):
             # Not a tag field — the magnitude is a percentage of the level's weapon
             # placements. Show how many there are so the % means something.
@@ -7706,7 +7799,21 @@ class MagnitudeEditorDialog(QDialog):
         # to the same weapon-swap mechanism the sliders drive, so they're collected
         # here and merged into the swap spec rather than becoming plan ops.
         card_swaps, equip_swaps = {}, {}
+        armed_picks = {}                 # Halo 1 'Armed' cards: {enemy: {weapon: share}}
         for eff, t, le in self.rows:
+            if t.get('enemy_weapon'):
+                txt = row_value(le).strip()
+                _k = self._hp.preset_key(eff['tag'], eff['name'], t['field'], self.game)
+                if txt and self._is_default_step(t, txt):
+                    self.presets.pop(_k, None)
+                else:
+                    self.presets[_k] = txt
+                parsed = self._hp.hm.parse_operator(self._stacked_op(eff, t, txt) or '')
+                if parsed and parsed[0] != 'sub' and parsed[1] > 0:
+                    share = parsed[1] / 100.0 if parsed[1] > 1 else parsed[1]
+                    by = armed_picks.setdefault(t.get('enemy_type'), {})
+                    by[t['enemy_weapon']] = by.get(t['enemy_weapon'], 0.0) + share
+                continue
             if not (t.get('map_swap') or t.get('map_equip')):
                 continue
             txt = row_value(le).strip()
@@ -7742,8 +7849,9 @@ class MagnitudeEditorDialog(QDialog):
         plan_map = {}
         for eff, t, le in self.rows:
             if (t.get('derived') or t.get('set') is not None or t.get('choice')
-                    or t.get('map_swap') or t.get('map_equip') or t.get('sprint')):
-                continue          # display-only / fixed-set / choice / swap / sprint
+                    or t.get('map_swap') or t.get('map_equip') or t.get('sprint')
+                    or t.get('enemy_weapon')):
+                continue          # display-only / fixed-set / choice / swap / sprint / armed
             txt = row_value(le).strip()
             # #11: remember the input as-is, including an empty one — an empty entry is
             # a valid "leave this field alone" that sticks (so a cleared value doesn't
@@ -7990,6 +8098,7 @@ class MagnitudeEditorDialog(QDialog):
                 clear_profile_grenades=bool(CONFIG.get('clear_profile_grenades')),
                 spawn_grenades=self._spawn_grenades_spec(),
                 h4_ability_visibility=CONFIG.get('h4_ability_visibility') or None,
+                h1_enemy_weapons=self._h1_enemy_weapons_spec(armed_picks),
                 hostile_sentinels=bool(CONFIG.get('h4_hostile_sentinels')),
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
@@ -10133,6 +10242,67 @@ class OptionsDialog(QDialog):
         _sync_h1_spawn()
         h1form.addRow("", self.h1_spawn_all_cb)
 
+        # Enemy weapons (h1_enemy_weapons.py). Needs the level rebuilt with the 20
+        # enhancer variant slots whenever a weapon has to be TAUGHT.
+        self.h1_replace_first_cb = QCheckBox(
+            "Enemies never carry the players' starting weapons")
+        self.h1_replace_first_cb.setChecked(bool(CONFIG.get('h1_replace_first_weapons')))
+        self.h1_replace_first_cb.setToolTip(
+            "Every enemy that would carry player 1's or player 2's starting weapon gets "
+            "another one instead: a version of that enemy the level already has with a "
+            "different weapon, or -- if there is none -- the weapon picked below, which "
+            "the enemy is taught. 'Armed' cards still win: they are applied after this."
+            "\n\nTeaching needs the level rebuilt with the enhancer variant slots "
+            "(characters\\enhancer\\slot 01-20 in its Actor Palette).")
+        h1form.addRow("Enemy weapons:", self.h1_replace_first_cb)
+        self.h1_enemy_rows = {}
+        grid = QGridLayout()
+        grid.setHorizontalSpacing(10)
+        db = getattr(self.parent(), 'db', None) if self.parent() else None
+        weapons = []
+        if db is not None:
+            weapons = [w for w in db.get_game_weapons('Halo 1')
+                       if not db.is_grenade(w) and not db.is_equipment(w)
+                       and not is_sprint_item(w) and db.weap_tag_for(w, 'Halo 1')]
+        enabled = CONFIG.get('h1_enemy_weapon_enabled') or {}
+        fallback = CONFIG.get('h1_enemy_weapon_fallback') or {}
+        for r, enemy in enumerate(ModifierDatabase.H1_ARMED_ENEMIES):
+            cb = QCheckBox(enemy)
+            cb.setChecked(bool(enabled.get(enemy, enemy not in ('Hunter', 'Sentinel'))))
+            cb.setToolTip("Off: %ss keep the weapons the level gives them." % enemy)
+            combo = QComboBox()
+            combo.addItem("Auto (what it carries elsewhere)", None)
+            for w in weapons:
+                combo.addItem(w, w)
+            i = combo.findData(fallback.get(enemy))
+            combo.setCurrentIndex(i if i >= 0 else 0)
+            combo.setToolTip("Used only when the level has no other version of the %s: "
+                             "the weapon it is taught instead." % enemy)
+            grid.addWidget(cb, r, 0)
+            grid.addWidget(combo, r, 1)
+            self.h1_enemy_rows[enemy] = (cb, combo)
+        _gw = QWidget()
+        _gw.setLayout(grid)
+        h1form.addRow("    ↳ Per enemy, fallback:", _gw)
+
+        def _sync_h1_enemies(_=False):
+            on = self.h1_replace_first_cb.isChecked()
+            for cb, combo in self.h1_enemy_rows.values():
+                cb.setEnabled(on)
+                combo.setEnabled(on and cb.isChecked())
+        self.h1_replace_first_cb.toggled.connect(_sync_h1_enemies)
+        for cb, _c in self.h1_enemy_rows.values():
+            cb.toggled.connect(_sync_h1_enemies)
+        _sync_h1_enemies()
+
+        self.h1_armed_cards_cb = QCheckBox("Offer 'Armed: <weapon>' enemy cards")
+        self.h1_armed_cards_cb.setChecked(bool(CONFIG.get('h1_enemy_weapon_cards', True)))
+        self.h1_armed_cards_cb.setToolTip(
+            "For every weapon the players hold, each armed enemy on the level gets a card "
+            "that moves 10% more of them onto that weapon per pick. Marines get the same "
+            "cards through the Ally slot, at the lowest priority.")
+        h1form.addRow("", self.h1_armed_cards_cb)
+
         self.reach_pools_cb = QCheckBox(
             "Reach: offer every weapon and ability the prepared map supports")
         self.reach_pools_cb.setChecked(bool(CONFIG.get('reach_pools_from_map')))
@@ -11195,6 +11365,11 @@ class OptionsDialog(QDialog):
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'h1_spawn_starting_weapons': self.h1_spawn_weapons_cb.isChecked(),
             'h1_spawn_all_weapons': self.h1_spawn_all_cb.isChecked(),
+            'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
+            'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},
+            'h1_enemy_weapon_fallback': {e: c.currentData() for e, (_cb, c) in self.h1_enemy_rows.items()
+                                         if c.currentData()},
+            'h1_enemy_weapon_cards': self.h1_armed_cards_cb.isChecked(),
             'ignore_elite_in_h3': self.ignore_elite_h3_cb.isChecked(),
             'odst_red_plasma_as_brute': self.red_plasma_cb.isChecked(),
             'odst_variants_as_base': self.odst_variants_cb.isChecked(),
@@ -14208,6 +14383,8 @@ class HaloGUI(QMainWindow):
                     return found
             return None
 
+        if mod.get('synth'):
+            return              # built in code (Armed, Map Presence): nothing to refresh
         name = mod.get('name')
         fresh = find_by_name(name)
         renamed_to = None
@@ -14498,6 +14675,11 @@ class RunEnhancer:
         # (_new_equipment_pool, option auto_new_equipment_abilities; user, 2026-10-02).
         return pool
 
+    def _run_weapons(self):
+        """Every weapon either player holds (the Armed cards follow them)."""
+        rs = self.run_state
+        return list(dict.fromkeys((rs.player1_weapons or []) + (rs.player2_weapons or [])))
+
     def _draw_other(self, mid, game, bl, active_neg, enemy_mods=None):
         """The Other slot: one card from Hero / Exhaust / Skull / Ally, or None.
 
@@ -14551,6 +14733,15 @@ class RunEnhancer:
                 mod = self.db.get_skull_modifier_filtered(active_neg, bl, game)
             elif picked == 'ally':
                 mod = self.db.get_wildcard_modifier_filtered(bl, game)
+                # Marine 'Armed' cards ride the Ally pool at the LOWEST priority (user,
+                # 2026-10-02): a quarter of the weight of an ordinary ally card each.
+                marines = self.db.filter_blacklisted(
+                    self.db.armed_cards(mid, self._run_weapons(), game, ally=True), bl, game)
+                if marines:
+                    regular = self.db.filter_blacklisted(self.db.wildcard_pool, bl, game)
+                    pool = regular + marines
+                    mod = random.choices(pool, weights=[1.0] * len(regular)
+                                         + [0.25] * len(marines), k=1)[0]
             elif picked == 'bane':
                 mod = copy.deepcopy(random.choice(enemy_mods))
                 mod['bane'] = True
@@ -14580,6 +14771,8 @@ class RunEnhancer:
         bl = self.run_state.blacklist
         pmods = self.db.get_player_modifiers_filtered(self.run_state.weapons_for(for_player), bl, game)
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
+        enemy_mods += self.db.filter_blacklisted(
+            self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         wpool = self._new_weapon_pool(for_player)
 
         # A level with a named STORY fight gets a guaranteed Boss card on every pair.

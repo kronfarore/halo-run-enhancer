@@ -414,12 +414,24 @@ class HaloMap:
                         seen.add(p)
                         out.append((p, o))
             return out
+        alias = getattr(self, 'actv_alias', None) if cls == 'actv' else None
         if '*' in path:
             match = _wildcard_matcher(path)
-            return sorted((p, off) for (c, p), off in self.tags.items()
-                          if c == cls and match(p))
+            out = sorted((p, off) for (c, p), off in self.tags.items()
+                         if c == cls and match(p))
+            if alias:
+                # a filled enhancer SLOT answers to the clone it holds
+                # ('<source> with <weapon>', h1_enemy_weapons): Grunt cards reach a Grunt
+                # slot, '*plasma pistol' cards do not reach an AR one
+                have = {p for p, _o in out}
+                out += sorted((sp, self.tags[('actv', sp)]) for sp, al in alias.items()
+                              if match(al) and sp not in have and ('actv', sp) in self.tags)
+            return out
         off = self.tags.get((cls, path))
         out = [(path, off)] if off is not None else []
+        if alias:
+            out += sorted((sp, self.tags[('actv', sp)]) for sp, al in alias.items()
+                          if al.startswith(path + ' with ') and ('actv', sp) in self.tags)
         if cls == 'actv':
             # A weapon CLONE of a variant ('<path> with <weapon>', sprint_toolkit/
             # h1_variants.py) is that same character, so an exact lookup -- the enemy

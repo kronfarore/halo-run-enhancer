@@ -7977,7 +7977,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               skip_flight=False, hostile_sentinels=False, enemy_colors=None,
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
-              h4_ability_visibility=None,
+              h4_ability_visibility=None, h1_enemy_weapons=None,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -8031,6 +8031,14 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if equipment_swaps:
         # Same placement-scatter idea, on the equipment block.
         results.extend(_apply_equipment_swaps(m, str(game).strip(), equipment_swaps))
+    if h1_enemy_weapons and str(game).strip() == 'Halo 1':
+        # What weapons the AI carries (h1_enemy_weapons.py): the starting-weapon
+        # replacement and the 'Armed: <weapon>' cards. After the weapon ports (a ported
+        # weapon can be handed out) and BEFORE the effect ops, which reach the filled
+        # variant slots through the map's actv aliases.
+        import sys as _sys
+        import h1_enemy_weapons as _ew
+        results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
     # Skulls are whole-map rules, applied BEFORE the per-field ops. Order matters for
     # any skull that zeroes a field a normal effect also touches (Eyepatch vs an
     # aim-assist buff): running the skull first leaves the effect something to act on,
