@@ -5211,12 +5211,16 @@ def _spread_slots(N, counts):
 # racks cannot be picked. The share is matched instead by choosing child slots whose
 # placement-weighted total comes closest to rate x all crate-borne weapons.
 # Measured 2026-10-02 (crate-borne vs loose placements): H3 010 80/28, 030 60/60,
-# ODST l300 86/15, Reach m50 44/68, H4 m020 176/81. Halo 1 has no crates; Halo 2 has
-# the same structure but is not scanned yet, so it is left out.
+# ODST l300 86/15, Reach m50 44/68, H4 m020 176/81. Halo 1 has no crates. Halo 2 has
+# the same structure with 8-byte tagrefs (group, datum) where the later games use 16
+# (group, 8 unused, datum): `rid` is the datum's offset inside a tagref, `rsz` its size,
+# `pes` the Crates Palette element.
 #   cr: Crates block (off, elem)   pal: Crates Palette   vn: placement Variant Name
 #   model: bloc Model tagref   var: hlmt Variants (off, elem)
 #   obj: Objects in a variant (off, elem, Child Object tagref offset)
 _MAP_CRATES = {
+    'Halo 2':       dict(cr=(0x328, 0x4C), pal=0x330, pes=0x28, vn=0x34, model=0x34,
+                         var=(0x50, 0x38), obj=(0x1C, 0x10, 0x8), rid=0x4, rsz=8),
     'Halo 3':       dict(cr=(0x5BC, 0xB0), pal=0x5C8, vn=0x54, model=0x34,
                          var=(0x64, 0x30), obj=(0x20, 0x1C, 0xC)),
     'Halo 3: ODST': dict(cr=(0x5FC, 0xB0), pal=0x608, vn=0x54, model=0x34,
@@ -5241,11 +5245,12 @@ def _crate_weapon_slots(m, game):
     hlmts = dict(m.find_tags('hlmt', '*'))
     pc = max(0, m.i32(s + lay['pal']))
     pb = _block_base(m, s + lay['pal']) if pc else None
+    rid, pes = lay.get('rid', 0xC), lay.get('pes', 0x10)
     variants = {}                      # palette index -> {name sid: [slot offsets]}
     names = {}
     for pi in range(pc):
-        b = blocs.get(_tag_name_by_id(m, m.u32(pb + pi * 0x10 + 0xC)))
-        hb = hlmts.get(_tag_name_by_id(m, m.u32(b + lay['model'] + 0xC))) if b is not None else None
+        b = blocs.get(_tag_name_by_id(m, m.u32(pb + pi * pes + rid)))
+        hb = hlmts.get(_tag_name_by_id(m, m.u32(b + lay['model'] + rid))) if b is not None else None
         if hb is None:
             continue
         voff, vsz = lay['var']
@@ -5260,7 +5265,7 @@ def _crate_weapon_slots(m, game):
             slots = []
             for k in range(no):
                 r = ob + k * osz + ref
-                n = _tag_name_by_id(m, m.u32(r + 0xC))
+                n = _tag_name_by_id(m, m.u32(r + rid))
                 low = (n or '').lower()
                 if (n and (chr(92) + 'weapons' + chr(92)) in chr(92) + low
                         and 'grenade' not in low and 'ammo' not in low):
@@ -5305,8 +5310,10 @@ def _apply_crate_weapon_swaps(m, game, swaps):
     poff, pes = wl['palette']
     pc = max(0, m.i32(s + poff))
     pb = _block_base(m, s + poff)
-    pal = {_tag_name_by_id(m, m.u32(pb + i * pes + wl['pal_id_at'])): pb + i * pes
-           for i in range(pc)}
+    rid, rsz = lay.get('rid', 0xC), lay.get('rsz', 16)
+    # the palette's own tagref for each weapon (it starts rid bytes before the datum)
+    pal = {_tag_name_by_id(m, m.u32(pb + i * pes + wl['pal_id_at'])):
+           pb + i * pes + wl['pal_id_at'] - rid for i in range(pc)}
     free = dict(slots)                 # slots not yet given to a pick
     out = []
     for tag, rate in (swaps or {}).items():
@@ -5327,7 +5334,7 @@ def _apply_crate_weapon_swaps(m, game, swaps):
                 chosen.append(r)
                 got += n
         for r in chosen:
-            m.data[r:r + 16] = m.data[src:src + 16]
+            m.data[r:r + rsz] = m.data[src:src + rsz]
             free.pop(r)
         out.append({'effect': 'crate weapons', 'field': short, 'ok': True,
                     'skip': not chosen, 'tag': 'hlmt',
