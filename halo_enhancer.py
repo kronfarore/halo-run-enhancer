@@ -3520,6 +3520,25 @@ class ModifierDatabase:
             out.append(base or live)
         return out
 
+    def h1_weapon_path(self, weapon_name):
+        """A weapon's Halo 1 weap tag path. A PORTED weapon (weapon_ports_catalog.json)
+        is asked of its port first: halo.json only carries the SAW's cards for Halo 4,
+        so weap_tag_for answered Halo 1 with Halo 4's storm_lmg (the plain-string-tag
+        trap, memory halo-weap-tag-wrong-game)."""
+        try:
+            import weapon_ports
+            for port in weapon_ports.ports_for('Halo 1'):
+                if port.get('weapon') == weapon_name:
+                    for row in port.get('balance') or ():
+                        t = row.get('tag') or ''
+                        if t and not t.startswith(('proj ', 'jpt! ', 'jmad ', 'antr ')):
+                            return t[5:] if t.startswith('weap ') else t
+        except Exception:
+            pass
+        tag = self.weap_tag_for(weapon_name, 'Halo 1') if weapon_name else None
+        tag = tag.split(' & ')[0] if tag else None
+        return tag[5:] if tag and tag.startswith('weap ') else None
+
     def h1_used_weapons(self):
         """Weapon tag paths some Halo 1 character actually spawns with (cached index,
         h1_enemy_weapons.used_weapons), or None when it cannot be read."""
@@ -3564,8 +3583,7 @@ class ModifierDatabase:
         used = self.h1_used_weapons()
         names = []
         for w in weapons or []:
-            tag = self.weap_tag_for(w, game) if w else None
-            path = tag.split(' & ')[0][5:] if tag and tag.startswith('weap ') else None
+            path = self.h1_weapon_path(w) if w else None
             if (w and w not in names and not self.is_grenade(w) and not self.is_equipment(w)
                     and not is_sprint_item(w) and path
                     # only weapons some character in the game really spawns with
@@ -4786,9 +4804,7 @@ class MagnitudeEditorDialog(QDialog):
             return None
 
         def tag(w):
-            t = db.weap_tag_for(w, 'Halo 1') if w else None
-            t = t.split(' & ')[0] if t else None
-            return t[5:] if t and t.startswith('weap ') else None
+            return db.h1_weapon_path(w) if w else None
         first = [tag(getattr(rs, k, None)) for k in ('player1_weapon', 'player2_weapon')] if rs else []
         levels = db.h1_level_maps()
         return {
@@ -10328,7 +10344,7 @@ class OptionsDialog(QDialog):
         if db is not None:
             weapons = [w for w in db.get_game_weapons('Halo 1')
                        if not db.is_grenade(w) and not db.is_equipment(w)
-                       and not is_sprint_item(w) and db.weap_tag_for(w, 'Halo 1')]
+                       and not is_sprint_item(w) and db.h1_weapon_path(w)]
         enabled = CONFIG.get('h1_enemy_weapon_enabled') or {}
         fallback = CONFIG.get('h1_enemy_weapon_fallback') or {}
         for r, enemy in enumerate(ModifierDatabase.H1_ARMED_ENEMIES):

@@ -130,11 +130,25 @@ def build_index(map_paths, open_map):
     return out
 
 
+PROFILE_FILE = os.path.join(HERE, 'ai_firing_profiles.json')
+
+
+def profiles():
+    """Firing profiles for PORTED weapons nobody in Halo 1 carries
+    (sprint_toolkit/ai_firing_profile.py): {weapon path: {'source', 'fields'}}."""
+    try:
+        with open(PROFILE_FILE, encoding='utf-8') as f:
+            return json.load(f).get(GAME, {})
+    except Exception:
+        return {}
+
+
 def used_weapons(index):
     """Weapons some character in the game actually SPAWNS with. The Flood combat
     flamethrower variants ship but are never placed -- an Armed: Flamethrower card was
     a mess in game (user, 2026-10-02) -- so those do not count."""
-    return {e['weapon'] for e in index if e['weapon'] and e.get('spawns')}
+    # ...plus every PORTED weapon that has a firing profile to stand in for a donor
+    return {e['weapon'] for e in index if e['weapon'] and e.get('spawns')} | set(profiles())
 
 
 def _scnr(m):
@@ -163,9 +177,54 @@ def best_donor(index, weapon, unit, traits):
         major = e['major_bytes'] if e['major_weapon'] == weapon else None
         if major is None:
             score += 0.1
-        if best is None or score < best[0]:
+        if best is None or score < best[0] or (score == best[0] and e['name'] < best[3]):
             best = (score, bytes.fromhex(e['bytes']), bytes.fromhex(major) if major else None, e['name'])
-    return best[1:] if best else None
+    # (minor, major, name, score) -- deterministic, so two co-op machines agree
+    return best[1:] + (best[0],) if best else None
+
+
+def donor_for(m, index, weapon, unit, traits):
+    """(minor bytes, major bytes, description, profile fields or None).
+
+    A character in the game that carries the weapon, if there is one (best_donor);
+    otherwise -- a PORTED weapon -- the best donor among weapons sharing its animation
+    LABEL (the SAW is 'ar', so an AR carrier), with the weapon's firing profile to be
+    written over it."""
+    d = best_donor(index, weapon, unit, traits)
+    if d:
+        return d[0], d[1], d[2], None
+    prof = profiles().get(weapon)
+    label = m.weapon_label(weapon)
+    if not prof or not label:
+        return None
+    same = sorted(w for w in {e['weapon'] for e in index if e['weapon']}
+                  if m.tag_id(('weap', w)) is not None and m.weapon_label(w) == label)
+    best = None
+    for w in same:                      # sorted + lowest score: the same on every machine
+        d = best_donor(index, w, unit, traits)
+        if d and (best is None or d[3] < best[3]):
+            best = d
+    if best is None:
+        return None
+    src = prof.get('source', '?').split(' (')[0]
+    return (best[0], best[1], '%s + %s profile' % (best[2].rsplit(BS, 1)[-1],
+                                                    ' '.join(src.split()[:2]) + ' ' + src.rsplit(BS, 1)[-1]),
+            prof['fields'])
+
+
+def write_profile(m, base, fields):
+    for off, (fmt, value, _name) in (fields or {}).items():
+        struct.pack_into(fmt, m.data, base + int(off, 16), value)
+
+
+def index_fingerprint(index):
+    """A short, order-free code for the donor index: two machines whose codes match
+    built their clones from the same donors (co-op patch codes)."""
+    import hashlib
+    h = hashlib.sha1()
+    for e in sorted(index, key=lambda e: (e['level'], e['name'])):
+        h.update(('%s|%s|%s|' % (e['level'], e['name'], e['bytes'])).encode('latin-1'))
+    return h.hexdigest()[:8]
 
 
 def carried_weapons(index, enemy):
@@ -217,6 +276,7 @@ class Level:
         self.alias = {}                        # slot path -> '<source> with <weapon>'
         self.clones = {}                       # (source, weapon) -> palette index
         self.moved = set()                     # spawn offsets a card already moved
+        self.log = []                          # (slot, alias, donor) per filled slot
 
     def ref(self, name, what):
         return hv._ref_name(self.m, self.tags[name], what) if name in self.tags else None
@@ -278,9 +338,11 @@ class Level:
         if key in self.clones:
             return self.clones[key], None
         unit = self.ref(source, hv.REF_UNIT)
+        actor = self.ref(source, hv.REF_ACTOR)
         existing = [n for n, b in self.tags.items()
                     if not n.lower().startswith('characters' + BS + 'enhancer' + BS)
                     and hv._ref_name(self.m, b, hv.REF_UNIT) == unit
+                    and hv._ref_name(self.m, b, hv.REF_ACTOR) == actor
                     and hv._ref_name(self.m, b, hv.REF_WEAPON) == weapon
                     and not any(k in n.lower() for k in ('wounded', 'sitting', 'cinematic'))
                     and n not in {hv._ref_name(self.m, x, hv.REF_MAJOR) for x in self.tags.values()}]
@@ -297,22 +359,27 @@ class Level:
         need = 2 if major in self.tags else 1
         if len(self.free_slots) < need:
             return None, 'no free variant slot (%d left)' % len(self.free_slots)
-        donor = best_donor(index, weapon, unit, hv._floats(self.m, self.tags[source], hv.TRAITS))
+        donor = donor_for(self.m, index, weapon, unit,
+                          hv._floats(self.m, self.tags[source], hv.TRAITS))
         dmin, dmaj = (donor[0], donor[1] or donor[0]) if donor else (None, None)
+        prof = donor[3] if donor else None
+        dname = donor[2] if donor else 'itself (no donor)'
         major_ref = None
         if need == 2:
             ms = self.free_slots.pop(0)
-            vs.fill_slot(self.m, ms, self.tags[major], weref, dmaj)
+            write_profile(self.m, vs.fill_slot(self.m, ms, self.tags[major], weref, dmaj), prof)
             major_ref = vs.slot_ref(self.m, ms)
             self.alias[vs.slot_path(ms)] = major + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
+            self.log.append((ms, self.alias[vs.slot_path(ms)], dname))
         sl = self.free_slots.pop(0)
-        vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref)
+        write_profile(self.m, vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref), prof)
         self.alias[vs.slot_path(sl)] = source + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
+        self.log.append((sl, self.alias[vs.slot_path(sl)], dname))
         taught = self.ensure_label(unit, weapon)
         idx = self.palette_index(vs.slot_path(sl))
         self.clones[key] = idx
         return idx, 'slot %02d%s, firing from %s%s' % (
-            sl, ' (+major)' if need == 2 else '', (donor[2] if donor else 'itself').rsplit(BS, 1)[-1],
+            sl, ' (+major)' if need == 2 else '', dname if ' profile' in dname else dname.rsplit(BS, 1)[-1],
             '; ' + taught if taught else '')
 
 
@@ -346,10 +413,15 @@ def option1(lv, index, first_weapons, enabled, fallback):
         src = lv.pal_names[i]
         unit = lv.ref(src, hv.REF_UNIT)
         # an existing variant of this biped with another weapon, most spawned first
+        actor = lv.ref(src, hv.REF_ACTOR)
+        # a stand-in must be the same KIND of actor, not just the same biped: stealth
+        # Elites share the Elite biped with the sword Commanders and lost their
+        # camouflage when swapped onto them
         others = [j for j in range(len(lv.pal_names)) if j != i
                   and (lv.pal_names[j] in lv.alias or not (lv.pal_names[j] or '').lower()
                        .startswith('characters' + BS + 'enhancer' + BS))   # no empty slots
                   and lv.ref(lv.pal_names[j], hv.REF_UNIT) == unit
+                  and lv.ref(lv.pal_names[j], hv.REF_ACTOR) == actor
                   and lv.weapon_of_index(j) not in first and lv.weapon_of_index(j)]
         others.sort(key=lambda j: -len(lv.spawns_of(j)))
         target, note = (others[0], 'existing variant %s' % lv.pal_names[others[0]].rsplit(BS, 1)[-1]) \
@@ -371,6 +443,53 @@ def option1(lv, index, first_weapons, enabled, fallback):
         out.append(_row('enemy weapons', '%s %s' % (enemy, src.rsplit(BS, 1)[-1]),
                         old=weapon.rsplit(BS, 1)[-1],
                         new='%d spawn(s) -> %s (%s)' % (len(spawns), (lv.weapon_of_index(target) or '?').rsplit(BS, 1)[-1], note)))
+    return out
+
+
+def fix_promotions(lv, index, first, enabled):
+    """A variant that still spawns must not PROMOTE into a starting weapon either:
+    the needler Elite promotes into 'elite major plasma rifle'. Such a major gets a
+    slot copy carrying the minor's own weapon (or, if that is a starting weapon too,
+    the first Auto fallback), and the minor is pointed at it. Vanilla minors only --
+    a filled slot's major was cloned with its new weapon already."""
+    out = []
+    first = {w for w in first if w}
+    fixed = {}
+    for i in sorted({sp[1] for sp in lv.spawns}):
+        name = lv.pal_names[i]
+        enemy = lv.enemy_of_index(i)
+        if (not name or not enemy or enemy == 'Marine' or not enabled.get(enemy, True)
+                or name.lower().startswith('characters' + BS + 'enhancer' + BS)):
+            continue
+        major = lv.ref(name, hv.REF_MAJOR)
+        if not major or major not in lv.tags or lv.ref(major, hv.REF_WEAPON) not in first:
+            continue
+        own = lv.ref(name, hv.REF_WEAPON)
+        weapon = own if own and own not in first else next(
+            (w for w in auto_fallbacks(lv, index, enemy, lv.ref(name, hv.REF_UNIT))
+             if w not in first and lv.m.tag_id(('weap', w)) is not None), None)
+        if not weapon:
+            continue
+        key = (major, weapon)
+        if key not in fixed:
+            weref = hv._weapon_ref(lv.m, weapon)
+            if weref is None or not lv.free_slots:
+                out.append(_row('enemy weapons', '%s promotion' % name.rsplit(BS, 1)[-1], ok=False,
+                                reason='no free variant slot' if weref else 'no %s here' % weapon))
+                continue
+            d = donor_for(lv.m, index, weapon, lv.ref(major, hv.REF_UNIT),
+                          hv._floats(lv.m, lv.tags[major], hv.TRAITS))
+            sl = lv.free_slots.pop(0)
+            write_profile(lv.m, vs.fill_slot(lv.m, sl, lv.tags[major], weref,
+                                             (d[1] or d[0]) if d else None), d[3] if d else None)
+            lv.alias[vs.slot_path(sl)] = major + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
+            lv.log.append((sl, lv.alias[vs.slot_path(sl)], d[2] if d else 'itself (no donor)'))
+            fixed[key] = vs.slot_ref(lv.m, sl)
+        b = lv.tags[name]
+        lv.m.data[b + hv.REF_MAJOR:b + hv.REF_MAJOR + 16] = fixed[key]
+        out.append(_row('enemy weapons', '%s promotion' % name.rsplit(BS, 1)[-1],
+                        old='%s (%s)' % (major.rsplit(BS, 1)[-1], lv.ref(major, hv.REF_WEAPON).rsplit(BS, 1)[-1]),
+                        new='promotes into a %s copy' % weapon.rsplit(BS, 1)[-1]))
     return out
 
 
@@ -461,6 +580,16 @@ def apply(m, hp, spec):
                        spec.get('fallback') or {})
     if spec.get('cards'):
         out += cards(lv, index, spec['cards'])
+    if spec.get('option1'):
+        out += fix_promotions(lv, index, spec.get('first_weapons') or [], spec.get('enabled') or {})
+    # the log a co-op partner compares: what every slot became, and from which donors
+    for sl, alias, donor in lv.log:
+        out.append(_row('enemy weapons', 'slot %02d' % sl, old='empty',
+                        new='%s -- firing from %s' % (alias.rsplit(BS, 1)[-1],
+                                                      donor if ' profile' in donor else donor.rsplit(BS, 1)[-1])))
+    if lv.log:
+        out.append(_row('enemy weapons', 'donor index', old='%d variants' % len(index),
+                        new='fingerprint %s' % index_fingerprint(index)))
     m.actv_alias = dict(lv.alias)            # cards and colours see slots as their enemy
     if note and any(r.get('reason', '').startswith('no free variant slot') for r in out):
         out.append(note)

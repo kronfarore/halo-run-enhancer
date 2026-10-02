@@ -1,0 +1,114 @@
+{
+ "Halo 1": {
+  "weapons\\saw\\saw": {
+   "source": "Halo 4 ai\\generic objects\\weapons\\rifle\\storm_lmg\\storm_lmg (weapon properties #40, firing pattern #39)",
+   "fields": {
+    "0x74": [
+     "<f",
+     20.0,
+     "Maximum Firing Distance"
+    ],
+    "0x7C": [
+     "<f",
+     0.02399827679619193,
+     "Projectile Error"
+    ],
+    "0x80": [
+     "<f",
+     0.25,
+     "First Burst Delay Time"
+    ],
+    "0x84": [
+     "<f",
+     0.25,
+     "First Burst Delay Time Max"
+    ],
+    "0x8C": [
+     "<f",
+     1.0,
+     "Surprise Delay Time"
+    ],
+    "0x9C": [
+     "<f",
+     5.0,
+     "Desired Combat Range"
+    ],
+    "0xA0": [
+     "<f",
+     15.0,
+     "Desired Combat Range Max"
+    ],
+    "0xBC": [
+     "<f",
+     0.949999988079071,
+     "Target Tracking"
+    ],
+    "0xC0": [
+     "<f",
+     0.699999988079071,
+     "Target Leading"
+    ],
+    "0xC4": [
+     "<f",
+     0.75,
+     "Weapon Damage Modifier"
+    ],
+    "0xCC": [
+     "<f",
+     0.30000001192092896,
+     "Burst Origin Radius"
+    ],
+    "0xD0": [
+     "<f",
+     0.0872664600610733,
+     "Burst Origin Angle"
+    ],
+    "0xD4": [
+     "<f",
+     0.2750000059604645,
+     "Burst Return Length"
+    ],
+    "0xD8": [
+     "<f",
+     0.5,
+     "Burst Return Length Max"
+    ],
+    "0xDC": [
+     "<f",
+     0.1745329201221466,
+     "Burst Return Angle"
+    ],
+    "0xE0": [
+     "<f",
+     0.5600000023841858,
+     "Burst Duration"
+    ],
+    "0xE4": [
+     "<f",
+     0.75,
+     "Burst Duration Max"
+    ],
+    "0xE8": [
+     "<f",
+     0.75,
+     "Burst Separation"
+    ],
+    "0xEC": [
+     "<f",
+     2.25,
+     "Burst Separation Max"
+    ],
+    "0x1D8": [
+     "<f",
+     0.4000000059604645,
+     "Drop Weapon Loaded"
+    ],
+    "0x1DC": [
+     "<f",
+     0.800000011920929,
+     "Drop Weapon Loaded Max"
+    ]
+   }
+  }
+ }
+}
