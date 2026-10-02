@@ -2442,6 +2442,21 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   pixel as bytes R,G,B,A while the game/decoder read B,G,R,A. Hidden (prop_visible 0) by
   the user's call; Reach's frames stay.
 
+**Boot 25:** zoomed view visible. Three findings:
+* **Scope art short of the screen edges:** Halo 4's HUD area is inset; Bungie's own dark
+  vignette in the Beam Rifle scope is drawn 15% larger (scale 1.15 at -96,-54). The Reach
+  art is now scaled 1.15 on a canvas 1.5x the HUD area, padded with the mask's dark edge
+  (frame widget -320,-180 1920x1080).
+* **Drift left (slight unzoomed, more with zoom):** without the weapon flag **strict
+  deviation angle** Halo 4 raises the deviation to the AUTOAIM angle (plugin tooltip) --
+  2 deg unzoomed, 1 in the modes; the Beam Rifle sets it. Set.
+* **Gun still drawn when zoomed** (the pistol hides it): flag **hide FP weapon when in
+  iron sights** ("for scoped weapons"), set like the Beam Rifle. h4_weapon_refs.py now
+  takes '/name' for a TOP-LEVEL field ('/flags' = the weapon's own; a bare 'flags' finds
+  item/object/flags first).
+* Projectile origin when zoomed: the tag has ONE first-person offset per barrel, nothing
+  per zoom level -- the beam starts at camera + offset in both states.
+
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
 The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's
