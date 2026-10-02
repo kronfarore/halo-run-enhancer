@@ -76,6 +76,8 @@ def main():
                     help='fp graph action A plays animation B (bisection; repeatable)')
     ap.add_argument('--secondary-fx', metavar='EFFECT',
                     help='a muzzle effect (tag name) in the secondary firing slot of each barrel')
+    ap.add_argument('--firing-response', metavar='DRDF',
+                    help='per-shot damage response (shake/rumble) from another weapon')
     ap.add_argument('--no-firing-shake', action='store_true',
                     help='null the per-shot firing damage response (shake/rumble/recoil)')
     ap.add_argument('--fp-offset', metavar='X,Y,Z',
@@ -111,7 +113,7 @@ def main():
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
-            a.no_firing_shake or a.action_anim):
+            a.no_firing_shake or a.action_anim or a.firing_response):
         return
 
     d = m.data
@@ -157,7 +159,7 @@ def main():
             was = struct.unpack_from('<h', d, acts[ai] + 0xA)[0]
             struct.pack_into('<h', d, acts[ai] + 0xA, an)
             print('action %d: animation %d -> %d' % (ai, was, an))
-    if a.secondary_fx or a.no_firing_shake:
+    if a.secondary_fx or a.no_firing_shake or a.firing_response:
         # each barrel's firing-effects element 0 (barrel +0x184, 0xF4 each):
         #   +0x44 Optional Secondary Firing Effect -- a MUZZLE FLASH beside the Sentinel's
         #         firing effect (boot 16: "missing a muzzle firing effect")
@@ -168,6 +170,14 @@ def main():
             fx = next((t for t in m.tags if t['class'] == 'effe' and t['name'] == a.secondary_fx), None)
             if fx is None:
                 raise SystemExit('no effect %s in this map' % a.secondary_fx)
+        resp = None
+        if a.firing_response:
+            # a GENTLER per-shot response (boot 17: shake "much better" without one, but
+            # "add a little feedback back") -- e.g. the Storm Rifle's, built for a
+            # sustained automatic plasma weapon
+            resp = next((t for t in m.tags if t['class'] == 'drdf' and t['name'] == a.firing_response), None)
+            if resp is None:
+                raise SystemExit('no response %s in this map' % a.firing_response)
         count, ptr = struct.unpack_from('<iI', d, pb + 0x518)
         first = m.data2off(ptr)
         for i in range(count):
@@ -180,6 +190,10 @@ def main():
             if a.no_firing_shake:
                 struct.pack_into('<I', d, el + 0x54 + 0xC, 0xFFFFFFFF)
                 print('barrel %d firing damage response -> null' % i)
+            if resp is not None:
+                d[el + 0x54:el + 0x58] = b'drdf'[::-1]
+                struct.pack_into('<I', d, el + 0x54 + 0xC, resp['ident'])
+                print('barrel %d firing damage response -> %s' % (i, a.firing_response))
     if a.fp_offset:
         # each barrel's "First Person Offset" block (weap.xml: barrel +0x100, 0xC per
         # point, +x forward, +z up, +y left) -- where the beam spawns in first person.
