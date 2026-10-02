@@ -70,6 +70,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--no-overheat-shake', action='store_true',
+                    help='null the overheated damage effect (camera shake + rumble)')
     ap.add_argument('--graph-back', action='store_true',
                     help='fp animations back to the Beam Rifle graph')
     ap.add_argument('--streak-back', action='store_true',
@@ -95,7 +97,8 @@ def main():
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
-            a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back):
+            a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
+            a.no_overheat_shake):
         return
 
     d = m.data
@@ -123,6 +126,14 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.no_overheat_shake:
+        # weap 0x330 "Overheated Damage Effect" tagRef -> null. The Sentinel base names
+        # globals\damage_responses	rigger_overheat: a CAMERA SHAKE + rumble on overheat --
+        # the whole-view jerk the user still felt (boot 13) after every animation seam was
+        # closed. The Beam Rifle leaves this field empty.
+        was = struct.unpack_from('<I', d, pb + 0x330 + 0xC)[0]
+        struct.pack_into('<I', d, pb + 0x330 + 0xC, 0xFFFFFFFF)
+        print('overheated damage effect datum %08x -> null' % was)
     if a.graph_back:
         # fp animations -> the Beam Rifle's own graph (First Person +0x10): does the
         # port's re-exported graph cause the freeze after the overheat jerk (boot 12)?
