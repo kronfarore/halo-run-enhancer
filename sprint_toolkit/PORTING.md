@@ -2423,7 +2423,24 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   compiled: type sid == name sid on every ti=1 row), not its widget class. Written as
   the class, the rows were never tied to the zoom-faded container.
 * **No dark lens mask:** prop_alpha_blend_mode 1 is ADDITIVE (the Beam Rifle's glowing
-  polyart); its dark vignette uses the default 0. The Reach frame widget is set to 0.
+  polyart); its dark vignette leaves it UNSET.
+
+**Boots 23-24:** zoom back, unzoomed fine; the user keeps the HUD's OWN reticle zoomed too
+(Reach reticle out of the art, no fade -- the heat readout under it shows when zoomed).
+* **Black block:** an EXPLICIT prop_alpha_blend_mode 0 drew the whole frame opaque.
+  Bungie leaves the property UNSET on 1707 of 1727 HUD widgets sampled; unset != 0.
+* **THE RETICLE DRIFT, found by a field diff of the weapon against the Beam Rifle and
+  Plasma Pistol:** the Sentinel Beam (an ENEMY gun) carries aim assist modes with a 20 deg
+  autoaim cone and a **20 deg DEVIATION ANGLE** -- how far Halo 4 lets the aim, and the
+  reticle with it, leave the screen centre (Beam Rifle 0.4, Plasma Pistol 4). Not the
+  scope's parallax (gone, drift unchanged), not the barrel offset (zeroed, unchanged).
+  Both modes -> the Beam Rifle's; top-level deviation 0; zoomed aim speed 0.5 -> 1.
+  LESSON: a weapon based on an AI gun inherits AI aim assist -- diff ALL of it.
+* **Side meters stayed empty** with heat and battery (weapon_data_reader.prop_battery --
+  prop_charge is the Plasma Pistol's OVERCHARGE) bound. Unsettled: an a8r8g8b8 bitmap tag
+  holds the imported source AND the processed pixels, and `tool bitmaps` stores a TIFF
+  pixel as bytes R,G,B,A while the game/decoder read B,G,R,A. Hidden (prop_visible 0) by
+  the user's call; Reach's frames stay.
 
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
