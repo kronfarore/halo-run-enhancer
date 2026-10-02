@@ -68,8 +68,9 @@ SET_REFS = [
     ('model', PORT + '.model'),
     ('first person[0]/first person model', PORT + '.render_model'),
     ('first person[0]/first person animations',
-     'objects\\characters\\storm_fp\\weapons\\rifle\\fp_beam_rifle\\'
-     'storm_fp_beam_rifle.model_animation_graph'),
+     # the port's OWN copy of fp_beam_rifle (h4_fp_graph.py: the overheat jerk fixed)
+     'objects\\characters\\storm_fp\\weapons\\rifle\\fp_focus_rifle\\'
+     'fp_focus_rifle.model_animation_graph'),
     # the PLASMA PISTOL's HUD: battery as a percentage + overheat. The Beam Rifle's (first
     # boot) counts 10 shots, which a 620-round battery cannot show. No scope overlay: zoom
     # itself is the weapon's, and the enhancer grafts the scope UI at patch time.

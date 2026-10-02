@@ -172,6 +172,10 @@ H4_TREES = [
     (os.path.join(H4EK, 'tags', FOCUS), 'tags/objects/weapons/rifle/focus_rifle', True),
     (os.path.join(H4EK, 'data', FOCUS), 'data/objects/weapons/rifle/focus_rifle', True),
     (os.path.join(HREK, 'data', FOCUS), 'source/hrek_data_focus_rifle', True),
+    (os.path.join(H4EK, 'tags', 'objects', 'characters', 'storm_fp', 'weapons', 'rifle',
+                  'fp_focus_rifle'), 'tags/objects/characters/storm_fp/fp_focus_rifle', True),
+    (os.path.join(H4EK, 'data', 'objects', 'characters', 'storm_fp', 'weapons', 'rifle',
+                  'fp_focus_rifle'), 'data/objects/characters/storm_fp/fp_focus_rifle', True),
 ]
 H4_FILES = [
     (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
@@ -181,6 +185,7 @@ H4_FILES = [
 ]
 H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
               'h4_make_port_weapon.py', 'h4_weapon_refs.py', 'h4_tag_numbers.py', 'balance_port.py',
+              'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py',
               'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
 PROFILES = {

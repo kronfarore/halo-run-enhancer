@@ -2229,6 +2229,31 @@ firing effect, a path no player ever exercised. h4_make_port_weapon.py now gives
 port's own projectile that attachment (h4_weapon_refs.py `add-attachment`). Recipe rule:
 **a donor's visuals must be the kind the PLAYER path draws.**
 
+**Boots 10-11:** the beam DRAWS (thin, end-on: it leaves the camera). Muzzle start: the
+gun-origin barrel flag fires from the gun's WORLD position, which first person draws
+elsewhere -- no visible help; not kept. "Draw in first person pass" on the Sentinel's
+point-to-point tracer: no change. **The look:** H4 has NO beam_system tags; Bungie
+converted the Focus Rifle's beam into the Sentinel's tracers -- a "cross" (two ribbons,
+double-sided) where the Beam Rifle's streak is one thin "aligned ribbon". The port now
+owns a copy of that tracer with point-to-point CLEARED, riding the projectile inside its
+own copy of the Beam Rifle's projectile effect (fx\beam, fx\beam_projectile).
+
+**The overheat jerk** (user's slow-motion video: the whole fp view shifts right ~2 frames
+at the end of overheating). h4_fp_jump.py measured the Beam Rifle's graph, hands + gun
+against the camera: overheating->o_h_exit 0.0010 (authored to join), but overheating->
+overheated 0.0353 and overheated->o_h_exit 0.0350 -- the `overheated` hold is DISPLACED,
+all base animations (not an overlay artifact), and no o_h_exit frame matches it (closest
+0.031), so trimming frames could not fix it. h4_fp_graph.py writes the port's OWN graph
+(storm_fp\weapons\rifle\fp_focus_rifle) with `overheated` as a still hold of
+overheating's last frame (both hand-offs <=0.001), keeping the SHIPPED frame_event_list
+(Foundry's round trip lost events: 25,224 vs 32,491 bytes). The Beam Rifle never
+overheats in normal play, so nobody saw this.
+
+**TRAP: Foundry's graph IMPORT rewrites the source graph's frame_event_list** -- it
+changed the Beam Rifle's shipped one (32,491 -> 30,376 bytes). Restored from H4EK.7z
+(bin\x64\7zr.exe e H4EK.7z <path>); h4_fp_jump.build_rig now keeps it byte for byte.
+H4EK.7z is the clean source for ANY shipped H4 tag.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
