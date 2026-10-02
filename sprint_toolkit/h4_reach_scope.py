@@ -65,6 +65,10 @@ WIDGETS = {
     'bitmap_heat_bar': ('meter_heat', 1070.4, 203.4, 105.8, 313.3, 0.85, (1, 1, 0.45, 0.2)),
     'bitmap_ammo_bar': ('meter_batt', 103.8, 203.4, 105.8, 313.3, 0.85, (1, 0.45, 0.75, 1)),
 }
+#: prop_alpha_blend_mode: the Beam Rifle's glowing art uses 1 (ADDITIVE -- a black mask
+#: adds nothing: boot 22 showed only the frame lines); its dark vignette leaves it at the
+#: default 0, alpha blend. The Reach frame carries the dark lens mask, so 0.
+BLEND = {'bitmap_bar_outlines': 0}
 #: HUD bindings the scope's meters need: (source comp, source prop, target comp, target prop)
 METER_BINDINGS = (
     ('weapon_data_reader', 'prop_charge', 'ammo_animator', 'prop_current_value'),
@@ -211,6 +215,8 @@ def make_template(T, write):
                          ('prop_height', h), ('prop_opacity', op)):
                 set_prop(t, oc, 'real', p, v)
             set_prop(t, oc, 'argb color', 'prop_tint_color', tint)
+            if comp in BLEND:
+                set_prop(t, oc, 'long', 'prop_alpha_blend_mode', BLEND[comp])
             print('template: %-20s -> %s at %s,%s %sx%s' % (comp, bm, left, top, w, h))
         t.tag_has_changes = write
     names = []
@@ -255,7 +261,11 @@ def wire_hud(T, template_comps, write):
         for typ, name, parent, flags in template_comps:
             new = name if name not in have else name + '_template'
             rename[name] = new
-            add(typ, new, rename.get(parent, parent) if parent else CONTAINER, flags, ti)
+            # A TEMPLATE-INSTANCE row's "type" is the TEMPLATE COMPONENT'S NAME, not its
+            # widget class (Bungie's Beam Rifle HUD, compiled: type == name sid on every
+            # ti=1 row). Boot 22 wrote the class: the scope was never tied to its
+            # zoom-faded container and drew all the time.
+            add(name, new, rename.get(parent, parent) if parent else CONTAINER, flags, ti)
         dcomps = ds.SelectField('components')
         for z in ZOOM:
             e = comps.AddElement()

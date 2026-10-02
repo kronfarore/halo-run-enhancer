@@ -268,6 +268,16 @@ def main():
     by_name(PORT + '.weapon', SET_REFS)
     by_name(OWN_PROJ + '.projectile', PROJ_REFS)
 
+    # the port's NUMBERS last: the re-copied weapon is the Sentinel Beam's (no zoom, its
+    # heat). Boot 22 was built without this step and lost zoom and heat -- so it runs here.
+    r = subprocess.run([BLENDER, '--background', '--python', os.path.join(HERE, 'h4_tag_numbers.py'),
+                        '--', '--write'], capture_output=True, text=True, encoding='utf-8',
+                       errors='replace')
+    if 'SAVED' not in r.stdout:
+        print(r.stdout[-2000:])
+        raise SystemExit('h4_tag_numbers.py failed: the weapon has the Sentinel Beam numbers')
+    print('numbers: h4_tag_numbers.py --write (zoom, heat, rate of fire)')
+
 
 def by_name(tag, pairs):
     """Run h4_weapon_refs.py on one tag with (field, value) pairs; refuse on failure."""

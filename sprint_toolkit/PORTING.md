@@ -2412,6 +2412,19 @@ overheat border) -- recreating it means a new H4 scope template on imported Reac
   count, a two-colour function's colours in u32 slots 0 and 3 -- Reach uses the same
   layout) and gives the six palette bitmaps own recoloured copies.
 
+**Boot 22 (rebuild):** muzzle flash GOOD. Control test before it: barrel offset 0,0,0 in
+the old map still drifted ("when looking around") -> the offset is innocent, the drift was
+the Beam Rifle scope's parallax. Three faults, all mine:
+* **No zoom, wrong heat:** h4_make_port_weapon.py re-copies the Sentinel Beam, and
+  h4_tag_numbers.py (magnification levels 0 -> 2, heat values) was not run after it.
+  h4_make_port_weapon.py now runs it as its LAST step.
+* **Scope drawn all the time (side bars + a second reticle):** in a HUD, a TEMPLATE
+  INSTANCE row's `type` is the template component's NAME (Bungie's Beam Rifle HUD,
+  compiled: type sid == name sid on every ti=1 row), not its widget class. Written as
+  the class, the rows were never tied to the zoom-faded container.
+* **No dark lens mask:** prop_alpha_blend_mode 1 is ADDITIVE (the Beam Rifle's glowing
+  polyart); its dark vignette uses the default 0. The Reach frame widget is set to 0.
+
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
 The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's
