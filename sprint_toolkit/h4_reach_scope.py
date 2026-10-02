@@ -70,8 +70,19 @@ WIDGETS = {
 }
 #: prop_alpha_blend_mode: the Beam Rifle's glowing art uses 1 (ADDITIVE -- a black mask
 #: adds nothing: boot 22 showed only the frame lines); its dark vignette leaves it at the
-#: default 0, alpha blend. The Reach frame carries the dark lens mask, so 0.
-BLEND = {'bitmap_bar_outlines': 0}
+#: property unset. The Reach frame carries the dark lens mask, so it is unset too.
+BLEND = {}
+#: boot 24: an EXPLICIT 0 drew the whole frame as a solid black block. Bungie leaves the
+#: property UNSET on 1707 of 1727 HUD widgets sampled (1 on 16 glowing ones), and unset
+#: is not 0 -- so the frame's is removed, leaving the widget's default.
+UNSET_BLEND = ('bitmap_bar_outlines',)
+#: THE SIDE METERS ARE HIDDEN (boot 24, the user's call: heat shows under the HUD reticle,
+#: which now stays when zoomed, and the battery in the weapon panel). They stayed EMPTY in
+#: boots 23-24 with heat and battery bound; the channel layout Halo 4's hud_meter wants
+#: could not be settled from the tags (an a8r8g8b8 bitmap tag holds the imported source
+#: AND the processed pixels; `tool bitmaps` stores a TIFF pixel as bytes R,G,B,A, and the
+#: Beam Rifle's heat_bar decodes as R = shape, G = B = threshold). Reach's frames stay.
+HIDDEN = ('bitmap_heat_bar', 'bitmap_ammo_bar')
 #: HUD bindings the scope's meters need: (source comp, source prop, target comp, target prop)
 METER_BINDINGS = (
     # the BATTERY is prop_battery, into both animator values (the Spartan Laser's HUD).
@@ -223,6 +234,13 @@ def make_template(T, write):
             set_prop(t, oc, 'argb color', 'prop_tint_color', tint)
             if comp in BLEND:
                 set_prop(t, oc, 'long', 'prop_alpha_blend_mode', BLEND[comp])
+            if comp in HIDDEN:
+                set_prop(t, oc, 'long', 'prop_visible', 0)
+            if comp in UNSET_BLEND:
+                blk = props(oc, 'long')
+                for k in reversed(range(blk.Elements.Count)):
+                    if name_of(blk.Elements[k]) == 'prop_alpha_blend_mode':
+                        blk.RemoveElement(k)
             print('template: %-20s -> %s at %s,%s %sx%s' % (comp, bm, left, top, w, h))
         t.tag_has_changes = write
     names = []

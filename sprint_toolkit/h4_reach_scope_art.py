@@ -21,10 +21,10 @@ bitmaps`):
                         drawn for the 1280x720 HUD screen (the Halo 4 scope template's
                         bar-outline widget shows it, h4_reach_scope.py).
   * meter_heat.tif / meter_batt.tif -- Halo 4 METER bitmaps. Halo 4's hud_meter reads
-    them like the Beam Rifle's heat_bar: R = A = the shape, G = B = the fill threshold
-    (255 at the top, 0 at the bottom; measured on heat_bar/ammo_bar). Reach keeps the
-    shape in A and its own gradient along the arc, so the shape is kept and the
-    threshold is redrawn top-to-bottom.
+    them like the Beam Rifle's heat_bar: B = A = the shape, R = G = the fill threshold
+    (255 at the top, 0 at the bottom; heat_bar/ammo_bar, read with h4_bitmap.py's R/B
+    swap for a8r8g8b8 accounted for). Reach keeps the shape in A and its own gradient
+    along the arc, so the shape is kept and the threshold is redrawn top-to-bottom.
   The bitmap TAGS are copies of the Beam Rifle's (bar_outlines: dxt5; heat_bar:
   a8r8g8b8, no mips) made before the import, so `tool bitmaps` keeps their settings.
 
@@ -142,7 +142,12 @@ def meter(im):
     w, h = shape.size
     grad = Image.new('L', (w, h))
     grad.putdata([round(255 * (1 - y / (h - 1))) for y in range(h) for _x in range(w)])
-    return Image.merge('RGBA', (shape, grad, grad, shape))
+    # Channel order, measured on the TAG (boot 24): a TIFF written R = shape decodes from
+    # the imported a8r8g8b8 tag with the shape in B, where Bungie's heat_bar decodes with it
+    # in R (h4_bitmap.py swaps R/B for this format; its DXT path does not). Matching
+    # Bungie's tag means writing the shape into B: R = G = threshold, B = A = shape.
+    # Written R = shape, the meters stayed empty (boots 23-24).
+    return Image.merge('RGBA', (grad, grad, shape, shape))
 
 
 def meter_rects():

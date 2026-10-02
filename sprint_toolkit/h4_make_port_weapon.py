@@ -131,6 +131,28 @@ SET_REFS = [
     ('set:picked up msg', 'fr_picked_up'),
     ('set:switch-to msg', 'fr_switch_to'),
     ('set:switch-to from ai msg', 'fr_swap_ai'),
+] + [
+    # AIM ASSIST (boot 24: "the reticle drifts while looking around, always to the right,
+    # back to the centre when still" -- unchanged by the scope and by the barrel offset).
+    # The Sentinel Beam is an ENEMY gun: its aim assist MODES carry a 20 deg autoaim cone
+    # and a 20 deg DEVIATION ANGLE (how far Halo 4 lets the aim, and the reticle with it,
+    # leave the screen centre); the Beam Rifle's is 0.4, the Plasma Pistol's 4. Both modes
+    # -> the Beam Rifle's mode (the user's balance: "a sniper but laser"). The top-level
+    # weapon aim assist keeps the catalog's Reach autoaim (h4_tag_numbers.py) with the
+    # Beam Rifle's deviation 0; zoomed turning speed from the Sentinel's 0.5 to 1.
+    ('set:aim assist modes[%d]/%s' % (i, f), v)
+    for i in (0, 1)
+    for f, v in (('autoaim stick time', '0'), ('autoaim stick angle', '0'),
+                 ('autoaim angle', '1'), ('autoaim range', '25'),
+                 ('autoaim falloff range', '12.5'), ('autoaim near falloff range', '0'),
+                 ('magnetism angle', '2'), ('magnetism range', '25'),
+                 ('magnetism falloff range', '12.5'), ('magnetism near falloff range', '1'),
+                 ('deviation angle', '0.4'))
+] + [
+    # leaf names: found depth-first through STRUCTS only (h4_weapon_refs.find), so the
+    # modes BLOCK above is not touched; 'weapon aim assist/...' does not resolve by path
+    ('set:deviation angle', '0'),
+    ('set:aim speed multiplier', '1'),
     ('set-point:barrels[0]/first person offset', FP_OFFSET),
     ('set-point:barrels[1]/first person offset', FP_OFFSET),
 ]
