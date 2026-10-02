@@ -122,9 +122,16 @@ def shift_to_join(src_anim, dst_anim):
 #: (vent_enter / vent_loop / vent_exit) the Plasma Pistol's lacks, and vent_enter's second
 #: frame steps 0.058 -- a mid-vent switch into it shows as exactly one odd frame. Left
 #: OUT of the port's graph (the export rebuilds the graph from what is exported).
-DROP = ('vent_enter', 'vent_loop', 'vent_exit', 'o_h_exit')
-#: boot 16: the pop SURVIVED dropping the vent set. The Plasma Pistol's overheat set also
-#: has NO o_h_exit -- the engine goes overheated -> idle -- so o_h_exit is left out too.
+DROP = ('vent_enter', 'vent_loop', 'vent_exit',
+        'flaps', 'barrel_spin', 'accelration_screens')
+#: boot 16: the pop SURVIVED dropping the vent set, and dropping o_h_exit was a mistake
+#: (the Plasma Pistol HAS o_h_exit -- an earlier name filter missed it; restored). What the
+#: port graph has and the Plasma Pistol's does not, by name: three OVERLAYS -- flaps (1
+#: frame), barrel_spin (21), accelration_screens (9) -- the Beam Rifle's flaps and barrel,
+#: blended on top by weapon functions. The port's weapon (Sentinel base) exports `heat` as
+#: blend_weight and blend_weight_barrel, so heat drives them: a weight crossing a threshold
+#: mid-vent on a one-frame overlay = a one-frame pop at ~half heat. The Focus Rifle has no
+#: flaps or spinning barrel; all three are left out.
 #: THE SHAKE (user, boot 15: reduce it): overheating frames 27-37 alternate +-0.005 every
 #: frame -- the Beam Rifle's heat vibration, not the Focus Rifle's. Damped by a centred
 #: moving average (window 5) over frames 26..38: the alternation cancels, the slower

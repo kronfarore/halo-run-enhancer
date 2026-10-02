@@ -2310,6 +2310,14 @@ Reach's Focus Rifle had all three too) nulled, and the Suppressor's muzzle-flash
 effect (storm_forerunner_smgxr_smg_firing_muzzle_flash, no shot sound) in each
 barrel's "Optional Secondary Firing Effect" (+0x44).
 
+**Boot 17:** pop still there. Dropping o_h_exit was a MISTAKE -- the Plasma Pistol HAS one
+(an earlier name filter on heat/vent/overh missed it); restored. A full name diff of the
+port graph against the Plasma Pistol's leaves three OVERLAYS only the Beam Rifle has:
+flaps (1 frame), barrel_spin (21), accelration_screens (9), blended by weapon functions --
+and the port's weapon exports `heat` as blend_weight / blend_weight_barrel. Heat crossing
+a threshold mid-vent on a one-frame overlay = a one-frame pop at ~half heat. All three are
+left out (34 animations). Lesson: compare graphs by the FULL name set, never a filtered one.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
