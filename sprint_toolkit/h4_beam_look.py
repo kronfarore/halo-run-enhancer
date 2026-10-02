@@ -31,6 +31,7 @@ Run inside the portable Blender on F: (H4EK is bound through an absolute path):
 import importlib
 import os
 import shutil
+import struct
 import sys
 
 import bpy
@@ -46,6 +47,11 @@ OWN_TRACER = B.join(['objects', 'weapons', 'rifle', 'focus_rifle', 'fx', 'beam']
 OWN_EFFECT = B.join(['objects', 'weapons', 'rifle', 'focus_rifle', 'fx', 'beam_projectile'])
 PALETTE = B.join(['fx', 'reach', 'bitmaps', 'contrails', '_gradients', 'focus_rifle_plasma'])
 BEHAVIOUR = ('length', 'offset', 'profile lifespan', 'profile self acceleration')
+#: boot 15 (user): "very 2 dimensional" -> a TUBE: Reach's own 1p beam used an n-gon
+#: profile; "lifespan a bit too long" -> the streak's profile lifespan (0.35..1.0 s,
+#: floats at +4/+8 of the function data) scaled down.
+SHAPE, SIDES = 'n-gon', 6
+LIFESPAN_SCALE = 0.5
 
 
 def field(fields, name):
@@ -111,6 +117,16 @@ def main(write):
             for fn in BEHAVIOUR:
                 copied += copy_fields(field(donor.Fields, fn).Elements[0].Fields,
                                       field(e.Fields, fn).Elements[0].Fields)
+            sh = e.SelectField('profile shape')
+            sh.Value = [x.EnumName for x in sh.Items].index(SHAPE)
+            e.SelectField('number of n-gon sides').SetStringData(str(SIDES))
+            life = field(field(e.Fields, 'profile lifespan').Elements[0].Fields, 'data')
+            raw = bytearray(life.GetData())
+            lo, hi = struct.unpack_from('<ff', raw, 4)
+            struct.pack_into('<ff', raw, 4, lo * LIFESPAN_SCALE, hi * LIFESPAN_SCALE)
+            life.SetData(bytes(raw))
+            print('   shape %s/%d sides, lifespan %.3f..%.3f -> %.3f..%.3f s'
+                  % (SHAPE, SIDES, lo, hi, lo * LIFESPAN_SCALE, hi * LIFESPAN_SCALE))
             params = field(e.Fields, 'material parameters')
             pal = 0
             for j in range(params.Elements.Count):

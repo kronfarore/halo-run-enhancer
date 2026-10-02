@@ -116,6 +116,38 @@ def shift_to_join(src_anim, dst_anim):
     return changed
 
 
+#: THE ONE-FRAME POP at ~half heat (user's video, frame 56 of 124: both hands + rifle
+#: shifted for one frame) is NOT in the animation data. Diagnostic (boot 15): with the
+#: PLASMA PISTOL's fp graph the pop is GONE. The Beam Rifle graph differs by a VENT set
+#: (vent_enter / vent_loop / vent_exit) the Plasma Pistol's lacks, and vent_enter's second
+#: frame steps 0.058 -- a mid-vent switch into it shows as exactly one odd frame. Left
+#: OUT of the port's graph (the export rebuilds the graph from what is exported).
+DROP = ('vent_enter', 'vent_loop', 'vent_exit')
+#: THE SHAKE (user, boot 15: reduce it): overheating frames 27-37 alternate +-0.005 every
+#: frame -- the Beam Rifle's heat vibration, not the Focus Rifle's. Damped by a centred
+#: moving average (window 5) over frames 26..38: the alternation cancels, the slower
+#: underlying motion stays.
+DAMP_ANIM, DAMP_FROM, DAMP_TO, DAMP_WINDOW = 'overheating', 26, 38, 5
+
+
+def damp(anim, f0, f1, window):
+    half = window // 2
+    changed = 0
+    for fc in jump_fcurves(action_of(anim)):
+        orig = {f: fc.evaluate(f) for f in range(f0 - half, f1 + half + 1)}
+        for k in fc.keyframe_points:
+            f = int(round(k.co.x))
+            if f0 <= f <= f1:
+                v = sum(orig[f + i] for i in range(-half, half + 1)) / window
+                dy = v - k.co.y
+                k.co.y = v
+                k.handle_left.y += dy
+                k.handle_right.y += dy
+                changed += 1
+        fc.update()
+    return changed
+
+
 def worst_spike(arm, anim, lo, hi):
     fr = [x for x in jump.sample(arm, anim) if lo - 1 <= x[0] <= hi + 1]
     best = (0, None)
@@ -136,6 +168,14 @@ def main(write):
     print('%s frames %d..%d smoothed (%d keys): worst spike %.4f at %s -> %.4f at %s'
           % (SMOOTH_ANIM, SMOOTH_FROM + 1, SMOOTH_TO - 1, n, before[0], before[1],
              after[0], after[1]))
+    def shake(anim):
+        fr = [x for x in jump.sample(arm, anim) if DAMP_FROM <= x[0] <= DAMP_TO]
+        return max(max((b[k] - (a[k] + c[k]) * 0.5).length for k in jump.WATCH)
+                   for (_x, a), (_y, b), (_z, c) in zip(fr, fr[1:], fr[2:]))
+    before = shake(anims[DAMP_ANIM])
+    n = damp(anims[DAMP_ANIM], DAMP_FROM, DAMP_TO, DAMP_WINDOW)
+    print('%s frames %d..%d damped (%d keys): worst shake %.4f -> %.4f'
+          % (DAMP_ANIM, DAMP_FROM, DAMP_TO, n, before, shake(anims[DAMP_ANIM])))
     c = shift_to_join(anims[SHIFT_FROM], anims[SHIFT_INTO])
     print('%s shifted to join %s: %d channels' % (SHIFT_INTO, SHIFT_FROM, c))
     sm = {n: jump.sample(arm, anims[n]) for n in (SHIFT_FROM, SHIFT_INTO, 'o_h_exit')}
@@ -148,8 +188,13 @@ def main(write):
         return
     sc = bpy.context.scene.nwo
     sc.asset_type = 'animation'
+    dropped = []
     for a in sc.animations:
-        a.export_this = True
+        short = a.name.replace('first_person ', '').replace('first_person:', '')
+        a.export_this = short not in DROP
+        if not a.export_this:
+            dropped.append(short)
+    print('left out of the port graph: %s' % dropped)
     out = os.path.join(TAGS, OWN)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     if not os.path.exists(out):

@@ -71,6 +71,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--fp-offset', metavar='X,Y,Z',
+                    help='first person projectile offset: +x forward, +y left, +z up')
     ap.add_argument('--no-overheat-shake', action='store_true',
                     help='null the overheated damage effect (camera shake + rumble)')
     ap.add_argument('--graph-pp', action='store_true',
@@ -101,7 +103,7 @@ def main():
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
-            a.no_overheat_shake or a.graph_pp):
+            a.no_overheat_shake or a.graph_pp or a.fp_offset):
         return
 
     d = m.data
@@ -129,6 +131,21 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.fp_offset:
+        # each barrel's "First Person Offset" block (weap.xml: barrel +0x100, 0xC per
+        # point, +x forward, +z up, +y left) -- where the beam spawns in first person.
+        # The block needs an element already (the kit build adds one).
+        x, y, z = (float(v) for v in a.fp_offset.split(','))
+        count, ptr = struct.unpack_from('<iI', d, pb + 0x518)
+        first = m.data2off(ptr)
+        for i in range(count):
+            n, p2 = struct.unpack_from('<iI', d, first + i * 0x190 + 0x100)
+            if not n:
+                raise SystemExit('barrel %d has no first person offset element -- rebuild first' % i)
+            at = m.data2off(p2)
+            was = struct.unpack_from('<3f', d, at)
+            struct.pack_into('<3f', d, at, x, y, z)
+            print('barrel %d first person offset %s -> %s' % (i, ','.join('%g' % v for v in was), a.fp_offset))
     if a.no_overheat_shake:
         # weap 0x330 "Overheated Damage Effect" tagRef -> null. The Sentinel base names
         # globals\damage_responses	rigger_overheat: a CAMERA SHAKE + rumble on overheat --

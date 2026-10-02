@@ -137,6 +137,21 @@ def main(argv):
                 ok &= good
                 print('   %-4s add-attachment %s' % ('ok' if good else 'BAD', got))
                 continue
+            if field.startswith('set-point:'):
+                # 'set-point:<block path>' 'x,y,z': element 0 of a one-point block (a
+                # barrel's "first person offset"), added when the block is empty
+                path = field[len('set-point:'):]
+                blk = resolve_any(t.tag, path)
+                if blk.Elements.Count == 0:
+                    blk.AddElement()
+                pt = blk.Elements[0].Fields[0]
+                pt.SetStringData(value.split(','))
+                now = pt.GetStringData()
+                now_s = now if isinstance(now, str) else ','.join(now)
+                good = same_value(now_s, value)
+                ok &= bool(good)
+                print('   %-4s %-44s %s' % ('ok' if good else 'BAD', field, now_s))
+                continue
             if field.startswith('set:'):
                 # 'set:<field path>' <value>: a plain field -- number, string id or enum
                 f = resolve_any(t.tag, field[len('set:'):])

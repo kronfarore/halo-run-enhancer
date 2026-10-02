@@ -64,6 +64,8 @@ REPOINT = [
 ]
 
 #: (field path, tag path WITH extension): references the donor has as NULL
+FP_OFFSET = '0.13,-0.05,-0.05'
+
 SET_REFS = [
     ('model', PORT + '.model'),
     ('first person[0]/first person model', PORT + '.render_model'),
@@ -91,6 +93,13 @@ SET_REFS = [
     ('set:weapon ready 1st person animation playback scale', '1'),
     ('set:weapon name', 'csr'),
     ('set:weapon class', 'rifle'),
+    # WHERE THE BEAM STARTS (boot 15: "appears in the centre of the screen"). Projectiles
+    # leave the first-person camera; a barrel's "first person offset" (+x forward, +z up,
+    # +y left) moves that spawn in FIRST PERSON only. The gun-origin flag used the gun's
+    # WORLD position instead and did not help. Starting guess for the Focus Rifle's
+    # muzzle; tune in a built map with h4_map_poke.py --fp-offset, then copy here.
+    ('set-point:barrels[0]/first person offset', FP_OFFSET),
+    ('set-point:barrels[1]/first person offset', FP_OFFSET),
 ]
 
 
@@ -165,7 +174,7 @@ def main():
         if n < 1:
             raise SystemExit('the donor has no %s reference to %s' % (group, old))
     for field, path in SET_REFS:
-        if field.startswith(('clear-flag:', 'set:')):
+        if field.startswith(('clear-flag:', 'set:', 'set-point:')):
             continue
         if not os.path.exists(os.path.join(TAGS, path)):
             raise SystemExit('%s -> %s does not exist' % (field, path))

@@ -2291,6 +2291,16 @@ focus_rifle_plasma, point-to-point cleared; in an own copy of the streak's effec
 to the port's projectile. Z-510 (storm_anti_infantry_turret) = the same "bsh" point-to-point
 mechanism, not usable for a player weapon.
 
+**Boot 15 (rebuild):** the Plasma Pistol graph has NO pop -> the Beam Rifle chain. Its VENT
+set (vent_enter/loop/exit, absent from the Plasma Pistol's; vent_enter steps 0.058) is now
+LEFT OUT of the port graph (37 animations). The overheat shake (frames 27-37, +-0.005
+alternating -- the Beam Rifle's, not the Focus Rifle's) damped by a 5-frame moving average:
+0.0096 -> 0.0018. The beam: drew, "2-dimensional" and too long-lived -> n-gon tube, 6
+sides (Reach's own 1p beam was an n-gon), profile lifespan 0.35..1.0 -> 0.175..0.5 s
+(function data floats at +4/+8). Spawn point: each barrel's FIRST PERSON OFFSET (+x
+forward, +y left, +z up) -- first-person only, unlike the gun-origin flag; starting guess
+0.13,-0.05,-0.05, tuned without rebuilds via `h4_map_poke.py --fp-offset x,y,z`.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
