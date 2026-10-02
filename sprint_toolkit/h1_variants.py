@@ -237,11 +237,14 @@ def repoint_share(m, source, clone_id, clone_name, share):
     src_idx = {i for i, n in enumerate(names) if n == source}
     if not src_idx:
         return 0, 0
-    ref = bytearray(m.data[pal[min(src_idx)]:pal[min(src_idx)] + 16])
-    struct.pack_into('<I', ref, 4, m.tag_name_ptr(('actv', clone_name)))
-    struct.pack_into('<I', ref, 0xC, clone_id)
-    new_idx = len(pal)
-    m.grow_block(s, S_PALETTE, S_PAL_SZ, [bytes(ref)])
+    if clone_name in names:                  # built in (Sapien): reuse its entry
+        new_idx = names.index(clone_name)
+    else:
+        ref = bytearray(m.data[pal[min(src_idx)]:pal[min(src_idx)] + 16])
+        struct.pack_into('<I', ref, 4, m.tag_name_ptr(('actv', clone_name)))
+        struct.pack_into('<I', ref, 0xC, clone_id)
+        new_idx = len(pal)
+        m.grow_block(s, S_PALETTE, S_PAL_SZ, [bytes(ref)])
     spawns = []
     for enc in _elems(m, s + S_ENC, S_ENC_SZ):
         for sq in _elems(m, enc + SQ, SQ_SZ):
@@ -274,7 +277,23 @@ def main():
     b.add_argument('--weapon', required=True)
     b.add_argument('--share', type=float, default=0.5)
     b.add_argument('--teach', metavar='DONOR_LABEL', help="also teach the biped's antr the weapon label from this donor label")
+    sh = sub.add_parser('share', help='point a share of a variant spawns at a clone ALREADY in the map (kit-built)')
+    sh.add_argument('--map', required=True)
+    sh.add_argument('--out', required=True)
+    sh.add_argument('--source', required=True)
+    sh.add_argument('--clone', required=True)
+    sh.add_argument('--share', type=float, default=0.5)
     a = ap.parse_args()
+    if a.cmd == 'share':
+        m = hp.open_map(a.map, 'Halo 1')
+        tid = m.tag_id(('actv', a.clone))
+        if tid is None:
+            raise SystemExit('the clone is not in this map: ' + a.clone)
+        moved, of = repoint_share(m, a.source, tid, a.clone, a.share)
+        print('%d of %d %s spawns -> %s' % (moved, of, a.source.split(chr(92))[-1], a.clone.split(chr(92))[-1]))
+        m.save(a.out)
+        print('written:', a.out)
+        return
 
     m = hp.open_map(a.map, 'Halo 1')
     like = a.like if a.cmd == 'donors' else a.source
