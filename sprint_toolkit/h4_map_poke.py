@@ -140,7 +140,7 @@ def main():
         # pick the EFFECT attachment by its group -- element 0 of the port's projectile
         # is the Sentinel's looping fire SOUND (lsnd); a blind index once wrote an effect
         # datum under an lsnd group
-        hits = [el + i * 0x20 for i in range(count) if bytes(d[el + i * 0x20:el + i * 0x20 + 4]) == b'effe']
+        hits = [el + i * 0x20 for i in range(count) if bytes(d[el + i * 0x20:el + i * 0x20 + 4])[::-1] == b'effe']
         if len(hits) != 1:
             raise SystemExit('expected one effect attachment, found %d' % len(hits))
         struct.pack_into('<I', d, hits[0] + 0xC, brfx['ident'])
