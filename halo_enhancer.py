@@ -3502,6 +3502,37 @@ class ModifierDatabase:
     H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Sentinel')
     ARMED_STEP = '+0.1'
 
+    def h1_level_maps(self):
+        """Every Halo 1 level's map to READ from: its pristine baseline when there is
+        one (a patched live map would feed this run's own edits back in), else the
+        live map."""
+        import halo_patch
+        folder = CONFIG.get('map_game_folder', {}).get('Halo 1', '')
+        out = []
+        for mid, g in self.mission_games.items():
+            if g != 'Halo 1':
+                continue
+            live = halo_patch.default_map_path(mcc_root(), folder, mid)
+            try:
+                base = halo_patch.existing_baseline(live, CONFIG.get('baseline_root'), folder)
+            except Exception:
+                base = None
+            out.append(base or live)
+        return out
+
+    def h1_used_weapons(self):
+        """Weapon tag paths some Halo 1 character actually spawns with (cached index,
+        h1_enemy_weapons.used_weapons), or None when it cannot be read."""
+        if getattr(self, '_h1_used', None) is None:
+            try:
+                import halo_patch
+                import h1_enemy_weapons as ew
+                self._h1_used = ew.used_weapons(ew.build_index(self.h1_level_maps(),
+                                                               halo_patch.open_map))
+            except Exception:
+                self._h1_used = False
+        return self._h1_used or None
+
     def armed_card(self, enemy, weapon_name, ally=False):
         """'Armed: <weapon>' -- each pick moves 10% more of `enemy`'s spawns onto a
         variant carrying the weapon (h1_enemy_weapons.cards). Synthesized, like Map
@@ -3530,10 +3561,15 @@ class ModifierDatabase:
         """The Armed cards this level can offer for the players' `weapons`."""
         if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
             return []
+        used = self.h1_used_weapons()
         names = []
         for w in weapons or []:
+            tag = self.weap_tag_for(w, game) if w else None
+            path = tag.split(' & ')[0][5:] if tag and tag.startswith('weap ') else None
             if (w and w not in names and not self.is_grenade(w) and not self.is_equipment(w)
-                    and not is_sprint_item(w) and self.weap_tag_for(w, game)):
+                    and not is_sprint_item(w) and path
+                    # only weapons some character in the game really spawns with
+                    and (used is None or path in used)):
                 names.append(w)
         if ally:
             return [self.armed_card('Marine', w, ally=True) for w in names]
@@ -4754,17 +4790,7 @@ class MagnitudeEditorDialog(QDialog):
             t = t.split(' & ')[0] if t else None
             return t[5:] if t and t.startswith('weap ') else None
         first = [tag(getattr(rs, k, None)) for k in ('player1_weapon', 'player2_weapon')] if rs else []
-        folder = CONFIG.get('map_game_folder', {}).get('Halo 1', '')
-        levels = []
-        for mid, g in db.mission_games.items():
-            if g != 'Halo 1':
-                continue
-            live = self._hp.default_map_path(mcc_root(), folder, mid)
-            try:
-                base = self._hp.existing_baseline(live, CONFIG.get('baseline_root'), folder)
-            except Exception:
-                base = None
-            levels.append(base or live)
+        levels = db.h1_level_maps()
         return {
             'levels': levels,
             'option1': replace,

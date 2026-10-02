@@ -45,6 +45,7 @@ import h1_teach_weapon as tw      # noqa: E402
 BS = chr(92)
 GAME = 'Halo 1'
 INDEX_FILE = os.path.join(HERE, 'h1_actv_index.json')
+INDEX_VERSION = 2            # bump when an index entry gains a field (2: 'spawns')
 
 # enemy type -> unit (bipd) path keywords. Checked in order: the Flood combat forms
 # carry 'elite' / 'human' in their names, so they come before the Elite.
@@ -79,7 +80,8 @@ def build_index(map_paths, open_map):
     """Every actv in the game (from the given level files): name, unit, weapon,
     major (+ its weapon), traits and raw bytes. Cached in INDEX_FILE, keyed by the
     files' size and mtime, because opening all ten levels per patch is slow."""
-    key = [[p, os.path.getsize(p), int(os.path.getmtime(p))] for p in map_paths if os.path.exists(p)]
+    key = [INDEX_VERSION] + [[p, os.path.getsize(p), int(os.path.getmtime(p))]
+                             for p in map_paths if os.path.exists(p)]
     try:
         with open(INDEX_FILE, encoding='utf-8') as f:
             cached = json.load(f)
@@ -88,9 +90,23 @@ def build_index(map_paths, open_map):
     except Exception:
         pass
     out = []
-    for p, _s, _t in key:
+    for p, _s, _t in key[1:]:
         m = open_map(p, GAME)
         tags = dict(m.find_tags('actv', '*'))
+        # how often each variant actually spawns on this level (a promoted major
+        # counts through its minor) -- 'used' means spawned, not merely shipped
+        spawned = {}
+        lv_s = _scnr(m)
+        pal = hv._elems(m, lv_s + hv.S_PALETTE, hv.S_PAL_SZ) if lv_s is not None else []
+        names = [m.tag_name_by_id(m.u32(x + 0xC)) for x in pal]
+        for enc in hv._elems(m, lv_s + hv.S_ENC, hv.S_ENC_SZ) if lv_s is not None else []:
+            for sq in hv._elems(m, enc + hv.SQ, hv.SQ_SZ):
+                t = struct.unpack_from('<h', m.data, sq + hv.SQ_TYPE)[0]
+                for sl in hv._elems(m, sq + hv.SL, hv.SL_SZ):
+                    ov = struct.unpack_from('<h', m.data, sl + hv.SL_TYPE)[0]
+                    i = ov if ov >= 0 else t
+                    if 0 <= i < len(names) and names[i]:
+                        spawned[names[i]] = spawned.get(names[i], 0) + 1
         for name, b in tags.items():
             low = name.lower()
             if low.startswith('characters' + BS + 'enhancer' + BS) or hv.CLONE_SEP in name:
@@ -98,6 +114,7 @@ def build_index(map_paths, open_map):
             maj = hv._ref_name(m, b, hv.REF_MAJOR)
             mb = tags.get(maj)
             out.append({'level': os.path.basename(p)[:-4], 'name': name,
+                        'spawns': spawned.get(name, 0),
                         'unit': hv._ref_name(m, b, hv.REF_UNIT),
                         'weapon': hv._ref_name(m, b, hv.REF_WEAPON),
                         'major': maj,
@@ -111,6 +128,18 @@ def build_index(map_paths, open_map):
     except Exception:
         pass
     return out
+
+
+def used_weapons(index):
+    """Weapons some character in the game actually SPAWNS with. The Flood combat
+    flamethrower variants ship but are never placed -- an Armed: Flamethrower card was
+    a mess in game (user, 2026-10-02) -- so those do not count."""
+    return {e['weapon'] for e in index if e['weapon'] and e.get('spawns')}
+
+
+def _scnr(m):
+    import halo_patch
+    return halo_patch._scnr_base(m)
 
 
 def best_donor(index, weapon, unit, traits):
@@ -361,6 +390,19 @@ def cards(lv, index, picks):
                                  or lv.alias.get(lv.pal_names[sp[1]]), []).append(sp)
         if not units:
             continue
+        # how many of each biped's spawns every weapon gets, decided TOGETHER: at a
+        # full 100% (weights) the counts must add up to every spawn -- rounding each
+        # on its own left a vanilla Grunt behind (largest remainder fixes it)
+        wants = {}
+        for unit, sps in units.items():
+            raw = {w: sh * len(sps) for w, sh in shares.items()}
+            got = {w: int(math.floor(v)) for w, v in raw.items()}
+            target = int(round(sum(raw.values())))
+            for w in sorted(raw, key=lambda w: raw[w] - got[w], reverse=True):
+                if sum(got.values()) >= target:
+                    break
+                got[w] += 1
+            wants[unit] = got
         for weapon, share in shares.items():
             if lv.m.tag_id(('weap', weapon)) is None:
                 out.append(_row('enemy weapons', '%s +%s' % (enemy, weapon.rsplit(BS, 1)[-1]),
@@ -369,7 +411,7 @@ def cards(lv, index, picks):
             moved = 0
             notes = []
             for _unit, sps in units.items():
-                want = int(round(share * len(sps)))
+                want = wants[_unit][weapon]
                 pool = [sp for sp in sps if sp[0] not in lv.moved and lv.weapon_of_index(sp[1]) != weapon]
                 if not want or not pool:
                     continue
