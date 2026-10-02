@@ -95,6 +95,9 @@ class PluginRegistry:
         return plugin
 
 
+BANE_PICKS = 3          # keep in step with halo_enhancer.BANE_PICKS
+
+
 def collect_effects(rounds, mission_id=None, valid_bosses=None):
     """Unique patchable effects from a run's rounds, in first-seen order, each
     with a selection `count`, and a source `group`/`cat` (specific weapon,
@@ -144,7 +147,14 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          'color': mod.get('color'),
                          'group': group, 'cat': cat, 'count': 0}
             order.append(key)
-        seen[key]['count'] += 1
+        # A Bane (an enemy card drawn from the Other slot) is three picks' worth of the
+        # same card: it stacks with ordinary picks of it, and the patcher blacklists it
+        # afterwards (MagnitudeEditorDialog._offer_saturated_blacklist).
+        if mod.get('bane'):
+            seen[key]['count'] += BANE_PICKS
+            seen[key]['bane'] = True
+        else:
+            seen[key]['count'] += 1
 
     for rd in rounds or []:
         for pk in ('player1', 'player2'):

@@ -406,6 +406,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
                'other_chance', 'other_weights', 'other_hero_enabled',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
+               'other_bane_enabled',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1131,11 +1132,15 @@ CONFIG = {
     # Hero 4 / Exhaust 3 / Ally 2 are the user's chosen defaults. Skull stays at 1:
     # a skull is a whole-map rule that lasts the REST OF THE RUN, so it should be
     # the rarest of the four.
-    "other_weights": {"hero": 4.0, "exhaust": 3.0, "skull": 1.0, "ally": 2.0},
+    # Bane (user, 2026-10-02): weight 3. Wins the Other roll, then REPLACES the pair's
+    # enemy card with a Bane copy of an enemy card -- 3 picks' worth of step, and
+    # blacklisted once patched.
+    "other_weights": {"hero": 4.0, "exhaust": 3.0, "skull": 1.0, "ally": 2.0, "bane": 3.0},
     "other_hero_enabled": True,
     "other_exhaust_enabled": True,
     "other_skull_enabled": True,
     "other_ally_enabled": True,
+    "other_bane_enabled": True,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -4113,7 +4118,10 @@ class PairCard(QGroupBox):
                     "green", 'player2'))
 
         if self.pair['enemy_mod']:
-            negative.append(self.create_mod_widget(self.pair['enemy_mod'], "ENEMY", "red", 'enemy'))
+            negative.append(self.create_mod_widget(
+                self.pair['enemy_mod'],
+                "☠ BANE (x%d, blacklisted after patching)" % BANE_PICKS
+                if self.pair['enemy_mod'].get('bane') else "ENEMY", "red", 'enemy'))
         elif self.pair.get('no_negative'):
             # #5: exhaust reward — this pair carries no enemy buff.
             free = QLabel("✦ NO ENEMY BUFF  (exhaust reward)")
@@ -4606,6 +4614,14 @@ def is_operator_box(widget):
 
 # Map Presence, per pick: this share of the level's placements (0.1 = 10%).
 MAP_PRESENCE_STEP = '+0.1'
+
+# A kind added after a user's settings were saved has no stored weight; fall back to
+# its shipped default rather than 1.0.
+OTHER_WEIGHT_DEFAULTS = {'bane': 3.0}
+
+# How many picks one Bane card counts as (halo_patch.collect_effects).
+BANE_PICKS = 3
+
 
 def scaled_step(text, pct=None):
     """A halo.json default step at the Options strength (step_strength, percent).
@@ -8249,8 +8265,10 @@ class MagnitudeEditorDialog(QDialog):
         db = getattr(gui, 'db', None)
         if rs is None or db is None:
             return
-        # the user's "Is saturated" overrides: blacklisted straight away, no question
-        forced = [e for e in self.effects if self._card_key(e) in self._forced_saturated]
+        # the user's "Is saturated" overrides, and every Bane (it is drawn once and
+        # then kept out): blacklisted straight away, no question
+        forced = [e for e in self.effects
+                  if self._card_key(e) in self._forced_saturated or e.get('bane')]
         done = []
         for e in forced:
             lab = db.get_mod_label(e)
@@ -8258,7 +8276,7 @@ class MagnitudeEditorDialog(QDialog):
                 rs.blacklist.add(lab)
                 done.append(lab)
         if done and hasattr(gui, 'update_status'):
-            gui.update_status("Blacklisted %d card(s) marked saturated" % len(done))
+            gui.update_status("Blacklisted %d card(s) (saturated / Bane)" % len(done))
         sat = [e for e in sat if e not in forced]
         if not sat:
             return
@@ -9628,6 +9646,10 @@ class OptionsDialog(QDialog):
                                "never offered twice."),
             ('ally', 'Ally', "Friend modifiers and anything flagged as a wildcard. "
                              "Called Wildcard before."),
+            ('bane', 'Bane', "An enemy card at triple strength: it takes the place of "
+                             "the pair's normal enemy card, applies three times the "
+                             "step (less where the field hits its limit first), and is "
+                             "blacklisted after it is patched, so it never comes back."),
         )
         # Two columns: four kinds in one vertical list pushed the rest of the page down
         # for no reason. Left column is the first two, right column the last two.
@@ -9641,7 +9663,8 @@ class OptionsDialog(QDialog):
             sp.setRange(0.0, 20.0)
             sp.setSingleStep(0.5)
             sp.setDecimals(1)
-            sp.setValue(float((CONFIG.get('other_weights') or {}).get(key, 1.0)))
+            sp.setValue(float((CONFIG.get('other_weights') or {}).get(
+                key, OTHER_WEIGHT_DEFAULTS.get(key, 1.0))))
             sp.setToolTip(tip + "\n\nRelative weight against the other kinds, not a "
                                 "probability.")
             sp.setMaximumWidth(80)
@@ -11163,6 +11186,7 @@ class OptionsDialog(QDialog):
             'other_exhaust_enabled': self.other_weight_boxes['exhaust'][0].isChecked(),
             'other_skull_enabled': self.other_weight_boxes['skull'][0].isChecked(),
             'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
+            'other_bane_enabled': self.other_weight_boxes['bane'][0].isChecked(),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'new_equipment_chance': round(self.new_equipment_chance.value(), 2),
             'balance_item_counts': self.balance_items_cb.isChecked(),
@@ -14442,7 +14466,7 @@ class RunEnhancer:
                      if w not in owned and self.db.weapon_label(w) not in bl]
         return pool
 
-    def _draw_other(self, mid, game, bl, active_neg):
+    def _draw_other(self, mid, game, bl, active_neg, enemy_mods=None):
         """The Other slot: one card from Hero / Exhaust / Skull / Ally, or None.
 
         Two steps, and the order is the point. First whether this pair gets an Other
@@ -14475,6 +14499,9 @@ class RunEnhancer:
             candidates.append(('skull', float(weights.get('skull', 1.0) or 0)))
         if CONFIG.get('other_ally_enabled', True):
             candidates.append(('ally', float(weights.get('ally', 1.0) or 0)))
+        if CONFIG.get('other_bane_enabled', True) and enemy_mods:
+            candidates.append(('bane', float(weights.get(
+                'bane', OTHER_WEIGHT_DEFAULTS['bane']) or 0)))
         candidates = [(k, w) for k, w in candidates if w > 0]
         # Draw, and if the winning kind turns out to have nothing left, drop it and
         # roll again among the rest rather than returning an empty slot.
@@ -14492,6 +14519,9 @@ class RunEnhancer:
                 mod = self.db.get_skull_modifier_filtered(active_neg, bl, game)
             elif picked == 'ally':
                 mod = self.db.get_wildcard_modifier_filtered(bl, game)
+            elif picked == 'bane':
+                mod = copy.deepcopy(random.choice(enemy_mods))
+                mod['bane'] = True
             if mod is not None:
                 return picked, mod
             candidates = [(k, w) for k, w in candidates if k != picked]
@@ -14615,8 +14645,11 @@ class RunEnhancer:
                     p2_choice = choice
             # The Other slot is rolled for EVERY pair, including a new-weapon one: it
             # is its own slot now, not the leftover of the player card.
-            kind, other = self._draw_other(mid, game, bl, active_neg)
-            if kind == 'hero':
+            kind, other = self._draw_other(mid, game, bl, active_neg, enemy_mods)
+            if kind == 'bane':
+                # a Bane takes the ENEMY card's place; the Other slot is spent on it
+                enemy_choice = other
+            elif kind == 'hero':
                 hero = other
             elif kind == 'exhaust':
                 exhaust = other
