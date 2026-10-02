@@ -146,13 +146,27 @@ def find_donors(weapon, like_unit, like_traits, maps=None):
             # combatants and make poor firing donors, however close their numbers
             if any(k in name.lower() for k in ('wounded', 'sitting', 'cinematic')):
                 continue
+            # an enhancer SLOT or a weapon clone is never a donor: it may already hold
+            # another clone's values (the Elite once drew its firing from a filled Grunt)
+            if name.lower().startswith('characters\\enhancer\\') or CLONE_SEP in name:
+                continue
             unit = _ref_name(m, b, REF_UNIT)
             score = 0.0 if unit == like_unit else 1.0
+            # same FAMILY next: a donor whose biped carries the character's name (an
+            # Elite -> 'floodcombat elite') beats an unrelated one -- the trait numbers
+            # alone ranked the Flood HUMAN first for the Elite, by 0.002.
+            fam = [w for w in (like_unit or '').rsplit(chr(92), 1)[-1].replace('_', ' ').split() if len(w) > 3]
+            if unit != like_unit and fam and any(w in (unit or '').lower() for w in fam):
+                score -= 0.5
             score += _distance(_floats(m, b, TRAITS), like_traits)
             maj = _ref_name(m, b, REF_MAJOR)
+            mb = tags.get(maj)
+            # a major only counts if it carries the SAME weapon: 'elite minor needler'
+            # promotes into 'elite major plasma rifle', whose firing is a plasma rifle's
+            if mb is not None and _ref_name(m, mb, REF_WEAPON) != weapon:
+                maj, mb = None, None
             if not maj:
                 score += 0.1                 # a minor+major pair gives both clones a donor
-            mb = tags.get(maj)
             out.append((score, lvl, name, unit, maj,
                         bytes(m.data[b:b + ACTV_SIZE]),
                         bytes(m.data[mb:mb + ACTV_SIZE]) if mb is not None else None))
