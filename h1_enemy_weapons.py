@@ -183,13 +183,23 @@ def best_donor(index, weapon, unit, traits):
     return best[1:] + (best[0],) if best else None
 
 
-def donor_for(m, index, weapon, unit, traits):
+def donor_for(m, index, weapon, unit, traits, forced=None):
     """(minor bytes, major bytes, description, profile fields or None).
 
     A character in the game that carries the weapon, if there is one (best_donor);
     otherwise -- a PORTED weapon -- the best donor among weapons sharing its animation
     LABEL (the SAW is 'ar', so an AR carrier), with the weapon's firing profile to be
     written over it."""
+    if forced:
+        # a SAVED choice (presets / the shared run) wins, so both co-op machines clone
+        # from the same donor whatever their own ranking would say
+        e = next((e for e in index if e['name'] == forced), None)
+        if e is not None:
+            major = e['major_bytes'] if e['major_weapon'] == e['weapon'] else None
+            prof = profiles().get(weapon) if e['weapon'] != weapon else None
+            return (bytes.fromhex(e['bytes']), bytes.fromhex(major) if major else None,
+                    e['name'] + (' + ' + _prof_desc(prof) if prof else ''),
+                    prof['fields'] if prof else None)
     d = best_donor(index, weapon, unit, traits)
     if d:
         return d[0], d[1], d[2], None
@@ -206,10 +216,20 @@ def donor_for(m, index, weapon, unit, traits):
             best = d
     if best is None:
         return None
+    # the FULL donor path stays first: it is what gets saved and looked up again
+    return best[0], best[1], '%s + %s' % (best[2], _prof_desc(prof)), prof['fields']
+
+
+def _prof_desc(prof):
+    """'Halo 4 storm_lmg profile' from a profile's source line."""
     src = prof.get('source', '?').split(' (')[0]
-    return (best[0], best[1], '%s + %s profile' % (best[2].rsplit(BS, 1)[-1],
-                                                    ' '.join(src.split()[:2]) + ' ' + src.rsplit(BS, 1)[-1]),
-            prof['fields'])
+    return '%s %s profile' % (' '.join(src.split()[:2]), src.rsplit(BS, 1)[-1])
+
+
+def short_donor(d):
+    """A donor description with its path cut to the variant name (patch log only)."""
+    head, _sep, tail = str(d).partition(' + ')
+    return head.rsplit(BS, 1)[-1] + (' + ' + tail if tail else '')
 
 
 def write_profile(m, base, fields):
@@ -277,6 +297,8 @@ class Level:
         self.clones = {}                       # (source, weapon) -> palette index
         self.moved = set()                     # spawn offsets a card already moved
         self.log = []                          # (slot, alias, donor) per filled slot
+        self.forced = {}                       # 'source||weapon' -> saved donor name
+        self.chosen = {}                       # ...and what this patch used
 
     def ref(self, name, what):
         return hv._ref_name(self.m, self.tags[name], what) if name in self.tags else None
@@ -360,7 +382,10 @@ class Level:
         if len(self.free_slots) < need:
             return None, 'no free variant slot (%d left)' % len(self.free_slots)
         donor = donor_for(self.m, index, weapon, unit,
-                          hv._floats(self.m, self.tags[source], hv.TRAITS))
+                          hv._floats(self.m, self.tags[source], hv.TRAITS),
+                          self.forced.get(source + '||' + weapon))
+        if donor:
+            self.chosen[source + '||' + weapon] = donor[2].split(' + ')[0]
         dmin, dmaj = (donor[0], donor[1] or donor[0]) if donor else (None, None)
         prof = donor[3] if donor else None
         dname = donor[2] if donor else 'itself (no donor)'
@@ -379,7 +404,7 @@ class Level:
         idx = self.palette_index(vs.slot_path(sl))
         self.clones[key] = idx
         return idx, 'slot %02d%s, firing from %s%s' % (
-            sl, ' (+major)' if need == 2 else '', dname if ' profile' in dname else dname.rsplit(BS, 1)[-1],
+            sl, ' (+major)' if need == 2 else '', short_donor(dname),
             '; ' + taught if taught else '')
 
 
@@ -478,7 +503,10 @@ def fix_promotions(lv, index, first, enabled):
                                 reason='no free variant slot' if weref else 'no %s here' % weapon))
                 continue
             d = donor_for(lv.m, index, weapon, lv.ref(major, hv.REF_UNIT),
-                          hv._floats(lv.m, lv.tags[major], hv.TRAITS))
+                          hv._floats(lv.m, lv.tags[major], hv.TRAITS),
+                          lv.forced.get(major + '||' + weapon))
+            if d:
+                lv.chosen[major + '||' + weapon] = d[2].split(' + ')[0]
             sl = lv.free_slots.pop(0)
             write_profile(lv.m, vs.fill_slot(lv.m, sl, lv.tags[major], weref,
                                              (d[1] or d[0]) if d else None), d[3] if d else None)
@@ -567,6 +595,7 @@ def apply(m, hp, spec):
     'first_weapons': [...], 'option1': bool, 'enabled': {enemy: bool},
     'fallback': {enemy: weapon path}, 'cards': {enemy: {weapon path: share}}}."""
     lv = Level(m, hp)
+    lv.forced = dict(spec.get('donors') or {})
     if not lv.free_slots and (spec.get('option1') or spec.get('cards')):
         note = _row('enemy weapons', 'variant slots', skip=True,
                     reason='this level has no enhancer variant slots (rebuild it with '
@@ -585,11 +614,14 @@ def apply(m, hp, spec):
     # the log a co-op partner compares: what every slot became, and from which donors
     for sl, alias, donor in lv.log:
         out.append(_row('enemy weapons', 'slot %02d' % sl, old='empty',
-                        new='%s -- firing from %s' % (alias.rsplit(BS, 1)[-1],
-                                                      donor if ' profile' in donor else donor.rsplit(BS, 1)[-1])))
+                        new='%s -- firing from %s' % (alias.rsplit(BS, 1)[-1], short_donor(donor))))
     if lv.log:
-        out.append(_row('enemy weapons', 'donor index', old='%d variants' % len(index),
-                        new='fingerprint %s' % index_fingerprint(index)))
+        row = _row('enemy weapons', 'donor index', old='%d variants' % len(index),
+                   new='fingerprint %s; %d donor choice(s), %d saved before' % (
+                       index_fingerprint(index), len(lv.chosen),
+                       sum(1 for k in lv.chosen if k in lv.forced)))
+        row['donors'] = dict(lv.chosen)        # the patcher stores these with the magnitudes
+        out.append(row)
     m.actv_alias = dict(lv.alias)            # cards and colours see slots as their enemy
     if note and any(r.get('reason', '').startswith('no free variant slot') for r in out):
         out.append(note)

@@ -86,9 +86,13 @@ def run_magnitudes(rounds, mission_id, presets=None):
         for one in ([tag] if isinstance(tag, str) else list(tag.values())):
             if isinstance(one, str):
                 prefixes.append('%s||%s||' % (one, e.get('name')))
-    if not prefixes:
-        return {}
+    # the Halo 1 enemy-weapon DONOR choices travel with every run: they are what makes
+    # two machines' clones identical (h1_enemy_weapons, saved by the patcher)
+    prefixes.append(DONOR_KEY_PREFIX)
     return {k: v for k, v in presets.items() if k.startswith(tuple(prefixes))}
+
+
+DONOR_KEY_PREFIX = 'scnr enemy weapons||donor||'
 
 
 def merge_presets(incoming):
@@ -432,7 +436,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'camo_duration_s', 'camo_cooldown_s',
                # Visual, but it changes map bytes: co-op partners must patch the same
                # colours or the game fails to load, so it travels in the run.
-               'enemy_colors', 'enemy_color_drift', 'weapon_ports')
+               'enemy_colors', 'enemy_color_drift', 'weapon_ports',
+               'weapon_ports_in_pools')
 
 
 class _WheelGuard(QObject):
@@ -961,6 +966,9 @@ CONFIG = {
     "h1_enemy_weapon_fallback": {},
     # ...and offer 'Armed: <weapon>' enemy cards (Marines through the Ally pool)
     "h1_enemy_weapon_cards": True,
+    # Options -> Weapon ports: ported weapons join every weapon pick (initial
+    # selection, New Weapon, automatic rolls) on levels whose map carries them
+    "weapon_ports_in_pools": False,
     "h1_spawn_all_weapons": False,
     "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
@@ -2672,6 +2680,11 @@ class ModifierDatabase:
         """The `weap ...` tag for a weapon in the given game, taken from any of its
         effects (used to set the scenario's starting weapons). None if unknown.
 
+        A PORTED weapon answers with its port's tag in that game first: halo.json files
+        the SAW's cards under Halo 4 only, so its plain-string tag resolved Halo 1 to
+        Halo 4's storm_lmg -- the wrong weapon for a starting pick or a Map Presence
+        swap the moment ports are offered (user, 2026-10-02).
+
         Returns exactly ONE tag. An effect may name several with ' & ' so it patches
         them together — ODST's Plasma Rifle covers both the dead plasma_rifle and the
         live plasma_rifle_red that way — but a starting weapon is a single tagRef, and
@@ -2681,6 +2694,14 @@ class ModifierDatabase:
         effects: ODST's Silenced SMG and Auto Magnum take the SMG's and Magnum's mods,
         so without an override they resolved to the base weapon, which ODST does not
         even ship in every level."""
+        try:
+            import weapon_ports
+            _port = weapon_ports.port_for(game, weapon_name)
+            _path = weapon_ports.weap_path(_port) if _port else None
+            if _path:
+                return 'weap ' + _path
+        except Exception:
+            pass
         override = (CONFIG.get('weapon_tag_overrides', {}).get(game, {})
                     .get(weapon_name))
         # The ODST overrides exist because the base weapons used to be unreachable
@@ -3177,6 +3198,12 @@ class ModifierDatabase:
                 and self.mission_games.get(mission_id) == 'Halo 3: ODST'
                 and 'Plasma Rifle' in wl and 'Brute Plasma Rifle' not in wl):
             wl.append('Brute Plasma Rifle')
+        # Ported weapons (Options -> Weapon ports): every enabled port that is built
+        # into this level's map joins the pool, so the initial selection, the New
+        # Weapon button and the automatic rolls all reach it -- and with it the
+        # Armed cards for it (h1_enemy_weapons).
+        if CONFIG.get('weapon_ports_in_pools'):
+            wl += [w for w in self.ports_on_level(mission_id) if w not in wl]
         # Turrets are placed as vehicles, so they are listed separately and only
         # join the pool when the option is on. Same shape as the grenade fold below.
         if CONFIG.get('turrets_are_weapons'):
@@ -3520,21 +3547,47 @@ class ModifierDatabase:
             out.append(base or live)
         return out
 
+    @staticmethod
+    def _is_port(weapon, game):
+        try:
+            import weapon_ports
+            return weapon_ports.port_for(game, weapon) is not None
+        except Exception:
+            return False
+
+    def ports_on_level(self, mission_id):
+        """Enabled ported weapons whose tag is in this level's map (baseline first).
+        Cached per process: opening a map is not free."""
+        game = self.mission_games.get(mission_id)
+        cache = self.__dict__.setdefault('_port_levels', {})
+        if (game, mission_id) not in cache:
+            out = []
+            try:
+                import weapon_ports
+                import halo_patch
+                ports = weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
+                if ports:
+                    folder = CONFIG.get('map_game_folder', {}).get(game, '')
+                    live = halo_patch.default_map_path(mcc_root(), folder, mission_id)
+                    try:
+                        path = halo_patch.existing_baseline(live, CONFIG.get('baseline_root'), folder) or live
+                    except Exception:
+                        path = live
+                    m = halo_patch.open_map(path, game)
+                    for p in ports:
+                        wp = weapon_ports.weap_path(p)
+                        if wp and m.find_tags('weap', wp):
+                            out.append(p['weapon'])
+            except Exception:
+                pass
+            cache[(game, mission_id)] = out
+        return list(cache[(game, mission_id)])
+
     def h1_weapon_path(self, weapon_name):
         """A weapon's Halo 1 weap tag path. A PORTED weapon (weapon_ports_catalog.json)
         is asked of its port first: halo.json only carries the SAW's cards for Halo 4,
         so weap_tag_for answered Halo 1 with Halo 4's storm_lmg (the plain-string-tag
         trap, memory halo-weap-tag-wrong-game)."""
-        try:
-            import weapon_ports
-            for port in weapon_ports.ports_for('Halo 1'):
-                if port.get('weapon') == weapon_name:
-                    for row in port.get('balance') or ():
-                        t = row.get('tag') or ''
-                        if t and not t.startswith(('proj ', 'jpt! ', 'jmad ', 'antr ')):
-                            return t[5:] if t.startswith('weap ') else t
-        except Exception:
-            pass
         tag = self.weap_tag_for(weapon_name, 'Halo 1') if weapon_name else None
         tag = tag.split(' & ')[0] if tag else None
         return tag[5:] if tag and tag.startswith('weap ') else None
@@ -3584,6 +3637,9 @@ class ModifierDatabase:
         names = []
         for w in weapons or []:
             path = self.h1_weapon_path(w) if w else None
+            if w and self._is_port(w, game) and not (
+                    CONFIG.get('weapon_ports_in_pools') and w in self.ports_on_level(mission_id)):
+                continue           # a port is only an Armed card while ports are offered here
             if (w and w not in names and not self.is_grenade(w) and not self.is_equipment(w)
                     and not is_sprint_item(w) and path
                     # only weapons some character in the game really spawns with
@@ -4814,6 +4870,9 @@ class MagnitudeEditorDialog(QDialog):
             'enabled': dict(CONFIG.get('h1_enemy_weapon_enabled') or {}),
             'fallback': {e: tag(w) for e, w in (CONFIG.get('h1_enemy_weapon_fallback') or {}).items() if w},
             'cards': {e: {tag(w): sh for w, sh in ws.items() if tag(w)} for e, ws in armed_picks.items()},
+            # donor choices already made (this machine or the co-op partner's shared run)
+            'donors': {k[len(DONOR_KEY_PREFIX):]: v for k, v in self.presets.items()
+                       if k.startswith(DONOR_KEY_PREFIX)},
         }
 
     def _enemy_colors_for_patch(self):
@@ -8281,6 +8340,11 @@ class MagnitudeEditorDialog(QDialog):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
 
+        # the enemy-weapon donors this patch used, remembered like a magnitude so the
+        # next patch and the co-op partner make the very same clones
+        for r in results or ():
+            for k, v in (r.get('donors') or {}).items():
+                self.presets[DONOR_KEY_PREFIX + k] = v
         self._hp.save_presets(self.presets_path, self.presets)
         self._write_patch_file(map_path, plan, results, backup)
         self._srcmap = None  # map changed on disk; re-read vanilla next time
@@ -11319,6 +11383,14 @@ class OptionsDialog(QDialog):
             "two versions.\n\nThe balanced values become the port's vanilla, so cards "
             "scale from them. Off, the port keeps its original numbers.")
         gform.addRow("Balance:", self._ports_balance_cb)
+        self._ports_pools_cb = QCheckBox("Offer ported weapons in every weapon pick")
+        self._ports_pools_cb.setChecked(bool(CONFIG.get('weapon_ports_in_pools')))
+        self._ports_pools_cb.setToolTip(
+            "A switched-on port that is built into a level's map joins that level's "
+            "weapon pool: the initial weapon selection, the New Weapon button and the "
+            "automatic new-weapon rolls. It also unlocks the Halo 1 'Armed' enemy cards "
+            "for it.\n\nOff, ports only change the weapon where the level already places it.")
+        gform.addRow("Weapon picks:", self._ports_pools_cb)
         self._ports_anim_cb = QCheckBox("Retime reload and weapon swap with it")
         self._ports_anim_cb.setChecked(bool(CONFIG.get('weapon_ports_balance_anims', True)))
         self._ports_anim_cb.setToolTip(
@@ -11547,6 +11619,7 @@ class OptionsDialog(QDialog):
                     for (g2, w), cb in self._ports_boxes.items() if g2 == g}
                 for g in {gg for gg, _ in self._ports_boxes}},
             'weapon_ports_balance': self._ports_balance_cb.isChecked(),
+            'weapon_ports_in_pools': self._ports_pools_cb.isChecked(),
             'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
             'enemy_color_drift': dict(
                 enabled=self._ecd_on.isChecked(),

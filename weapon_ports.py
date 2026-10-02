@@ -44,6 +44,21 @@ def enabled_ports(game, config_ports, catalog=None):
             if (chosen.get(p.get('weapon')) or {}).get('enabled', p.get('default_on', False))]
 
 
+def weap_path(port):
+    """The ported weapon's own weap tag path in its TARGET game (no class prefix),
+    read off its balance rows -- or None."""
+    for row in port.get('balance') or ():
+        t = row.get('tag') or ''
+        if t and not t.startswith(('proj ', 'jpt! ', 'jmad ', 'antr ', 'eqip ')):
+            return t[5:] if t.startswith('weap ') else t
+    return None
+
+
+def port_for(game, weapon, catalog=None):
+    """The catalog entry porting `weapon` into `game`, or None."""
+    return next((p for p in ports_for(game, catalog) if p.get('weapon') == weapon), None)
+
+
 NO_AMMO = '(none)'
 
 
