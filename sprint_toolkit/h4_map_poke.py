@@ -72,6 +72,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--anim-flags', metavar='N=FLAGS', action='append',
+                    help='fp graph animation N playback flags (repeatable)')
     ap.add_argument('--action-anim', metavar='A=B', action='append',
                     help='fp graph action A plays animation B (bisection; repeatable)')
     ap.add_argument('--secondary-fx', metavar='EFFECT',
@@ -113,7 +115,7 @@ def main():
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
-            a.no_firing_shake or a.action_anim or a.firing_response):
+            a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags):
         return
 
     d = m.data
@@ -159,6 +161,22 @@ def main():
             was = struct.unpack_from('<h', d, acts[ai] + 0xA)[0]
             struct.pack_into('<h', d, acts[ai] + 0xA, an)
             print('action %d: animation %d -> %d' % (ai, was, an))
+    if a.anim_flags:
+        # Playback Flags (jmad Animations element +0xA): bit 3 Disable Weapon IK, bit 4
+        # Disable Weapon Aim/1st Person. The port's (Beam Rifle) overheating + o_h_exit
+        # carry 0x18; the Plasma Pistol's -- which do not pop -- 0x08. With bit 4 the fp
+        # aim offset is OFF during overheating and snaps back ON at the hand-off: one
+        # frame of the whole rig shifted, "right before the idle" (boot 18).
+        import halo3_reload
+        L = halo3_reload.LAYOUTS['Halo 4']
+        g = m.find_tags('jmad', PORT_GRAPH)[0][1]
+        els = m.follow_all(g, [L['anim_blk']], [L['anim_el']], 'all')
+        for pair in a.anim_flags:
+            ai, v = pair.split('=')
+            ai, v = int(ai), int(v, 0)
+            was = struct.unpack_from('<H', d, els[ai] + 0xA)[0]
+            struct.pack_into('<H', d, els[ai] + 0xA, v)
+            print('animation %d playback flags %#06x -> %#06x' % (ai, was, v))
     if a.secondary_fx or a.no_firing_shake or a.firing_response:
         # each barrel's firing-effects element 0 (barrel +0x184, 0xF4 each):
         #   +0x44 Optional Secondary Firing Effect -- a MUZZLE FLASH beside the Sentinel's
