@@ -49,6 +49,18 @@ quietly shipped without the last three until the user caught it:
 | 8 | pickup icon, and the HUD schematic beside the ammo | done | done |
 | 9 | reload and swap animation timing | done | done |
 
+**Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
+2026-10-02). `saw_port_values.py` wrote the port's own numbers into
+`weapons\saw\bullet` (proj + jpt!), but the weapon tag's trigger was a copy of the
+Assault Rifle's and still named `weapons\assault rifle\bullet`. So the built SAW fired
+the DONOR's bullet, the port's own bullet tags were orphans the cache never compiled,
+every SAW projectile/damage balance row pointed at a tag that was not in the map, and
+editing the AR's bullet moved the SAW with it. Cloning the tags is not enough: the
+trigger has to name them (`saw_weapon.py` does it now). Melee is left on the donor's
+tag on purpose -- only Halo 1 has per-weapon melee damage, so sharing it is harmless.
+After fixing the wiring the maps that carry the port must be REBUILT; until then the
+deployed map still has the old reference.
+
 Step 6 is a **port detail, not a general option**: a port inherits the donor's pickup
 item, and the dropdown only re-points it when several weapons share one. Halo 4 has no
 ammo pickups at all.

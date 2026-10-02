@@ -50,6 +50,14 @@ def main():
     # SAW's reload / swap identity). Same skeleton, so the models still bind.
     d.weap_attrs.interface.first_person_animations.filepath = ('weapons' + B + 'saw' + B
                                                                + 'fp' + B + 'fp')
+    # ITS OWN BULLET, not the donor's. saw_port_values.py writes the port's Halo 4
+    # numbers into weapons\saw\bullet (proj + jpt!), but the trigger copied from
+    # the Assault Rifle still named weapons\assault rifle\bullet -- so the built SAW
+    # fired the AR's bullet, those tags never reached the map, and every SAW
+    # projectile/damage balance row and card pointed at nothing (found 2026-10-02).
+    # Melee stays the donor's deliberately: only Halo 1 has per-weapon melee damage.
+    for trig in d.weap_attrs.triggers.STEPTREE:
+        trig.projectile.projectile.filepath = 'weapons' + B + 'saw' + B + 'bullet'
     mags = d.weap_attrs.magazines.STEPTREE
     if len(mags):
         m = mags[0]
