@@ -315,6 +315,9 @@ class Plugin:
         return cands[nth] if 0 <= nth < len(cands) else None
 
 
+TAG_BASE = 0x50000000      # where MCC Halo 1 loads the tag-data region
+
+
 class HaloMap:
     """Parsed Halo 1 (MCC) map with tag lookup and field read/write."""
 
@@ -346,9 +349,14 @@ class HaloMap:
         self.tag_count = self.u32(io + 0x0C)
         if self.data[io + 0x24:io + 0x28] != b'sgat':
             raise ValueError("Tag index 'tags' magic missing — unexpected map format")
-        self.tag_array_off = io + 0x28
-        self.magic = (self.tag_array_ptr - self.tag_array_off) & 0xFFFFFFFF
+        # The tag-data region (index header first) loads at a FIXED 0x50000000 on every
+        # MCC level, so the magic comes from that base, not from the array's position:
+        # sprint_toolkit/h1_variants.add_tags relocates the array to EOF to add tags.
+        self.magic = (TAG_BASE - io) & 0xFFFFFFFF
+        self.tag_array_off = (self.tag_array_ptr - self.magic) & 0xFFFFFFFF
         self.tags = {}
+        self._ids = {}
+        self._name_ptrs = {}
         for i in range(self.tag_count):
             b = self.tag_array_off + i * 32
             cls = bytes(self.data[b:b + 4][::-1]).decode('latin1')
@@ -359,6 +367,34 @@ class HaloMap:
             except Exception:
                 continue
             self.tags[(cls, name)] = (meta_ptr - self.magic) & 0xFFFFFFFF
+            self._ids[(cls, name)] = self.u32(b + 0xC)
+            self._name_ptrs[(cls, name)] = name_ptr
+
+    def tag_id(self, key):
+        """Tag id of (cls, path), or None."""
+        return self._ids.get(key)
+
+    def tag_name_ptr(self, key):
+        """The (magic-relative) name pointer of (cls, path) -- what a tagref carries."""
+        return self._name_ptrs.get(key)
+
+    def tag_name_by_id(self, tid):
+        """Path of the tag whose id is `tid` (row = low word), or None."""
+        row = tid & 0xFFFF
+        if row >= self.tag_count:
+            return None
+        b = self.tag_array_off + row * 32
+        try:
+            return self._cstr((self.u32(b + 0x10) - self.magic) & 0xFFFFFFFF)
+        except Exception:
+            return None
+
+    def weapon_label(self, path):
+        """A weap tag's animation Label (+0x30C, e.g. 'ar'), or None."""
+        off = self.tags.get(('weap', path))
+        if off is None:
+            return None
+        return bytes(self.data[off + 0x30C:off + 0x32C]).split(b'\0')[0].decode('latin1')
 
     # --- resolution ---
     def get_tag_meta(self, cls, path):
@@ -383,7 +419,14 @@ class HaloMap:
             return sorted((p, off) for (c, p), off in self.tags.items()
                           if c == cls and match(p))
         off = self.tags.get((cls, path))
-        return [(path, off)] if off is not None else []
+        out = [(path, off)] if off is not None else []
+        if cls == 'actv':
+            # A weapon CLONE of a variant ('<path>~<weapon>', sprint_toolkit/
+            # h1_variants.py) is that same character, so an exact lookup -- the enemy
+            # colour rows name variants exactly -- reaches it too.
+            out += sorted((p, o) for (c, p), o in self.tags.items()
+                          if c == cls and p.startswith(path + '~'))
+        return out
 
     def apply_field(self, cls, path, field, op, value, plugin, block=None, index=0, nth=0,
                     scale=1.0, offset=0.0, clamp_min=None, clamp_max=None,
