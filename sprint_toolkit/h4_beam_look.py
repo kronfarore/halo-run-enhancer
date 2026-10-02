@@ -89,6 +89,44 @@ def copy_fields(src_fields, dst_fields):
     return n
 
 
+#: THE ORIGINAL MUZZLE FLASH (boot 19): the Focus Rifle's own Reach muzzle particles --
+#: muzzle_flash_plasma, flash_large, distortion_ring, spark_ember -- sit in the Sentinel's
+#: friendly firing effect, first- AND third-person sets, and Bungie flagged nearly all of
+#: them "disabled for debugging". The port gets its OWN copy of that effect with every
+#: particle system re-enabled and the tracer + sound PARTS removed (the primary firing
+#: effect already plays those; here they would double). It fills the weapon's "optional
+#: secondary firing effect" slot (h4_make_port_weapon.py), replacing the Storm Rifle's
+#: stand-in flash.
+SB_FIRING = B.join(['objects', 'weapons', 'pistol', 'storm_sentinel_beam', 'fx', 'friendly_beam',
+                    'firing'])
+OWN_MUZZLE = B.join(['objects', 'weapons', 'rifle', 'focus_rifle', 'fx', 'muzzle'])
+
+
+def make_muzzle(T):
+    dst = os.path.join(H4EK_TAGS, OWN_MUZZLE + '.effect')
+    shutil.copyfile(os.path.join(H4EK_TAGS, SB_FIRING + '.effect'), dst)
+    with T(path=dst) as fx:
+        ev = fx.tag.SelectField('events')
+        for i in range(ev.Elements.Count):
+            e = ev.Elements[i]
+            parts = e.SelectField('parts')
+            for j in reversed(range(parts.Elements.Count)):
+                kind = fx.get_path_str(parts.Elements[j].SelectField('type').Path).lower()
+                if kind.endswith(('.tracer_system', '.sound', '.sound_looping')):
+                    parts.RemoveElement(j)
+                    print('   event %d: removed part %s' % (i, kind.rsplit(B, 1)[-1]))
+            ps = e.SelectField('particle systems')
+            for j in range(ps.Elements.Count):
+                el = ps.Elements[j]
+                flags = next(f for f in el.Fields if f.FieldName == 'flags')
+                was = flags.TestBit('disabled for debugging')
+                flags.SetBit('disabled for debugging', False)
+                print('   event %d: particle %-26s re-enabled (was disabled: %s)'
+                      % (i, fx.get_path_str(el.SelectField('particle').Path).rsplit(B, 1)[-1], was))
+        fx.tag_has_changes = True
+    print('wrote %s.effect' % OWN_MUZZLE)
+
+
 def main(write):
     mb = importlib.import_module(KEY + '.managed_blam')
     if not mb.mb_active:
@@ -154,6 +192,7 @@ def main(write):
                 raise SystemExit('expected one tracer part in the effect, found %d' % hit)
             fx.tag_has_changes = True
         print('wrote %s.tracer_system and %s.effect' % (OWN_TRACER, OWN_EFFECT))
+        make_muzzle(T)
     else:
         print('(dry run on the Sentinel tracer in memory -- pass --write)')
 

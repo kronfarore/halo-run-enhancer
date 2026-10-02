@@ -66,7 +66,10 @@ REPOINT = [
 #: (field path, tag path WITH extension): references the donor has as NULL
 AR_FIRING = ('objects\\weapons\\rifle\\storm_assault_rifle\\feedback\\'
              'storm_assault_rifle_firing.damage_response_definition')
-MUZZLE_FX = 'objects\\weapons\\rifle\\storm_assault_carbine\\fx\\firing.effect'
+# the Focus Rifle's OWN Reach muzzle particles (h4_beam_look.py builds it -- Bungie had
+# them "disabled for debugging" in the Sentinel's firing effect); the Storm Rifle's
+# fx\firing was the stand-in that proved the slot draws (boot 18)
+MUZZLE_FX = 'objects\\weapons\\rifle\\focus_rifle\\fx\\muzzle.effect'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
