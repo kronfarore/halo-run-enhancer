@@ -185,7 +185,7 @@ H4_FILES = [
 ]
 H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
               'h4_make_port_weapon.py', 'h4_weapon_refs.py', 'h4_tag_numbers.py', 'balance_port.py',
-              'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py',
+              'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py', 'h4_beam_look.py',
               'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
 PROFILES = {

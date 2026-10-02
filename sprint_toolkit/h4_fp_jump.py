@@ -152,6 +152,20 @@ def main(rel):
         print('ANIM %-26s frames %4d  typical step %.4f%s'
               % (name, len(s), typical,
                  ''.join('\n     SPIKE at frame %d: %.4f off the midpoint of its neighbours (%.0fx typical)' % h for h in hits)))
+    if '--root' in sys.argv:
+        # the same frames measured against the ARMATURE ROOT, plus the camera bone itself:
+        # a jolt IN b_camera_control cancels out of the camera-relative measure
+        name = sys.argv[sys.argv.index('--root') + 1]
+        a = anims[name]
+        arm.animation_data.action = a.action_tracks[0].action
+        prev = None
+        for f in range(int(a.frame_start), int(a.frame_end) + 1):
+            bpy.context.scene.frame_set(f)
+            pos = {b: arm.matrix_world @ arm.pose.bones[b].head for b in WATCH + (CAMERA,)}
+            if prev:
+                print('ROOT %3d  ' % f + '  '.join('%s %.4f' % (b.replace('b_', ''), (pos[b] - prev[b]).length)
+                                              for b in WATCH + (CAMERA,)))
+            prev = pos
     if '--detail' in sys.argv:
         name = sys.argv[sys.argv.index('--detail') + 1]
         fr = samples[name]

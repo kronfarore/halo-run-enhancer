@@ -2274,6 +2274,23 @@ channel + overheating's last minus overheated's first), keeping its motion: join
 0.0000 / 0.0009, verified on the exported graph. The frame-44 jolt smoothing stays (a real
 spike). Lesson: ask WHEN in the game state a glitch happens before choosing which seam.
 
+**Boot 14: jerk still felt.** Not the overheat camera shake either (weap 0x330 nulled,
+`--no-overheat-shake`: unchanged). The user's second video, frame-differenced: ONE frame
+(56 of 124, ~52% heat) with BOTH hands and the rifle shifted -- not in the animation data
+(the frame-44 jolt was right hand only; every hand-off <=0.001; b_camera_control never
+moves). Diagnostic poke `--graph-pp`: the Plasma Pistol's fp graph, whose overheat chain is
+used in normal play (it has b_gun, so the port's model still draws).
+
+**The beam look, solved on paper:** the Sentinel's 3p tracer IS the Focus Rifle's beam
+(center on energy_trail + two plasma layers: plasma_trail_a/b noise through a palette --
+Reach's own textures, all present in H4 under fx\reach). Unpinning failed because its
+LENGTH functions run on "profile position"; the Beam Rifle streak's run on "profile age".
+h4_beam_look.py: own copy of the Sentinel tracer, the streak's length/offset/lifespan/
+self-acceleration functions copied in field by field, palette -> Reach's
+focus_rifle_plasma, point-to-point cleared; in an own copy of the streak's effect, attached
+to the port's projectile. Z-510 (storm_anti_infantry_turret) = the same "bsh" point-to-point
+mechanism, not usable for a player weapon.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

@@ -34,6 +34,7 @@ MAP = (r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
        r'\halo4\maps\m30_cryptum.map')
 PORT = r'objects\weapons\rifle\focus_rifle\focus_rifle'
 BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
+PP_GRAPH = r'objects\characters\storm_fp\weapons\pistol\fp_plasma_pistol\storm_fp_plasma_pistol'
 PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
 BR_PROJ_FX = r'objects\weapons\rifle\storm_beam_rifle\fx\projectile'
 FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
@@ -72,6 +73,8 @@ def main():
     ap.add_argument('--swap-fp', action='store_true')
     ap.add_argument('--no-overheat-shake', action='store_true',
                     help='null the overheated damage effect (camera shake + rumble)')
+    ap.add_argument('--graph-pp', action='store_true',
+                    help='fp animations -> the Plasma Pistol graph (diagnostic)')
     ap.add_argument('--graph-back', action='store_true',
                     help='fp animations back to the Beam Rifle graph')
     ap.add_argument('--streak-back', action='store_true',
@@ -98,7 +101,7 @@ def main():
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
-            a.no_overheat_shake):
+            a.no_overheat_shake or a.graph_pp):
         return
 
     d = m.data
@@ -134,6 +137,16 @@ def main():
         was = struct.unpack_from('<I', d, pb + 0x330 + 0xC)[0]
         struct.pack_into('<I', d, pb + 0x330 + 0xC, 0xFFFFFFFF)
         print('overheated damage effect datum %08x -> null' % was)
+    if a.graph_pp:
+        # fp animations -> the PLASMA PISTOL's graph: its overheat chain is used all the
+        # time in normal play. One-frame pop at ~52%% heat gone -> the Beam Rifle chain's
+        # state handling; still there -> something on the port's weapon tag (boot 14).
+        g = next((t for t in m.tags if t['class'] == 'jmad' and t['name'] == PP_GRAPH), None)
+        if g is None:
+            raise SystemExit('the Plasma Pistol fp graph is not in this map')
+        pf = fp_element(m, pb)
+        struct.pack_into('<I', d, pf + 0x10 + 0xC, g['ident'])
+        print('fp animations -> %s' % PP_GRAPH)
     if a.graph_back:
         # fp animations -> the Beam Rifle's own graph (First Person +0x10): does the
         # port's re-exported graph cause the freeze after the overheat jerk (boot 12)?

@@ -120,7 +120,10 @@ OWN_PROJ_FX = OWN_FX + 'beam_projectile'
 SB_TRACER = SB + 'fx\\friendly_beam\\projectile_3p'
 BR_PROJ_FX = BR + 'fx\\projectile'
 PROJ_REFS = [
-    ('add-attachment', BR_PROJ_FX + '.effect'),
+    # the Focus Rifle's own beam look -- h4_beam_look.py builds it (run that FIRST): the
+    # Sentinel's tracer (= the Focus Rifle's converted beam) with the Beam Rifle streak's
+    # trail behaviour and Reach's focus_rifle_plasma palette
+    ('add-attachment', OWN_FX + 'beam_projectile.effect'),
 ]
 
 
