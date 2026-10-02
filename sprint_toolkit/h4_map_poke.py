@@ -34,6 +34,8 @@ MAP = (r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
        r'\halo4\maps\m30_cryptum.map')
 PORT = r'objects\weapons\rifle\focus_rifle\focus_rifle'
 BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
+PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
+BR_PROJ_FX = r'objects\weapons\rifle\storm_beam_rifle\fx\projectile'
 FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
 
 FLAGS, RADIUS, OFFSET = 0x1C, 0x20, 0x24
@@ -68,6 +70,10 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--graph-back', action='store_true',
+                    help='fp animations back to the Beam Rifle graph')
+    ap.add_argument('--streak-back', action='store_true',
+                    help='projectile attachment back to the Beam Rifle streak')
     ap.add_argument('--fp-tracer', action='store_true',
                     help='the original beam tracer: set "draw in first person pass"')
     ap.add_argument('--weapon-origin', action='store_true',
@@ -89,7 +95,7 @@ def main():
     report(m, pb, 'focus rifle')
     report(m, bb, 'beam rifle')
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
-            a.weapon_origin or a.fp_tracer):
+            a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back):
         return
 
     d = m.data
@@ -117,6 +123,28 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.graph_back:
+        # fp animations -> the Beam Rifle's own graph (First Person +0x10): does the
+        # port's re-exported graph cause the freeze after the overheat jerk (boot 12)?
+        pf, bf = fp_element(m, pb), fp_element(m, bb)
+        d[pf + 0x10:pf + 0x20] = d[bf + 0x10:bf + 0x20]
+        print('fp animations -> the Beam Rifle graph')
+    if a.streak_back:
+        # the port projectile's attachment (proj.xml Attachments 0x118, 0x20 each, Type
+        # tagRef +0x0) -> the Beam Rifle's projectile effect, the thin streak that DREW
+        # (boot 10). The unpinned Sentinel tracer drew nothing (boot 12).
+        own = m.find_tags('proj', PORT_BEAM)[0][1]
+        brfx = next(t for t in m.tags if t['class'] == 'effe' and t['name'] == BR_PROJ_FX)
+        count, ptr = struct.unpack_from('<iI', d, own + 0x118)
+        el = m.data2off(ptr)
+        # pick the EFFECT attachment by its group -- element 0 of the port's projectile
+        # is the Sentinel's looping fire SOUND (lsnd); a blind index once wrote an effect
+        # datum under an lsnd group
+        hits = [el + i * 0x20 for i in range(count) if bytes(d[el + i * 0x20:el + i * 0x20 + 4]) == b'effe']
+        if len(hits) != 1:
+            raise SystemExit('expected one effect attachment, found %d' % len(hits))
+        struct.pack_into('<I', d, hits[0] + 0xC, brfx['ident'])
+        print('projectile attachment -> %s (%d attachment(s))' % (BR_PROJ_FX, count))
     if a.fp_tracer:
         # The Sentinel's (= the Focus Rifle's converted) first-person beam tracer carries
         # only "point-to-point" (flags u32 at +0x0, bit 0; measured: 1 on both Sentinel
