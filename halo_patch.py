@@ -5202,6 +5202,141 @@ def _spread_slots(N, counts):
     return target
 
 
+# --- crate weapons: gun racks, weapon cases, supply crates --------------------
+# A crate's weapons are not scnr placements. They are CHILD OBJECTS of the crate's
+# model: bloc -> Model (hlmt) -> Variants[] -> Objects[] -> Child Object tagref, and
+# each scnr Crates placement picks its variant by name (Variant Name string id; an
+# empty name takes variant 0). So a swap rewrites a child slot in the hlmt, which
+# changes EVERY placement of that crate showing that variant -- a share of individual
+# racks cannot be picked. The share is matched instead by choosing child slots whose
+# placement-weighted total comes closest to rate x all crate-borne weapons.
+# Measured 2026-10-02 (crate-borne vs loose placements): H3 010 80/28, 030 60/60,
+# ODST l300 86/15, Reach m50 44/68, H4 m020 176/81. Halo 1 has no crates; Halo 2 has
+# the same structure but is not scanned yet, so it is left out.
+#   cr: Crates block (off, elem)   pal: Crates Palette   vn: placement Variant Name
+#   model: bloc Model tagref   var: hlmt Variants (off, elem)
+#   obj: Objects in a variant (off, elem, Child Object tagref offset)
+_MAP_CRATES = {
+    'Halo 3':       dict(cr=(0x5BC, 0xB0), pal=0x5C8, vn=0x54, model=0x34,
+                         var=(0x64, 0x30), obj=(0x20, 0x1C, 0xC)),
+    'Halo 3: ODST': dict(cr=(0x5FC, 0xB0), pal=0x608, vn=0x54, model=0x34,
+                         var=(0x64, 0x48), obj=(0x38, 0x1C, 0xC)),
+    'Halo Reach':   dict(cr=(0x600, 0xD8), pal=0x60C, vn=0x58, model=0x64,
+                         var=(0x84, 0x38), obj=(0x20, 0x20, 0xC)),
+    'Halo 4':       dict(cr=(0x638, 0x178), pal=0x644, vn=0x9C, model=0x64,
+                         var=(0xC4, 0x6C), obj=(0x30, 0x24, 0x10)),
+}
+
+
+def _crate_weapon_slots(m, game):
+    """{tagref file offset: [weapon tag name, placements showing it]} for every child
+    weapon slot of every crate model on this level. Grenades and ammo children are
+    left out. A model shared by several crate tags is walked once (the offset is the
+    key), so a slot is never counted -- or rewritten -- twice."""
+    lay = _MAP_CRATES.get(str(game).strip())
+    s = _scnr_base(m)
+    if not lay or s is None:
+        return {}
+    blocs = dict(m.find_tags('bloc', '*'))
+    hlmts = dict(m.find_tags('hlmt', '*'))
+    pc = max(0, m.i32(s + lay['pal']))
+    pb = _block_base(m, s + lay['pal']) if pc else None
+    variants = {}                      # palette index -> {name sid: [slot offsets]}
+    names = {}
+    for pi in range(pc):
+        b = blocs.get(_tag_name_by_id(m, m.u32(pb + pi * 0x10 + 0xC)))
+        hb = hlmts.get(_tag_name_by_id(m, m.u32(b + lay['model'] + 0xC))) if b is not None else None
+        if hb is None:
+            continue
+        voff, vsz = lay['var']
+        ooff, osz, ref = lay['obj']
+        nv = max(0, m.i32(hb + voff))
+        vb = _block_base(m, hb + voff) if nv else None
+        table = {}
+        for v in range(nv):
+            ve = vb + v * vsz
+            no = max(0, m.i32(ve + ooff))
+            ob = _block_base(m, ve + ooff) if no else None
+            slots = []
+            for k in range(no):
+                r = ob + k * osz + ref
+                n = _tag_name_by_id(m, m.u32(r + 0xC))
+                low = (n or '').lower()
+                if (n and (chr(92) + 'weapons' + chr(92)) in chr(92) + low
+                        and 'grenade' not in low and 'ammo' not in low):
+                    slots.append(r)
+                    names[r] = n
+            table.setdefault(m.u32(ve), slots)
+            if v == 0:
+                table.setdefault(0, slots)          # an empty name takes variant 0
+        if any(table.values()):
+            variants[pi] = table
+    out = {}
+    co, ce = lay['cr']
+    cc = max(0, m.i32(s + co))
+    cb = _block_base(m, s + co) if cc else None
+    for i in range(cc):
+        e = cb + i * ce
+        pi = struct.unpack_from('<h', m.data, e)[0]
+        table = variants.get(pi)
+        if not table:
+            continue
+        for r in table.get(m.u32(e + lay['vn']), []):   # unknown name: nothing counted
+            out.setdefault(r, [names[r], 0])[1] += 1
+    return out
+
+
+def _apply_crate_weapon_swaps(m, game, swaps):
+    """Give the picked weapons the same share of the level's CRATE-borne weapons as
+    _apply_weapon_swaps gives them of the loose placements. Per pick, child slots are
+    taken (largest first, then whichever brings the total nearest the target) until
+    rate x total is matched as closely as the slot sizes allow. The reference written
+    is the Weapon Palette's own tagref for the pick, so only a weapon the level already
+    carries -- and that the loose swap could place -- ever goes on a rack."""
+    lay = _MAP_CRATES.get(str(game).strip())
+    if not lay:
+        return []
+    slots = _crate_weapon_slots(m, game)
+    total = sum(n for _w, n in slots.values())
+    if not total:
+        return []
+    wl = _MAP_WEAPONS.get(game)
+    s = _scnr_base(m)
+    poff, pes = wl['palette']
+    pc = max(0, m.i32(s + poff))
+    pb = _block_base(m, s + poff)
+    pal = {_tag_name_by_id(m, m.u32(pb + i * pes + wl['pal_id_at'])): pb + i * pes
+           for i in range(pc)}
+    free = dict(slots)                 # slots not yet given to a pick
+    out = []
+    for tag, rate in (swaps or {}).items():
+        if not rate or rate <= 0:
+            continue
+        _, name = hm.split_tag(tag)
+        name = _concrete_tag(m, 'weap', name, pal.keys()) or name
+        short = name.rsplit(chr(92), 1)[-1]
+        src = pal.get(name)
+        if src is None:
+            out.append({'effect': 'crate weapons', 'field': short, 'ok': False,
+                        'reason': "weapon not in this map's palette"})
+            continue
+        target = min(total, rate * total)
+        got, chosen = 0, []
+        for r, (_w, n) in sorted(free.items(), key=lambda kv: -kv[1][1]):
+            if abs(target - (got + n)) < abs(target - got):
+                chosen.append(r)
+                got += n
+        for r in chosen:
+            m.data[r:r + 16] = m.data[src:src + 16]
+            free.pop(r)
+        out.append({'effect': 'crate weapons', 'field': short, 'ok': True,
+                    'skip': not chosen, 'tag': 'hlmt',
+                    'old': '%d crate-borne weapons' % total,
+                    'new': '%d swapped in (%.0f%%, asked %.0f%%)'
+                           % (got, 100.0 * got / total, 100.0 * rate)})
+    return out
+
+
 def map_weapon_placement_count(m, game):
     """How many weapon placements the level has — the denominator a Map Presence
     percentage applies to. 0 if the game has no known layout."""
@@ -7835,6 +7970,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # Scatter picked weapons through the map's placements. Runs BEFORE the ops so
         # each swapped weapon gets its VANILLA rounds (Magazine picks don't apply).
         results.extend(_apply_weapon_swaps(m, game, registry, weapon_swaps))
+        # ...and the weapons that come with gun racks, weapon cases and supply crates,
+        # at the same rates (after the swap above, which may have added a pick to the
+        # Weapon Palette -- the crate pass copies its reference from there).
+        results.extend(_apply_crate_weapon_swaps(m, game, weapon_swaps))
     if equipment_swaps:
         # Same placement-scatter idea, on the equipment block.
         results.extend(_apply_equipment_swaps(m, str(game).strip(), equipment_swaps))
