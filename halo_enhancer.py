@@ -391,7 +391,8 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_specops_bosses', 'h3_specops_bosses', 'heroes_are_bosses',
                'h2_sentinel_enforcer_bosses',
                'h3_equipment_in_rolls', 'equipment_need_weapon',
-               'auto_new_weapon_abilities', 'auto_new_weapon_duals',
+               'auto_new_weapon_abilities', 'auto_new_equipment_abilities',
+               'auto_new_weapon_duals',
                'auto_new_weapon_upgrades',
                'score_scaling', 'score_step', 'score_cap_mult', 'score_live_push',
                'betrayal_marines_score',
@@ -996,7 +997,8 @@ CONFIG = {
     # level's plain weapon pool. The New Weapon BUTTON always offers duals and
     # upgrades; these three let the automatic rolls do the same. Default False, which
     # is exactly what the automatic rolls did before the options existed.
-    "auto_new_weapon_abilities": False,
+    "auto_new_weapon_abilities": False,     # retired: abilities ride the equipment rolls
+    "auto_new_equipment_abilities": True,
     "auto_new_weapon_duals": False,
     "auto_new_weapon_upgrades": False,
     # Metagame scoring: pay more per kill for enemies the run has made nastier.
@@ -1941,6 +1943,8 @@ MOD_COLORS = {
     'exhaust': {'border': 'FF7043', 'bg': '1e0f06'},  # #5: one-map exhaust (ember orange)
     'skull': {'border': 'D8D0C0', 'bg': '141210'},  # #7: skull — bone on near-black
     'equipment': {'border': 'ADCB2E', 'bg': '13160a'},  # H3 equipment — yellow-green
+    # Bane: blood red on a deep maroon, framed three times (create_mod_widget)
+    'bane': {'border': 'FF1744', 'bg': '24060c', 'outer': '8B0000'},
 }
 
 
@@ -1949,7 +1953,17 @@ def skull_watermark_path():
 
     Qt stylesheets can only take a background-image from a file (no inline data),
     so the glyph is painted to a PNG rather than shipped as an asset."""
-    p = app_data_dir() / "skull_bg.png"
+    return glyph_watermark_path("skull_bg.png", "☠", (216, 208, 192, 30))
+
+
+def bane_watermark_path():
+    """The Bane card's watermark: a faint blood-red ☣ (poison), deliberately not a
+    skull so the two kinds never read alike."""
+    return glyph_watermark_path("bane_bg.png", "☣", (255, 23, 68, 34))
+
+
+def glyph_watermark_path(filename, glyph, rgba):
+    p = app_data_dir() / filename
     if not p.exists():
         try:
             from PySide6.QtGui import QPixmap, QPainter, QColor, QFont
@@ -1959,8 +1973,8 @@ def skull_watermark_path():
             font = QFont()
             font.setPointSize(170)
             painter.setFont(font)
-            painter.setPen(QColor(216, 208, 192, 30))   # faint, so text stays readable
-            painter.drawText(pm.rect(), Qt.AlignCenter, "☠")
+            painter.setPen(QColor(*rgba))               # faint, so text stays readable
+            painter.drawText(pm.rect(), Qt.AlignCenter, glyph)
             painter.end()
             pm.save(str(p))
         except Exception:
@@ -4120,7 +4134,7 @@ class PairCard(QGroupBox):
         if self.pair['enemy_mod']:
             negative.append(self.create_mod_widget(
                 self.pair['enemy_mod'],
-                "☠ BANE (x%d, blacklisted after patching)" % BANE_PICKS
+                "☣ BANE (x%d, blacklisted after patching)" % BANE_PICKS
                 if self.pair['enemy_mod'].get('bane') else "ENEMY", "red", 'enemy'))
         elif self.pair.get('no_negative'):
             # #5: exhaust reward — this pair carries no enemy buff.
@@ -4261,7 +4275,11 @@ class PairCard(QGroupBox):
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
         dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
         skull = bool(mod_data.get('skull'))      # #7: whole-map rule
-        if skull:
+        bane = bool(mod_data.get('bane')) and not skull
+        if bane:
+            scheme = MOD_COLORS['bane']
+            border_width = 5                     # a double line; the frame adds the third
+        elif skull:
             scheme = MOD_COLORS['skull']
             border_width = 3
         elif special:
@@ -4277,15 +4295,15 @@ class PairCard(QGroupBox):
             border_width = 2
         # #7: skull cards get the glyph as a faint background watermark.
         bg_img = ''
-        if skull:
-            wm = skull_watermark_path()
+        if skull or bane:
+            wm = bane_watermark_path() if bane else skull_watermark_path()
             if wm:
                 bg_img = (f"background-image: url({str(wm).replace(chr(92), '/')});"
                           "background-repeat: no-repeat; background-position: center;")
         widget = QGroupBox(label)
         widget.setStyleSheet(f"""
             QGroupBox {{
-                border: {border_width}px {'double' if special or dual or skull else 'solid'} #{scheme['border']};
+                border: {border_width}px {'double' if special or dual or skull or bane else 'solid'} #{scheme['border']};
                 border-radius: 4px;
                 padding: 10px;
                 margin-top: 5px;
@@ -4294,7 +4312,8 @@ class PairCard(QGroupBox):
             }}
         """)
         layout = QVBoxLayout(widget)
-        marker = '☠ ' if skull else '★ ' if special else '⚔ ' if dual else ''
+        marker = ('☣ ' if bane else '☠ ' if skull else '★ ' if special
+                  else '⚔ ' if dual else '')
         name = QLabel(f"{marker}{source}: {mod_data.get('name', 'Unknown')}")
         name.setStyleSheet("font-weight: bold; font-size: %dpx; color: %s;"
                            % (CONFIG['font_size_name'],
@@ -4365,6 +4384,16 @@ class PairCard(QGroupBox):
         button_layout.addWidget(blacklist_btn)
 
         layout.addLayout(button_layout)
+        if bane:
+            # the THIRD line: a thin dark-red frame around the double-bordered card
+            frame = QFrame()
+            frame.setObjectName('baneFrame')
+            frame.setStyleSheet("QFrame#baneFrame { border: 2px solid #%s; border-radius: 6px; "
+                                "background: transparent; }" % MOD_COLORS['bane']['outer'])
+            fl = QVBoxLayout(frame)
+            fl.setContentsMargins(3, 3, 3, 3)
+            fl.addWidget(widget)
+            return frame
         return widget
 
     def on_select(self):
@@ -9689,6 +9718,23 @@ class OptionsDialog(QDialog):
                                           "same number of new-weapon cards. 0 disables.")
         rform.addRow("New-weapon chance:", self.new_weapon_chance)
 
+        # What an automatic new-weapon card may draw beyond the level's plain weapon
+        # pool. The New Weapon BUTTON always offers duals and upgrades; without these
+        # the automatic rolls silently could not.
+        self.auto_nw_duals_cb = QCheckBox("Dual-wield versions of weapons already held")
+        self.auto_nw_duals_cb.setChecked(bool(CONFIG.get('auto_new_weapon_duals')))
+        self.auto_nw_duals_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
+                                         "a 'Dual <Weapon>' turns up only once the player holds "
+                                         "that one-handed weapon.")
+        rform.addRow("    ↳ Rolls may offer:", self.auto_nw_duals_cb)
+
+        self.auto_nw_upgrades_cb = QCheckBox("Upgrade weapons whose base is already held")
+        self.auto_nw_upgrades_cb.setChecked(bool(CONFIG.get('auto_new_weapon_upgrades')))
+        self.auto_nw_upgrades_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
+                                            "an upgrade weapon is offered only once its base "
+                                            "weapon is owned.")
+        rform.addRow("", self.auto_nw_upgrades_cb)
+
         self.new_equipment_chance = QDoubleSpinBox()
         self.new_equipment_chance.setRange(0.0, 1.0)
         self.new_equipment_chance.setSingleStep(0.05)
@@ -9700,6 +9746,16 @@ class OptionsDialog(QDialog):
             "new weapon. 0 = never.")
         rform.addRow("New-equipment chance:", self.new_equipment_chance)
 
+        # Abilities ride on the new-EQUIPMENT rolls (user, 2026-10-02); they used to
+        # widen the new-weapon rolls. The New Weapon button still offers them.
+        self.auto_nw_abilities_cb = QCheckBox("Abilities")
+        self.auto_nw_abilities_cb.setChecked(bool(CONFIG.get('auto_new_equipment_abilities', True)))
+        self.auto_nw_abilities_cb.setToolTip("Let an automatic new-equipment card offer an ability "
+                                             "(Sprint / Overshield / Regeneration / Camo). Still "
+                                             "subject to the ability options: one per player, and "
+                                             "Sprint and Camo only once per run.")
+        rform.addRow("    ↳ Rolls may offer:", self.auto_nw_abilities_cb)
+
         self.balance_items_cb = QCheckBox("Keep both players' item counts level")
         self.balance_items_cb.setChecked(bool(CONFIG.get('balance_item_counts')))
         self.balance_items_cb.setToolTip(
@@ -9708,43 +9764,21 @@ class OptionsDialog(QDialog):
             "new-weapon / new-equipment cards, not to the NEW ITEM button.")
         rform.addRow("", self.balance_items_cb)
 
-        # What an automatic new-weapon card may draw beyond the level's plain weapon
-        # pool. The New Weapon BUTTON always offers duals and upgrades; without these
-        # the automatic rolls silently could not.
-        self.auto_nw_abilities_cb = QCheckBox("Abilities")
-        self.auto_nw_abilities_cb.setChecked(bool(CONFIG.get('auto_new_weapon_abilities')))
-        self.auto_nw_abilities_cb.setToolTip("Let an automatic new-weapon card offer an ability "
-                                             "(Sprint / Overshield / Regeneration / Camo), not just "
-                                             "the New Weapon button. Halo 1 only, and still subject "
-                                             "to the ability options: one per player, and Sprint and "
-                                             "Camo only once per run.")
-        rform.addRow("    ↳ Rolls may offer:", self.auto_nw_abilities_cb)
-
-        self.auto_nw_duals_cb = QCheckBox("Dual-wield versions of weapons already held")
-        self.auto_nw_duals_cb.setChecked(bool(CONFIG.get('auto_new_weapon_duals')))
-        self.auto_nw_duals_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
-                                         "a 'Dual <Weapon>' turns up only once the player holds "
-                                         "that one-handed weapon.")
-        rform.addRow("", self.auto_nw_duals_cb)
-
-        self.auto_nw_upgrades_cb = QCheckBox("Upgrade weapons whose base is already held")
-        self.auto_nw_upgrades_cb.setChecked(bool(CONFIG.get('auto_new_weapon_upgrades')))
-        self.auto_nw_upgrades_cb.setToolTip("Halo 2 onward. Same rule the New Weapon button uses: "
-                                            "an upgrade weapon is offered only once its base "
-                                            "weapon is owned.")
-        rform.addRow("", self.auto_nw_upgrades_cb)
-
-        def _sync_auto_nw(_=False):
-            on = self.new_weapon_chance.value() > 0
-            for cb in (self.auto_nw_abilities_cb, self.auto_nw_duals_cb,
-                       self.auto_nw_upgrades_cb):
+        def _gate(cbs, on, why):
+            for cb in cbs:
                 cb.setEnabled(on)           # nothing to widen if rolls are disabled
                 # say WHY it is greyed: it read as permanently broken (user, 2026-10-02)
                 base = cb.toolTip().split('\n\n(Greyed out')[0]
-                cb.setToolTip(base if on else base + "\n\n(Greyed out while New-weapon "
-                              "chance is 0: there are no automatic new-weapon rolls "
-                              "to widen.)")
+                cb.setToolTip(base if on else base + "\n\n(Greyed out while %s is 0: "
+                              "there are no automatic rolls to widen.)" % why)
+
+        def _sync_auto_nw(_=False):
+            _gate((self.auto_nw_duals_cb, self.auto_nw_upgrades_cb),
+                  self.new_weapon_chance.value() > 0, "New-weapon chance")
+            _gate((self.auto_nw_abilities_cb,),
+                  self.new_equipment_chance.value() > 0, "New-equipment chance")
         self.new_weapon_chance.valueChanged.connect(_sync_auto_nw)
+        self.new_equipment_chance.valueChanged.connect(_sync_auto_nw)
         _sync_auto_nw()
 
         self.special_rate = QDoubleSpinBox()
@@ -11220,7 +11254,7 @@ class OptionsDialog(QDialog):
                     for k, _t in BASELINE_COLS if self.baseline_spins[(g, k)].value()}
                 for g in BASELINE_GAMES
                 if any(self.baseline_spins[(g, k)].value() for k, _t in BASELINE_COLS)},
-            'auto_new_weapon_abilities': self.auto_nw_abilities_cb.isChecked(),
+            'auto_new_equipment_abilities': self.auto_nw_abilities_cb.isChecked(),
             'auto_new_weapon_duals': self.auto_nw_duals_cb.isChecked(),
             'auto_new_weapon_upgrades': self.auto_nw_upgrades_cb.isChecked(),
             'equipment_need_weapon': self.equipment_need_weapon_cb.isChecked(),
@@ -14419,8 +14453,9 @@ class RunEnhancer:
         pool = strip_denied_equipment(self.db, pool)
         pool = drop_weapons_taken(self.db, pool, self.run_state)
         pool = gate_offer_pool(self.db, pool, self.run_state, player)
-        pool += [w for w in ability_offer_pool(self.db, game, self.run_state, player)
-                 if w not in owned and self.db.weapon_label(w) not in bl and w not in pool]
+        if CONFIG.get('auto_new_equipment_abilities', True):
+            pool += [w for w in ability_offer_pool(self.db, game, self.run_state, player)
+                     if w not in owned and self.db.weapon_label(w) not in bl and w not in pool]
         return pool
 
     def _item_counts(self, player):
@@ -14458,12 +14493,8 @@ class RunEnhancer:
         # uniqueness rule applied here or player 2 keeps drawing player 1's weapons.
         pool = drop_weapons_taken(self.db, pool, self.run_state)
         pool = gate_offer_pool(self.db, pool, self.run_state, player)
-        # Abilities last: they are their own gate (ability_offer_pool already checks
-        # the sprint feature, per-player ownership and the one-per-run pair), and they
-        # must not be filtered by the equipment/grenade gates above.
-        if CONFIG.get('auto_new_weapon_abilities'):
-            pool += [w for w in ability_offer_pool(self.db, game, self.run_state, player)
-                     if w not in owned and self.db.weapon_label(w) not in bl]
+        # Abilities are no longer offered here: they ride the new-EQUIPMENT rolls
+        # (_new_equipment_pool, option auto_new_equipment_abilities; user, 2026-10-02).
         return pool
 
     def _draw_other(self, mid, game, bl, active_neg, enemy_mods=None):
