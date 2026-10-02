@@ -5232,16 +5232,48 @@ _MAP_CRATES = {
 }
 
 
+# SCENERY carries rack weapons the same way (user, 2026-10-02: Crow's Nest's armory
+# guns stayed after a 100% swap). They are 020's armory_shelf / armory_shelf_small
+# SCENERY -- 116 placements, all auto-spawned -- while its only weapon-bearing crate,
+# crate_h_gun_rack_2, is mostly script-created. Same hlmt variant-child walk; only the
+# scnr block, palette and the object's Model offset differ. Each entry overrides the
+# crate layout keys it names.
+_MAP_SCENERY = {
+    'Halo 2':       dict(cr=(0x50, 0x5C), pal=0x58, vn=0x34, model=0x34),
+    'Halo 3':       dict(cr=(0xB4, 0xB4), pal=0xC0, vn=0x54, model=0x34),
+    'Halo 3: ODST': dict(cr=(0xD0, 0xB4), pal=0xDC, vn=0x54, model=0x34),
+    'Halo Reach':   dict(cr=(0xFC, 0xDC), pal=0x108, vn=0x58, model=0x64),
+    'Halo 4':       dict(cr=(0x150, 0x17C), pal=0x15C, vn=0x9C, model=0x64),
+}
+
+
 def _crate_weapon_slots(m, game):
+    """Weapon child slots of every crate AND scenery model on the level (see
+    _crate_weapon_slots_in); a model used by both is counted once per placement."""
+    g = str(game).strip()
+    base = _MAP_CRATES.get(g)
+    if not base:
+        return {}
+    out = {}
+    layouts = [('bloc', base)]
+    if g in _MAP_SCENERY:
+        layouts.append(('scen', dict(base, **_MAP_SCENERY[g])))
+    for group, lay in layouts:
+        for r, (w, n) in _crate_weapon_slots_in(m, lay, group).items():
+            out.setdefault(r, [w, 0])[1] += n
+    return out
+
+
+def _crate_weapon_slots_in(m, lay, group):
     """{tagref file offset: [weapon tag name, placements showing it]} for every child
     weapon slot of every crate model on this level. Grenades and ammo children are
     left out. A model shared by several crate tags is walked once (the offset is the
-    key), so a slot is never counted -- or rewritten -- twice."""
-    lay = _MAP_CRATES.get(str(game).strip())
+    key), so a slot is never counted -- or rewritten -- twice. `group` is the object
+    group the palette names: 'bloc' for crates, 'scen' for scenery."""
     s = _scnr_base(m)
     if not lay or s is None:
         return {}
-    blocs = dict(m.find_tags('bloc', '*'))
+    blocs = dict(m.find_tags(group, '*'))
     hlmts = dict(m.find_tags('hlmt', '*'))
     pc = max(0, m.i32(s + lay['pal']))
     pb = _block_base(m, s + lay['pal']) if pc else None
@@ -5445,6 +5477,12 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     # would silently swap the item they picked for something else.
     for _pi in list(reach_protected_slots(m, game, block='weapons')):
         slots.pop(_pi, None)
+    # Never swap a SKULL: Halo 3 places its collectible skulls as weapon placements
+    # (020's primary_skull / secondary_skull went to plasma pistols at 100%).
+    for _slot in list(slots):
+        _cur = struct.unpack_from('<h', m.data, wbase + _slot * wes + lay['palette_index'])[0]
+        if 'skull' in (pal.get(_cur) or '').lower():
+            slots.pop(_slot, None)
     info = {a[0]: (a[2], a[3], a[4]) for a in assign}
     done = {}
     for slot, pi in slots.items():
