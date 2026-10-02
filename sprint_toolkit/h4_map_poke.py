@@ -35,6 +35,7 @@ MAP = (r'C:\Program Files (x86)\Steam\steamapps\common\Halo The Master Chief Col
 PORT = r'objects\weapons\rifle\focus_rifle\focus_rifle'
 BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
 PP_GRAPH = r'objects\characters\storm_fp\weapons\pistol\fp_plasma_pistol\storm_fp_plasma_pistol'
+PORT_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle'
 PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
 BR_PROJ_FX = r'objects\weapons\rifle\storm_beam_rifle\fx\projectile'
 FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
@@ -71,6 +72,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--action-anim', metavar='A=B', action='append',
+                    help='fp graph action A plays animation B (bisection; repeatable)')
     ap.add_argument('--secondary-fx', metavar='EFFECT',
                     help='a muzzle effect (tag name) in the secondary firing slot of each barrel')
     ap.add_argument('--no-firing-shake', action='store_true',
@@ -108,7 +111,7 @@ def main():
     if not (a.fix or a.swap_fp or a.unswap or a.model_flags or a.beam_test or
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
-            a.no_firing_shake):
+            a.no_firing_shake or a.action_anim):
         return
 
     d = m.data
@@ -136,6 +139,24 @@ def main():
         bfx = m.data2off(struct.unpack_from('<I', d, bb0 + 0x184 + 4)[0])
         d[pfx + 0x4:pfx + 0x14] = d[bfx + 0x4:bfx + 0x14]
         print('barrel 0: Beam Rifle projectile + firing effect')
+    if a.action_anim:
+        # BISECTION in the built map (boot 17): an action of the port's fp graph plays
+        # another animation. Layout = halo3_reload.LAYOUTS['Halo 4'] (proven by the reload
+        # and swap cards): modes -> weapon class -> weapon type -> sets -> actions (0xC),
+        # animation index at +0xA. `--list-actions` prints the indices.
+        import halo3_reload
+        L = halo3_reload.LAYOUTS['Halo 4']
+        g = m.find_tags('jmad', PORT_GRAPH)[0][1]
+        acts = [ac for mo in m.follow_all(g, [L['modes_blk']], [L['modes_el']], 'all')
+                for wc in m.follow_all(mo, [L['wclass_blk']], [L['wclass_el']], 'all')
+                for wt in m.follow_all(wc, [L['wtype_blk']], [L['wtype_el']], 'all')
+                for st in m.follow_all(wt, [L['sets_blk']], [L['sets_el']], 'all')
+                for ac in m.follow_all(st, [L['actions_blk']], [L['actions_el']], 'all')]
+        for pair in a.action_anim:
+            ai, an = (int(v) for v in pair.split('='))
+            was = struct.unpack_from('<h', d, acts[ai] + 0xA)[0]
+            struct.pack_into('<h', d, acts[ai] + 0xA, an)
+            print('action %d: animation %d -> %d' % (ai, was, an))
     if a.secondary_fx or a.no_firing_shake:
         # each barrel's firing-effects element 0 (barrel +0x184, 0xF4 each):
         #   +0x44 Optional Secondary Firing Effect -- a MUZZLE FLASH beside the Sentinel's
