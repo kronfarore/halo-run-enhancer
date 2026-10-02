@@ -162,10 +162,35 @@ def meter_rects():
     return out
 
 
+#: boot 25: the 1280x720 picture did NOT reach the screen edges -- Halo 4's HUD area is
+#: inset. Bungie's own dark vignette in the Beam Rifle scope is drawn 15% larger (scale
+#: 1.15 at -96,-54). So the Reach art is scaled by ART_SCALE about the centre, on a
+#: canvas PAD times the HUD area, the rest filled with the mask's dark edge. The frame
+#: widget's rect is FRAME_RECT (h4_reach_scope.py WIDGETS).
+ART_SCALE = 1.15
+PAD = 1.5
+PAD_PX_PER_UNIT = 1.25
+FRAME_RECT = (round(SCREEN[0] * (1 - PAD) / 2), round(SCREEN[1] * (1 - PAD) / 2),
+              round(SCREEN[0] * PAD), round(SCREEN[1] * PAD))
+
+
+def padded(art):
+    k = PAD_PX_PER_UNIT
+    big = (round(SCREEN[0] * PAD * k), round(SCREEN[1] * PAD * k))
+    inner = art.resize((round(SCREEN[0] * ART_SCALE * k), round(SCREEN[1] * ART_SCALE * k)),
+                       Image.LANCZOS)
+    edge = art.getpixel((0, art.height // 2))
+    can = Image.new('RGBA', big, (0, 0, 0, edge[3]))
+    can.paste(inner, ((big[0] - inner.width) // 2, (big[1] - inner.height) // 2))
+    return can
+
+
 def preview(art, meters, path):
     W, H = SCREEN
     can = Image.new('RGBA', (W, H), (95, 115, 95, 255))
-    can.alpha_composite(art.resize((W, H), Image.LANCZOS))
+    l, t, w, h = FRAME_RECT
+    big = padded(art).resize((w, h), Image.LANCZOS)
+    can.alpha_composite(big.crop((-l, -t, -l + W, -t + H)))
     for name, (l, t, w, h) in meter_rects().items():
         m = meters[name]
         rgb = (255, 120, 60) if name == 'meter_heat' else (90, 170, 255)
@@ -191,7 +216,8 @@ def main():
         return
     data = os.path.join(H4EK, 'data', OWN)
     os.makedirs(data, exist_ok=True)
-    art.save(os.path.join(data, 'scope_frame.tif'))
+    padded(art).save(os.path.join(data, 'scope_frame.tif'))
+    print('   scope_frame rect (left, top, width, height) = %s' % (FRAME_RECT,))
     for k, im in meters.items():
         im.save(os.path.join(data, k + '.tif'))
     tags = os.path.join(H4EK, 'tags', OWN)

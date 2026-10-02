@@ -64,7 +64,9 @@ FADE_HUD_RETICLE = False
 #: the template's widgets: component -> (bitmap, left, top, width, height, opacity, tint argb)
 #: rects from h4_reach_scope_art.py meter_rects()
 WIDGETS = {
-    'bitmap_bar_outlines': ('scope_frame', 0, 0, 1280, 720, 1.0, (1, 1, 1, 1)),
+    # oversized like Bungie's vignette (boot 25: 1280x720 left the screen edges bare);
+    # = h4_reach_scope_art.FRAME_RECT
+    'bitmap_bar_outlines': ('scope_frame', -320, -180, 1920, 1080, 1.0, (1, 1, 1, 1)),
     'bitmap_heat_bar': ('meter_heat', 1070.4, 203.4, 105.8, 313.3, 0.85, (1, 1, 0.45, 0.2)),
     'bitmap_ammo_bar': ('meter_batt', 103.8, 203.4, 105.8, 313.3, 0.85, (1, 0.45, 0.75, 1)),
 }

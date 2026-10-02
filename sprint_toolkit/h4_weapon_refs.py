@@ -65,8 +65,16 @@ def same_value(got, want):
 
 
 def resolve_any(tag, path):
-    """Like resolve(), for a field of any type (a flags field here)."""
+    """Like resolve(), for a field of any type (a flags field here). A leading '/' names
+    a TOP-LEVEL field: '/flags' is the weapon's own flags, where a bare 'flags' would be
+    found first inside the item/object structs."""
     fields = tag.Fields
+    if path.startswith('/'):
+        name = path[1:].lower()
+        for f in fields:
+            if f.FieldName.lower() == name:
+                return f
+        raise SystemExit('no top-level field %r' % path)
     parts = path.lower().split('/')
     for part in parts[:-1]:
         m = re.match(r'(.+)\[(\d+)\]$', part)

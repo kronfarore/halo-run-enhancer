@@ -152,6 +152,13 @@ SET_REFS = [
     # leaf names: found depth-first through STRUCTS only (h4_weapon_refs.find), so the
     # modes BLOCK above is not touched; 'weapon aim assist/...' does not resolve by path
     ('set:deviation angle', '0'),
+    # boot 25 ("drifts slightly unzoomed, more the further I zoom"): WITHOUT "strict
+    # deviation angle" Halo 4 raises the deviation to the AUTOAIM angle (plugin: "deviation
+    # angle is allowed to be less than primary autoaim angle") -- 2 deg unzoomed from the
+    # Reach catalog, 1 in the modes. The Beam Rifle sets it. And it hides its gun when
+    # zoomed ("for scoped weapons"), as the pistol does -- the port's stayed visible.
+    ('set-flag:/flags', 'strict deviation angle'),
+    ('set-flag:/flags', 'hide FP weapon when in iron sights'),
     ('set:aim speed multiplier', '1'),
     ('set-point:barrels[0]/first person offset', FP_OFFSET),
     ('set-point:barrels[1]/first person offset', FP_OFFSET),
@@ -229,7 +236,7 @@ def main():
         if n < 1:
             raise SystemExit('the donor has no %s reference to %s' % (group, old))
     for field, path in SET_REFS:
-        if field.startswith(('clear-flag:', 'set:', 'set-point:')):
+        if field.startswith(('clear-flag:', 'set-flag:', 'set:', 'set-point:')):
             continue
         if path.startswith(OWN_HUD) and not a.write:
             continue                          # copied from the Plasma Pistol's on --write
