@@ -2338,6 +2338,26 @@ weak); muzzle flash = the Storm Rifle's firing effect in the optional secondary 
 (needs primary_trigger + fx_vent, both on the model) until the Focus Rifle's own Reach
 muzzle particles are ported.
 
+### Step 7 / 8 in Halo 4: the HUD scope, the pickup lines, the pictogram (2026-10-02)
+
+* **Scope:** the port's OWN copy of the Plasma Pistol's cui_screen (in a built map a screen
+  is one shared tag -- grafting the shared one would scope the real Plasma Pistol), then
+  AFTER EACH BUILD `h4_map_poke.py --scope`: the enhancer's in-game-proven
+  `_apply_h4_scope` with the Beam Rifle's screen as donor.
+* **Lines:** they live in `ui\strings\ingame` (not a hud_messages list), five ids like
+  Halo 3's; the Sentinel base carried the Beam Rifle's `be_*`. `h4_port_messages.py`
+  clones them as `fr_*` ("Focus Rifle"), English in every language (Halo 4's prompts NAME
+  the weapon, so a translated line cannot be cloned safely); `tool strings` imports
+  English, `strings-localized` reported 0 for the others (fallback). Only ingame.txt may
+  sit in data\ui\strings when importing (the verb takes every .txt).
+* **Pictogram:** Halo 4's icon packages are the Halo 3 container with **0x10000 blocks**
+  (h3_font_repack rebuilds all four byte for byte with BLOCK = 0x10000); a glyph record
+  has a **12-byte header** (u16 advance, size, width, height, 0, 12*res) over Halo 3's
+  codec (408/408 decode exactly); x2-x4 are exact multiples; pickup pictograms are font 2
+  (icon\fixedsys-hud). `h4_mesh_dump.py` + `h4_weapon_glyph.py` draw the port's side
+  silhouette and add it at U+E1F6 (no Focus Rifle macro exists); the lines carry the
+  literal character. Packages are loose: no rebuild for the glyph, one for the lines.
+
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
 The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's

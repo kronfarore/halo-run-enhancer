@@ -38,7 +38,9 @@ LIST = B.join(['ui', 'strings', 'ingame'])
 SRC = os.path.join(H4EK, 'data', 'ui', 'strings', 'ingame.txt')
 DONOR, PORT = 'be_', 'fr_'
 DONOR_NAME, PORT_NAME = 'Beam Rifle', 'Focus Rifle'
-DONOR_ICON, PORT_ICON = '&beam_rifle', '&beam_rifle'      # interim icon, see above
+#: the port's OWN pictogram (h4_weapon_glyph.py): a literal private-use character in
+#: font 2 of the icon packages -- a literal works in place of a macro (the Halo 3 lesson)
+DONOR_ICON, PORT_ICON = '&beam_rifle', chr(0xE1F6)
 IDS = ('pickup', 'swap', 'picked_up', 'switch_to', 'swap_ai')
 
 
@@ -72,14 +74,24 @@ def port_lines(english):
 
 
 def add_lines(path, lines, write):
+    """Add the port's missing lines and REWRITE those whose text changed (the icon moved
+    from &beam_rifle to the port's own glyph). Returns the lines added or rewritten."""
     s = read(path)
-    new = [l for l in lines if not re.search(r'^%s = ' % re.escape(l.split(' = ')[0]), s, re.M)]
-    if new and write:
-        body = s.rstrip('\r\n') + '\r\n' + '\r\n'.join(new) + '\r\n'
-        if body.count('\n') != body.count('\r\n'):
+    touched = []
+    for l in lines:
+        key = l.split(' = ')[0]
+        m = re.search(r'^%s = [^\r\n]*' % re.escape(key), s, re.M)
+        if m is None:
+            s = s.rstrip('\r\n') + '\r\n' + l + '\r\n'
+            touched.append(l)
+        elif m.group(0) != l:
+            s = s[:m.start()] + l + s[m.end():]
+            touched.append(l)
+    if touched and write:
+        if s.count('\n') != s.count('\r\n'):
             raise SystemExit('%s: mixed line endings' % path)
-        io.open(path, 'w', encoding='utf-16', newline='').write(body)
-    return new
+        io.open(path, 'w', encoding='utf-16', newline='').write(s)
+    return touched
 
 
 def main():
