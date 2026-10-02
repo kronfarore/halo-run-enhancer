@@ -2266,6 +2266,14 @@ Method note: an animation glitch the user sees as "a jerk" can be a mismatched
 HAND-OFF or a SPIKE inside one animation -- measure both, and use the user's ordering
 (jerk-then-freeze) to tell which.
 
+**User correction (boot 13): the jerk is "within the overheated animation when the heat
+is vented".** `overheated` is internally clean (loop seam 0.0009) and `vent_*` too; the
+jerk is the 0.035 hand-off overheated -> o_h_exit, which starts while heat still drains.
+The still-hold of boot 12 froze the motion; the fix SHIFTS `overheated` as a whole (every
+channel + overheating's last minus overheated's first), keeping its motion: joins
+0.0000 / 0.0009, verified on the exported graph. The frame-44 jolt smoothing stays (a real
+spike). Lesson: ask WHEN in the game state a glitch happens before choosing which seam.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

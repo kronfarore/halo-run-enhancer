@@ -10,7 +10,13 @@ mismatch -- and the jerk stayed, now followed by a FREEZE (the still hold). The 
 "jerk, then freeze" put the jerk BEFORE the hold, inside `overheating`; the user's
 heat-meter timing ("shortly after halfway") agreed.
 
-THE JOLT: h4_fp_jump.py --detail overheating -- frames 27-37 a deliberate fine shake,
+THE USER'S JERK (boot 13: "within the overheated animation when the heat is vented"):
+`overheated` itself is clean (loop seam 0.0009), but it sits 0.035 off both neighbours,
+and o_h_exit starts while heat still drains -- the hand-off is the jerk. `overheated` is
+now SHIFTED as a whole to meet overheating's end (its motion kept; the still hold froze
+it), which closes both joins (0.0000 / 0.0009, verified on the exported graph).
+
+ALSO THE JOLT: h4_fp_jump.py --detail overheating -- frames 27-37 a deliberate fine shake,
 then frame 44 kicks 0.0205, ~10x its neighbours, and 45-49 drift back. Frames 44-46 are
 replaced by a straight line from frame 43 to 47 (worst spike there 0.0144 -> 0.0035);
 every other frame stays Bungie's. The Beam Rifle never overheats in normal play, so nobody
@@ -83,6 +89,33 @@ def smooth(anim, f0, f1):
     return changed
 
 
+#: THE JERK THE USER SEES (boot 13, user: "within the overheated animation when the heat
+#: is vented"): `overheated` itself is clean (loop seam 0.0009, steps <= 0.0019), but it
+#: sits displaced 0.035 from BOTH neighbours, and o_h_exit starts while heat still drains.
+#: overheating -> o_h_exit join at 0.001, so `overheated` is SHIFTED as a whole: every
+#: channel + (overheating's last value - overheated's first value). Its own motion is
+#: kept (the still-hold of boot 12 froze it); both joins close.
+SHIFT_FROM, SHIFT_INTO = 'overheating', 'overheated'
+
+
+def shift_to_join(src_anim, dst_anim):
+    src, dst = action_of(src_anim), action_of(dst_anim)
+    srcs = {(fc.data_path, fc.array_index): fc for fc in jump_fcurves(src)}
+    changed = 0
+    for fc in jump_fcurves(dst):
+        sfc = srcs.get((fc.data_path, fc.array_index))
+        if sfc is None or not len(fc.keyframe_points):
+            continue
+        delta = sfc.evaluate(src_anim.frame_end) - fc.evaluate(dst_anim.frame_start)
+        for k in fc.keyframe_points:
+            k.co.y += delta
+            k.handle_left.y += delta
+            k.handle_right.y += delta
+        fc.update()
+        changed += 1
+    return changed
+
+
 def worst_spike(arm, anim, lo, hi):
     fr = [x for x in jump.sample(arm, anim) if lo - 1 <= x[0] <= hi + 1]
     best = (0, None)
@@ -103,6 +136,13 @@ def main(write):
     print('%s frames %d..%d smoothed (%d keys): worst spike %.4f at %s -> %.4f at %s'
           % (SMOOTH_ANIM, SMOOTH_FROM + 1, SMOOTH_TO - 1, n, before[0], before[1],
              after[0], after[1]))
+    c = shift_to_join(anims[SHIFT_FROM], anims[SHIFT_INTO])
+    print('%s shifted to join %s: %d channels' % (SHIFT_INTO, SHIFT_FROM, c))
+    sm = {n: jump.sample(arm, anims[n]) for n in (SHIFT_FROM, SHIFT_INTO, 'o_h_exit')}
+    for x, y in ((SHIFT_FROM, SHIFT_INTO), (SHIFT_INTO, 'o_h_exit'), (SHIFT_INTO, SHIFT_INTO)):
+        last, first = sm[x][-1][1], sm[y][0][1]
+        print('join %-12s -> %-10s %.4f' % (x, y, max((first[k] - last[k]).length
+                                                     for k in jump.WATCH)))
     if not write:
         print('(dry run -- pass --write)')
         return

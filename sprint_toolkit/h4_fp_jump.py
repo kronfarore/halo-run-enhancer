@@ -163,6 +163,11 @@ def main(rel):
             dv = b['b_gun'] - a['b_gun']
             print('DETAIL %3d  step %.4f  spike %.4f  gun d=(%+.4f %+.4f %+.4f)'
                   % (fb, step, spike, dv.x, dv.y, dv.z))
+    for name in ('overheated', 'vent_loop', 'idle'):
+        if name in samples and samples[name]:
+            first, last = samples[name][0][1], samples[name][-1][1]
+            print('LOOPSEAM %-12s last->first %.4f' % (name, max((first[k] - last[k]).length
+                                                                 for k in WATCH)))
     for a, b in CHAINS:
         if a in samples and b in samples and samples[a] and samples[b]:
             last, first = samples[a][-1][1], samples[b][0][1]
