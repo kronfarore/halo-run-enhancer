@@ -70,6 +70,8 @@ AR_FIRING = ('objects\\weapons\\rifle\\storm_assault_rifle\\feedback\\'
 # them "disabled for debugging" in the Sentinel's firing effect); the Storm Rifle's
 # fx\firing was the stand-in that proved the slot draws (boot 18)
 MUZZLE_FX = 'objects\\weapons\\rifle\\focus_rifle\\fx\\muzzle.effect'
+PP_HUD = 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol'
+OWN_HUD = 'ui\\hud\\weapons\\covenant\\focus_rifle\\focus_rifle'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
@@ -82,7 +84,10 @@ SET_REFS = [
     # the PLASMA PISTOL's HUD: battery as a percentage + overheat. The Beam Rifle's (first
     # boot) counts 10 shots, which a 620-round battery cannot show. No scope overlay: zoom
     # itself is the weapon's, and the enhancer grafts the scope UI at patch time.
-    ('hud screen reference', 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol.cui_screen'),
+    # the port's OWN copy of the Plasma Pistol's screen (OWN_HUD): in a built map a screen
+    # is ONE shared tag, so the scope graft (h4_map_poke.py --scope, after each build)
+    # would otherwise give the real Plasma Pistol a scope too
+    ('hud screen reference', OWN_HUD + '.cui_screen'),
     # NOT A REFERENCE: the Sentinel Beam is flagged "extension of parent" -- its gun was
     # part of the Sentinel's body. Held by the player, the weapon then draws as part of
     # the player, whose body first person never draws: invisible, shadow still cast, and
@@ -200,7 +205,9 @@ def main():
     for field, path in SET_REFS:
         if field.startswith(('clear-flag:', 'set:', 'set-point:')):
             continue
-        if not os.path.exists(os.path.join(TAGS, path)):
+        if path.startswith(OWN_HUD) and not a.write:
+            continue                          # copied from the Plasma Pistol's on --write
+        if not os.path.exists(os.path.join(TAGS, path)) and not path.startswith(OWN_HUD):
             raise SystemExit('%s -> %s does not exist' % (field, path))
 
     # the port's own beam, copied fresh from the donor's
@@ -214,6 +221,10 @@ def main():
             raise SystemExit('the beam projectile does not name its damage effect once')
         proj.save()
         print('own beam: %s.{projectile,damage_effect}' % OWN_PROJ)
+        hud = os.path.join(TAGS, OWN_HUD + '.cui_screen')
+        os.makedirs(os.path.dirname(hud), exist_ok=True)
+        shutil.copyfile(os.path.join(TAGS, PP_HUD + '.cui_screen'), hud)
+        print("own HUD screen: %s.cui_screen (a copy of the Plasma Pistol's)" % OWN_HUD)
 
     bad = [b for b in unresolved(model) + unresolved(weap) if a.write or b[1] != OWN_PROJ]
     if bad:

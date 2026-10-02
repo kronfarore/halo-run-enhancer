@@ -72,6 +72,8 @@ def main():
     ap.add_argument('--map', default=MAP)
     ap.add_argument('--fix', action='store_true')
     ap.add_argument('--swap-fp', action='store_true')
+    ap.add_argument('--scope', action='store_true',
+                    help='graft the Beam Rifle scope onto the port HUD (after each build)')
     ap.add_argument('--loop-frame', metavar='N=F', action='append',
                     help='fp graph animation N loop frame index (repeatable)')
     ap.add_argument('--anim-flags', metavar='N=FLAGS', action='append',
@@ -118,7 +120,7 @@ def main():
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
-            a.loop_frame):
+            a.loop_frame or a.scope):
         return
 
     d = m.data
@@ -164,6 +166,16 @@ def main():
             was = struct.unpack_from('<h', d, acts[ai] + 0xA)[0]
             struct.pack_into('<h', d, acts[ai] + 0xA, an)
             print('action %d: animation %d -> %d' % (ai, was, an))
+    if a.scope:
+        # STEP 7: the zoom HUD. The enhancer's own, in-game-proven Halo 4 scope graft
+        # (halo_patch._apply_h4_scope: template instance, zoom_decision/zoom_on_off,
+        # bindings, sniper_zoom_* animations) onto the port's OWN screen copy, donor the
+        # Beam Rifle's screen. Run after every build; the enhancer does the same at patch
+        # time. Its residency check refuses a donor whose scope template is not loaded
+        # where the port's HUD is.
+        rows = halo_patch._apply_h4_scope(m, ['weap ' + PORT], donor_huds=['beam_rifle'])
+        for r in rows:
+            print('scope: %s' % {k: r[k] for k in r if k in ('field', 'ok', 'skip', 'new', 'reason')})
     if a.anim_flags:
         # Playback Flags (jmad Animations element +0xA): bit 3 Disable Weapon IK, bit 4
         # Disable Weapon Aim/1st Person. The port's (Beam Rifle) overheating + o_h_exit
