@@ -7724,7 +7724,8 @@ class MagnitudeEditorDialog(QDialog):
             share = parsed[1] / 100.0 if parsed[1] > 1 else parsed[1]
             if share > 0:
                 bucket = equip_swaps if t.get('map_equip') else card_swaps
-                bucket[eff['tag']] = min(1.0, bucket.get(eff['tag'], 0.0) + share)
+                # NOT capped at 100%: above it the rates are weights (_weigh_rates)
+                bucket[eff['tag']] = bucket.get(eff['tag'], 0.0) + share
 
         # Sprint tuning rows fold into the sprint spec (_sprint_spec) rather than
         # becoming plan ops, so like the swap rows above they're skipped below — but

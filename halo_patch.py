@@ -2236,10 +2236,23 @@ def _append_equipment_palette(m, lay, scnr_base, datums):
     return out
 
 
+def _weigh_rates(swaps):
+    """Map Presence rates that add up to MORE than 100% become weights (user,
+    2026-10-02): at 100% every placement is already replaced, so past that point the
+    cards only compete for the same placements -- 150% and 50% share them 3:1 rather
+    than the first card taking everything and the rest being trimmed away."""
+    live = {t: float(r) for t, r in (swaps or {}).items() if r and float(r) > 0}
+    total = sum(live.values())
+    if total > 1.0:
+        live = {t: r / total for t, r in live.items()}
+    return live
+
+
 def _apply_equipment_swaps(m, game, swaps):
     """Replace a share of the level's EQUIPMENT placements, scattered evenly.
     `swaps` = {eqip-tag: rate 0..1}. Same idea as _apply_weapon_swaps, minus the
     ammo bookkeeping — equipment placements carry no rounds."""
+    swaps = _weigh_rates(swaps)
     out = []
     lay = _MAP_EQUIPMENT.get(str(game).strip())
     scnr_base = _scnr_base(m)
@@ -5330,6 +5343,7 @@ def _apply_crate_weapon_swaps(m, game, swaps):
     rate x total is matched as closely as the slot sizes allow. The reference written
     is the Weapon Palette's own tagref for the pick, so only a weapon the level already
     carries -- and that the loose swap could place -- ever goes on a rack."""
+    swaps = _weigh_rates(swaps)
     lay = _MAP_CRATES.get(str(game).strip())
     if not lay:
         return []
@@ -5391,6 +5405,7 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     weapons, scattered evenly. `swaps` = {weap-tag: rate 0..1}. Rounds are set to the
     weapon's VANILLA magazine values (this runs BEFORE the effect ops, so Magazine
     picks don't apply). Weapons absent from the map's Weapon Palette are skipped."""
+    swaps = _weigh_rates(swaps)
     out = []
     lay = _MAP_WEAPONS.get(game)
     scnr_base = _scnr_base(m)
@@ -5477,12 +5492,6 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     # would silently swap the item they picked for something else.
     for _pi in list(reach_protected_slots(m, game, block='weapons')):
         slots.pop(_pi, None)
-    # Never swap a SKULL: Halo 3 places its collectible skulls as weapon placements
-    # (020's primary_skull / secondary_skull went to plasma pistols at 100%).
-    for _slot in list(slots):
-        _cur = struct.unpack_from('<h', m.data, wbase + _slot * wes + lay['palette_index'])[0]
-        if 'skull' in (pal.get(_cur) or '').lower():
-            slots.pop(_slot, None)
     info = {a[0]: (a[2], a[3], a[4]) for a in assign}
     done = {}
     for slot, pi in slots.items():
