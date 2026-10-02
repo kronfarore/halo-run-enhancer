@@ -166,6 +166,8 @@ NAME_TO_CATEGORY.update({'General ' + n: c for n, c in list(NAME_TO_CATEGORY.ite
 def weight_of(effect_name, weights=None):
     """The score weight of an effect, or 0 if its name is not categorised."""
     cat = NAME_TO_CATEGORY.get(effect_name)
+    if not cat and str(effect_name).startswith('Armed: '):
+        cat = 'equipment'       # Halo 1 'Armed: <weapon>' cards: what the enemy carries
     if not cat:
         return 0
     return (weights or CATEGORY_WEIGHTS).get(cat, 0)

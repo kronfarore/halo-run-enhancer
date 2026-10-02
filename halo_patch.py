@@ -8418,9 +8418,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         if rep.get('skip'):
             row.update(ok=True, skip=True, reason=rep.get('reason'))
         elif rep.get('ok'):
-            row.update(ok=True, skip=(rep.get('removed', 0) == 0), old='hidden',
-                       new='%d hide call(s) removed, %d restore(s) kept'
-                           % (rep.get('removed', 0), rep.get('kept', 0)))
+            row.update(ok=True, skip=(rep.get('removed', 0) == 0 and not rep.get('released')),
+                       old='hidden',
+                       new='%d hide call(s) removed, %d restore(s) kept%s'
+                           % (rep.get('removed', 0), rep.get('kept', 0),
+                              ', %d cutscene restore(s) moved before a title the player '
+                              'already plays through' % rep['released']
+                              if rep.get('released') else ''))
         else:
             row.update(ok=False, reason=rep.get('reason', 'script edit failed'))
         results.append(row)

@@ -69,7 +69,7 @@ H2_OPCODES = {0x0274: 'hud_cinematic_fade', 0x0230: 'cinematic_show_letterbox',
 H1_SYNTAX, H1_HEADER, H1_NODES = 0x474, 56, 32767
 H1_OPCODES = {0x0198: 'show_hud', 0x0156: 'cinematic_show_letterbox',
               0x0157: 'cinematic_set_title', 0x0151: 'cinematic_start',
-              0x0152: 'cinematic_stop'}
+              0x0152: 'cinematic_stop', 0x0186: 'player_enable_input'}
 H1_HIDERS = {'show_hud': lambda v: v == 0.0,
              'cinematic_show_letterbox': lambda v: v == 1.0}
 # Halo 1 puts title beats INLINE in huge mission scripts that also hide the HUD for
@@ -536,5 +536,85 @@ def remove_title_hud_hiding(m, game, block_base, scnr_base):
         if not moved:
             failed = len(live)
             break
+    released = _h1_release_titles(t) if g == 'Halo 1' else 0
     return {'ok': True, 'removed': len(done), 'kept': kept, 'failed': failed,
-            'sites': len(rows), 'passes': passes}
+            'sites': len(rows), 'passes': passes, 'released': released}
+
+
+# The restores that END a cutscene (Halo 1). Moved, never removed.
+H1_RESTORES = {'show_hud': 1.0, 'cinematic_stop': None, 'cinematic_show_letterbox': 0.0}
+
+
+def _h1_release_titles(t):
+    """Halo 1 titles shown INSIDE a cutscene after the player already has control.
+
+    b30's 'override' beat (user, 2026-10-02): camera_control off, player_enable_input 1,
+    cinematic_set_title, sleep 150, show_hud 1, cinematic_stop -- the player plays the
+    whole title with the cutscene's HUD hidden. Titles inside a REAL cutscene (no input
+    yet, b30's Pelican insertion) are left alone. Where input is back before the title,
+    the restores after it (show_hud 1, cinematic_stop, letterbox 0, within H1_WINDOW
+    statements) are relinked to just BEFORE the title, so the cutscene ends when the
+    player gets control. Same Next-link surgery as everything else here: nothing is
+    deleted, the title still draws. Returns the number of statements moved."""
+    child_of, pred = {}, {}
+    for i in range(t.n):
+        r = t.at(i)
+        child_of.setdefault(r['child'], []).append(i)
+        if r['next'] != TERMINATOR:
+            pred.setdefault(r['next'] & 0xFFFF, i)
+    moved = 0
+    for head in _title_chains(t, pred, child_of):
+        chain, x = [], head
+        while x is not None and len(chain) < 4096:
+            chain.append(x)
+            r = t.at(x)
+            x = None if r['next'] == TERMINATOR else r['next'] & 0xFFFF
+        verbs = [_verb(t, g) for g in chain]
+        for k, v in enumerate(verbs):
+            if v != 'cinematic_set_title' or k == 0:
+                continue
+            # still inside a cutscene here?
+            depth = sum((w == 'cinematic_start') - (w == 'cinematic_stop') for w in verbs[:k])
+            if depth <= 0:
+                continue
+            last_start = max(i for i in range(k) if verbs[i] == 'cinematic_start')
+            if not any(verbs[i] == 'player_enable_input' and _arg(t, chain[i]) == 1.0
+                       for i in range(last_start, k)):
+                continue                       # a real cutscene: no control yet
+            grab = []
+            for i in range(k + 1, min(len(chain), k + 1 + H1_WINDOW + 2)):
+                want = H1_RESTORES.get(verbs[i], 'no')
+                if want == 'no':
+                    continue
+                if want is None or _arg(t, chain[i]) == want:
+                    grab.append(i)
+                if verbs[i] == 'cinematic_stop':
+                    break
+            if not grab:
+                continue
+            # unlink each grabbed statement from where it is (back to front keeps the
+            # indices valid), then chain them in front of the title
+            order = list(chain)
+            for i in sorted(grab, reverse=True):
+                prev, me = order[i - 1], order[i]
+                t.set_next(prev, t.at(me)['next'])
+                order.pop(i)
+            title_pos = order.index(chain[k])
+            before = order[title_pos - 1]
+            seq = [chain[i] for i in grab]
+            dat = lambda i: (t.at(i)['salt'] << 16) | i      # a link is a full datum
+            t.set_next(before, dat(seq[0]))
+            for a, b in zip(seq, seq[1:]):
+                t.set_next(a, dat(b))
+            t.set_next(seq[-1], dat(chain[k]))
+            moved += len(seq)
+            break                              # one title per chain is enough
+    return moved
+
+
+def _arg(t, group):
+    g = t.at(group)
+    name = t.at(g['child']) if g else None
+    if not name or name['next'] == TERMINATOR:
+        return None
+    return t.number(t.at(name['next'] & 0xFFFF))

@@ -3401,7 +3401,7 @@ class ModifierDatabase:
         elif mod.get('enemy'):
             return f"{mod['enemy']}{CONFIG['blacklist_label_separator']}{mod['name']}"
         else:
-            return f"General{CONFIG['blacklist_label_separator']}{mod['name']}"
+            return f"General{CONFIG['blacklist_label_separator']}{display_name(mod['name'], 'General')}"
 
     # Cards the Player Health / Player Shield pair supersedes. Starting Health and
     # Starting Shield Modifier scale the scenario profile rather than the pool, and
@@ -3497,7 +3497,9 @@ class ModifierDatabase:
 
     # Halo 1 enemies that wield a weapon (h1_enemy_weapons.ENEMY_UNITS), and the share
     # one 'Armed' card moves per pick.
-    H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Hunter', 'Sentinel')
+    # Hunter left out: its fuel rod is built in, an Armed card on it did nothing in game
+    # (user, 2026-10-02). Sentinel still to be tested.
+    H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Sentinel')
     ARMED_STEP = '+0.1'
 
     def armed_card(self, enemy, weapon_name, ally=False):
@@ -3883,7 +3885,10 @@ class RunState:
 
         state.phase = data.get('phase', 'weapon_selection')
         state.current_turn = data.get('current_turn', 'player1')
-        state.blacklist = set(data.get('blacklist', []))
+        # labels saved as 'General: General X' before display_name dropped the repeat
+        _sep = CONFIG['blacklist_label_separator']
+        state.blacklist = {l.replace('General' + _sep + 'General ', 'General' + _sep, 1)
+                           for l in data.get('blacklist', [])}
         state.special_counters = dict(data.get('special_counters', {}))
         fnp = data.get('free_negative_pending') or {}
         state.free_negative_pending = {'player1': bool(fnp.get('player1')),
@@ -4031,7 +4036,7 @@ class WeaponSelectionCard(QGroupBox):
         """)
         layout = QVBoxLayout(widget)
         source = mod_data.get('enemy', 'General')
-        name = QLabel(f"{source}: {mod_data.get('name', 'Unknown')}")
+        name = QLabel(f"{source}: {display_name(mod_data.get('name', 'Unknown'), source)}")
         name.setStyleSheet(f"font-weight: bold; font-size: {CONFIG['font_size_name']}px; color: #e0e0e0;")
         layout.addWidget(name)
         badge = single_game_badge(mod_data)   # #2: single-game indicator
@@ -4366,7 +4371,7 @@ class PairCard(QGroupBox):
         layout = QVBoxLayout(widget)
         marker = ('☣ ' if bane else '☠ ' if skull else '★ ' if special
                   else '⚔ ' if dual else '')
-        name = QLabel(f"{marker}{source}: {mod_data.get('name', 'Unknown')}")
+        name = QLabel(f"{marker}{source}: {display_name(mod_data.get('name', 'Unknown'), source)}")
         name.setStyleSheet("font-weight: bold; font-size: %dpx; color: %s;"
                            % (CONFIG['font_size_name'],
                               '#D8D0C0' if skull else '#00E5FF' if special
@@ -4702,6 +4707,16 @@ OTHER_WEIGHT_DEFAULTS = {'bane': 3.0}
 
 # How many picks one Bane card counts as (halo_patch.collect_effects).
 BANE_PICKS = 3
+
+
+def display_name(name, source):
+    """A card name as shown after its source: the General enemy cards are NAMED
+    'General <card>' (so they sort and search together), which after the source read
+    'General: General Vision'. The repeated word is dropped on screen only."""
+    name = str(name or '')
+    if source and name.startswith(str(source) + ' '):
+        return name[len(str(source)) + 1:]
+    return name
 
 
 def scaled_step(text, pct=None):
@@ -8175,9 +8190,9 @@ class MagnitudeEditorDialog(QDialog):
             # never become plan ops — they're reported by _apply_sprint instead (an
             # aggregate line plus a per-card old→new line), so don't add a stray
             # "no value changed" skip for them here.
-            if any(isinstance(t, dict) and t.get('sprint')
+            if any(isinstance(t, dict) and (t.get('sprint') or t.get('enemy_weapon'))
                    for t in (eff.get('targets') or [])):
-                continue
+                continue          # Armed cards report through their 'enemy weapons' rows
             results.append({'tag': eff.get('tag'), 'effect': eff.get('name'),
                             'ok': True, 'skip': True, 'reason': 'no value changed'})
 
@@ -10292,7 +10307,7 @@ class OptionsDialog(QDialog):
         fallback = CONFIG.get('h1_enemy_weapon_fallback') or {}
         for r, enemy in enumerate(ModifierDatabase.H1_ARMED_ENEMIES):
             cb = QCheckBox(enemy)
-            cb.setChecked(bool(enabled.get(enemy, enemy not in ('Hunter', 'Sentinel'))))
+            cb.setChecked(bool(enabled.get(enemy, enemy != 'Sentinel')))
             cb.setToolTip("Off: %ss keep the weapons the level gives them." % enemy)
             combo = QComboBox()
             combo.addItem("Auto (what it carries elsewhere)", None)
