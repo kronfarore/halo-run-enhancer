@@ -219,6 +219,40 @@ def main(write):
     shutil.copyfile(os.path.join(TAGS, os.path.splitext(SOURCE)[0] + '.frame_event_list'),
                     os.path.join(TAGS, OWN_REL + '.frame_event_list'))
     print('events: the shipped frame_event_list copied as the port\'s own')
+    set_loop_frames()
+
+
+#: THE POP, FOUND (boot 19, by in-map bisection with h4_map_poke.py): `overheating`'s LOOP
+#: FRAME INDEX was 0. When it finishes, the engine wraps to the loop frame and shows it for
+#: ONE frame before the next state -- frame 0 is the PRE-overheat pose, both hands
+#: elsewhere: the whole-rig pop "right before the idle", ~half heat. The Plasma Pistol's
+#: (no pop) is 16. Set to the LAST frame, a wrap lands on the pose the arms are already in:
+#: pop gone in game. Everything else tried before was not it (vent set, overlays,
+#: o_h_exit, the still hold, the aim flag) -- see PORTING.md.
+LOOP_FRAMES = {'first_person:overheating': 'last'}
+
+
+def set_loop_frames():
+    mb = jump.importlib.import_module(jump.KEY + '.managed_blam')
+
+    class T(mb.Tag):
+        pass
+
+    with T(path=os.path.join(TAGS, OWN)) as t:
+        anims = t.tag.SelectField('Struct:definitions[0]/Block:animations')
+        for i in range(anims.Elements.Count):
+            e = anims.Elements[i]
+            name = e.Fields[0].GetStringData()
+            if name not in LOOP_FRAMES:
+                continue
+            shared = e.SelectField('shared animation data').Elements[0]
+            frames = int(shared.SelectField('frame count').GetStringData())
+            want = frames - 1 if LOOP_FRAMES[name] == 'last' else int(LOOP_FRAMES[name])
+            f = e.SelectField('loop frame index')
+            was = f.GetStringData()
+            f.SetStringData(str(want))
+            print('%s loop frame index %s -> %s (of %d frames)' % (name, was, f.GetStringData(), frames))
+        t.tag_has_changes = True
 
 
 if __name__ == '__main__':

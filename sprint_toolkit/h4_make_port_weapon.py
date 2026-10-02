@@ -64,6 +64,9 @@ REPOINT = [
 ]
 
 #: (field path, tag path WITH extension): references the donor has as NULL
+AR_FIRING = ('objects\\weapons\\rifle\\storm_assault_rifle\\feedback\\'
+             'storm_assault_rifle_firing.damage_response_definition')
+MUZZLE_FX = 'objects\\weapons\\rifle\\storm_assault_carbine\\fx\\firing.effect'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
@@ -98,6 +101,17 @@ SET_REFS = [
     # +y left) moves that spawn in FIRST PERSON only. The gun-origin flag used the gun's
     # WORLD position instead and did not help. Starting guess for the Focus Rifle's
     # muzzle; tune in a built map with h4_map_poke.py --fp-offset, then copy here.
+    # FIRING FEEDBACK (boots 16-19, tuned in game by poke): the Sentinel's per-shot
+    # response shook too hard at 30 shots a second, none felt dead, the Storm Rifle's too
+    # little; the ASSAULT RIFLE's is right.
+    ('barrels[0]/firing effects[0]/firing damage', AR_FIRING),
+    ('barrels[1]/firing effects[0]/firing damage', AR_FIRING),
+    # MUZZLE FLASH (boot 18): the Storm Rifle's firing effect in the spare "optional
+    # secondary firing effect" slot -- it attaches to primary_trigger + fx_vent, both on
+    # the Focus Rifle model (the Suppressor's needs primary_trigger_muzzle: nothing drew).
+    # Stand-in until the Focus Rifle's own Reach muzzle particles are ported.
+    ('barrels[0]/firing effects[0]/optional secondary firing effect', MUZZLE_FX),
+    ('barrels[1]/firing effects[0]/optional secondary firing effect', MUZZLE_FX),
     ('set-point:barrels[0]/first person offset', FP_OFFSET),
     ('set-point:barrels[1]/first person offset', FP_OFFSET),
 ]

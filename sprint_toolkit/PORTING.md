@@ -2318,6 +2318,26 @@ and the port's weapon exports `heat` as blend_weight / blend_weight_barrel. Heat
 a threshold mid-vent on a one-frame overlay = a one-frame pop at ~half heat. All three are
 left out (34 animations). Lesson: compare graphs by the FULL name set, never a filtered one.
 
+**THE POP, SOLVED (boot 19) -- by in-map bisection, no rebuilds** (h4_map_poke.py
+--action-anim / --anim-flags / --loop-frame on the compiled graph, layout =
+halo3_reload.LAYOUTS['Halo 4']). Steps: o_h_exit -> overheated: pop stays; overheated ->
+idle: pop stays, but now visibly "right before the idle" = the END of `overheating`; the
+"Disable Weapon Aim/1st Person" flag (0x18 vs the Plasma Pistol's 0x08): not it.
+**Cause: `overheating`'s LOOP FRAME INDEX was 0** -- at its end the engine wraps to the
+loop frame for ONE frame before the next state, and frame 0 is the pre-overheat pose.
+The Plasma Pistol's is 16. Set to the last frame (58): pop gone. h4_fp_graph.py sets it
+after export (set_loop_frames). The earlier removals (vent set, overlays) are harmless to
+the Focus Rifle and kept; o_h_exit and Bungie's motion are intact.
+**Method lesson:** when two graphs differ in behaviour, diff their COMPILED per-animation
+fields (loop frame, playback flags, frame counts) in the built map -- not only names and
+poses -- and bisect by poking one field per boot.
+
+**Firing feedback + muzzle (kit):** per-shot response = the Assault Rifle's
+(storm_assault_rifle_firing; the Sentinel's was too strong at 30/s, the Storm Rifle's too
+weak); muzzle flash = the Storm Rifle's firing effect in the optional secondary slot
+(needs primary_trigger + fx_vent, both on the model) until the Focus Rifle's own Reach
+muzzle particles are ported.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A
