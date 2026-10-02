@@ -42,6 +42,13 @@ DONOR_NAME, PORT_NAME = 'Beam Rifle', 'Focus Rifle'
 #: font 2 of the icon packages -- a literal works in place of a macro (the Halo 3 lesson)
 DONOR_ICON, PORT_ICON = '&beam_rifle', chr(0xE1F6)
 IDS = ('pickup', 'swap', 'picked_up', 'switch_to', 'swap_ai')
+#: the player HUD's weapon icon (boot 20: "the player HUD icon is not in"): the screen's
+#: `weapon_icon_text` names a string id from ui\strings\weapons -- the Plasma Pistol
+#: screen copy said plasma_pistol_icon = "&plasma_pistol". The port's own line, with
+#: the port's glyph; h4_hud_icon.py points the port's screen at it.
+WEAPONS_SRC = os.path.join(H4EK, 'data', 'ui', 'strings', 'weapons.txt')
+HUD_ICON_LINE = 'focus_rifle_icon = "%s"' % chr(0xE1F6)
+KEEP_TXT = ('ingame.txt', 'weapons.txt')
 
 
 def run(verb, *args):
@@ -107,7 +114,7 @@ def main():
     if a.write:
         aside = os.path.join(H4EK, 'temp', 'strings_aside')
         for f in glob.glob(os.path.join(folder, '*.txt')):
-            if os.path.basename(f) != 'ingame.txt':
+            if os.path.basename(f) not in KEEP_TXT:
                 os.makedirs(aside, exist_ok=True)
                 shutil.move(f, os.path.join(aside, os.path.basename(f)))
                 print('   moved stray %s aside' % os.path.basename(f))
@@ -116,6 +123,19 @@ def main():
         if not os.path.exists(keep):
             shutil.copy2(tag, keep)
     print('english: +%d' % len(add_lines(SRC, lines, a.write)))
+    if not os.path.exists(WEAPONS_SRC):
+        aside = os.path.join(H4EK, 'temp', 'strings_aside', 'weapons.txt')
+        if os.path.exists(aside) and a.write:
+            shutil.move(aside, WEAPONS_SRC)
+        elif not os.path.exists(aside):
+            print(run('extract-unicode-strings', B.join(['ui', 'strings', 'weapons'])).strip()[-120:])
+    if os.path.exists(WEAPONS_SRC):
+        print('weapons list: +%d' % len(add_lines(WEAPONS_SRC, [HUD_ICON_LINE], a.write)))
+        for p in sorted(glob.glob(os.path.join(H4EK, 'data_*', 'ui', 'strings', 'weapons.txt'))):
+            add_lines(p, [HUD_ICON_LINE], a.write)
+        wtag = os.path.join(H4EK, 'tags', 'ui', 'strings', 'weapons.multilingual_unicode_string_list')
+        if a.write and not os.path.exists(wtag + '.before_focus'):
+            shutil.copy2(wtag, wtag + '.before_focus')
     langs = sorted(glob.glob(os.path.join(H4EK, 'data_*', 'ui', 'strings', 'ingame.txt')))
     for p in langs:
         n = add_lines(p, lines, a.write)
@@ -130,6 +150,8 @@ def main():
             print('   tool: ' + line.strip()[:110])
     d = open(os.path.join(H4EK, 'tags', LIST + '.multilingual_unicode_string_list'), 'rb').read()
     print('ids in the tag: %s' % [PORT + k for k in IDS if (PORT + k).encode() in d])
+    w = open(os.path.join(H4EK, 'tags', 'ui', 'strings', 'weapons.multilingual_unicode_string_list'), 'rb').read()
+    print('focus_rifle_icon in the weapons list: %s' % (b'focus_rifle_icon' in w))
 
 
 if __name__ == '__main__':

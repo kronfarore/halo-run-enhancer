@@ -2358,6 +2358,15 @@ muzzle particles are ported.
   silhouette and add it at U+E1F6 (no Focus Rifle macro exists); the lines carry the
   literal character. Packages are loose: no rebuild for the glyph, one for the lines.
 
+**Boot 20:** pickup prompt IN. Player-HUD icon NOT: the screen's `weapon_icon_text`
+names a string id from `ui\strings\weapons` (`plasma_pistol_icon = "&plasma_pistol"` on the
+copied screen) -> `focus_rifle_icon` (the port's glyph) added there and the screen
+repointed (h4_hud_icon.py, run by h4_make_port_weapon.py after every screen copy).
+Muzzle: the re-enabled Reach particles drew NOTHING (Bungie disabled them for a reason) --
+back to the Storm Rifle's flash. Scope: the graft is the H4 BEAM RIFLE's (vector polyart,
+19 assets); Reach's Focus Rifle scope is BITMAPS (scopes\beam_rifle_scope + meters +
+overheat border) -- recreating it means a new H4 scope template on imported Reach bitmaps.
+
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
 The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's
