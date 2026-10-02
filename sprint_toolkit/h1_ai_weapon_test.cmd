@@ -1,31 +1,36 @@
 @echo off
-rem Halo 1 AI-weapon test on b30 (The Silent Cartographer).
-rem   h1_ai_weapon_test.cmd deploy    put the test map in place (live b30 kept aside)
-rem   h1_ai_weapon_test.cmd restore   put the live b30 back
-rem Close MCC first is NOT required for maps, but load the level fresh after deploying.
+rem Halo 1 AI-weapon test maps.
+rem   h1_ai_weapon_test.cmd deploy  [level]   put <level>_aiweapon_test.map in place
+rem   h1_ai_weapon_test.cmd restore [level]   put the live map back
+rem Level defaults to b30. The live map is kept aside as <level>.map.pre_aiweapon.
+rem No parenthesised blocks: the path contains "(x86)", whose ")" would end one.
 setlocal
-set MAPS=%~dp0..\..\halo1\maps
+set "LVL=%~2"
+if "%LVL%"=="" set "LVL=b30"
+set "MAPS=%~dp0..\..\halo1\maps"
 if /i "%~1"=="deploy" goto deploy
 if /i "%~1"=="restore" goto restore
-echo usage: %~nx0 deploy ^| restore
+echo usage: %~nx0 deploy^|restore [level]
 exit /b 1
 
 :deploy
-if not exist "%MAPS%\b30_aiweapon_test.map" (
-  echo Test map missing - build it first: python h1_ai_weapon_test.py
-  exit /b 1
-)
-if not exist "%MAPS%\b30.map.pre_aiweapon" copy /y "%MAPS%\b30.map" "%MAPS%\b30.map.pre_aiweapon" >nul
-copy /y "%MAPS%\b30_aiweapon_test.map" "%MAPS%\b30.map" >nul
-echo Test map deployed. Live b30 saved as b30.map.pre_aiweapon
+if not exist "%MAPS%\%LVL%_aiweapon_test.map" goto notest
+if not exist "%MAPS%\%LVL%.map.pre_aiweapon" copy /y "%MAPS%\%LVL%.map" "%MAPS%\%LVL%.map.pre_aiweapon" >nul
+copy /y "%MAPS%\%LVL%_aiweapon_test.map" "%MAPS%\%LVL%.map" >nul
+echo Test map deployed. Live %LVL% saved as %LVL%.map.pre_aiweapon
 exit /b 0
 
 :restore
-if not exist "%MAPS%\b30.map.pre_aiweapon" (
-  echo Nothing to restore - b30.map.pre_aiweapon not found.
-  exit /b 1
-)
-copy /y "%MAPS%\b30.map.pre_aiweapon" "%MAPS%\b30.map" >nul
-del "%MAPS%\b30.map.pre_aiweapon"
-echo Live b30 restored.
+if not exist "%MAPS%\%LVL%.map.pre_aiweapon" goto norestore
+copy /y "%MAPS%\%LVL%.map.pre_aiweapon" "%MAPS%\%LVL%.map" >nul
+del "%MAPS%\%LVL%.map.pre_aiweapon"
+echo Live %LVL% restored.
 exit /b 0
+
+:notest
+echo Test map missing: %LVL%_aiweapon_test.map
+exit /b 1
+
+:norestore
+echo Nothing to restore - %LVL%.map.pre_aiweapon not found.
+exit /b 1
