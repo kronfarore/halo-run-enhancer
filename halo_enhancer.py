@@ -9716,6 +9716,11 @@ class OptionsDialog(QDialog):
             for cb in (self.auto_nw_abilities_cb, self.auto_nw_duals_cb,
                        self.auto_nw_upgrades_cb):
                 cb.setEnabled(on)           # nothing to widen if rolls are disabled
+                # say WHY it is greyed: it read as permanently broken (user, 2026-10-02)
+                base = cb.toolTip().split('\n\n(Greyed out')[0]
+                cb.setToolTip(base if on else base + "\n\n(Greyed out while New-weapon "
+                              "chance is 0: there are no automatic new-weapon rolls "
+                              "to widen.)")
         self.new_weapon_chance.valueChanged.connect(_sync_auto_nw)
         _sync_auto_nw()
 

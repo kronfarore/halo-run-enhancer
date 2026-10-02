@@ -5223,6 +5223,33 @@ def _apply_weapon_swaps(m, game, registry, swaps):
     pal = {i: _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at'])) for i in range(pcount)}
     weap_plug = registry.get('weap')
 
+    # A weapon the level carries but never places loose -- the detachable Machine Gun
+    # turret on all nine Halo 3 maps that field the turret (it is placed as a VEHICLE)
+    # -- is added to the Weapon Palette first, the same way _apply_equipment_swaps
+    # does it for ODST's equipment. The palette layouts match, so its helper is reused.
+    want = {}
+    for tag, rate in swaps.items():
+        if not rate or rate <= 0:
+            continue
+        _, name = hm.split_tag(tag)
+        name = _concrete_tag(m, 'weap', name, pal.values()) or name
+        if any(n == name for n in pal.values()):
+            continue
+        datum = _h3_tag_datum(m, 'weap', name)
+        if datum is not None:
+            want.setdefault(datum, name)
+    if want and hasattr(m, 'off2data'):      # H3-derived maps only
+        added = _append_equipment_palette(m, lay, scnr_base, list(want))
+        if added is None:
+            out.append({'effect': 'map weapons', 'ok': False,
+                        'reason': 'no free run to grow the weapon palette'})
+        else:
+            for datum, idx in added.items():
+                pal[idx] = want[datum]
+                out.append({'effect': 'map weapons',
+                            'field': want[datum].rsplit(chr(92), 1)[-1], 'ok': True,
+                            'old': 'not in this level', 'new': 'added to the palette'})
+
     assign = []          # (palette_index, count, rounds_left, rounds_loaded, short)
     for tag, rate in swaps.items():
         if not rate or rate <= 0:
