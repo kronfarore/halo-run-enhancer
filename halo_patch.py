@@ -7712,7 +7712,15 @@ def _tag_id_by_name(m, cls, path):
 
     Halo 1 index entry: group @0x00, tag id @0x0C, name pointer @0x10, meta @0x14.
     """
+    if hasattr(m, 'tag_id'):                       # Halo 1: tags is {(cls, path): meta}
+        tid = m.tag_id((cls, path))
+        if tid is not None:
+            return tid
     for t in getattr(m, 'tags', None) or ():
+        # a Halo 1 map's `tags` is a dict, so iterating it yields (cls, path) TUPLES --
+        # calling .get on those made every H1 patch with a weapon port fail (2026-10-02)
+        if not isinstance(t, dict):
+            continue
         if t.get('class') == cls and t.get('name') == path and t.get('ident') is not None:
             return t['ident']
     if not hasattr(m, 'tag_count'):
