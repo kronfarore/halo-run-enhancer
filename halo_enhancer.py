@@ -2588,6 +2588,7 @@ class ModifierDatabase:
         # After Missions, because the games list it builds is what the per-game tag
         # resolution needs.
         self._index_generic_enemy_tags()
+        self._add_port_cards()
         print(f"✅ Categorized: {len(self.positive_pool)} general positive, "
               f"{len(self.negative_pool)} general negative, "
               f"{len(self.wildcard_pool)} wildcard, "
@@ -3462,6 +3463,12 @@ class ModifierDatabase:
                 continue
             for src in (self.mission_weapons, self.mission_grenades, self.mission_turrets):
                 out |= set(src.get(mid) or ())
+        # a switched-on PORT is a weapon this game fields, however it is offered
+        try:
+            import weapon_ports
+            out |= {p.get('weapon') for p in weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))}
+        except Exception:
+            pass
         return {self.resolve_weapon(w) for w in out} | out
 
     def _weapon_fielded(self, mod, game, fielded=None):
@@ -3485,6 +3492,8 @@ class ModifierDatabase:
                 if self.get_mod_label(m) not in blacklist and self._game_ok(m, game)
                 and self._cross_game_ok(m) and not mod_ignored(m)
                 and self._config_ok(m, game)
+                # a ported weapon's derived card whose tag this level lacks
+                and self.port_card_ok(m, (getattr(self, 'current_mission_fn', None) or (lambda: None))())
                 # Every offer path funnels through here, so one test covers the
                 # initial selection, the New Weapon draw and every reroll — the
                 # recurring bug class of fixing only one of them.
@@ -3555,33 +3564,223 @@ class ModifierDatabase:
         except Exception:
             return False
 
-    def ports_on_level(self, mission_id):
-        """Enabled ported weapons whose tag is in this level's map (baseline first).
-        Cached per process: opening a map is not free."""
+    PORT_LEVELS_FILE = 'port_levels_cache.json'
+    PORT_CACHE_VERSION = 2       # 2: entries also list the port card tags MISSING there
+
+    def _port_level_map(self, mission_id):
+        import halo_patch
         game = self.mission_games.get(mission_id)
-        cache = self.__dict__.setdefault('_port_levels', {})
-        if (game, mission_id) not in cache:
-            out = []
+        folder = CONFIG.get('map_game_folder', {}).get(game, '')
+        live = halo_patch.default_map_path(mcc_root(), folder, mission_id)
+        try:
+            return halo_patch.existing_baseline(live, CONFIG.get('baseline_root'), folder) or live
+        except Exception:
+            return live
+
+    def _add_port_cards(self):
+        """Cards for a PORTED weapon in every game it was ported into (user,
+        2026-10-02), derived from the port's DONOR weapon in that game -- the SAW's
+        from the Assault Rifle everywhere but Halo 2, where its donor is the SMG.
+
+        Each donor card valid in that game is copied for the port, every donor-specific
+        tag pointed at the port's own: the weapon itself, its bullet / projectile /
+        damage effect (matched by name among the port's tags), its first-person
+        animations and its HUD. Tags the donor shares with others (globals melee) stay.
+        A card the port already has for that game (halo.json) is never duplicated, and
+        a donor card whose donor-specific tag has no port counterpart is left out
+        rather than guessed. Built at load, so a new port gets its cards for free."""
+        try:
+            import weapon_ports
+            catalog = weapon_ports.load_catalog()
+        except Exception:
+            return
+        self.port_card_count = {}
+        for game, ports in (catalog or {}).items():
+            for port in ports or ():
+                weapon, donor = port.get('weapon'), port.get('donor')
+                wpath = weapon_ports.weap_path(port)
+                dtag = self.weap_tag_for(donor, game) if donor else None
+                if not (weapon and donor and wpath and dtag):
+                    continue
+                dpath = dtag.split(' & ')[0][5:]
+                dfolder = dpath.rsplit(chr(92), 1)[0]
+                dbase = dpath.rsplit(chr(92), 1)[-1].replace(' ', '_')
+                ptags = [r.get('tag') for r in port.get('balance') or () if r.get('tag')]
+                own = {m['name'] for m in self.weapon_mods.get(weapon, []) if self._game_ok(m, game)}
+                made = 0
+                for mod in self.weapon_mods.get(self.resolve_weapon(donor) or donor, []):
+                    if not self._game_ok(mod, game) or mod['name'] in own or mod.get('synth'):
+                        continue
+                    tag = resolve_gamed(mod.get('tag'), game, self.games)
+                    if not isinstance(tag, str) or not tag:
+                        continue
+                    parts = []
+                    for part in tag.split(' & '):
+                        mapped = self._port_tag(part.strip(), dpath, dfolder, dbase, wpath,
+                                                ptags, port.get('fp_animations'))
+                        if mapped is None:
+                            parts = None
+                            break
+                        parts.append(mapped)
+                    if not parts:
+                        continue
+                    card = copy.deepcopy(mod)
+                    card.update(weapon=weapon, tag=' & '.join(parts), games=[game],
+                                skip_games=[], port_from=donor)
+                    card['debug_desc'] = ((mod.get('debug_desc') or '') +
+                                          '\n\n[Ported weapon: this card is the %s\'s, '
+                                          'pointed at the %s port in %s.]' % (donor, weapon, game)).strip()
+                    self.weapon_mods.setdefault(weapon, []).append(card)
+                    own.add(card['name'])
+                    made += 1
+                self.port_card_count[(game, weapon)] = made
+
+    @staticmethod
+    def _port_tag(part, dpath, dfolder, dbase, wpath, ptags, fp_anims):
+        """One donor card tag ('class path') -> the port's equivalent, the tag itself
+        when it is not donor-specific, or None when the port has nothing to match."""
+        cls, _sp, path = part.partition(' ')
+        low = path.lower()
+        specific = (low.startswith(dfolder.lower() + chr(92)) or path == dpath
+                    or dbase.lower() in low.replace(' ', '_'))
+        if not specific:
+            return part                        # shared (globals, generic AI ...)
+        if path == dpath or cls == 'weap':
+            return 'weap ' + wpath if cls == 'weap' else None
+        if cls in ('jmad', 'antr'):
+            return '%s %s' % (cls, fp_anims) if fp_anims else None
+        tokens = set(path.rsplit(chr(92), 1)[-1].replace('_', ' ').split())
+        # third-gen ports keep projectiles\ and damage_effects\ apart, so a damage
+        # effect must come from damage_effects\ and a projectile from projectiles        # (Halo 1 files both under one path, weapons\sawullet, so it is not strict)
+        strict = any('projectiles' in t.lower() or 'damage_effects' in t.lower() for t in ptags)
+        best, score = None, 0
+        for t in ptags:
+            if t == wpath:
+                continue
+            tl = t.lower()
+            if strict and cls == 'jpt!' and 'damage_effect' not in tl:
+                continue
+            if strict and cls == 'proj' and 'projectile' not in tl:
+                continue
+            s = len(tokens & set(t.rsplit(chr(92), 1)[-1].replace('_', ' ').split()))
+            if cls == 'proj' and ('projectile' in tl or 'bullet' in tl):
+                s += 1
+            if cls == 'jpt!' and ('damage_effect' in tl or 'bullet' in tl or 'melee' in tl):
+                s += 1
+            if cls in ('chud', 'wphi', 'nhdt') and 'chud' in tl:
+                s += 2
+            if s > score:
+                best, score = t, s
+        return '%s %s' % (cls, best) if best else None
+
+    def ports_on_level(self, mission_id, scan=False):
+        """Enabled ported weapons whose tag is in this level's map (baseline first).
+
+        Opening a map takes seconds -- doing it inside a weapon pick froze the window
+        long enough to look like a crash (user, 2026-10-02) -- so the answer is cached
+        on DISK per map file (size + mtime) and only ever computed by
+        prewarm_port_levels, behind a progress dialog. Without `scan` an unchecked
+        level answers 'none' rather than block the GUI."""
+        game = self.mission_games.get(mission_id)
+        try:
+            import weapon_ports
+            ports = weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
+        except Exception:
+            return []
+        if not ports:
+            return []
+        path = self._port_level_map(mission_id)
+        try:
+            key = '%s|%d|%d|v%d' % (path, os.path.getsize(path), int(os.path.getmtime(path)),
+                                    self.PORT_CACHE_VERSION)
+        except OSError:
+            return []
+        cache = self.__dict__.get('_port_cache')
+        if cache is None:
             try:
-                import weapon_ports
-                import halo_patch
-                ports = weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
-                if ports:
-                    folder = CONFIG.get('map_game_folder', {}).get(game, '')
-                    live = halo_patch.default_map_path(mcc_root(), folder, mission_id)
-                    try:
-                        path = halo_patch.existing_baseline(live, CONFIG.get('baseline_root'), folder) or live
-                    except Exception:
-                        path = live
-                    m = halo_patch.open_map(path, game)
-                    for p in ports:
-                        wp = weapon_ports.weap_path(p)
-                        if wp and m.find_tags('weap', wp):
-                            out.append(p['weapon'])
+                with open(app_data_dir() / self.PORT_LEVELS_FILE, encoding='utf-8') as f:
+                    cache = json.load(f)
+            except Exception:
+                cache = {}
+            self._port_cache = cache
+        if key not in cache:
+            if not scan:
+                return []
+            import halo_patch
+            found, missing = [], {}
+            try:
+                m = halo_patch.open_map(path, game)
+                for p in weapon_ports.ports_for(game):
+                    wp = weapon_ports.weap_path(p)
+                    if wp and m.find_tags('weap', wp):
+                        found.append(p['weapon'])
+                        # which of its derived cards' tags this map lacks: Halo 1's SAW
+                        # fires the Assault Rifle's own bullet, so 'weapons\saw\bullet'
+                        # is nowhere -- such a card would do nothing (or, re-aimed, hit
+                        # the AR too), so it is not offered here
+                        gone = []
+                        for c in self.weapon_mods.get(p['weapon'], []):
+                            if c.get('port_from') and self._game_ok(c, game):
+                                cls = c['tag'].split(' ', 1)[0]
+                                for part in c['tag'].split(' & '):
+                                    pc, _s, pp = part.partition(' ')
+                                    if chr(92) not in pc:          # carries its own class
+                                        cls, path_ = pc, pp
+                                    else:
+                                        path_ = part
+                                    if not m.find_tags(cls, path_) and part not in gone:
+                                        gone.append(part)
+                        missing[p['weapon']] = gone
             except Exception:
                 pass
-            cache[(game, mission_id)] = out
-        return list(cache[(game, mission_id)])
+            cache[key] = {'ports': found, 'missing': missing}
+            try:
+                with open(app_data_dir() / self.PORT_LEVELS_FILE, 'w', encoding='utf-8') as f:
+                    json.dump(cache, f, indent=1)
+            except Exception:
+                pass
+        on = {p.get('weapon') for p in ports}
+        self.__dict__.setdefault('_port_missing', {})[mission_id] = cache[key].get('missing', {})
+        return [w for w in cache[key]['ports'] if w in on]
+
+    def port_card_ok(self, card, mission_id):
+        """False for a port card whose tag (any part) the level's map lacks."""
+        if not card.get('port_from') or not mission_id:
+            return True
+        self.ports_on_level(mission_id)
+        gone = (self.__dict__.get('_port_missing') or {}).get(mission_id, {}).get(card.get('weapon'))
+        if not gone:
+            return True
+        return not any(part in gone for part in card['tag'].split(' & '))
+
+    def port_levels_pending(self):
+        """Levels whose port check has not been done for their current map file."""
+        out = []
+        for mid, game in self.mission_games.items():
+            try:
+                import weapon_ports
+                if not weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports')):
+                    continue
+            except Exception:
+                continue
+            path = self._port_level_map(mid)
+            try:
+                key = '%s|%d|%d|v%d' % (path, os.path.getsize(path), int(os.path.getmtime(path)),
+                                        self.PORT_CACHE_VERSION)
+            except OSError:
+                continue
+            cache = self.__dict__.get('_port_cache')
+            if cache is None:
+                self.ports_on_level(mid)          # loads the disk cache
+                cache = self.__dict__.get('_port_cache') or {}
+            if key not in cache:
+                out.append(mid)
+        return out
+
+    def prewarm_port_levels(self):
+        """Check every pending level (no Qt: run it through run_busy)."""
+        for mid in self.port_levels_pending():
+            self.ports_on_level(mid, scan=True)
 
     def h1_weapon_path(self, weapon_name):
         """A weapon's Halo 1 weap tag path. A PORTED weapon (weapon_ports_catalog.json)
@@ -12550,6 +12749,9 @@ class HaloGUI(QMainWindow):
         # rather than showing a half-constructed window that crashes later.
         self.db = ModifierDatabase()
         self.run_state = RunState()
+        # the level being drafted, for filters that depend on it (port cards); a
+        # lambda, because run_state is replaced on New Run / Load
+        self.db.current_mission_fn = lambda: getattr(self.run_state, 'mission_id', None)
         self.loaded_run_path = None   # set when a run is loaded; steers the save default
         self.shared_run_path = None   # this run's file in the shared folder, re-used
         self.enhancer = RunEnhancer(self.db, self.run_state)
@@ -12734,7 +12936,19 @@ class HaloGUI(QMainWindow):
     def _weapon_choice_negatives(self):
         return CONFIG.get('weapon_choice_negatives', True)
 
+    def _ensure_port_levels(self):
+        """'Offer ported weapons in every weapon pick' needs to know which levels'
+        maps carry each port: check the unchecked ones now, behind a progress dialog,
+        instead of freezing a weapon pick on it."""
+        if not CONFIG.get('weapon_ports_in_pools') or not getattr(self, 'db', None):
+            return
+        pending = self.db.port_levels_pending()
+        if pending:
+            run_busy(self, self.db.prewarm_port_levels, "Weapon ports",
+                     "Checking which of %d level(s) carry the ported weapons" % len(pending))
+
     def show_weapon_selection(self):
+        self._ensure_port_levels()
         weapons = self._game_weapon_pool('player1')
         if len(weapons) < 2:
             QMessageBox.warning(self, "Error", "Not enough weapons available!")
@@ -13762,6 +13976,7 @@ class HaloGUI(QMainWindow):
         if not self.run_state.player1_weapon or not self.run_state.player2_weapon:
             self.update_status("Please select weapons for both players first")
             return
+        self._ensure_port_levels()
 
         if self.run_state.phase == 'player1_turn':
             player = 'player1'
@@ -14301,6 +14516,7 @@ class HaloGUI(QMainWindow):
                 QMessageBox.warning(self, "Baselines folder",
                                     "%s\n\n%s" % (new_root, problem))
             self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
+            self._ensure_port_levels()
             if hasattr(self, 'add_mod_btn'):        # debug tools show/hide live
                 self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
             # Re-render the CURRENT screen (weapon selection or pairs) so appearance

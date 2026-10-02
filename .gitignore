@@ -52,3 +52,4 @@ sprint_toolkit/*.bitmap.stock
 # Stale test-folder settings export (to be deleted)
 settings_from_test_folder.json
 h1_actv_index.json
+port_levels_cache.json
