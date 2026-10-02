@@ -58,6 +58,8 @@ K = 2                              # compose at 2 px a chud unit
 #: Reach's HUD colours for the frame lines and the reticle (chud "highlight"-ish blue)
 FRAME_RGB = (150, 210, 255)
 RETICLE_RGB = (210, 235, 255)
+#: boot 23 (user): the HUD's own reticle is used zoomed too -- no Reach reticle in the art
+DRAW_RETICLE = False
 #: the meters, in Reach units: centre and size after the quarter turn (80x234 units of
 #: bitmap at scale 1.19)
 METER_CENTRE_X = 435
@@ -127,8 +129,9 @@ def frame(src):
     place(can, mask, (1.2, 1.2), (-1, -1), mirror_h=True, mirror_v=True, paste=True)
     place(can, tinted(src['border'], FRAME_RGB), (1.2, 1.23), (6.8, 0.95), dsize=3.0,
           mirror_h=True, mirror_v=True)
-    ret = src['reticles'].convert('RGBA').crop(RETICLE)
-    place(can, tinted(ret, RETICLE_RGB), (0.5, 0.5), dsize=3.0)
+    if DRAW_RETICLE:
+        ret = src['reticles'].convert('RGBA').crop(RETICLE)
+        place(can, tinted(ret, RETICLE_RGB), (0.5, 0.5), dsize=3.0)
     return can.resize(FRAME_PX, Image.LANCZOS)
 
 

@@ -28,9 +28,9 @@ a copy of the Beam Rifle's with:
     lens mask, side frames, Reach reticle) at 0,0 1280x720;
   * bitmap_heat_bar -> meter_heat (right frame), bitmap_ammo_bar -> meter_batt (left
     frame) -- Reach's layout: heat right, battery left.
-and the HUD binds weapon_data_reader.prop_charge (the battery, 0..1) into ammo_animator
+and the HUD binds weapon_data_reader.prop_battery (0..1) into ammo_animator
 and prop_heat into shader_heat_bar. The HUD's own reticle (reticule_container_template)
-fades out while zoomed, since the Reach reticle is in the scope art.
+stays in both modes (boot 23: the Reach reticle is out of the art).
 
     blender --background --python h4_reach_scope.py -- [--write]
 Run AFTER h4_make_port_weapon.py (which re-copies the port's HUD screen) and after
@@ -58,6 +58,9 @@ CONTAINER = 'animation_container_fr_scope'
 ZOOM = ('zoom_decision', 'zoom_on_off')
 ZOOM_ANIMS = ('sniper_zoom_out', 'sniper_zoom_in', 'sniper_zoom_initial')
 HUD_RETICLE = 'reticule_container_template'
+#: boot 23 (user): keep the HUD's own reticle zoomed and unzoomed -- the Reach reticle is
+#: no longer in the scope art, and the HUD reticle carries the heat/battery readout.
+FADE_HUD_RETICLE = False
 #: the template's widgets: component -> (bitmap, left, top, width, height, opacity, tint argb)
 #: rects from h4_reach_scope_art.py meter_rects()
 WIDGETS = {
@@ -71,7 +74,10 @@ WIDGETS = {
 BLEND = {'bitmap_bar_outlines': 0}
 #: HUD bindings the scope's meters need: (source comp, source prop, target comp, target prop)
 METER_BINDINGS = (
-    ('weapon_data_reader', 'prop_charge', 'ammo_animator', 'prop_current_value'),
+    # the BATTERY is prop_battery, into both animator values (the Spartan Laser's HUD).
+    # prop_charge is the Plasma Pistol's OVERCHARGE: boot 23's left meter stayed empty.
+    ('weapon_data_reader', 'prop_battery', 'ammo_animator', 'prop_current_value'),
+    ('weapon_data_reader', 'prop_battery', 'ammo_animator', 'prop_initial_value'),
     ('weapon_data_reader', 'prop_heat', 'shader_heat_bar', 'prop_current_meter_value'),
 )
 
@@ -316,7 +322,7 @@ def wire_hud(T, template_comps, write):
                 for k in range(acs.Elements.Count):
                     c = acs.Elements[k]
                     c.SelectField('name').SetStringData(rename.get(name_of(c), name_of(c)))
-                if HUD_RETICLE in have and acs.Elements.Count:
+                if FADE_HUD_RETICLE and HUD_RETICLE in have and acs.Elements.Count:
                     # the HUD's own reticle: the inverse of the scope's opacity
                     r = paste_copy(acs, 0, acs)
                     r.SelectField('name').SetStringData(HUD_RETICLE)
