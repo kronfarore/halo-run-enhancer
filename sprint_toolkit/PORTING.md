@@ -2254,6 +2254,18 @@ changed the Beam Rifle's shipped one (32,491 -> 30,376 bytes). Restored from H4E
 (bin\x64\7zr.exe e H4EK.7z <path>); h4_fp_jump.build_rig now keeps it byte for byte.
 H4EK.7z is the clean source for ANY shipped H4 tag.
 
+**Boot 12, both WRONG:** the unpinned Sentinel tracer drew NOTHING (its length runs along
+the point-to-point profile; without two points it has none) -- back to the Beam Rifle's
+streak. And the jerk STAYED with the `overheated` hold made still, followed by a FREEZE
+(that still hold): so the jerk is BEFORE the hold, inside `overheating`. **The jolt:**
+--detail overheating -> frame 44 kicks 0.0205 (~10x its neighbours), 45-49 drift back;
+frames 27-37 are a deliberate fine shake. h4_fp_graph.py now smooths ONLY frames 44-46
+(a line from 43 to 47; worst spike 0.0144 -> 0.0035) and leaves every other frame,
+`overheated` included, as Bungie made it. Verified on the exported graph itself.
+Method note: an animation glitch the user sees as "a jerk" can be a mismatched
+HAND-OFF or a SPIKE inside one animation -- measure both, and use the user's ordering
+(jerk-then-freeze) to tell which.
+
 ### Foundry across kits: the traps
 
 * **The Microsoft Store Python virtualises %APPDATA%** for itself and every child. A

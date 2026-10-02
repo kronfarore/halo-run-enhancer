@@ -152,6 +152,17 @@ def main(rel):
         print('ANIM %-26s frames %4d  typical step %.4f%s'
               % (name, len(s), typical,
                  ''.join('\n     SPIKE at frame %d: %.4f off the midpoint of its neighbours (%.0fx typical)' % h for h in hits)))
+    if '--detail' in sys.argv:
+        name = sys.argv[sys.argv.index('--detail') + 1]
+        fr = samples[name]
+        print('DETAIL %s: frame, step, off-midpoint, per bone dx dy dz of the step' % name)
+        for i in range(1, len(fr) - 1):
+            (fa, a), (fb, b), (fc, c) = fr[i - 1], fr[i], fr[i + 1]
+            step = max((b[k] - a[k]).length for k in WATCH)
+            spike = max((b[k] - (a[k] + c[k]) * 0.5).length for k in WATCH)
+            dv = b['b_gun'] - a['b_gun']
+            print('DETAIL %3d  step %.4f  spike %.4f  gun d=(%+.4f %+.4f %+.4f)'
+                  % (fb, step, spike, dv.x, dv.y, dv.z))
     for a, b in CHAINS:
         if a in samples and b in samples and samples[a] and samples[b]:
             last, first = samples[a][-1][1], samples[b][0][1]
@@ -166,4 +177,4 @@ def main(rel):
 
 if __name__ == '__main__':
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    main(argv[0] if argv else GRAPH)
+    main(argv[0] if argv and not argv[0].startswith('--') else GRAPH)
