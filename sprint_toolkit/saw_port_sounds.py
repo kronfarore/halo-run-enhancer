@@ -40,6 +40,8 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 import h3tag                                                        # noqa: E402
+sys.path.insert(0, os.path.dirname(HERE))
+import port_volume                                                  # noqa: E402
 
 MCC = os.path.dirname(os.path.dirname(HERE))
 AUDIO = r'F:\SteamLibrary\steamapps\common\H4EK\temp\saw_port_audio'
@@ -91,6 +93,13 @@ GAMES = {
                  boost={'saw_fire': 1.5, 'saw_tail_ext': 1.5, 'saw_tail_int': 1.5}),
 }
 G = EK = TAGS = SOUNDS = None
+#: what `sounds-single-layer` gives every sound; G['gain'] overrides per sound
+IMPORT_GAIN = -3.0
+#: THE VOLUME MARKER (port_volume.py): every SAW sound is built this far BELOW its gain, a
+#: value no stock sound has, so the cache builder cannot pool the SAW's gestalt Playbacks
+#: entries with stock sounds (before: shared with 4598 sounds on 010_jungle) and the
+#: enhancer can turn the port's volume up or down at patch time. Inaudible (0.01 dB).
+MARKER = port_volume.MARKER_DB['SAW']
 
 
 def configure(game):
@@ -241,8 +250,10 @@ def boosted(src, dst, db):
 
 
 def set_gain():
-    """Each sound's gain base (dB) from G['gain'], through the kit's own verb; read back."""
-    for name, db in G.get('gain', {}).items():
+    """Each sound's gain base (dB) from G['gain'] (default IMPORT_GAIN) minus the volume
+    MARKER, through the kit's own verb; read back."""
+    for name in SOUNDS:
+        db = G.get('gain', {}).get(name, IMPORT_GAIN) - MARKER
         tool('process-sounds', SND_DIR, name, 'gain=', str(db))
         x = os.path.join(EK, 'temp', '_saw_snd.xml')
         if os.path.exists(x):
@@ -274,6 +285,8 @@ def main():
                     help="override the audio boost (dB) of every boosted sound of this game. "
                          "The boost lives in the BANK only, so on the stock route (H3/ODST) a "
                          "retune is this run + an MCC restart, no rebuild")
+    ap.add_argument('--gain-only', action='store_true',
+                    help="only (re)write the tags' gain + volume marker, no import (then rebuild)")
     ap.add_argument('--both', action='store_true',
                     help='Reach: keep the Xbox XMA2 encoding beside MS-ADPCM (the default is PC '
                          'ONLY, confirmed in game 2026-10-03)')
@@ -284,6 +297,9 @@ def main():
     if not glob.glob(os.path.join(AUDIO, 'fire', '*.wav')):
         raise SystemExit('run saw_port_audio.py first')
     print('%s: %s, route %s' % (a.game, G['ek'], G['route']))
+    if a.gain_only:
+        set_gain()
+        return
     if a.write:
         import_sounds()
         own_effects()

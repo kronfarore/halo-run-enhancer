@@ -2261,6 +2261,19 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
     the .info (the keys the map looks up) comes out byte-identical and the sample counts
     unchanged -- restart MCC and listen. Only a GAIN change (in the tag, so in the map)
     needs a rebuild. The +6 bank: F:\HaloPortBackups\odst_saw_bank_plus6.
+    +4.5 CONFIRMED good (user); a bank swap took effect WITHOUT an MCC restart.
+* **Per-port VOLUME at patch time (port_volume.py, tool root).** A compiled sound's gain
+  is NOT in its snd!: the snd! holds an index (+0xC H3/ODST, +0xE Reach) into the sound
+  gestalt (ugh!) Playbacks block (+0x10; element 0x44 / Reach 0x54; Gain Base +0x1C /
+  Reach +0x2C), and the cache builder POOLS identical entries. The SAW's entry was shared
+  with 4596 stock sounds (010), 282 + 2646 (sc150), 2079 (m20) -- never write it in
+  place. **The build-time marker:** every port sound is built MARKER_DB (SAW 0.01 dB,
+  one value per port) below its gain (`saw_port_sounds.py --game X --gain-only`, then
+  rebuild). No stock gain is fractional like that (pools read: whole and half dB, a few
+  x.4988), so the port owns its entries and port_volume.apply() shifts them; it refuses
+  an entry used by any other sound. Relative to the as-built level, so applied to the
+  baseline copy. **Every map carrying a port must be rebuilt with the marker** before
+  the knob works there.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
