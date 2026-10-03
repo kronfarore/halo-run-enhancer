@@ -3611,7 +3611,7 @@ class ModifierDatabase:
             return '%s %s' % (cls, fp_anims) if fp_anims else None
         tokens = set(path.rsplit(chr(92), 1)[-1].replace('_', ' ').split())
         # third-gen ports keep projectiles\ and damage_effects\ apart, so a damage
-        # effect must come from damage_effects\ and a projectile from projectiles        # (Halo 1 files both under one path, weapons\sawullet, so it is not strict)
+        # effect must come from damage_effects\ and a projectile from projectiles        # (Halo 1 files both under one path, weapons\saw\bullet, so it is not strict)
         strict = any('projectiles' in t.lower() or 'damage_effects' in t.lower() for t in ptags)
         best, score = None, 0
         for t in ptags:

@@ -12,7 +12,7 @@ the balanced numbers become the vanilla a run's cards scale from. `anims` scales
 port's first-person animations by the same yardstick -- halo3_reload resamples them in the
 map, so they can grow as well as shrink.
 
-How the numbers are derived (sprint_toolkit/weapon_port_balance.py): a donor weapon that
+How the numbers are derived (sprint_toolkit/balance_port.py): a donor weapon that
 exists in BOTH games (the SAW's donor is the Assault Rifle) is read field by field in each,
 and every card field of the port moves by donor_target / donor_source. Ratios cancel the
 engines' unit differences, so the result is already in the target game's stored units.
