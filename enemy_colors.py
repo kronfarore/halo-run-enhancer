@@ -432,7 +432,7 @@ def _route_armour(m, row, slots):
 # rejected: the - steps would wrap 0 -> 253, and a very aggressive enemy would cycle
 # out of red, so the colour would stop saying how buffed it is.)
 DRIFT_CHANNEL = {'aggressive': 0, 'defensive': 2, 'utility': 1}          # R, B, G
-DRIFT_DEFAULTS = {'enabled': False,
+DRIFT_DEFAULTS = {'enabled': False, 'per_game': False,
                   'aggressive': [8, 3], 'defensive': [14, 5], 'utility': [14, 5],
                   'general_enabled': False,
                   'general': {'aggressive': [3, 1], 'defensive': [11, 4], 'utility': [8, 3]}}
@@ -469,6 +469,19 @@ def pool_counts(data=None):
         return out
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return None
+
+
+def per_game_knobs(knobs, counts):
+    """`knobs` with every group's steps replaced by the ones `counts` (one GAME's pools,
+    ModifierDatabase.color_pool_counts) suggest -- the 'per_game' option. Each game's
+    draw pool is lopsided its own way (Halo 2: 9% utility), so one shared set moves its
+    groups unevenly. The switches are kept."""
+    out = dict(knobs or {})
+    if not counts:
+        return out
+    out.update(suggested_steps(counts['specific'], 'specific'))
+    out['general'] = suggested_steps(counts['general'], 'general')
+    return out
 
 
 def suggested_steps(counts, kind):

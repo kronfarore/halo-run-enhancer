@@ -2504,6 +2504,22 @@ class ModifierDatabase:
             mod.update(extra)
         return mod
 
+    def color_pool_counts(self, game):
+        """enemy_colors.pool_counts for ONE game: the not-ignored enemy / hero / boss
+        and General enemy cards valid in `game`, per colour group (per-game drift)."""
+        gen = set((self.data.get('Enemy modifiers') or {}).get('General modifiers') or {})
+        out = {'specific': dict.fromkeys(('aggressive', 'defensive', 'utility'), 0),
+               'general': dict.fromkeys(('aggressive', 'defensive', 'utility'), 0)}
+        pools = (('general', [m for m in self.negative_pool if m['name'] in gen]),
+                 ('specific', [m for ms in list(self.enemy_mods.values())
+                               + list(self.boss_mods.values()) for m in ms]))
+        for kind, mods in pools:
+            for m in mods:
+                if (m.get('color') in out[kind] and not m.get('ignore')
+                        and self._game_ok(m, game)):
+                    out[kind][m['color']] += 1
+        return out
+
     def _categorize(self):
         if 'Player Modifiers' in self.data:
             if 'General Modifiers' in self.data['Player Modifiers']:
@@ -5043,8 +5059,14 @@ class MagnitudeEditorDialog(QDialog):
         removed in this dialog stops shifting colours too."""
         import enemy_colors
         base = (CONFIG.get('enemy_colors') or {}).get(self.game) or {}
+        knobs = CONFIG.get('enemy_color_drift') or {}
+        db = getattr(self.parent_gui, 'db', None)
+        if knobs.get('per_game') and db is not None:
+            # steps from THIS game's own card pools (derived from halo.json, so both
+            # co-op machines get the same ones)
+            knobs = enemy_colors.per_game_knobs(knobs, db.color_pool_counts(self.game))
         return enemy_colors.drift(self.game, enemy_colors.drift_counts(self.effects),
-                                  CONFIG.get('enemy_color_drift'), base) or None
+                                  knobs, base) or None
 
     """Per-run editor: lists the selected effects grouped by tag, shows each
     field's vanilla value, takes a typed operator (-n/+n/*n or xn/=n) per target
@@ -11420,15 +11442,42 @@ class OptionsDialog(QDialog):
         rrow.addWidget(reset_steps)
         rrow.addStretch(1)
         dl.addLayout(rrow)
+        # Per-game steps: each game's own pools set its steps (enemy_colors.per_game_knobs)
+        # instead of the shared ones above.
+        self._ecd_per_game = QCheckBox("Per-game steps (each game balanced on its own cards)")
+        self._ecd_per_game.setChecked(bool(dr.get('per_game')))
+        tip = ("The steps above are balanced over every game's cards together, but each "
+               "game draws from its own pool and those are lopsided differently (Halo 2 "
+               "has few utility cards, Halo 1 few defensive ones). With this on, every "
+               "game uses steps worked out from its own cards the same way, and the steps "
+               "above are not used.")
+        db = getattr(self.parent(), 'db', None)
+        if db is not None:
+            import enemy_colors as _ec
+            lines = []
+            for g in db.games:
+                k = _ec.per_game_knobs({}, db.color_pool_counts(g))
+                lines.append('%s: %s | general %s' % (g, ', '.join(
+                    '%d/%d' % tuple(k[x]) for x in ('aggressive', 'defensive', 'utility')),
+                    ', '.join('%d/%d' % tuple(k['general'][x])
+                              for x in ('aggressive', 'defensive', 'utility'))))
+            tip += "\n\nSteps per game (aggressive, defensive, utility):\n" + "\n".join(lines)
+        self._ecd_per_game.setToolTip(tip)
+        dl.addWidget(self._ecd_per_game)
 
         def _sync_drift(_=False):
+            shared = not self._ecd_per_game.isChecked()
             for on, spins in ((self._ecd_on, self._ecd_spins),
                               (self._ecd_gen_on, self._ecd_gen_spins)):
                 for a, b in spins.values():
-                    a.setEnabled(on.isChecked())
-                    b.setEnabled(on.isChecked())
+                    a.setEnabled(on.isChecked() and shared)
+                    b.setEnabled(on.isChecked() and shared)
+            reset_steps.setEnabled(shared)
+            self._ecd_per_game.setEnabled(self._ecd_on.isChecked()
+                                          or self._ecd_gen_on.isChecked())
         self._ecd_on.toggled.connect(_sync_drift)
         self._ecd_gen_on.toggled.connect(_sync_drift)
+        self._ecd_per_game.toggled.connect(_sync_drift)
         _sync_drift()
         self._opt_page("Enemy colours").addWidget(dbox)
 
@@ -11812,6 +11861,7 @@ class OptionsDialog(QDialog):
             'enemy_color_drift': dict(
                 enabled=self._ecd_on.isChecked(),
                 general_enabled=self._ecd_gen_on.isChecked(),
+                per_game=self._ecd_per_game.isChecked(),
                 general={k: [a.value(), b.value()] for k, (a, b) in self._ecd_gen_spins.items()},
                 **{k: [a.value(), b.value()] for k, (a, b) in self._ecd_spins.items()}),
             'assembly_plugins_dir': self.plugins_dir_edit.text().strip(),
