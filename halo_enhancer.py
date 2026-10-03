@@ -2588,7 +2588,6 @@ class ModifierDatabase:
         # After Missions, because the games list it builds is what the per-game tag
         # resolution needs.
         self._index_generic_enemy_tags()
-        self._add_port_cards()
         print(f"✅ Categorized: {len(self.positive_pool)} general positive, "
               f"{len(self.negative_pool)} general negative, "
               f"{len(self.wildcard_pool)} wildcard, "
@@ -3565,7 +3564,7 @@ class ModifierDatabase:
             return False
 
     PORT_LEVELS_FILE = 'port_levels_cache.json'
-    PORT_CACHE_VERSION = 2       # 2: entries also list the port card tags MISSING there
+    PORT_CACHE_VERSION = 3       # 2: + port card tags MISSING there; 3: from halo.json cards
 
     def _port_level_map(self, mission_id):
         import halo_patch
@@ -3576,64 +3575,6 @@ class ModifierDatabase:
             return halo_patch.existing_baseline(live, CONFIG.get('baseline_root'), folder) or live
         except Exception:
             return live
-
-    def _add_port_cards(self):
-        """Cards for a PORTED weapon in every game it was ported into (user,
-        2026-10-02), derived from the port's DONOR weapon in that game -- the SAW's
-        from the Assault Rifle everywhere but Halo 2, where its donor is the SMG.
-
-        Each donor card valid in that game is copied for the port, every donor-specific
-        tag pointed at the port's own: the weapon itself, its bullet / projectile /
-        damage effect (matched by name among the port's tags), its first-person
-        animations and its HUD. Tags the donor shares with others (globals melee) stay.
-        A card the port already has for that game (halo.json) is never duplicated, and
-        a donor card whose donor-specific tag has no port counterpart is left out
-        rather than guessed. Built at load, so a new port gets its cards for free."""
-        try:
-            import weapon_ports
-            catalog = weapon_ports.load_catalog()
-        except Exception:
-            return
-        self.port_card_count = {}
-        for game, ports in (catalog or {}).items():
-            for port in ports or ():
-                weapon, donor = port.get('weapon'), port.get('donor')
-                wpath = weapon_ports.weap_path(port)
-                dtag = self.weap_tag_for(donor, game) if donor else None
-                if not (weapon and donor and wpath and dtag):
-                    continue
-                dpath = dtag.split(' & ')[0][5:]
-                dfolder = dpath.rsplit(chr(92), 1)[0]
-                dbase = dpath.rsplit(chr(92), 1)[-1].replace(' ', '_')
-                ptags = [r.get('tag') for r in port.get('balance') or () if r.get('tag')]
-                own = {m['name'] for m in self.weapon_mods.get(weapon, []) if self._game_ok(m, game)}
-                made = 0
-                for mod in self.weapon_mods.get(self.resolve_weapon(donor) or donor, []):
-                    if not self._game_ok(mod, game) or mod['name'] in own or mod.get('synth'):
-                        continue
-                    tag = resolve_gamed(mod.get('tag'), game, self.games)
-                    if not isinstance(tag, str) or not tag:
-                        continue
-                    parts = []
-                    for part in tag.split(' & '):
-                        mapped = self._port_tag(part.strip(), dpath, dfolder, dbase, wpath,
-                                                ptags, port.get('fp_animations'))
-                        if mapped is None:
-                            parts = None
-                            break
-                        parts.append(mapped)
-                    if not parts:
-                        continue
-                    card = copy.deepcopy(mod)
-                    card.update(weapon=weapon, tag=' & '.join(parts), games=[game],
-                                skip_games=[], port_from=donor)
-                    card['debug_desc'] = ((mod.get('debug_desc') or '') +
-                                          '\n\n[Ported weapon: this card is the %s\'s, '
-                                          'pointed at the %s port in %s.]' % (donor, weapon, game)).strip()
-                    self.weapon_mods.setdefault(weapon, []).append(card)
-                    own.add(card['name'])
-                    made += 1
-                self.port_card_count[(game, weapon)] = made
 
     @staticmethod
     def _port_tag(part, dpath, dfolder, dbase, wpath, ptags, fp_anims):
@@ -3720,9 +3661,10 @@ class ModifierDatabase:
                         # the AR too), so it is not offered here
                         gone = []
                         for c in self.weapon_mods.get(p['weapon'], []):
-                            if c.get('port_from') and self._game_ok(c, game):
-                                cls = c['tag'].split(' ', 1)[0]
-                                for part in c['tag'].split(' & '):
+                            ctag = resolve_gamed(c.get('tag'), game, self.games)
+                            if self._game_ok(c, game) and isinstance(ctag, str) and ctag:
+                                cls = ctag.split(' ', 1)[0]
+                                for part in ctag.split(' & '):
                                     pc, _s, pp = part.partition(' ')
                                     if chr(92) not in pc:          # carries its own class
                                         cls, path_ = pc, pp
@@ -3745,13 +3687,14 @@ class ModifierDatabase:
 
     def port_card_ok(self, card, mission_id):
         """False for a port card whose tag (any part) the level's map lacks."""
-        if not card.get('port_from') or not mission_id:
+        if not card.get('weapon') or not mission_id:
             return True
         self.ports_on_level(mission_id)
         gone = (self.__dict__.get('_port_missing') or {}).get(mission_id, {}).get(card.get('weapon'))
         if not gone:
             return True
-        return not any(part in gone for part in card['tag'].split(' & '))
+        tag = resolve_gamed(card.get('tag'), self.mission_games.get(mission_id), self.games)
+        return not (isinstance(tag, str) and any(part in gone for part in tag.split(' & ')))
 
     def port_levels_pending(self):
         """Levels whose port check has not been done for their current map file."""
