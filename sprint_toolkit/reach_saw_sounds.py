@@ -13,6 +13,7 @@ THE KIT'S CUSTOM-SOUND ROUTE (HREK, measured):
     haloreach\fmod\pc\sfx.saw.fsb (installed by this script; first in-game test pending).
 
 What this does:
+  0. (see import_sounds) every tag gets the PC encoding MS-ADPCM beside the XMA2 one;
   1. the audio from saw_port_audio.py into HREK data\sound\weapons\saw_port\:
         saw_fire      6 permutations  weapon_fire           (crack + body per shot)
         saw_tail_ext  3 permutations  first_person_outside  (the AR's tail classes, so the
@@ -31,6 +32,7 @@ Then rebuild m20 (rebuild_reach.cmd m20).
 import argparse
 import glob
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -87,6 +89,23 @@ def import_sounds():
             raise SystemExit('import failed')
     bank = os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb' % SUFFIX)
     print('   bank %s: %d bytes' % (bank, os.path.getsize(bank)))
+    # THE PC ENCODING (boot after the first build: the SAW was SILENT). A stock Reach sound
+    # carries TWO encodings, `xma2,ms_adpcm`; the import writes xma2 only, the map then
+    # compiles the sound with an XMA v2 codec (gestalt codec compression 7) where every
+    # stock sound uses compression 8 -- the PC one. `reimport-sounds ... adpcm ...
+    # compression-append` adds the MS-ADPCM encoding, as the stock tags have it.
+    out = tool('reimport-sounds', SND_DIR, 'adpcm', 'no', 'no', 'compression-append')
+    for name in SOUNDS:
+        x = os.path.join(EK, 'temp', '_saw_snd.xml')
+        if os.path.exists(x):
+            os.remove(x)
+        tool('export-tag-to-xml', os.path.join(TAGS, SND_DIR, name + '.sound'), x)
+        comp = re.search(r'name="compression" value="([^"]*)"', open(x, encoding='utf-8', errors='replace').read())
+        comp = comp.group(1) if comp else '?'
+        print('   %-13s compression %s' % (name, comp))
+        if 'ms_adpcm' not in comp:
+            print(out[-1500:])
+            raise SystemExit('%s has no PC (ms_adpcm) encoding' % name)
 
 
 def own_effects():

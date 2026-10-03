@@ -2191,7 +2191,16 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   first_person_inside); the SAW's tail is imported twice with those classes.
 * the SAW gets OWN copies of the AR's firing / empty effects (saw\fx), sounds repointed;
   the weapon names them. The distant-fire LOD sound stays the AR's for now.
-* Built + installed, m20 rebuild pending -- the first in-game test of the FMOD route.
+* **First boot: the SAW was SILENT.** The map was right (own effects, own sounds, suffix
+  'saw'), and the game does build `fmod\pc\sfx.<suffix>.fsb` (haloreach.dll strings). The
+  difference was the ENCODING: stock Reach sound tags carry `xma2,ms_adpcm` (two raw-data
+  entries); the import wrote xma2 only, so the map compiled the sound with an XMA v2 codec
+  (ugh! codec compression 7) where every stock sound uses compression 8 -- the PC one,
+  MS-ADPCM, embedded in the map. `tool reimport-sounds <dir> adpcm no no
+  compression-append` adds it (the script does, and checks every tag). The saw bank and
+  suffix stay, so either playback path finds the audio. Second boot pending.
+  Observation from one game: whether PC Reach plays the map's MS-ADPCM or the FMOD bank
+  is not isolated yet.
 
 **Still to do, per game:** H3 / ODST (same kit route as Reach, expected); H2 (H2EK
 `reimport-sounds`; its SAW already owns a firing effect, saw_fire); H1 (HCEEK `sounds
