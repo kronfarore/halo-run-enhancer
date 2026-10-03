@@ -1477,7 +1477,7 @@ copy.
 ## Port glyphs on EVERY machine: port_glyphs.py (2026-10-03)
 
 The pictograms of Halo 3 / ODST / Reach / Halo 4 live in LOOSE packages beside the maps
-(`<game>\mapsontsont_package_icon*.bin`): no map rebuild carries them, a Steam
+(`<game>\maps\fonts\font_package_icon*.bin`): no map rebuild carries them, a Steam
 update or verify restores the stock ones, and a co-op partner's install never had them.
 `tool\port_glyphs.py` + `tool\port_glyphs.json` (35 KB) carry the finished glyph records
 and put them back: `ensure(game, mcc_root)` for the Enhancer at patch time, or
