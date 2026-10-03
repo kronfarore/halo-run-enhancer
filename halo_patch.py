@@ -3430,6 +3430,10 @@ _OBJECT_NAMES = {
     # name inline as ASCII like Halo 3's. Read off b30/a10/b40/c10: 119/387/458/333
     # entries, every one a name the level's own scripts use.
     'Halo 1':       (0x204, 0x24, 'ascii'),
+    # Halo 2: scnr+0x48, 0x24 an entry, ASCII name + Type (+0x20) + Placement Index
+    # (+0x22), off Halo2MCC/scnr.xml. Checked on the live 01b build: enhancer_marker1/2
+    # are entries 370/371, type 3 (equipment), placements 49/50.
+    'Halo 2':       (0x48, 0x24, 'ascii'),
     'Halo 3':       (0xA8, 0x24, 'ascii'),
     'Halo 3: ODST': (0xC4, 0x24, 'ascii'),
     'Halo Reach':   (0xF0, 0x08, 'sid'),
@@ -3440,7 +3444,7 @@ _OBJECT_NAMES = {
 }
 #: Games whose prepared maps carry NAMED enhancer markers, and so hand the player's
 #: picks over by placement at that marker.
-MARKER_GAMES = ('Halo Reach', 'Halo 4', 'Halo 1')
+MARKER_GAMES = ('Halo Reach', 'Halo 4', 'Halo 1', 'Halo 2')
 #: What the user names a marker in Sapien. `enhancer_marker1` is player 1's position,
 #: `enhancer_marker2` player 2's.
 REACH_MARKER_PREFIX = 'enhancer_marker'
@@ -4199,6 +4203,176 @@ def _apply_spawn_weapons_h1(m, game, spec, registry=None):
     return out
 
 
+# Halo 2 scenario object blocks that carry a Unique ID at +0x28 (Halo2MCC/scnr.xml):
+# scenery, bipeds, vehicles, equipment, weapons, machines, controls, light fixtures,
+# sound scenery, light volumes. Unique IDs are map-wide.
+_H2_OBJECT_BLOCKS = ((0x50, 0x5C), (0x60, 0x54), (0x70, 0x54), (0x80, 0x38), (0x90, 0x54),
+                     (0xA8, 0x48), (0xB8, 0x44), (0xC8, 0x54), (0xD8, 0x50), (0xE8, 0x6C))
+_H2_TYPE = {'weapons': 2, 'equipment': 3}         # Object Names / placement Type byte
+_H2_NOT_AUTOMATICALLY = 0x1
+
+
+def _h2_free_unique_ids(m, scnr, n):
+    """`n` Unique IDs no placement in the map uses. They are arbitrary 32-bit values
+    (01b mixes 201 different high words, and ships 48 objects at 0 plus three shared
+    pairs), so new ones simply count up from above the highest in use."""
+    used = set()
+    for off, es in _H2_OBJECT_BLOCKS:
+        base = _block_base(m, scnr + off)
+        for i in range(max(0, m.i32(scnr + off)) if base else 0):
+            used.add(m.u32(base + i * es + 0x28))
+    used.discard(0xFFFFFFFF)
+    nxt = (max(used) + 1) if used else 1
+    out = []
+    while len(out) < n:
+        nxt &= 0xFFFFFFFF
+        if nxt not in used and nxt != 0xFFFFFFFF:
+            out.append(nxt)
+        nxt += 1
+    return out
+
+
+def _h2_palette(m, scnr, lay, cls, wanted):
+    """{tag path (lowercase): palette index} with every `wanted` tag the MAP carries
+    added to the palette when missing (copy of entry 0, datum swapped) -- a weapon the
+    level never placed can still be handed over as long as its tag is in the cache."""
+    poff, pes = lay['palette']
+    pbase = _block_base(m, scnr + poff)
+    count = max(0, m.i32(scnr + poff))
+    pal, names = {}, []
+    for i in range(count if pbase else 0):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + lay['pal_id_at']))
+        if isinstance(nm, str):
+            pal[nm.replace('/', chr(92)).lower()] = i
+            names.append(nm)
+    by_name = {t['name'].replace('/', chr(92)).lower(): t for t in m.tags
+               if t.get('class') == cls}
+    new = []
+    for t in wanted:
+        k = str(t).replace('/', chr(92)).lower()
+        if k in pal or k not in by_name or not pbase or not count:
+            continue
+        e = bytearray(m.data[pbase:pbase + pes])
+        struct.pack_into('<I', e, lay['pal_id_at'], by_name[k]['datum'])
+        pal[k] = count + len(new)
+        new.append(bytes(e))
+    if new:
+        m.grow_block(scnr, poff, pes, new)
+    return pal, names
+
+
+def _h2_place_at_markers(m, block, groups, registry=None, radius=0.25, stack=False):
+    """Halo 2: APPEND placements of `groups` (group i -> enhancer_marker<i+1>) to the
+    scenario's weapons or equipment block. Second-generation scenario: placements
+    share Halo 1's head (palette index, name, flags, position, rotation) plus a unique
+    ID (+0x28), origin BSP (+0x2C) and a Type byte (+0x2E). Each new element is a copy
+    of one the map already has, so every field not modelled keeps a known-good value;
+    its BSP fields come from the MARKER (so it attaches where the marker does), and the
+    block grows through Halo2Map.grow_block (relocate to end of image, proven by the
+    respawn profile and squad passes)."""
+    game = 'Halo 2'
+    out = []
+    eff = 'spawned weapons' if block == 'weapons' else 'starting grenades'
+    lay = (_MAP_WEAPONS if block == 'weapons' else _MAP_EQUIPMENT).get(game)
+    E = _MAP_EQUIPMENT.get(game)
+    scnr = _scnr_base(m)
+    if not lay or scnr is None or not any(groups):
+        return out
+    named = reach_named_markers(m, game)
+    if not named:
+        return [{'effect': eff, 'ok': False, 'reason': 'this map carries no enhancer markers'}]
+    eoff, ees = E['items']
+    ebase = _block_base(m, scnr + eoff)
+    markers = {nm: ebase + idx * ees for nm, idx in named.items()}
+    cls = 'weap' if block == 'weapons' else 'eqip'
+    pal, pal_names = _h2_palette(m, scnr, lay, cls, [t for g in groups for t in g])
+    groups = [[_palette_variant(_concrete_tag(m, cls, t, pal_names) or t, pal, pal_names)
+               for t in g] for g in groups]
+    pal, pal_names = _h2_palette(m, scnr, lay, cls, [t for g in groups for t in g])
+    boff, bes = lay['weapons'] if block == 'weapons' else lay['items']
+    N = max(0, m.i32(scnr + boff))
+    base = _block_base(m, scnr + boff)
+    weap_plug = registry.get('weap') if (registry is not None and block == 'weapons') else None
+    LIFT = 0.30
+    plan = []
+    for gi, g in enumerate(groups):
+        key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
+        mk = markers.get(key)
+        if mk is None:
+            for t in g:
+                out.append({'effect': eff, 'field': str(t).rsplit(chr(92), 1)[-1],
+                            'ok': False, 'reason': 'no %s on this map' % key})
+            continue
+        ax, ay, az = struct.unpack_from('<fff', m.data, mk + _EQ_POS)
+        placeable = [t for t in g if pal.get(str(t).replace('/', chr(92)).lower()) is not None]
+        n = len(placeable)
+        seat = 0
+        for t in g:
+            short = str(t).rsplit(chr(92), 1)[-1]
+            pi = pal.get(str(t).replace('/', chr(92)).lower())
+            if pi is None:
+                out.append({'effect': eff, 'field': short, 'ok': False,
+                            'reason': 'not in this map (its tag is not in the cache)'})
+                continue
+            if stack or n <= 1 or radius <= 0:
+                pos = (ax, ay, az + LIFT)
+            else:
+                ang = 2.0 * math.pi * seat / n
+                pos = (ax + radius * math.cos(ang), ay + radius * math.sin(ang), az + LIFT)
+            seat += 1
+            loaded = total = None
+            if weap_plug is not None:
+                wb = _weap_base(m, str(t))
+                if wb is not None:
+                    loaded = m.read_tag_field(wb, 'Rounds Loaded Maximum', weap_plug,
+                                              block='Magazines', index=0)
+                    total = m.read_tag_field(wb, 'Rounds Total Maximum', weap_plug,
+                                             block='Magazines', index=0)
+            plan.append((pi, pos, short, key, mk, loaded, total))
+    if not plan:
+        return out
+    uids = _h2_free_unique_ids(m, scnr, len(plan))
+    elems = []
+    for (pi, pos, short, key, mk, loaded, total), uid in zip(plan, uids):
+        if N and base:
+            e = bytearray(m.data[base:base + bes])          # a working element of this block
+        else:
+            e = bytearray(bes)
+            e[:0x34] = m.data[mk:mk + 0x34]                 # the shared placement head
+        struct.pack_into('<hh', e, 0x0, pi, -1)             # palette, unnamed
+        flags = struct.unpack_from('<I', e, 0x4)[0] & ~_H2_NOT_AUTOMATICALLY
+        struct.pack_into('<I', e, 0x4, flags)               # spawns with the level
+        struct.pack_into('<fff', e, _EQ_POS, *pos)
+        struct.pack_into('<fff', e, 0x14, 0.0, 0.0, 0.0)    # rotation
+        e[0x24:0x28] = m.data[mk + 0x24:mk + 0x28]          # transform + manual BSP flags
+        struct.pack_into('<I', e, 0x28, uid)
+        e[0x2C:0x2E] = m.data[mk + 0x2C:mk + 0x2E]          # origin BSP, as the marker
+        e[0x2E] = _H2_TYPE[block]
+        e[0x30] = m.data[mk + 0x30]                         # BSP policy
+        struct.pack_into('<h', e, 0x32, -1)                 # no editor folder
+        if block == 'weapons':
+            struct.pack_into('<h', e, lay['rounds_left'],
+                             max(-32768, min(32767, int(total or 0))))
+            struct.pack_into('<h', e, lay['rounds_loaded'],
+                             max(-32768, min(32767, int(loaded or 0))))
+        elems.append(bytes(e))
+    m.grow_block(scnr, boff, bes, elems)
+    for pi, pos, short, key, mk, loaded, total in plan:
+        new = 'placed at (%.1f, %.1f, %.1f)' % pos
+        if block == 'weapons':
+            new += ', %d/%d rounds' % (int(loaded or 0), int(total or 0))
+        out.append({'effect': eff, 'field': short, 'ok': True, 'old': key, 'new': new})
+    return out
+
+
+def _apply_spawn_weapons_h2(m, game, spec, registry=None):
+    """Halo 2: place the player's weapons at the enhancer marker (_h2_place_at_markers)."""
+    groups = [[t for t in (g or []) if t] for g in (spec.get('groups') or [])]
+    radius = spec.get('radius')
+    return _h2_place_at_markers(m, 'weapons', groups, registry,
+                                radius=0.25 if radius is None else max(0.0, float(radius)))
+
+
 def _apply_spawn_weapons(m, game, spec, registry=None):
     """Reach: hand a player their weapons by PLACING them at the marker.
 
@@ -4232,6 +4406,8 @@ def _apply_spawn_weapons(m, game, spec, registry=None):
         return _apply_spawn_weapons_h3(m, game, spec, registry)
     if game == 'Halo 1':
         return _apply_spawn_weapons_h1(m, game, spec, registry)
+    if game == 'Halo 2':
+        return _apply_spawn_weapons_h2(m, game, spec, registry)
     if game not in MARKER_GAMES:
         return out
     lay = _MAP_WEAPONS.get(game)
@@ -4402,7 +4578,7 @@ def grenade_supply(m, game, registry, index):
     count = struct.unpack_from('<h', m.data, e + mc['offset'])[0]
     tag = None
     for off in _GRENADE_EQUIPMENT_REF.get(game, ()):
-        rid = m.u32(e + off + 0xC)
+        rid = m.u32(e + off + _TAGREF_DATUM_AT.get(game, 0xC))
         nm = _tag_name_by_id(m, rid) if rid != 0xFFFFFFFF else None
         if isinstance(nm, str):
             tag = nm
@@ -4413,7 +4589,12 @@ def grenade_supply(m, game, registry, index):
 # The Grenades element's Equipment tagRef (16-byte, ident at +0xC), per MCC plugin; the
 # plugin lookup skips tagRefs. Halo 4's PvE equipment first.
 _GRENADE_EQUIPMENT_REF = {'Halo 3': (0x14,), 'Halo 3: ODST': (0x14,),
-                          'Halo Reach': (0x18,), 'Halo 4': (0x58, 0x38)}
+                          'Halo Reach': (0x18,), 'Halo 4': (0x58, 0x38),
+                          # Halo2MCC/matg.xml: Grenades (0x100, 0x2C) Equipment @0x1C
+                          'Halo 2': (0x1C,)}
+#: where a tagRef keeps its datum: 16-byte refs (class, name, length, datum) from Halo 3
+#: on, Halo 2's cache refs are 8 bytes (class, datum)
+_TAGREF_DATUM_AT = {'Halo 2': 0x4}
 
 
 # --- Halo 4: make abilities on the ground easier to see (TEST, 2026-09-27) -------
@@ -4692,9 +4873,9 @@ def _apply_spawn_grenades(m, game, registry, spec):
     groups = spec.get('groups') or []
     if not any(groups):
         return []
-    if game not in ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
+    if game not in ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
         return [{'effect': 'starting grenades', 'ok': True, 'skip': True,
-                 'reason': 'not built for %s yet (Halo 3, ODST, Reach, Halo 4 only)'
+                 'reason': 'not built for %s yet (Halo 2, 3, ODST, Reach, Halo 4 only)'
                            % game}]
     out, tag_groups = [], []
     for g in groups:
@@ -4713,6 +4894,10 @@ def _apply_spawn_grenades(m, game, registry, spec):
                         'old': 'none',
                         'new': '%d on the marker (the Maximum Count)' % count})
         tag_groups.append(tg)
+    if game == 'Halo 2':
+        # Halo 2's own placer (second-generation scenario), stacked on the marker
+        return out + [r for r in _h2_place_at_markers(m, 'equipment', tag_groups,
+                                                      stack=True) if not r.get('ok')]
     points = None
     if game in MARKER_GAMES:
         named = reach_named_markers(m, game)

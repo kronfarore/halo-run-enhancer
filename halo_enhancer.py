@@ -402,6 +402,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'h4_spawn_starting_weapons', 'h4_spawn_all_weapons',
                'h3_spawn_starting_weapons', 'h3_spawn_all_weapons',
                'h1_spawn_starting_weapons', 'h1_spawn_all_weapons',
+               'h2_spawn_starting_weapons', 'h2_spawn_all_weapons',
                'h1_replace_first_weapons', 'h1_enemy_weapon_enabled',
                'h1_enemy_weapon_fallback', 'h1_enemy_weapon_cards',
                'ignore_elite_in_h3', 'remove_flood_from_odst',
@@ -978,6 +979,8 @@ CONFIG = {
     # profile cannot give every weapon -- a turret written into it never arrives.
     "h3_spawn_starting_weapons": False,
     "h1_spawn_starting_weapons": False,
+    "h2_spawn_starting_weapons": False,
+    "h2_spawn_all_weapons": False,
     # Halo 1 enemy weapons (h1_enemy_weapons.py): replace every enemy variant carrying a
     # player's STARTING weapon; per-enemy switch and fallback weapon (None = Auto).
     "h1_replace_first_weapons": False,
@@ -7856,7 +7859,8 @@ class MagnitudeEditorDialog(QDialog):
         key = {'Halo Reach': 'reach_spawn_starting_weapons',
                'Halo 4': 'h4_spawn_starting_weapons',
                'Halo 3': 'h3_spawn_starting_weapons',
-               'Halo 1': 'h1_spawn_starting_weapons'}.get(self.game)
+               'Halo 1': 'h1_spawn_starting_weapons',
+               'Halo 2': 'h2_spawn_starting_weapons'}.get(self.game)
         return (key is not None
                 and bool(CONFIG.get('set_starting_weapons'))
                 and bool(CONFIG.get(key)))
@@ -7880,7 +7884,8 @@ class MagnitudeEditorDialog(QDialog):
             return None
         first_only = not CONFIG.get({'Halo 4': 'h4_spawn_all_weapons',
                                      'Halo 3': 'h3_spawn_all_weapons',
-                                     'Halo 1': 'h1_spawn_all_weapons'}.get(
+                                     'Halo 1': 'h1_spawn_all_weapons',
+                                     'Halo 2': 'h2_spawn_all_weapons'}.get(
                                          self.game, 'reach_spawn_all_weapons'))
         # A run carries weapons across games, and a plain-string tag resolves in every
         # game, so a weapon this game never fields (Reach's SMG) reached the placer and
@@ -11284,6 +11289,35 @@ class OptionsDialog(QDialog):
         h2form = QFormLayout(h2g)
         h2form.setLabelAlignment(Qt.AlignRight)
 
+        self.h2_spawn_weapons_cb = QCheckBox(
+            "Place starting weapons at the enhancer marker instead of the profile")
+        self.h2_spawn_weapons_cb.setChecked(bool(CONFIG.get('h2_spawn_starting_weapons')))
+        self.h2_spawn_weapons_cb.setToolTip(
+            "Halo 2 hands the player their weapons through the starting profile, which "
+            "has room for two. With this on they are PLACED at enhancer_marker1 (and "
+            "player 2's at enhancer_marker2) to be picked up instead, so a run can hand "
+            "over as many as it likes. Any weapon whose tag the map carries can be "
+            "placed, even one the level never put down itself."
+            "\n\n"
+            "Needs 'Set starting weapons', and a map REBUILT with the markers in it -- a "
+            "mission without them is left alone and says so. Starting grenades (their own "
+            "option) are placed on the same markers.")
+        h2form.addRow("Starting weapons:", self.h2_spawn_weapons_cb)
+        self.h2_spawn_all_cb = QCheckBox("↳ place every selected weapon, not just the first")
+        self.h2_spawn_all_cb.setChecked(bool(CONFIG.get('h2_spawn_all_weapons')))
+        self.h2_spawn_all_cb.setToolTip(
+            "Off: only each player's first weapon is placed, as a profile would give it. "
+            "On: every weapon that player holds is placed, ringed round the marker.")
+
+        def _sync_h2_spawn(on=None):
+            on = self.h2_spawn_weapons_cb.isChecked()
+            self.h2_spawn_all_cb.setEnabled(on)
+            if not on:
+                self.h2_spawn_all_cb.setChecked(False)
+        self.h2_spawn_weapons_cb.toggled.connect(_sync_h2_spawn)
+        _sync_h2_spawn()
+        h2form.addRow("", self.h2_spawn_all_cb)
+
         for label, keys, tip in H2_PATCH_SETS:
             cb = QCheckBox(label)
             cb.setToolTip(tip)
@@ -12054,6 +12088,8 @@ class OptionsDialog(QDialog):
             'h3_spawn_all_weapons': self.h3_spawn_all_cb.isChecked(),
             'h1_spawn_starting_weapons': self.h1_spawn_weapons_cb.isChecked(),
             'h1_spawn_all_weapons': self.h1_spawn_all_cb.isChecked(),
+            'h2_spawn_starting_weapons': self.h2_spawn_weapons_cb.isChecked(),
+            'h2_spawn_all_weapons': self.h2_spawn_all_cb.isChecked(),
             'h1_replace_first_weapons': self.h1_replace_first_cb.isChecked(),
             'h1_enemy_weapon_enabled': {e: cb.isChecked() for e, (cb, _c) in self.h1_enemy_rows.items()},
             'h1_enemy_weapon_fallback': {e: c.currentData() for e, (_cb, c) in self.h1_enemy_rows.items()
