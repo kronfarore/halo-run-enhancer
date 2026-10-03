@@ -2274,6 +2274,13 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   an entry used by any other sound. Relative to the as-built level, so applied to the
   baseline copy. **Every map carrying a port must be rebuilt with the marker** before
   the knob works there.
+* **The engine CLAMPS Gain Base at 0 dB** (boots 2026-10-03: H3 SAW -6 "quieter", -20
+  near silent; ODST SAW +6 and +12 unmoved; Reach with only the marker: unchanged). A port
+  can be turned DOWN freely, UP only to 0. **Headroom rule:** every port ships at the
+  import gain -3 with its AUDIO set so that -3 is the right level -- the knob gets +3 dB
+  up. Halo 3 / Reach SAW: plain audio at -3. ODST SAW: -3 gain + 4.5 dB soft-limited
+  audio (= the confirmed +4.5; limiter: 0.05% of samples near the ceiling, at +6 0.6%).
+  port_volume.headroom() reports it, apply() caps at 0.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 

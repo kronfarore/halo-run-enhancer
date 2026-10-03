@@ -88,9 +88,13 @@ GAMES = {
                  sounds=dict(FIRE, **TAILS, **DRY),
                  effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                           'empty': (BR_FX + B + 'empty', DRY_PAIR)},
-                 gain={'saw_fire': 0, 'saw_tail_ext': 0, 'saw_tail_int': 0},
-                 # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between"
-                 boost={'saw_fire': 1.5, 'saw_tail_ext': 1.5, 'saw_tail_int': 1.5}),
+                 # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between";
+                 # +4.5 (gain 0 + boost 1.5) CONFIRMED. HEADROOM RULE (boot 2026-10-03: the
+                 # engine CLAMPS Gain Base at 0 dB in the map, +12 was unmoved, -20 near
+                 # silent): every port ships at the import gain -3 so port_volume.py has +3 dB
+                 # up; the same +4.5 is therefore -3 gain + 4.5 audio (limiter: 0.05% of
+                 # samples near the ceiling, peak -0.8 dBFS).
+                 boost={'saw_fire': 4.5, 'saw_tail_ext': 4.5, 'saw_tail_int': 4.5}),
 }
 G = EK = TAGS = SOUNDS = None
 #: what `sounds-single-layer` gives every sound; G['gain'] overrides per sound

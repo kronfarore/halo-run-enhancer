@@ -13,6 +13,13 @@ distinct as-built gain. This tool finds them through the port's sound tags and s
 their Gain Base by the knob. It REFUSES when an entry is also used by a sound outside the
 port (a map built before the marker) -- nothing is written then.
 
+THE ENGINE CLAMPS GAIN BASE AT 0 dB (boot 2026-10-03: the ODST SAW at +12 sounded
+unmoved; the Halo 3 SAW at -20 was near silent). So a port can only be turned UP as far
+as its entries sit below 0 -- HEADROOM RULE: every port ships at gain -3 (the import's
+own default), its AUDIO set so that -3 is the right level (ODST's SAW: +4.5 dB soft-
+limited), giving the knob +3 dB up and anything down. headroom() reports it; apply()
+caps every entry at 0 and says so.
+
 THE KNOB is relative, in dB, to the as-built level, so it must be applied to the
 BASELINE map (the patcher's fresh copy), never twice to the same file.
 
@@ -69,6 +76,21 @@ def entries(m, game, weapon):
     return own, shared, pbs
 
 
+#: the engine's ceiling for a Playbacks entry's Gain Base (measured, see above)
+CEILING_DB = 0.0
+
+
+def headroom(m, game, weapon):
+    """How far (dB) the knob can turn this port UP in this map before the engine's 0 dB
+    clamp: the smallest distance of its entries below CEILING_DB. None without a port."""
+    if game not in LAYOUT or weapon not in PORT_SOUNDS:
+        return None
+    own, _shared, pbs = entries(m, game, weapon)
+    if not own:
+        return None
+    return round(min(CEILING_DB - _f32(m, pbs[i] + LAYOUT[game][3]) for i in own), 2)
+
+
 def apply(m, game, weapon, db):
     """Shift the port's own Playbacks entries by `db` dB. Returns [(index, old, new,
     sounds)]. Raises ValueError (nothing written) when an entry is shared."""
@@ -85,8 +107,9 @@ def apply(m, game, weapon, db):
     for i in sorted(own):
         o = pbs[i] + gain_off
         old = _f32(m, o)
-        struct.pack_into('<f', m.data, o, old + db)
-        rows.append((i, old, old + db, own[i]))
+        new = min(old + db, CEILING_DB)     # louder than 0 dB is not played louder
+        struct.pack_into('<f', m.data, o, new)
+        rows.append((i, old, new, own[i]))
     return rows
 
 
@@ -105,7 +128,8 @@ def main():
     m = hp.open_map(path, a.game)
     own, shared, pbs = entries(m, a.game, a.weapon)
     gain_off = LAYOUT[a.game][3]
-    print('%s  %s: %d playback entries' % (os.path.basename(path), a.weapon, len(own)))
+    print('%s  %s: %d playback entries, headroom %s dB' % (
+        os.path.basename(path), a.weapon, len(own), headroom(m, a.game, a.weapon)))
     for i in sorted(own):
         print('   #%-4d gain %+7.3f dB  %s%s' % (
             i, _f32(m, pbs[i] + gain_off), ', '.join(n.rsplit(B, 1)[-1] for n in own[i]),
