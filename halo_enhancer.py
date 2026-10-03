@@ -1962,9 +1962,10 @@ MOD_COLORS = {
     'equipment': {'border': 'ADCB2E', 'bg': '13160a'},  # H3 equipment — yellow-green
     # Bane: blood red on a deep maroon, framed three times (create_mod_widget)
     'bane': {'border': 'FF1744', 'bg': '24060c', 'outer': '8B0000'},
-    # Weapon Identity: both tied cards green with a double outline (user, 2026-10-03)
+    # Weapon Identity (user, 2026-10-03): the x2 card green with a double outline, the
+    # tied inverted card a green-adjacent teal with a normal outline
     'identity': {'border': '4CAF50', 'bg': '0a1a0a'},
-    'identity_down': {'border': '4CAF50', 'bg': '0a1a0a'},
+    'identity_down': {'border': '26A69A', 'bg': '061a17'},
 }
 
 
@@ -2509,8 +2510,7 @@ class ModifierDatabase:
             mod.update(extra)
         return mod
 
-    @staticmethod
-    def identity_invertible(mod):
+    def identity_invertible(self, mod, game=None):
         """Can this weapon card be the INVERTED half of a Weapon Identity pair?
           * `"invertible": false` in halo.json says no (the card's own knowledge);
           * Map Presence: an inverted share is negative, and the swap drops it -- no-op;
@@ -2523,8 +2523,13 @@ class ModifierDatabase:
         ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)]
         if any(t.get('map_swap') or t.get('map_equip') for t in ts):
             return False
-        if any(t.get('from_zero') and not t.get('inverse_steps') for t in ts):
-            return False
+        for t in ts:
+            if t.get('from_zero'):
+                lad = t.get('inverse_steps')
+                if isinstance(lad, dict):
+                    lad = resolve_gamed(lad, game, self.games) if game else None
+                if not lad:
+                    return False
         if ts and all('set' in t for t in ts):
             return False
         return True
@@ -4660,7 +4665,7 @@ class PairCard(QGroupBox):
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
-        identity = color in ('identity', 'identity_down')
+        identity = color == 'identity'
         if identity:
             border_width = 4                      # wide enough to draw as a double line
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
@@ -5353,8 +5358,9 @@ class MagnitudeEditorDialog(QDialog):
             # mirrored and stacked. There is NO general floor (user, 2026-10-01): a
             # card that needs one says so with `inverse_floor` (a multiplier, on the
             # target or the card); counts that must not reach 0 carry `min: 1`.
-            if t.get('inverse_steps') and (not txt or self._is_default_step(t, txt)):
-                return self._hp.stack_op('', n, steps=t['inverse_steps'])
+            ilad = self._inverse_ladder(t)
+            if ilad and (not txt or self._is_default_step(t, txt)):
+                return self._hp.stack_op('', n, steps=ilad)
             txt = self._hp.invert_step(txt)
             steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
             op = self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
@@ -5364,6 +5370,16 @@ class MagnitudeEditorDialog(QDialog):
                 return '*%g' % float(floor)
             return op
         return self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
+
+    def _inverse_ladder(self, t):
+        """A target's `inverse_steps` for this game: a list, or a per-game dict (the
+        Zoom cards: each weapon's ladder follows its vanilla zoom stages there; null =
+        no zoom in that game, nothing to invert)."""
+        lad = t.get('inverse_steps')
+        if isinstance(lad, dict):
+            db = getattr(self.parent_gui, 'db', None)
+            lad = resolve_gamed(lad, self.game, db.games if db else None)
+        return lad or None
 
     @staticmethod
     def _card_key(eff):
@@ -8792,6 +8808,10 @@ class MagnitudeEditorDialog(QDialog):
                 lad = t.get('from_zero')
                 if lad and n >= len(lad) and self._stacked_op(eff, t, '') == str(lad[-1]):
                     continue                     # the ladder's last rung
+                c = int(eff.get('count') or 1)
+                ilad = self._inverse_ladder(t)
+                if ilad and (self._step_inverted(eff) != (c < 0)) and abs(c) >= len(ilad):
+                    continue                     # the INVERSE ladder's last rung (zoom gone)
                 lo, hi = t.get('min'), t.get('max')
                 if lo is None and hi is None:
                     ok = False
@@ -13126,10 +13146,14 @@ class HaloGUI(QMainWindow):
         box.setStyleSheet("""
             QFrame#nextLevelBox { background-color: #141c26; border: 1px solid #3a5a80;
                                   border-radius: 8px; }
-            QLabel { color: #c8d4e0; background: transparent; }
+            QFrame#nextLevelBox QLabel { color: #c8d4e0; background: transparent; }
             QLineEdit { background-color: #1a1a1a; color: #e0e0e0;
                         border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px; }
+            QToolTip { color: #e0e0e0; background-color: #1e2630;
+                       border: 1px solid #3a5a80; padding: 4px; }
         """)
+        # (the QLabel rule is scoped to the box: unscoped it also reached the buttons'
+        # tooltips -- a tooltip is a QLabel -- and drew them as an empty box)
         box.setFixedWidth(400)
         lay = QVBoxLayout(box)
         lay.setContentsMargins(16, 14, 16, 14)
@@ -14645,7 +14669,7 @@ class HaloGUI(QMainWindow):
                                                       ident.get('weapon'))
             keep = (ident.get(other) or {}).get('name')
             cands = [m for m in cands if m.get('name') not in (keep, (ident.get(part) or {}).get('name'))
-                     and (part == 'up' or self.db.identity_invertible(m))]
+                     and (part == 'up' or self.db.identity_invertible(m, game))]
             if not cands:
                 self.update_status("No other card of the %s can take that place" % ident.get('weapon'))
                 return
@@ -15841,7 +15865,7 @@ class RunEnhancer:
         random.shuffle(offer_locked)
         # a weapon can take a new identity with one invertible card and one other
         free = [w for w, ms in by_weapon.items() if w not in mine and len(ms) >= 2
-                and any(self.db.identity_invertible(m) for m in ms)]
+                and any(self.db.identity_invertible(m, game) for m in ms)]
         random.shuffle(free)
 
         slots = [(w, u, d, True) for w, u, d in offer_locked[:3]]
@@ -15850,7 +15874,7 @@ class RunEnhancer:
         while len(slots) < 3 and free and tries < 60:
             w = free[tries % len(free)]
             tries += 1
-            down = random.choice([m for m in by_weapon[w] if self.db.identity_invertible(m)])
+            down = random.choice([m for m in by_weapon[w] if self.db.identity_invertible(m, game)])
             up = random.choice([m for m in by_weapon[w] if m is not down])
             key = (w, up.get('name'), down.get('name'))
             if key in seen and tries < 50:

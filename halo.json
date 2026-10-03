@@ -952,9 +952,9 @@
 					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "weap weapons\\assault rifle\\assault rifle", "Halo 3": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\assault_rifle\\assault_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -1280,9 +1280,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\pistol\\pistol", "Halo 2": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 3: ODST": "weap objects\\weapons\\pistol\\magnum\\magnum & objects\\weapons\\pistol\\automag\\automag", "Halo Reach": "weap objects\\weapons\\pistol\\magnum\\magnum", "Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": ["=0"], "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["=0"], "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["=0"], "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": ["=0"], "Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -1776,9 +1776,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\plasma pistol\\plasma pistol", "Halo 2": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 3": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo Reach": "weap objects\\weapons\\pistol\\plasma_pistol\\plasma_pistol", "Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -2178,9 +2178,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\plasma rifle\\plasma rifle", "Halo 2": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle", "Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle & objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red", "Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "=2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "=2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -2615,9 +2615,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\needler\\needler", "Halo 2": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 3": "weap objects\\weapons\\pistol\\needler\\needler", "Halo Reach": "weap objects\\weapons\\pistol\\needler\\needler", "Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -2934,9 +2934,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\sniper rifle\\sniper rifle", "Halo 2": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 3": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo Reach": "weap objects\\weapons\\rifle\\sniper_rifle\\sniper_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": ["=1", "=0"], "Halo 2": ["=1", "=0"], "Halo 3": ["=1", "=0"], "Halo 3: ODST": ["=1", "=0"], "Halo Reach": ["=1", "=0"], "Halo 4": ["=1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["*1", "=0"], "Halo 2": ["*1", "=0"], "Halo 3": ["*1", "=0"], "Halo 3: ODST": ["*1", "=0"], "Halo Reach": ["*1", "=0"], "Halo 4": ["*1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["=2", "=0"], "Halo 2": ["=3.5", "=0"], "Halo 3": ["=4", "=0"], "Halo 3: ODST": ["=4", "=0"], "Halo Reach": ["=4", "=0"], "Halo 4": ["=4", "=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -3281,9 +3281,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\rocket launcher\\rocket launcher", "Halo 2": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 3": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo Reach": "weap objects\\weapons\\support_high\\rocket_launcher\\rocket_launcher", "Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": ["=0"], "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["=0"], "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": ["=0"], "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -3592,9 +3592,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 1": "weap weapons\\shotgun\\shotgun", "Halo 2": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 3": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo Reach": "weap objects\\weapons\\rifle\\shotgun\\shotgun", "Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -3869,9 +3869,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST"],
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3": "weap objects\\weapons\\rifle\\smg\\smg", "Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg & objects\\weapons\\rifle\\smg_silenced\\smg_silenced"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} }
 					]
 				},
 				"Zoom Time": {
@@ -4137,6 +4137,7 @@
 				"Zoom": {
 					"desc": "Magnification Levels and Range",
 					"game": "Halo 2",
+					"invertible": false,
 					"tag": {
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle",
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\plasma_rifle_red\\plasma_rifle_red"
@@ -4431,9 +4432,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 3": "weap objects\\weapons\\rifle\\battle_rifle\\battle_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -4728,9 +4729,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot", "Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null} }
 					],
 					"game": ["Halo 2", "Halo 3"]
 				},
@@ -5003,9 +5004,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 3": "weap objects\\weapons\\rifle\\beam_rifle\\beam_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": ["=1", "=0"], "Halo 3": ["=1", "=0"], "Halo 3: ODST": ["=1", "=0"], "Halo 4": ["=1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["*1", "=0"], "Halo 3": ["*1", "=0"], "Halo 3: ODST": ["*1", "=0"], "Halo 4": ["*1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=3.5", "=0"], "Halo 3": ["=3.5", "=0"], "Halo 3: ODST": ["=3.5", "=0"], "Halo 4": ["=3.5", "=0"]} }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5270,9 +5271,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 3": "weap objects\\weapons\\rifle\\covenant_carbine\\covenant_carbine", "Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo 4": ["=0"]} }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -5614,9 +5615,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
 				},
@@ -5888,9 +5889,9 @@
 					"desc": "Magnification Levels, Magnification Range",
 					"tag": {"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "weap objects\\weapons\\support_low\\sentinel_gun\\sentinel_gun & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo 4": null} }
 					],
 					"game": ["Halo 2", "Halo 3", "Halo 4"]
 				},
@@ -6118,6 +6119,7 @@
 					"desc": "Magnification Levels, Magnification Range. The Sentinel Beam has no vanilla scope - give it one by setting Magnification Levels above 0.",
 					"debug_desc": "UPGRADE MIRROR. This card is not offered on its own -- `upgrade_inherits_base` means the Sentinel Beam's card of the same name is what gets drafted, and this entry exists so `upgrade_twin_tag` can find the tag to patch alongside it. Measured against the ordinary beam, the eliminator is the same weapon: the projectile is identical in all 62 fields, the weapon differs only in Heat and Age Generated Per Round (0.040 vs 0.045, 0.0030 vs 0.0035), and the damage effect only in damage (2.0 vs 3.0).",
 					"game": "Halo 2",
+					"invertible": false,
 					"tag": {
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
 					},
@@ -6313,9 +6315,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -6714,9 +6716,9 @@
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\pistol\\excavator\\excavator",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} }
 					]
 				},
 				"Zoom Time": {
@@ -7030,9 +7032,9 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null} }
 					]
 				},
 				"Zoom Time": {
@@ -7124,9 +7126,9 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\melee\\gravity_hammer\\gravity_hammer", "Halo 4": "weap objects\\weapons\\melee\\storm_gravity_hammer\\storm_gravity_hammer"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -7435,9 +7437,9 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\support_high\\spartan_laser\\spartan_laser", "Halo 4": "weap objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -7658,9 +7660,9 @@
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\flamethrower\\flamethrower",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} }
 					]
 				},
 				"Zoom Time": {
@@ -7922,9 +7924,9 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret\\machinegun_turret_integrated & objects\\vehicles\\warthog\\turrets\\chaingun\\weapon\\chaingun_turret", "Halo Reach": "weap objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\machinegun_turret & objects\\weapons\\turret\\machinegun_turret_jorge\\machinegun_turret_jorge & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\warthog\\weapons\\warthog_chaingun\\weapon\\warthog_chaingun", "Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -8186,9 +8188,9 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 3": "weap objects\\weapons\\turret\\plasma_cannon\\plasma_cannon & objects\\weapons\\turret\\plasma_cannon\\plasma_cannon_integrated", "Halo Reach": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted", "Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -8405,9 +8407,9 @@
 					"game": "Halo 3",
 					"tag": "weap objects\\weapons\\turret\\missile_pod\\missile_pod & objects\\weapons\\turret\\missile_pod\\missile_pod_integrated",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 3": null, "Halo 3: ODST": null} }
 					]
 				},
 				"Zoom Time": {
@@ -8595,9 +8597,9 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null, "Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -8870,9 +8872,9 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"], "Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"], "Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -9151,9 +9153,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["*1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=3.5", "=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -9393,9 +9395,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null} }
 					]
 				},
 				"Zoom Time": {
@@ -9729,9 +9731,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -10020,9 +10022,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -10298,9 +10300,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": null} }
 					]
 				},
 				"Zoom Time": {
@@ -10641,9 +10643,9 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo Reach": ["=1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["*1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo Reach": ["=2", "=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -10956,9 +10958,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -11321,9 +11323,9 @@
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg", "Halo 1": "weap weapons\\saw\\saw", "Halo 2": "weap objects\\weapons\\rifle\\saw\\saw", "Halo 3": "weap objects\\weapons\\rifle\\saw\\saw", "Halo Reach": "weap objects\\weapons\\rifle\\saw\\saw" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "games": ["Halo 4"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "games": ["Halo 4"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "games": ["Halo 4"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "games": ["Halo 4"], "inverse_steps": {"Halo 1": null, "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
 						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "games": ["Halo 1"] },
@@ -11701,9 +11703,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -11954,9 +11956,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -12216,9 +12218,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -12527,9 +12529,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -12828,9 +12830,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -12960,9 +12962,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "min": 0, "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": null} }
 					]
 				},
 				"Zoom Time": {
@@ -13272,9 +13274,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": ["=1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["*1", "=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["=4", "=0"]} }
 					]
 				},
 				"Zoom Time": {
@@ -13557,9 +13559,9 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels" },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels" }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["=0"]} },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 4": ["=0"]} }
 					]
 				},
 				"Zoom Time": {
