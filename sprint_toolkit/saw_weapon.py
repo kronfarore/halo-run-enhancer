@@ -65,6 +65,15 @@ def main():
     # `player_response` stays the donor's: that is the effect played on whoever is hit,
     # the kit has no SAW copy of it, and it carries no per-weapon damage.
     d.weap_attrs.melee.player_damage.filepath = 'weapons' + B + 'saw' + B + 'melee'
+    # ITS OWN FIRING SOUNDS (2026-10-03): h1_saw_sounds.py makes own copies of the AR's
+    # `fire bullet` and `empty` effects naming the SAW's sounds -- the AR's are shared
+    # with the real AR. Named here too, so regenerating the weapon keeps them.
+    own_fx = 'weapons' + B + 'saw' + B + 'effects' + B
+    if os.path.exists(os.path.join(TAGS, own_fx + 'fire bullet.effect')):
+        for trig in d.weap_attrs.triggers.STEPTREE:
+            for fe in trig.firing_effects.STEPTREE:
+                fe.firing_effect.filepath = own_fx + 'fire bullet'
+                fe.empty_effect.filepath = own_fx + 'empty'
     mags = d.weap_attrs.magazines.STEPTREE
     if len(mags):
         m = mags[0]

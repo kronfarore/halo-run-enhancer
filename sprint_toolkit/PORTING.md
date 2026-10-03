@@ -2317,10 +2317,30 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
-**Still to do, per game:** H3 / ODST (same kit route as Reach, expected); H2 (H2EK
-`reimport-sounds`; its SAW already owns a firing effect, saw_fire); H1 (HCEEK `sounds
-<dir> <wav|ogg>`). Reload / ready / melee sounds are cued at animation frames in each
-port's (retimed) fp graph -- a separate step after the firing sounds.
+**Halo 2 and Halo 1 (2026-10-03), CLASSIC ONLY** (user: every H1/H2 rebuild is classic):
+* **Halo 2** -- `h2_saw_sounds.py --write`. Classic H2 in MCC plays the map's sounds as
+  OPUS 48 kHz (4039 of 4456 on 03a), so: `sounds-single-layer <dir> <class>` then
+  `reimport-sounds-to-opus <dir>`. The SAW's own saw_fire effect named the SMG's fire
+  (its remastered-only fire_lod part is left: classic never plays it); the weapon names
+  its dry fire SOUND directly (the Battle Rifle's). H2's gestalt pools gains like H3's
+  (the SMG fire's entry: 871 sounds) -> the volume marker (-3.01), port_volume knows
+  Halo 2 (snd! +0x6, ugh! Playback Parameters 0x38, Gain Base +0x10). H2EK's
+  export-tag-to-xml needs ABSOLUTE paths (a relative output comes out empty) and writes
+  `<field name="gain base" ...>-3.000000</field>`. The SAW is on 01b and 03a only; 03a
+  rebuilt (`h2_batch.py --maps 03a --stage build`) + shipped (live + E:\HaloBaselines);
+  01b is reserved for another test -- rebuild it when that is done.
+* **Halo 1** -- `h1_saw_sounds.py --write`. Classic H1 plays Xbox ADPCM from the map (AR
+  fire 22 kHz mono); the SAW audio is resampled to 44.1 kHz mono (numpy FFT, no scipy)
+  and imported with `tool sounds <dir> xbox`, its playback fields copied from the AR's
+  sound. The SAW fired through the AR's SHARED `fire bullet` / `empty` effects -> own
+  copies in weapons\saw\effects (the casing eject kept), the weapon repointed in place
+  AND in saw_weapon.py (which regenerates the weapon from the AR). No gestalt in H1: the
+  knob scales the own tags' permutation GAINS (linear; a 0 in a tag plays as 1.0), built
+  at 0.708 with the audio +3 dB soft-limited (headroom rule). All ten maps carry the SAW;
+  a10 rebuilt + shipped (`h1_rebuild_all.py --maps a10`), the other nine still play the
+  AR's sounds until rebuilt.
+Reload / ready / melee sounds are cued at animation frames in each port's (retimed) fp
+graph -- a separate step after the firing sounds.
 
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
 

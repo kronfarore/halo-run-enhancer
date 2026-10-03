@@ -1,4 +1,4 @@
-r"""A ported weapon's sound VOLUME, set at patch time (Halo 2, Halo 3, ODST, Reach; Halo 4 through
+r"""A ported weapon's sound VOLUME, set at patch time (Halo 1, Halo 2, Halo 3, ODST, Reach; Halo 4 through
 its own sound bank).
 
 WHERE A SOUND'S VOLUME LIVES: not in the sound tag. A compiled sound (snd!) holds an
@@ -37,6 +37,7 @@ COMMAND LINE (cmd.exe):
                                           (Halo 4: relative to the bank AS BUILT)
 """
 import argparse
+import math
 import os
 import struct
 import sys
@@ -59,10 +60,13 @@ LAYOUT = {'Halo 3': (0x0C, 0x10, 0x44, 0x1C),
           # Parameters" (0x38) with Gain Base +0x10 -- pooled too (03a: 871 sounds share
           # the SMG fire's entry). Whether it clamps at 0 like Halo 3: untested, so the
           # headroom rule applies (built at -3.01).
-          'Halo 2': (0x06, 0x08, 0x38, 0x10)}
+          'Halo 2': (0x06, 0x08, 0x38, 0x10),
+          # Halo 1: no gestalt, no pooling -- each sound tag's own permutation gains
+          # (_h1_gains); the headroom rule still applies (built at 0.708 = -3 dB)
+          'Halo 1': None}
 #: game -> its maps folder under the MCC install
 FOLDER = {'Halo 3': 'halo3\\maps', 'Halo 3: ODST': 'halo3odst\\maps', 'Halo Reach': 'haloreach\\maps',
-          'Halo 2': 'halo2\\h2_maps_win64_dx11'}
+          'Halo 2': 'halo2\\h2_maps_win64_dx11', 'Halo 1': 'halo1\\maps'}
 
 
 def _f32(m, o):
@@ -93,11 +97,34 @@ def entries(m, game, weapon):
 CEILING_DB = 0.0
 
 
+def _h1_gains(m, weapon):
+    """Halo 1 (no gestalt -- each sound tag holds its own gains): [(sound name, offset of
+    a permutation's linear GAIN)] for every permutation of the port's own sound tags.
+    snd! pitch ranges +0x98 (0x48 each) -> permutations +0x3C (0x7C each), gain +0x24;
+    a 0 gain plays as 1.0."""
+    folder = PORT_SOUNDS[weapon].lower() + B
+    out = []
+    for name, base in m.find_tags('snd!', '*'):
+        if not str(name).lower().startswith(folder):
+            continue
+        for pr in m.follow_all(base, [0x98], [0x48], 'all'):
+            for p in m.follow_all(pr, [0x3C], [0x7C], 'all'):
+                out.append((str(name), p + 0x24))
+    return out
+
+
+def _db(g):
+    return 20 * math.log10(g if g > 0 else 1.0)
+
+
 def headroom(m, game, weapon):
     """How far (dB) the knob can turn this port UP in this map before the engine's 0 dB
     clamp: the smallest distance of its entries below CEILING_DB. None without a port."""
     if game not in LAYOUT or weapon not in PORT_SOUNDS:
         return None
+    if LAYOUT[game] is None:                      # Halo 1: linear gains, 1.0 = 0 dB
+        g = _h1_gains(m, weapon)
+        return round(min(CEILING_DB - _db(_f32(m, o)) for _n, o in g), 2) if g else None
     own, _shared, pbs = entries(m, game, weapon)
     if not own:
         return None
@@ -109,6 +136,14 @@ def apply(m, game, weapon, db):
     sounds)]. Raises ValueError (nothing written) when an entry is shared."""
     if game not in LAYOUT or weapon not in PORT_SOUNDS:
         return []
+    if LAYOUT[game] is None:                      # Halo 1: scale each permutation's gain
+        rows = []
+        for i, (name, o) in enumerate(_h1_gains(m, weapon)):
+            old = _db(_f32(m, o))
+            new = min(old + db, CEILING_DB)
+            struct.pack_into('<f', m.data, o, 10 ** (new / 20))
+            rows.append((i, old, new, [name]))
+        return rows
     own, shared, pbs = entries(m, game, weapon)
     if shared:
         i = sorted(shared)[0]
@@ -257,6 +292,21 @@ def main():
     path = a.map if a.map.lower().endswith('.map') else \
         os.path.join(a.mcc, FOLDER[a.game], a.map + '.map')
     m = hp.open_map(path, a.game)
+    if LAYOUT[a.game] is None:                    # Halo 1: per-tag permutation gains
+        g = _h1_gains(m, a.weapon)
+        print('%s  %s: %d permutation gains, headroom %s dB' % (
+            os.path.basename(path), a.weapon, len(g), headroom(m, a.game, a.weapon)))
+        for n, o in g:
+            print('   %-30s gain %.4f (%+.2f dB)' % (n.rsplit(B, 1)[-1], _f32(m, o), _db(_f32(m, o))))
+        if a.shift is not None:
+            for _i, old, new, n in apply(m, a.game, a.weapon, a.shift):
+                print('   %-30s %+.2f -> %+.2f dB' % (n[0].rsplit(B, 1)[-1], old, new))
+            if a.write:
+                m.save()
+                print('written %s' % path)
+            else:
+                print('(dry run -- pass --write)')
+        return
     own, shared, pbs = entries(m, a.game, a.weapon)
     gain_off = LAYOUT[a.game][3]
     print('%s  %s: %d playback entries, headroom %s dB' % (

@@ -1,0 +1,192 @@
+r"""The Halo 1 SAW's OWN firing sounds -- Halo 4's SAW audio (saw_port_audio.py) through
+the HCEEK's sound import. CLASSIC ONLY (user, 2026-10-03: every H1/H2 rebuild is classic).
+
+WHAT IT PLAYED (port_sound_refs.py, 2026-10-03): the Assault Rifle's own firing effect
+`weapons\assault rifle\effects\fire bullet` (AR fire + the pistol's casing eject) and its
+`empty` effect (AR dry fire) -- SHARED with the real AR, so the SAW gets OWN copies:
+
+    weapons\saw\effects\fire bullet.effect   AR fire -> the SAW's, the casing eject kept
+    weapons\saw\effects\empty.effect         AR dry fire -> the SAW's
+
+and the weapon names them (in place here; saw_weapon.py does the same on a regeneration).
+
+HOW CLASSIC HALO 1 PLAYS (measured on a10): the map carries the sound, Xbox ADPCM, the
+AR fire 22 kHz mono. The SAW audio (48 kHz stereo) is resampled to 44.1 kHz mono and
+imported with `tool sounds <data dir> xbox`; the playback fields (distances, pitch, cone,
+random gain) are copied from the AR's sound so it carries like the AR.
+
+VOLUME (port_volume.py): a Halo 1 sound tag holds its own gains -- there is no shared
+pool and no marker. The knob scales the permutations' GAIN (a linear fraction; 0 in a
+tag means 1.0 in the map). HEADROOM RULE as elsewhere: built at -3 dB (0.708) with the
+audio soft-limited +3 dB (saw_port_sounds.boosted), so the as-built level is the plain
+import's and the knob has +3 up before 1.0.
+
+    python h1_saw_sounds.py [--write]
+
+Then rebuild the maps (all ten carry the SAW): h1_rebuild_all.py --maps a10 for a test.
+"""
+import argparse
+import glob
+import os
+import shutil
+import subprocess
+import sys
+import wave
+
+import numpy as np
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+sys.path.insert(0, os.path.join(HERE, 'pylibs'))
+import env                                                          # noqa: E402,F401
+from reclaimer.hek.defs.effe import effe_def                        # noqa: E402
+from reclaimer.hek.defs.snd_ import snd__def                        # noqa: E402
+from reclaimer.hek.defs.weap import weap_def                        # noqa: E402
+from saw_port_sounds import AUDIO, boosted                          # noqa: E402
+
+HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
+TAGS = os.path.join(HCEEK, 'tags')
+B = '\\'
+SND_DIR = B.join(['sound', 'weapons', 'saw_port'])
+AR_SND = B.join(['sound', 'sfx', 'weapons', 'assault rifle'])
+#: own sound -> (audio folder, the AR sound whose playback fields it takes)
+SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
+          'saw_dryfire': ('dryfire', AR_SND + B + 'dryfire')}
+AR_FX = B.join(['weapons', 'assault rifle', 'effects'])
+OWN_FX = B.join(['weapons', 'saw', 'effects'])
+#: own effect -> (the AR's, [(sound it names, own sound)])
+EFFECTS = {'fire bullet': (AR_FX + B + 'fire bullet', [(AR_SND + B + 'fire', SND_DIR + B + 'saw_fire')]),
+           'empty': (AR_FX + B + 'empty', [(AR_SND + B + 'dryfire', SND_DIR + B + 'saw_dryfire')])}
+WEAPON = B.join(['weapons', 'saw', 'saw.weapon'])
+RATE = 44100
+HEADROOM_DB = 3.0
+BACKUP = r'E:\HaloBackups\HCEEK_saw_before_sounds'
+#: playback fields copied from the AR's sound tag
+COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fraction',
+        'random_pitch_bounds', 'inner_cone_angle', 'outer_cone_angle', 'outer_cone_gain',
+        'gain_modifier', 'maximum_bend_per_second')
+
+
+def mono_44k(src, dst):
+    """48 kHz stereo 16-bit -> 44.1 kHz mono (FFT resample, padded so the wrap is silent)."""
+    with wave.open(src, 'rb') as r:
+        ch, rate, n = r.getnchannels(), r.getframerate(), r.getnframes()
+        a = np.frombuffer(r.readframes(n), dtype=np.int16).astype(np.float64).reshape(-1, ch)
+    x = a.mean(1)
+    pad = rate // 10
+    x = np.concatenate([x, np.zeros(pad)])
+    m = int(round(len(x) * RATE / rate))
+    X = np.fft.rfft(x)
+    keep = m // 2 + 1
+    Y = np.zeros(keep, dtype=complex)
+    k = min(keep, len(X))
+    Y[:k] = X[:k]
+    y = np.fft.irfft(Y, m) * (m / len(x))
+    y = y[:int(round(n * RATE / rate))]
+    y = np.clip(np.round(y), -32768, 32767).astype(np.int16)
+    with wave.open(dst, 'wb') as o:
+        o.setnchannels(1)
+        o.setsampwidth(2)
+        o.setframerate(RATE)
+        o.writeframes(y.tobytes())
+
+
+def tool(*args):
+    r = subprocess.run([os.path.join(HCEEK, 'tool.exe')] + list(args), cwd=HCEEK,
+                       capture_output=True, text=True, errors='replace')
+    return r.stdout + r.stderr
+
+
+def backup():
+    if os.path.exists(BACKUP):
+        print('backup exists: %s' % BACKUP)
+        return
+    d = os.path.join(BACKUP, WEAPON)
+    os.makedirs(os.path.dirname(d), exist_ok=True)
+    shutil.copyfile(os.path.join(TAGS, WEAPON), d)
+    print('backup: %s' % BACKUP)
+
+
+def import_sounds():
+    shutil.rmtree(os.path.join(TAGS, SND_DIR), ignore_errors=True)
+    shutil.rmtree(os.path.join(HCEEK, 'data', SND_DIR), ignore_errors=True)
+    gain = 10 ** (-HEADROOM_DB / 20)
+    for name, (src, ar) in SOUNDS.items():
+        d = os.path.join(HCEEK, 'data', SND_DIR, name)
+        os.makedirs(d)
+        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
+            tmp = os.path.join(d, '_44k.wav')
+            mono_44k(w, tmp)
+            boosted(tmp, os.path.join(d, os.path.basename(w)), HEADROOM_DB)
+            os.remove(tmp)
+        out = tool('sounds', SND_DIR + B + name, 'xbox')
+        path = os.path.join(TAGS, SND_DIR, name + '.sound')
+        if not os.path.exists(path):
+            print(out[-1500:])
+            raise SystemExit('import failed: %s' % name)
+        t = snd__def.build(filepath=path)
+        arT = snd__def.build(filepath=os.path.join(TAGS, ar + '.sound')).data.tagdata
+        dd = t.data.tagdata
+        for f in COPY:
+            setattr(dd, f, getattr(arT, f))
+        perms = [p for pr in dd.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE]
+        for p in perms:
+            p.gain = gain
+        t.serialize(temp=False, backup=False)
+        t = snd__def.build(filepath=path).data.tagdata
+        print('   %-12s %d permutation(s), %s %s %s, class %s, gain %s' % (
+            name, len(perms), t.sample_rate.enum_name, t.encoding.enum_name,
+            t.compression.enum_name, t.sound_class.enum_name,
+            sorted({round(p.gain, 4) for pr in t.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE})))
+
+
+def own_effects():
+    for name, (src, pairs) in EFFECTS.items():
+        dst = os.path.join(TAGS, OWN_FX, name + '.effect')
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copyfile(os.path.join(TAGS, src + '.effect'), dst)
+        t = effe_def.build(filepath=dst)
+        hits = 0
+        for ev in t.data.tagdata.events.STEPTREE:
+            for p in ev.parts.STEPTREE:
+                for old, new in pairs:
+                    if p.type.filepath.lower() == old.lower():
+                        p.type.filepath = new
+                        hits += 1
+        if hits != len(pairs):
+            raise SystemExit('%s: repointed %d of %d sounds' % (name, hits, len(pairs)))
+        t.serialize(temp=False, backup=False)
+        print('   effect %-12s own copy, %d sound(s) -> own' % (name, hits))
+
+
+def repoint_weapon():
+    path = os.path.join(TAGS, WEAPON)
+    t = weap_def.build(filepath=path)
+    n = 0
+    for trig in t.data.tagdata.weap_attrs.triggers.STEPTREE:
+        for fe in trig.firing_effects.STEPTREE:
+            for field, name in (('firing_effect', 'fire bullet'), ('empty_effect', 'empty')):
+                ref = getattr(fe, field)
+                if ref.filepath.lower() in ((AR_FX + B + name).lower(), (OWN_FX + B + name).lower()):
+                    ref.filepath = OWN_FX + B + name
+                    n += 1
+    t.serialize(temp=False, backup=False)
+    print('   weapon: %d effect reference(s) -> own' % n)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument('--write', action='store_true')
+    a = ap.parse_args()
+    if not a.write:
+        print('(dry run -- pass --write)')
+        return
+    backup()
+    import_sounds()
+    own_effects()
+    repoint_weapon()
+    print('done -- rebuild (h1_rebuild_all.py --maps a10 for a test)')
+
+
+if __name__ == '__main__':
+    main()
