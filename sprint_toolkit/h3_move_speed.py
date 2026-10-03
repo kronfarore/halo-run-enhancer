@@ -50,10 +50,12 @@ FPS = 30.0
 
 
 class Pages:
-    """Resource pages of one open Halo 3 map: read, edit, write back."""
+    """Resource pages of one open Halo 3 / ODST / Reach map: read, edit, write back."""
 
-    def __init__(self, m):
+    def __init__(self, m, reach=None):
         self.m = m
+        # Halo Reach: same zone and pages, but a 0x64-byte member record (below)
+        self.reach = (type(m).__name__ == 'ReachMap') if reach is None else reach
         self.zb = Z._zone_tag(m)['base']
         self.tabs = R.resource_tables(m)
         self.cbase = m.data2off(m.u32(self.zb + 0x148 + 0xC))
@@ -100,6 +102,24 @@ class Pages:
         fb = HP._block_base(m, e + 0x28)
         fix = {m.u32(fb + k * 8): m.u32(fb + k * 8 + 4) for k in range(max(0, m.i32(e + 0x28)))}
         out = []
+        if self.reach:
+            # Reach member, 0x64 bytes: frame count +0x8, movement type +0xB, 17 u32 sizes
+            # from +0xC in the order [default, compressed, static flags, animated flags,
+            # movement, pill, ...], blob size +0x50, page pointer fixup at +0x5C.
+            for k in range(csz // 0x64):
+                mo = self.cbase + coff + k * 0x64
+                ptr = fix.get(k * 0x64 + 0x5C)
+                if ptr is None:
+                    break
+                fc = struct.unpack_from('<h', m.data, mo + 8)[0]
+                it = m.data[mo + 0xB]
+                sizes = struct.unpack_from('<17I', m.data, mo + 0xC)
+                dflt, cmp, sf, af, mv = sizes[:5]
+                ok = (ptr >> 28 == 4 and sum(sizes) == m.i32(mo + 0x50)
+                      and 0 < it < 4 and mv == PER[it] * fc)
+                out.append(dict(fc=fc, it=it, seg=seg, ok=ok,
+                                move=seg_off + (ptr & 0x0FFFFFFF) + dflt + cmp + sf + af))
+            return out
         for k in range(csz // 0x30):
             mo = self.cbase + coff + k * 0x30
             ptr = fix.get(k * 0x30 + 0x28)
@@ -142,18 +162,34 @@ class Pages:
 def move_anims(m, pages, base):
     """[(name, type, frames, page index, movement offset in page)] -- every animation with
     root motion whose name holds `move_` ('aim_move' overlays carry none). Members whose
-    sizes do not add up are left out."""
-    groups = m.follow_all(base, [0xF8], [0xC], 'all')
+    sizes do not add up are left out.
+
+    Reach keeps frame count, frame info type and resource group/member in a nested Shared
+    Animation Data block (+0x30, 0xD4) of a 0x3C element at +0x94, its Tag Resource Groups
+    at +0x1AC. An animation without that block BORROWS another graph's (Shared Graph
+    Reference +0x1C) and is reached through the lender's own pattern."""
+    if pages.reach:
+        groups = m.follow_all(base, [0x1AC], [0xC], 'all')
+    else:
+        groups = m.follow_all(base, [0xF8], [0xC], 'all')
     res_of = [m.u32(g + 4) & 0xFFFF for g in groups]
     memo = {}
     out = []
-    for el in m.follow_all(base, [0x50], [0x88], 'all'):
-        if not m.data[el + 0x13]:
+    if pages.reach:
+        els = []
+        for el in m.follow_all(base, [0x94], [0x3C], 'all'):
+            sh = m.follow_all(el, [0x30], [0xD4], 'all')
+            if sh:
+                els.append((el, sh[0] + 5, sh[0] + 0x20))
+    else:
+        els = [(el, el + 0x13, el + 0x28) for el in m.follow_all(base, [0x50], [0x88], 'all')]
+    for el, fit_at, group_at in els:
+        if not m.data[fit_at]:
             continue
         nm = m.resolve_stringid(m.u32(el)) or ''
         if 'move_' not in nm or 'aim_move' in nm:
             continue
-        g, k = struct.unpack_from('<hh', m.data, el + 0x28)
+        g, k = struct.unpack_from('<hh', m.data, group_at)
         if not (0 <= g < len(res_of)):
             continue
         res = res_of[g]
@@ -207,7 +243,7 @@ def main():
                         struct.pack_into('<2f', pg, off + i * per, dx * a.mult, dy * a.mult)
                     done.add((pi, off))
                     pages.dirty.add(pi)
-                if nm.startswith('combat:') and ':move_front' in nm and ':2:' not in nm:
+                if nm.startswith(('combat:', 'any:')) and ':move_front' in nm and ':2:' not in nm:
                     print('   %-40s f=%3d type=%d  %5.2f wu/s' % (nm, fc, it, speed(pg, it, fc, off)))
     for name, n in external.items():
         print('NOT WRITTEN: %s -- %d animation(s) on pages outside this map (vanilla map?)' % (name, n))
@@ -218,14 +254,16 @@ def main():
     if a.shield_mult:
         import halo_map as hm
         import assembly_plugins as apl
-        pl = hm.Plugin(os.path.join(apl.plugins_dir(), 'Halo3MCC', 'hlmt.xml'))
-        for path in ('objects\\characters\\masterchief\\masterchief',):
-            for _p, base in m.find_tags('hlmt', path):
-                old = m.read_tag_field(base, 'Maximum Shield Vitality', pl, 'New Damage Info')
-                m.write_tag_field(base, 'Maximum Shield Vitality', old * a.shield_mult, pl,
-                                  'New Damage Info')
-                print('shield %s: %s -> %s' % (path, old, m.read_tag_field(
-                    base, 'Maximum Shield Vitality', pl, 'New Damage Info')))
+        reach = a.game == 'Halo Reach'
+        pl = hm.Plugin(os.path.join(apl.plugins_dir(), 'ReachMCC' if reach else 'Halo3MCC', 'hlmt.xml'))
+        blk = 'Old Damage Info' if reach else 'New Damage Info'
+        path = ('objects\\characters\\spartans\\spartans' if reach
+                else 'objects\\characters\\masterchief\\masterchief')
+        for _p, base in m.find_tags('hlmt', path):
+            old = m.read_tag_field(base, 'Maximum Shield Vitality', pl, blk)
+            m.write_tag_field(base, 'Maximum Shield Vitality', old * a.shield_mult, pl, blk)
+            print('shield %s: %s -> %s' % (path, old, m.read_tag_field(
+                base, 'Maximum Shield Vitality', pl, blk)))
     if a.paint:
         import enemy_colors as ec
         ov = {}
