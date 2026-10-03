@@ -375,18 +375,86 @@ def h2_move_anims(m, jmad_base):
 _MOVE_GAMES = {'Halo 1': ('antr', h1_move_anims), 'Halo 2': ('jmad', h2_move_anims)}
 
 
+_H3_GAMES = ('Halo 3', 'Halo 3: ODST')
+
+
 def _is_run(game, name):
-    """The plain run: Halo 1 `stand ... move-front`, Halo 2 `combat:<weapon>:move_front`
-    (and its `:varN` permutations), never a transition."""
+    """The plain run: Halo 1 `stand ... move-front`; from Halo 2 on `combat:<weapon>:
+    move_front` and its `:varN` permutations (the Halo 3 Hunter's is `any:any:
+    move_front`), never a transition."""
     if game == 'Halo 1':
         return name.startswith('stand ') and 'move-front' in name
-    return name.startswith('combat:') and ':move_front' in name and ':2:' not in name
+    return (name.startswith(('combat:', 'any:')) and ':move_front' in name
+            and ':2:' not in name)
+
+
+def _h3_pages():
+    """Halo 3 / ODST keep the frames in compressed resource pages; that reader and writer
+    live in sprint_toolkit/h3_move_speed.py (zone control data, raw-page fixups, deflate,
+    page checksums)."""
+    import os
+    import sys
+    tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+    if tk not in sys.path:
+        sys.path.insert(0, tk)
+    import h3_move_speed
+    return h3_move_speed
+
+
+def _h3_move_speeds(m, tag_pattern, game):
+    ms = _h3_pages()
+    pages = ms.Pages(m)
+    out = []
+    for name, base in m.find_tags('jmad', tag_pattern):
+        runs = []
+        for nm, it, fc, pi, off in ms.move_anims(m, pages, base):
+            if _is_run(game, nm) and pages.local(pi):
+                runs.append(ms.speed(pages.get(pi), it, fc, off))
+        if runs:
+            out.append((name.rsplit(chr(92), 1)[-1], max(runs)))
+    return out
+
+
+def _h3_scale_move_speed(m, tag_pattern, mult):
+    ms = _h3_pages()
+    tags = m.find_tags('jmad', tag_pattern)
+    if not tags:
+        return {'ok': False, 'reason': 'not present in this map'}
+    pages = ms.Pages(m)
+    done, outside = set(), 0
+    graphs = 0
+    for _, base in tags:
+        hit = False
+        for _nm, it, fc, pi, off in ms.move_anims(m, pages, base):
+            if not pages.local(pi):
+                outside += 1          # a vanilla map keeps them in campaign/shared.map
+                continue
+            if (pi, off) in done:
+                continue
+            per = H1_INFO_SIZES[it]
+            pg = pages.get(pi)
+            for i in range(fc):
+                dx, dy = struct.unpack_from('<2f', pg, off + i * per)
+                struct.pack_into('<2f', pg, off + i * per, dx * mult, dy * mult)
+            done.add((pi, off))
+            pages.dirty.add(pi)
+            hit = True
+        graphs += hit
+    pages.write_back()
+    if not done:
+        reason = ('animation pages live outside this map (vanilla map: campaign/shared.map)'
+                  if outside else 'no move animations with root motion')
+        return {'ok': True, 'skip': True, 'reason': reason, 'graphs': 0, 'animations': 0}
+    return {'ok': True, 'graphs': graphs, 'animations': len(done), 'pages': len(pages.dirty),
+            'outside': outside}
 
 
 def move_speeds(m, tag_pattern, game='Halo 1'):
     """Reference read for the patcher: [(who, run wu/s)] per graph -- the fastest plain
     run. [] if none, or for a game whose root motion is not reachable."""
     g = str(game).strip()
+    if g in _H3_GAMES:
+        return _h3_move_speeds(m, tag_pattern, g)
     if g not in _MOVE_GAMES:
         return []
     cls, reader = _MOVE_GAMES[g]
@@ -400,14 +468,17 @@ def move_speeds(m, tag_pattern, game='Halo 1'):
 
 def scale_move_speed(m, tag_pattern, mult, game='Halo 1'):
     """Multiply the dx,dy root motion of every move animation on every graph matching
-    `tag_pattern` (antr in Halo 1, jmad in Halo 2; dz and dyaw untouched, frame counts
-    untouched). A buffer two animations share is scaled once. Halo 3 onward keep root
-    motion inside compressed codec data (see the halo-enemy-movement-speed memory)."""
+    `tag_pattern` (antr in Halo 1, jmad from Halo 2; dz and dyaw untouched, frame counts
+    untouched). A buffer two animations share is scaled once. Halo 3 / ODST hold the
+    frames in compressed resource pages: edited pages are recompressed in place with
+    fresh checksums (confirmed in game on 010, 2026-10-03). Reach onward: not reachable."""
     g = str(game).strip()
-    if g not in _MOVE_GAMES:
-        return {'ok': False, 'reason': f'movement speed is Halo 1 / Halo 2 only, not {game}'}
     if mult is None or mult <= 0:
         return {'ok': False, 'reason': 'invalid movement multiplier'}
+    if g in _H3_GAMES:
+        return _h3_scale_move_speed(m, tag_pattern, mult)
+    if g not in _MOVE_GAMES:
+        return {'ok': False, 'reason': f'movement speed is Halo 1 / 2 / 3 / ODST only, not {game}'}
     cls, reader = _MOVE_GAMES[g]
     tags = m.find_tags(cls, tag_pattern)
     if not tags:

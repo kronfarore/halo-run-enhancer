@@ -5638,6 +5638,10 @@ class MagnitudeEditorDialog(QDialog):
                 import halo3_reload
                 rows = halo3_reload.move_speeds(m, path, self.game)
                 if not rows:
+                    if str(self.game).strip() in ('Halo 3', 'Halo 3: ODST'):
+                        # only pages inside the level map are read (and written)
+                        return ("— none in this map's own pages (a vanilla map keeps "
+                                "them in campaign/shared.map; not patched)")
                     return "— no move animation on this map"
                 return "\n".join("run %.2f wu/s  (%s)" % (v, who) for who, v in rows)
             except Exception:

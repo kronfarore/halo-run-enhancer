@@ -93,6 +93,10 @@ class Pages:
         e = self.rbase + res * 0x40
         coff, csz = m.i32(e + 0x14), m.i32(e + 0x18)
         seg = struct.unpack_from('<h', m.data, e + 0x22)[0]
+        # The segment is a Default Location: required page +0x0, offset in that page +0x4.
+        # An Editing Kit rebuild starts every resource on its own page (offset 0); a
+        # vanilla map packs several resources into one page.
+        seg_off = struct.unpack_from('<i', m.data, self.tabs['seg'][0] + seg * R.PLAY_SEG_ELEM + 4)[0]
         fb = HP._block_base(m, e + 0x28)
         fix = {m.u32(fb + k * 8): m.u32(fb + k * 8 + 4) for k in range(max(0, m.i32(e + 0x28)))}
         out = []
@@ -107,7 +111,7 @@ class Pages:
             ok = (ptr >> 28 == 4 and sf + af + mv + pill + dflt + unc + cmp == m.i32(mo + 0x1C)
                   and 0 < it < 4 and mv == PER[it] * fc)
             out.append(dict(fc=fc, it=it, seg=seg, ok=ok,
-                            move=(ptr & 0x0FFFFFFF) + dflt + cmp + sf + af))
+                            move=seg_off + (ptr & 0x0FFFFFFF) + dflt + cmp + sf + af))
         return out
 
     def write_back(self):
