@@ -2245,6 +2245,16 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   Reach AR (-16 vs -17 dBFS RMS) -- the gap is low end (11.6% vs the AR's 13.9%).
   Candidates for listening: sprint_toolkit\sound_compare\oomph (A current, B + punch,
   C + punch + 4 dB below 150 Hz, level-matched; the AR shot for reference).
+  User: the sound itself is fine (A stays).
+* **ODST felt "noticeably quieter" (user) -- it is the MIX, not the audio.** The SAW shot
+  measures the same in every game (-12 dBFS over the first 0.25 s; tag gain -3 = -15
+  effective). Effective level of each game's own guns (shot RMS + tag gain): Halo 3 AR
+  -22.2, Carbine -24.7 -> the H3 SAW stands ~7 dB above; ODST AR -14.6, Carbine -13.0 ->
+  the ODST SAW sat level with them. Fix with the SAME sounds, ODST only, ~+6 dB:
+  * the tag's GAIN BASE IS CAPPED AT 0 dB (`tool process-sounds <dir> <spec> gain= 4`
+    stays 0; gain+ stops at 0): -3 -> 0 = +3 dB (saw_port_sounds.py `gain`);
+  * the other +3 dB in the AUDIO: a soft limiter searched to raise the shot's RMS by
+    exactly 3 dB, peaks capped (-12.0 -> -9.0 dBFS, peak -1.2) (`boost`, fire + tails).
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 

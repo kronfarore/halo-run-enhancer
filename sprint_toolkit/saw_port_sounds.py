@@ -75,10 +75,19 @@ GAMES = {
                sounds=dict(FIRE, **DRY),
                effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR),
                         'empty': (BR_FX + B + 'empty', DRY_PAIR)}),
+    # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
+    # in every game (-12 dBFS over the first 0.25 s, tag gain -3 = -15 effective), but the
+    # games' own mixes differ: Halo 3's AR is -22 effective (the SAW stands 7 dB above it),
+    # ODST's AR -14.6 and Carbine -13.0 (the SAW sat level with them). About +6 dB puts it
+    # where the Halo 3 SAW stands in its mix (~5.5 dB over the AR). The tag's GAIN BASE IS
+    # CAPPED AT 0 dB (`tool process-sounds <dir> <spec> gain= 4` stays 0, gain+ stops at
+    # 0): -3 -> 0 gives +3; the other +3 is the AUDIO, soft-limited (boosted()).
     'odst': dict(ek='H3ODSTEK', folder='halo3odst', route='stock',
                  sounds=dict(FIRE, **TAILS, **DRY),
                  effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
-                          'empty': (BR_FX + B + 'empty', DRY_PAIR)}),
+                          'empty': (BR_FX + B + 'empty', DRY_PAIR)},
+                 gain={'saw_fire': 0, 'saw_tail_ext': 0, 'saw_tail_int': 0},
+                 boost={'saw_fire': 3.0, 'saw_tail_ext': 3.0, 'saw_tail_int': 3.0}),
 }
 G = EK = TAGS = SOUNDS = None
 
@@ -107,7 +116,11 @@ def import_sounds():
         d = os.path.join(EK, 'data', SND_DIR, name)
         os.makedirs(d)
         for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
-            shutil.copyfile(w, os.path.join(d, os.path.basename(w)))
+            dst = os.path.join(d, os.path.basename(w))
+            if G.get('boost', {}).get(name):
+                boosted(w, dst, G['boost'][name])
+            else:
+                shutil.copyfile(w, dst)
         out = tool('sounds-single-layer', SND_DIR + B + name, cls, '-bank:' + SUFFIX)
         perms = out.count('adding permutation')
         ok = os.path.exists(os.path.join(TAGS, SND_DIR, name + '.sound'))
@@ -196,6 +209,48 @@ def own_effects():
         raise SystemExit('the weapon no longer spans its file')
 
 
+def boosted(src, dst, db):
+    """The same sound, `db` louder: scaled, then a tanh soft limiter (the shots already peak
+    near full scale, so plain scaling would clip). Same audio, more loudness."""
+    import wave
+    import numpy as np
+    with wave.open(src, 'rb') as r:
+        ch, sw, rate, n = r.getnchannels(), r.getsampwidth(), r.getframerate(), r.getnframes()
+        a = np.frombuffer(r.readframes(n), dtype=np.int16).astype(np.float64) / 32768.0
+    def soft(x):                                # linear when quiet, peaks capped at 0.95
+        return 0.95 * np.tanh(x / 0.95)
+
+    def rms(x):
+        return np.sqrt((x[:min(len(x), 12000 * ch)] ** 2).mean())   # the shot, ~0.25 s
+    want = rms(a) * 10 ** (db / 20)
+    lo, hi = 1.0, 10 ** ((db + 12) / 20)       # drive that raises the shot's RMS by `db`
+    for _ in range(40):
+        k = (lo + hi) / 2
+        lo, hi = (k, hi) if rms(soft(a * k)) < want else (lo, k)
+    a = soft(a * (lo + hi) / 2)
+    with wave.open(dst, 'wb') as o:
+        o.setnchannels(ch)
+        o.setsampwidth(sw)
+        o.setframerate(rate)
+        o.writeframes((a * 32767).astype(np.int16).tobytes())
+
+
+def set_gain():
+    """Each sound's gain base (dB) from G['gain'], through the kit's own verb; read back."""
+    for name, db in G.get('gain', {}).items():
+        tool('process-sounds', SND_DIR, name, 'gain=', str(db))
+        x = os.path.join(EK, 'temp', '_saw_snd.xml')
+        if os.path.exists(x):
+            os.remove(x)
+        tool('export-tag-to-xml', os.path.join(TAGS, SND_DIR, name + '.sound'), x)
+        txt = open(x, encoding='utf-8', errors='replace').read()
+        got = float(re.search(r'name="gain base" value="([^"]*)"', txt).group(1))
+        suf = re.search(r'name="fmod bank suffix" value="([^"]*)"', txt)
+        print('   %-13s gain base %+g dB%s' % (name, got, '' if suf is None else ', bank suffix %r' % suf.group(1)))
+        if abs(got - db) > 0.01:
+            raise SystemExit('%s: gain base is %g, wanted %g' % (name, got, db))
+
+
 def install():
     dst = os.path.join(MCC, G['folder'], 'fmod', 'pc')
     for f in glob.glob(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb*' % SUFFIX)):
@@ -223,6 +278,7 @@ def main():
         own_effects()
         if G['route'] == 'pc' and not a.both:
             pc_only()
+        set_gain()
     if a.install or (a.write and G['route'] == 'stock'):
         install()
     if not (a.write or a.install):
