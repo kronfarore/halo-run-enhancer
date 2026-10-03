@@ -17,7 +17,9 @@ Several animations can share one movement block, so a block is scaled once (by o
 Scaling multiplies dx and dy only. Halo 1's equivalent was confirmed in game on b30.
 
 Test-only options (the 03a test): --swap-char FROM=TO remaps squads and starting
-locations from one Character Palette index to another and gives them --swap-weapon;
+locations from one Character Palette index to another and gives them --swap-weapon
+(--swap-fly spawns them flying); --flight-bipd/--flight-mult scale a flyer's bipd
+Flying Maximum + Sidestep Velocity;
 --shield-mult scales the player's Maximum Shield Vitality; --paint colours an
 enemy_colors row as a load-proof control.
 
@@ -75,8 +77,9 @@ def scale(m, fit, fc, off, mult):
         struct.pack_into('<2f', m.data, off + i * per, dx * mult, dy * mult)
 
 
-def swap_char(m, src, dst, weapon):
-    """Squads and starting locations on palette index `src` -> `dst`, weapon -> `weapon`."""
+def swap_char(m, src, dst, weapon, fly=False):
+    """Squads and starting locations on palette index `src` -> `dst`, weapon -> `weapon`;
+    `fly` also starts every swapped location in Initial Movement Mode Flying (+0x3E = 2)."""
     s = m.scenario_tag()['base']
     n = 0
     for sq in m.follow_all(s, [0x160], [0x74], 'all'):
@@ -93,6 +96,8 @@ def swap_char(m, src, dst, weapon):
             elif ch == -1 and sq_hit and w1 != -1:
                 struct.pack_into('<h', m.data, loc + 0x22, weapon)   # inherits the swap
                 n += 1
+            if fly and (ch == src or (ch == -1 and sq_hit)):
+                struct.pack_into('<H', m.data, loc + 0x3E, 2)
     return n
 
 
@@ -105,6 +110,11 @@ def main():
     ap.add_argument('--show', action='store_true')
     ap.add_argument('--swap-char', action='append', default=[], help='palette FROM=TO')
     ap.add_argument('--swap-weapon', type=int, default=-1)
+    ap.add_argument('--swap-fly', action='store_true',
+                    help='swapped starting locations spawn in Flying movement mode')
+    ap.add_argument('--flight-bipd', help='bipd path whose Flying Maximum/Sidestep '
+                    'Velocity --flight-mult scales')
+    ap.add_argument('--flight-mult', type=float)
     ap.add_argument('--shield-mult', type=float)
     ap.add_argument('--paint', action='append', default=[], help='"<enemy_colors row>=RRGGBB"')
     a = ap.parse_args()
@@ -131,7 +141,16 @@ def main():
     for spec in a.swap_char:
         src, dst = (int(x) for x in spec.split('='))
         print('swap palette %d -> %d (weapon %d): %d squad/location writes'
-              % (src, dst, a.swap_weapon, swap_char(m, src, dst, a.swap_weapon)))
+              % (src, dst, a.swap_weapon, swap_char(m, src, dst, a.swap_weapon, a.swap_fly)))
+    if a.flight_bipd and a.flight_mult:
+        import halo_map as hm
+        import assembly_plugins as apl
+        pb = hm.Plugin(os.path.join(apl.plugins_dir(), 'Halo2MCC', 'bipd.xml'))
+        for _p, base in m.find_tags('bipd', a.flight_bipd):
+            for f in ('Maximum Velocity', 'Maximum Sidestep Velocity'):
+                old = m.read_tag_field(base, f, pb)
+                m.write_tag_field(base, f, old * a.flight_mult, pb)
+                print('flight %s %s: %s -> %s' % (_p, f, old, m.read_tag_field(base, f, pb)))
     if a.shield_mult:
         import halo_map as hm
         import assembly_plugins as apl
