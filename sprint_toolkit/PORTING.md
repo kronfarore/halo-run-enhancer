@@ -2203,13 +2203,16 @@ lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`,
     8 icon + text     DONE   own glyph U+E1F6 in the live icon packages, fr_* pickup lines,
                              HUD icon line (boot 20). OPEN: non-English lines --
                              `strings-localized` imported 0, unchecked in game
-    9 animations      PARTLY own graph = byte copy of the Beam Rifle's + overheating loop
-                             frame (boot 26). OPEN: ready / put-away timing not compared
-                             with Reach's Focus Rifle (no catalog row yet)
+    9 animations      DONE   own graph = byte copy of the Beam Rifle's + overheating loop
+                             frame (boot 26); ready playback 24/22 = Reach's swap timing
     fx                DONE   beam (Sentinel tracer look, n-gon, Reach palette), orange muzzle
-                             flash (own Storm Rifle copy, boot 22). Firing SOUND is still the
-                             Sentinel Beam's
+                             flash (own Storm Rifle copy, boot 22). Firing sound: see sound
     aim               DONE   Beam Rifle aim assist + strict deviation + hidden gun when zoomed
+    sound             DONE   own Wwise bank (Reach in/loop/out as PCM) via tool/port_sounds.py,
+                             firing loop as a weapon attachment, Beam Rifle zoom sounds (boot 31)
+    ** COMPLETE 2026-10-03 (boot 31): every step confirmed in game; backup
+       F:\HaloPortBackups6-10-03_focus-rifle-h4. Open only: non-English pickup
+       lines unchecked in a non-English client. **
 
 **First test: m30_cryptum** (user's choice). Add the Focus Rifle to m30's `dz_enhancer`,
 tick that zone in the zone sets where it is tested (m30 has it in only 4 of 24), place it,
