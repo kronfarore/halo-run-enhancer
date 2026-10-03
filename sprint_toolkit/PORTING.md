@@ -2201,6 +2201,14 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   suffix stay, so either playback path finds the audio. Second boot pending.
   Observation from one game: whether PC Reach plays the map's MS-ADPCM or the FMOD bank
   is not isolated yet.
+* **Second boot (2026-10-03): THE REACH SAW PLAYS ITS OWN SOUNDS** (Halo 4 SAW fire, tails,
+  dry fire). Working state: tags `xma2,ms_adpcm`, bank suffix 'saw', sfx.saw.fsb installed.
+* **Planned tests, one at a time now that sound works (user):**
+  1. PC ONLY -- drop the Xbox (XMA2) encoding, keep MS-ADPCM: the ports only run on PC,
+     and the XMA2 data only adds size. Reimport with the adpcm compressor WITHOUT
+     compression-append and confirm in game.
+  2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
+     bank is a loose file a Steam verify removes; without it, nothing to restore).
 
 **Still to do, per game:** H3 / ODST (same kit route as Reach, expected); H2 (H2EK
 `reimport-sounds`; its SAW already owns a firing effect, saw_fire); H1 (HCEEK `sounds
