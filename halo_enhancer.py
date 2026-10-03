@@ -13056,7 +13056,7 @@ class HaloGUI(QMainWindow):
             QLineEdit { background-color: #1a1a1a; color: #e0e0e0;
                         border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px; }
         """)
-        box.setFixedWidth(340)
+        box.setFixedWidth(400)
         lay = QVBoxLayout(box)
         lay.setContentsMargins(16, 14, 16, 14)
         lay.setSpacing(8)
@@ -13071,15 +13071,27 @@ class HaloGUI(QMainWindow):
         self.nl_score = QLineEdit()
         self.nl_score.setPlaceholderText("e.g. 25840")
         self.nl_score.setValidator(QRegularExpressionValidator(QRegularExpression(r"-?\d{0,9}")))
-        self.nl_time = QLineEdit()
-        self.nl_time.setPlaceholderText("h:mm:ss or mm:ss")
-        self.nl_time.setValidator(QRegularExpressionValidator(
-            QRegularExpression(r"\d{0,3}(:\d{0,2}){0,2}")))
+        # time as three fields; an empty hour counts as 0
+        time_row = QHBoxLayout()
+        time_row.setSpacing(4)
+        self.nl_time_h, self.nl_time_m, self.nl_time_s = QLineEdit(), QLineEdit(), QLineEdit()
+        for w, ph, rx in ((self.nl_time_h, "h", r"\d{0,3}"),
+                          (self.nl_time_m, "mm", r"[0-5]?\d"),
+                          (self.nl_time_s, "ss", r"[0-5]?\d")):
+            w.setPlaceholderText(ph)
+            w.setValidator(QRegularExpressionValidator(QRegularExpression(rx)))
+            w.setFixedWidth(44)
+            w.setAlignment(Qt.AlignCenter)
+        for i, w in enumerate((self.nl_time_h, self.nl_time_m, self.nl_time_s)):
+            if i:
+                time_row.addWidget(QLabel(":"))
+            time_row.addWidget(w)
+        time_row.addStretch(1)
         self.nl_mult = QLineEdit()
         self.nl_mult.setPlaceholderText("e.g. 1.5")
         self.nl_mult.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d{0,3}([.,]\d{0,3})?")))
         form.addRow("Score:", self.nl_score)
-        form.addRow("Time:", self.nl_time)
+        form.addRow("Time:", time_row)
         form.addRow("Time multiplier:", self.nl_mult)
         lay.addLayout(form)
         self.next_level_btn = QPushButton("▶ NEXT LEVEL")
@@ -13108,17 +13120,18 @@ class HaloGUI(QMainWindow):
         idle = (bool(rs) and rs.phase not in ('weapon_selection', 'player2_turn')
                 and not getattr(self, 'pair_cards', None) and not self._mid_picking_round())
         box.setVisible(idle)
+        # centred in the draw zone while it is the only thing there; cards keep their
+        # usual top-left packing
+        self.pairs_layout.setAlignment(Qt.AlignCenter if idle else Qt.AlignTop)
 
-    @staticmethod
-    def _parse_time(text):
-        """'h:mm:ss' / 'mm:ss' / 'ss' -> seconds, or None."""
-        parts = [p for p in (text or '').strip().split(':')]
-        if not parts or not all(p.isdigit() for p in parts) or len(parts) > 3:
-            return None
-        secs = 0
-        for p in parts:
-            secs = secs * 60 + int(p)
-        return secs
+    def _read_time(self):
+        """('h:mm:ss', seconds) from the three time fields, or (None, None) when all
+        three are empty. An empty hour (or minute / second) counts as 0."""
+        vals = [w.text().strip() for w in (self.nl_time_h, self.nl_time_m, self.nl_time_s)]
+        if not any(vals):
+            return None, None
+        h, m, sec = (int(v) if v.isdigit() else 0 for v in vals)
+        return '%d:%02d:%02d' % (h, m, sec), h * 3600 + m * 60 + sec
 
     def _next_level_target(self):
         """(game index, mission index) of the level after the current one, or None
@@ -13145,7 +13158,8 @@ class HaloGUI(QMainWindow):
     def on_next_level(self):
         rs = self.run_state
         game, mid = self._current_game(), rs.mission_id
-        score_t, time_t = self.nl_score.text().strip(), self.nl_time.text().strip()
+        score_t = self.nl_score.text().strip()
+        time_t, time_secs = self._read_time()
         mult_t = self.nl_mult.text().strip().replace(',', '.')
         try:
             mult = float(mult_t) if mult_t else None
@@ -13154,7 +13168,7 @@ class HaloGUI(QMainWindow):
         entry = {
             'game': game, 'mission_id': mid, 'mission_name': rs.mission_name,
             'score': int(score_t) if score_t.lstrip('-').isdigit() else None,
-            'time': time_t or None, 'time_seconds': self._parse_time(time_t),
+            'time': time_t, 'time_seconds': time_secs,
             'time_multiplier': mult,
             # rounds drafted on this level (since the previous Next level) and in all
             'rounds': len(rs.rounds or []) - ((getattr(rs, 'levels', None) or [{}])[-1]
@@ -13186,7 +13200,7 @@ class HaloGUI(QMainWindow):
         if not hasattr(rs, 'levels') or rs.levels is None:
             rs.levels = []
         rs.levels.append(entry)
-        for w in (self.nl_score, self.nl_time, self.nl_mult):
+        for w in (self.nl_score, self.nl_time_h, self.nl_time_m, self.nl_time_s, self.nl_mult):
             w.clear()
         old = rs.mission_name
         nxt = self._next_level_target()
