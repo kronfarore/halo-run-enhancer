@@ -185,6 +185,9 @@ def main():
             f.seek(r['entry_at'])
             f.write(bytes.fromhex(r['entry']))
             f.truncate(r['size'])
+        # the record goes too, or the next --install refuses ("already installed") -- boot
+        # 29's second check ran on the STOCK package because of exactly that
+        os.replace(RESTORE, RESTORE + '.done')
         print('restored the %s entry and truncated to %d bytes' % (BANK, r['size']))
         return
     pck = w.read_pck(w.BANKS)
@@ -202,7 +205,11 @@ def main():
         print('(dry run -- pass --install)')
         return
     if os.path.exists(RESTORE):
-        raise SystemExit('a test is already installed (%s); --restore first' % RESTORE)
+        r = json.load(open(RESTORE))
+        if os.path.getsize(w.BANKS) != r['size']:
+            raise SystemExit('a test is already installed (%s); --restore first' % RESTORE)
+        # a stale record from a restore made before the fix above: the package is stock
+        os.replace(RESTORE, RESTORE + '.done')
     at = lut_entry_offset(w.BANKS, bid)
     size = os.path.getsize(w.BANKS)
     with open(w.BANKS, 'r+b') as f:
