@@ -1,0 +1,10 @@
+{
+ "bank": "port_focus_rifle",
+ "bank_id": 3034130382,
+ "events": [
+  "play_wea_port_focus_rifle_fire_in",
+  "stop_wea_port_focus_rifle_fire"
+ ],
+ "source": "Reach focus_rifle 3p firing set (sfx.fsb 10952-10954) as PCM, in a renamed copy of the Halo 4 sentinel bank",
+ "bytes": 1540856
+}

@@ -58,7 +58,9 @@ quietly shipped without the last three until the user caught it:
 2. `python validate_halo_json.py` -- its GLYPHS section flags a live glyph the json
    lacks (step 1 forgotten) and a glyph the live packages are missing
    (`python port_glyphs.py --check` runs that section alone).
-3. `python port_backup.py --game <g>` -- the port's tags, data, scripts and shared files.
+3. If the port added its own sound bank (Halo 4): commit `tool/port_sounds/<game>/*.bnk`;
+   `python port_sounds.py --check` confirms it is in the live package.
+4. `python port_backup.py --game <g>` -- the port's tags, data, scripts and shared files.
 
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
@@ -2221,6 +2223,8 @@ enhancer patch rebuilds from the old one.
     blender --background --python h4_foundry_port.py -- --export    (H4EK)
     python h4_reach_scope_art.py --write         scope bitmaps (once; boot 21)
     python h4_muzzle_recolor.py --write          own orange muzzle effect (boot 21)
+    python h4_sound_bank.py                      own Wwise bank -> tool/port_sounds/halo4
+    python ..\port_sounds.py --write            bank into the live sfxbank.pck (no rebuild)
     blender --background --python h4_fp_graph.py -- --write   own fp graph = byte copy + loop fix
     python h4_make_port_weapon.py --write        re-copies the donor weapon every time
                                                  (and the HUD: icon + Reach scope)
@@ -2613,6 +2617,27 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   primary_firing, the bank added to sfxbank.pck as a NEW LUT entry (the header grows by
   20 bytes, so every bank start shifts) or in the DLC stub package; a restore path like
   port_glyphs (Steam verify restores sfxbank.pck).
+* **The finished version (2026-10-03, needs a rebuild):**
+  - `h4_sound_bank.py`: the port's OWN bank `port_focus_rifle` (0xb4d927ce) = a full copy
+    of the stock sentinel bank with all 59 owned ids renamed (objects, media, bank id;
+    122 references, exactly the count measured before) -- no collision with the real
+    sentinel bank -- events `play_wea_port_focus_rifle_fire_in` /
+    `stop_wea_port_focus_rifle_fire`, Reach's in/loop/out as PCM. Written to
+    `tool/port_sounds/halo4/port_focus_rifle.bnk` (committed, 1.5 MB).
+  - `tool/port_sounds.py` (sound twin of port_glyphs.py): inserts every port bank into the
+    live sfxbank.pck as a NEW table entry in id order (header +20 bytes, every bank offset
+    shifted), the bank appended; temp file + swap, read back. Proven on a stock copy: all
+    577 original banks byte-identical at their new offsets, the port bank reads back,
+    second run a no-op. `--write`, `--check`; SOUNDS section in validate_halo_json.py.
+  - Kit (`h4_make_port_weapon.make_sound_tags`): own .soundbank (bank list name
+    port_focus_rifle), .sound in/out (the two events), .sound_looping (tracks[0]
+    in/out) under sound\weapons\focus_rifle\port; the weapon gets the loop as a NEW
+    attachment scaled by primary_firing (the overheat loop keeps its own) and the bank as
+    its Player Sound Bank. h4_weapon_refs add-attachment takes `path|scale|marker`.
+  - The sentinel bank is STOCK again (h4_sound_test.py --restore, sha1 c63d37be checked).
+  - Closing step for a sound port: commit the .bnk under tool/port_sounds/<game>/; the
+    Enhancer's patch-time `port_sounds.ensure('halo4', mcc_root())` reinstalls it after a
+    Steam update/verify (spec: datas += [('port_sounds', 'port_sounds')]).
 * **Scope meters, in-map test pokes:** `--meters-visible`, `--meters-br-bitmap` (the Beam
   Rifle's heat_bar as a control). UI property names are in a string namespace the map
   reader does not resolve -- the poke matches by structure.

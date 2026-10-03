@@ -78,6 +78,18 @@ PP_HUD = 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol'
 OWN_HUD = 'ui\\hud\\weapons\\covenant\\focus_rifle\\focus_rifle'
 ZOOM_IN = r'sound\storm\weapons\beam_rifle\beam_rifle_zoom_in.sound'
 ZOOM_OUT = r'sound\storm\weapons\beam_rifle\beam_rifle_zoom_out.sound'
+# the port's OWN firing sound (make_sound_tags): bank + events from h4_sound_bank.py
+SND_BANK_NAME = 'port_focus_rifle'
+SND_EVENT_IN = 'play_wea_port_focus_rifle_fire_in'
+SND_EVENT_OUT = 'stop_wea_port_focus_rifle_fire'
+SND_BANK = r'sound\soundbanks\weapons_covenant\port_focus_rifle.soundbank'
+SND_IN = r'sound\weapons\focus_rifle\port\focus_rifle_fire_in.sound'
+SND_OUT = r'sound\weapons\focus_rifle\port\focus_rifle_fire_out.sound'
+SND_LOOP = r'sound\weapons\focus_rifle\port\focus_rifle_fire.sound_looping'
+SENTINEL_SBNK = r'sound\soundbanks\characters\sentinel.soundbank'
+SENTINEL_IN = r'sound\storm\characters\sentinel\npc_sentinel_friendly_beam_fire_in.sound'
+SENTINEL_OUT = r'sound\storm\characters\sentinel\npc_sentinel_friendly_beam_fire_out.sound'
+SENTINEL_LSND = r'sound\storm\characters\sentinel\loops\npc_sentinel_friendly_beam_fire.sound_looping'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
@@ -99,6 +111,12 @@ SET_REFS = [
     # zoom sounds -- Halo 4's Beam Rifle has its own (weapons_covenant/beam_rifle bank).
     ('zoom-in sound', ZOOM_IN),
     ('zoom-out sound', ZOOM_OUT),
+    # FIRING SOUND (boot 30): the Sentinel firing effect's loop never sounded for the
+    # player (it lives in the per-shot effect); as a weapon ATTACHMENT scaled by
+    # primary_firing it plays -- the overheat loop is attached the same way. The weapon
+    # also names the bank as its Player Sound Bank (the test played with that set).
+    ('add-attachment', SND_LOOP + '|primary_firing'),
+    ('player sound bank', SND_BANK),
     # NOT A REFERENCE: the Sentinel Beam is flagged "extension of parent" -- its gun was
     # part of the Sentinel's body. Held by the player, the weapon then draws as part of
     # the player, whose body first person never draws: invisible, shadow still cast, and
@@ -250,6 +268,9 @@ def main():
     for field, path in SET_REFS:
         if field.startswith(('clear-flag:', 'set-flag:', 'set:', 'set-point:')):
             continue
+        path = path.split('|')[0]                 # add-attachment: 'path|scale|marker'
+        if path in (SND_BANK, SND_LOOP):
+            continue                              # made by make_sound_tags() on --write
         if path.startswith(OWN_HUD) and not a.write:
             continue                          # copied from the Plasma Pistol's on --write
         if not os.path.exists(os.path.join(TAGS, path)) and not path.startswith(OWN_HUD):
@@ -305,6 +326,9 @@ def main():
             raise SystemExit('%s no longer spans its file' % f)
     print('wrote', out)
 
+    # the port's OWN sound tags, before the weapon names them
+    make_sound_tags()
+
     # the NULL references, by field name, in an H4EK Blender process
     by_name(PORT + '.weapon', SET_REFS)
     by_name(OWN_PROJ + '.projectile', PROJ_REFS)
@@ -318,6 +342,24 @@ def main():
         print(r.stdout[-2000:])
         raise SystemExit('h4_tag_numbers.py failed: the weapon has the Sentinel Beam numbers')
     print('numbers: h4_tag_numbers.py --write (zoom, heat, rate of fire)')
+
+
+def make_sound_tags():
+    """The port's own sound tags in H4EK (2026-10-03, after test 1 proved the chain):
+    copies of the Sentinel friendly-beam set, pointed at the port's OWN Wwise bank
+    (port_focus_rifle, built by h4_sound_bank.py, installed by tool\\port_sounds.py) and
+    its two renamed events. The weapon then carries the looping sound as an attachment
+    scaled by primary_firing (SET_REFS) -- the way its overheat loop already plays."""
+    for src, dst in ((SENTINEL_SBNK, SND_BANK), (SENTINEL_IN, SND_IN),
+                     (SENTINEL_OUT, SND_OUT), (SENTINEL_LSND, SND_LOOP)):
+        d = os.path.join(TAGS, dst)
+        os.makedirs(os.path.dirname(d), exist_ok=True)
+        shutil.copyfile(os.path.join(TAGS, src), d)
+    by_name(SND_BANK, [('set:sound bank list[0]/sound bank name', SND_BANK_NAME)])
+    by_name(SND_IN, [('set:event name', SND_EVENT_IN), ('sound bank', SND_BANK)])
+    by_name(SND_OUT, [('set:event name', SND_EVENT_OUT), ('sound bank', SND_BANK)])
+    by_name(SND_LOOP, [('tracks[0]/in', SND_IN), ('tracks[0]/out', SND_OUT)])
+    print('own sound tags: %s (+ in/out sounds, soundbank %s)' % (SND_LOOP, SND_BANK_NAME))
 
 
 def by_name(tag, pairs):

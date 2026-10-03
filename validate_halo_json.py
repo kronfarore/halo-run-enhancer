@@ -503,6 +503,14 @@ def check_glyphs():
         return
     for pr in port_glyphs.problems(MCC):
         report('GLYPHS: ' + pr)
+    # the ports' own Halo 4 sound banks in the live sfxbank.pck (port_sounds.py)
+    try:
+        import port_sounds
+    except Exception as e:
+        report(f'SOUNDS: port_sounds could not be loaded ({e})')
+        return
+    for pr in port_sounds.problems(MCC):
+        report('SOUNDS: ' + pr)
 
 
 if __name__ == '__main__':
@@ -510,7 +518,7 @@ if __name__ == '__main__':
     n_struct = len(problems)
     print(f'structure checks: {n_struct} problem(s)')
     check_glyphs()
-    print(f'glyph checks: {len(problems) - n_struct} problem(s)')
+    print(f'port glyph/sound checks: {len(problems) - n_struct} problem(s)')
     skipped = not os.path.isdir(PLUGINS)
     if not skipped:
         check_resolution()

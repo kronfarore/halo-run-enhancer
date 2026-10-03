@@ -176,6 +176,11 @@ H4_TREES = [
                   'fp_focus_rifle'), 'tags/objects/characters/storm_fp/fp_focus_rifle', True),
     (os.path.join(H4EK, 'data', 'objects', 'characters', 'storm_fp', 'weapons', 'rifle',
                   'fp_focus_rifle'), 'data/objects/characters/storm_fp/fp_focus_rifle', True),
+    # the port's OWN sound tags (h4_make_port_weapon.make_sound_tags) and soundbank tag
+    (os.path.join(H4EK, 'tags', 'sound', 'weapons', 'focus_rifle', 'port'),
+     'tags/sound/weapons/focus_rifle/port', True),
+    # the built Wwise bank port_sounds.py installs (also committed in the repo)
+    (os.path.join(TOOL, 'port_sounds', 'halo4'), 'port_sounds/halo4', True),
     # the port's own HUD screen, Reach scope template and scope bitmaps
     (os.path.join(H4EK, 'tags', 'ui', 'hud', 'weapons', 'covenant', 'focus_rifle'),
      'tags/ui/hud/weapons/covenant/focus_rifle', True),
@@ -206,6 +211,9 @@ H4_SHARED = [
     for f in ('font_package_icon.bin', 'font_package_icon_x2.bin',
               'font_package_icon_x3.bin', 'font_package_icon_x4.bin')
 ]
+H4_SHARED.append((os.path.join(H4EK, 'tags', 'sound', 'soundbanks', 'weapons_covenant',
+                               'port_focus_rifle.soundbank'),
+                  'tags/sound/soundbanks/weapons_covenant/port_focus_rifle.soundbank'))
 H4_MAPS = [
     (os.path.join(GAME, 'halo4', 'maps', 'm30_cryptum.map'), 'maps/m30_cryptum.map'),
 ]
@@ -214,7 +222,8 @@ H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_mat
               'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py', 'h4_beam_look.py', 'h4_port_messages.py',
               'h4_mesh_dump.py', 'h4_weapon_glyph.py', 'h4_hud_icon.py', 'h3_font_repack.py', 'h3_font_codec.py',
               'h3_weapon_glyph.py', 'h4_reach_scope_art.py', 'h4_reach_scope.py',
-              'h4_muzzle_recolor.py', 'h4_muzzle_tags.py',
+              'h4_muzzle_recolor.py', 'h4_muzzle_tags.py', 'h4_wwise.py', 'h4_sound_test.py',
+              'h4_sound_bank.py',
               'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
 PROFILES = {
