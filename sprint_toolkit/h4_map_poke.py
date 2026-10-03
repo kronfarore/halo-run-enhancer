@@ -106,6 +106,9 @@ def main():
                     help='point the fp model back at the own render model of the port')
     ap.add_argument('--model-flags', action='store_true',
                     help='render model 0x64 bit 5: do not use compressed vertex positions')
+    ap.add_argument('--accel-scale', action='store_true',
+                    help="object horizontal/vertical/angular acceleration scale (weap "
+                         "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
     a = ap.parse_args()
 
     m = halo_patch.open_map(a.map, 'Halo 4')
@@ -120,10 +123,19 @@ def main():
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
-            a.loop_frame or a.scope):
+            a.loop_frame or a.scope or a.accel_scale):
         return
 
     d = m.data
+    if a.accel_scale:
+        # Boot 26 drift hunt: the reticle drifts while turning and recentres when still --
+        # motion-driven. The Sentinel Beam (part of an enemy's body) carries acceleration
+        # scales of 0 where every player weapon has 1 (Beam Rifle) or 1.25 (Plasma Pistol).
+        for off in (0x30, 0x34, 0x38):
+            was = struct.unpack_from('<f', d, pb + off)[0]
+            new = struct.unpack_from('<f', d, bb + off)[0]
+            struct.pack_into('<f', d, pb + off, new)
+            print('acceleration scale +%#x: %g -> %g' % (off, was, new))
     if a.fix:
         flags = struct.unpack_from('<I', d, pb + FLAGS)[0]
         struct.pack_into('<I', d, pb + FLAGS, flags & ~EXT_OF_PARENT)
