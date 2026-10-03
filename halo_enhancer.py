@@ -4033,6 +4033,10 @@ class RunState:
         # partner — comparing codes is the whole point, and the partner loading
         # the run is exactly who needs to compare. {code, map, difficulty, when}.
         self.last_patch = None
+        # One entry per level finished with "Next level": the summary screen's score,
+        # time and time multiplier as the player typed them, plus the par-time / score
+        # settings in force -- data to check whether the par-time change does anything.
+        self.levels = []
 
     def weapons_for(self, player):
         return self.player1_weapons if player == 'player1' else self.player2_weapons
@@ -4100,6 +4104,7 @@ class RunState:
             "card_directions": dict(getattr(self, 'card_directions', {}) or {}),
             "inverted_steps": list(getattr(self, 'inverted_steps', []) or []),
             "last_patch": self.last_patch,
+            "levels": list(getattr(self, 'levels', []) or []),
             "rounds": self.rounds
         }
 
@@ -4143,6 +4148,7 @@ class RunState:
         state.inverted_steps = list(data.get('inverted_steps') or [])
         lp = data.get('last_patch')
         state.last_patch = lp if isinstance(lp, dict) else None
+        state.levels = [x for x in (data.get('levels') or []) if isinstance(x, dict)]
 
         p1_mod = p1data.get('selected_mod')
         p2_mod = p2data.get('selected_mod')
@@ -13005,13 +13011,176 @@ class HaloGUI(QMainWindow):
         self.update_status("Select a weapon for Player 1")
 
     def _clear_pairs_layout(self):
-        """Remove and dispose every widget in the pairs layout."""
+        """Remove and dispose every widget in the pairs layout -- except the Next level
+        box, which lives there for good and is only shown or hidden."""
+        keep = getattr(self, 'next_level_box', None)
         for i in reversed(range(self.pairs_layout.count())):
             widget = self.pairs_layout.itemAt(i).widget()
-            if widget:
+            if widget and widget is not keep:
                 widget.setParent(None)
                 widget.deleteLater()
         self.pair_cards = []
+
+    # ------------------------------------------------------------------ next level
+    def _build_next_level_box(self):
+        """The "Next level" box in the card draw zone: shown whenever no drawing round
+        is going on (after the opening weapon picks and after every completed round).
+        Takes the level's summary-screen score, time and time multiplier -- all
+        optional -- records them, then moves the enhancer to the next level."""
+        box = QFrame()
+        box.setObjectName('nextLevelBox')
+        box.setStyleSheet("""
+            QFrame#nextLevelBox { background-color: #141c26; border: 1px solid #3a5a80;
+                                  border-radius: 8px; }
+            QLabel { color: #c8d4e0; background: transparent; }
+            QLineEdit { background-color: #1a1a1a; color: #e0e0e0;
+                        border: 1px solid #3a3a3a; border-radius: 3px; padding: 4px; }
+        """)
+        box.setFixedWidth(340)
+        lay = QVBoxLayout(box)
+        lay.setContentsMargins(16, 14, 16, 14)
+        lay.setSpacing(8)
+        title = QLabel("Level finished?")
+        title.setStyleSheet("font-weight: bold; font-size: 14px; color: #e0e0e0;")
+        lay.addWidget(title)
+        hint = QLabel("From the level's summary screen (optional):")
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        form = QFormLayout()
+        form.setLabelAlignment(Qt.AlignRight)
+        self.nl_score = QLineEdit()
+        self.nl_score.setPlaceholderText("e.g. 25840")
+        self.nl_score.setValidator(QRegularExpressionValidator(QRegularExpression(r"-?\d{0,9}")))
+        self.nl_time = QLineEdit()
+        self.nl_time.setPlaceholderText("h:mm:ss or mm:ss")
+        self.nl_time.setValidator(QRegularExpressionValidator(
+            QRegularExpression(r"\d{0,3}(:\d{0,2}){0,2}")))
+        self.nl_mult = QLineEdit()
+        self.nl_mult.setPlaceholderText("e.g. 1.5")
+        self.nl_mult.setValidator(QRegularExpressionValidator(QRegularExpression(r"\d{0,3}([.,]\d{0,3})?")))
+        form.addRow("Score:", self.nl_score)
+        form.addRow("Time:", self.nl_time)
+        form.addRow("Time multiplier:", self.nl_mult)
+        lay.addLayout(form)
+        self.next_level_btn = QPushButton("▶ NEXT LEVEL")
+        self.next_level_btn.setStyleSheet("""
+            QPushButton { background-color: #2a4a7a; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px; }
+            QPushButton:hover { background-color: #3a5a9a; }
+            QPushButton:disabled { background-color: #444; color: #888; }
+        """)
+        self.next_level_btn.setToolTip(
+            "Records the values above for this level (in its newest patch file and in "
+            "the run) and moves the enhancer to the next level -- after the last level "
+            "of a game, to the first level of the next game.")
+        self.next_level_btn.clicked.connect(self.on_next_level)
+        lay.addWidget(self.next_level_btn)
+        box.setVisible(False)
+        self.next_level_box = box
+
+    def _sync_next_level(self):
+        """Show the box only while no drawing round is going on: not during the opening
+        weapon picks, not while cards are on screen, not between the players' turns."""
+        box = getattr(self, 'next_level_box', None)
+        if box is None:
+            return
+        rs = getattr(self, 'run_state', None)
+        idle = (bool(rs) and rs.phase not in ('weapon_selection', 'player2_turn')
+                and not getattr(self, 'pair_cards', None) and not self._mid_picking_round())
+        box.setVisible(idle)
+
+    @staticmethod
+    def _parse_time(text):
+        """'h:mm:ss' / 'mm:ss' / 'ss' -> seconds, or None."""
+        parts = [p for p in (text or '').strip().split(':')]
+        if not parts or not all(p.isdigit() for p in parts) or len(parts) > 3:
+            return None
+        secs = 0
+        for p in parts:
+            secs = secs * 60 + int(p)
+        return secs
+
+    def _next_level_target(self):
+        """(game index, mission index) of the level after the current one, or None
+        after the very last level."""
+        mi, gi = self.mission_combo.currentIndex(), self.game_combo.currentIndex()
+        if mi + 1 < self.mission_combo.count():
+            return gi, mi + 1
+        if gi + 1 < self.game_combo.count():
+            return gi + 1, 0
+        return None
+
+    def _level_patch_file(self, game, mission_id):
+        """The newest patch log of this level, or None."""
+        try:
+            import halo_patch
+            folder = CONFIG.get('map_game_folder', {}).get(game, '')
+            stem = Path(halo_patch.default_map_path(mcc_root(), folder, mission_id)).stem
+        except Exception:
+            stem = mission_id
+        files = sorted((app_data_dir() / "patches").glob('patch_%s_*.json' % stem),
+                       key=lambda p: p.stat().st_mtime)
+        return files[-1] if files else None
+
+    def on_next_level(self):
+        rs = self.run_state
+        game, mid = self._current_game(), rs.mission_id
+        score_t, time_t = self.nl_score.text().strip(), self.nl_time.text().strip()
+        mult_t = self.nl_mult.text().strip().replace(',', '.')
+        try:
+            mult = float(mult_t) if mult_t else None
+        except ValueError:
+            mult = None
+        entry = {
+            'game': game, 'mission_id': mid, 'mission_name': rs.mission_name,
+            'score': int(score_t) if score_t.lstrip('-').isdigit() else None,
+            'time': time_t or None, 'time_seconds': self._parse_time(time_t),
+            'time_multiplier': mult,
+            # rounds drafted on this level (since the previous Next level) and in all
+            'rounds': len(rs.rounds or []) - ((getattr(rs, 'levels', None) or [{}])[-1]
+                                              .get('rounds_total') or 0),
+            'rounds_total': len(rs.rounds or []),
+            'recorded_at': datetime.now().isoformat(timespec='seconds'),
+            # what was in force, so a result can be read against the par-time change
+            'par_time_scale': float(CONFIG.get('par_time_scale') or 1.0),
+            'score_scaling': bool(CONFIG.get('score_scaling')),
+            'score_step': CONFIG.get('score_step'),
+            'score_cap_mult': CONFIG.get('score_cap_mult'),
+            'patch_code': (rs.last_patch or {}).get('code'),
+        }
+        pf = self._level_patch_file(game, mid)
+        if pf is not None:
+            entry['patch_file'] = pf.name
+            try:
+                data = json.loads(pf.read_text(encoding='utf-8'))
+                data.setdefault('level_results', []).append(
+                    {k: v for k, v in entry.items() if k != 'patch_file'})
+                tmp = pf.with_suffix('.json.tmp')
+                tmp.write_text(json.dumps(data, indent=2), encoding='utf-8')
+                os.replace(tmp, pf)
+                where = pf.name
+            except Exception as e:
+                where = 'the run only (patch file not written: %s)' % e
+        else:
+            where = 'the run only (this level has no patch file)'
+        if not hasattr(rs, 'levels') or rs.levels is None:
+            rs.levels = []
+        rs.levels.append(entry)
+        for w in (self.nl_score, self.nl_time, self.nl_mult):
+            w.clear()
+        old = rs.mission_name
+        nxt = self._next_level_target()
+        if nxt is None:
+            self.update_status(f"{old} recorded in {where} -- that was the last level.")
+            return
+        gi, mi = nxt
+        if gi != self.game_combo.currentIndex():
+            self.game_combo.setCurrentIndex(gi)       # on_game_changed: first level
+        else:
+            self.mission_combo.setCurrentIndex(mi)    # on_mission_changed
+        self.update_status(f"{old} recorded in {where} -- now on {rs.mission_name}. "
+                           "Generate pairs manually")
+        self._sync_next_level()
 
     def display_weapon_selection(self, choices, is_player2=False, mode='initial'):
         self._last_weapon_display = (choices, is_player2, mode)  # re-render on options change
@@ -13025,6 +13194,7 @@ class HaloGUI(QMainWindow):
                 self.pair_cards.append(card)
         finally:
             self.pairs_container.setUpdatesEnabled(True)
+        self._sync_next_level()
 
     # Both rerolls ask for their OWN player's pool, like every other offer path: the
     # ability items are per-player, so a player-less pool hides them for both players
@@ -13742,6 +13912,8 @@ class HaloGUI(QMainWindow):
         # Top-align cards so short cards don't get centered with dead space above
         # them; each card now sizes to its own content (see PairCard).
         self.pairs_layout.setAlignment(Qt.AlignTop)
+        self._build_next_level_box()
+        self.pairs_layout.addWidget(self.next_level_box)
         self.pairs_scroll.setWidget(self.pairs_container)
         main_layout.addWidget(self.pairs_scroll, 1)
 
@@ -14061,6 +14233,7 @@ class HaloGUI(QMainWindow):
                 self.pair_cards.append(card)
         finally:
             self.pairs_container.setUpdatesEnabled(True)
+        self._sync_next_level()
 
     def clear_pairs(self):
         self.pairs_container.setUpdatesEnabled(False)
@@ -14068,6 +14241,7 @@ class HaloGUI(QMainWindow):
             self._clear_pairs_layout()
         finally:
             self.pairs_container.setUpdatesEnabled(True)
+        self._sync_next_level()
 
     def _mid_picking_round(self):
         """True while a card-picking round is on screen and not yet concluded.
@@ -14090,6 +14264,7 @@ class HaloGUI(QMainWindow):
         progress and not yet concluded. Weapon selection and completed rounds allow it."""
         rs = getattr(self, 'run_state', None)
         self.save_btn.setEnabled(not self._mid_picking_round())
+        self._sync_next_level()
         qb = getattr(self, 'quicksave_btn', None)
         if qb is not None:
             # Quicksave writes a completed run for the partner to pick up, so it needs
