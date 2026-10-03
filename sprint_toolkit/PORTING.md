@@ -2165,13 +2165,19 @@ lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`,
                              (sniper round 80 in both); Shots Per Fire dropped (Reach 0 =
                              H4 minimum 1)
     6 ammo pickup     n/a    energy weapon
-    7 HUD             BORROWED  the PLASMA PISTOL's cui_screen (battery % + heat); the
-                             Beam Rifle's showed 10 shots for a 620-round battery. Scope UI
-                             by the enhancer's graft at patch time
-    8 icon + text     -      pickup message is still the Beam Rifle's (be_pickup); H4 font
-                             packages are NOT 0xC000-blocked: a reader is needed
-    9 animations      BORROWED  fp_beam_rifle, shared -- so no retime (it would retime
-                             the Beam Rifle)
+    7 HUD             DONE   own cui_screen (a Plasma Pistol copy: battery % + heat under the
+                             reticle) + OWN Reach scope template (h4_reach_scope*.py, boots
+                             21-25). Side meters hidden (empty in game; layout unsettled)
+    8 icon + text     DONE   own glyph U+E1F6 in the live icon packages, fr_* pickup lines,
+                             HUD icon line (boot 20). OPEN: non-English lines --
+                             `strings-localized` imported 0, unchecked in game
+    9 animations      PARTLY own graph = byte copy of the Beam Rifle's + overheating loop
+                             frame (boot 26). OPEN: ready / put-away timing not compared
+                             with Reach's Focus Rifle (no catalog row yet)
+    fx                DONE   beam (Sentinel tracer look, n-gon, Reach palette), orange muzzle
+                             flash (own Storm Rifle copy, boot 22). Firing SOUND is still the
+                             Sentinel Beam's
+    aim               DONE   Beam Rifle aim assist + strict deviation + hidden gun when zoomed
 
 **First test: m30_cryptum** (user's choice). Add the Focus Rifle to m30's `dz_enhancer`,
 tick that zone in the zone sets where it is tested (m30 has it in only 4 of 24), place it,
