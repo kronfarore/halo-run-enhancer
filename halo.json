@@ -812,7 +812,7 @@
 					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\assault rifle\\fp\\fp", "Halo 3": "jmad *fp_assault_rifle*", "Halo Reach": "jmad *fp_assault_rifle*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -992,7 +992,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\assault rifle\\fp\\fp", "Halo 3": "jmad *fp_assault_rifle*", "Halo Reach": "jmad *fp_assault_rifle*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -1117,7 +1117,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\pistol\\fp\\fp", "Halo 2": "jmad *fp_magnum*", "Halo 3": "jmad *fp_magnum*", "Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*", "Halo Reach": "jmad *fp_magnum*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -1318,7 +1318,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\pistol\\fp\\fp", "Halo 2": "jmad *fp_magnum*", "Halo 3": "jmad *fp_magnum*", "Halo 3: ODST": "jmad *fp_magnum* & *fp_automag*", "Halo Reach": "jmad *fp_magnum*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -1487,7 +1487,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\plasma pistol\\fp\\fp", "Halo 2": "jmad *fp_plasma_pistol*", "Halo 3": "jmad *fp_plasma_pistol*", "Halo 3: ODST": "jmad *fp_plasma_pistol*", "Halo Reach": "jmad *fp_plasma_pistol*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -1496,7 +1496,7 @@
 					"game": ["Halo 2", "Halo 4"],
 					"tag": "jmad *fp_plasma_pistol*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Rider Damage": {
@@ -1982,7 +1982,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"],
 					"tag": {"Halo 1": "antr weapons\\plasma rifle\\fp\\fp", "Halo 2": "jmad *fp_plasma_rifle*", "Halo 3": "jmad *fp_plasma_rifle*", "Halo 3: ODST": "jmad *fp_plasma_rifle*", "Halo Reach": "jmad *fp_plasma_rifle*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Rider Damage": {
@@ -2366,7 +2366,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -2653,7 +2653,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\needler\\fp\\fp", "Halo 2": "jmad *fp_needler*", "Halo 3": "jmad *fp_needler*", "Halo Reach": "jmad *fp_needler*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -2811,7 +2811,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\sniper rifle\\fp\\fp", "Halo 2": "jmad *fp_sniper_rifle*", "Halo 3": "jmad *fp_sniper_rifle*", "Halo Reach": "jmad *fp_sniper_rifle*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -2972,7 +2972,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\sniper rifle\\fp\\fp", "Halo 2": "jmad *fp_sniper_rifle*", "Halo 3": "jmad *fp_sniper_rifle*", "Halo Reach": "jmad *fp_sniper_rifle*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -3106,7 +3106,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\rocket launcher\\fp\\fp", "Halo 2": "jmad *fp_rocket_launcher*", "Halo 3": "jmad *fp_rocket_launcher*", "Halo Reach": "jmad *fp_rocket_launcher*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -3319,7 +3319,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\rocket launcher\\fp\\fp", "Halo 2": "jmad *fp_rocket_launcher*", "Halo 3": "jmad *fp_rocket_launcher*", "Halo Reach": "jmad *fp_rocket_launcher*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -3437,7 +3437,7 @@
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\shotgun\\fp\\fp", "Halo 2": "jmad *fp_shotgun*", "Halo 3": "jmad *fp_shotgun*", "Halo Reach": "jmad *fp_shotgun*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -3630,7 +3630,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 1": "antr weapons\\shotgun\\fp\\fp", "Halo 2": "jmad *fp_shotgun*", "Halo 3": "jmad *fp_shotgun*", "Halo Reach": "jmad *fp_shotgun*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -3754,7 +3754,7 @@
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_smg*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Ramp Up": {
@@ -3909,7 +3909,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_smg*",
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -4327,7 +4327,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {"default": "jmad *fp_battle_rifle*", "Halo 4": "jmad *fp_br*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -4473,7 +4473,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": {"default": "jmad *fp_battle_rifle*", "Halo 4": "jmad *fp_br*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -4588,7 +4588,7 @@
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_brute_shot*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -4770,7 +4770,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3"],
 					"tag": "jmad *fp_brute_shot*",
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -4870,7 +4870,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo 4"],
 					"tag": "jmad *fp_beam_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Rider Damage": {
@@ -5166,7 +5166,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": "jmad *fp_covenant_carbine*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -5312,7 +5312,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3", "Halo 4"],
 					"tag": "jmad *fp_covenant_carbine*",
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -5435,7 +5435,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*", "Halo 4": "jmad *fp_fuel_rod_cannon*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -5656,7 +5656,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*", "Halo 4": "jmad *fp_fuel_rod_cannon*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -6244,7 +6244,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "jmad *fp_energy_blade*", "Halo 3": "jmad *fp_energy_blade*", "Halo 3: ODST": "jmad *fp_energy_blade*", "Halo Reach": "jmad *fp_energy_sword*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -6512,7 +6512,7 @@
 					"game": ["Halo 3"],
 					"tag": "jmad *fp_excavator*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -6709,7 +6709,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": "Halo 3",
 					"tag": "jmad *fp_excavator*",
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
@@ -6803,7 +6803,7 @@
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {"Halo 3": "jmad *fp_spike_rifle*", "Halo Reach": "jmad *fp_spike_rifle*"},
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Ramp Up": {
@@ -6961,7 +6961,7 @@
 					"debug_desc": "In the MCC every magazine-fed weapon reloads on its first-person animation — the tag-side reload timer is inert — so this scales the animation's length. Scales both Master Chief and Arbiter.",
 					"game": ["Halo 3", "Halo Reach"],
 					"tag": {"Halo 3": "jmad *fp_spike_rifle*", "Halo Reach": "jmad *fp_spike_rifle*"},
-					"targets": [ { "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
+					"targets": [ { "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true } ]
 				},
 				"Salvo Shooting": {
 					"desc": "How fast it fires and how many rounds one pull sends.",
@@ -7085,7 +7085,7 @@
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_gravity_hammer*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -7248,7 +7248,7 @@
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_spartan_laser*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Rider Damage": {
@@ -8535,7 +8535,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_concussion_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -8544,7 +8544,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_concussion_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -8801,7 +8801,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_dmr*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -8810,7 +8810,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": "jmad *fp_dmr*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -9090,7 +9090,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_focus_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -9324,7 +9324,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_grenade_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -9333,7 +9333,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_grenade_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Latch Time": {
@@ -9593,7 +9593,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_needle_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -9602,7 +9602,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_needle_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Explosion Damage": {
@@ -9897,7 +9897,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_plasma_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -9906,7 +9906,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_plasma_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Ramp Up": {
@@ -10247,7 +10247,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_plasma_repeater*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -10580,7 +10580,7 @@
 					"game": ["Halo Reach"],
 					"tag": "jmad *fp_target_laser*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Ramp Up": {
@@ -10821,7 +10821,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_assault_carbine*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -11109,11 +11109,11 @@
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 4"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 1"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 2"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 3", "Halo 3: ODST"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo Reach"] }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 1"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 2"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo Reach"] }
 					]
 				},
 				"Melee Seeking Angles": {
@@ -11396,11 +11396,11 @@
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "jmad *fp_assault_rifle*", "Halo 1": "antr weapons\\saw\\fp\\fp", "Halo 2": "jmad objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw", "Halo 3": "jmad objects\\weapons\\rifle\\saw\\fp\\fp_saw_*", "Halo Reach": "jmad objects\\weapons\\rifle\\saw\\fp_saw_*" },
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 4"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 1"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 2"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 3", "Halo 3: ODST"] },
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo Reach"] }
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 1"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 2"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo Reach"] }
 					]
 				},
 				"Salvo Shooting": {
@@ -11573,7 +11573,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_shotgun*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -11744,7 +11744,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_shotgun*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {
@@ -11858,7 +11858,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_covenant_carbine*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -11997,7 +11997,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_covenant_carbine*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {
@@ -12089,7 +12089,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_assault_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -12259,7 +12259,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_assault_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {
@@ -12400,7 +12400,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_magnum*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -12570,7 +12570,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_magnum*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {
@@ -12663,7 +12663,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_spartan_laser*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -12891,7 +12891,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_sticky_detonator*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Reload Time": {
@@ -12900,7 +12900,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_sticky_detonator*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Latch Time": {
@@ -13156,7 +13156,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_sniper_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -13315,7 +13315,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_sniper_rifle*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {
@@ -13399,7 +13399,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_rocket_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
 					]
 				},
 				"Melee Seeking Angles": {
@@ -13600,7 +13600,7 @@
 					"game": ["Halo 4"],
 					"tag": "jmad *fp_rocket_launcher*",
 					"targets": [
-						{ "step": "*0.75", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Reload Animation", "reload_anim": true}
 					]
 				},
 				"Salvo Shooting": {

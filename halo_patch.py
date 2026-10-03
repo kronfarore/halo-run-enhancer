@@ -8195,6 +8195,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 rep = halo3_reload.scale_reload(m, path, mult, game=game, match=match)
                 r = {**base}
                 if rep.get('ok'):
+                    # every scaled animation at the engine's frame-count ceiling: an
+                    # inverted (slowing) card is saturated there and nowhere sooner
+                    r['at_limit'] = bool(rep.get('animations')) and \
+                        rep.get('capped', 0) >= rep['animations']
                     r.update(ok=True, skip=bool(rep.get('skip')),
                              old=('swap anim' if op.get('swap_anim') else
                                   'berserk anim' if op.get('berserk_anim') else

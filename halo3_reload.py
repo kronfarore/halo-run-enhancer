@@ -208,6 +208,12 @@ def _scale_frame(m, off, mult, cap):
     return v, nv
 
 
+# A frame count is a signed 16-bit value: the engine's own ceiling on how long an
+# animation can get. An inverted (slowing) reload / swap card stacks without a cap of
+# its own and is saturated only when every animation it scales sits here.
+FRAME_LIMIT = 0x7FFF
+
+
 # --- Halo 1: model_animations (antr) master Animations block ---
 # elem 0xB4: Name ascii@0x0 (0x20), Frame Count i16@0x22, Loop Frame @0x2E,
 # Key Frame @0x34, Second Key Frame @0x36, Sound Frame @0x3E, foot i8 @0x40/0x41.
@@ -262,7 +268,7 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
     tags = m.find_tags('antr', tag_pattern)
     if not tags:
         return {'ok': False, 'reason': f'no antr tags match {tag_pattern!r}'}
-    graphs = anims_scaled = edits = 0
+    graphs = anims_scaled = edits = capped = 0
     for _, base in tags:
         anims = m.follow_all(base, [H1_ANIM_BLK], [H1_ANIM_EL], 'all')
         hit = False
@@ -272,7 +278,8 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
                 continue
             hit = True
             old_fc = struct.unpack_from('<h', m.data, el + H1_FC)[0]
-            _, new_fc = _scale_frame(m, el + H1_FC, mult, 0x7FFF)
+            _, new_fc = _scale_frame(m, el + H1_FC, mult, FRAME_LIMIT)
+            capped += new_fc >= FRAME_LIMIT
             if new_fc < 1:
                 new_fc = 1
                 struct.pack_into('<h', m.data, el + H1_FC, 1)
@@ -299,7 +306,8 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
     if anims_scaled == 0:
         return {'ok': True, 'skip': True, 'reason': 'no reload animations found',
                 'graphs': graphs, 'animations': 0, 'edits': 0}
-    return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits}
+    return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits,
+            'capped': capped}
 
 
 # --- Halo 1 enemy ground speed: the ROOT MOTION of the move-* animations ---
@@ -528,7 +536,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     tags = m.find_tags('jmad', tag_pattern)
     if not tags:
         return {'ok': False, 'reason': f'no jmad tags match {tag_pattern!r}'}
-    graphs = anims_scaled = edits = 0
+    graphs = anims_scaled = edits = capped = 0
     seen_events = set()          # (frame_field_addr) — event blocks are shared between anims
     fo = L['frame_off']
     for _, base in tags:
@@ -548,7 +556,8 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
                 if not shared:
                     continue
                 el = shared[0]
-            _, new_fc = _scale_frame(m, el + L['fc_off'], mult, 0x7FFF)
+            _, new_fc = _scale_frame(m, el + L['fc_off'], mult, FRAME_LIMIT)
+            capped += new_fc >= FRAME_LIMIT
             if new_fc < 1:
                 new_fc = 1
                 struct.pack_into('<h', m.data, el + L['fc_off'], 1)
@@ -568,4 +577,5 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     if anims_scaled == 0:
         return {'ok': True, 'skip': True, 'reason': 'no reload animations found',
                 'graphs': graphs, 'animations': 0, 'edits': 0}
-    return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits}
+    return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits,
+            'capped': capped}

@@ -268,6 +268,22 @@ def stamped_put(key, path, value):
         pass
 
 
+def pool_stamp_known(path):
+    """The map's [size, sha256] stamp if it can be had WITHOUT hashing -- the digest
+    memo still matches the file's size and mtime -- else None. For readiness checks
+    on the GUI thread: a stale memo means a full digest (1 GB+ over USB for a rebuilt
+    or re-baselined map), which belongs behind a progress bar."""
+    try:
+        st = os.stat(str(path))
+    except OSError:
+        return None
+    ent = _hash_memo().get(os.path.normcase(os.path.abspath(str(path))))
+    if (isinstance(ent, list) and len(ent) == 3 and ent[0] == st.st_size
+            and ent[1] == int(st.st_mtime) and isinstance(ent[2], str)):
+        return [st.st_size, ent[2]]
+    return None
+
+
 def pool_cache_get(key, path):
     """Remembered names for this map, or None when the map has moved on.
 
@@ -2976,6 +2992,34 @@ class ModifierDatabase:
             return self.h4_map_pool(mission_id, 'equipment') or declared
         return declared
 
+    def map_pools_quick_ready(self, mission_id):
+        """map_pools_ready without the risk of hashing a map on the GUI thread: False
+        whenever the answer would need a digest or a map read. Cheap (stat + dict)."""
+        game, kinds = self.map_pool_kinds(mission_id)
+        if not kinds:
+            return True
+        src = None
+        for kind in kinds:
+            if game == 'Halo Reach' and (mission_id, kind) in self._reach_pool_cache:
+                continue
+            if game == 'Halo 4' and (mission_id, kind) in self._h4_pool_cache:
+                continue
+            if game == 'Halo 3: ODST' and mission_id in self._odst_pool_cache:
+                continue
+            src = src or self._pool_src(game, mission_id)
+            stamp = pool_stamp_known(src) if src else None
+            ent = _pool_disk().get('%s|%s|%s' % (game, mission_id, kind))
+            if stamp is None or not isinstance(ent, dict) or ent.get('stamp') != stamp:
+                return False
+        return True
+
+    def game_pools_pending(self, game):
+        """Levels of `game` whose map pools are not answerable without reading -- every
+        draw asks for the whole game's weapons (filter_blacklisted -> _fielded_weapons),
+        so one stale level stalls the first draw."""
+        return [mid for mid, g in self.mission_games.items()
+                if g == game and not self.map_pools_quick_ready(mid)]
+
     def warm_map_pools(self, mission_id):
         """Derive this mission's map pools now, so nothing stalls later. No Qt here --
         this is meant to be run off the GUI thread."""
@@ -5362,6 +5406,11 @@ class MagnitudeEditorDialog(QDialog):
             # mirrored and stacked. There is NO general floor (user, 2026-10-01): a
             # card that needs one says so with `inverse_floor` (a multiplier, on the
             # target or the card); counts that must not reach 0 carry `min: 1`.
+            # an uncapped per-pick inverse (reload / swap animations: *1.25 a pick,
+            # linear, up to the engine's frame-count limit) wins while the row shows
+            # its default
+            if t.get('inverse_step') and (not txt or self._is_default_step(t, txt)):
+                return self._hp.stack_op(t['inverse_step'], n)
             ilad = self._inverse_ladder(t)
             if ilad and (not txt or self._is_default_step(t, txt)):
                 return self._hp.stack_op('', n, steps=ilad)
@@ -8841,6 +8890,14 @@ class MagnitudeEditorDialog(QDialog):
                 st = t.get('steps')
                 if st and not inv and abs(c) >= len(st) and self._stacked_op(eff, t, '') == str(st[-1]):
                     continue                     # a `steps` ladder's last rung (reload *0.1)
+                if inv and t.get('inverse_step') and (t.get('reload_anim') or t.get('swap_anim')):
+                    # uncapped inverse: saturated only at the engine's frame-count limit
+                    anim = [r for r in results or [] if r.get('effect') == eff.get('name')
+                            and r.get('ok') and not r.get('skip') and self._result_is_mine(r, eff, t)]
+                    if anim and all(r.get('at_limit') for r in anim):
+                        continue
+                    ok = False
+                    break
                 lo, hi = t.get('min'), t.get('max')
                 if lo is None and hi is None:
                     ok = False
@@ -14233,6 +14290,25 @@ class HaloGUI(QMainWindow):
         else:
             self._reset_for_new_round(f"Game changed to {game}")
 
+    def _ensure_game_pools(self):
+        """Before a draw: every level of the current game must have its map pools
+        ready, because the card filter asks for the WHOLE game's weapons. A level whose
+        map changed since it was last read (a rebuild, a new baseline) costs a full
+        digest plus a read of the map -- seconds to minutes for 1 GB maps over USB --
+        so it runs behind a progress bar instead of freezing the window mid-draw."""
+        try:
+            game = self._current_game()
+            pending = self.db.game_pools_pending(game)
+            if not pending:
+                return
+            names = ', '.join(self.db.mission_enemies.get(m, {}).get('name', m) for m in pending)
+            run_busy(self, lambda: [self.db.warm_map_pools(m) for m in pending],
+                     "Reading the maps",
+                     "Reading what %d changed %s level(s) can grant: %s"
+                     % (len(pending), game, names))
+        except Exception as e:
+            print(f"game pool warm-up failed: {e}")
+
     def _ensure_map_pools(self, mission_id):
         """Read what this level can grant, behind a progress dialog when it is slow.
 
@@ -14461,6 +14537,7 @@ class HaloGUI(QMainWindow):
             self.update_status("Please select weapons for both players first")
             return
         self._ensure_port_levels()
+        self._ensure_game_pools()
 
         if self.run_state.phase == 'player1_turn':
             player = 'player1'
