@@ -2223,6 +2223,19 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
      import); the tags keep suffix 'saw' (the tested state; an empty suffix is untested).
      Observation from Reach; Halo 3 / ODST use the same kit route and are expected to
      behave alike -- confirm on their first port.
+**Halo 3 / ODST (2026-10-03, built, first boot pending)** -- `saw_port_sounds.py --game h3|odst
+--write` (one script for all three kits now; reach_saw_sounds.py is a wrapper):
+* both SAWs fired through the AR's firing effect, the dry fire through the BATTLE RIFLE's
+  empty effect; Halo 3's AR firing effect has NO tails (fire + distant fire), ODST's has
+  the two like Reach. Own copies, repointed, as for Reach.
+* the encoding differs from Reach: stock H3 / ODST sound tags carry xma v2.0 ONLY -- PC
+  must play them from FMOD (sfx.fsb) -- and the H3 kits' `reimport-sounds ... adpcm`
+  gives uncompressed PCM ("none (little endian)") and clears the bank suffix. So the
+  first test mirrors STOCK: the import's XMA2, suffix 'saw', and sfx.saw.fsb installed in
+  halo3\fmod\pc / halo3odst\fmod\pc (both dlls build `fmod\pc\sfx.<suffix>.fsb` too).
+  Banks: Vorbis 48 kHz stereo ~70 kbps (H3 7 streams, ODST 13).
+* the ports live in ONE map each: Halo 3 010_jungle, ODST sc150.
+* if it plays: the same follow-up as Reach -- is the bank needed? (no rebuild).
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
