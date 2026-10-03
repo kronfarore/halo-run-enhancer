@@ -509,7 +509,17 @@ def check_glyphs():
     except Exception as e:
         report(f'SOUNDS: port_sounds could not be loaded ({e})')
         return
-    for pr in port_sounds.problems(MCC):
+    # the volume knob (settings.json weapon_port_volume): a bank turned on purpose is
+    # not stale
+    volume = None
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.json'),
+                  encoding='utf-8') as f:
+            volume = {w: float(v) for w, v in ((json.load(f).get('weapon_port_volume') or {})
+                                              .get('Halo 4') or {}).items() if v} or None
+    except Exception:
+        pass
+    for pr in port_sounds.problems(MCC, volume=volume):
         report('SOUNDS: ' + pr)
 
 

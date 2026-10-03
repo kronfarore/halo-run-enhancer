@@ -6739,9 +6739,13 @@ class MagnitudeEditorDialog(QDialog):
         folder = folder.replace('/', '\\').split('\\')[0]
         if folder != 'halo4':
             return []
+        # the per-port volume knob (Options -> Weapon ports): a turned bank replaces the
+        # as-built one; 0 dB values are left out, so a knob set back to 0 restores it
+        volume = {w: float(v) for w, v in ((CONFIG.get('weapon_port_volume') or {})
+                                          .get(self.game) or {}).items() if v} or None
         try:
             import port_sounds
-            return self._run_busy(lambda: port_sounds.ensure(folder, mcc_root()),
+            return self._run_busy(lambda: port_sounds.ensure(folder, mcc_root(), volume=volume),
                                   title="Port sounds",
                                   label="Checking the ported weapons' sound banks") or []
         except Exception as e:
@@ -11969,10 +11973,22 @@ class OptionsDialog(QDialog):
             import port_volume
         except Exception:
             return None
-        if game not in port_volume.LAYOUT or weapon not in port_volume.PORT_SOUNDS:
+        bank = game in port_volume.BANK_GAMES and weapon in port_volume.PORT_BANKS
+        if not bank and (game not in port_volume.LAYOUT or weapon not in port_volume.PORT_SOUNDS):
             return None
+        top = 3.0                         # map ports ship at -3 dB; the engine clamps at 0
+        if bank:
+            # a Halo 4 port's own Wwise bank: its root mixer's headroom (the Focus Rifle
+            # ships at -6 dB)
+            try:
+                import port_sounds
+                folder, name = port_volume.PORT_BANKS[weapon]
+                with open(os.path.join(port_sounds._data_dir(), folder, name), 'rb') as fh:
+                    top = float(port_volume.bank_headroom(fh.read()))
+            except Exception:
+                top = 6.0
         sp = QDoubleSpinBox()
-        sp.setRange(-24.0, 3.0)
+        sp.setRange(-24.0, top)
         sp.setSingleStep(0.5)
         sp.setDecimals(1)
         sp.setSuffix(" dB")
@@ -11981,12 +11997,20 @@ class OptionsDialog(QDialog):
         # a new widget class in this dialog needs its own colours (dark-theme trap)
         sp.setStyleSheet("QDoubleSpinBox { background-color: #1a1a1a; color: #e0e0e0; "
                          "border: 1px solid #3a3a3a; padding: 2px; }")
-        tip = ("How loud this port's own sounds play, in dB against the map as built. 0 = "
-               "as built. Every port ships at -3 dB on purpose: the engine plays nothing "
-               "louder than 0 dB, so +3 is the most the knob can raise it; down has no "
-               "limit.\n\nYour own setting -- not part of the run, so a co-op partner "
-               "sets theirs. Needs a map built with the port's volume marker; on an older "
-               "build the patch log says to rebuild it.")
+        if bank:
+            tip = ("How loud this port's own sounds play, in dB against its sound bank as "
+                   "built. 0 = as built. The bank ships at -%g dB, and nothing plays louder "
+                   "than 0 dB, so +%g is the most the knob can raise it; down has no limit."
+                   "\n\nApplied to Halo 4's sound package on every Halo 4 patch -- no map "
+                   "rebuild needed. Your own setting: not part of the run, so a co-op partner "
+                   "sets theirs." % (top, top))
+        else:
+            tip = ("How loud this port's own sounds play, in dB against the map as built. 0 = "
+                   "as built. Every port ships at -3 dB on purpose: the engine plays nothing "
+                   "louder than 0 dB, so +3 is the most the knob can raise it; down has no "
+                   "limit.\n\nYour own setting -- not part of the run, so a co-op partner "
+                   "sets theirs. Needs a map built with the port's volume marker; on an older "
+                   "build the patch log says to rebuild it.")
         sp.setToolTip(tip)
         lbl = QLabel("Volume:")
         lbl.setToolTip(tip)
