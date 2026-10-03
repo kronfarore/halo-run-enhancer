@@ -157,7 +157,19 @@ def main():
         if oc < 1:
             raise SystemExit('barrel 1 has no first person offset element to set')
         xyz = [float(v) for v in a.zoom_barrel.split(',')]
-        struct.pack_into('<3f', d, m.data2off(op), *xyz)
+        # THE BUILD MERGES IDENTICAL BLOCKS: both barrels' offset blocks (both 0.03,-0.08,0
+        # in the kit) are ONE block in the map, so writing barrel 1's in place moved barrel
+        # 0's too. Barrel 1 gets its own 12 bytes in a zero run (halo_patch._h3_reserve,
+        # >= 4 KB runs only -- see h4-scope-graft-residency-crash).
+        if op == struct.unpack_from('<iI', d, b0 + 0x100)[1]:
+            got = halo_patch._h3_reserve(m, [12])
+            if got is None:
+                raise SystemExit("no free run for barrel 1's own offset block")
+            struct.pack_into('<3f', d, got[0], *xyz)
+            struct.pack_into('<iI', d, b1 + 0x100, 1, m.off2data(got[0]))
+            print("barrel 1: own first person offset block (it shared barrel 0's)")
+        else:
+            struct.pack_into('<3f', d, m.data2off(op), *xyz)
         was = struct.unpack_from('<hhh', d, t0 + 0x6)
         struct.pack_into('<h', d, t0 + 0x6, 5)
         struct.pack_into('<h', d, t0 + 0xA, 1)
