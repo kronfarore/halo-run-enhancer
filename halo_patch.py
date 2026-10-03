@@ -8146,6 +8146,27 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                     'reason': (res.get('reason') + ' -- patch again with MCC '
                                                'open' if closed else res.get('reason'))})
                 continue
+            if op.get('move_speed'):
+                # Halo 1 AI ground speed: multiply the dx,dy root motion of the enemy's
+                # move-* animations (item['tag'] is the antr pattern). No tag field
+                # sets it; confirmed in game on b30, 2026-10-03.
+                parsed = hm.parse_operator(op.get('op_str'))
+                if not parsed:
+                    results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
+                    continue
+                oper, val = parsed
+                mult = hm.OP_FUNCS[oper](1.0, val)
+                import halo3_reload
+                rep = halo3_reload.scale_move_speed(m, path, mult, game=game)
+                r = {**base}
+                if rep.get('ok'):
+                    r.update(ok=True, skip=bool(rep.get('skip')), old='move root motion',
+                             new=(rep.get('reason') if rep.get('skip')
+                                  else f"x{mult:g} ({rep['animations']} anim, {rep['graphs']} graph)"))
+                else:
+                    r.update(ok=False, reason=rep.get('reason', 'movement scale failed'))
+                results.append(r)
+                continue
             if (op.get('reload_anim') or op.get('swap_anim') or op.get('berserk_anim')
                     or op.get('morph_anim') or op.get('infect_anim')):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length

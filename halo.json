@@ -16483,6 +16483,17 @@
 						{ "step": "*1.2", "field": "Minimum Suppressing Time", "block": "Pre-Search Properties", "index": "all", "group": "Suppressing Time", "harder_when": "increased", "min": 0 },
 						{ "step": "*1.2", "field": "Minimum Suppressing Time Max", "block": "Pre-Search Properties", "index": "all", "group": "Suppressing Time", "harder_when": "increased", "min": 0 }
 					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Elite 2.60, 2.99 with the sword; crouched 1.00, walking 0.57. The graph is shared by every Elite rank, Spec Ops and stealth Elites included.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\elite\\elite",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Hunter": {
@@ -17104,6 +17115,17 @@
 					"tag": "char objects\\characters\\hunter\\ai\\hunter*",
 					"targets": [
 						{ "step": "*1.2", "field": "Max Suppress Count", "block": "Pre-Search Properties", "index": "all", "harder_when": "increased", "min": 0 }
+					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Hunter 2.32, crouched 0.57.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\hunter\\hunter",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
 				}
 			},
@@ -17933,6 +17955,17 @@
 							{ "step": "*0.8","field": "Landing Anticipation Time", "block": "Jet Pack", "index": 0, "min": 0}
 						]
 					}
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Grunt 1.88, fleeing 1.87, sideways 1.20, crouched 0.26.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\grunt\\grunt",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Jackal": {
@@ -18727,6 +18760,17 @@
 						{ "step": "*1.2", "field": "Minimum Suppressing Time Max", "block": "Pre-Search Properties", "index": "all", "group": "Suppressing Time", "harder_when": "increased", "min": 0 },
 						{ "step": "*1.2", "field": "Max Suppress Count", "block": "Pre-Search Properties", "index": "all", "harder_when": "increased", "min": 0, "games": ["Halo 3"] }
 					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Jackal 1.37, fleeing 1.83, crouched 0.42.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\jackal\\jackal",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Flood Combat Form": {
@@ -19178,6 +19222,17 @@
 					"targets": [
 						{ "step": "*0.8", "field": "Conversion Animation", "infect_anim": true }
 					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): combat Elite 1.87 / 2.40 (two permutations), charging (flee) 3.60; combat human 1.84, charging 3.26.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\floodcombat*",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Flood Infection Form": {
@@ -19438,6 +19493,17 @@
 						{ "step": "*0.8", "field": "Infection Time", "block": "Swarm Properties", "group": "Infection Time" },
 						{ "step": "*0.8", "field": "Infection Time Max", "block": "Swarm Properties", "group": "Infection Time" }
 					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): infection form 1.29.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\flood_infection\\flood_infection",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Flood Carrier Form": {
@@ -19671,6 +19737,17 @@
 							{ "step": "*1.2", "field": "Search Time Max", "block": "Search Properties", "group": "Search Time", "harder_when": "increased", "min": 0 }
 						]
 					}
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast they move on foot.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): carrier 1.00-1.25 (three permutations).",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "antr characters\\floodcarrier\\floodcarrier",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
 				}
 			},
 			"Flood Pure Form": {
@@ -20621,6 +20698,30 @@
 						{ "step": "*1.2", "field": "Minimum Suppressing Time", "block": "Pre-Search Properties", "index": "all", "group": "Suppressing Time", "harder_when": "increased", "min": 0 },
 						{ "step": "*1.2", "field": "Minimum Suppressing Time Max", "block": "Pre-Search Properties", "index": "all", "group": "Suppressing Time", "harder_when": "increased", "min": 0 },
 						{ "step": "*1.2", "field": "Max Suppress Count", "block": "Pre-Search Properties", "index": "all", "harder_when": "increased", "min": 0, "games": ["Halo 3"] }
+					]
+				},
+				"Flight Speed": {
+					"color": "aggressive",
+					"desc": "How fast they fly.",
+					"debug_desc": "Sentinels FLY, so unlike the ground enemies they have no root motion: their speed is the biped's Flying block (bipd characters\\sentinel\\sentinel). Confirmed working in game by the user (2026-10-03). Maximum Velocity (2.25, straight flight) and Maximum Sidestep Velocity (1.8, sideways/up/down), grouped.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "bipd characters\\sentinel\\sentinel",
+					"targets": [
+						{ "step": "*1.2", "field": "Maximum Velocity", "group": "Flight Speed", "min": 0 },
+						{ "step": "*1.2", "field": "Maximum Sidestep Velocity", "group": "Flight Speed", "min": 0 }
+					]
+				},
+				"Flight Acceleration": {
+					"color": "aggressive",
+					"desc": "How quickly they reach full flying speed, and stop again.",
+					"debug_desc": "Sentinels FLY, so unlike the ground enemies they have no root motion: their speed is the biped's Flying block (bipd characters\\sentinel\\sentinel). Confirmed working in game by the user (2026-10-03). Acceleration (0.06) and Deceleration (0.12), grouped: higher reaches top speed and stops sooner.",
+					"harder_when": "increased",
+					"game": ["Halo 1"],
+					"tag": "bipd characters\\sentinel\\sentinel",
+					"targets": [
+						{ "step": "*1.2", "field": "Acceleration", "group": "Flight Acceleration", "min": 0 },
+						{ "step": "*1.2", "field": "Deceleration", "group": "Flight Acceleration", "min": 0 }
 					]
 				}
 			},

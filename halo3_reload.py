@@ -302,6 +302,89 @@ def _scale_reload_h1(m, tag_pattern, mult, match=('reload',)):
     return {'ok': True, 'graphs': graphs, 'animations': anims_scaled, 'edits': edits}
 
 
+# --- Halo 1 enemy ground speed: the ROOT MOTION of the move-* animations ---
+# AI ground speed has no tag field in Halo 1: the engine moves an AI biped by the
+# per-frame dx,dy of its move-* animation's Frame Info (confirmed in game on b30,
+# 2026-10-03: x2 data, everybody moved twice as fast, legs looked fine). Speed in wu/s
+# = sum(dx, dy) / frames * FPS; Elite stand move-front ships 2.25 wu over 26 frames.
+# Covers every stance (stand / crouch / alert / flee / flaming) and direction.
+
+def h1_move_anims(m, antr_base):
+    """[(name, frame count, info type, info size, info file offset)] -- move-* only
+    ('aim-move' is an aiming overlay with no root motion and does not match)."""
+    out = []
+    for el in m.follow_all(antr_base, [H1_ANIM_BLK], [H1_ANIM_EL], 'all'):
+        nm = m.data[el:m.data.index(b'\x00', el)].decode('latin1', 'replace')
+        if 'move-' not in nm:
+            continue
+        fc = struct.unpack_from('<h', m.data, el + H1_FC)[0]
+        it = struct.unpack_from('<h', m.data, el + H1_INFO_TYPE)[0]
+        size, off = _h1_dataref(m, el, H1_FRAME_INFO)
+        out.append((nm, fc, it, size, off))
+    return out
+
+
+def h1_move_speed(m, fc, it, size, off):
+    """(sum dx, sum dy, wu/s) of one move animation's root motion."""
+    per = H1_INFO_SIZES[it] if 0 <= it < len(H1_INFO_SIZES) else 0
+    if not per or off is None or fc < 1:
+        return 0.0, 0.0, 0.0
+    sx = sy = 0.0
+    for i in range(min(fc, size // per)):
+        dx, dy = struct.unpack_from('<2f', m.data, off + i * per)
+        sx += dx
+        sy += dy
+    return sx, sy, (sx * sx + sy * sy) ** 0.5 / fc * FPS
+
+
+def move_speeds(m, tag_pattern, game='Halo 1'):
+    """Reference read for the patcher: [(who, run wu/s)] per graph -- the fastest
+    `stand` move-front, i.e. the plain run. [] if none (or not Halo 1)."""
+    if str(game).strip() != 'Halo 1':
+        return []
+    out = []
+    for name, base in m.find_tags('antr', tag_pattern):
+        runs = [h1_move_speed(m, *a[1:])[2] for a in h1_move_anims(m, base)
+                if a[0].startswith('stand ') and 'move-front' in a[0]]
+        if runs:
+            out.append((name.rsplit(chr(92), 1)[-1], max(runs)))
+    return out
+
+
+def scale_move_speed(m, tag_pattern, mult, game='Halo 1'):
+    """Multiply the dx,dy root motion of every move-* animation on every antr matching
+    `tag_pattern` (dz and dyaw untouched, frame counts untouched). A buffer two
+    animations share is scaled once. Halo 1 only: later games keep root motion inside
+    compressed codec data (see the halo-enemy-movement-speed memory)."""
+    if str(game).strip() != 'Halo 1':
+        return {'ok': False, 'reason': f'movement speed is Halo 1 only, not {game}'}
+    if mult is None or mult <= 0:
+        return {'ok': False, 'reason': 'invalid movement multiplier'}
+    tags = m.find_tags('antr', tag_pattern)
+    if not tags:
+        # apply_run's exact wording for an absent tag: an enemy card turns it into
+        # "not on this level" (absent_is_skip) instead of a failure
+        return {'ok': False, 'reason': 'not present in this map'}
+    done = set()
+    graphs = 0
+    for _, base in tags:
+        hit = False
+        for _nm, fc, it, size, off in h1_move_anims(m, base):
+            per = H1_INFO_SIZES[it] if 0 <= it < len(H1_INFO_SIZES) else 0
+            if not per or off is None or off in done:
+                continue
+            done.add(off)
+            hit = True
+            for i in range(min(fc, size // per)):
+                dx, dy = struct.unpack_from('<2f', m.data, off + i * per)
+                struct.pack_into('<2f', m.data, off + i * per, dx * mult, dy * mult)
+        graphs += hit
+    if not done:
+        return {'ok': True, 'skip': True, 'reason': 'no move animations with root motion',
+                'graphs': 0, 'animations': 0}
+    return {'ok': True, 'graphs': graphs, 'animations': len(done)}
+
+
 def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     """Scale animation length by `mult` (0.5 = half duration = faster) on every jmad
     tag matching `tag_pattern`. `match` picks WHICH actions: ('reload',) for reload

@@ -5631,6 +5631,17 @@ class MagnitudeEditorDialog(QDialog):
                     'None' if amt is None else round(amt, 4), where)
             except Exception:
                 return '0.1 per kill (hardcoded in the game dll)'
+        if target.get('move_speed'):
+            # Halo 1 ground speed lives in the move animations' root motion: show the
+            # plain run (fastest `stand` move-front) per graph in world units/s.
+            try:
+                import halo3_reload
+                rows = halo3_reload.move_speeds(m, path, self.game)
+                if not rows:
+                    return "— no move animation on this map"
+                return "\n".join("run %.2f wu/s  (%s)" % (v, who) for who, v in rows)
+            except Exception:
+                return "move animation root motion"
         if (target.get('reload_anim') or target.get('swap_anim') or target.get('berserk_anim')
                 or target.get('morph_anim') or target.get('infect_anim')):
             # An animation target: show the current length in seconds (frames / 30fps)
@@ -8328,6 +8339,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'berserk_anim': t.get('berserk_anim'),
                                          'morph_anim': t.get('morph_anim'),
                                          'infect_anim': t.get('infect_anim'),
+                                         'move_speed': t.get('move_speed'),
                                          'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a

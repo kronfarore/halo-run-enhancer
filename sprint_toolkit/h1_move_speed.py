@@ -30,51 +30,9 @@ sys.path.insert(0, os.path.dirname(HERE))
 import halo_patch as hp  # noqa: E402
 import halo3_reload as hr  # noqa: E402
 
-INFO_SIZES = hr.H1_INFO_SIZES          # bytes per frame by Frame Info Type
-FPS = hr.FPS
-
-
-def _name(m, el):
-    return bytes(m.data[el:el + 0x20]).split(b'\0')[0].decode('latin-1')
-
-
-def move_anims(m, antr_base):
-    """[(name, frame count, info type, info size, info file offset)] for move-* animations."""
-    out = []
-    for el in m.follow_all(antr_base, [hr.H1_ANIM_BLK], [hr.H1_ANIM_EL], 'all'):
-        nm = _name(m, el)
-        if 'move-' not in nm:
-            continue
-        fc = struct.unpack_from('<h', m.data, el + hr.H1_FC)[0]
-        it = struct.unpack_from('<h', m.data, el + hr.H1_INFO_TYPE)[0]
-        size, off = hr._h1_dataref(m, el, hr.H1_FRAME_INFO)
-        out.append((nm, fc, it, size, off))
-    return out
-
-
-def speed(m, fc, it, size, off):
-    """(sum dx, sum dy, wu/s) of one animation's root motion."""
-    per = INFO_SIZES[it] if 0 <= it < len(INFO_SIZES) else 0
-    if not per or off is None or fc < 1:
-        return 0.0, 0.0, 0.0
-    sx = sy = 0.0
-    for i in range(min(fc, size // per)):
-        dx, dy = struct.unpack_from('<2f', m.data, off + i * per)
-        sx += dx
-        sy += dy
-    return sx, sy, (sx * sx + sy * sy) ** 0.5 / fc * FPS
-
-
-def scale(m, fc, it, size, off, mult):
-    """Multiply dx, dy of every frame. Returns frames written."""
-    per = INFO_SIZES[it] if 0 <= it < len(INFO_SIZES) else 0
-    if not per or off is None:
-        return 0
-    n = min(fc, size // per)
-    for i in range(n):
-        dx, dy = struct.unpack_from('<2f', m.data, off + i * per)
-        struct.pack_into('<2f', m.data, off + i * per, dx * mult, dy * mult)
-    return n
+# The readers and the scaler live in halo3_reload (the Movement Speed cards use them).
+move_anims = hr.h1_move_anims
+speed = hr.h1_move_speed
 
 
 def _pick(m, globs, skips):
@@ -108,7 +66,10 @@ def main():
         print(p)
         for nm, fc, it, size, off in move_anims(m, b):
             if not a.show and a.mult and off is not None and off not in done:
-                scale(m, fc, it, size, off, a.mult)
+                per = hr.H1_INFO_SIZES[it] if 0 <= it < len(hr.H1_INFO_SIZES) else 0
+                for i in range(min(fc, size // per) if per else 0):
+                    dx, dy = struct.unpack_from('<2f', m.data, off + i * per)
+                    struct.pack_into('<2f', m.data, off + i * per, dx * a.mult, dy * a.mult)
                 done.add(off)
             sx, sy, v = speed(m, fc, it, size, off)
             print('   %-36s fc=%3d type=%d  dx=%7.3f dy=%7.3f  %5.2f wu/s' % (nm, fc, it, sx, sy, v))
