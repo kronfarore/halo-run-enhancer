@@ -3,8 +3,10 @@
  "bank_id": 3034130382,
  "events": [
   "play_wea_port_focus_rifle_fire_in",
-  "stop_wea_port_focus_rifle_fire"
+  "stop_wea_port_focus_rifle_fire",
+  "play_wea_port_focus_rifle_overheat",
+  "play_wea_port_focus_rifle_overheat_exit"
  ],
- "source": "Reach focus_rifle 3p firing set (sfx.fsb 10952-10954) as PCM, in a renamed copy of the Halo 4 sentinel bank",
- "bytes": 1540856
+ "source": "Reach focus_rifle 3p firing set (sfx.fsb 10952-10954) as PCM, in a renamed copy of the Halo 4 sentinel bank; the Beam Rifle overheat foley events imported from beam_rifle_player",
+ "bytes": 1746767
 }

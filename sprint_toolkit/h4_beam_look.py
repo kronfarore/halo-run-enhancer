@@ -60,7 +60,11 @@ LIFESPAN_SCALE = 0.5
 #: first quarter of a segment's life, then down to 0 -- and the materials blend
 #: add_src_times_srcalpha (both), so alpha dims the additive glow. Copied onto every tracer.
 FADE = ('profile alpha',)
-#: the streak's curve is scaled 0..0.9 (floats +4/+8 of the function data); the beam's
+#: boot 32 (user): "the fade could be stronger" -> the streak's SECOND tracer (blue_haze):
+#: (0,1) (0.2,0.747) (0.877,0) (1,0), fading from the start -- half alpha at ~0.4 of a
+#: segment's life against ~0.73 with the core's curve (tracer 0, boot 32)
+FADE_FROM = 1
+#: the streak's curves are scaled 0..0.9 (floats +4/+8 of the function data); the beam's
 #: own alpha was 1.0, so the peak goes back to 1.0 -- the fade only, not a dimmer beam
 FADE_PEAK = 1.0
 
@@ -163,8 +167,12 @@ def main(write):
             e = tracers.Elements[i]
             name = e.SelectField('tracer name').GetStringData()
             copied = 0
-            for fn in BEHAVIOUR + FADE:
+            for fn in BEHAVIOUR:
                 copied += copy_fields(field(donor.Fields, fn).Elements[0].Fields,
+                                      field(e.Fields, fn).Elements[0].Fields)
+            fade_donor = br.tag.SelectField('tracers').Elements[FADE_FROM]
+            for fn in FADE:
+                copied += copy_fields(field(fade_donor.Fields, fn).Elements[0].Fields,
                                       field(e.Fields, fn).Elements[0].Fields)
             fade = field(field(e.Fields, 'profile alpha').Elements[0].Fields, 'data')
             raw = bytearray(fade.GetData())

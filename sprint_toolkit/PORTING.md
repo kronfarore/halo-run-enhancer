@@ -2291,7 +2291,23 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   bank's ROOT actor-mixer, which every sound of the bank plays through (checked: all 15
   sounds); the patcher passes `port_sounds.ensure('halo4', root, volume={port: dB})`.
   Focus Rifle mixer ships at -6 dB -> +6 headroom (capped at 0 until a boot shows Wwise
-  plays a mixer above 0 louder). Test (boot 32): installed at -20.
+  plays a mixer above 0 louder). Boot 32: installed at -20 -> the beam "basically
+  silent", the OVERHEAT NOT -- it was never the weapon's sound:
+* **The Focus Rifle's overheat sound came from the FP GRAPH**, not the weapon: the port's
+  graph is a byte copy of the Beam Rifle's and cues the Beam Rifle's foley on
+  `overheating` (event-list sound reference 54) and `o_h_exit` (58), from the stock
+  beam_rifle_player bank. (The weapon's own overheat attachments -- Reach-era
+  fr_overheat lsnd, the Sentinel's overheated.effect -> bishop_beam -- name events no
+  installed bank has: silent.) Now: h4_sound_bank.py IMPORTS those two events WHOLE into
+  port_focus_rifle (event, actions, container + sounds, Vorbis media, their root
+  actor-mixers trimmed to the copied children, the attenuation share-set they name),
+  every id renamed, each copied root given a Volume property (0 dB) -- port_volume shifts
+  EVERY root. h4_make_port_weapon.make_sound_tags: own overheat sound tags on the new
+  events, the own event list's references 54/58 -> them, and the own graph's `imported
+  events` -> its OWN event list (it still named the Beam Rifle's: the copied list was
+  unused). Tag paths in an H4 tag file: a `frgt` chunk, group `!dns`, path WITHOUT
+  extension. Headroom is now 0 (the copied roots sit at 0 dB) until a boot shows Wwise
+  plays a mixer above 0 louder -- boot 33 tests overheat roots at +12, fire as built.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
@@ -2522,7 +2538,8 @@ all three tracers (FADE), peak kept at 1.0 (the streak's is 0.9). Both blend
 add_src_times_srcalpha, so alpha dims the glow. ManagedBlam's TagValueCustomFunctionEditor
 (`st.SelectField('Mapping').Value`) EVALUATES and edits these curves: Evaluate(x, range),
 Get/SetControlPoint(graph, i) -- use it to read a function's shape instead of decoding
-the blob. Untested in game (boot 32).
+the blob. Boot 32: fade visible, "could be stronger" -> the streak's SECOND tracer's
+curve (blue_haze: (0,1) (0.2,0.747) (0.877,0) (1,0)), FADE_FROM = 1 (boot 33).
 
 **Boot 15 (rebuild):** the Plasma Pistol graph has NO pop -> the Beam Rifle chain. Its VENT
 set (vent_enter/loop/exit, absent from the Plasma Pistol's; vent_enter steps 0.058) is now

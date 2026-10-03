@@ -169,8 +169,14 @@ def _node_base(bank, t, at):
 
 
 def _root_mixer(bank):
-    """(mixer id, offset of its Volume float) -- the one actor-mixer every sound of the
-    bank descends from. Raises ValueError when the bank is not shaped like that."""
+    """(mixer id, offset of its Volume float) of the FIRST root (reports)."""
+    return _root_mixers(bank)[0]
+
+
+def _root_mixers(bank):
+    """[(mixer id, offset of its Volume float)] -- the actor-mixers at the top of the bank
+    (parent outside it); every sound must descend from one, and every root must carry a
+    Volume property (h4_sound_bank.py gives imported roots one). ValueError otherwise."""
     objs = _hirc(bank)
     parent, ours = {}, {oid for _t, oid, _a, _n in objs}
     mixers = []
@@ -183,40 +189,47 @@ def _root_mixer(bank):
         parent[oid] = struct.unpack_from('<I', bank, p + 4)[0]
         if t == HIRC_MIXER and parent[oid] not in ours:
             mixers.append((oid, p + 8))
-    if len(mixers) != 1:
-        raise ValueError('%d root actor-mixers (want 1)' % len(mixers))
-    root, p = mixers[0]
+    if not mixers:
+        raise ValueError('no root actor-mixer')
+    roots = {r for r, _p in mixers}
     for t, oid, _a, _n in objs:
         if t != HIRC_SOUND:
             continue
         o, seen = oid, set()
-        while o in parent and o != root and o not in seen:
+        while o in parent and o not in roots and o not in seen:
             seen.add(o)
             o = parent[o]
-        if o != root:
-            raise ValueError('sound %#x does not play through mixer %#x' % (oid, root))
-    # two flag bytes, then the prop bundle: count, ids, 4-byte values
-    n = bank[p + 2]
-    ids = list(bank[p + 3:p + 3 + n])
-    if PROP_VOLUME not in ids:
-        raise ValueError('mixer %#x carries no Volume property' % root)
-    return root, p + 3 + n + 4 * ids.index(PROP_VOLUME)
+        if o not in roots:
+            raise ValueError('sound %#x does not play through a root mixer' % oid)
+    out = []
+    for root, p in mixers:
+        # two flag bytes, then the prop bundle: count, ids, 4-byte values
+        n = bank[p + 2]
+        ids = list(bank[p + 3:p + 3 + n])
+        if PROP_VOLUME not in ids:
+            raise ValueError('mixer %#x carries no Volume property' % root)
+        out.append((root, p + 3 + n + 4 * ids.index(PROP_VOLUME)))
+    return out
 
 
-def bank_volume(bank, db):
-    """The bank with its root mixer's Volume shifted by `db` (capped at CEILING_DB).
-    Same length; returns (new bytes, old dB, new dB)."""
-    _root, o = _root_mixer(bank)
-    old = struct.unpack_from('<f', bank, o)[0]
-    new = min(old + db, CEILING_DB)
+def bank_volume(bank, db, cap=True):
+    """The bank with EVERY root mixer's Volume shifted by `db` (each capped at
+    CEILING_DB unless cap=False -- a test). Same length; returns (new bytes, old dB, new
+    dB) of the first root."""
     out = bytearray(bank)
-    struct.pack_into('<f', out, o, new)
-    return bytes(out), old, new
+    first = None
+    for _root, o in _root_mixers(bank):
+        old = struct.unpack_from('<f', bank, o)[0]
+        new = old + db if not cap else min(old + db, CEILING_DB)
+        struct.pack_into('<f', out, o, new)
+        first = first or (old, new)
+    return bytes(out), first[0], first[1]
 
 
 def bank_headroom(bank):
-    _root, o = _root_mixer(bank)
-    return round(CEILING_DB - struct.unpack_from('<f', bank, o)[0], 2)
+    """How far the knob can go UP: the smallest distance of any root below CEILING_DB."""
+    return round(min(CEILING_DB - struct.unpack_from('<f', bank, o)[0]
+                     for _r, o in _root_mixers(bank)), 2)
 
 
 def main():

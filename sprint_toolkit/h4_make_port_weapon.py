@@ -90,6 +90,19 @@ SENTINEL_SBNK = r'sound\soundbanks\characters\sentinel.soundbank'
 SENTINEL_IN = r'sound\storm\characters\sentinel\npc_sentinel_friendly_beam_fire_in.sound'
 SENTINEL_OUT = r'sound\storm\characters\sentinel\npc_sentinel_friendly_beam_fire_out.sound'
 SENTINEL_LSND = r'sound\storm\characters\sentinel\loops\npc_sentinel_friendly_beam_fire.sound_looping'
+# the OVERHEAT sound (2026-10-03): the fp graph (a byte copy of the Beam Rifle's) cues the
+# Beam Rifle's foley on `overheating` and `o_h_exit`; h4_sound_bank.py copies those two
+# events into the port's bank (renamed), and the port's OWN event list points its two
+# sound references at own sound tags naming them -- so the volume knob turns them too.
+FP_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle'
+OH_SOUNDS = [  # (event-list sound reference index, Beam Rifle source tag, own tag, own event)
+    (54, r'sound\storm\characters\storm_fp\weapons\rifle\storm_beam_rifle\foley\mc_mech_fly'
+         r'\wea_beam_rifle_oh_foley_enter_player.sound',
+     r'sound\weapons\focus_rifle\port\focus_rifle_overheat.sound',
+     'play_wea_port_focus_rifle_overheat'),
+    (58, r'sound\storm\weapons\beam_rifle\cov_beam_first_person_o_h_exit_player_01.sound',
+     r'sound\weapons\focus_rifle\port\focus_rifle_overheat_exit.sound',
+     'play_wea_port_focus_rifle_overheat_exit')]
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
@@ -363,6 +376,31 @@ def make_sound_tags():
     by_name(SND_OUT, [('set:event name', SND_EVENT_OUT), ('sound bank', SND_BANK)])
     by_name(SND_LOOP, [('tracks[0]/in', SND_IN), ('tracks[0]/out', SND_OUT)])
     print('own sound tags: %s (+ in/out sounds, soundbank %s)' % (SND_LOOP, SND_BANK_NAME))
+    # the overheat foley: own sound tags on the imported events, the port's own event list
+    # names them, and the port's graph imports its OWN event list (it named the Beam Rifle's)
+    fel = FP_GRAPH + '.frame_event_list'
+    fel_pairs = []
+    for idx, src, dst, event in OH_SOUNDS:
+        if fel_sound(fel, idx) not in (src.lower(), dst.lower()):
+            raise SystemExit('%s sound references[%d] is %r, not %s'
+                             % (fel, idx, fel_sound(fel, idx), src))
+        shutil.copyfile(os.path.join(TAGS, src), os.path.join(TAGS, dst))
+        by_name(dst, [('set:event name', event), ('set:player event name', event),
+                      ('sound bank', SND_BANK)])
+        fel_pairs.append(('sound references[%d]/sound' % idx, dst))
+    by_name(fel, fel_pairs)
+    by_name(FP_GRAPH + '.model_animation_graph', [('imported events', fel)])
+    print('overheat sounds: %s' % ', '.join(d.rsplit('\\', 1)[-1] for _i, _s, d, _e in OH_SOUNDS))
+
+
+def fel_sound(fel, idx):
+    """The sound an event list names at sound reference `idx` (lower case), read from the
+    tag file: the references are stored in order, so the idx-th sound path is it. A tag
+    reference there is a `frgt` chunk: group `!dns`, then the path WITHOUT extension."""
+    import re
+    raw = open(os.path.join(TAGS, fel), 'rb').read()
+    paths = re.findall(rb'!dns(sound\\[\x20-\x7e]+?)(?=frgt)', raw)
+    return None if idx >= len(paths) else paths[idx].decode('latin-1').lower() + '.sound'
 
 
 def by_name(tag, pairs):
