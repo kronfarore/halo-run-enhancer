@@ -413,7 +413,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'odst_profiles_by_insertion', 'carry_magnitudes_across_games',
                'other_chance', 'other_weights', 'other_hero_enabled',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
-               'other_bane_enabled',
+               'other_bane_enabled', 'identity_other_card',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1160,6 +1160,10 @@ CONFIG = {
     "other_skull_enabled": True,
     "other_ally_enabled": True,
     "other_bane_enabled": True,
+    # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
+    # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
+    # one enemy card only.
+    "identity_other_card": False,
     # Tag basename -> the name that weapon is offered under. Anything not named here
     # (multiplayer props like the ball and flag, turrets, vehicle guns) is not a run
     # weapon and is simply not offered, so an unknown basename fails closed.
@@ -8830,9 +8834,13 @@ class MagnitudeEditorDialog(QDialog):
                 if lad and n >= len(lad) and self._stacked_op(eff, t, '') == str(lad[-1]):
                     continue                     # the ladder's last rung
                 c = int(eff.get('count') or 1)
+                inv = self._step_inverted(eff) != (c < 0)
                 ilad = self._inverse_ladder(t)
-                if ilad and (self._step_inverted(eff) != (c < 0)) and abs(c) >= len(ilad):
+                if ilad and inv and abs(c) >= len(ilad):
                     continue                     # the INVERSE ladder's last rung (zoom gone)
+                st = t.get('steps')
+                if st and not inv and abs(c) >= len(st) and self._stacked_op(eff, t, '') == str(st[-1]):
+                    continue                     # a `steps` ladder's last rung (reload *0.1)
                 lo, hi = t.get('min'), t.get('max')
                 if lo is None and hi is None:
                     ok = False
@@ -10280,6 +10288,14 @@ class OptionsDialog(QDialog):
         _gw = QWidget()
         _gw.setLayout(grid)
         rform.addRow("Kinds & weights:", _gw)
+        self.identity_other_cb = QCheckBox("Weapon Identity rounds also draw an Other card")
+        self.identity_other_cb.setChecked(bool(CONFIG.get('identity_other_card', False)))
+        self.identity_other_cb.setToolTip(
+            "Off: a Weapon Identity offer is the tied weapon pair plus one enemy card.\n"
+            "On: each offer also rolls the Other slot exactly like a normal round (the "
+            "Other-card chance and the kinds and weights above) -- a fourth card. A Bane "
+            "takes the enemy card's place there too, as it always does.")
+        rform.addRow("", self.identity_other_cb)
 
         self.new_weapon_chance = QDoubleSpinBox()
         self.new_weapon_chance.setRange(0.0, 1.0)
@@ -11928,6 +11944,7 @@ class OptionsDialog(QDialog):
             'other_skull_enabled': self.other_weight_boxes['skull'][0].isChecked(),
             'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
             'other_bane_enabled': self.other_weight_boxes['bane'][0].isChecked(),
+            'identity_other_card': self.identity_other_cb.isChecked(),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'new_equipment_chance': round(self.new_equipment_chance.value(), 2),
             'balance_item_counts': self.balance_items_cb.isChecked(),
@@ -15849,8 +15866,9 @@ class RunEnhancer:
             self.run_state.weapons_for(player), list(self.run_state.blacklist or []), game)
         out = {}
         for m in pool:
+            # no special (escalating-odds) cards in an identity pair (user, 2026-10-03)
             if m.get('weapon') and m.get('source') != 'General' and not m.get('equipment') \
-                    and self.db.get_mod_label(m) not in locked:
+                    and not m.get('special') and self.db.get_mod_label(m) not in locked:
                 out.setdefault(m['weapon'], []).append(m)
         return out
 
@@ -15870,7 +15888,8 @@ class RunEnhancer:
     def generate_identity_pairs(self, for_player='player1'):
         """A Weapon Identity round's three offers (user, 2026-10-03). Each: one of the
         player's weapons, a card for it at x2 tied to another card for it at the
-        inverted step, plus a normal enemy card -- no Other slot, no boss, no new weapon.
+        inverted step, plus a normal enemy card -- no boss, no new weapon, no special
+        cards, and the Other slot only with the 'identity_other_card' option.
           1. every identity pair the player already has is GUARANTEED an offer;
           2. the rest go to new pairs for weapons WITHOUT an identity (one identity per
              weapon), cycling through them;
@@ -15915,16 +15934,31 @@ class RunEnhancer:
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)
                    else [random.choice(enemy_mods) if enemy_mods else None for _ in slots])
+        # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
+        with_other = bool(CONFIG.get('identity_other_card'))
+        active_neg = self._active_negative_names() if with_other else set()
         pairs = []
         for i, ((w, up, down, locked), enemy) in enumerate(zip(slots, enemies)):
+            other = {'wildcard_mod': None, 'hero_mod': None, 'skull_mod': None,
+                     'exhaust_mod': None}
+            if with_other:
+                kind, card = self._draw_other(mid, game, bl, active_neg, enemy_mods)
+                if kind == 'bane':
+                    enemy = card                  # a Bane takes the enemy card's place
+                elif kind == 'skull':
+                    other['skull_mod'] = card
+                    active_neg = set(active_neg) | {card.get('name')}
+                elif kind in ('hero', 'exhaust'):
+                    other[kind + '_mod'] = card
+                elif kind == 'ally':
+                    other['wildcard_mod'] = card
             pairs.append({
                 'id': i + 1, 'kind': 'identity',
                 'identity': {'weapon': w, 'up': copy.deepcopy(up),
                              'down': copy.deepcopy(down), 'locked': locked},
                 'player1_mod': None, 'player2_mod': None, 'enemy_mod': enemy,
-                'wildcard_mod': None, 'boss_mod': None, 'hero_mod': None,
-                'skull_mod': None, 'exhaust_mod': None, 'new_weapon': None,
-                'no_negative': False, 'selected_by': None})
+                'boss_mod': None, 'new_weapon': None,
+                'no_negative': False, 'selected_by': None, **other})
         self.run_state.pairs = pairs
         self.run_state.current_turn = for_player
         return pairs
