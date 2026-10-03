@@ -1,15 +1,15 @@
 r"""Halo 4 port, step 9: the port's OWN first-person graph.
 
 NOW (boot 26): a BYTE COPY of the shipped Beam Rifle graph, plus ONE fix -- the
-`overheating` loop frame index (set_loop_frames, the real cause of the overheat pop).
-THE FOUNDRY RE-EXPORT BELOW CAUSED THE RETICLE DRIFT ("drifts while looking around, always
-right, recentres when still; more the further I zoom"): every per-animation flag and
-timing matched Bungie's, but the round trip re-encoded every animation's data, and the
-reticle follows the first-person rig. Proven in the built map: the port pointed at
-Bungie's graph (h4_map_poke.py --graph-back) -> drift gone; that graph with only the
-loop-frame fix (--on-beam-graph --loop-frame 16=58) -> no pop, no jerk, no drift. The
-smoothing / shift / dropped animations below were side-tracks of the pop hunt: kept for
-reference behind --foundry, not used.
+`overheating` loop frame index (set_loop_frames, the cause of the overheat pop).
+On THIS port the re-exported graph below came with a reticle drift ("drifts while looking
+around, always right, recentres when still; more the further I zoom"): every
+per-animation flag and timing matched Bungie's, the animation data did not. In the built
+map: the port pointed at Bungie's graph (h4_map_poke.py --graph-back) -> drift gone; that
+graph with only the loop-frame fix (--on-beam-graph --loop-frame 16=58) -> no pop, no
+jerk, no drift. Not isolated: the Foundry round trip itself, or one of the edits
+(smoothing / shift / dropped animations). The old route stays behind --foundry -- a
+re-export may be fine for another port; one port is not enough to rule it out.
 
     blender --background --python h4_fp_graph.py [-- --write]            (the copy)
     blender --background --python h4_fp_graph.py -- --foundry [--write]  (old route)

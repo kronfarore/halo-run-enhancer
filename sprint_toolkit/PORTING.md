@@ -2480,22 +2480,29 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   acceleration scales 0 -> 1 (`--accel-scale`): no change; the port pointed at Bungie's
   own fp graph (`--graph-back`): **drift gone**; that graph with only the overheating
   loop-frame fix (`--on-beam-graph --loop-frame 16=58`): no pop, no jerk, no drift.
-* **Cause: the Foundry RE-EXPORT of the fp graph.** Every per-animation flag, loop frame
-  and frame count matched Bungie's (compiled diff); the round trip re-encodes every
-  animation's DATA, and the reticle follows the first-person rig while turning.
-  h4_fp_graph.py now makes the port's graph a BYTE COPY of the shipped one plus the
-  loop-frame fix (`--foundry` keeps the old route for reference). The earlier smoothing,
-  shift and dropped animations were side-tracks of the pop hunt.
-  **LESSON: never round-trip a shipped first-person graph through Foundry to change a
-  field -- copy the tag and edit the field (ManagedBlam).**
-* **Zoomed beam origin -- NOT POSSIBLE for an automatic weapon.** The Light Rifle
+* **Cause, in THIS port: the port's re-exported fp graph** (Foundry round trip plus the
+  smoothing/shift/drops of the pop hunt). Every per-animation flag, loop frame and frame
+  count matched Bungie's (compiled diff), but the animation DATA differs, and with
+  Bungie's own graph the drift is gone. Which part did it (the round trip itself, or one
+  of the edits) is NOT isolated. h4_fp_graph.py now makes the Focus Rifle's graph a BYTE
+  COPY of the shipped one plus the loop-frame fix; `--foundry` keeps the old route.
+  **For other ports, an observation, not a rule (one port so far):** if a re-exported
+  fp graph shows reticle drift, compare against the shipped graph by poke
+  (`--graph-back`) first, and prefer copy-and-edit-the-field when only a field needs to
+  change. A Foundry export may well work for another weapon -- verify on more H4 ports
+  before ruling it out.
+* **Zoomed beam origin -- not achieved on the Focus Rifle.** The Light Rifle
   (storm_forerunner_rifle) splits by zoom with trigger behavior **latch-zoom** (primary
-  barrel 0 unzoomed, secondary barrel 1 zoomed); `--zoom-barrel` proved it fires ONE shot
-  per press, zoomed or not. Only per-press weapons use it (BR, Light Rifle); every
-  automatic uses spew. The offset stays 0.03,-0.08,0 in both views (user accepted).
-* **TRAP: the build MERGES IDENTICAL BLOCKS.** Both barrels' first-person offsets (equal in
-  the kit) are ONE block in the map; poking one moves both. `--zoom-barrel` gives barrel 1
-  its own 12 bytes (halo_patch._h3_reserve).
+  barrel 0 unzoomed, secondary barrel 1 zoomed). On this port `--zoom-barrel` (latch-zoom,
+  nothing else changed) fired ONE shot per press, zoomed or not. Among the shipped H4
+  weapons only per-press ones use it (BR, Light Rifle); the automatics use spew. Untried:
+  other trigger settings alongside it (autofire time, a second trigger), and per-press
+  ports, where it may work as it does on the Light Rifle. The Focus Rifle keeps
+  0.03,-0.08,0 in both views (user accepted).
+* **Seen in the m30 build: identical blocks MERGED.** Both barrels' first-person offsets
+  (equal in the kit) were ONE block in the map, so poking one moved both. Check block
+  pointers before poking a per-barrel block; `--zoom-barrel` gives barrel 1 its own 12
+  bytes (halo_patch._h3_reserve) when they are shared.
 
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
