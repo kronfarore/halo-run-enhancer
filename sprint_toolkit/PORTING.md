@@ -2596,6 +2596,23 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   (bishop_beam_fire, bishop_beam bank) is first-person-only and its bank is not in m30's
   list. Next test (`--firing-loop`): the Sentinel loop as attachment 0, scaled by
   `primary_firing` -- the way the overheat sound already works on this port.
+* **Boot 30 -- REACH'S FIRING SOUND PLAYS IN HALO 4.** `--firing-loop` made firing
+  audible (start sound + loop; overheat still plays); with the rebuilt sentinel bank
+  installed (`h4_sound_test.py --install`; the first retest was void because `--restore`
+  had left its record and `--install` refused -- fixed) the port plays Reach's Focus Rifle
+  audio, before and after an MCC restart. The chain holds on this port: Reach audio from
+  sfx.fsb (vgmstream) -> hand-written PCM WEM -> rebuilt v88 bank -> appended to
+  sfxbank.pck with its LUT entry repointed -> a weapon object attachment (lsnd) scaled by
+  primary_firing. Still a TEST: it lives in the Sentinel's bank and on map pokes.
+* **Zoom sounds:** the Sentinel base named the bishop beam's NONPLAYER zoom events (bank
+  bishop_beam, not in m30) -- silent. Reach's Focus Rifle used the Beam Rifle's zoom
+  sounds; Halo 4's Beam Rifle has its own (weapons_covenant/beam_rifle bank, in m30).
+  Kit (h4_make_port_weapon.py) + poke `--zoom-sounds`.
+* **Next:** the port's OWN bank (own event names, Reach in/loop/out as PCM), own
+  .sound / .sound_looping / .soundbank tags in H4EK, the lsnd as a kit attachment on
+  primary_firing, the bank added to sfxbank.pck as a NEW LUT entry (the header grows by
+  20 bytes, so every bank start shifts) or in the DLC stub package; a restore path like
+  port_glyphs (Steam verify restores sfxbank.pck).
 * **Scope meters, in-map test pokes:** `--meters-visible`, `--meters-br-bitmap` (the Beam
   Rifle's heat_bar as a control). UI property names are in a string namespace the map
   reader does not resolve -- the poke matches by structure.
