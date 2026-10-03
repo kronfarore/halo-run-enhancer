@@ -2308,6 +2308,12 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   unused). Tag paths in an H4 tag file: a `frgt` chunk, group `!dns`, path WITHOUT
   extension. Headroom is now 0 (the copied roots sit at 0 dB) until a boot shows Wwise
   plays a mixer above 0 louder -- boot 33 tests overheat roots at +12, fire as built.
+* **Boot 33: WWISE PLAYS A MIXER ABOVE 0 dB LOUDER** (overheat at +12 "definitely
+  louder"; the exact amount not judged by ear) -- unlike the maps' Gain Base. Banks are
+  capped at port_volume.BANK_CEILING_DB = +12 (the highest value tested), so the Focus
+  Rifle's knob has +12 up (the overheat roots at 0) and the headroom rule is not needed
+  for Halo 4. The overheat plays from the port's own bank (imports confirmed); the
+  stronger fade (blue_haze curve) is good (user). As-built bank reinstalled.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 

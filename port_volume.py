@@ -124,13 +124,14 @@ def apply(m, game, weapon, db):
 # not map data. A port's bank is its own (every id renamed, h4_sound_bank.py), so nothing
 # is pooled and no marker is needed: the knob shifts the Volume property (v88 prop id 0x00,
 # dB float) of the bank's ROOT actor-mixer, which every sound of the bank plays through
-# (Wwise volumes add down the hierarchy). The Focus Rifle's mixer ships at -6 dB, so it
-# has +6 up before 0 -- capped at CEILING_DB like the maps, until a boot shows Wwise plays
-# a mixer above 0 louder.
+# (Wwise volumes add down the hierarchy). UNLIKE THE MAPS, WWISE PLAYS A MIXER ABOVE 0 dB
+# LOUDER (boot 33, 2026-10-03: overheat roots at +12 "definitely louder"), so banks are
+# capped at BANK_CEILING_DB, the highest value tested, not at 0.
 #: port -> (game folder, bank file under tool\port_sounds\<game>)
 PORT_BANKS = {'Focus Rifle': ('halo4', 'port_focus_rifle.bnk')}
 BANK_GAMES = {'Halo 4': 'halo4'}
 HIRC_SOUND, HIRC_CONTAINER, HIRC_MIXER = 2, 5, 7
+BANK_CEILING_DB = 12.0
 PROP_VOLUME = 0x00
 
 
@@ -214,21 +215,21 @@ def _root_mixers(bank):
 
 def bank_volume(bank, db, cap=True):
     """The bank with EVERY root mixer's Volume shifted by `db` (each capped at
-    CEILING_DB unless cap=False -- a test). Same length; returns (new bytes, old dB, new
-    dB) of the first root."""
+    BANK_CEILING_DB unless cap=False -- a test). Same length; returns (new bytes, old dB,
+    new dB) of the first root."""
     out = bytearray(bank)
     first = None
     for _root, o in _root_mixers(bank):
         old = struct.unpack_from('<f', bank, o)[0]
-        new = old + db if not cap else min(old + db, CEILING_DB)
+        new = old + db if not cap else min(old + db, BANK_CEILING_DB)
         struct.pack_into('<f', out, o, new)
         first = first or (old, new)
     return bytes(out), first[0], first[1]
 
 
 def bank_headroom(bank):
-    """How far the knob can go UP: the smallest distance of any root below CEILING_DB."""
-    return round(min(CEILING_DB - struct.unpack_from('<f', bank, o)[0]
+    """How far the knob can go UP: the smallest distance of any root below BANK_CEILING_DB."""
+    return round(min(BANK_CEILING_DB - struct.unpack_from('<f', bank, o)[0]
                      for _r, o in _root_mixers(bank)), 2)
 
 
