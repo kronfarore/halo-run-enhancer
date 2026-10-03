@@ -189,6 +189,9 @@ SET_REFS = [
     # zoomed ("for scoped weapons"), as the pistol does -- the port's stayed visible.
     ('set-flag:/flags', 'strict deviation angle'),
     ('set-flag:/flags', 'hide FP weapon when in iron sights'),
+    # a Sentinel (AI) leftover found by h4_weapon_diff.py (2026-10-03): the friendly-beam
+    # barrel logic of an AI gun; no player weapon carries it
+    ('clear-flag:/secondary flags', 'second barrel fires if friend is targeted'),
     ('set:aim speed multiplier', '1'),
     ('set-point:barrels[0]/first person offset', FP_OFFSET),
     ('set-point:barrels[1]/first person offset', FP_OFFSET),
