@@ -105,7 +105,12 @@ SET_REFS = [
     # its animations as a pistol 'bb' where the fp graph is the Beam Rifle's 'csr'.
     ('set:item/object/bounding radius', '0.3'),
     ('set:item/object/bounding offset', '0.215,0,0'),
-    ('set:weapon ready 1st person animation playback scale', '1'),
+    # STEP 9, swap timing (measured 2026-10-03, both graphs 30 fps): Reach's Focus Rifle
+    # ready = 22 frames (0.73 s), the Beam Rifle graph's = 24 (0.80 s); neither weapon
+    # sets a ready time. 24/22 makes the ordinary ready Reach's. The one scale also moves
+    # ready_initial (29 in both -> 0.81 s) and ready_overheated (19 vs Reach's 22) --
+    # the common swap wins. put_away: 5 vs 6 frames (33 ms), no field for it; left.
+    ('set:weapon ready 1st person animation playback scale', '1.0909'),
     ('set:weapon name', 'csr'),
     ('set:weapon class', 'rifle'),
     # WHERE THE BEAM STARTS (boot 15: "appears in the centre of the screen"). Projectiles

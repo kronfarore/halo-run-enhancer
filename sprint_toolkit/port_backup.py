@@ -188,6 +188,27 @@ H4_FILES = [
      'catalog/balance_Focus_Rifle_HaloReach_to_Halo4.json'),
     (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md'),
 ]
+# shared files the H4 port EDITS IN PLACE: the two string lists (fr_* pickup lines,
+# focus_rifle_icon) as tags and as source text in every language folder, and the LIVE icon
+# font packages carrying the port's glyph U+E1F6 (h4_weapon_glyph.py) -- a Steam update
+# or verify restores the stock packages, and an EK reinstall the stock string lists.
+H4_SHARED = [
+    (os.path.join(H4EK, 'tags', 'ui', 'strings', n + '.multilingual_unicode_string_list'),
+     'tags/ui/strings/%s.multilingual_unicode_string_list' % n) for n in ('ingame', 'weapons')
+] + [
+    (os.path.join(H4EK, d, 'ui', 'strings', n + '.txt'), '%s/ui/strings/%s.txt' % (d, n))
+    for d in ['data'] + ['data_' + x for x in ('chs', 'cht', 'de', 'dk', 'fi', 'fr', 'it',
+                                               'jpn', 'kor', 'mx', 'nl', 'no', 'pl', 'pt',
+                                               'ru', 'sp')]
+    for n in ('ingame', 'weapons')
+] + [
+    (os.path.join(GAME, 'halo4', 'maps', 'fonts', f), 'live_fonts/' + f)
+    for f in ('font_package_icon.bin', 'font_package_icon_x2.bin',
+              'font_package_icon_x3.bin', 'font_package_icon_x4.bin')
+]
+H4_MAPS = [
+    (os.path.join(GAME, 'halo4', 'maps', 'm30_cryptum.map'), 'maps/m30_cryptum.map'),
+]
 H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
               'h4_make_port_weapon.py', 'h4_weapon_refs.py', 'h4_tag_numbers.py', 'balance_port.py',
               'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py', 'h4_beam_look.py', 'h4_port_messages.py',
@@ -203,7 +224,7 @@ PROFILES = {
            'scripts': H2_SCRIPTS, 'label': 'saw-h2'},
     'reach': {'trees': REACH_TREES, 'shared': REACH_SHARED, 'files': REACH_FILES,
               'maps': REACH_MAPS, 'scripts': REACH_SCRIPTS, 'label': 'saw-reach'},
-    'h4': {'trees': H4_TREES, 'shared': [], 'files': H4_FILES, 'maps': [],
+    'h4': {'trees': H4_TREES, 'shared': H4_SHARED, 'files': H4_FILES, 'maps': H4_MAPS,
            'scripts': H4_SCRIPTS, 'label': 'focus-rifle-h4'},
 }
 
