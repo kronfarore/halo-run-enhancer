@@ -2236,6 +2236,15 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   Banks: Vorbis 48 kHz stereo ~70 kbps (H3 7 streams, ODST 13).
 * the ports live in ONE map each: Halo 3 010_jungle, ODST sc150.
 * if it plays: the same follow-up as Reach -- is the bank needed? (no rebuild).
+* **CONFIRMED in game (2026-10-03): Halo 3 and ODST play the SAW's own sounds** (stock
+  route). Lessons: h3_build_map.py only BUILDS -- install with `h3_saw_deploy.py --install
+  --baseline`; ODST levels are levels\atlas (h3_build_map fixed); h3_chunk_check.py takes
+  the map NAME, not a path (sc150: every SAW chunk backed, the four sounds included).
+* **"More oomph" (user):** the per-shot mix left out Halo 4's 0.35 s PUNCH layer (fire_in
+  #9: the loudest, most low end, 16% below 150 Hz), and its level already matched the
+  Reach AR (-16 vs -17 dBFS RMS) -- the gap is low end (11.6% vs the AR's 13.9%).
+  Candidates for listening: sprint_toolkit\sound_compare\oomph (A current, B + punch,
+  C + punch + 4 dB below 150 Hz, level-matched; the AR shot for reference).
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
