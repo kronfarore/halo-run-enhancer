@@ -7920,6 +7920,41 @@ def apply_ammo_display(m, game, registry, before):
     return out
 
 
+def apply_port_volume(m, game, volume):
+    """`volume` {weapon: dB}; 0 = as built (no call). A map built without the volume
+    marker has the port's gain entry pooled with stock sounds: port_volume refuses
+    (ValueError, nothing written) and that is reported as one skipped row."""
+    out = []
+    try:
+        import port_volume
+    except Exception as e:
+        return [{'effect': 'port volume', 'field': 'gain', 'ok': False,
+                 'reason': 'port_volume not available: %s' % e}]
+    for weapon, db in (volume or {}).items():
+        try:
+            db = float(db or 0)
+        except (TypeError, ValueError):
+            continue
+        if not db:
+            continue
+        row = {'effect': 'port volume', 'tag': weapon, 'field': 'gain %+g dB' % db}
+        try:
+            rows = port_volume.apply(m, game, weapon, db)
+        except ValueError as e:
+            out.append({**row, 'ok': True, 'skip': True,
+                        'reason': 'map built without the volume marker (rebuild it): %s' % e})
+            continue
+        except Exception as e:
+            out.append({**row, 'ok': False, 'reason': '%s: %s' % (type(e).__name__, e)})
+            continue
+        if not rows:
+            continue                      # a game / weapon port_volume does not cover
+        out.append({**row, 'ok': True,
+                    'old': ', '.join('%.2f' % r[1] for r in rows),
+                    'new': ', '.join('%.2f' % r[2] for r in rows) + ' dB (%d entries)' % len(rows)})
+    return out
+
+
 def apply_weapon_ports(m, game, registry, ports):
     """Write each enabled port's balance rows and retime its animations.
 
@@ -7992,7 +8027,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               equipment_drop=False, par_time_scale=None, from_baseline=True, remove_cutscenes=False, skulls=(),
               equipment_swaps=None, spawn_equipment=None, spawn_weapons=None,
               sprint=None, h4_sprint=None,
-              difficulty_baseline=None, weapon_ports=None, ammo_display=True,
+              difficulty_baseline=None, weapon_ports=None, port_volume=None, ammo_display=True,
               red_plasma=None, odst_downgrade=None, equipment_ai_drops=False,
               add_respawn_profile=False, extra_squads=None,
               keep_title_hud=False, keep_loadout=False, skip_space=False,
@@ -8030,6 +8065,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # cards scale from it -- hence before every op, like the difficulty baseline. The
         # patcher's vanilla column applies the same table (see weapon_ports.balance_map).
         results.extend(apply_weapon_ports(m, game, registry, weapon_ports))
+    if port_volume:
+        # Per-port volume knob (port_volume.py): SHIFTS the port's own sound gains by
+        # dB relative to the map as built -- so only ever on this fresh baseline copy.
+        results.extend(apply_port_volume(m, game, port_volume))
 
     if difficulty_baseline:
         # FIRST of everything: the whole-game dials are the floor the run's own enemy

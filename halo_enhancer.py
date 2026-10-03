@@ -561,7 +561,10 @@ ZOOM_DONOR_WEAPONS = {
 SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'zoom_donor_by_weapon', 'mcc_root', 'show_new_at_top',
                  'options_dialog_size', 'patcher_dialog_size',
                  'shared_session_dir', 'shared_session_autosave',
-                 'vault_dir', 'baseline_root') + OPTION_KEYS
+                 'vault_dir', 'baseline_root',
+                 # per-port volume: a listening preference, NOT gameplay -- each co-op
+                 # partner sets their own, and it stays out of the run and patch code
+                 'weapon_port_volume') + OPTION_KEYS
 
 
 def mcc_root():
@@ -985,6 +988,8 @@ CONFIG = {
     # Options -> Weapon ports: ported weapons join every weapon pick (initial
     # selection, New Weapon, automatic rolls) on levels whose map carries them
     "weapon_ports_in_pools": False,
+    # {game: {weapon: dB}}: shift a port's own sounds (port_volume.py), 0 = as built.
+    "weapon_port_volume": {},
     "h1_spawn_all_weapons": False,
     "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
@@ -5292,6 +5297,12 @@ class MagnitudeEditorDialog(QDialog):
         except Exception:
             return None
 
+    def _port_volume_for_patch(self):
+        """{weapon: dB} of the volume knobs for this game's ENABLED ports (0s left out)."""
+        vol = (CONFIG.get('weapon_port_volume') or {}).get(self.game) or {}
+        on = {p.get('weapon') for p in (self._weapon_ports_for_patch() or [])}
+        return {w: float(v) for w, v in vol.items() if w in on and v} or None
+
     def _port_balance(self):
         """{(class, tag, field, block): value} the port balance will write. The vanilla
         column must show these: they are written BEFORE every card op, so they are the
@@ -8594,6 +8605,7 @@ class MagnitudeEditorDialog(QDialog):
                 par_time_scale=float(CONFIG.get('par_time_scale') or 1.0),
                 enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
+                port_volume=self._port_volume_for_patch(),
                 ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
                 keep_loadout=bool(CONFIG.get('reach_keep_loadout')),
                 skip_space=bool(CONFIG.get('reach_skip_space')),
@@ -8652,6 +8664,7 @@ class MagnitudeEditorDialog(QDialog):
                     skulls=skulls,
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
+                port_volume=self._port_volume_for_patch(),
                 ammo_display=bool(CONFIG.get('ammo_display_follows_magazine', True)),
                     red_plasma=(CONFIG.get('odst_brute_plasma_tuning')
                                 if CONFIG.get('odst_red_plasma_as_brute') else None),
@@ -11856,6 +11869,7 @@ class OptionsDialog(QDialog):
         lay.addWidget(gen)
         self._ports_boxes = {}
         self._ports_ammo = {}
+        self._ports_volume = {}
         for game in BASELINE_GAMES:
             ports = self._ports_catalog.get(game) or []
             gb = QGroupBox(game)
@@ -11872,8 +11886,20 @@ class OptionsDialog(QDialog):
                 cb.setToolTip(port.get('desc') or '')
                 self._ports_boxes[(game, port.get('weapon'))] = cb
                 ammo = port.get('ammo') or {}
+                vol = self._port_volume_widgets(game, port.get('weapon'))
                 if not ammo:
-                    f.addRow("Port:", cb)
+                    if vol:
+                        row = QWidget()
+                        rl = QHBoxLayout(row)
+                        rl.setContentsMargins(0, 0, 0, 0)
+                        rl.addWidget(cb)
+                        rl.addSpacing(12)
+                        rl.addWidget(vol[0])
+                        rl.addWidget(vol[1])
+                        rl.addStretch(1)
+                        f.addRow("Port:", row)
+                    else:
+                        f.addRow("Port:", cb)
                     continue
                 # Which ammo pickup the port's magazines accept. A port has no pickup
                 # item of its own (the SAW's home game has no ammo pickups at all), so
@@ -11922,6 +11948,10 @@ class OptionsDialog(QDialog):
                 combo.setMinimumWidth(0)
                 combo.setMaximumWidth(340)
                 combo.view().setMinimumWidth(view_w)
+                if vol:
+                    rl.addSpacing(12)
+                    rl.addWidget(vol[0])
+                    rl.addWidget(vol[1])
                 f.addRow("Port:", row)
                 self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
@@ -11931,6 +11961,37 @@ class OptionsDialog(QDialog):
         # Debug-only: the nav entry is hidden unless Debug is on (the page itself stays
         # built, so its values are still saved either way).
         self._ports_nav_row = self._opt_nav.count() - 1
+
+    def _port_volume_widgets(self, game, weapon):
+        """(label, spin box) for a port's volume knob, or None where port_volume does
+        not reach yet (Halo 1, Halo 2, the Halo 4 bank ports)."""
+        try:
+            import port_volume
+        except Exception:
+            return None
+        if game not in port_volume.LAYOUT or weapon not in port_volume.PORT_SOUNDS:
+            return None
+        sp = QDoubleSpinBox()
+        sp.setRange(-24.0, 3.0)
+        sp.setSingleStep(0.5)
+        sp.setDecimals(1)
+        sp.setSuffix(" dB")
+        sp.setValue(float(((CONFIG.get('weapon_port_volume') or {}).get(game) or {})
+                          .get(weapon, 0.0) or 0.0))
+        # a new widget class in this dialog needs its own colours (dark-theme trap)
+        sp.setStyleSheet("QDoubleSpinBox { background-color: #1a1a1a; color: #e0e0e0; "
+                         "border: 1px solid #3a3a3a; padding: 2px; }")
+        tip = ("How loud this port's own sounds play, in dB against the map as built. 0 = "
+               "as built. Every port ships at -3 dB on purpose: the engine plays nothing "
+               "louder than 0 dB, so +3 is the most the knob can raise it; down has no "
+               "limit.\n\nYour own setting -- not part of the run, so a co-op partner "
+               "sets theirs. Needs a map built with the port's volume marker; on an older "
+               "build the patch log says to rebuild it.")
+        sp.setToolTip(tip)
+        lbl = QLabel("Volume:")
+        lbl.setToolTip(tip)
+        self._ports_volume[(game, weapon)] = sp
+        return lbl, sp
 
     def _sync_ports_page(self):
         row = getattr(self, '_ports_nav_row', None)
@@ -12070,6 +12131,10 @@ class OptionsDialog(QDialog):
                                if (g, w) in self._ports_ammo else {}))
                     for (g2, w), cb in self._ports_boxes.items() if g2 == g}
                 for g in {gg for gg, _ in self._ports_boxes}},
+            'weapon_port_volume': {
+                g: {w: round(sp.value(), 1) for (g2, w), sp in self._ports_volume.items()
+                    if g2 == g}
+                for g in {gg for gg, _ in self._ports_volume}},
             'weapon_ports_balance': self._ports_balance_cb.isChecked(),
             'weapon_ports_in_pools': self._ports_pools_cb.isChecked(),
             'weapon_ports_balance_anims': self._ports_anim_cb.isChecked(),
