@@ -2185,6 +2185,7 @@ enhancer patch rebuilds from the old one.
     blender --background --python h4_foundry_port.py -- --export    (H4EK)
     python h4_reach_scope_art.py --write         scope bitmaps (once; boot 21)
     python h4_muzzle_recolor.py --write          own orange muzzle effect (boot 21)
+    blender --background --python h4_fp_graph.py -- --write   own fp graph = byte copy + loop fix
     python h4_make_port_weapon.py --write        re-copies the donor weapon every time
                                                  (and the HUD: icon + Reach scope)
     blender --background --python h4_tag_numbers.py -- --write      so this comes LAST
@@ -2472,6 +2473,29 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   item/object/flags first).
 * Projectile origin when zoomed: the tag has ONE first-person offset per barrel, nothing
   per zoom level -- the beam starts at camera + offset in both states.
+
+**Boot 26 -> THE RETICLE DRIFT, SOLVED (no rebuild, by poke bisection):**
+* Unchanged by the deviation fixes. In the HUD nothing binds the reticle's position: it
+  sits in a `reticule_offset_container`, which the ENGINE moves. Pokes, cumulative:
+  acceleration scales 0 -> 1 (`--accel-scale`): no change; the port pointed at Bungie's
+  own fp graph (`--graph-back`): **drift gone**; that graph with only the overheating
+  loop-frame fix (`--on-beam-graph --loop-frame 16=58`): no pop, no jerk, no drift.
+* **Cause: the Foundry RE-EXPORT of the fp graph.** Every per-animation flag, loop frame
+  and frame count matched Bungie's (compiled diff); the round trip re-encodes every
+  animation's DATA, and the reticle follows the first-person rig while turning.
+  h4_fp_graph.py now makes the port's graph a BYTE COPY of the shipped one plus the
+  loop-frame fix (`--foundry` keeps the old route for reference). The earlier smoothing,
+  shift and dropped animations were side-tracks of the pop hunt.
+  **LESSON: never round-trip a shipped first-person graph through Foundry to change a
+  field -- copy the tag and edit the field (ManagedBlam).**
+* **Zoomed beam origin -- NOT POSSIBLE for an automatic weapon.** The Light Rifle
+  (storm_forerunner_rifle) splits by zoom with trigger behavior **latch-zoom** (primary
+  barrel 0 unzoomed, secondary barrel 1 zoomed); `--zoom-barrel` proved it fires ONE shot
+  per press, zoomed or not. Only per-press weapons use it (BR, Light Rifle); every
+  automatic uses spew. The offset stays 0.03,-0.08,0 in both views (user accepted).
+* **TRAP: the build MERGES IDENTICAL BLOCKS.** Both barrels' first-person offsets (equal in
+  the kit) are ONE block in the map; poking one moves both. `--zoom-barrel` gives barrel 1
+  its own 12 bytes (halo_patch._h3_reserve).
 
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 

@@ -1,4 +1,20 @@
-r"""Halo 4 port, step 9: the port's OWN first-person graph, with the overheat jerk removed.
+r"""Halo 4 port, step 9: the port's OWN first-person graph.
+
+NOW (boot 26): a BYTE COPY of the shipped Beam Rifle graph, plus ONE fix -- the
+`overheating` loop frame index (set_loop_frames, the real cause of the overheat pop).
+THE FOUNDRY RE-EXPORT BELOW CAUSED THE RETICLE DRIFT ("drifts while looking around, always
+right, recentres when still; more the further I zoom"): every per-animation flag and
+timing matched Bungie's, but the round trip re-encoded every animation's data, and the
+reticle follows the first-person rig. Proven in the built map: the port pointed at
+Bungie's graph (h4_map_poke.py --graph-back) -> drift gone; that graph with only the
+loop-frame fix (--on-beam-graph --loop-frame 16=58) -> no pop, no jerk, no drift. The
+smoothing / shift / dropped animations below were side-tracks of the pop hunt: kept for
+reference behind --foundry, not used.
+
+    blender --background --python h4_fp_graph.py [-- --write]            (the copy)
+    blender --background --python h4_fp_graph.py -- --foundry [--write]  (old route)
+
+THE OLD ROUTE'S HISTORY:
 
 THE JERK (user's slow-motion video, boot 11): during the overheat the whole first-person
 view -- both arms and the rifle -- shifts right for about two frames and comes back.
@@ -166,6 +182,23 @@ def worst_spike(arm, anim, lo, hi):
     return best
 
 
+def copy_graph(write):
+    """The port's graph = the shipped Beam Rifle graph byte for byte, its own event list
+    a copy of the shipped one, then the loop-frame fix."""
+    out = os.path.join(TAGS, OWN)
+    if not write:
+        print('would copy %s -> %s and set %s' % (SOURCE, OWN_REL, LOOP_FRAMES))
+        print('(dry run -- pass --write)')
+        return
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    shutil.copyfile(os.path.join(TAGS, SOURCE), out)
+    shutil.copyfile(os.path.join(TAGS, os.path.splitext(SOURCE)[0] + '.frame_event_list'),
+                    os.path.join(TAGS, OWN_REL + '.frame_event_list'))
+    print('graph: %s = a byte copy of %s (+ its frame_event_list)' % (OWN_REL, SOURCE))
+    set_loop_frames()
+    print('FPGRAPH OK')
+
+
 def main(write):
     arm = jump.build_rig(SOURCE)
     anims = {a.name.replace('first_person ', '').replace('first_person:', ''): a
@@ -257,4 +290,7 @@ def set_loop_frames():
 
 if __name__ == '__main__':
     argv = sys.argv[sys.argv.index('--') + 1:] if '--' in sys.argv else []
-    main('--write' in argv)
+    if '--foundry' in argv:
+        main('--write' in argv)
+    else:
+        copy_graph('--write' in argv)
