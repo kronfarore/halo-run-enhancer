@@ -41,7 +41,7 @@ quietly shipped without the last three until the user caught it:
 |---|------|----|----|
 | 1 | geometry: first-person AND world model, on the target's skeleton | done | done |
 | 2 | textures / shaders | done | done |
-| 3 | its own projectile + damage effect, so numbers do not leak to the donor | done | done |
+| 3 | its own projectile + damage effect AND the weapon names them (H1: its own melee too) -- `port_refs_audit.py` | done | done |
 | 4 | numbers: the source game's values in the tags | done | done |
 | 5 | balance rows, with per-game field coverage audited | done | done |
 | 6 | ammo pickup: which item tops it up (a port has none of its own) | done | n/a |
@@ -50,6 +50,8 @@ quietly shipped without the last three until the user caught it:
 | 9 | reload and swap animation timing | done | done |
 
 **When a port is done -- the closing steps (all games):**
+0. `python port_refs_audit.py --game "<game>"` on the REBUILT map: the weapon fires its own
+   projectile, names its own damage effects (Halo 1: its own melee too) -- see step 3 below.
 1. If the port added a pickup/HUD glyph (Halo 3, ODST, Reach, Halo 4 -- the loose icon
    font packages): `python port_glyphs.py --capture` in the tool folder, then commit
    `port_glyphs.json`. Without it the glyph exists only on this machine, and the
@@ -77,6 +79,25 @@ card nothing of its own to move. `player_response` stays the donor's: it is the 
 played on whoever is hit and carries no per-weapon damage.
 After fixing the wiring the maps that carry the port must be REBUILT; until then the
 deployed map still has the old reference.
+
+**Step 3, checked in every game -- what the WEAPON must NAME (audited 2026-10-03):**
+cloning the projectile and damage tags is half of step 3; the other half is that the
+built weapon REFERENCES the clones. `python port_refs_audit.py` (sprint_toolkit) reads
+the DEPLOYED map through the Assembly plugin -- tag edits without a rebuild do not count
+-- and lists every projectile and damage effect the port and its projectile name, each
+classified OWN / GLOBAL / DONOR'S (how many of the map's weapons and projectiles share
+it). All six ports pass (H1/H2/H3/ODST/Reach SAW, H4 Focus Rifle).
+
+| reference | Halo 1 | Halo 2 - Halo 4 |
+|---|---|---|
+| weapon -> projectile (trigger / barrel `Projectile`) | OWN | OWN |
+| projectile -> `Impact Damage` | OWN | OWN |
+| weapon -> melee DAMAGE | **OWN** -- every H1 weapon has its own melee damage tag (`weapons\assault rifle\melee`); clone it and point `Player Melee Damage` at the clone | **SHARED GLOBAL** -- `strike_melee` / `smash_melee` (13-38 users per map); keep it, and no catalog row may retune it (Reach dropped its three melee rows for exactly this) |
+| weapon -> melee RESPONSE, firing damage (shake/rumble) | donor's is fine: feedback, no per-weapon damage numbers | global, or the port's own |
+
+A DONOR'S damage tag in a damage-bearing field is the Halo 1 bug pattern: the audit
+reports it as a PROBLEM and exits 1. Run it after every rebuild of a map that carries a
+port (closing steps above).
 
 Step 6 is a **port detail, not a general option**: a port inherits the donor's pickup
 item, and the dropdown only re-points it when several weapons share one. Halo 4 has no
@@ -2662,6 +2683,19 @@ play (the Beam Rifle), whose overheat animations nobody ever saw:
 3. Bisect in the built map, one field per boot, before any rebuild.
 4. Per-shot feedback at a heat weapon's fire rate (30/s for the Focus Rifle) multiplies:
    pick a firing damage response built for automatic fire (the Assault Rifle's here).
+
+### Diagnostic tools of the H4 kit (promoted from scratch scripts, 2026-10-03)
+
+    h4_weapon_diff.py      field-by-field diff of weapon tags (+ flag names): finds what
+                           a donor-based port inherited -- the drift's AI aim assist,
+                           the missing strict-deviation / hide-when-zoomed flags
+    h4_cusc_dump.py        a HUD screen's templates, components, overlay properties and
+                           bindings (mapping the scope templates)
+    reach_effect_tints.py  a Reach effect's particle colours via HREK ManagedBlam (the
+                           orange muzzle); export-tag-to-xml shows them only as sizes
+    port_refs_audit.py     step 3 in the built map, every game (see the top of this file)
+    h4_map_poke.py         every no-rebuild test of this port (--help lists them)
+    h4_wwise.py            Halo 4 sound package / bank / event reader
 
 ### Foundry across kits: the traps
 

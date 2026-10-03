@@ -48,7 +48,7 @@ FILES = [
     (os.path.join(HERE, 'balance_SAW_Halo4_to_Halo3_mgvel.json'), 'catalog/balance_SAW_Halo4_to_Halo3_mgvel.json'),
     (os.path.join(HERE, 'balance_SAW_Halo4_to_Halo2.json'), 'catalog/balance_SAW_Halo4_to_Halo2.json'),
 ]
-SCRIPTS = ('saw_build.py', 'saw_to_jms.py', 'saw_shaders.py', 'saw_weapon.py', 'saw_anims.py',
+SCRIPTS = ('port_refs_audit.py', 'saw_build.py', 'saw_to_jms.py', 'saw_shaders.py', 'saw_weapon.py', 'saw_anims.py',
            'saw_port_values.py', 'saw_scenario.py', 'ammo_meter.py', 'make_icon.py',
            'add_msg_icon.py', 'h4_bitmap.py', 'h4_rm.py', 'balance_compare.py',
            'balance_port.py', 'make_port_catalog.py', 'tagvals.py', 'ammo_pickups_scan.py',
@@ -109,7 +109,7 @@ H2_FILES = [
      'catalog/balance_SAW_Halo4_to_Halo2.json'),
     (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md'),
 ]
-H2_SCRIPTS = ('saw_to_jms_h2.py', 'h2_jms.py', 'h2_jms_preview.py', 'h2_tagref.py',
+H2_SCRIPTS = ('port_refs_audit.py', 'saw_to_jms_h2.py', 'h2_jms.py', 'h2_jms_preview.py', 'h2_tagref.py',
               'h2_tagfield.py', 'h2_loosetag.py', 'h2_batch.py',
               'h2_saw_textures.py', 'h2_saw_weapon.py', 'h2_saw_numbers.py',
               'h2_saw_collision.py', 'h2_saw_meter.py', 'h2_saw_hud_plate.py',
@@ -153,7 +153,7 @@ REACH_FILES = [
 REACH_MAPS = [
     (os.path.join(GAME, 'haloreach', 'maps', 'm20.map'), 'maps/m20.map'),
 ]
-REACH_SCRIPTS = ('h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
+REACH_SCRIPTS = ('port_refs_audit.py', 'h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
                  'saw_port_values.py', 'reach_ek_build.py', 'reach_saw_wire_model.py',
                  'reach_saw_textures.py', 'reach_saw_tag_numbers.py',
                  'make_port_catalog_reach.py', 'h3_saw_chud.py', 'reach_meter_art.py',
@@ -188,6 +188,10 @@ H4_TREES = [
      'data/ui/hud/weapons/covenant/focus_rifle', True),
 ]
 H4_FILES = [
+    # tool-root modules the port relies on at patch time (icons, sound bank)
+    (os.path.join(TOOL, 'port_glyphs.py'), 'tool/port_glyphs.py'),
+    (os.path.join(TOOL, 'port_glyphs.json'), 'tool/port_glyphs.json'),
+    (os.path.join(TOOL, 'port_sounds.py'), 'tool/port_sounds.py'),
     (os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
     (os.path.join(HERE, 'balance_Focus_Rifle_HaloReach_to_Halo4.json'),
      'catalog/balance_Focus_Rifle_HaloReach_to_Halo4.json'),
@@ -217,7 +221,8 @@ H4_SHARED.append((os.path.join(H4EK, 'tags', 'sound', 'soundbanks', 'weapons_cov
 H4_MAPS = [
     (os.path.join(GAME, 'halo4', 'maps', 'm30_cryptum.map'), 'maps/m30_cryptum.map'),
 ]
-H4_SCRIPTS = ('h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
+H4_SCRIPTS = ('port_refs_audit.py', 'h4_weapon_diff.py', 'h4_cusc_dump.py', 'reach_effect_tints.py',
+              'h3tag.py', 'foundry_setup.py', 'h4_foundry_port.py', 'h4_port_materials.py',
               'h4_make_port_weapon.py', 'h4_weapon_refs.py', 'h4_tag_numbers.py', 'balance_port.py',
               'h4_map_poke.py', 'h4_fp_jump.py', 'h4_fp_graph.py', 'h4_beam_look.py', 'h4_port_messages.py',
               'h4_mesh_dump.py', 'h4_weapon_glyph.py', 'h4_hud_icon.py', 'h3_font_repack.py', 'h3_font_codec.py',
