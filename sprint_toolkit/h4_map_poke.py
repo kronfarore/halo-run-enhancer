@@ -123,6 +123,8 @@ def main():
                     help='scope side meters: prop_visible 0 -> 1 in the built focus_rifle_scope')
     ap.add_argument('--meters-br-bitmap', action='store_true',
                     help="CONTROL: both scope meters draw the Beam Rifle's own heat_bar bitmap")
+    ap.add_argument('--meter-rects', action='store_true',
+                    help='scope side meters -> the rects scaled with the art (boot 28)')
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -141,7 +143,7 @@ def main():
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
             a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew or
-            a.meters_visible or a.meters_br_bitmap):
+            a.meters_visible or a.meters_br_bitmap or a.meter_rects):
         return
 
     d = m.data
@@ -220,6 +222,28 @@ def main():
                         was = struct.unpack_from('<I', d, at + 4 + 0xC)[0]
                         struct.pack_into('<I', d, at + 4 + 0xC, brbm['ident'])
                         print('%s bitmap %#x -> %#x (Beam Rifle heat_bar)' % (nm, was, brbm['ident']))
+    if a.meter_rects:
+        # Each meter's REAL property block (overlay 0): name sid + float. The names do not
+        # resolve here, so each value is matched: old rect -> new rect, per meter.
+        C = halo_patch._H4_CUSC
+        sc = m.find_tags('cusc', SCOPE)[0][1]
+        ov0 = halo_patch._h4_rows(m, sc, *C['overlays'])[0]
+        cb = m.data2off(struct.unpack_from('<I', ov0, halo_patch._H4_OV_COMPS[0] + 4)[0])
+        n = struct.unpack_from('<i', ov0, halo_patch._H4_OV_COMPS[0])[0]
+        want = {1070.4: 1135.0, 103.8: 23.3, 203.4: 179.9, 105.8: 121.6, 313.3: 360.3}
+        for i in range(n):
+            e = cb + i * halo_patch._H4_OV_COMPS[1]
+            nm = m.resolve_stringid(struct.unpack_from('<I', d, e)[0])
+            if nm not in ('bitmap_heat_bar', 'bitmap_ammo_bar'):
+                continue
+            cnt, ptr = struct.unpack_from('<iI', d, e + 4 + 12)
+            a0 = m.data2off(ptr)
+            for j in range(cnt):
+                v = struct.unpack_from('<f', d, a0 + j * 8 + 4)[0]
+                for old_v, new_v in want.items():
+                    if abs(v - old_v) < 0.05:
+                        struct.pack_into('<f', d, a0 + j * 8 + 4, new_v)
+                        print('%s %.1f -> %.1f' % (nm, v, new_v))
     if a.trigger_spew:
         tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
         t0 = m.data2off(tp)

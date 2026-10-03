@@ -151,8 +151,10 @@ def meter(im):
 
 
 def meter_rects():
-    """Each meter's HUD rectangle (left, top, width, height) in 1280x720 units."""
-    fx, fy = SCREEN[0] / CHUD[0], SCREEN[1] / CHUD[1]
+    """Each meter's HUD rectangle (left, top, width, height) in 1280x720 units, scaled by
+    ART_SCALE about the screen centre like the frame art (boot 28: unscaled, the meters
+    sat inside the frames and were too small)."""
+    fx, fy = SCREEN[0] / CHUD[0] * ART_SCALE, SCREEN[1] / CHUD[1] * ART_SCALE
     w = 160 / 2 * METER_SCALE * fx          # the arc is 468x160 px before the quarter turn
     h = 468 / 2 * METER_SCALE * fy
     out = {}
