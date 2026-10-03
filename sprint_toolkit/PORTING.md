@@ -2255,6 +2255,12 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
     stays 0; gain+ stops at 0): -3 -> 0 = +3 dB (saw_port_sounds.py `gain`);
   * the other +3 dB in the AUDIO: a soft limiter searched to raise the shot's RMS by
     exactly 3 dB, peaks capped (-12.0 -> -9.0 dBFS, peak -1.2) (`boost`, fire + tails).
+  * +6 was TOO LOUD in game (user); now +4.5 (boost 1.5, shot -10.5 dBFS). **Retuning
+    the boost needs NO REBUILD on the stock route:** the boost lives only in the loose
+    bank; `saw_port_sounds.py --game odst --write --boost DB` re-imports and installs it,
+    the .info (the keys the map looks up) comes out byte-identical and the sample counts
+    unchanged -- restart MCC and listen. Only a GAIN change (in the tag, so in the map)
+    needs a rebuild. The +6 bank: F:\HaloPortBackups\odst_saw_bank_plus6.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 

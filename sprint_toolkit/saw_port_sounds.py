@@ -87,7 +87,8 @@ GAMES = {
                  effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                           'empty': (BR_FX + B + 'empty', DRY_PAIR)},
                  gain={'saw_fire': 0, 'saw_tail_ext': 0, 'saw_tail_int': 0},
-                 boost={'saw_fire': 3.0, 'saw_tail_ext': 3.0, 'saw_tail_int': 3.0}),
+                 # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between"
+                 boost={'saw_fire': 1.5, 'saw_tail_ext': 1.5, 'saw_tail_int': 1.5}),
 }
 G = EK = TAGS = SOUNDS = None
 
@@ -203,6 +204,10 @@ def own_effects():
         n = w.repoint(src_fx, OWN_FX + B + fx, 'effe')
         print('   weapon: %s -> own %s  x%d' % (src_fx, fx, n))
         if n < 1:
+            # a re-run: the weapon already names its own effect
+            if any(r[1] == 'effe' and r[2].lower() == (OWN_FX + B + fx).lower() for r in w.references()):
+                print('   weapon: already names its own %s' % fx)
+                continue
             raise SystemExit('the SAW does not name %s' % src_fx)
     w.save()
     if not h3tag.Tag(os.path.join(TAGS, WEAPON + '.weapon')).check()[0]:
@@ -265,11 +270,17 @@ def main():
     ap.add_argument('--install', action='store_true',
                     help='copy the FMOD bank into the game folder (automatic on the stock route; '
                          'Reach does not need it)')
+    ap.add_argument('--boost', type=float, metavar='DB',
+                    help="override the audio boost (dB) of every boosted sound of this game. "
+                         "The boost lives in the BANK only, so on the stock route (H3/ODST) a "
+                         "retune is this run + an MCC restart, no rebuild")
     ap.add_argument('--both', action='store_true',
                     help='Reach: keep the Xbox XMA2 encoding beside MS-ADPCM (the default is PC '
                          'ONLY, confirmed in game 2026-10-03)')
     a = ap.parse_args()
     configure(a.game)
+    if a.boost is not None:
+        G['boost'] = {k: a.boost for k in G.get('boost') or G['gain']}
     if not glob.glob(os.path.join(AUDIO, 'fire', '*.wav')):
         raise SystemExit('run saw_port_audio.py first')
     print('%s: %s, route %s' % (a.game, G['ek'], G['route']))
