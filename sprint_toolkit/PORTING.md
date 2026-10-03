@@ -2549,7 +2549,34 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   `halo4\sound\pc\sfxbank.pck` (AKPK, bank version 88); H4EK has no Wwise project and no
   audio import verb. A port needs: extract (an FSB5 Vorbis decoder) -> author a v88 bank
   + event -> add it to the package (or reuse an existing event's audio, which is
-  hijacking). Not started.
+  hijacking). Research below.
+
+**Halo 4 sound, mapped 2026-10-03 (h4_wwise.py, no boot):**
+* `halo4\sound\pc\sfxbank.pck` = AKPK v1: header 0x1C (magic, header size, version,
+  language-map / bank-LUT / stream-LUT / externals sizes), language map (1: "sfx"), bank
+  LUT of 577 entries (id, block size 1, size, start = BYTE offset, language). Bank id =
+  Wwise FNV-1 of the soundbank tag's name, lower case ("sentinel" -> 0xfb27dc31).
+  sfxstream.pck holds 2085 streamed media. sfxbank_dlc.pck / sfxstream_dlc.pck are
+  4-byte "Stub" files; whether the game mounts them is unknown (names not in halo4.dll
+  as plain strings).
+* Banks are version 88 (BKHD, DIDX, DATA, HIRC). The .sound tag's event name hashes to
+  the HIRC event. Sentinel friendly beam: `play_..._fire_in` = play a start one-shot
+  (2.55 s, in a random container) + play a LOOPING sound (4.6 s);
+  `stop_..._fire` = stop the loop + play a tail (1.6 s). Reach's Focus Rifle has the
+  same three: in / loop / out (sfx.fsb subsongs 10952-10954).
+* Codecs in all banks: Wwise custom Vorbis 12706 embedded + 1217 streamed, **PCM 450
+  embedded + 189 streamed**, a few others. Custom Vorbis needs Wwise's encoder; **PCM
+  is writable by hand**: RIFF/WAVE, fmt 24 bytes (tag 0xFFFE, 16-bit, cbSize 6, u16 0,
+  u32 channel mask), JUNK 4, data. A sound object's first fields: codec plugin
+  (0x00010001 PCM, 0x00040001 Vorbis), stream type (0 embedded), media id, bank id,
+  in-bank offset (DIDX offset + start of DATA payload), size.
+* Plan, test 1 (no map rebuild): rebuild the sentinel bank with those three media as
+  Reach's audio in PCM, the three sound objects switched to PCM; append it to the end of
+  sfxbank.pck and repoint its LUT entry (20 bytes, in place; restore = put the entry
+  back and truncate). The port fires the Sentinel friendly beam effect, so it would sound
+  like Reach's Focus Rifle -- and so would friendly Sentinels' beams, for the test only.
+  Then the real thing: an OWN bank and own event names, own .sound / .sound_looping /
+  .soundbank tags in H4EK, a new LUT entry (or the DLC package), map rebuild.
 * **Scope meters, in-map test pokes:** `--meters-visible`, `--meters-br-bitmap` (the Beam
   Rifle's heat_bar as a control). UI property names are in a string namespace the map
   reader does not resolve -- the poke matches by structure.
