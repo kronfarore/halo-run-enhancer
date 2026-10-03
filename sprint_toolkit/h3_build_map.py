@@ -69,7 +69,10 @@ def build(name, log=None):
     # BACKSLASHES. tool derives the report directory from this string, and given forward
     # slashes it fails to open reports\<map>\cache_file_loaded_tags.txt and asserts
     # g_cache_file_loaded_tags_report_file_ready before it has built anything.
-    scenario = os.path.join('levels', 'solo', name, name)
+    # ODST's levels live under levels\atlas (2026-10-03: `levels\solo\sc150` failed to load
+    # the scenario); Halo 3's under levels\solo.
+    folder = 'atlas' if h3_kit.EK.rstrip(os.sep).lower().endswith('h3odstek') else 'solo'
+    scenario = os.path.join('levels', folder, name, name)
     out = os.path.join(EK, 'maps', name + '.map')
     before = os.path.getmtime(out) if os.path.exists(out) else 0
     t0 = time.time()
