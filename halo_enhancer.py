@@ -12070,11 +12070,12 @@ class OptionsDialog(QDialog):
                          "border: 1px solid #3a3a3a; padding: 2px; }")
         if bank:
             tip = ("How loud this port's own sounds play, in dB against its sound bank as "
-                   "built. 0 = as built. The bank ships at -%g dB, and nothing plays louder "
-                   "than 0 dB, so +%g is the most the knob can raise it; down has no limit."
+                   "built. 0 = as built. +%g is the most the knob can raise it (the "
+                   "loudest the bank's mixers can be set, measured in game); down has no "
+                   "limit."
                    "\n\nApplied to Halo 4's sound package on every Halo 4 patch -- no map "
                    "rebuild needed. Your own setting: not part of the run, so a co-op partner "
-                   "sets theirs." % (top, top))
+                   "sets theirs." % top)
         else:
             tip = ("How loud this port's own sounds play, in dB against the map as built. 0 = "
                    "as built. Every port ships at -3 dB on purpose: the engine plays nothing "
