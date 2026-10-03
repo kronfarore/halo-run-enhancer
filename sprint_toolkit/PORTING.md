@@ -1474,6 +1474,25 @@ copy.
 
 ---
 
+## Port glyphs on EVERY machine: port_glyphs.py (2026-10-03)
+
+The pictograms of Halo 3 / ODST / Reach / Halo 4 live in LOOSE packages beside the maps
+(`<game>\mapsontsont_package_icon*.bin`): no map rebuild carries them, a Steam
+update or verify restores the stock ones, and a co-op partner's install never had them.
+`tool\port_glyphs.py` + `tool\port_glyphs.json` (35 KB) carry the finished glyph records
+and put them back: `ensure(game, mcc_root)` for the Enhancer at patch time, or
+`python port_glyphs.py [--game G] --write` by hand. Standard library + h3_font_repack.py
+only -- no kit, Blender or source art at run time.
+* Proven on a stock install copy: all 13 packages written, glyph sets identical to the
+  in-game-proven live ones; a second run is a no-op. Halo 4 rebuilds byte for byte; the
+  older Halo 3-family placements come out with the same glyphs and headers in the
+  repacker's block order (the layout of the in-game growth test).
+* **After adding a new port glyph** (h3_weapon_glyph.py, h4_weapon_glyph.py, ...): run
+  `python port_glyphs.py --capture` on the dev machine (needs the stock backups on E:)
+  and commit the json. It refuses if any package does not rebuild from stock.
+* A frozen Enhancer build needs in halo_enhancer.spec: pathex=['sprint_toolkit'],
+  hiddenimports=['h3_font_repack', 'port_glyphs'], datas += [('port_glyphs.json', '.')].
+
 ## THE GLYPH CEILING: the first hard limit on how many weapons a game can take
 
 Measured with `glyph_capacity.py`. A ported weapon needs a pickup icon, and from Halo 3
