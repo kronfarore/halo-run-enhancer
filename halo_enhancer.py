@@ -1962,6 +1962,9 @@ MOD_COLORS = {
     'equipment': {'border': 'ADCB2E', 'bg': '13160a'},  # H3 equipment — yellow-green
     # Bane: blood red on a deep maroon, framed three times (create_mod_widget)
     'bane': {'border': 'FF1744', 'bg': '24060c', 'outer': '8B0000'},
+    # Weapon Identity: the doubled card amber, the inverted one violet
+    'identity': {'border': 'FFB300', 'bg': '1c1406'},
+    'identity_down': {'border': '9575CD', 'bg': '120c1c'},
 }
 
 
@@ -4463,14 +4466,27 @@ class PairCard(QGroupBox):
             if self.pair.get('new_weapon'):
                 positive.append(self.create_weapon_widget(
                     self.pair['new_weapon'], _new_heading("PLAYER 1"), 'player1'))
-            elif self.pair['player1_mod']:
+            elif self.pair.get('player1_mod'):
                 w1 = self.pair['player1_mod'].get('weapon')
                 positive.append(self.create_mod_widget(
                     self.pair['player1_mod'],
                     f"PLAYER 1 ({w1})" if w1 else "Player (General)",
                     "green", 'player1'))
 
-        if self.show_player2:
+        ident = self.pair.get('identity')
+        if isinstance(ident, dict):
+            # Weapon Identity: two tied cards for one weapon in the player's band
+            who = "PLAYER 1" if self.show_player1 else "PLAYER 2"
+            lock = "  🔒 your identity" if ident.get('locked') else ""
+            positive.append(self.create_mod_widget(
+                ident['up'], "%s (%s) — IDENTITY x%d%s" % (who, ident.get('weapon'),
+                                                          IDENTITY_UP_PICKS, lock),
+                "identity", 'identity_up'))
+            positive.append(self.create_mod_widget(
+                ident['down'], "TIED — INVERTED STEP x%d" % IDENTITY_DOWN_PICKS,
+                "identity_down", 'identity_down'))
+
+        if self.show_player2 and not isinstance(ident, dict):
             if self.pair.get('new_weapon'):
                 positive.append(self.create_weapon_widget(
                     self.pair['new_weapon'], _new_heading("PLAYER 2"), 'player2'))
@@ -4602,7 +4618,7 @@ class PairCard(QGroupBox):
         return widget
 
     def create_mod_widget(self, mod_data, label, color, mod_type):
-        if mod_type == 'player1' or mod_type == 'player2':
+        if mod_type in ('player1', 'player2', 'identity_up', 'identity_down'):
             if mod_data.get('source') == 'General':
                 source = 'General'
             else:
@@ -4622,6 +4638,8 @@ class PairCard(QGroupBox):
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
+        if color in ('identity', 'identity_down'):
+            border_width = 3
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
         dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
         skull = bool(mod_data.get('skull'))      # #7: whole-map rule
@@ -4712,6 +4730,8 @@ class PairCard(QGroupBox):
         reroll_btn.setToolTip("Reroll this effect")
         reroll_btn.clicked.connect(lambda: self.on_reroll(mod_type))
         button_layout.addWidget(reroll_btn)
+        # a Weapon Identity card is half of a tied pair: no reroll / blacklist of one half
+        reroll_btn.setVisible(mod_type not in ('identity_up', 'identity_down'))
 
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
@@ -5000,6 +5020,21 @@ OTHER_WEIGHT_DEFAULTS = {'bane': 3.0}
 
 # How many picks one Bane card counts as (halo_patch.collect_effects).
 BANE_PICKS = 3
+# Weapon Identity: the x2 card and the inverted card (keep in step with halo_patch)
+IDENTITY_UP_PICKS = 2
+IDENTITY_DOWN_PICKS = 1
+
+
+def identity_mods(rd):
+    """The Weapon Identity cards one round holds (both players' up + down cards).
+    A Weapon Identity round records `rd[player]['identity'] = {weapon, up, down}`
+    instead of a `mod`; every place that walks a round's card dicts needs these too."""
+    out = []
+    for pk in ('player1', 'player2'):
+        ident = (rd.get(pk) or {}).get('identity')
+        if isinstance(ident, dict):
+            out += [m for m in (ident.get('up'), ident.get('down')) if isinstance(m, dict)]
+    return out
 
 
 def display_name(name, source):
@@ -5279,26 +5314,31 @@ class MagnitudeEditorDialog(QDialog):
         # An irregular `steps` ladder applies while the row still shows its default; a
         # value typed over it is the user's and stacks linearly like any other.
         steps = t.get('steps') if (t.get('steps') and (not txt or self._is_default_step(t, txt))) else None
-        if self._step_inverted(eff):
+        # A Weapon Identity card's inverted picks count NEGATIVE (halo_patch.collect_effects):
+        # a net 0 is no edit, below 0 the step is inverted for that many picks.
+        n = eff.get('count')
+        n = 1 if n is None else int(n)
+        if n == 0:
+            return ''
+        inverted = self._step_inverted(eff) != (n < 0)
+        n = abs(n)
+        if inverted:
             # A card's own `inverse_steps` ladder wins while the row shows its default
             # (Magazine: *0.75, *0.5, *0.25, then *0.1 at cap); otherwise the step is
             # mirrored and stacked. There is NO general floor (user, 2026-10-01): a
             # card that needs one says so with `inverse_floor` (a multiplier, on the
             # target or the card); counts that must not reach 0 carry `min: 1`.
             if t.get('inverse_steps') and (not txt or self._is_default_step(t, txt)):
-                return self._hp.stack_op('', eff.get('count') or 1,
-                                         steps=t['inverse_steps'])
+                return self._hp.stack_op('', n, steps=t['inverse_steps'])
             txt = self._hp.invert_step(txt)
             steps = [self._hp.invert_step(str(s)) for s in steps] if steps else steps
-            op = self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
-                                   steps=steps)
+            op = self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
             floor = t.get('inverse_floor', eff.get('inverse_floor'))
             parsed = self._hp.hm.parse_operator(op) if op else None
             if floor is not None and parsed and parsed[0] == 'mul' and parsed[1] < float(floor):
                 return '*%g' % float(floor)
             return op
-        return self._hp.stack_op(txt, eff.get('count') or 1, vanilla, t.get('from_zero'),
-                                 steps=steps)
+        return self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
 
     @staticmethod
     def _card_key(eff):
@@ -5350,14 +5390,17 @@ class MagnitudeEditorDialog(QDialog):
         return store[key]
 
     def _stack_hint(self, eff, t, txt):
-        n = max(1, int(eff.get('count') or 1))
+        c = eff.get('count')
+        c = 1 if c is None else int(c)
+        # Weapon Identity: a negative net count is that many INVERTED picks
+        picked = 'picked %dx' % c if c > 0 else ('inverted %dx' % -c if c < 0 else 'net 0 picks')
         txt = (txt or '').strip()
         if not txt and not t.get('from_zero'):
-            return 'picked %dx' % n
+            return picked
         try:
-            return 'picked %dx -> %s' % (n, self._stacked_op(eff, t, txt) or 'nothing')
+            return '%s -> %s' % (picked, self._stacked_op(eff, t, txt) or 'nothing')
         except Exception:
-            return 'picked %dx' % n
+            return picked
 
     def _vanilla_num(self, tag, field, block=None, nth=0):
         """Numeric vanilla value of a field (first matching tag), or None."""
@@ -6697,6 +6740,12 @@ class MagnitudeEditorDialog(QDialog):
                 if isinstance(slot, dict) and matches(slot.get('mod')):
                     slot['mod'] = None
                     removed += 1
+                ident = slot.get('identity') if isinstance(slot, dict) else None
+                if isinstance(ident, dict):
+                    for part in ('up', 'down'):
+                        if matches(ident.get(part)):
+                            ident[part] = None
+                            removed += 1
             for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2', 'boss1', 'boss2'):
                 if matches(rd.get(k)):
                     rd[k] = None
@@ -13739,8 +13788,26 @@ class HaloGUI(QMainWindow):
             }
             QPushButton:hover { background-color: #3a7a3a; }
         """)
-        self.generate_btn.clicked.connect(self.on_generate)
+        self.generate_btn.clicked.connect(self.on_generate_clicked)
         button_layout.addWidget(self.generate_btn)
+
+        self.identity_btn = QPushButton("🧬 WEAPON IDENTITY")
+        self.identity_btn.setToolTip(
+            "A Weapon Identity round: every offer ties two cards for ONE of the player's "
+            "weapons -- one at double strength, the other with its step inverted -- plus "
+            "a normal enemy card, and nothing else.\n\nA picked pair becomes that "
+            "weapon's identity for the rest of the run: its two cards only ever appear "
+            "together, as that pair, and every later Weapon Identity round offers it "
+            "again (until one of its cards is saturated). One identity per weapon.")
+        self.identity_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #5a4210; color: white; font-weight: bold;
+                font-size: 14px; padding: 10px 20px; border-radius: 5px;
+            }
+            QPushButton:hover { background-color: #7a5a18; }
+        """)
+        self.identity_btn.clicked.connect(self.on_identity_clicked)
+        button_layout.addWidget(self.identity_btn)
 
         self.new_weapon_btn = QPushButton("🔫 NEW WEAPON")
         self.new_weapon_btn.setToolTip(
@@ -14219,6 +14286,22 @@ class HaloGUI(QMainWindow):
             self.show_weapon_selection()
 
     # ---- Pair Generation ----
+    def _start_round_kind(self, kind):
+        """Generate / Weapon Identity buttons: a different KIND than the round on
+        screen starts over at Player 1, so a round never mixes the two."""
+        rs = self.run_state
+        if getattr(rs, 'round_kind', 'normal') != kind:
+            rs.round_kind = kind
+            if rs.phase in ('player1_turn', 'player2_turn'):
+                rs.phase = 'complete'           # on_generate restarts at Player 1
+        self.on_generate()
+
+    def on_generate_clicked(self):
+        self._start_round_kind('normal')
+
+    def on_identity_clicked(self):
+        self._start_round_kind('identity')
+
     def on_generate(self):
         if not self.run_state.player1_weapon or not self.run_state.player2_weapon:
             self.update_status("Please select weapons for both players first")
@@ -14243,9 +14326,18 @@ class HaloGUI(QMainWindow):
             self._sync_save_button()
             self.update_status("Regenerating pairs for Player 1")
 
-        pairs = self.enhancer.generate_pairs(for_player=player)
+        if getattr(self.run_state, 'round_kind', 'normal') == 'identity':
+            pairs = self.enhancer.generate_identity_pairs(for_player=player)
+            if not pairs:
+                # no weapon with two cards left to tie: this player gets a normal offer
+                pairs = self.enhancer.generate_pairs(for_player=player)
+                turn_text += " (no Weapon Identity possible -- normal offer)"
+        else:
+            pairs = self.enhancer.generate_pairs(for_player=player)
         self.display_pairs(pairs, show_p1, show_p2)
-        self.update_status(f"{turn_text}'s turn - Select a pair")
+        self.update_status(f"{turn_text}'s turn - Select a pair"
+                           + (" (Weapon Identity)" if getattr(self.run_state, 'round_kind', '')
+                              == 'identity' else ""))
         self.update_history()
         self._sync_save_button()
         self.generate_btn.setEnabled(True)
@@ -14327,6 +14419,11 @@ class HaloGUI(QMainWindow):
             self.run_state.add_weapon(player, pair['new_weapon'])
             self.update_weapon_display()
             self.update_status(f"{player_name} gained a new weapon: {pair['new_weapon']}!")
+        elif isinstance(pair.get('identity'), dict):
+            ident = pair['identity']
+            self.update_status(f"{player_name} took the {ident.get('weapon')} identity: "
+                               f"{ident['up'].get('name')} x{IDENTITY_UP_PICKS} / "
+                               f"{ident['down'].get('name')} inverted")
         else:
             mod = pair['player1_mod'] if player == 'player1' else pair['player2_mod']
             self.update_status(f"{player_name} selected: {mod['name'] if mod else '—'}")
@@ -14367,6 +14464,15 @@ class HaloGUI(QMainWindow):
                 'skull1': p1_pair.get('skull_mod'),
                 'skull2': p2_pair.get('skull_mod')
             }
+            # Weapon Identity: the tied pair replaces the player card (halo_patch.
+            # collect_effects counts up x2, down -1); the round says what kind it was
+            for pk, pr in (('player1', p1_pair), ('player2', p2_pair)):
+                ident = pr.get('identity')
+                if isinstance(ident, dict):
+                    round_data[pk]['identity'] = {'weapon': ident.get('weapon'),
+                                                  'up': ident.get('up'),
+                                                  'down': ident.get('down')}
+                    round_data['kind'] = 'identity'
             # #5: stamp each picked Exhaust with the mission it belongs to (so it
             # only patches that one map), and grant its picker a no-negative
             # choice next round.
@@ -14433,7 +14539,8 @@ class HaloGUI(QMainWindow):
                     pair['new_weapon'] = random.choice(pool)
             else:
                 mods = self.db.get_player_modifiers_filtered(
-                    self.run_state.weapons_for(mod_type), bl, game)
+                    self.run_state.weapons_for(mod_type),
+                    list(bl) + self.enhancer.identity_locked_labels(), game)
                 pair[f'{mod_type}_mod'] = random.choice(mods) if mods else None
         elif mod_type == 'enemy':
             mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game)
@@ -14494,6 +14601,11 @@ class HaloGUI(QMainWindow):
 
     @staticmethod
     def _round_summary(pdata):
+        ident = pdata.get('identity')
+        if isinstance(ident, dict):
+            up, down = ident.get('up') or {}, ident.get('down') or {}
+            return (f"{ident.get('weapon')} - IDENTITY: {up.get('name', '?')} x{IDENTITY_UP_PICKS}"
+                    f" / {down.get('name', '?')} inverted")
         if pdata.get('starting'):
             return f"{pdata.get('weapon')} (starting weapon)"
         if pdata.get('gained_weapon'):
@@ -14565,7 +14677,7 @@ class HaloGUI(QMainWindow):
         cards for the same weapon / enemy / boss (user, 2026-09-27: picking one Search
         Tactics card for a species blocks the rest; the two Kamikaze cards block each
         other). Called wherever a round is recorded."""
-        mods = []
+        mods = list(identity_mods(round_data))
         for k in ('player1', 'player2'):
             m = (round_data.get(k) or {}).get('mod')
             if isinstance(m, dict):
@@ -14811,7 +14923,7 @@ class HaloGUI(QMainWindow):
                  rd.get('enemy1'), rd.get('enemy2'), rd.get('wildcard'), rd.get('wildcard2'),
                  rd.get('boss1'), rd.get('boss2'), rd.get('hero1'), rd.get('hero2'),
                  rd.get('skull1'), rd.get('skull2'), rd.get('exhaust1'), rd.get('exhaust2')]
-        return [m for m in slots if isinstance(m, dict)]
+        return [m for m in slots if isinstance(m, dict)] + identity_mods(rd)
 
     def _shared_run_path(self):
         """The file in the shared folder that IS this run, if we know it — either one
@@ -15120,7 +15232,7 @@ class HaloGUI(QMainWindow):
                      rd.get('boss1'), rd.get('boss2'),
                      rd.get('hero1'), rd.get('hero2'),
                      rd.get('skull1'), rd.get('skull2'),
-                     rd.get('exhaust1'), rd.get('exhaust2')]
+                     rd.get('exhaust1'), rd.get('exhaust2')] + identity_mods(rd)
             for mod in slots:
                 if not isinstance(mod, dict):
                     continue
@@ -15390,7 +15502,9 @@ class RunEnhancer:
         mid = self.run_state.mission_id
         game = self.db.get_game_for_mission(mid)
         bl = self.run_state.blacklist
-        pmods = self.db.get_player_modifiers_filtered(self.run_state.weapons_for(for_player), bl, game)
+        # a Weapon Identity pair's cards only ever appear as that pair
+        pmods = self.db.get_player_modifiers_filtered(
+            self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
@@ -15555,6 +15669,97 @@ class RunEnhancer:
                 if isinstance(m, dict) and m.get('_exhaust_mission') == mid:
                     names.add(m.get('name'))
         return names
+
+    # ------------------------------------------------------------ Weapon Identity
+    def identity_pairs(self, player):
+        """{weapon: (up card, down card)} -- the player's Weapon Identity pairs, read
+        from the run's rounds (so a saved run and the co-op partner know them too). A
+        pair with a SATURATED card (in the blacklist: declared saturated by hand or at
+        the end of a patch) is over and frees its weapon."""
+        bl = set(self.run_state.blacklist or [])
+        out = {}
+        for rd in self.run_state.rounds or []:
+            ident = (rd.get(player) or {}).get('identity')
+            if isinstance(ident, dict) and isinstance(ident.get('up'), dict) \
+                    and isinstance(ident.get('down'), dict):
+                out[ident.get('weapon')] = (ident['up'], ident['down'])
+        return {w: p for w, p in out.items()
+                if not ({self.db.get_mod_label(p[0]), self.db.get_mod_label(p[1])} & bl)}
+
+    def identity_locked_labels(self):
+        """Labels of every card in an active identity pair (either player): kept out
+        of every other draw -- they only ever appear as their pair."""
+        labels = []
+        for pk in ('player1', 'player2'):
+            for up, down in self.identity_pairs(pk).values():
+                labels += [self.db.get_mod_label(up), self.db.get_mod_label(down)]
+        return labels
+
+    def generate_identity_pairs(self, for_player='player1'):
+        """A Weapon Identity round's three offers (user, 2026-10-03). Each: one of the
+        player's weapons, a card for it at x2 tied to another card for it at the
+        inverted step, plus a normal enemy card -- no Other slot, no boss, no new weapon.
+          1. every identity pair the player already has is GUARANTEED an offer;
+          2. the rest go to new pairs for weapons WITHOUT an identity (one identity per
+             weapon), cycling through them;
+          3. still short: the existing identity pairs again, each with another enemy card."""
+        mid = self.run_state.mission_id
+        game = self.db.get_game_for_mission(mid)
+        bl = list(self.run_state.blacklist or [])
+        locked_labels = set(self.identity_locked_labels())
+        weapons = self.run_state.weapons_for(for_player)
+        pool = self.db.get_player_modifiers_filtered(weapons, bl, game)
+        by_weapon = {}
+        for m in pool:
+            if m.get('weapon') and m.get('source') != 'General' and not m.get('equipment') \
+                    and self.db.get_mod_label(m) not in locked_labels:
+                by_weapon.setdefault(m['weapon'], []).append(m)
+        mine = self.identity_pairs(for_player)
+        # an identity is offered only where its cards still apply (this game, not blacklisted)
+        offer_locked = [(w, u, d) for w, (u, d) in mine.items()
+                        if len(self.db.filter_blacklisted([u, d], bl, game)) == 2]
+        random.shuffle(offer_locked)
+        free = [w for w, ms in by_weapon.items() if w not in mine and len(ms) >= 2]
+        random.shuffle(free)
+
+        slots = [(w, u, d, True) for w, u, d in offer_locked[:3]]
+        seen = set()
+        tries = 0
+        while len(slots) < 3 and free and tries < 60:
+            w = free[tries % len(free)]
+            tries += 1
+            up, down = random.sample(by_weapon[w], 2)
+            key = (w, up.get('name'), down.get('name'))
+            if key in seen and tries < 50:
+                continue
+            seen.add(key)
+            slots.append((w, up, down, False))
+        k = 0
+        while len(slots) < 3 and offer_locked:
+            w, u, d = offer_locked[k % len(offer_locked)]
+            slots.append((w, u, d, True))
+            k += 1
+        if not slots:
+            return []
+
+        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
+        enemy_mods += self.db.filter_blacklisted(
+            self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
+        enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)
+                   else [random.choice(enemy_mods) if enemy_mods else None for _ in slots])
+        pairs = []
+        for i, ((w, up, down, locked), enemy) in enumerate(zip(slots, enemies)):
+            pairs.append({
+                'id': i + 1, 'kind': 'identity',
+                'identity': {'weapon': w, 'up': copy.deepcopy(up),
+                             'down': copy.deepcopy(down), 'locked': locked},
+                'player1_mod': None, 'player2_mod': None, 'enemy_mod': enemy,
+                'wildcard_mod': None, 'boss_mod': None, 'hero_mod': None,
+                'skull_mod': None, 'exhaust_mod': None, 'new_weapon': None,
+                'no_negative': False, 'selected_by': None})
+        self.run_state.pairs = pairs
+        self.run_state.current_turn = for_player
+        return pairs
 
     def select_pair(self, pair_id, player):
         for pair in self.run_state.pairs:

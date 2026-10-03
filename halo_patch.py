@@ -96,6 +96,11 @@ class PluginRegistry:
 
 
 BANE_PICKS = 3          # keep in step with halo_enhancer.BANE_PICKS
+# Weapon Identity (a draw round of tied weapon-card pairs): the pair's first card is two
+# picks' worth, its second card ONE pick at the inverted step -- counted as -1, so it
+# cancels an ordinary pick of the same card and, past zero, applies inverted.
+IDENTITY_UP_PICKS = 2
+IDENTITY_DOWN_PICKS = 1
 
 
 def collect_effects(rounds, mission_id=None, valid_bosses=None):
@@ -114,7 +119,7 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
     magnitude collector, shouldn't silently drop effects."""
     seen, order = {}, []
 
-    def add(mod, group, cat):
+    def add(mod, group, cat, picks=None):
         if not isinstance(mod, dict) or mod.get('_game_excluded'):
             return
         tag = mod.get('tag')
@@ -150,7 +155,10 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
         # A Bane (an enemy card drawn from the Other slot) is three picks' worth of the
         # same card: it stacks with ordinary picks of it, and the patcher blacklists it
         # afterwards (MagnitudeEditorDialog._offer_saturated_blacklist).
-        if mod.get('bane'):
+        if picks is not None:                         # Weapon Identity: +2 / -1
+            seen[key]['count'] += picks
+            seen[key]['identity'] = True
+        elif mod.get('bane'):
             seen[key]['count'] += BANE_PICKS
             seen[key]['bane'] = True
         else:
@@ -162,6 +170,12 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
             if isinstance(mod, dict):
                 src = mod.get('weapon') or mod.get('equipment')
                 add(mod, src if src else 'Player (general)', 0 if src else 1)
+            ident = (rd.get(pk) or {}).get('identity')
+            if isinstance(ident, dict):
+                for part, picks in (('up', IDENTITY_UP_PICKS), ('down', -IDENTITY_DOWN_PICKS)):
+                    m = ident.get(part)
+                    if isinstance(m, dict):
+                        add(m, m.get('weapon') or 'Player (general)', 0, picks)
         for k in ('enemy1', 'enemy2'):
             mod = rd.get(k)
             if isinstance(mod, dict):
