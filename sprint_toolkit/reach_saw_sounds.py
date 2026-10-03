@@ -9,11 +9,17 @@ THE KIT'S CUSTOM-SOUND ROUTE (HREK, measured):
     tag per folder, one PERMUTATION per wav, and writes the audio into an FMOD bank
     `fmod\pc\sfx.<suffix>.fsb` (+ .info) beside the stock sfx.fsb.
   * a compiled Reach sound tag carries `FMod Bank Suffix` (snd! +0x30): stock sounds ''
-    (sfx.fsb), these 'saw' -- so the game is expected to open
-    haloreach\fmod\pc\sfx.saw.fsb (installed by this script; first in-game test pending).
+    (sfx.fsb), these 'saw'.
+  * MEASURED IN GAME (2026-10-03): PC Reach plays the MS-ADPCM audio COMPILED INTO THE MAP.
+    Boot 1 (xma2 only) was silent; with ms_adpcm it plays -- with or without the Xbox
+    encoding (test 1), and with the sfx.saw.fsb bank REMOVED from the game folder, before
+    and after an MCC restart (test 2). So nothing outside the map is needed: no loose
+    file, nothing for a Steam verify to delete, no restore step. The kit still writes the
+    bank into HREK\fmod\pc (part of its import); the tags keep suffix 'saw' -- the tested
+    state (an empty suffix is untested).
 
 What this does:
-  0. (see import_sounds) every tag gets the PC encoding MS-ADPCM beside the XMA2 one;
+  0. (pc_only) every tag is re-encoded to MS-ADPCM ONLY, its suffix restored;
   1. the audio from saw_port_audio.py into HREK data\sound\weapons\saw_port\:
         saw_fire      6 permutations  weapon_fire           (crack + body per shot)
         saw_tail_ext  3 permutations  first_person_outside  (the AR's tail classes, so the
@@ -24,11 +30,11 @@ What this does:
      ar_tail_ext/int -> saw_tail_ext/int, dryfire -> saw_dryfire; the distant-fire LOD
      sound stays the AR's;
   3. the SAW weapon names its own effects;
-  4. --install copies sfx.saw.fsb + .info into MCC's haloreach\fmod\pc.
-Then rebuild m20 (rebuild_reach.cmd m20).
+  4. (--install, NOT NEEDED -- test 2) copies sfx.saw.fsb + .info into haloreach\fmod\pc.
+Then rebuild m20 (tool\rebuild_reach.cmd m20).
 
-    python reach_saw_sounds.py --write --install           PC only (ms_adpcm) -- confirmed in game
-    python reach_saw_sounds.py --write --both --install    + the Xbox xma2 encoding (also worked)
+    python reach_saw_sounds.py --write             PC only (ms_adpcm) -- confirmed in game
+    python reach_saw_sounds.py --write --both      + the Xbox xma2 encoding (also worked)
 """
 import argparse
 import glob
@@ -190,7 +196,7 @@ def main():
     if a.install:
         install()
     if not (a.write or a.install):
-        print('(dry run -- pass --write, then --install)')
+        print('(dry run -- pass --write; --install is not needed, see the docstring)')
 
 
 if __name__ == '__main__':
