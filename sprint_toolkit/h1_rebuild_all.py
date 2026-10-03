@@ -66,7 +66,15 @@ def build(mp):
                        capture_output=True, text=True, errors='replace')
     out = os.path.join(paths.HCEEK, 'maps', mp + '.map')
     if 'successfully built' not in (r.stdout or ''):
-        tail = ((r.stdout or '') + (r.stderr or '')).strip().splitlines()[-6:]
+        text = (r.stdout or '') + (r.stderr or '')
+        if 'actor_palette_block' in text:
+            # tool APPENDS every child scenario's Actor Palette to the parent's, no
+            # de-duplication, and the merged block holds 64. c20/d20's _cinema children
+            # carry an unused near-copy of the palette (0 encounters) -- empty it.
+            return None, ('build failed: Actor Palette over 64 entries. The build adds each '
+                          'child scenario\'s palette (e.g. levels\\%s\\%s_cinema) to this '
+                          'one -- empty the unused child palette in Guerilla.' % (mp, mp))
+        tail = [l for l in text.strip().splitlines() if l.strip() and '?????' not in l][-6:]
         return None, 'build failed:\n      ' + '\n      '.join(tail)
     if not os.path.isfile(out) or os.path.getmtime(out) < t0 - 2:
         return None, 'tool reported success but %s is not fresh' % out
