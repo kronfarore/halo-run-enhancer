@@ -11377,8 +11377,14 @@ class OptionsDialog(QDialog):
             grid.setColumnStretch(3, 1)
             return grid, spins
 
+        # the pools counted live from halo.json, so the text never goes stale again
+        _pc = enemy_colors.pool_counts() or {}
+        def _pool_text(kind):
+            c = _pc.get(kind)
+            return (', '.join('%d %s' % (c[g], g) for g in ('aggressive', 'defensive', 'utility'))
+                    if c else 'see enemy_colors.py')
         grid, self._ecd_spins = _step_grid(dr, enemy_colors.DRIFT_DEFAULTS,
-                                           '211 aggressive, 142 defensive, 85 utility')
+                                           _pool_text('specific'))
         dl.addLayout(grid)
         # Step 3: General enemy cards shift every enemy.
         self._ecd_gen_on = QCheckBox("General enemy cards shift every enemy")
@@ -11386,19 +11392,22 @@ class OptionsDialog(QDialog):
         self._ecd_gen_on.setToolTip(
             "Cards from the General enemy modifiers (Enemy Vitality, Accuracy, Vision...) "
             "change every enemy, so they nudge every enemy's colours the same way. Smaller "
-            "default steps: there are 30 aggressive, 6 defensive and 9 utility cards, "
+"default steps: there are %s cards, "
             "and each one moves the whole roster.\n\nBoth kinds of drift wrap: once a "
             "colour has washed out to white (one channel at 255, the other two within "
-            "the card's + step of it), it starts again from black.")
+            "the card's + step of it), it starts again from black." % _pool_text('general'))
         dl.addWidget(self._ecd_gen_on)
         gdef = enemy_colors.DRIFT_DEFAULTS['general']
         grid2, self._ecd_gen_spins = _step_grid(
-            dict(gdef, **(dr.get('general') or {})), gdef, '30 aggressive, 6 defensive, 9 utility')
+            dict(gdef, **(dr.get('general') or {})), gdef, _pool_text('general'))
         dl.addLayout(grid2)
         reset_steps = QPushButton("Reset steps to defaults")
         reset_steps.setToolTip("Put every step above back to its default (specific cards "
-                               "8/3, 12/4, 20/7; general cards 3/1, 12/4, 8/3). The two "
-                               "switches stay as they are.")
+                               "%s; general cards %s). The two "
+                               "switches stay as they are." % tuple(
+                                   ', '.join('%d/%d' % tuple(d[g]) for g in
+                                             ('aggressive', 'defensive', 'utility'))
+                                   for d in (enemy_colors.DRIFT_DEFAULTS, gdef)))
 
         def _reset_steps():
             for spins, defaults in ((self._ecd_spins, enemy_colors.DRIFT_DEFAULTS),

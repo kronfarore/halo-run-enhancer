@@ -420,9 +420,10 @@ def _route_armour(m, row, slots):
 # player's pick.
 #   Step 2  a Specific Enemy card shifts that enemy; a hero / boss card only its rank.
 #   Step 3  a General enemy card shifts EVERY enemy, with its own (smaller) steps.
-# Steps are per group because the pools are lopsided (specific 211 / 142 / 85, general
-# 30 / 6 / 9): scaled inversely to pool share, each group moves an enemy about equally
-# often.
+# Steps are per group because the pools are lopsided: scaled inversely to pool share, so
+# each group moves an enemy about equally often. Measured 2026-10-03 over halo.json's
+# cards that are not ignored (`python enemy_colors.py --measure` recounts and suggests):
+# specific 322 / 187 / 186, general 35 / 8 / 11 (was 211 / 142 / 85 and 30 / 6 / 9).
 #   WRAP: cards apply one at a time; when a card leaves one channel at 255 and the other
 # two within that card's + step of 255 -- the colour has gone white -- it restarts from
 # black (Halo 1 draws near-black: pure black is "no tint" there) and later cards carry
@@ -432,9 +433,52 @@ def _route_armour(m, row, slots):
 # out of red, so the colour would stop saying how buffed it is.)
 DRIFT_CHANNEL = {'aggressive': 0, 'defensive': 2, 'utility': 1}          # R, B, G
 DRIFT_DEFAULTS = {'enabled': False,
-                  'aggressive': [8, 3], 'defensive': [12, 4], 'utility': [20, 7],
+                  'aggressive': [8, 3], 'defensive': [14, 5], 'utility': [14, 5],
                   'general_enabled': False,
-                  'general': {'aggressive': [3, 1], 'defensive': [12, 4], 'utility': [8, 3]}}
+                  'general': {'aggressive': [3, 1], 'defensive': [11, 4], 'utility': [8, 3]}}
+
+# The expected shift per card DRAWN (share x step), held from the first measurement
+# (specific 211/142/85 -> 8, 12, 20; general 30/6/9 -> 3, 12, 8) so a re-measure keeps the
+# overall pace and only rebalances the groups. + step = per_draw / share, at least 3;
+# - step = a third of it, at least 1.
+PER_DRAW = {'specific': 3.875, 'general': 1.6}
+_COLOR_SECTIONS = ('Specific Enemy modifier', 'Hero enemy modifier', 'Boss enemy modifier')
+
+
+def pool_counts(data=None):
+    """{'specific': {group: n}, 'general': {group: n}} over halo.json's enemy / hero /
+    boss cards and General enemy cards that are not ignored. None if unreadable."""
+    try:
+        if data is None:
+            import sys
+            for d in (getattr(sys, '_MEIPASS', None), os.path.dirname(os.path.abspath(__file__))):
+                p = os.path.join(d, 'halo.json') if d else None
+                if p and os.path.exists(p):
+                    with open(p, encoding='utf-8') as f:
+                        data = json.load(f)
+                    break
+        em = data['Enemy modifiers']
+        out = {'specific': dict.fromkeys(DRIFT_CHANNEL, 0), 'general': dict.fromkeys(DRIFT_CHANNEL, 0)}
+        cards = [('general', e) for e in (em.get('General modifiers') or {}).values()]
+        for sec in _COLOR_SECTIONS:
+            for effs in (em.get(sec) or {}).values():
+                cards += [('specific', e) for e in effs.values()]
+        for kind, e in cards:
+            if isinstance(e, dict) and not e.get('ignore') and e.get('color') in DRIFT_CHANNEL:
+                out[kind][e['color']] += 1
+        return out
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
+        return None
+
+
+def suggested_steps(counts, kind):
+    """{group: [+, -]} for one pool's counts (see PER_DRAW)."""
+    total = sum(counts.values()) or 1
+    out = {}
+    for g, n in counts.items():
+        up = max(3, round(PER_DRAW[kind] * total / n)) if n else 0
+        out[g] = [up, max(1, round(up / 3))]
+    return out
 GENERAL = '*'                     # `who` of a General enemy card: every enemy
 
 # A hero or boss card shifts only its own rank rows: (enemy, label prefixes).
@@ -600,3 +644,20 @@ def apply(m, game, overrides, catalog=None):
                         'effect': 'Enemy colours', 'ok': False,
                         'reason': '%s: %s' % (type(e).__name__, e)})
     return out
+
+
+if __name__ == '__main__':
+    import sys
+    if '--measure' not in sys.argv:
+        sys.exit('usage: python enemy_colors.py --measure   (count the drift pools, suggest steps)')
+    counts = pool_counts()
+    if counts is None:
+        sys.exit('halo.json not readable')
+    for kind in ('specific', 'general'):
+        c = counts[kind]
+        cur = DRIFT_DEFAULTS if kind == 'specific' else DRIFT_DEFAULTS['general']
+        sug = suggested_steps(c, kind)
+        print('%-8s %s' % (kind, ' / '.join('%d %s' % (c[g], g) for g in DRIFT_CHANNEL)))
+        for g in DRIFT_CHANNEL:
+            print('   %-10s default %-8s suggested %s%s' % (g, cur[g], sug[g],
+                  '' if list(cur[g]) == sug[g] else '   <- differs'))
