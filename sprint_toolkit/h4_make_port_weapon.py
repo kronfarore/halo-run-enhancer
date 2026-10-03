@@ -76,6 +76,8 @@ AR_FIRING = ('objects\\weapons\\rifle\\storm_assault_rifle\\feedback\\'
 MUZZLE_FX = 'objects\\weapons\\rifle\\focus_rifle\\fx\\muzzle\\firing.effect'
 PP_HUD = 'ui\\hud\\weapons\\covenant\\plasma_pistol\\plasma_pistol'
 OWN_HUD = 'ui\\hud\\weapons\\covenant\\focus_rifle\\focus_rifle'
+ZOOM_IN = r'sound\storm\weapons\beam_rifle\beam_rifle_zoom_in.sound'
+ZOOM_OUT = r'sound\storm\weapons\beam_rifle\beam_rifle_zoom_out.sound'
 FP_OFFSET = '0.03,-0.08,0.00'      # tuned in game by the user (boot 16)
 
 SET_REFS = [
@@ -92,6 +94,11 @@ SET_REFS = [
     # is ONE shared tag, so the scope graft (h4_map_poke.py --scope, after each build)
     # would otherwise give the real Plasma Pistol a scope too
     ('hud screen reference', OWN_HUD + '.cui_screen'),
+    # ZOOM SOUNDS (boot 30: silent): the Sentinel base names the bishop beam's NONPLAYER
+    # zoom events, in a bank m30 does not carry. Reach's Focus Rifle used the BEAM RIFLE's
+    # zoom sounds -- Halo 4's Beam Rifle has its own (weapons_covenant/beam_rifle bank).
+    ('zoom-in sound', ZOOM_IN),
+    ('zoom-out sound', ZOOM_OUT),
     # NOT A REFERENCE: the Sentinel Beam is flagged "extension of parent" -- its gun was
     # part of the Sentinel's body. Held by the player, the weapon then draws as part of
     # the player, whose body first person never draws: invisible, shadow still cast, and

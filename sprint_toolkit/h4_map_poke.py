@@ -132,6 +132,9 @@ def main():
     ap.add_argument('--firing-loop', metavar='LSND', nargs='?', const=SENTINEL_LOOP,
                     help='object attachment 0 (the overheat loop) -> this looping sound, '
                          'scaled by primary_firing (the scale attachment 1 uses)')
+    ap.add_argument('--zoom-sounds', action='store_true',
+                    help="weap Zoom-In/Out Sound (0x48C/0x49C) -> the Beam Rifle's (Reach's "
+                         "Focus Rifle used the Beam Rifle's zoom sounds)")
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -151,7 +154,7 @@ def main():
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
             a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew or
             a.meters_visible or a.meters_br_bitmap or a.meter_rects or a.player_bank or
-            a.firing_loop):
+            a.firing_loop or a.zoom_sounds):
         return
 
     d = m.data
@@ -283,6 +286,13 @@ def main():
         struct.pack_into('<I', d, a0 + 0x18, sc)
         print('attachment 0: %#x -> %#x (%s), primary scale -> %s'
               % (was, t['ident'], a.firing_loop, m.resolve_stringid(sc) or hex(sc)))
+    if a.zoom_sounds:
+        # Boot 30: no zoom sound. The Sentinel base names the bishop beam's NONPLAYER zoom
+        # events (bishop_beam bank, not in m30); Reach's Focus Rifle used the Beam Rifle's.
+        for off in (0x48C, 0x49C):
+            was = struct.unpack_from('<I', d, pb + off + 0xC)[0]
+            d[pb + off:pb + off + 0x10] = d[bb + off:bb + off + 0x10]
+            print('zoom sound +%#x: %#x -> %#x' % (off, was, struct.unpack_from('<I', d, pb + off + 0xC)[0]))
     if a.trigger_spew:
         tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
         t0 = m.data2off(tp)
