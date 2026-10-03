@@ -114,6 +114,9 @@ def main():
                     help="the Light Rifle's split: trigger 0 -> latch-zoom (primary barrel "
                          "0 unzoomed, secondary barrel 1 zoomed); barrel 1 = a copy of "
                          "barrel 0 with this first person offset (default the centre)")
+    ap.add_argument('--trigger-spew', action='store_true',
+                    help='undo --zoom-barrel: trigger 0 back to spew, no secondary barrel '
+                         '(boot 26: latch-zoom fires ONE shot per press, zoomed or not)')
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -131,7 +134,7 @@ def main():
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
-            a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel):
+            a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew):
         return
 
     d = m.data
@@ -175,6 +178,13 @@ def main():
         struct.pack_into('<h', d, t0 + 0xA, 1)
         print('trigger 0 behavior/primary/secondary %s -> (5, %d, 1); barrel 1 = barrel 0, '
               'first person offset %s' % (was, was[1], xyz))
+    if a.trigger_spew:
+        tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
+        t0 = m.data2off(tp)
+        was = struct.unpack_from('<hhh', d, t0 + 0x6)
+        struct.pack_into('<h', d, t0 + 0x6, 0)
+        struct.pack_into('<h', d, t0 + 0xA, -1)
+        print('trigger 0 behavior/primary/secondary %s -> (0, %d, -1)' % (was, was[1]))
     if a.accel_scale:
         # Boot 26 drift hunt: the reticle drifts while turning and recentres when still --
         # motion-driven. The Sentinel Beam (part of an enemy's body) carries acceleration
