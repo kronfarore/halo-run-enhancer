@@ -9,8 +9,8 @@ a = Analysis(
     ['halo_enhancer.py'],
     pathex=['sprint_toolkit'],
     binaries=[],
-    datas=[('halo.json', '.'), ('port_glyphs.json', '.')],   # bundle the data files next to the app
-    hiddenimports=['h3_font_repack', 'port_glyphs'],
+    datas=[('halo.json', '.'), ('port_glyphs.json', '.'), ('port_sounds', 'port_sounds')],   # bundle the data files next to the app
+    hiddenimports=['h3_font_repack', 'port_glyphs', 'port_sounds'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

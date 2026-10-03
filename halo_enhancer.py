@@ -6566,6 +6566,25 @@ class MagnitudeEditorDialog(QDialog):
             return [{'effect': 'port glyph', 'field': folder, 'ok': False,
                      'reason': 'port glyphs not checked: %s' % e}]
 
+    def _ensure_port_sounds(self):
+        """Halo 4 reads every Wwise bank from ONE package (halo4\\sound\\pc\\sfxbank.pck);
+        a ported weapon's own bank (port_sounds.py) must be in it or the port fires
+        silently. A Steam verify restores the stock file and a co-op partner never had
+        it, so every Halo 4 patch makes sure. Present = a header read; missing = a
+        ~400 MB rewrite (seconds), hence the busy dialog. Never fatal to the map patch."""
+        folder = (CONFIG.get('map_game_folder', {}).get(self.game) or '')
+        folder = folder.replace('/', '\\').split('\\')[0]
+        if folder != 'halo4':
+            return []
+        try:
+            import port_sounds
+            return self._run_busy(lambda: port_sounds.ensure(folder, mcc_root()),
+                                  title="Port sounds",
+                                  label="Checking the ported weapons' sound banks") or []
+        except Exception as e:
+            return [{'effect': 'port sound bank', 'field': folder, 'ok': False,
+                     'reason': 'port sound banks not checked: %s' % e}]
+
     def _restore_sword_drain(self, plan):
         """Put the hardcoded sword cost per kill back when this run no longer sets it.
 
@@ -8546,6 +8565,7 @@ class MagnitudeEditorDialog(QDialog):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
         results.extend(self._ensure_port_glyphs())
+        results.extend(self._ensure_port_sounds())
 
         # the enemy-weapon donors this patch used, remembered like a magnitude so the
         # next patch and the co-op partner make the very same clones
