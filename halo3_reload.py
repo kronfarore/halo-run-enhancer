@@ -218,7 +218,9 @@ H1_I8_FRAMES = (0x40, 0x41)
 # pointer@+0xC, magic-relative): Frame Info @0x48, Default Data @0x8C, Frame Data @0xA0.
 H1_FRAME_SIZE, H1_INFO_TYPE = 0x24, 0x26
 H1_FRAME_INFO, H1_FRAME_DATA = 0x48, 0xA0
-H1_INFO_SIZES = (0, 4, 8, 12)      # none / dx / dx dy / dx dy dyaw, per frame
+# Frame Info Type: none / dx,dy / dx,dy,dyaw / dx,dy,dz,dyaw -> bytes per frame. Measured
+# on all ten campaign maps (5390 animations): size / frame count is exactly 0/8/12/16.
+H1_INFO_SIZES = (0, 8, 12, 16)
 
 
 def _h1_dataref(m, el, off):
