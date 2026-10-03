@@ -27,7 +27,8 @@ What this does:
   4. --install copies sfx.saw.fsb + .info into MCC's haloreach\fmod\pc.
 Then rebuild m20 (rebuild_reach.cmd m20).
 
-    python reach_saw_sounds.py [--write] [--install]
+    python reach_saw_sounds.py --write --install              (confirmed in game: xma2 + ms_adpcm)
+    python reach_saw_sounds.py --write --pc-only --install    (test 1: ms_adpcm only)
 """
 import argparse
 import glob
@@ -108,6 +109,35 @@ def import_sounds():
             raise SystemExit('%s has no PC (ms_adpcm) encoding' % name)
 
 
+BLENDER = r'F:\Tools\blender-5.2.2-windows-x64\blender.exe'
+
+
+def pc_only():
+    """TEST 1 (user, 2026-10-03): the PC encoding ONLY -- drop XMA2 (the ports run on PC).
+    `reimport-sounds <dir> adpcm no no <filter>` REPLACES the encodings when the filter is
+    not compression-append; the filter must match every tag (`weapons` misses the
+    first_person_* tails, `stereo` takes all four). It also CLEARS the bank suffix, even
+    with -bank:<suffix>, so reach_sound_suffix.py puts it back."""
+    tool('reimport-sounds', SND_DIR, 'adpcm', 'no', 'no', 'stereo')
+    r = subprocess.run([BLENDER, '--background', '--python', os.path.join(HERE, 'reach_sound_suffix.py'),
+                        '--', SUFFIX] + [SND_DIR + B + n for n in SOUNDS],
+                       capture_output=True, text=True, errors='replace')
+    if 'SUFFIX OK' not in r.stdout:
+        print(r.stdout[-1500:])
+        raise SystemExit('could not restore the bank suffix')
+    for name in SOUNDS:
+        x = os.path.join(EK, 'temp', '_saw_snd.xml')
+        if os.path.exists(x):
+            os.remove(x)
+        tool('export-tag-to-xml', os.path.join(TAGS, SND_DIR, name + '.sound'), x)
+        txt = open(x, encoding='utf-8', errors='replace').read()
+        comp = re.search(r'name="compression" value="([^"]*)"', txt).group(1)
+        suf = re.search(r'name="fmod bank suffix" value="([^"]*)"', txt).group(1)
+        print('   %-13s compression %s, bank suffix %r' % (name, comp, suf))
+        if comp != 'ms_adpcm' or suf != SUFFIX:
+            raise SystemExit('%s is not PC-only with suffix %s' % (name, SUFFIX))
+
+
 def own_effects():
     os.makedirs(os.path.join(TAGS, OWN_FX), exist_ok=True)
     for fx, pairs in REPOINT.items():
@@ -145,12 +175,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--install', action='store_true')
+    ap.add_argument('--pc-only', action='store_true',
+                    help='TEST 1: MS-ADPCM only, no XMA2 (confirmed in game so far: both)')
     a = ap.parse_args()
     if not glob.glob(os.path.join(AUDIO, 'fire', '*.wav')):
         raise SystemExit('run saw_port_audio.py first')
     if a.write:
         import_sounds()
         own_effects()
+    if a.pc_only:
+        pc_only()
     if a.install:
         install()
     if not (a.write or a.install):

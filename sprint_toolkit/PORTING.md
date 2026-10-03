@@ -2207,6 +2207,12 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   1. PC ONLY -- drop the Xbox (XMA2) encoding, keep MS-ADPCM: the ports only run on PC,
      and the XMA2 data only adds size. Reimport with the adpcm compressor WITHOUT
      compression-append and confirm in game.
+     SET UP (2026-10-03): `reach_saw_sounds.py --write --pc-only --install`. Found on the
+     way: `reimport-sounds <dir> adpcm no no <filter>` REPLACES the encodings when the
+     filter is not compression-append, and the filter must match every tag (`weapons`
+     misses the first_person_* tails; `stereo` takes all four). It also CLEARS the bank
+     suffix, even with -bank:<suffix> -- `reach_sound_suffix.py` (ManagedBlam) sets it
+     back, so this test changes the encoding only.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
