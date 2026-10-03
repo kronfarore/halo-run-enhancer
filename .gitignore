@@ -30,6 +30,9 @@ deepseek_*
 # .exe build tooling (not needed to run the Python tool)
 build.bat
 *.spec
+# ...except the exe recipe itself: it bundles port_glyphs.json + h3_font_repack, without
+# which a built Enhancer cannot restore the weapon ports' icons on other machines
+!halo_enhancer.spec
 
 # Reference material / not part of the main tool
 *.ods
@@ -53,3 +56,6 @@ sprint_toolkit/*.bitmap.stock
 settings_from_test_folder.json
 h1_actv_index.json
 port_levels_cache.json
+
+# weapon-port listening samples (decoded game audio)
+sprint_toolkit/sound_compare/
