@@ -6521,6 +6521,23 @@ class MagnitudeEditorDialog(QDialog):
                          'reason': res.get('reason')})
         return rows
 
+    def _ensure_port_glyphs(self):
+        """Put the ported weapons' pickup/HUD pictograms into this game's LIVE icon font
+        packages (<game>\\maps\\fonts\\font_package_icon*.bin, port_glyphs.py). A map
+        rebuild never carries them, a Steam verify restores the stock files and a co-op
+        partner's install never had them -- so every patch makes sure. A no-op once
+        present, [] for games without port glyphs, never fatal to the map patch."""
+        folder = (CONFIG.get('map_game_folder', {}).get(self.game) or '')
+        folder = folder.replace('/', '\\').split('\\')[0]
+        if not folder:
+            return []
+        try:
+            import port_glyphs
+            return port_glyphs.ensure(folder, mcc_root())
+        except Exception as e:
+            return [{'effect': 'port glyph', 'field': folder, 'ok': False,
+                     'reason': 'port glyphs not checked: %s' % e}]
+
     def _restore_sword_drain(self, plan):
         """Put the hardcoded sword cost per kill back when this run no longer sets it.
 
@@ -8500,6 +8517,7 @@ class MagnitudeEditorDialog(QDialog):
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
+        results.extend(self._ensure_port_glyphs())
 
         # the enemy-weapon donors this patch used, remembered like a magnitude so the
         # next patch and the co-op partner make the very same clones

@@ -2588,6 +2588,14 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   like Reach's Focus Rifle -- and so would friendly Sentinels' beams, for the test only.
   Then the real thing: an OWN bank and own event names, own .sound / .sound_looping /
   .soundbank tags in H4EK, a new LUT entry (or the DLC package), map rebuild.
+* **Boot 29:** firing SILENT with the test bank, and again after `--restore`, with the
+  port's Player Sound Bank poked to the sentinel bank -- while the OVERHEAT loop plays.
+  The overheat loop is an OBJECT ATTACHMENT on the weapon (weap 0x118: lsnd, primary
+  scale `overheated`); the Sentinel's firing loop sits in its firing EFFECT's "looping
+  sounds" block (alive only as long as the per-shot effect), and its one-shot
+  (bishop_beam_fire, bishop_beam bank) is first-person-only and its bank is not in m30's
+  list. Next test (`--firing-loop`): the Sentinel loop as attachment 0, scaled by
+  `primary_firing` -- the way the overheat sound already works on this port.
 * **Scope meters, in-map test pokes:** `--meters-visible`, `--meters-br-bitmap` (the Beam
   Rifle's heat_bar as a control). UI property names are in a string namespace the map
   reader does not resolve -- the poke matches by structure.

@@ -37,6 +37,7 @@ BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
 PP_GRAPH = r'objects\characters\storm_fp\weapons\pistol\fp_plasma_pistol\storm_fp_plasma_pistol'
 PORT_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle'
 BEAM_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_beam_rifle\storm_fp_beam_rifle'
+SENTINEL_LOOP = r'sound\storm\characters\sentinel\loops\npc_sentinel_friendly_beam_fire'
 SCOPE = r'ui\hud\weapons\covenant\focus_rifle\focus_rifle_scope'
 BR_HEAT_BAR = r'ui\hud\weapons\covenant\beam_rifle\bitmap\heat_bar'
 PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
@@ -128,6 +129,9 @@ def main():
     ap.add_argument('--player-bank', metavar='SBNK',
                     help="weap +0x608 'Player Sound Bank' -> this soundbank tag (the port's "
                          "is empty; the plugin: 'high quality player sound bank to be prefetched')")
+    ap.add_argument('--firing-loop', metavar='LSND', nargs='?', const=SENTINEL_LOOP,
+                    help='object attachment 0 (the overheat loop) -> this looping sound, '
+                         'scaled by primary_firing (the scale attachment 1 uses)')
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -146,7 +150,8 @@ def main():
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
             a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew or
-            a.meters_visible or a.meters_br_bitmap or a.meter_rects or a.player_bank):
+            a.meters_visible or a.meters_br_bitmap or a.meter_rects or a.player_bank or
+            a.firing_loop):
         return
 
     d = m.data
@@ -260,6 +265,24 @@ def main():
         d[pb + 0x608:pb + 0x60C] = d[bb + 0x608:bb + 0x60C]
         struct.pack_into('<I', d, pb + 0x608 + 0xC, t['ident'])
         print('player sound bank %#x -> %#x (%s)' % (was, t['ident'], a.player_bank))
+    if a.firing_loop:
+        # Boot 29: firing is SILENT (with or without the sound test, with the player bank
+        # set) while the overheat loop -- an OBJECT ATTACHMENT (weap 0x118, 0x20 each: type
+        # tagRef +0, marker +0x10, primary scale +0x18) scaled by `overheated` -- plays.
+        # The Sentinel's firing sound sits in its firing effect's "looping sounds", alive
+        # only as long as a per-shot effect. Test: the same loop as an attachment, scaled
+        # by primary_firing (attachment 1, the firing light, already uses that function).
+        t = next((t for t in m.tags if t['class'] == 'lsnd' and t['name'] == a.firing_loop), None)
+        if t is None:
+            raise SystemExit('no looping sound %s in this map' % a.firing_loop)
+        cnt, ptr = struct.unpack_from('<iI', d, pb + 0x118)
+        a0 = m.data2off(ptr)
+        was = struct.unpack_from('<I', d, a0 + 0xC)[0]
+        struct.pack_into('<I', d, a0 + 0xC, t['ident'])
+        sc = struct.unpack_from('<I', d, a0 + 0x20 + 0x18)[0]
+        struct.pack_into('<I', d, a0 + 0x18, sc)
+        print('attachment 0: %#x -> %#x (%s), primary scale -> %s'
+              % (was, t['ident'], a.firing_loop, m.resolve_stringid(sc) or hex(sc)))
     if a.trigger_spew:
         tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
         t0 = m.data2off(tp)
