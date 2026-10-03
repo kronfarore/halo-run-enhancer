@@ -56,10 +56,23 @@ class Pages:
         self.m = m
         # Halo Reach: same zone and pages, but a 0x64-byte member record (below)
         self.reach = (type(m).__name__ == 'ReachMap') if reach is None else reach
-        self.zb = Z._zone_tag(m)['base']
-        self.tabs = R.resource_tables(m)
-        self.cbase = m.data2off(m.u32(self.zb + 0x148 + 0xC))
-        self.rbase = HP._block_base(m, self.zb + 0x64)
+        # Halo 4: pages as before, but its own zone layout -- Segments +0x4C (0x18: page
+        # offset +0x0, page index +0xC), Tag Resources +0x58 (0x44), control buffer +0x154 --
+        # and a 0x68-byte member record
+        self.h4 = type(m).__name__ == 'Halo4Map'
+        if self.h4:
+            zt = next(t for t in m.tags if t.get('class') == 'zone')
+            self.zb = zb = zt['base']
+            self.tabs = {'owner': 'zone',
+                         'page': (HP._block_base(m, zb + 0x34), m.i32(zb + 0x34)),
+                         'seg': (HP._block_base(m, zb + 0x4C), m.i32(zb + 0x4C))}
+            self.cbase = m.data2off(m.u32(zb + 0x154 + 0xC))
+            self.rbase = HP._block_base(m, zb + 0x58)
+        else:
+            self.zb = Z._zone_tag(m)['base']
+            self.tabs = R.resource_tables(m)
+            self.cbase = m.data2off(m.u32(self.zb + 0x148 + 0xC))
+            self.rbase = HP._block_base(m, self.zb + 0x64)
         pb, pc = self.tabs['page']
         starts = sorted(struct.unpack_from('<I', m.data, pb + i * R.PLAY_PAGE_ELEM + 8)[0]
                         for i in range(pc)
@@ -70,6 +83,8 @@ class Pages:
 
     def page_index(self, seg):
         sb, _sc = self.tabs['seg']
+        if self.h4:
+            return struct.unpack_from('<h', self.m.data, sb + seg * 0x18 + 0xC)[0]
         return struct.unpack_from('<h', self.m.data, sb + seg * R.PLAY_SEG_ELEM)[0]
 
     def entry(self, pi):
@@ -92,6 +107,8 @@ class Pages:
 
     def members(self, res):
         m = self.m
+        if self.h4:
+            return self._members_h4(res)
         e = self.rbase + res * 0x40
         coff, csz = m.i32(e + 0x14), m.i32(e + 0x18)
         seg = struct.unpack_from('<h', m.data, e + 0x22)[0]
@@ -134,6 +151,38 @@ class Pages:
                             move=seg_off + (ptr & 0x0FFFFFFF) + dflt + cmp + sf + af))
         return out
 
+    def _members_h4(self, res):
+        """Halo 4 resource (0x44): control length +0x14, segment +0x1A, fixups +0x20, Fixup
+        Information Locations +0x38 (first entry = offset in the control buffer). Member
+        0x68: frame count u16 +0x8, movement type +0xB, 18 u32 sizes from +0xC (default,
+        compressed, static flags, animated flags, movement, pill, ...), blob size +0x54,
+        page pointer fixup at +0x60."""
+        m = self.m
+        e = self.rbase + res * 0x44
+        seg = struct.unpack_from('<h', m.data, e + 0x1A)[0]
+        nloc, lb = m.i32(e + 0x38), HP._block_base(m, e + 0x38)
+        if seg < 0 or nloc <= 0 or not lb:
+            return []
+        ctl = self.cbase + m.i32(lb)
+        clen = m.i32(e + 0x14)
+        seg_off = struct.unpack_from('<i', m.data, self.tabs['seg'][0] + seg * 0x18)[0]
+        fb = HP._block_base(m, e + 0x20)
+        fix = {m.u32(fb + k * 8): m.u32(fb + k * 8 + 4) for k in range(max(0, m.i32(e + 0x20)))}
+        out = []
+        for k in range(clen // 0x68):
+            mo = ctl + k * 0x68
+            ptr = fix.get(k * 0x68 + 0x60)
+            if ptr is None:
+                break
+            fc = struct.unpack_from('<H', m.data, mo + 8)[0]
+            it = m.data[mo + 0xB]
+            sizes = struct.unpack_from('<18I', m.data, mo + 0xC)
+            ok = (ptr >> 28 == 4 and sum(sizes) == m.i32(mo + 0x54)
+                  and 0 < it < 4 and sizes[4] == PER[it] * fc)
+            out.append(dict(fc=fc, it=it, seg=seg, ok=ok,
+                            move=seg_off + (ptr & 0x0FFFFFFF) + sum(sizes[:4])))
+        return out
+
     def write_back(self):
         """Recompress every edited page into its own slot and refresh its checksums."""
         m = self.m
@@ -168,14 +217,24 @@ def move_anims(m, pages, base):
     Animation Data block (+0x30, 0xD4) of a 0x3C element at +0x94, its Tag Resource Groups
     at +0x1AC. An animation without that block BORROWS another graph's (Shared Graph
     Reference +0x1C) and is reached through the lender's own pattern."""
-    if pages.reach:
+    if pages.h4:
+        groups = m.follow_all(base, [0x1E4], [0xC], 'all')
+    elif pages.reach:
         groups = m.follow_all(base, [0x1AC], [0xC], 'all')
     else:
         groups = m.follow_all(base, [0xF8], [0xC], 'all')
     res_of = [m.u32(g + 4) & 0xFFFF for g in groups]
     memo = {}
     out = []
-    if pages.reach:
+    if pages.h4:
+        # Halo 4: Animations +0x9C (0x40), Shared Animation Data +0x34 (0xDC): frame info
+        # type +0x4, resource group/member +0x18/+0x1A
+        els = []
+        for el in m.follow_all(base, [0x9C], [0x40], 'all'):
+            sh = m.follow_all(el, [0x34], [0xDC], 'all')
+            if sh:
+                els.append((el, sh[0] + 4, sh[0] + 0x18))
+    elif pages.reach:
         els = []
         for el in m.follow_all(base, [0x94], [0x3C], 'all'):
             sh = m.follow_all(el, [0x30], [0xD4], 'all')
@@ -187,7 +246,9 @@ def move_anims(m, pages, base):
         if not m.data[fit_at]:
             continue
         nm = m.resolve_stringid(m.u32(el)) or ''
-        if 'move_' not in nm or 'aim_move' in nm:
+        # Halo 4 names its locomotion `locomote_run_<direction>` (the walk is
+        # `locomote_walk_inplace`, which carries no root motion and drops out above)
+        if ('move_' not in nm and 'locomote_' not in nm) or 'aim_' in nm:
             continue
         g, k = struct.unpack_from('<hh', m.data, group_at)
         if not (0 <= g < len(res_of)):
@@ -243,7 +304,8 @@ def main():
                         struct.pack_into('<2f', pg, off + i * per, dx * a.mult, dy * a.mult)
                     done.add((pi, off))
                     pages.dirty.add(pi)
-                if nm.startswith(('combat:', 'any:')) and ':move_front' in nm and ':2:' not in nm:
+                if (nm.startswith(('combat:', 'any:')) and (':move_front' in nm or 'locomote_run_front' in nm)
+                        and ':2:' not in nm):
                     print('   %-40s f=%3d type=%d  %5.2f wu/s' % (nm, fc, it, speed(pg, it, fc, off)))
     for name, n in external.items():
         print('NOT WRITTEN: %s -- %d animation(s) on pages outside this map (vanilla map?)' % (name, n))
@@ -254,11 +316,14 @@ def main():
     if a.shield_mult:
         import halo_map as hm
         import assembly_plugins as apl
-        reach = a.game == 'Halo Reach'
-        pl = hm.Plugin(os.path.join(apl.plugins_dir(), 'ReachMCC' if reach else 'Halo3MCC', 'hlmt.xml'))
-        blk = 'Old Damage Info' if reach else 'New Damage Info'
-        path = ('objects\\characters\\spartans\\spartans' if reach
-                else 'objects\\characters\\masterchief\\masterchief')
+        sub, blk, path = {
+            'Halo Reach': ('ReachMCC', 'Old Damage Info', 'objects\\characters\\spartans\\spartans'),
+            'Halo 4': ('Halo4MCC', 'Old Damage Info',
+                       'objects\\characters\\storm_masterchief\\storm_masterchief'),
+        }.get(a.game, ('Halo3MCC', 'New Damage Info', 'objects\\characters\\masterchief\\masterchief'))
+        if not os.path.exists(os.path.join(apl.plugins_dir(), sub, 'hlmt.xml')):
+            sub = sub.replace('MCC', '')
+        pl = hm.Plugin(os.path.join(apl.plugins_dir(), sub, 'hlmt.xml'))
         for _p, base in m.find_tags('hlmt', path):
             old = m.read_tag_field(base, 'Maximum Shield Vitality', pl, blk)
             m.write_tag_field(base, 'Maximum Shield Vitality', old * a.shield_mult, pl, blk)
