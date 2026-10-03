@@ -101,6 +101,28 @@ def swap_char(m, src, dst, weapon, fly=False):
     return n
 
 
+def squad_setup(m, fly_squads, orders):
+    """Test staging: every starting location of the named squads spawns Flying, and
+    `orders` {squad: order name} replaces a squad's Initial Order Index (+0x42) -- a
+    flyer needs an order with perch positions (vanilla Drone orders have them)."""
+    s = m.scenario_tag()['base']
+    onames = [m.data[o:o + 0x20].split(b'\0')[0].decode()
+              for o in m.follow_all(s, [0x240], [0x7C], 'all')]
+    out = []
+    for sq in m.follow_all(s, [0x160], [0x74], 'all'):
+        n = m.data[sq:sq + 0x20].split(b'\0')[0].decode()
+        if n in fly_squads:
+            locs = m.follow_all(sq, [0x48], [0x64], 'all')
+            for loc in locs:
+                struct.pack_into('<H', m.data, loc + 0x3E, 2)
+            out.append('%s: %d location(s) Flying' % (n, len(locs)))
+        if n in orders:
+            oi = onames.index(orders[n])
+            struct.pack_into('<h', m.data, sq + 0x42, oi)
+            out.append('%s: order -> %s (%d)' % (n, orders[n], oi))
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--map', required=True)
@@ -112,6 +134,9 @@ def main():
     ap.add_argument('--swap-weapon', type=int, default=-1)
     ap.add_argument('--swap-fly', action='store_true',
                     help='swapped starting locations spawn in Flying movement mode')
+    ap.add_argument('--fly-squad', action='append', default=[],
+                    help='squad whose starting locations spawn Flying')
+    ap.add_argument('--squad-order', action='append', default=[], help='SQUAD=ORDER name')
     ap.add_argument('--flight-bipd', help='bipd path whose Flying Maximum/Sidestep '
                     'Velocity --flight-mult scales')
     ap.add_argument('--flight-mult', type=float)
@@ -142,6 +167,9 @@ def main():
         src, dst = (int(x) for x in spec.split('='))
         print('swap palette %d -> %d (weapon %d): %d squad/location writes'
               % (src, dst, a.swap_weapon, swap_char(m, src, dst, a.swap_weapon, a.swap_fly)))
+    for line in squad_setup(m, set(a.fly_squad),
+                            dict(x.split('=', 1) for x in a.squad_order)):
+        print(line)
     if a.flight_bipd and a.flight_mult:
         import halo_map as hm
         import assembly_plugins as apl
