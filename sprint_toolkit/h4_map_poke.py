@@ -36,6 +36,7 @@ PORT = r'objects\weapons\rifle\focus_rifle\focus_rifle'
 BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
 PP_GRAPH = r'objects\characters\storm_fp\weapons\pistol\fp_plasma_pistol\storm_fp_plasma_pistol'
 PORT_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle'
+BEAM_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_beam_rifle\storm_fp_beam_rifle'
 PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
 BR_PROJ_FX = r'objects\weapons\rifle\storm_beam_rifle\fx\projectile'
 FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
@@ -106,6 +107,13 @@ def main():
                     help='point the fp model back at the own render model of the port')
     ap.add_argument('--model-flags', action='store_true',
                     help='render model 0x64 bit 5: do not use compressed vertex positions')
+    ap.add_argument('--on-beam-graph', action='store_true',
+                    help='--loop-frame / --anim-flags act on the BEAM RIFLE fp graph (the '
+                         'one --graph-back points the port at)')
+    ap.add_argument('--zoom-barrel', metavar='X,Y,Z', nargs='?', const='0,0,0',
+                    help="the Light Rifle's split: trigger 0 -> latch-zoom (primary barrel "
+                         "0 unzoomed, secondary barrel 1 zoomed); barrel 1 = a copy of "
+                         "barrel 0 with this first person offset (default the centre)")
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -123,10 +131,38 @@ def main():
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
-            a.loop_frame or a.scope or a.accel_scale):
+            a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel):
         return
 
     d = m.data
+    if a.zoom_barrel:
+        # Boot 26 (user): one first-person offset per BARREL, so zoomed and unzoomed can
+        # start the beam in different places -- the Light Rifle's trigger is latch-zoom,
+        # primary barrel 0 unzoomed, secondary barrel 1 zoomed. weap.xml: New Triggers
+        # 0x50C (0xAC each): Behavior +0x6 (5 = Latch-Zoom), Secondary Barrel +0xA.
+        # Barrels 0x518 (0x190): First Person Offset tagblock +0x100 (12 bytes).
+        # OPEN QUESTION this tests: latch-zoom is only used by per-press weapons (Battle
+        # Rifle, Light Rifle); does a held 30/s beam keep firing?
+        tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
+        t0 = m.data2off(tp)
+        bc, bp = struct.unpack_from('<iI', d, pb + 0x518)
+        if bc < 2:
+            raise SystemExit('the port has %d barrel(s); the zoom split needs 2' % bc)
+        b0 = m.data2off(bp)
+        b1 = b0 + 0x190
+        keep = bytes(d[b1 + 0x100:b1 + 0x10C])
+        d[b1:b1 + 0x190] = d[b0:b0 + 0x190]
+        d[b1 + 0x100:b1 + 0x10C] = keep
+        oc, op = struct.unpack_from('<iI', d, b1 + 0x100)
+        if oc < 1:
+            raise SystemExit('barrel 1 has no first person offset element to set')
+        xyz = [float(v) for v in a.zoom_barrel.split(',')]
+        struct.pack_into('<3f', d, m.data2off(op), *xyz)
+        was = struct.unpack_from('<hhh', d, t0 + 0x6)
+        struct.pack_into('<h', d, t0 + 0x6, 5)
+        struct.pack_into('<h', d, t0 + 0xA, 1)
+        print('trigger 0 behavior/primary/secondary %s -> (5, %d, 1); barrel 1 = barrel 0, '
+              'first person offset %s' % (was, was[1], xyz))
     if a.accel_scale:
         # Boot 26 drift hunt: the reticle drifts while turning and recentres when still --
         # motion-driven. The Sentinel Beam (part of an enemy's body) carries acceleration
@@ -196,7 +232,7 @@ def main():
         # frame of the whole rig shifted, "right before the idle" (boot 18).
         import halo3_reload
         L = halo3_reload.LAYOUTS['Halo 4']
-        g = m.find_tags('jmad', PORT_GRAPH)[0][1]
+        g = m.find_tags('jmad', BEAM_GRAPH if a.on_beam_graph else PORT_GRAPH)[0][1]
         els = m.follow_all(g, [L['anim_blk']], [L['anim_el']], 'all')
         for pair in a.anim_flags:
             ai, v = pair.split('=')
@@ -211,7 +247,7 @@ def main():
         # hand-off = the pop "right before the idle" (boot 18).
         import halo3_reload
         L = halo3_reload.LAYOUTS['Halo 4']
-        g = m.find_tags('jmad', PORT_GRAPH)[0][1]
+        g = m.find_tags('jmad', BEAM_GRAPH if a.on_beam_graph else PORT_GRAPH)[0][1]
         els = m.follow_all(g, [L['anim_blk']], [L['anim_el']], 'all')
         for pair in a.loop_frame:
             ai, v = (int(x) for x in pair.split('='))
