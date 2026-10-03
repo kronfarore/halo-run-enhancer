@@ -37,6 +37,8 @@ BEAM = r'objects\weapons\rifle\storm_beam_rifle\storm_beam_rifle'
 PP_GRAPH = r'objects\characters\storm_fp\weapons\pistol\fp_plasma_pistol\storm_fp_plasma_pistol'
 PORT_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_focus_rifle\fp_focus_rifle'
 BEAM_GRAPH = r'objects\characters\storm_fp\weapons\rifle\fp_beam_rifle\storm_fp_beam_rifle'
+SCOPE = r'ui\hud\weapons\covenant\focus_rifle\focus_rifle_scope'
+BR_HEAT_BAR = r'ui\hud\weapons\covenant\beam_rifle\bitmap\heat_bar'
 PORT_BEAM = r'objects\weapons\rifle\focus_rifle\projectiles\focus_rifle_beam'
 BR_PROJ_FX = r'objects\weapons\rifle\storm_beam_rifle\fx\projectile'
 FP_TRACER = r'objects\weapons\pistol\storm_sentinel_beam\fx\friendly_beam\projectile_1p'
@@ -117,6 +119,10 @@ def main():
     ap.add_argument('--trigger-spew', action='store_true',
                     help='undo --zoom-barrel: trigger 0 back to spew, no secondary barrel '
                          '(boot 26: latch-zoom fires ONE shot per press, zoomed or not)')
+    ap.add_argument('--meters-visible', action='store_true',
+                    help='scope side meters: prop_visible 0 -> 1 in the built focus_rifle_scope')
+    ap.add_argument('--meters-br-bitmap', action='store_true',
+                    help="CONTROL: both scope meters draw the Beam Rifle's own heat_bar bitmap")
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -134,7 +140,8 @@ def main():
             a.weapon_origin or a.fp_tracer or a.graph_back or a.streak_back or
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
-            a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew):
+            a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew or
+            a.meters_visible or a.meters_br_bitmap):
         return
 
     d = m.data
@@ -178,6 +185,41 @@ def main():
         struct.pack_into('<h', d, t0 + 0xA, 1)
         print('trigger 0 behavior/primary/secondary %s -> (5, %d, 1); barrel 1 = barrel 0, '
               'first person offset %s' % (was, was[1], xyz))
+    if a.meters_visible or a.meters_br_bitmap:
+        # The port's scope template, overlay 0 (widescreen): each overlay component =
+        # name sid + 7 property blocks (long, real, string_id, component ptr, tag
+        # reference, string, argb), 12 bytes each. Long = (name sid, value); tag reference
+        # = (name sid, 16-byte tagref: group, ..., datum at +0xC of the ref).
+        C = halo_patch._H4_CUSC
+        sc = m.find_tags('cusc', SCOPE)[0][1]
+        ov0 = halo_patch._h4_rows(m, sc, *C['overlays'])[0]
+        cb = m.data2off(struct.unpack_from('<I', ov0, halo_patch._H4_OV_COMPS[0] + 4)[0])
+        n = struct.unpack_from('<i', ov0, halo_patch._H4_OV_COMPS[0])[0]
+        brbm = next(t for t in m.tags if t['class'] == 'bitm' and t['name'] == BR_HEAT_BAR)
+        for i in range(n):
+            e = cb + i * halo_patch._H4_OV_COMPS[1]
+            nm = m.resolve_stringid(struct.unpack_from('<I', d, e)[0])
+            if nm not in ('bitmap_heat_bar', 'bitmap_ammo_bar'):
+                continue
+            for k, (esz, want) in ((0, (8, 'prop_visible')), (4, (20, 'prop_bitmap_reference'))):
+                cnt, ptr = struct.unpack_from('<iI', d, e + 4 + k * 12)
+                a0 = m.data2off(ptr) if cnt > 0 else None
+                for j in range(max(cnt, 0)):
+                    at = a0 + j * esz
+                    # UI property names sit in a string NAMESPACE the map reader does not
+                    # resolve, so match by structure: the meters' long block is (blend 1,
+                    # scale-to-bounds 1, visible 0) -- the 0 is prop_visible; the tag
+                    # reference block holds one entry, the bitmap.
+                    if k == 0 and struct.unpack_from('<i', d, at + 4)[0] != 0:
+                        continue
+                    if k == 0 and a.meters_visible:
+                        was = struct.unpack_from('<i', d, at + 4)[0]
+                        struct.pack_into('<i', d, at + 4, 1)
+                        print('%s prop_visible %d -> 1' % (nm, was))
+                    if k == 4 and a.meters_br_bitmap:
+                        was = struct.unpack_from('<I', d, at + 4 + 0xC)[0]
+                        struct.pack_into('<I', d, at + 4 + 0xC, brbm['ident'])
+                        print('%s bitmap %#x -> %#x (Beam Rifle heat_bar)' % (nm, was, brbm['ident']))
     if a.trigger_spew:
         tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
         t0 = m.data2off(tp)
