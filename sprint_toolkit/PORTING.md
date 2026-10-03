@@ -2211,7 +2211,7 @@ lacks is the user's spreadsheet (`Halo Weapons Spreadsheet (CE - Infinite).ods`,
     sound             DONE   own Wwise bank (Reach in/loop/out as PCM) via tool/port_sounds.py,
                              firing loop as a weapon attachment, Beam Rifle zoom sounds (boot 31)
     ** COMPLETE 2026-10-03 (boot 31): every step confirmed in game; backup
-       F:\HaloPortBackups6-10-03_focus-rifle-h4. Open only: non-English pickup
+       F:\HaloPortBackups\2026-10-03_focus-rifle-h4. Open only: non-English pickup
        lines unchecked in a non-English client. **
 
 **First test: m30_cryptum** (user's choice). Add the Focus Rifle to m30's `dz_enhancer`,
