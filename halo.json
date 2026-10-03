@@ -25186,7 +25186,7 @@
 			"desc": "How strong friends shields are",
 			"tag": "matg globals\\globals",
 			"targets": [
-				{ "step": "*1.1", "field": "Friend Shield", "block": "Difficulty", "difficulty": true }
+				{ "step": "+1", "field": "Friend Shield", "block": "Difficulty", "difficulty": true }
 			]
 		},
 		"Friend Recharge": {
@@ -25202,7 +25202,7 @@
 			"game": ["Halo 1", "Halo 2"],
 			"tag": {"Halo 1": "antr characters\\marine\\marine", "Halo 2": "jmad objects\\characters\\marine\\marine"},
 			"targets": [
-				{ "step": "*1.1", "field": "Movement Animation", "move_speed": true }
+				{ "step": "*1.5", "field": "Movement Animation", "move_speed": true }
 			]
 		}
 	}
