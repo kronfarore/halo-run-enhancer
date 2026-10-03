@@ -5642,7 +5642,7 @@ class MagnitudeEditorDialog(QDialog):
                 import halo3_reload
                 rows = halo3_reload.move_speeds(m, path, self.game)
                 if not rows:
-                    if str(self.game).strip() in ('Halo 3', 'Halo 3: ODST'):
+                    if str(self.game).strip() in ('Halo 3', 'Halo 3: ODST', 'Halo Reach'):
                         # only pages inside the level map are read (and written)
                         return ("— none in this map's own pages (a vanilla map keeps "
                                 "them in campaign/shared.map; not patched)")

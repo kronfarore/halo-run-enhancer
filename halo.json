@@ -15630,14 +15630,14 @@
 			"General Movement Speed": {
 				"color": "aggressive",
 				"desc": "How fast every enemy moves, on foot or in flight.",
-				"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). Every enemy graph: Elite, Grunt, Jackal, Hunter, the Flood combat forms, infection form and carrier (Marines, the Chief, Keyes and cinematic graphs are left alone). Sentinels fly and have no root motion, so the second row scales their bipd Flying block (Maximum Velocity + Maximum Sidestep Velocity, the same fields as their Flight Speed card). Stacks with each enemy's own Movement Speed card. Halo 2: every enemy jmad (Elite incl. Heretics, Grunt, Jackal, Hunter, Brute incl. Tartarus, Drone, Flood combat / infection / carrier); the flight row scales the Flying block of the Sentinel aggressor AND the Drone. Halo 3: every enemy jmad incl. the Flood combat Brute and pure forms (the AI Arbiter shares the Elite graph); the flight row covers Sentinels and Drones, and in ODST also Engineers.",
+				"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). Every enemy graph: Elite, Grunt, Jackal, Hunter, the Flood combat forms, infection form and carrier (Marines, the Chief, Keyes and cinematic graphs are left alone). Sentinels fly and have no root motion, so the second row scales their bipd Flying block (Maximum Velocity + Maximum Sidestep Velocity, the same fields as their Flight Speed card). Stacks with each enemy's own Movement Speed card. Halo 2: every enemy jmad (Elite incl. Heretics, Grunt, Jackal, Hunter, Brute incl. Tartarus, Drone, Flood combat / infection / carrier); the flight row scales the Flying block of the Sentinel aggressor AND the Drone. Halo 3: every enemy jmad incl. the Flood combat Brute and pure forms (the AI Arbiter shares the Elite graph); the flight row covers Sentinels and Drones, and in ODST also Engineers. Halo Reach: Elite AI + elite (they lend each other animations), Grunt, Jackal (and so Skirmishers), Hunter, Brute, Drone, Mule; the flight row covers Drones and Engineers (Flying block nth 2).",
 				"harder_when": "increased",
-				"game": ["Halo 1", "Halo 2", "Halo 3"],
-				"tag": {"Halo 1": "antr characters\\elite\\elite & characters\\grunt\\grunt & characters\\jackal\\jackal & characters\\hunter\\hunter & characters\\floodcombat* & characters\\flood_infection\\flood_infection & characters\\floodcarrier\\floodcarrier", "Halo 2": "jmad objects\\characters\\elite\\elite & objects\\characters\\grunt\\grunt & objects\\characters\\jackal\\jackal & objects\\characters\\hunter\\hunter & objects\\characters\\brute\\brute & objects\\characters\\bugger\\bugger & objects\\characters\\floodcombat_elite\\floodcombat_elite & objects\\characters\\floodcombat_human\\floodcombat_human & objects\\characters\\flood_infection\\flood_infection & objects\\characters\\floodcarrier\\floodcarrier", "Halo 3": "jmad objects\\characters\\elite\\elite & objects\\characters\\grunt\\grunt & objects\\characters\\jackal\\jackal & objects\\characters\\hunter\\hunter & objects\\characters\\brute\\brute & objects\\characters\\bugger\\bugger & objects\\characters\\floodcombat_elite\\floodcombat_elite & objects\\characters\\floodcombat_human\\floodcombat_human & objects\\characters\\floodcombat_brute\\floodcombat_brute & objects\\characters\\flood_infection\\flood_infection & objects\\characters\\floodcarrier\\floodcarrier & objects\\characters\\flood_stalker\\flood_stalker & objects\\characters\\flood_tank\\flood_tank"},
+				"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+				"tag": {"Halo 1": "antr characters\\elite\\elite & characters\\grunt\\grunt & characters\\jackal\\jackal & characters\\hunter\\hunter & characters\\floodcombat* & characters\\flood_infection\\flood_infection & characters\\floodcarrier\\floodcarrier", "Halo 2": "jmad objects\\characters\\elite\\elite & objects\\characters\\grunt\\grunt & objects\\characters\\jackal\\jackal & objects\\characters\\hunter\\hunter & objects\\characters\\brute\\brute & objects\\characters\\bugger\\bugger & objects\\characters\\floodcombat_elite\\floodcombat_elite & objects\\characters\\floodcombat_human\\floodcombat_human & objects\\characters\\flood_infection\\flood_infection & objects\\characters\\floodcarrier\\floodcarrier", "Halo 3": "jmad objects\\characters\\elite\\elite & objects\\characters\\grunt\\grunt & objects\\characters\\jackal\\jackal & objects\\characters\\hunter\\hunter & objects\\characters\\brute\\brute & objects\\characters\\bugger\\bugger & objects\\characters\\floodcombat_elite\\floodcombat_elite & objects\\characters\\floodcombat_human\\floodcombat_human & objects\\characters\\floodcombat_brute\\floodcombat_brute & objects\\characters\\flood_infection\\flood_infection & objects\\characters\\floodcarrier\\floodcarrier & objects\\characters\\flood_stalker\\flood_stalker & objects\\characters\\flood_tank\\flood_tank", "Halo Reach": "jmad objects\\characters\\elite_ai\\elite_ai & objects\\characters\\elite\\elite & objects\\characters\\grunt\\grunt & objects\\characters\\jackal\\jackal & objects\\characters\\hunter\\hunter & objects\\characters\\brute\\brute & objects\\characters\\bugger\\bugger & objects\\characters\\mule\\mule"},
 				"targets": [
 					{ "step": "*1.1", "field": "Movement Animation", "move_speed": true },
-					{ "step": "*1.1", "field": "Maximum Velocity", "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform"}, "group": "Flight Speed", "min": 0 },
-					{ "step": "*1.1", "field": "Maximum Sidestep Velocity", "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform"}, "group": "Flight Speed", "min": 0 }
+					{ "step": "*1.1", "field": "Maximum Velocity", "nth": {"default": 0, "Halo Reach": 2}, "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform", "Halo Reach": "bipd objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer"}, "group": "Flight Speed", "min": 0 },
+					{ "step": "*1.1", "field": "Maximum Sidestep Velocity", "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform", "Halo Reach": "bipd objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer"}, "group": "Flight Speed", "min": 0 }
 				]
 			}
 		},
@@ -16500,10 +16500,10 @@
 				"Movement Speed": {
 					"color": "aggressive",
 					"desc": "How fast they move on foot.",
-					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Elite 2.60, 2.99 with the sword; crouched 1.00, walking 0.57. The graph is shared by every Elite rank, Spec Ops and stealth Elites included. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Elite 2.22 for every weapon. The graph is shared by Heretics, the Heretic Leader and the flying Elite Rangers. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Elite 2.22 (hammer/dual 2.29). The AI Arbiter (dervish_ai) shares this graph, so it speeds up your ally too.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Elite 2.60, 2.99 with the sword; crouched 1.00, walking 0.57. The graph is shared by every Elite rank, Spec Ops and stealth Elites included. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Elite 2.22 for every weapon. The graph is shared by Heretics, the Heretic Leader and the flying Elite Rangers. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Elite 2.22 (hammer/dual 2.29). The AI Arbiter (dervish_ai) shares this graph, so it speeds up your ally too. Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Elite AI 3.20. The AI graph and elite\\elite LEND move animations to each other (Shared Graph Reference), so both are scaled.",
 					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "antr characters\\elite\\elite", "Halo 2": "jmad objects\\characters\\elite\\elite"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+					"tag": {"Halo 1": "antr characters\\elite\\elite", "Halo 2": "jmad objects\\characters\\elite\\elite", "Halo Reach": "jmad objects\\characters\\elite_ai\\elite_ai & objects\\characters\\elite\\elite"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
@@ -17133,9 +17133,9 @@
 				"Movement Speed": {
 					"color": "aggressive",
 					"desc": "How fast they move on foot.",
-					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Hunter 2.32, crouched 0.57. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Hunter 1.62. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Hunter: its run is any:any:move_front.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Hunter 2.32, crouched 0.57. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Hunter 1.62. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Hunter: its run is any:any:move_front. Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Hunter 2.50 (any:move_front).",
 					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {"Halo 1": "antr characters\\hunter\\hunter", "Halo 2": "jmad objects\\characters\\hunter\\hunter"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
@@ -17972,9 +17972,9 @@
 				"Movement Speed": {
 					"color": "aggressive",
 					"desc": "How fast they move on foot.",
-					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Grunt 1.88, fleeing 1.87, sideways 1.20, crouched 0.26. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Grunt 1.26-1.69 (run permutations), fleeing 1.87. Heretic Grunts share the graph. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Grunt 1.26-1.69 (run permutations).",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Grunt 1.88, fleeing 1.87, sideways 1.20, crouched 0.26. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Grunt 1.26-1.69 (run permutations), fleeing 1.87. Heretic Grunts share the graph. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Grunt 1.26-1.69 (run permutations). Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Grunt 1.30-1.69.",
 					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {"Halo 1": "antr characters\\grunt\\grunt", "Halo 2": "jmad objects\\characters\\grunt\\grunt"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
@@ -18777,9 +18777,9 @@
 				"Movement Speed": {
 					"color": "aggressive",
 					"desc": "How fast they move on foot.",
-					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Jackal 1.37, fleeing 1.83, crouched 0.42. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Jackal 2.91, fleeing 1.35. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Jackal 2.42-2.91.",
+					"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay, so the legs keep their pace. Confirmed in game on b30 (2026-10-03): x2 moved every Covenant twice as fast with no visible problem. Shipped run speeds (stand move-front, wu/s): Jackal 1.37, fleeing 1.83, crouched 0.42. Halo 2: the same per-frame dx,dy root motion, kept OUTSIDE the codec data as plain floats in each jmad animation's resource (confirmed in game on 03a, 2026-10-03: x2 made every Covenant twice as fast on foot). Halo 2 run speeds (combat move_front, wu/s): Jackal 2.91, fleeing 1.35. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Jackal 2.42-2.91. Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Jackal 4.11 fast / 1.52 slow. SKIRMISHERS share this graph and these very animations (they run at the fast end by throttle), so this card speeds both and there is no separate Skirmisher movement card.",
 					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": {"Halo 1": "antr characters\\jackal\\jackal", "Halo 2": "jmad objects\\characters\\jackal\\jackal"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
@@ -21168,12 +21168,12 @@
 				"Flight Speed": {
 					"color": "aggressive",
 					"desc": "How fast they fly, and how fast they move on foot.",
-					"debug_desc": "Drones FLY on their biped's Flying block -- confirmed in game on 03a (2026-10-03): Maximum Velocity x4 sent them streaking; their flight animation's root motion does not set flight speed. One input moves three things: bipd Maximum Velocity (5.0) and Maximum Sidestep Velocity (3.5) for flight, and the root motion of the Drone graph's move animations for walking (run 2.62 wu/s, x2 confirmed on 03a). Halo 3 / ODST: same Flying block (5.0 / 3.5 / 18 / 3.6) and graph (run 2.62-3.02); flight assumed to work as in Halo 2, not tested.",
+					"debug_desc": "Drones FLY on their biped's Flying block -- confirmed in game on 03a (2026-10-03): Maximum Velocity x4 sent them streaking; their flight animation's root motion does not set flight speed. One input moves three things: bipd Maximum Velocity (5.0) and Maximum Sidestep Velocity (3.5) for flight, and the root motion of the Drone graph's move animations for walking (run 2.62 wu/s, x2 confirmed on 03a). Halo 3 / ODST: same Flying block (5.0 / 3.5 / 18 / 3.6) and graph (run 2.62-3.02); flight assumed to work as in Halo 2, not tested. Halo Reach: the same Flying block at bipd +0x680 (the plugin repeats these field names, hence nth 2 / 1 for Reach); assumed to work as in Halo 2, not tested.",
 					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": "bipd objects\\characters\\bugger\\bugger",
 					"targets": [
-						{ "step": "*1.2", "field": "Maximum Velocity", "group": "Flight Speed", "min": 0 },
+						{ "step": "*1.2", "field": "Maximum Velocity", "nth": {"default": 0, "Halo Reach": 2}, "group": "Flight Speed", "min": 0 },
 						{ "step": "*1.2", "field": "Maximum Sidestep Velocity", "group": "Flight Speed", "min": 0 },
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true, "tag": "jmad objects\\characters\\bugger\\bugger", "group": "Flight Speed" }
 					]
@@ -21181,12 +21181,12 @@
 				"Flight Acceleration": {
 					"color": "aggressive",
 					"desc": "How quickly they reach full flying speed, and stop again.",
-					"debug_desc": "Drones FLY on their biped's Flying block -- confirmed in game on 03a (2026-10-03): Maximum Velocity x4 sent them streaking; their flight animation's root motion does not set flight speed. Acceleration (18) and Deceleration (3.6), grouped: higher reaches top speed and stops sooner. Halo 3 / ODST: same Flying block (5.0 / 3.5 / 18 / 3.6) and graph (run 2.62-3.02); flight assumed to work as in Halo 2, not tested.",
+					"debug_desc": "Drones FLY on their biped's Flying block -- confirmed in game on 03a (2026-10-03): Maximum Velocity x4 sent them streaking; their flight animation's root motion does not set flight speed. Acceleration (18) and Deceleration (3.6), grouped: higher reaches top speed and stops sooner. Halo 3 / ODST: same Flying block (5.0 / 3.5 / 18 / 3.6) and graph (run 2.62-3.02); flight assumed to work as in Halo 2, not tested. Halo Reach: the same Flying block at bipd +0x680 (the plugin repeats these field names, hence nth 2 / 1 for Reach); assumed to work as in Halo 2, not tested.",
 					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": "bipd objects\\characters\\bugger\\bugger",
 					"targets": [
-						{ "step": "*1.2", "field": "Acceleration", "group": "Flight Acceleration", "min": 0 },
+						{ "step": "*1.2", "field": "Acceleration", "nth": {"default": 0, "Halo Reach": 1}, "group": "Flight Acceleration", "min": 0 },
 						{ "step": "*1.2", "field": "Deceleration", "group": "Flight Acceleration", "min": 0 }
 					]
 				}
@@ -21872,9 +21872,9 @@
 				"Movement Speed": {
 					"color": "aggressive",
 					"desc": "How fast they move on foot.",
-					"debug_desc": "Halo 2 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION of its move animations, kept as plain floats outside the codec data in each jmad animation's resource. This card multiplies it for every stance, direction and idle<->move transition; frame counts stay. Confirmed in game on 03a (2026-10-03). Brute run 1.83 wu/s; Tartarus shares the graph. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Brute 2.14-2.94 (hammer fastest); chieftains and jump-pack Brutes share the graph.",
+					"debug_desc": "Halo 2 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION of its move animations, kept as plain floats outside the codec data in each jmad animation's resource. This card multiplies it for every stance, direction and idle<->move transition; frame counts stay. Confirmed in game on 03a (2026-10-03). Brute run 1.83 wu/s; Tartarus shares the graph. Halo 3 / ODST: the same plain dx,dy section, inside the animation's compressed resource page; edited pages are recompressed in place with fresh checksums (confirmed in game on 010, 2026-10-03: x2 made the Covenant twice as fast). Only pages in the level map itself are written -- a vanilla map keeps them in campaign/shared.map and is skipped. Halo 3 run speeds (wu/s): Brute 2.14-2.94 (hammer fastest); chieftains and jump-pack Brutes share the graph. Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Brute 2.94 (hammer); chieftains share the graph.",
 					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3"],
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
 					"tag": "jmad objects\\characters\\brute\\brute",
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
@@ -22448,24 +22448,24 @@
 				"Flight Speed": {
 					"color": "aggressive",
 					"desc": "How fast they float around.",
-					"debug_desc": "Engineers FLY on their biped's Flying block, like Drones and Sentinels (Drone flight confirmed in Halo 2; ODST assumed the same, not tested). Maximum Velocity (1.25) and Maximum Sidestep Velocity (0.85), grouped.",
+					"debug_desc": "Engineers FLY on their biped's Flying block, like Drones and Sentinels (Drone flight confirmed in Halo 2; ODST assumed the same, not tested). Maximum Velocity (1.25) and Maximum Sidestep Velocity (0.85), grouped. Halo Reach: the same Flying block at bipd +0x680 (the plugin repeats these field names, hence nth 2 / 1 for Reach); assumed to work as in Halo 2, not tested.",
 					"harder_when": "increased",
-					"game": ["Halo 3: ODST"],
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "bipd objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform",
 					"targets": [
-						{ "step": "*1.2", "field": "Maximum Velocity", "group": "Flight Speed", "min": 0 },
+						{ "step": "*1.2", "field": "Maximum Velocity", "nth": {"default": 0, "Halo Reach": 2}, "group": "Flight Speed", "min": 0 },
 						{ "step": "*1.2", "field": "Maximum Sidestep Velocity", "group": "Flight Speed", "min": 0 }
 					]
 				},
 				"Flight Acceleration": {
 					"color": "aggressive",
 					"desc": "How quickly they reach full speed, and stop again.",
-					"debug_desc": "Engineers FLY on their biped's Flying block, like Drones and Sentinels (Drone flight confirmed in Halo 2; ODST assumed the same, not tested). Acceleration (0.75) and Deceleration (1.5), grouped.",
+					"debug_desc": "Engineers FLY on their biped's Flying block, like Drones and Sentinels (Drone flight confirmed in Halo 2; ODST assumed the same, not tested). Acceleration (0.75) and Deceleration (1.5), grouped. Halo Reach: the same Flying block at bipd +0x680 (the plugin repeats these field names, hence nth 2 / 1 for Reach); assumed to work as in Halo 2, not tested.",
 					"harder_when": "increased",
-					"game": ["Halo 3: ODST"],
+					"game": ["Halo 3: ODST", "Halo Reach"],
 					"tag": "bipd objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform",
 					"targets": [
-						{ "step": "*1.2", "field": "Acceleration", "group": "Flight Acceleration", "min": 0 },
+						{ "step": "*1.2", "field": "Acceleration", "nth": {"default": 0, "Halo Reach": 1}, "group": "Flight Acceleration", "min": 0 },
 						{ "step": "*1.2", "field": "Deceleration", "group": "Flight Acceleration", "min": 0 }
 					]
 				}
@@ -23774,6 +23774,17 @@
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
+					]
+				},
+				"Movement Speed": {
+					"color": "aggressive",
+					"desc": "How fast it moves.",
+					"debug_desc": "Root motion of the Mule's move animations (see the other Movement Speed cards). Halo Reach: the same dx,dy section in compressed resource pages (0x64-byte member record, frame data in the animation's Shared Animation Data); confirmed in game on m45 (2026-10-03). Reach also has move_*_fast / _slow pairs the AI blends by throttle -- both are scaled. Reach run speeds (wu/s): Mule 3.56.",
+					"harder_when": "increased",
+					"game": ["Halo Reach"],
+					"tag": "jmad objects\\characters\\mule\\mule",
+					"targets": [
+						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
 				}
 			},
@@ -25233,9 +25244,9 @@
 		},
 		"Friend Movement Speed": {
 			"desc": "How fast Marines move on foot.",
-			"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). One graph, characters\\marine\\marine, drives every Marine variant (armored, sniper, unarmed, plasma rifle) and also the crewmen and Captain Keyes while he is under AI control. Shipped run speeds (stand move-front, wu/s): rifle 2.10, pistol 2.25, fleeing 2.47, crouched 0.98, walking 0.42. Halo 2: objects\\characters\\marine\\marine drives Marines, crewmen and marine_massive, and female Marines inherit it (their graph's Parent Animation Graph); run 2.06, fleeing 2.47 wu/s. Halo 3 / ODST: the same marine graph, which also drives ODST troopers, workers and Johnson; run 1.17-1.65 wu/s.",
-			"game": ["Halo 1", "Halo 2", "Halo 3"],
-			"tag": {"Halo 1": "antr characters\\marine\\marine", "Halo 2": "jmad objects\\characters\\marine\\marine"},
+			"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). One graph, characters\\marine\\marine, drives every Marine variant (armored, sniper, unarmed, plasma rifle) and also the crewmen and Captain Keyes while he is under AI control. Shipped run speeds (stand move-front, wu/s): rifle 2.10, pistol 2.25, fleeing 2.47, crouched 0.98, walking 0.42. Halo 2: objects\\characters\\marine\\marine drives Marines, crewmen and marine_massive, and female Marines inherit it (their graph's Parent Animation Graph); run 2.06, fleeing 2.47 wu/s. Halo 3 / ODST: the same marine graph, which also drives ODST troopers, workers and Johnson; run 1.17-1.65 wu/s. Halo Reach: the marine graph BORROWS 300 move animations from the civilian graphs, so those are scaled too -- civilians and female troopers (civilian_female graph) speed up with the Marines; run 1.85 wu/s. Noble team is not included.",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
+			"tag": {"Halo 1": "antr characters\\marine\\marine", "Halo 2": "jmad objects\\characters\\marine\\marine", "Halo Reach": "jmad objects\\characters\\marine\\marine & objects\\characters\\civilian_male\\civilian_male & objects\\characters\\civilian_female\\civilian_female"},
 			"targets": [
 				{ "step": "*1.5", "field": "Movement Animation", "move_speed": true }
 			]

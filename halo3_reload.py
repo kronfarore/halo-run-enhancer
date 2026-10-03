@@ -375,7 +375,9 @@ def h2_move_anims(m, jmad_base):
 _MOVE_GAMES = {'Halo 1': ('antr', h1_move_anims), 'Halo 2': ('jmad', h2_move_anims)}
 
 
-_H3_GAMES = ('Halo 3', 'Halo 3: ODST')
+# Halo Reach shares Halo 3's zone and pages (its own 0x64-byte member record and Shared
+# Animation Data path are handled inside h3_move_speed). Confirmed in game on m45.
+_H3_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach')
 
 
 def _is_run(game, name):
@@ -471,14 +473,15 @@ def scale_move_speed(m, tag_pattern, mult, game='Halo 1'):
     `tag_pattern` (antr in Halo 1, jmad from Halo 2; dz and dyaw untouched, frame counts
     untouched). A buffer two animations share is scaled once. Halo 3 / ODST hold the
     frames in compressed resource pages: edited pages are recompressed in place with
-    fresh checksums (confirmed in game on 010, 2026-10-03). Reach onward: not reachable."""
+    fresh checksums (confirmed in game on 010, 2026-10-03); Halo Reach the same way
+    (m45). Halo 4: not investigated."""
     g = str(game).strip()
     if mult is None or mult <= 0:
         return {'ok': False, 'reason': 'invalid movement multiplier'}
     if g in _H3_GAMES:
         return _h3_scale_move_speed(m, tag_pattern, mult)
     if g not in _MOVE_GAMES:
-        return {'ok': False, 'reason': f'movement speed is Halo 1 / 2 / 3 / ODST only, not {game}'}
+        return {'ok': False, 'reason': f'movement speed is Halo 1 / 2 / 3 / ODST / Reach only, not {game}'}
     cls, reader = _MOVE_GAMES[g]
     tags = m.find_tags(cls, tag_pattern)
     if not tags:
