@@ -140,6 +140,8 @@ def main():
     ap.add_argument('--flight-bipd', help='bipd path whose Flying Maximum/Sidestep '
                     'Velocity --flight-mult scales')
     ap.add_argument('--flight-mult', type=float)
+    ap.add_argument('--flight-accel-mult', type=float,
+                    help='also scale the Flying Acceleration + Deceleration')
     ap.add_argument('--shield-mult', type=float)
     ap.add_argument('--paint', action='append', default=[], help='"<enemy_colors row>=RRGGBB"')
     a = ap.parse_args()
@@ -170,14 +172,18 @@ def main():
     for line in squad_setup(m, set(a.fly_squad),
                             dict(x.split('=', 1) for x in a.squad_order)):
         print(line)
-    if a.flight_bipd and a.flight_mult:
+    if a.flight_bipd and (a.flight_mult or a.flight_accel_mult):
         import halo_map as hm
         import assembly_plugins as apl
         pb = hm.Plugin(os.path.join(apl.plugins_dir(), 'Halo2MCC', 'bipd.xml'))
+        plan = [(f, a.flight_mult) for f in ('Maximum Velocity', 'Maximum Sidestep Velocity')]
+        plan += [(f, a.flight_accel_mult) for f in ('Acceleration', 'Deceleration')]
         for _p, base in m.find_tags('bipd', a.flight_bipd):
-            for f in ('Maximum Velocity', 'Maximum Sidestep Velocity'):
+            for f, mult in plan:
+                if not mult:
+                    continue
                 old = m.read_tag_field(base, f, pb)
-                m.write_tag_field(base, f, old * a.flight_mult, pb)
+                m.write_tag_field(base, f, old * mult, pb)
                 print('flight %s %s: %s -> %s' % (_p, f, old, m.read_tag_field(base, f, pb)))
     if a.shield_mult:
         import halo_map as hm
