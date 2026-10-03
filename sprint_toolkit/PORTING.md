@@ -2162,6 +2162,42 @@ The originals stay in `saw\fp\` (plus `.before_retime` copies of them and of saw
 
 ---
 
+## The SAW ports' OWN SOUNDS (started 2026-10-03)
+
+**What they play today** (`port_sound_refs.py`, read from the deployed maps): every SAW
+port borrows ALL its sounds -- fire, distant fire, tails, dry fire, reload, ready, melee,
+pose, zoom, pickup -- from its donor (H1/H3/ODST/Reach: the Assault Rifle, the Battle
+Rifle's dry fire, the Sniper's zoom; H2: the SMG, the chaingun's ammo rattle). In
+H3/ODST/Reach the SAW even fires through the ASSAULT RIFLE's own firing / empty EFFECTS,
+shared with the real AR -- the sounds cannot be changed there without owning the effects.
+
+**The source: Halo 4's SAW** (`storm_lmg`, player bank `light_machine_gun_player` in
+sfxbank.pck). Wwise banks keep only name HASHES; the event names come from H4EK's sound
+tags (export-tag-to-xml), 21 of the bank's 26 named that way. `h4_wwise.py --extract
+<bank> <out> <event...>` follows event -> actions -> containers -> sounds -> media
+(embedded or in sfxstream.pck) and decodes with vgmstream. The player fire is LAYERED:
+6 stereo cracks (~84 ms) + 11 mono bodies (0.645 s) played together per shot; release
+plays one of 3 tails (2.4-2.7 s). `saw_port_audio.py` makes the older engines' per-shot
+sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 kHz stereo).
+
+**Reach: the kit's FMOD route** (`reach_saw_sounds.py`, HREK):
+* `tool sounds-single-layer <data folder> <sound class> -bank:<suffix>` = one sound tag
+  per folder, one permutation per wav, the audio in `fmod\pc\sfx.<suffix>.fsb` (+ .info)
+  beside the stock sfx.fsb. The type argument is a SOUND CLASS (weapon_fire,
+  weapon_empty, first_person_outside, ...; `tool` lists them on a wrong one).
+* a compiled Reach sound tag carries `FMod Bank Suffix` (snd! +0x30): stock '' (sfx.fsb),
+  the port's 'saw' -- so MCC is expected to open `haloreach\fmod\pc\sfx.saw.fsb`.
+* the AR's tails are two tags by class (ar_tail_ext first_person_outside, ar_tail_int
+  first_person_inside); the SAW's tail is imported twice with those classes.
+* the SAW gets OWN copies of the AR's firing / empty effects (saw\fx), sounds repointed;
+  the weapon names them. The distant-fire LOD sound stays the AR's for now.
+* Built + installed, m20 rebuild pending -- the first in-game test of the FMOD route.
+
+**Still to do, per game:** H3 / ODST (same kit route as Reach, expected); H2 (H2EK
+`reimport-sounds`; its SAW already owns a firing effect, saw_fire); H1 (HCEEK `sounds
+<dir> <wav|ogg>`). Reload / ready / melee sounds are cued at animation frames in each
+port's (retimed) fp graph -- a separate step after the firing sounds.
+
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
 
 Every earlier port carried the Halo 4 SAW OUT of Halo 4. This kit ports INTO it. First

@@ -131,8 +131,14 @@ REACH_TREES = [
     (os.path.join(HREK, 'data', SAWR), 'data/objects/weapons/rifle/saw', True),
     (os.path.join(GAME, 'haloreach', 'maps', 'fonts'), 'shared/fonts_live', True),
     (os.path.join(E_BACKUPS, 'reach_live_fonts'), 'shared/fonts.stock', True),
+    # the SAW's own sounds (reach_saw_sounds.py): sound tags + source wavs
+    (os.path.join(HREK, 'tags', 'sound', 'weapons', 'saw_port'), 'tags/sound/weapons/saw_port', True),
+    (os.path.join(HREK, 'data', 'sound', 'weapons', 'saw_port'), 'data/sound/weapons/saw_port', True),
 ]
 REACH_SHARED = [
+    # the SAW's FMOD bank, as built by the kit and as installed beside the stock sfx.fsb
+    (os.path.join(HREK, 'fmod', 'pc', 'sfx.saw.fsb'), 'fmod/pc/sfx.saw.fsb'),
+    (os.path.join(HREK, 'fmod', 'pc', 'sfx.saw.fsb.info'), 'fmod/pc/sfx.saw.fsb.info'),
     (os.path.join(HREK, 'tags', 'ui', 'chud', 'saw.chud_definition'),
      'tags/ui/chud/saw.chud_definition'),
     (os.path.join(HREK, 'tags', 'ui', 'chud', 'bitmaps', 'saw_ballistic_meter.bitmap'),
@@ -153,7 +159,7 @@ REACH_FILES = [
 REACH_MAPS = [
     (os.path.join(GAME, 'haloreach', 'maps', 'm20.map'), 'maps/m20.map'),
 ]
-REACH_SCRIPTS = ('port_refs_audit.py', 'h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
+REACH_SCRIPTS = ('reach_saw_sounds.py', 'saw_port_audio.py', 'port_sound_refs.py', 'h4_wwise.py', 'port_refs_audit.py', 'h3_kit.py', 'h3tag.py', 'h3_make_saw.py', 'saw_to_jms_h3.py',
                  'saw_port_values.py', 'reach_ek_build.py', 'reach_saw_wire_model.py',
                  'reach_saw_textures.py', 'reach_saw_tag_numbers.py',
                  'make_port_catalog_reach.py', 'h3_saw_chud.py', 'reach_meter_art.py',
