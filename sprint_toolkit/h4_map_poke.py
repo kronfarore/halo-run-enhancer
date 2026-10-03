@@ -125,6 +125,9 @@ def main():
                     help="CONTROL: both scope meters draw the Beam Rifle's own heat_bar bitmap")
     ap.add_argument('--meter-rects', action='store_true',
                     help='scope side meters -> the rects scaled with the art (boot 28)')
+    ap.add_argument('--player-bank', metavar='SBNK',
+                    help="weap +0x608 'Player Sound Bank' -> this soundbank tag (the port's "
+                         "is empty; the plugin: 'high quality player sound bank to be prefetched')")
     ap.add_argument('--accel-scale', action='store_true',
                     help="object horizontal/vertical/angular acceleration scale (weap "
                          "0x30/0x34/0x38) -> the Beam Rifle's (the Sentinel's are 0)")
@@ -143,7 +146,7 @@ def main():
             a.no_overheat_shake or a.graph_pp or a.fp_offset or a.secondary_fx or
             a.no_firing_shake or a.action_anim or a.firing_response or a.anim_flags or
             a.loop_frame or a.scope or a.accel_scale or a.zoom_barrel or a.trigger_spew or
-            a.meters_visible or a.meters_br_bitmap or a.meter_rects):
+            a.meters_visible or a.meters_br_bitmap or a.meter_rects or a.player_bank):
         return
 
     d = m.data
@@ -230,7 +233,8 @@ def main():
         ov0 = halo_patch._h4_rows(m, sc, *C['overlays'])[0]
         cb = m.data2off(struct.unpack_from('<I', ov0, halo_patch._H4_OV_COMPS[0] + 4)[0])
         n = struct.unpack_from('<i', ov0, halo_patch._H4_OV_COMPS[0])[0]
-        want = {1070.4: 1135.0, 103.8: 23.3, 203.4: 179.9, 105.8: 121.6, 313.3: 360.3}
+        want = {1070.4: 1138.7, 1135.0: 1138.7, 103.8: 23.3, 203.4: 179.9, 105.8: 121.6,
+                313.3: 360.3}
         for i in range(n):
             e = cb + i * halo_patch._H4_OV_COMPS[1]
             nm = m.resolve_stringid(struct.unpack_from('<I', d, e)[0])
@@ -244,6 +248,18 @@ def main():
                     if abs(v - old_v) < 0.05:
                         struct.pack_into('<f', d, a0 + j * 8 + 4, new_v)
                         print('%s %.1f -> %.1f' % (nm, v, new_v))
+    if a.player_bank:
+        # Boot 28 (user): the port makes NO sound. Its firing effect names the Sentinel
+        # friendly-beam loop (sentinel bank), but m30 has no Sentinels, and the port's
+        # Player Sound Bank is empty -- so the bank may never load. tagRef: group at +0,
+        # datum at +0xC (the Beam Rifle's: knbs ... beam_rifle_player).
+        t = next((t for t in m.tags if t['class'] == 'sbnk' and t['name'] == a.player_bank), None)
+        if t is None:
+            raise SystemExit('no soundbank %s in this map' % a.player_bank)
+        was = struct.unpack_from('<I', d, pb + 0x608 + 0xC)[0]
+        d[pb + 0x608:pb + 0x60C] = d[bb + 0x608:bb + 0x60C]
+        struct.pack_into('<I', d, pb + 0x608 + 0xC, t['ident'])
+        print('player sound bank %#x -> %#x (%s)' % (was, t['ident'], a.player_bank))
     if a.trigger_spew:
         tc, tp = struct.unpack_from('<iI', d, pb + 0x50C)
         t0 = m.data2off(tp)

@@ -49,6 +49,17 @@ quietly shipped without the last three until the user caught it:
 | 8 | pickup icon, and the HUD schematic beside the ammo | done | done |
 | 9 | reload and swap animation timing | done | done |
 
+**When a port is done -- the closing steps (all games):**
+1. If the port added a pickup/HUD glyph (Halo 3, ODST, Reach, Halo 4 -- the loose icon
+   font packages): `python port_glyphs.py --capture` in the tool folder, then commit
+   `port_glyphs.json`. Without it the glyph exists only on this machine, and the
+   Enhancer cannot restore it after a Steam update or put it on a co-op partner's
+   install. It refuses if any package does not rebuild from the stock backups on E:.
+2. `python validate_halo_json.py` -- its GLYPHS section flags a live glyph the json
+   lacks (step 1 forgotten) and a glyph the live packages are missing
+   (`python port_glyphs.py --check` runs that section alone).
+3. `python port_backup.py --game <g>` -- the port's tags, data, scripts and shared files.
+
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
 `weapons\saw\bullet` (proj + jpt!), but the weapon tag's trigger was a copy of the

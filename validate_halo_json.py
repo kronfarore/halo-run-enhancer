@@ -492,10 +492,25 @@ def check_resolution():
                            f'{field!r}', quiet)
 
 
+def check_glyphs():
+    """GLYPHS -- the ported weapons' pictograms in MCC's live icon font packages (Halo 3,
+    ODST, Reach, Halo 4): missing on this machine, or a new port glyph that
+    `port_glyphs.py --capture` was not run for. Logic in port_glyphs.problems()."""
+    try:
+        import port_glyphs
+    except Exception as e:                       # the module or its json is missing
+        report(f'GLYPHS: port_glyphs could not be loaded ({e})')
+        return
+    for pr in port_glyphs.problems(MCC):
+        report('GLYPHS: ' + pr)
+
+
 if __name__ == '__main__':
     check_structure()
     n_struct = len(problems)
     print(f'structure checks: {n_struct} problem(s)')
+    check_glyphs()
+    print(f'glyph checks: {len(problems) - n_struct} problem(s)')
     skipped = not os.path.isdir(PLUGINS)
     if not skipped:
         check_resolution()

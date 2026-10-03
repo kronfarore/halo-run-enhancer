@@ -39,6 +39,7 @@ COMMAND LINE (cmd.exe):
     python port_glyphs.py                      report every game
     python port_glyphs.py --write              add the missing glyphs
     python port_glyphs.py --game halo4 --write
+    python port_glyphs.py --check              validator: missing glyphs / capture not run
     python port_glyphs.py --capture            DEV: re-read the glyphs from this machine's
                                                live packages against the stock backups on E:
 """
@@ -192,6 +193,44 @@ def ensure(game, mcc_root, write=True, backup_dir=None, data=None):
     return rows
 
 
+def problems(mcc_root, data=None):
+    """Validator: what is wrong with the port glyphs on this machine, as messages.
+      * every machine: a live package lacks a glyph port_glyphs.json carries (a Steam
+        update / verify restored the stock file, or the patch never ran here);
+      * the DEV machine (stock backups on E: present): a live package holds a port glyph
+        the json lacks -- a new port's glyph that `--capture` was not run for."""
+    data = data or load()
+    out = []
+    for game, (block, _hdr, names) in GAMES.items():
+        for r in ensure(game, mcc_root, write=False, data=data):
+            if not r.get('ok'):
+                out.append('glyph %s: %s' % (r['field'], r.get('reason')))
+            elif not r.get('skip'):
+                out.append('glyph %s: missing %s -- run `python port_glyphs.py --write` '
+                           '(or patch)' % (r['field'], r['old'].replace('without ', '')))
+        stock_dir = STOCK.get(game)
+        if not stock_dir or not os.path.isdir(stock_dir):
+            continue
+        spec = data.get('games', {}).get(game, {})
+        for name in names:
+            live_p = os.path.join(mcc_root, game, 'maps', 'fonts', name)
+            stock_p = os.path.join(stock_dir, name)
+            if not (os.path.exists(live_p) and os.path.exists(stock_p)):
+                continue
+            try:
+                live = _present(open(live_p, 'rb').read(), block)
+                stock = _present(open(stock_p, 'rb').read(), block)
+            except (SystemExit, Exception):
+                continue
+            known = {(g['cp'], g['font']) for g in spec.get(name, [])}
+            extra = sorted(set(live) - set(stock) - known)
+            if extra:
+                out.append('glyph %s %s: U+%s in the live package but not in port_glyphs.json '
+                           '-- run `python port_glyphs.py --capture` and commit the json'
+                           % (game, name, ', U+'.join('%04X' % c for c, _f in extra)))
+    return out
+
+
 def capture(mcc_root):
     """DEV: the port glyphs = what this machine's live packages hold beyond the stock
     backups. Also proves them: stock + records must give the live glyph set and headers."""
@@ -233,10 +272,17 @@ def main():
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--backup-dir')
     ap.add_argument('--capture', action='store_true')
+    ap.add_argument('--check', action='store_true', help='validator: list problems, exit 1 if any')
     a = ap.parse_args()
     if a.capture:
         capture(a.mcc)
         return
+    if a.check:
+        found = problems(a.mcc)
+        for pr in found:
+            print(' ', pr)
+        print('%d glyph problem(s)' % len(found))
+        sys.exit(1 if found else 0)
     for game in ([a.game] if a.game else sorted(GAMES)):
         for r in ensure(game, a.mcc, write=a.write, backup_dir=a.backup_dir):
             state = 'skip' if r.get('skip') else ('ok' if r['ok'] else 'FAIL')

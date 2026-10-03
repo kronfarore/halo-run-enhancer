@@ -68,7 +68,9 @@ WIDGETS = {
     # = h4_reach_scope_art.FRAME_RECT
     'bitmap_bar_outlines': ('scope_frame', -320, -180, 1920, 1080, 1.0, (1, 1, 1, 1)),
     # = h4_reach_scope_art.meter_rects(), scaled with the art (ART_SCALE 1.15; boot 28)
-    'bitmap_heat_bar': ('meter_heat', 1135.0, 179.9, 121.6, 360.3, 0.85, (1, 1, 0.45, 0.2)),
+    # +3.7 measured in game (boot 28 screenshot: the right meter hugged its frame's inner
+    # line, 4 px in / 15 px out; the left fills its frame) -- the H4 visor HUD is curved
+    'bitmap_heat_bar': ('meter_heat', 1138.7, 179.9, 121.6, 360.3, 0.85, (1, 1, 0.45, 0.2)),
     'bitmap_ammo_bar': ('meter_batt', 23.3, 179.9, 121.6, 360.3, 0.85, (1, 0.45, 0.75, 1)),
 }
 #: prop_alpha_blend_mode: the Beam Rifle's glowing art uses 1 (ADDITIVE -- a black mask
