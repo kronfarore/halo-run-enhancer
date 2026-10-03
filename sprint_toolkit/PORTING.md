@@ -63,6 +63,11 @@ quietly shipped without the last three until the user caught it:
 3. If the port added its own sound bank (Halo 4): commit `tool/port_sounds/<game>/*.bnk`;
    `python port_sounds.py --check` confirms it is in the live package.
 4. `python port_backup.py --game <g>` -- the port's tags, data, scripts and shared files.
+5. If the port has its OWN sound tags (Halo 3, ODST, Reach): the volume knob needs them
+   built with the marker -- a NEW port gets its own value in port_volume.py (MARKER_DB +
+   PORT_SOUNDS, e.g. 0.02, never one another port uses) and its sounds set to gain -3
+   minus it before the build; `python port_volume.py --game "<game>" --map <map>` on the
+   rebuilt map must list the entries with no SHARED and headroom 3.
 
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
