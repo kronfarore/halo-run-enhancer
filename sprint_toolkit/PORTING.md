@@ -2510,6 +2510,26 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   pointers before poking a per-barrel block; `--zoom-barrel` gives barrel 1 its own 12
   bytes (halo_patch._h3_reserve) when they are shared.
 
+**2026-10-03, measured without a boot:**
+* **Swap timing (step 9):** both graphs 30 fps. Reach's Focus Rifle: ready 22 frames,
+  put_away 6, ready_initial 29, ready_overheated 22. The Beam Rifle graph: 24 / 5 / 29 /
+  19. No ready time on either weapon. Halo 4's lever is the weapon's ready playback scale:
+  24/22 = 1.0909 (kit) makes the ordinary ready Reach's; put_away (1 frame) has no field.
+* **Languages:** the `strings-localized` "imported 0" was misleading -- the built tag has
+  all 17 language offsets for every fr_* line and focus_rifle_icon, each the English text
+  (by design). Unconfirmed in a non-English client.
+* **Firing sound -- the audio is in neither kit.** Reach: the HREK sound tags hold only
+  metadata ("sound data resource <unavailable>"); the audio is in MCC's FMOD bank
+  `haloreachmod\pc\sfx.fsb` (FSB5, Vorbis, 16162 samples; names in sfx.fsb.info).
+  Halo 4: a sound tag is a WWISE EVENT NAME + a .soundbank tag naming a bank inside
+  `halo4\sound\pc\sfxbank.pck` (AKPK, bank version 88); H4EK has no Wwise project and no
+  audio import verb. A port needs: extract (an FSB5 Vorbis decoder) -> author a v88 bank
+  + event -> add it to the package (or reuse an existing event's audio, which is
+  hijacking). Not started.
+* **Scope meters, in-map test pokes:** `--meters-visible`, `--meters-br-bitmap` (the Beam
+  Rifle's heat_bar as a control). UI property names are in a string namespace the map
+  reader does not resolve -- the poke matches by structure.
+
 ### CHECKLIST for a port that OVERHEATS (battery / heat weapons only)
 
 The overheat pop is a **heat-weapon problem only**: it lives in a borrowed fp graph's
