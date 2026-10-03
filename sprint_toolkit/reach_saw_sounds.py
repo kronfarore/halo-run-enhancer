@@ -27,8 +27,8 @@ What this does:
   4. --install copies sfx.saw.fsb + .info into MCC's haloreach\fmod\pc.
 Then rebuild m20 (rebuild_reach.cmd m20).
 
-    python reach_saw_sounds.py --write --install              (confirmed in game: xma2 + ms_adpcm)
-    python reach_saw_sounds.py --write --pc-only --install    (test 1: ms_adpcm only)
+    python reach_saw_sounds.py --write --install           PC only (ms_adpcm) -- confirmed in game
+    python reach_saw_sounds.py --write --both --install    + the Xbox xma2 encoding (also worked)
 """
 import argparse
 import glob
@@ -113,7 +113,8 @@ BLENDER = r'F:\Tools\blender-5.2.2-windows-x64\blender.exe'
 
 
 def pc_only():
-    """TEST 1 (user, 2026-10-03): the PC encoding ONLY -- drop XMA2 (the ports run on PC).
+    """The PC encoding ONLY -- XMA2 dropped (the ports run on PC). Test 1, CONFIRMED in game
+    2026-10-03: the SAW sounds the same as with both encodings.
     `reimport-sounds <dir> adpcm no no <filter>` REPLACES the encodings when the filter is
     not compression-append; the filter must match every tag (`weapons` misses the
     first_person_* tails, `stereo` takes all four). It also CLEARS the bank suffix, even
@@ -175,15 +176,16 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--install', action='store_true')
-    ap.add_argument('--pc-only', action='store_true',
-                    help='TEST 1: MS-ADPCM only, no XMA2 (confirmed in game so far: both)')
+    ap.add_argument('--both', action='store_true',
+                    help='keep the Xbox XMA2 encoding beside MS-ADPCM (the first working state); '
+                         'the default is PC ONLY, confirmed in game 2026-10-03')
     a = ap.parse_args()
     if not glob.glob(os.path.join(AUDIO, 'fire', '*.wav')):
         raise SystemExit('run saw_port_audio.py first')
     if a.write:
         import_sounds()
         own_effects()
-    if a.pc_only:
+    if a.write and not a.both:
         pc_only()
     if a.install:
         install()
