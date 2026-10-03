@@ -8324,7 +8324,12 @@ class MagnitudeEditorDialog(QDialog):
                                       # objects\characters), which read as a broken
                                       # player-weapon card otherwise. cats: 2 specific
                                       # enemy, 3 enemy-general, 5 boss/hero.
-                                      'absent_is_skip': eff.get('cat') in (2, 3, 5),
+                                      # Cat 4 (Ally) too unless it is a weapon card: Friend
+                                      # Movement Speed's Marine graph is absent from levels
+                                      # with no Marines.
+                                      'absent_is_skip': (eff.get('cat') in (2, 3, 5) or
+                                                         (eff.get('cat') == 4
+                                                          and not eff.get('weapon'))),
                                       # carried so the patcher can report it as skipped
                                       # rather than patching from a stale snapshot
                                       'missing_in_db': bool(eff.get('_missing_in_db'))})

@@ -15626,6 +15626,19 @@
 						{ "step": "*0.9","field": "Burst Separation Max", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Burst Separation", "min": 0, "harder_when": "decreased"}
 					]
 				}
+			},
+			"General Movement Speed": {
+				"color": "aggressive",
+				"desc": "How fast every enemy moves, on foot or in flight.",
+				"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). Every enemy graph: Elite, Grunt, Jackal, Hunter, the Flood combat forms, infection form and carrier (Marines, the Chief, Keyes and cinematic graphs are left alone). Sentinels fly and have no root motion, so the second row scales their bipd Flying block (Maximum Velocity + Maximum Sidestep Velocity, the same fields as their Flight Speed card). Stacks with each enemy's own Movement Speed card.",
+				"harder_when": "increased",
+				"game": ["Halo 1"],
+				"tag": "antr characters\\elite\\elite & characters\\grunt\\grunt & characters\\jackal\\jackal & characters\\hunter\\hunter & characters\\floodcombat* & characters\\flood_infection\\flood_infection & characters\\floodcarrier\\floodcarrier",
+				"targets": [
+					{ "step": "*1.1", "field": "Movement Animation", "move_speed": true },
+					{ "step": "*1.1", "field": "Maximum Velocity", "tag": "bipd characters\\sentinel\\sentinel", "group": "Sentinel Flight Speed", "min": 0 },
+					{ "step": "*1.1", "field": "Maximum Sidestep Velocity", "tag": "bipd characters\\sentinel\\sentinel", "group": "Sentinel Flight Speed", "min": 0 }
+				]
 			}
 		},
 		"Specific Enemy modifier": {
@@ -25145,6 +25158,15 @@
 			"tag": "matg globals\\globals",
 			"targets": [
 				{ "step": "+1", "field": "Friend Recharge", "block": "Difficulty", "difficulty": true }
+			]
+		},
+		"Friend Movement Speed": {
+			"desc": "How fast Marines move on foot.",
+			"debug_desc": "Halo 1 has no ground-speed field: the engine moves an AI biped by the per-frame dx,dy ROOT MOTION stored uncompressed in its move-* animations (antr Frame Info). This card multiplies that root motion for every stance (stand, crouch, alert, flee, flaming) and direction; frame counts stay. Confirmed in game on b30 (2026-10-03). One graph, characters\\marine\\marine, drives every Marine variant (armored, sniper, unarmed, plasma rifle) and also the crewmen and Captain Keyes while he is under AI control. Shipped run speeds (stand move-front, wu/s): rifle 2.10, pistol 2.25, fleeing 2.47, crouched 0.98, walking 0.42.",
+			"game": ["Halo 1"],
+			"tag": "antr characters\\marine\\marine",
+			"targets": [
+				{ "step": "*1.1", "field": "Movement Animation", "move_speed": true }
 			]
 		}
 	}
