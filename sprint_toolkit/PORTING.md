@@ -2215,6 +2215,14 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
      back, so this test changes the encoding only.
      **CONFIRMED in game (2026-10-03): PC-only sounds the same.** Now the default of
      reach_saw_sounds.py (`--both` keeps XMA2). Import ports' sounds PC-only from here on.
+     **Test 2 CONFIRMED (2026-10-03): the FMOD bank is NOT needed.** With sfx.saw.fsb +
+     .info moved out of haloreach\fmod\pc the SAW still plays its sounds, before and after
+     an MCC restart: PC Reach plays the MS-ADPCM audio compiled INTO THE MAP. So a Reach
+     port's sounds need nothing outside the map -- no loose file, no restore step, nothing
+     a Steam verify can delete. The kit still writes the bank into HREK (part of the
+     import); the tags keep suffix 'saw' (the tested state; an empty suffix is untested).
+     Observation from Reach; Halo 3 / ODST use the same kit route and are expected to
+     behave alike -- confirm on their first port.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
