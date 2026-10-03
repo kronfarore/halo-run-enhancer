@@ -3533,7 +3533,7 @@ class ModifierDatabase:
     # Halo 1 enemies that wield a weapon (h1_enemy_weapons.ENEMY_UNITS), and the share
     # one 'Armed' card moves per pick.
     # Hunter left out: its fuel rod is built in, an Armed card on it did nothing in game
-    # (user, 2026-10-02). Sentinel still to be tested.
+    # (user, 2026-10-02). Sentinels tested in game: they fire and drop an assault rifle.
     H1_ARMED_ENEMIES = ('Grunt', 'Jackal', 'Elite', 'Flood Combat Form', 'Sentinel')
     ARMED_STEP = '+0.1'
 
@@ -10555,7 +10555,7 @@ class OptionsDialog(QDialog):
         fallback = CONFIG.get('h1_enemy_weapon_fallback') or {}
         for r, enemy in enumerate(ModifierDatabase.H1_ARMED_ENEMIES):
             cb = QCheckBox(enemy)
-            cb.setChecked(bool(enabled.get(enemy, enemy != 'Sentinel')))
+            cb.setChecked(bool(enabled.get(enemy, True)))
             cb.setToolTip("Off: %ss keep the weapons the level gives them." % enemy)
             combo = QComboBox()
             combo.addItem("Auto (what it carries elsewhere)", None)
