@@ -2460,10 +2460,15 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   Both modes -> the Beam Rifle's; top-level deviation 0; zoomed aim speed 0.5 -> 1.
   LESSON: a weapon based on an AI gun inherits AI aim assist -- diff ALL of it.
 * **Side meters stayed empty** with heat and battery (weapon_data_reader.prop_battery --
-  prop_charge is the Plasma Pistol's OVERCHARGE) bound. Unsettled: an a8r8g8b8 bitmap tag
-  holds the imported source AND the processed pixels, and `tool bitmaps` stores a TIFF
-  pixel as bytes R,G,B,A while the game/decoder read B,G,R,A. Hidden (prop_visible 0) by
-  the user's call; Reach's frames stay.
+  prop_charge is the Plasma Pistol's OVERCHARGE) bound; hidden for a while. **SETTLED
+  2026-10-03:** an imported bitmap tag stores the SOURCE TIFF beside the PROCESSED pixels,
+  and the byte reads of boot 24 hit the source copy, so the "fix" swapped the layout the
+  wrong way. Read through ManagedBlam ('processed pixel data'), Bungie's heat_bar is
+  B,G,R,A = threshold, threshold, shape, shape -- R = A = shape, G = B = threshold, the
+  ORIGINAL layout -- and `tool bitmaps` stores a TIFF's RGBA exactly so. In-game control
+  (`--meters-br-bitmap`): Bungie's bitmap in both widgets filled with battery and heat,
+  so the bindings were right. Boot 23's "empty" was the overcharge binding plus no
+  firing. Meters shown again.
 
 **Boot 25:** zoomed view visible. Three findings:
 * **Scope art short of the screen edges:** Halo 4's HUD area is inset; Bungie's own dark

@@ -84,7 +84,7 @@ UNSET_BLEND = ('bitmap_bar_outlines',)
 #: could not be settled from the tags (an a8r8g8b8 bitmap tag holds the imported source
 #: AND the processed pixels; `tool bitmaps` stores a TIFF pixel as bytes R,G,B,A, and the
 #: Beam Rifle's heat_bar decodes as R = shape, G = B = threshold). Reach's frames stay.
-HIDDEN = ('bitmap_heat_bar', 'bitmap_ammo_bar')
+HIDDEN = ()     # 2026-10-03: shown again -- the layout is settled (h4_reach_scope_art.meter)
 #: HUD bindings the scope's meters need: (source comp, source prop, target comp, target prop)
 METER_BINDINGS = (
     # the BATTERY is prop_battery, into both animator values (the Spartan Laser's HUD).

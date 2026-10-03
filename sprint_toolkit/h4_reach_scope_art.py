@@ -21,9 +21,8 @@ bitmaps`):
                         drawn for the 1280x720 HUD screen (the Halo 4 scope template's
                         bar-outline widget shows it, h4_reach_scope.py).
   * meter_heat.tif / meter_batt.tif -- Halo 4 METER bitmaps. Halo 4's hud_meter reads
-    them like the Beam Rifle's heat_bar: B = A = the shape, R = G = the fill threshold
-    (255 at the top, 0 at the bottom; heat_bar/ammo_bar, read with h4_bitmap.py's R/B
-    swap for a8r8g8b8 accounted for). Reach keeps the shape in A and its own gradient
+    them like the Beam Rifle's heat_bar: R = A = the shape, G = B = the fill threshold
+    (255 at the top, 0 at the bottom; read from the processed pixel data). Reach keeps the shape in A and its own gradient
     along the arc, so the shape is kept and the threshold is redrawn top-to-bottom.
   The bitmap TAGS are copies of the Beam Rifle's (bar_outlines: dxt5; heat_bar:
   a8r8g8b8, no mips) made before the import, so `tool bitmaps` keeps their settings.
@@ -142,12 +141,13 @@ def meter(im):
     w, h = shape.size
     grad = Image.new('L', (w, h))
     grad.putdata([round(255 * (1 - y / (h - 1))) for y in range(h) for _x in range(w)])
-    # Channel order, measured on the TAG (boot 24): a TIFF written R = shape decodes from
-    # the imported a8r8g8b8 tag with the shape in B, where Bungie's heat_bar decodes with it
-    # in R (h4_bitmap.py swaps R/B for this format; its DXT path does not). Matching
-    # Bungie's tag means writing the shape into B: R = G = threshold, B = A = shape.
-    # Written R = shape, the meters stayed empty (boots 23-24).
-    return Image.merge('RGBA', (grad, grad, shape, shape))
+    # Channel order, settled 2026-10-03 on the PROCESSED pixel data (ManagedBlam
+    # 'processed pixel data', the bytes the game draws -- an imported tag ALSO stores the
+    # source TIFF, and reading that copy by byte search misled boot 24): Bungie's heat_bar
+    # is stored B,G,R,A = threshold, threshold, shape, shape, i.e. R = A = shape,
+    # G = B = threshold. `tool bitmaps` turns a TIFF's RGBA into exactly that. Control
+    # test in game: the Beam Rifle's heat_bar in both meter widgets filled (battery + heat).
+    return Image.merge('RGBA', (shape, grad, grad, shape))
 
 
 def meter_rects():
