@@ -3623,12 +3623,19 @@ class ModifierDatabase:
         prewarm_port_levels, behind a progress dialog. Without `scan` an unchecked
         level answers 'none' rather than block the GUI."""
         game = self.mission_games.get(mission_id)
+        # per-session memo: the map paths live on the baselines drive, and every card
+        # filtered asks -- statting E: hundreds of times per draw is what lagged Generate
+        memo = self.__dict__.setdefault('_port_memo', {})
+        if mission_id in memo and not scan:
+            return list(memo[mission_id])
         try:
             import weapon_ports
             ports = weapon_ports.enabled_ports(game, CONFIG.get('weapon_ports'))
         except Exception:
             return []
         if not ports:
+            memo[mission_id] = []
+            self.__dict__.setdefault('_port_missing', {})[mission_id] = {}
             return []
         path = self._port_level_map(mission_id)
         try:
@@ -3683,7 +3690,14 @@ class ModifierDatabase:
                 pass
         on = {p.get('weapon') for p in ports}
         self.__dict__.setdefault('_port_missing', {})[mission_id] = cache[key].get('missing', {})
-        return [w for w in cache[key]['ports'] if w in on]
+        memo[mission_id] = [w for w in cache[key]['ports'] if w in on]
+        return list(memo[mission_id])
+
+    def forget_port_levels(self):
+        """Drop the per-session memo (Options changed: ports switched, maps rebuilt)."""
+        self.__dict__.pop('_port_memo', None)
+        self.__dict__.pop('_port_missing', None)
+        self.__dict__.pop('_port_pending_done', None)
 
     def port_card_ok(self, card, mission_id):
         """False for a port card whose tag (any part) the level's map lacks."""
@@ -3697,7 +3711,11 @@ class ModifierDatabase:
         return not (isinstance(tag, str) and any(part in gone for part in tag.split(' & ')))
 
     def port_levels_pending(self):
-        """Levels whose port check has not been done for their current map file."""
+        """Levels whose port check has not been done for their current map file.
+        Once everything is checked this session, answers at once (Generate asks it
+        every time)."""
+        if self.__dict__.get('_port_pending_done'):
+            return []
         out = []
         for mid, game in self.mission_games.items():
             try:
@@ -3724,6 +3742,7 @@ class ModifierDatabase:
         """Check every pending level (no Qt: run it through run_busy)."""
         for mid in self.port_levels_pending():
             self.ports_on_level(mid, scan=True)
+        self._port_pending_done = True
 
     def h1_weapon_path(self, weapon_name):
         """A weapon's Halo 1 weap tag path. A PORTED weapon (weapon_ports_catalog.json)
@@ -12886,6 +12905,8 @@ class HaloGUI(QMainWindow):
         if not CONFIG.get('weapon_ports_in_pools') or not getattr(self, 'db', None):
             return
         pending = self.db.port_levels_pending()
+        if not pending:
+            self.db._port_pending_done = True
         if pending:
             run_busy(self, self.db.prewarm_port_levels, "Weapon ports",
                      "Checking which of %d level(s) carry the ported weapons" % len(pending))
@@ -14459,6 +14480,7 @@ class HaloGUI(QMainWindow):
                 QMessageBox.warning(self, "Baselines folder",
                                     "%s\n\n%s" % (new_root, problem))
             self.run_state.options = {k: CONFIG.get(k) for k in OPTION_KEYS}
+            self.db.forget_port_levels()          # ports or their switches may have changed
             self._ensure_port_levels()
             if hasattr(self, 'add_mod_btn'):        # debug tools show/hide live
                 self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))

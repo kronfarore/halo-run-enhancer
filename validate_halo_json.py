@@ -242,7 +242,41 @@ for _g, _ms in DB['Missions'].items():
         for _k in ('weapons', 'grenades', 'equipment', 'enemies', 'bosses', 'turrets'):
             _s |= set(_md.get(_k) or [])
     _FIELDED[_g] = _s
+# Ported weapons (weapon_ports_catalog.json) are fielded by every game they were
+# ported into: the SAW's Halo 1-Reach cards are real cards, not inert ones.
+_PORTS = {}
+try:
+    import weapon_ports as _wp
+    for _g, _ps in (_wp.load_catalog() or {}).items():
+        for _p in _ps or ():
+            if _p.get('weapon'):
+                _FIELDED.setdefault(_g, set()).add(_p['weapon'])
+                _PORTS.setdefault(_g, {})[_p['weapon']] = _p
+except Exception:
+    pass
 _ANY_FIELDED = set().union(*_FIELDED.values()) if _FIELDED else set()
+
+# A port's tag that the deployed maps lack but the EDITING KIT has is not a fault: the
+# levels were built before that tag was wired in (Halo 1's SAW bullet and melee until
+# a10/b30 are rebuilt). Those are listed apart, as 'awaiting a rebuild'.
+KIT_TAGS = {'Halo 1': r'F:\SteamLibrary\steamapps\common\HCEEK\tags'}
+KIT_EXT = {'weap': 'weapon', 'proj': 'projectile', 'jpt!': 'damage_effect',
+           'antr': 'model_animations', 'wphi': 'weapon_hud_interface'}
+pending = []
+
+
+def awaiting_rebuild(label, game, tag):
+    """True when `label` is a ported weapon's card and every part of `tag` exists in
+    that game's editing kit (the maps just predate it)."""
+    owner = label.split('/')[0]
+    if owner not in _PORTS.get(game, {}) or game not in KIT_TAGS or not tag:
+        return False
+    cls, _s, rest = tag.partition(' ')
+    ext = KIT_EXT.get(cls)
+    if not ext:
+        return False
+    return all(os.path.exists(os.path.join(KIT_TAGS[game], p.strip() + '.' + ext))
+               for p in rest.split(' & ') if p.strip())
 
 
 def is_inert(label, game):
@@ -434,7 +468,10 @@ def check_resolution():
         for label, tag, cls, tpath, keep in live:
             quiet = is_inert(label, game)
             if not found.get(label):
-                report(f'{label} [{game}]: tag resolves on 0 maps  ({tag})', quiet)
+                if awaiting_rebuild(label, game, tag):
+                    pending.append(f'{label} [{game}]: {tag}')
+                else:
+                    report(f'{label} [{game}]: tag resolves on 0 maps  ({tag})', quiet)
                 continue
             for field, ucls, upath, _fld, seeded in keep:
                 if seeded or filled.get((label, field, upath)):
@@ -484,6 +521,12 @@ if __name__ == '__main__':
               f'drifted:')
         for g, lab, f in _stale:
             print(f'   {lab} [{g}]: {f!r}')
+    if pending:
+        print(f'({len(pending)} ported-weapon card(s) awaiting a rebuild -- the tag is in '
+              f'the editing kit but not yet in the deployed maps; --all lists them)')
+        if '--all' in sys.argv:
+            for pr in pending:
+                print(' ', pr)
     if inert:
         if '--all' in sys.argv:
             print(f'\n----- {len(inert)} inert card(s): the game does not field this '

@@ -24,12 +24,27 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG_PATH = os.path.join(HERE, 'weapon_ports_catalog.json')
 
 
+_CACHE = {}
+
+
 def load_catalog(path=CATALOG_PATH):
+    """The catalog, read once and kept until the file changes. Card filtering asks
+    for it hundreds of times per card draw; reading and parsing it each time made
+    Generate lag (2026-10-03)."""
+    try:
+        stamp = os.path.getmtime(path)
+    except OSError:
+        return {}
+    hit = _CACHE.get(path)
+    if hit and hit[0] == stamp:
+        return hit[1]
     try:
         with open(path, encoding='utf-8') as f:
-            return json.load(f)
+            data = json.load(f)
     except (OSError, ValueError):
         return {}
+    _CACHE[path] = (stamp, data)
+    return data
 
 
 def ports_for(game, catalog=None):
