@@ -127,6 +127,10 @@ def plan(weapon):
                         if m['name'] == name), None)
             if mod is None or not db._game_ok(mod, game) or mod.get('ignore'):
                 continue
+            # dual-wield cards only for a port that can be dual wielded (catalog
+            # 'dual_wield': true) -- the SAW cannot (user, 2026-10-03)
+            if name.startswith('Dual ') and not port.get('dual_wield'):
+                continue
             card = port_cards.get(name)
             if card is not None and game in (card.get('game') or []):
                 continue                                     # already covered: never overwrite

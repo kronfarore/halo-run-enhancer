@@ -11296,8 +11296,8 @@
 				},
 				"Melee Damage": {
 					"desc": "Damage Lower Bound, Damage Upper Bound",
-					"game": ["Halo 4", "Halo 2", "Halo 3", "Halo Reach"],
-					"tag": { "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee" },
+					"game": ["Halo 4", "Halo 2", "Halo 3", "Halo Reach", "Halo 1"],
+					"tag": { "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\smash_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 1": "jpt! weapons\\saw\\melee" },
 					"targets": [
 						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 4"] },
 						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 4"] },
@@ -11310,7 +11310,10 @@
 						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 3", "Halo 3: ODST"] },
 						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo Reach"] },
 						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo Reach"] },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo Reach"] }
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo Reach"] },
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 1"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 1"] }
 					]
 				},
 				"Zoom": {
@@ -11507,26 +11510,6 @@
 					"targets": [
 						{ "step": "*0.8", "field": "Angle Change Per Shot", "block": "Barrels", "group": "Recoil", "games": ["Halo 2"] },
 						{ "step": "*0.8", "field": "Angle Change Per Shot Max", "block": "Barrels", "group": "Recoil", "games": ["Halo 2"] }
-					]
-				},
-				"Dual Weapon Error": {
-					"desc": "Weapon Spread while dual wielding",
-					"dual_only": true,
-					"game": ["Halo 2"],
-					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\saw\\saw" },
-					"targets": [
-						{ "step": "*0.8", "field": "Minimum Error", "block": "Barrels", "group": "Error Angle", "games": ["Halo 2"] },
-						{ "step": "*0.8", "field": "Error Angle", "block": "Barrels", "group": "Error Angle", "games": ["Halo 2"] },
-						{ "step": "*0.8", "field": "Error Angle Max", "block": "Barrels", "group": "Error Angle", "games": ["Halo 2"] }
-					]
-				},
-				"Dual Weapon Damage": {
-					"desc": "Damage dealt while dual wielding",
-					"dual_only": true,
-					"game": ["Halo 2"],
-					"tag": { "Halo 2": "weap objects\\weapons\\rifle\\saw\\saw" },
-					"targets": [
-						{ "step": "*1.2", "field": "Dual Wield Damage Scale", "block": "Barrels", "min": "0", "games": ["Halo 2"] }
 					]
 				}
 			},
@@ -17414,7 +17397,7 @@
 					"tag": {"Halo 1": "actv characters\\grunt\\*plasma pistol", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
 					"split_from": "Special-Case Firing",
 					"targets": [
-						{ "step": "*1.2", "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } },
+						{ "step": "*1.2", "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "zero_is": 1.0 },
 						{ "field": "Special-Fire Mode", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "index": { "Halo 1": 0, "Halo 2": "all" }, "set": "Overcharge" }
 					]
 				},
@@ -18401,7 +18384,7 @@
 					"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
 					"split_from": "Special-Case Firing",
 					"targets": [
-						{ "step": "*1.2", "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" } }
+						{ "step": "*1.2", "field": "Special Damage Modifier", "block": { "Halo 1": null, "Halo 2": "Weapons Properties" }, "zero_is": 1.0 }
 					]
 				},
 				"Special-Fire Chance": {
