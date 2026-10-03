@@ -565,7 +565,7 @@ SETTINGS_KEYS = ('assembly_plugins_dir', 'zoom_donor', 'zoom_donor_by_weapon', '
                  'vault_dir', 'baseline_root',
                  # per-port volume: a listening preference, NOT gameplay -- each co-op
                  # partner sets their own, and it stays out of the run and patch code
-                 'weapon_port_volume') + OPTION_KEYS
+                 'weapon_port_volume', 'weapon_port_volume_sync') + OPTION_KEYS
 
 
 def mcc_root():
@@ -993,6 +993,9 @@ CONFIG = {
     "weapon_ports_in_pools": False,
     # {game: {weapon: dB}}: shift a port's own sounds (port_volume.py), 0 = as built.
     "weapon_port_volume": {},
+    # Write the knobs into saved / shared run files, so a co-op partner loading the run
+    # plays the ports at the same volume (desynced port sounds may crash the session).
+    "weapon_port_volume_sync": False,
     "h1_spawn_all_weapons": False,
     "h3_spawn_all_weapons": False,
     "ignore_elite_in_h3": True,   # H3 Elites are allies — don't patch Elite enemy effects there
@@ -4154,7 +4157,15 @@ class RunState:
         last = self.rounds[-1] if self.rounds else None
         p1 = self.selected_pairs['player1']
         p2 = self.selected_pairs['player2']
+        out_extra = {}
+        if CONFIG.get('weapon_port_volume_sync'):
+            # the ports' volume knobs travel with the run (Options -> Weapon ports ->
+            # Sync to partner); a loader adopts them (from_dict)
+            out_extra['port_volume'] = {g: dict(v) for g, v in
+                                        (CONFIG.get('weapon_port_volume') or {}).items()
+                                        if isinstance(v, dict)}
         return {
+            **out_extra,
             "tool_version": VERSION,
             "options": {k: CONFIG.get(k) for k in OPTION_KEYS},
             # The patcher's scope source per game. It changes what is written to the map,
@@ -4203,6 +4214,16 @@ class RunState:
         state.options = {k: opts[k] for k in OPTION_KEYS if k in opts}
         for k, v in state.options.items():
             CONFIG[k] = v
+        # A partner who syncs their port volume knobs: this machine takes them OVER,
+        # whole -- a port the sharer never turned is 'as built' there, so keeping this
+        # machine's own value for it would leave the two sessions apart (to_dict).
+        pv = data.get('port_volume')
+        state.port_volume_synced = False
+        if isinstance(pv, dict):
+            CONFIG['weapon_port_volume'] = {
+                g: {w: float(d or 0) for w, d in v.items()}
+                for g, v in pv.items() if isinstance(v, dict)}
+            state.port_volume_synced = True
         # The run's scope donors win over this machine's, game by game (see to_dict).
         zd = data.get('zoom_donor')
         if isinstance(zd, dict) and zd:
@@ -5014,11 +5035,19 @@ class StartDialog(QDialog):
                                 f"Loaded {Path(file_path).name}, but its shared magnitudes "
                                 "could not be saved to magnitude_presets.json -- patching "
                                 "this run will use this machine's own values instead.")
-        elif n:
-            QMessageBox.information(self, "Run loaded",
-                                    f"Loaded {Path(file_path).name}\n\n"
-                                    f"{n} shared magnitude(s) merged — patching this run "
-                                    "will reproduce the same values.")
+        elif n or getattr(self.loaded_state, 'port_volume_synced', False):
+            msg = f"Loaded {Path(file_path).name}"
+            if n:
+                msg += (f"\n\n{n} shared magnitude(s) merged — patching this run "
+                        "will reproduce the same values.")
+            if getattr(self.loaded_state, 'port_volume_synced', False):
+                msg += ("\n\nThe ported weapons' volume settings were taken from this "
+                        "run (the sharer syncs them).")
+                try:
+                    save_settings()
+                except Exception:
+                    pass
+            QMessageBox.information(self, "Run loaded", msg)
         self.choice = 'load'
         self.accept()
 
@@ -11904,6 +11933,14 @@ class OptionsDialog(QDialog):
             "its frames rather than playing faster, so its tail is cut. Ports are built at "
             "the length they should play and scaled down from there.")
         gform.addRow("Animations:", self._ports_anim_cb)
+        self._ports_volume_sync_cb = QCheckBox("Sync to partner")
+        self._ports_volume_sync_cb.setChecked(bool(CONFIG.get('weapon_port_volume_sync')))
+        self._ports_volume_sync_cb.setToolTip(
+            "The Volume knobs below are your own setting and normally stay on this "
+            "machine. With this on, they are written into every run you save or share, "
+            "and a co-op partner who loads that run takes them over -- in case ported "
+            "sounds at different volumes on the two machines desync or crash the game.")
+        gform.addRow("Volume:", self._ports_volume_sync_cb)
         lay.addWidget(gen)
         self._ports_boxes = {}
         self._ports_ammo = {}
@@ -12191,6 +12228,7 @@ class OptionsDialog(QDialog):
                                if (g, w) in self._ports_ammo else {}))
                     for (g2, w), cb in self._ports_boxes.items() if g2 == g}
                 for g in {gg for gg, _ in self._ports_boxes}},
+            'weapon_port_volume_sync': self._ports_volume_sync_cb.isChecked(),
             'weapon_port_volume': {
                 g: {w: round(sp.value(), 1) for (g2, w), sp in self._ports_volume.items()
                     if g2 == g}
