@@ -1,4 +1,4 @@
-r"""A ported weapon's sound VOLUME, set at patch time (Halo 3, ODST, Reach; Halo 4 through
+r"""A ported weapon's sound VOLUME, set at patch time (Halo 2, Halo 3, ODST, Reach; Halo 4 through
 its own sound bank).
 
 WHERE A SOUND'S VOLUME LIVES: not in the sound tag. A compiled sound (snd!) holds an
@@ -54,8 +54,15 @@ MARKER_DB = {'SAW': 0.01}
 #:          Gain Base offset) -- Assembly's MCC plugins
 LAYOUT = {'Halo 3': (0x0C, 0x10, 0x44, 0x1C),
           'Halo 3: ODST': (0x0C, 0x10, 0x44, 0x1C),
-          'Halo Reach': (0x0E, 0x10, 0x54, 0x2C)}
-FOLDER = {'Halo 3': 'halo3', 'Halo 3: ODST': 'halo3odst', 'Halo Reach': 'haloreach'}
+          'Halo Reach': (0x0E, 0x10, 0x54, 0x2C),
+          # Halo 2 (classic): snd! +0x6 "Playback Parameter Index", ugh! "Playback
+          # Parameters" (0x38) with Gain Base +0x10 -- pooled too (03a: 871 sounds share
+          # the SMG fire's entry). Whether it clamps at 0 like Halo 3: untested, so the
+          # headroom rule applies (built at -3.01).
+          'Halo 2': (0x06, 0x08, 0x38, 0x10)}
+#: game -> its maps folder under the MCC install
+FOLDER = {'Halo 3': 'halo3\\maps', 'Halo 3: ODST': 'halo3odst\\maps', 'Halo Reach': 'haloreach\\maps',
+          'Halo 2': 'halo2\\h2_maps_win64_dx11'}
 
 
 def _f32(m, o):
@@ -248,7 +255,7 @@ def main():
     if not a.map:
         ap.error('--map is needed for %s' % a.game)
     path = a.map if a.map.lower().endswith('.map') else \
-        os.path.join(a.mcc, FOLDER[a.game], 'maps', a.map + '.map')
+        os.path.join(a.mcc, FOLDER[a.game], a.map + '.map')
     m = hp.open_map(path, a.game)
     own, shared, pbs = entries(m, a.game, a.weapon)
     gain_off = LAYOUT[a.game][3]
