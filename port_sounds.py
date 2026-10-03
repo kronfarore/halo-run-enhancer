@@ -20,6 +20,9 @@ APPENDED to the package and named by its table entry plays.
 FOR THE ENHANCER (patch time, Halo 4):
     import port_sounds
     rows = port_sounds.ensure('halo4', mcc_root())       # patcher-style rows
+    rows = port_sounds.ensure('halo4', mcc_root(), volume={'Focus Rifle': -3.0})
+                                   # per-port volume knob, dB relative to the bank as built
+                                   # (port_volume.bank_volume: the root mixer's Volume)
     problems = port_sounds.problems(mcc_root())           # validator messages
 A frozen build needs datas += [('port_sounds', 'port_sounds')] in halo_enhancer.spec.
 
@@ -49,13 +52,22 @@ def _data_dir():
     return os.path.join(HERE, DATA)
 
 
-def banks(game):
-    """[(bank id, bytes, file name)] the ports carry for `game`."""
+def banks(game, volume=None):
+    """[(bank id, bytes, file name)] the ports carry for `game`; `volume` {port: dB}
+    shifts a port's bank (port_volume.PORT_BANKS names which file is whose)."""
     out = []
+    shift = {}
+    if volume:
+        import port_volume
+        shift = {f.lower(): volume[w] for w, (g, f) in port_volume.PORT_BANKS.items()
+                 if g == game and volume.get(w)}
     for p in sorted(glob.glob(os.path.join(_data_dir(), game, '*.bnk'))):
         b = open(p, 'rb').read()
         if b[:4] != b'BKHD':
             continue
+        if shift.get(os.path.basename(p).lower()):
+            import port_volume
+            b = port_volume.bank_volume(b, shift[os.path.basename(p).lower()])[0]
         out.append((struct.unpack_from('<I', b, 12)[0], b, os.path.basename(p)))
     return out
 
@@ -136,10 +148,15 @@ def install(path, add):
     os.replace(tmp, path)
 
 
-def ensure(game, mcc_root, write=True, backup_dir=None):
+def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
     """Make `game`'s live sound package carry every port bank. Patcher-style rows; never
-    raises for a bad package -- it reports and leaves the file alone."""
-    want = banks(game)
+    raises for a bad package -- it reports and leaves the file alone. `volume` {port: dB}:
+    the knob (a bank at another volume is simply replaced)."""
+    try:
+        want = banks(game, volume)
+    except ValueError as e:
+        return [{'effect': 'port sound bank', 'field': '%s volume' % game, 'ok': False,
+                 'reason': str(e)}]
     if game not in PACKAGES or not want:
         return []
     path = os.path.join(mcc_root, PACKAGES[game])
@@ -173,11 +190,12 @@ def ensure(game, mcc_root, write=True, backup_dir=None):
     return rows + [dict(row, ok=True, old='without %s' % names, new='%s added' % names)]
 
 
-def problems(mcc_root):
-    """Validator: a port bank missing from (or stale in) a live package."""
+def problems(mcc_root, volume=None):
+    """Validator: a port bank missing from (or stale in) a live package. Pass the same
+    `volume` the patch used, or a turned bank reads as stale."""
     out = []
     for game in PACKAGES:
-        for r in ensure(game, mcc_root, write=False):
+        for r in ensure(game, mcc_root, write=False, volume=volume):
             if not r.get('ok'):
                 out.append('sound %s: %s' % (r['field'], r.get('reason')))
             elif not r.get('skip'):

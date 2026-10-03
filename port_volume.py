@@ -1,4 +1,5 @@
-r"""A ported weapon's sound VOLUME, set at patch time (Halo 3, ODST, Reach).
+r"""A ported weapon's sound VOLUME, set at patch time (Halo 3, ODST, Reach; Halo 4 through
+its own sound bank).
 
 WHERE A SOUND'S VOLUME LIVES: not in the sound tag. A compiled sound (snd!) holds an
 INDEX into the map's sound gestalt (ugh!) "Playbacks" block, and the gain is that
@@ -26,9 +27,14 @@ BASELINE map (the patcher's fresh copy), never twice to the same file.
     import port_volume
     rows = port_volume.apply(m, 'Halo 3', 'SAW', -3.0)     # m: an open map, saved by the caller
 
+HALO 4 is not map data -- see bank_volume() below; the patcher passes the knob to
+port_sounds.ensure(..., volume={port: dB}).
+
 COMMAND LINE (cmd.exe):
     python port_volume.py --game "Halo 3" --map 010_jungle             report
     python port_volume.py --game "Halo 3" --map 010_jungle --shift 6 --write
+    python port_volume.py --game "Halo 4" --weapon "Focus Rifle" --shift -3 --write
+                                          (Halo 4: relative to the bank AS BUILT)
 """
 import argparse
 import os
@@ -113,16 +119,120 @@ def apply(m, game, weapon, db):
     return rows
 
 
+# ---- Halo 4: the port's OWN Wwise bank ---------------------------------------------
+# Halo 4 sounds are Wwise (v88 banks in sound\pc\sfxbank.pck, installed by port_sounds.py),
+# not map data. A port's bank is its own (every id renamed, h4_sound_bank.py), so nothing
+# is pooled and no marker is needed: the knob shifts the Volume property (v88 prop id 0x00,
+# dB float) of the bank's ROOT actor-mixer, which every sound of the bank plays through
+# (Wwise volumes add down the hierarchy). The Focus Rifle's mixer ships at -6 dB, so it
+# has +6 up before 0 -- capped at CEILING_DB like the maps, until a boot shows Wwise plays
+# a mixer above 0 louder.
+#: port -> (game folder, bank file under tool\port_sounds\<game>)
+PORT_BANKS = {'Focus Rifle': ('halo4', 'port_focus_rifle.bnk')}
+BANK_GAMES = {'Halo 4': 'halo4'}
+HIRC_SOUND, HIRC_CONTAINER, HIRC_MIXER = 2, 5, 7
+PROP_VOLUME = 0x00
+
+
+def _hirc(bank):
+    """[(type, id, body offset in bank, body length)] -- chunk walk as h4_wwise.py."""
+    i = 0
+    while i + 8 <= len(bank):
+        tag, n = bank[i:i + 4], struct.unpack_from('<I', bank, i + 4)[0]
+        if tag == b'HIRC':
+            count = struct.unpack_from('<I', bank, i + 8)[0]
+            j, out = i + 12, []
+            for _ in range(count):
+                t = bank[j]
+                size, oid = struct.unpack_from('<II', bank, j + 1)
+                out.append((t, oid, j + 9, size - 4))
+                j += 5 + size
+            return out
+        i += 8 + n
+    return []
+
+
+def _node_base(bank, t, at):
+    """Offset of a node's (bus id, parent id) pair, or None for a layout not handled.
+    Sound: 24 bytes of embedded source data + source bits, then override-FX, FX count.
+    Container / mixer: override-FX, FX count first. Only FX count 0 is handled."""
+    if t == HIRC_SOUND:
+        stype = struct.unpack_from('<I', bank, at + 4)[0]
+        p = at + (24 if stype == 0 else 16) + 1
+    elif t in (HIRC_CONTAINER, HIRC_MIXER):
+        p = at
+    else:
+        return None
+    if bank[p + 1] != 0:
+        return None
+    return p + 2
+
+
+def _root_mixer(bank):
+    """(mixer id, offset of its Volume float) -- the one actor-mixer every sound of the
+    bank descends from. Raises ValueError when the bank is not shaped like that."""
+    objs = _hirc(bank)
+    parent, ours = {}, {oid for _t, oid, _a, _n in objs}
+    mixers = []
+    for t, oid, at, _n in objs:
+        p = _node_base(bank, t, at)
+        if p is None:
+            if t in (HIRC_SOUND, HIRC_CONTAINER, HIRC_MIXER):
+                raise ValueError('object %#x: layout not handled' % oid)
+            continue
+        parent[oid] = struct.unpack_from('<I', bank, p + 4)[0]
+        if t == HIRC_MIXER and parent[oid] not in ours:
+            mixers.append((oid, p + 8))
+    if len(mixers) != 1:
+        raise ValueError('%d root actor-mixers (want 1)' % len(mixers))
+    root, p = mixers[0]
+    for t, oid, _a, _n in objs:
+        if t != HIRC_SOUND:
+            continue
+        o, seen = oid, set()
+        while o in parent and o != root and o not in seen:
+            seen.add(o)
+            o = parent[o]
+        if o != root:
+            raise ValueError('sound %#x does not play through mixer %#x' % (oid, root))
+    # two flag bytes, then the prop bundle: count, ids, 4-byte values
+    n = bank[p + 2]
+    ids = list(bank[p + 3:p + 3 + n])
+    if PROP_VOLUME not in ids:
+        raise ValueError('mixer %#x carries no Volume property' % root)
+    return root, p + 3 + n + 4 * ids.index(PROP_VOLUME)
+
+
+def bank_volume(bank, db):
+    """The bank with its root mixer's Volume shifted by `db` (capped at CEILING_DB).
+    Same length; returns (new bytes, old dB, new dB)."""
+    _root, o = _root_mixer(bank)
+    old = struct.unpack_from('<f', bank, o)[0]
+    new = min(old + db, CEILING_DB)
+    out = bytearray(bank)
+    struct.pack_into('<f', out, o, new)
+    return bytes(out), old, new
+
+
+def bank_headroom(bank):
+    _root, o = _root_mixer(bank)
+    return round(CEILING_DB - struct.unpack_from('<f', bank, o)[0], 2)
+
+
 def main():
     import halo_patch as hp
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('--game', required=True, choices=sorted(LAYOUT))
-    ap.add_argument('--map', required=True, help='mission name, e.g. 010_jungle, or a .map path')
-    ap.add_argument('--weapon', default='SAW', choices=sorted(PORT_SOUNDS))
+    ap.add_argument('--game', required=True, choices=sorted(LAYOUT) + sorted(BANK_GAMES))
+    ap.add_argument('--map', help='mission name, e.g. 010_jungle, or a .map path (not Halo 4)')
+    ap.add_argument('--weapon', default='SAW', choices=sorted(PORT_SOUNDS) + sorted(PORT_BANKS))
     ap.add_argument('--mcc', default=os.path.dirname(HERE))
     ap.add_argument('--shift', type=float, help='dB relative to what the map holds now')
     ap.add_argument('--write', action='store_true')
     a = ap.parse_args()
+    if a.game in BANK_GAMES:
+        return main_bank(a)
+    if not a.map:
+        ap.error('--map is needed for %s' % a.game)
     path = a.map if a.map.lower().endswith('.map') else \
         os.path.join(a.mcc, FOLDER[a.game], 'maps', a.map + '.map')
     m = hp.open_map(path, a.game)
@@ -143,6 +253,35 @@ def main():
         m.save()
         print('written %s' % path)
     else:
+        print('(dry run -- pass --write)')
+
+
+def main_bank(a):
+    """Halo 4: report the live bank's mixer; --shift DB --write installs the bank at that
+    volume RELATIVE TO THE BANK AS BUILT (not to what is live)."""
+    import port_sounds
+    folder, name = PORT_BANKS[a.weapon]
+    built = open(os.path.join(port_sounds._data_dir(), folder, name), 'rb').read()
+    bid = struct.unpack_from('<I', built, 12)[0]
+    _r, o = _root_mixer(built)
+    print('%s %s: as built, mixer volume %+.2f dB, headroom %s dB'
+          % (name, a.weapon, struct.unpack_from('<f', built, o)[0], bank_headroom(built)))
+    pck = os.path.join(a.mcc, port_sounds.PACKAGES[folder])
+    with open(pck, 'rb') as f:
+        _h, _fl, table = port_sounds.read_header(f)
+        ent = next((e for e in table if e[0] == bid), None)
+        live = port_sounds._bank_at(f, ent) if ent else None
+    if live is None:
+        print('   live package: bank NOT installed')
+    else:
+        _r, lo = _root_mixer(live)
+        print('   live package: mixer volume %+.2f dB' % struct.unpack_from('<f', live, lo)[0])
+    if a.shift is None:
+        return
+    for r in port_sounds.ensure(folder, a.mcc, write=a.write, volume={a.weapon: a.shift}):
+        print('   %-5s %s  %s' % ('skip' if r.get('skip') else 'ok' if r['ok'] else 'FAIL', r['field'],
+                                  r.get('reason') or '%s -> %s' % (r.get('old'), r.get('new'))))
+    if not a.write:
         print('(dry run -- pass --write)')
 
 

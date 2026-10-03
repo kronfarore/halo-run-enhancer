@@ -2286,6 +2286,12 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   up. Halo 3 / Reach SAW: plain audio at -3. ODST SAW: -3 gain + 4.5 dB soft-limited
   audio (= the confirmed +4.5; limiter: 0.05% of samples near the ceiling, at +6 0.6%).
   port_volume.headroom() reports it, apply() caps at 0.
+* **Halo 4: volume is in the port's OWN Wwise bank** (not the map; no pooling, no marker).
+  port_volume.bank_volume() shifts the Volume property (v88 prop id 0x00, dB float) of the
+  bank's ROOT actor-mixer, which every sound of the bank plays through (checked: all 15
+  sounds); the patcher passes `port_sounds.ensure('halo4', root, volume={port: dB})`.
+  Focus Rifle mixer ships at -6 dB -> +6 headroom (capped at 0 until a boot shows Wwise
+  plays a mixer above 0 louder). Test (boot 32): installed at -20.
   2. is the FMOD bank needed at all -- or does PC Reach play the map's MS-ADPCM? (the
      bank is a loose file a Steam verify removes; without it, nothing to restore).
 
@@ -2379,6 +2385,7 @@ enhancer patch rebuilds from the old one.
     blender --background --python h4_foundry_port.py -- --export    (H4EK)
     python h4_reach_scope_art.py --write         scope bitmaps (once; boot 21)
     python h4_muzzle_recolor.py --write          own orange muzzle effect (boot 21)
+    blender --background --python h4_beam_look.py -- --write   own beam tracer (+ fade)
     python h4_sound_bank.py                      own Wwise bank -> tool/port_sounds/halo4
     python ..\port_sounds.py --write            bank into the live sfxbank.pck (no rebuild)
     blender --background --python h4_fp_graph.py -- --write   own fp graph = byte copy + loop fix
@@ -2506,6 +2513,16 @@ self-acceleration functions copied in field by field, palette -> Reach's
 focus_rifle_plasma, point-to-point cleared; in an own copy of the streak's effect, attached
 to the port's projectile. Z-510 (storm_anti_infantry_turret) = the same "bsh" point-to-point
 mechanism, not usable for a player weapon.
+
+**Beam FADE-OUT (2026-10-03, user):** the Sentinel tracers keep a constant profile alpha
+(1.0 on profile position), so each segment stays opaque until its lifespan ends. Most stock
+H4 trails fade by PROFILE AGE (curve functions, type 08); the Beam Rifle streak core:
+(0,1) (0.27,1) (0.863,0.321) (1,0). h4_beam_look.py now copies that `profile alpha` onto
+all three tracers (FADE), peak kept at 1.0 (the streak's is 0.9). Both blend
+add_src_times_srcalpha, so alpha dims the glow. ManagedBlam's TagValueCustomFunctionEditor
+(`st.SelectField('Mapping').Value`) EVALUATES and edits these curves: Evaluate(x, range),
+Get/SetControlPoint(graph, i) -- use it to read a function's shape instead of decoding
+the blob. Untested in game (boot 32).
 
 **Boot 15 (rebuild):** the Plasma Pistol graph has NO pop -> the Beam Rifle chain. Its VENT
 set (vent_enter/loop/exit, absent from the Plasma Pistol's; vent_enter steps 0.058) is now

@@ -18,7 +18,8 @@ SO, per tracer of the port's own copy of the Sentinel tracer:
   * look       kept: materials, shape (cross), profile size -- the Focus Rifle's beam
   * behaviour  copied from the Beam Rifle streak's first tracer: length, offset, profile
                lifespan, profile self acceleration (functions, field by field, data blobs
-               and their input/range/modifier enums)
+               and their input/range/modifier enums), and its FADE: profile alpha by
+               profile age (2026-10-03)
   * colour     palette -> fx\reach\bitmaps\contrails\_gradients\focus_rifle_plasma (Reach)
   * system     point-to-point cleared
 and the port's own copy of the Beam Rifle's projectile effect carries it.
@@ -52,6 +53,16 @@ BEHAVIOUR = ('length', 'offset', 'profile lifespan', 'profile self acceleration'
 #: floats at +4/+8 of the function data) scaled down.
 SHAPE, SIDES = 'n-gon', 6
 LIFESPAN_SCALE = 0.5
+#: 2026-10-03 (user: "adjust the beam slightly by adding a fade out"): the Sentinel's
+#: tracers keep a CONSTANT profile alpha (1.0 on profile position), so every segment stays
+#: fully opaque until its lifespan ends and it vanishes at once. The Beam Rifle streak's
+#: core fades by PROFILE AGE -- curve (0,1) (0.27,1) (0.863,0.321) (1,0): solid for the
+#: first quarter of a segment's life, then down to 0 -- and the materials blend
+#: add_src_times_srcalpha (both), so alpha dims the additive glow. Copied onto every tracer.
+FADE = ('profile alpha',)
+#: the streak's curve is scaled 0..0.9 (floats +4/+8 of the function data); the beam's
+#: own alpha was 1.0, so the peak goes back to 1.0 -- the fade only, not a dimmer beam
+FADE_PEAK = 1.0
 
 
 def field(fields, name):
@@ -152,9 +163,13 @@ def main(write):
             e = tracers.Elements[i]
             name = e.SelectField('tracer name').GetStringData()
             copied = 0
-            for fn in BEHAVIOUR:
+            for fn in BEHAVIOUR + FADE:
                 copied += copy_fields(field(donor.Fields, fn).Elements[0].Fields,
                                       field(e.Fields, fn).Elements[0].Fields)
+            fade = field(field(e.Fields, 'profile alpha').Elements[0].Fields, 'data')
+            raw = bytearray(fade.GetData())
+            struct.pack_into('<f', raw, 8, FADE_PEAK)
+            fade.SetData(bytes(raw))
             sh = e.SelectField('profile shape')
             sh.Value = [x.EnumName for x in sh.Items].index(SHAPE)
             e.SelectField('number of n-gon sides').SetStringData(str(SIDES))
