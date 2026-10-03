@@ -56,8 +56,12 @@ Assault Rifle's and still named `weapons\assault rifle\bullet`. So the built SAW
 the DONOR's bullet, the port's own bullet tags were orphans the cache never compiled,
 every SAW projectile/damage balance row pointed at a tag that was not in the map, and
 editing the AR's bullet moved the SAW with it. Cloning the tags is not enough: the
-trigger has to name them (`saw_weapon.py` does it now). Melee is left on the donor's
-tag on purpose -- only Halo 1 has per-weapon melee damage, so sharing it is harmless.
+trigger has to name them (`saw_weapon.py` does it now). The MELEE had the same gap and
+is wired too (2026-10-03): `weapons\saw\melee` holds the port's 70/70/70 where the AR's
+stock tag is 40/50/60 -- which is exactly what the balance table brings the port down
+to, so sharing the donor's tag shipped the port pre-balanced and left its Melee Damage
+card nothing of its own to move. `player_response` stays the donor's: it is the effect
+played on whoever is hit and carries no per-weapon damage.
 After fixing the wiring the maps that carry the port must be REBUILT; until then the
 deployed map still has the old reference.
 

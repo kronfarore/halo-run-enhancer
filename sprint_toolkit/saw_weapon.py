@@ -58,6 +58,13 @@ def main():
     # Melee stays the donor's deliberately: only Halo 1 has per-weapon melee damage.
     for trig in d.weap_attrs.triggers.STEPTREE:
         trig.projectile.projectile.filepath = 'weapons' + B + 'saw' + B + 'bullet'
+    # Melee the same way (user's call, 2026-10-03): weapons\saw\melee holds the
+    # port's own 70/70/70 where the AR's stock tag is 40/50/60 -- which is what the
+    # balance table brings the port back down to, so sharing the donor's tag made the
+    # port ship pre-balanced and gave its Melee Damage card nothing of its own to move.
+    # `player_response` stays the donor's: that is the effect played on whoever is hit,
+    # the kit has no SAW copy of it, and it carries no per-weapon damage.
+    d.weap_attrs.melee.player_damage.filepath = 'weapons' + B + 'saw' + B + 'melee'
     mags = d.weap_attrs.magazines.STEPTREE
     if len(mags):
         m = mags[0]
