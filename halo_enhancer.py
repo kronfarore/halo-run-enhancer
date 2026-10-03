@@ -1962,9 +1962,9 @@ MOD_COLORS = {
     'equipment': {'border': 'ADCB2E', 'bg': '13160a'},  # H3 equipment — yellow-green
     # Bane: blood red on a deep maroon, framed three times (create_mod_widget)
     'bane': {'border': 'FF1744', 'bg': '24060c', 'outer': '8B0000'},
-    # Weapon Identity: the doubled card amber, the inverted one violet
-    'identity': {'border': 'FFB300', 'bg': '1c1406'},
-    'identity_down': {'border': '9575CD', 'bg': '120c1c'},
+    # Weapon Identity: both tied cards green with a double outline (user, 2026-10-03)
+    'identity': {'border': '4CAF50', 'bg': '0a1a0a'},
+    'identity_down': {'border': '4CAF50', 'bg': '0a1a0a'},
 }
 
 
@@ -2490,6 +2490,8 @@ class ModifierDatabase:
             # for the same source (Search Tactics, Kamikaze). Drawing one blacklists the
             # others -- HaloGUI._blacklist_exclusive_siblings.
             'exclusive': mod_data.get('exclusive'),
+            # Weapon Identity: false = never the inverted half of an identity pair
+            'invertible': mod_data.get('invertible'),
             # the card family this card was split from (a pre-split run names it)
             'split_from': mod_data.get('split_from'),
             # An Options gate. `requires_config` names a CONFIG key (and may be
@@ -2506,6 +2508,26 @@ class ModifierDatabase:
         if extra:
             mod.update(extra)
         return mod
+
+    @staticmethod
+    def identity_invertible(mod):
+        """Can this weapon card be the INVERTED half of a Weapon Identity pair?
+          * `"invertible": false` in halo.json says no (the card's own knowledge);
+          * Map Presence: an inverted share is negative, and the swap drops it -- no-op;
+          * a Zoom ladder (`from_zero`) without a hand-made `inverse_steps`: a weapon
+            without vanilla zoom has nothing to take away, and one with zoom needs its
+            inverse written for its own zoom stages;
+          * a card whose every target SETS a value (=n): a set has no direction."""
+        if mod.get('invertible') is False or mod.get('synth'):
+            return False
+        ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)]
+        if any(t.get('map_swap') or t.get('map_equip') for t in ts):
+            return False
+        if any(t.get('from_zero') and not t.get('inverse_steps') for t in ts):
+            return False
+        if ts and all('set' in t for t in ts):
+            return False
+        return True
 
     def color_pool_counts(self, game):
         """enemy_colors.pool_counts for ONE game: the not-ignored enemy / hero / boss
@@ -4638,8 +4660,9 @@ class PairCard(QGroupBox):
 
         scheme = MOD_COLORS.get(color, MOD_COLORS['green'])
         border_width = 2 if color in ('gold', 'boss', 'exhaust') else 1  # emphasize 3rd-slot cards
-        if color in ('identity', 'identity_down'):
-            border_width = 3
+        identity = color in ('identity', 'identity_down')
+        if identity:
+            border_width = 4                      # wide enough to draw as a double line
         special = bool(mod_data.get('special'))  # #3: escalating-odds effect
         dual = bool(mod_data.get('dual_only'))   # dual-wield-only effect
         skull = bool(mod_data.get('skull'))      # #7: whole-map rule
@@ -4671,7 +4694,7 @@ class PairCard(QGroupBox):
         widget = QGroupBox(label)
         widget.setStyleSheet(f"""
             QGroupBox {{
-                border: {border_width}px {'double' if special or dual or skull or bane else 'solid'} #{scheme['border']};
+                border: {border_width}px {'double' if special or dual or skull or bane or identity else 'solid'} #{scheme['border']};
                 border-radius: 4px;
                 padding: 10px;
                 margin-top: 5px;
@@ -4730,8 +4753,10 @@ class PairCard(QGroupBox):
         reroll_btn.setToolTip("Reroll this effect")
         reroll_btn.clicked.connect(lambda: self.on_reroll(mod_type))
         button_layout.addWidget(reroll_btn)
-        # a Weapon Identity card is half of a tied pair: no reroll / blacklist of one half
-        reroll_btn.setVisible(mod_type not in ('identity_up', 'identity_down'))
+        # a Weapon Identity half can be rerolled while its pair is NEW; a locked pair
+        # is the player's identity and is offered as it is
+        if mod_type in ('identity_up', 'identity_down'):
+            reroll_btn.setVisible(not (self.pair.get('identity') or {}).get('locked'))
 
         blacklist_btn = QPushButton("🚫 Blacklist")
         blacklist_btn.setMaximumWidth(100)
@@ -13156,8 +13181,72 @@ class HaloGUI(QMainWindow):
             "of a game, to the first level of the next game.")
         self.next_level_btn.clicked.connect(self.on_next_level)
         lay.addWidget(self.next_level_btn)
+        # Next recommended step: what to draw first on the level Next level moves to.
+        # Live only right after Next level, and only once.
+        rec = QLabel("Next recommended step:")
+        rec.setStyleSheet("color: #9fb3c8; margin-top: 6px;")
+        lay.addWidget(rec)
+        self.rec_step_btn = QPushButton("")
+        self.rec_step_btn.setStyleSheet("""
+            QPushButton { background-color: #3a4a2a; color: white; font-weight: bold;
+                font-size: 13px; padding: 8px 16px; border-radius: 5px; }
+            QPushButton:hover { background-color: #4a6a3a; }
+            QPushButton:disabled { background-color: #2a2a2a; color: #777; }
+        """)
+        self.rec_step_btn.clicked.connect(self.on_recommended_step)
+        lay.addWidget(self.rec_step_btn)
+        self._rec_armed = False
         box.setVisible(False)
         self.next_level_box = box
+
+    # (kind, button text) per recommendation
+    _REC_STEPS = {'anything': "🎁 NEW ANYTHING", 'weapon': "🔫 NEW WEAPON",
+                  'equipment': "🎒 NEW EQUIPMENT", 'generate': "🔄 GENERATE PAIRS",
+                  'identity': "🧬 WEAPON IDENTITY"}
+
+    def _recommended_kind(self, mission_index):
+        """What to draw first on a level, by its place in its game (user, 2026-10-03):
+        the first level gets New Anything -- or, when the new-weapon / new-equipment
+        chance is already non-zero (so rounds deal them anyway), the one still at zero,
+        and a normal round when both are non-zero; the second level gets Weapon
+        Identity; any later level a normal round."""
+        if mission_index == 0:
+            w = float(CONFIG.get('new_weapon_chance', 0) or 0) > 0
+            e = float(CONFIG.get('new_equipment_chance', 0) or 0) > 0
+            if not w and not e:
+                return 'anything'
+            if w and e:
+                return 'generate'
+            return 'equipment' if w else 'weapon'
+        if mission_index == 1:
+            return 'identity'
+        return 'generate'
+
+    def _sync_rec_step(self):
+        btn = getattr(self, 'rec_step_btn', None)
+        if btn is None:
+            return
+        if self._rec_armed:
+            mi = self.mission_combo.currentIndex()            # the level just moved to
+        else:
+            nxt = self._next_level_target()
+            mi = nxt[1] if nxt else -1
+        kind = self._recommended_kind(mi) if mi >= 0 else None
+        self._rec_kind = kind
+        btn.setText(self._REC_STEPS.get(kind, "— (last level)"))
+        btn.setEnabled(bool(kind) and self._rec_armed)
+        btn.setToolTip("Unlocked by NEXT LEVEL, for the level it moves to; one press."
+                       if not self._rec_armed else "The recommended first draw on this level.")
+
+    def on_recommended_step(self):
+        kind = getattr(self, '_rec_kind', None)
+        self._rec_armed = False
+        self._sync_rec_step()
+        handler = {'anything': self.on_new_anything_button, 'weapon': self.on_new_weapon_button,
+                   'equipment': self.on_new_equipment_button,
+                   'generate': self.on_generate_clicked, 'identity': self.on_identity_clicked}.get(kind)
+        if handler:
+            handler()
 
     def _sync_next_level(self):
         """Show the box only while no drawing round is going on: not during the opening
@@ -13172,6 +13261,8 @@ class HaloGUI(QMainWindow):
         # centred in the draw zone while it is the only thing there; cards keep their
         # usual top-left packing
         self.pairs_layout.setAlignment(Qt.AlignCenter if idle else Qt.AlignTop)
+        if idle:
+            self._sync_rec_step()
 
     def _read_time(self):
         """('h:mm:ss', seconds) from the three time fields, or (None, None) when all
@@ -13257,6 +13348,7 @@ class HaloGUI(QMainWindow):
             self.update_status(f"{old} recorded in {where} -- that was the last level.")
             return
         gi, mi = nxt
+        self._rec_armed = True                       # the recommended step unlocks
         if gi != self.game_combo.currentIndex():
             self.game_combo.setCurrentIndex(gi)       # on_game_changed: first level
         else:
@@ -14542,6 +14634,22 @@ class HaloGUI(QMainWindow):
                     self.run_state.weapons_for(mod_type),
                     list(bl) + self.enhancer.identity_locked_labels(), game)
                 pair[f'{mod_type}_mod'] = random.choice(mods) if mods else None
+        elif mod_type in ('identity_up', 'identity_down'):
+            # one half of a NEW identity pair: another card of the same weapon (the
+            # inverted half only from cards that can be inverted)
+            ident = pair.get('identity') or {}
+            if ident.get('locked'):
+                return
+            part, other = (('up', 'down') if mod_type == 'identity_up' else ('down', 'up'))
+            cands = self.enhancer.identity_candidates(self.run_state.current_turn,
+                                                      ident.get('weapon'))
+            keep = (ident.get(other) or {}).get('name')
+            cands = [m for m in cands if m.get('name') not in (keep, (ident.get(part) or {}).get('name'))
+                     and (part == 'up' or self.db.identity_invertible(m))]
+            if not cands:
+                self.update_status("No other card of the %s can take that place" % ident.get('weapon'))
+                return
+            ident[part] = copy.deepcopy(random.choice(cands))
         elif mod_type == 'enemy':
             mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game)
             pair['enemy_mod'] = random.choice(mods) if mods else None
@@ -15686,6 +15794,25 @@ class RunEnhancer:
         return {w: p for w, p in out.items()
                 if not ({self.db.get_mod_label(p[0]), self.db.get_mod_label(p[1])} & bl)}
 
+    def _identity_pool(self, player):
+        """{weapon: [cards]} a new identity pair can be drawn from: the player's own
+        weapon cards (no General, no equipment), not blacklisted, not locked."""
+        mid = self.run_state.mission_id
+        game = self.db.get_game_for_mission(mid)
+        locked = set(self.identity_locked_labels())
+        pool = self.db.get_player_modifiers_filtered(
+            self.run_state.weapons_for(player), list(self.run_state.blacklist or []), game)
+        out = {}
+        for m in pool:
+            if m.get('weapon') and m.get('source') != 'General' and not m.get('equipment') \
+                    and self.db.get_mod_label(m) not in locked:
+                out.setdefault(m['weapon'], []).append(m)
+        return out
+
+    def identity_candidates(self, player, weapon):
+        """The cards a NEW identity pair for `weapon` can use (rerolling one half)."""
+        return list(self._identity_pool(player).get(weapon) or [])
+
     def identity_locked_labels(self):
         """Labels of every card in an active identity pair (either player): kept out
         of every other draw -- they only ever appear as their pair."""
@@ -15706,20 +15833,15 @@ class RunEnhancer:
         mid = self.run_state.mission_id
         game = self.db.get_game_for_mission(mid)
         bl = list(self.run_state.blacklist or [])
-        locked_labels = set(self.identity_locked_labels())
-        weapons = self.run_state.weapons_for(for_player)
-        pool = self.db.get_player_modifiers_filtered(weapons, bl, game)
-        by_weapon = {}
-        for m in pool:
-            if m.get('weapon') and m.get('source') != 'General' and not m.get('equipment') \
-                    and self.db.get_mod_label(m) not in locked_labels:
-                by_weapon.setdefault(m['weapon'], []).append(m)
+        by_weapon = self._identity_pool(for_player)
         mine = self.identity_pairs(for_player)
         # an identity is offered only where its cards still apply (this game, not blacklisted)
         offer_locked = [(w, u, d) for w, (u, d) in mine.items()
                         if len(self.db.filter_blacklisted([u, d], bl, game)) == 2]
         random.shuffle(offer_locked)
-        free = [w for w, ms in by_weapon.items() if w not in mine and len(ms) >= 2]
+        # a weapon can take a new identity with one invertible card and one other
+        free = [w for w, ms in by_weapon.items() if w not in mine and len(ms) >= 2
+                and any(self.db.identity_invertible(m) for m in ms)]
         random.shuffle(free)
 
         slots = [(w, u, d, True) for w, u, d in offer_locked[:3]]
@@ -15728,7 +15850,8 @@ class RunEnhancer:
         while len(slots) < 3 and free and tries < 60:
             w = free[tries % len(free)]
             tries += 1
-            up, down = random.sample(by_weapon[w], 2)
+            down = random.choice([m for m in by_weapon[w] if self.db.identity_invertible(m)])
+            up = random.choice([m for m in by_weapon[w] if m is not down])
             key = (w, up.get('name'), down.get('name'))
             if key in seen and tries < 50:
                 continue
