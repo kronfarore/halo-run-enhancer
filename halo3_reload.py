@@ -337,30 +337,79 @@ def h1_move_speed(m, fc, it, size, off):
     return sx, sy, (sx * sx + sy * sy) ** 0.5 / fc * FPS
 
 
-def move_speeds(m, tag_pattern, game='Halo 1'):
-    """Reference read for the patcher: [(who, run wu/s)] per graph -- the fastest
-    `stand` move-front, i.e. the plain run. [] if none (or not Halo 1)."""
-    if str(game).strip() != 'Halo 1':
-        return []
+# --- Halo 2: the same root motion, OUTSIDE the codec data, in the built map ---
+# jmad Animations +0x2C, element 0x60: Name stringId +0x0, Frame Info Type u8 +0x11,
+# Frame Count i16 +0x14, Resource dataref +0x28 (size i32, pointer -> p2o), data sizes
+# +0x30: u8 static flags, u8 animated flags, i16 movement, i16 pill, i16 default,
+# i32 uncompressed (0 once built), i32 compressed. The blob is [default][compressed]
+# [static flags][animated flags][MOVEMENT][pill][uncompressed], the movement section
+# plain dx,dy(,dz)(,dyaw) floats. The sizes sum to the dataref size on every
+# root-motion animation of all 14 campaign maps. Confirmed in game on 03a (2026-10-03):
+# x2 made every Covenant twice as fast on foot.
+H2_ANIM_BLK, H2_ANIM_EL = 0x2C, 0x60
+
+
+def h2_move_anims(m, jmad_base):
+    """[(name, frame count, info type, info size, info file offset)] for every animation
+    with root motion whose name holds `move_` -- runs, strafes, the idle<->move
+    transitions and flight moves ('aim_move' overlays carry none). An element whose
+    sizes do not add up is left out rather than written blind."""
     out = []
-    for name, base in m.find_tags('antr', tag_pattern):
-        runs = [h1_move_speed(m, *a[1:])[2] for a in h1_move_anims(m, base)
-                if a[0].startswith('stand ') and 'move-front' in a[0]]
+    for el in m.follow_all(jmad_base, [H2_ANIM_BLK], [H2_ANIM_EL], 'all'):
+        it = m.data[el + 0x11]
+        if not (0 < it < len(H1_INFO_SIZES)):
+            continue
+        nm = m.resolve_stringid(m.u32(el)) or ''
+        if 'move_' not in nm or 'aim_move' in nm:
+            continue
+        fc = struct.unpack_from('<h', m.data, el + 0x14)[0]
+        rsize, rptr = struct.unpack_from('<iI', m.data, el + 0x28)
+        sf, af, mv, pill, dflt, unc, cmp = struct.unpack_from('<BBhhhii', m.data, el + 0x30)
+        if (fc < 1 or mv != H1_INFO_SIZES[it] * fc or rsize <= 0
+                or sf + af + mv + pill + dflt + unc + cmp != rsize):
+            continue
+        out.append((nm, fc, it, mv, m.p2o(rptr) + dflt + cmp + sf + af))
+    return out
+
+
+_MOVE_GAMES = {'Halo 1': ('antr', h1_move_anims), 'Halo 2': ('jmad', h2_move_anims)}
+
+
+def _is_run(game, name):
+    """The plain run: Halo 1 `stand ... move-front`, Halo 2 `combat:<weapon>:move_front`
+    (and its `:varN` permutations), never a transition."""
+    if game == 'Halo 1':
+        return name.startswith('stand ') and 'move-front' in name
+    return name.startswith('combat:') and ':move_front' in name and ':2:' not in name
+
+
+def move_speeds(m, tag_pattern, game='Halo 1'):
+    """Reference read for the patcher: [(who, run wu/s)] per graph -- the fastest plain
+    run. [] if none, or for a game whose root motion is not reachable."""
+    g = str(game).strip()
+    if g not in _MOVE_GAMES:
+        return []
+    cls, reader = _MOVE_GAMES[g]
+    out = []
+    for name, base in m.find_tags(cls, tag_pattern):
+        runs = [h1_move_speed(m, *a[1:])[2] for a in reader(m, base) if _is_run(g, a[0])]
         if runs:
             out.append((name.rsplit(chr(92), 1)[-1], max(runs)))
     return out
 
 
 def scale_move_speed(m, tag_pattern, mult, game='Halo 1'):
-    """Multiply the dx,dy root motion of every move-* animation on every antr matching
-    `tag_pattern` (dz and dyaw untouched, frame counts untouched). A buffer two
-    animations share is scaled once. Halo 1 only: later games keep root motion inside
-    compressed codec data (see the halo-enemy-movement-speed memory)."""
-    if str(game).strip() != 'Halo 1':
-        return {'ok': False, 'reason': f'movement speed is Halo 1 only, not {game}'}
+    """Multiply the dx,dy root motion of every move animation on every graph matching
+    `tag_pattern` (antr in Halo 1, jmad in Halo 2; dz and dyaw untouched, frame counts
+    untouched). A buffer two animations share is scaled once. Halo 3 onward keep root
+    motion inside compressed codec data (see the halo-enemy-movement-speed memory)."""
+    g = str(game).strip()
+    if g not in _MOVE_GAMES:
+        return {'ok': False, 'reason': f'movement speed is Halo 1 / Halo 2 only, not {game}'}
     if mult is None or mult <= 0:
         return {'ok': False, 'reason': 'invalid movement multiplier'}
-    tags = m.find_tags('antr', tag_pattern)
+    cls, reader = _MOVE_GAMES[g]
+    tags = m.find_tags(cls, tag_pattern)
     if not tags:
         # apply_run's exact wording for an absent tag: an enemy card turns it into
         # "not on this level" (absent_is_skip) instead of a failure
@@ -369,7 +418,7 @@ def scale_move_speed(m, tag_pattern, mult, game='Halo 1'):
     graphs = 0
     for _, base in tags:
         hit = False
-        for _nm, fc, it, size, off in h1_move_anims(m, base):
+        for _nm, fc, it, size, off in reader(m, base):
             per = H1_INFO_SIZES[it] if 0 <= it < len(H1_INFO_SIZES) else 0
             if not per or off is None or off in done:
                 continue

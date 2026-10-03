@@ -8147,17 +8147,23 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                                'open' if closed else res.get('reason'))})
                 continue
             if op.get('move_speed'):
-                # Halo 1 AI ground speed: multiply the dx,dy root motion of the enemy's
-                # move-* animations (item['tag'] is the antr pattern). No tag field
-                # sets it; confirmed in game on b30, 2026-10-03.
+                # AI ground speed (Halo 1 / Halo 2): multiply the dx,dy root motion of
+                # the enemy's move animations -- the card's antr/jmad pattern, or the
+                # target's own `tag` (the Drone's Flight Speed card is a bipd card with
+                # one root-motion row). No tag field sets it; confirmed in game on b30
+                # and 03a, 2026-10-03.
                 parsed = hm.parse_operator(op.get('op_str'))
                 if not parsed:
                     results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
                     continue
                 oper, val = parsed
                 mult = hm.OP_FUNCS[oper](1.0, val)
+                mpath = path
+                if op.get('tag'):
+                    _c, mpath = hm.split_tag(op['tag'])
+                    base = {**base, 'tag': op['tag']}
                 import halo3_reload
-                rep = halo3_reload.scale_move_speed(m, path, mult, game=game)
+                rep = halo3_reload.scale_move_speed(m, mpath, mult, game=game)
                 r = {**base}
                 if rep.get('ok'):
                     r.update(ok=True, skip=bool(rep.get('skip')), old='move root motion',
