@@ -2333,7 +2333,7 @@ overheat damping is reverted (the user meant the shake WHILE FIRING). Offset tun
 **0.03,-0.08,0.00**. Firing shake + muzzle flash tested by poke first: the per-shot
 "Firing Damage" (barrel firing effect +0x54: camera shake + rumble + simulated input --
 Reach's Focus Rifle had all three too) nulled, and the Suppressor's muzzle-flash-only
-effect (storm_forerunner_smgxr_smg_firing_muzzle_flash, no shot sound) in each
+effect (storm_forerunner_smg\fx\fr_smg_firing_muzzle_flash, no shot sound) in each
 barrel's "Optional Secondary Firing Effect" (+0x44).
 
 **Boot 17:** pop still there. Dropping o_h_exit was a MISTAKE -- the Plasma Pistol HAS one
@@ -2520,7 +2520,7 @@ the Beam Rifle scope's parallax. Three faults, all mine:
   (by design). Unconfirmed in a non-English client.
 * **Firing sound -- the audio is in neither kit.** Reach: the HREK sound tags hold only
   metadata ("sound data resource <unavailable>"); the audio is in MCC's FMOD bank
-  `haloreachmod\pc\sfx.fsb` (FSB5, Vorbis, 16162 samples; names in sfx.fsb.info).
+  `haloreach\fmod\pc\sfx.fsb` (FSB5, Vorbis, 16162 samples; names in sfx.fsb.info).
   Halo 4: a sound tag is a WWISE EVENT NAME + a .soundbank tag naming a bank inside
   `halo4\sound\pc\sfxbank.pck` (AKPK, bank version 88); H4EK has no Wwise project and no
   audio import verb. A port needs: extract (an FSB5 Vorbis decoder) -> author a v88 bank
