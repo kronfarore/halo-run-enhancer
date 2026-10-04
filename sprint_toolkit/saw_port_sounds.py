@@ -148,6 +148,9 @@ GAMES = {
                       'saw_melee1': ('MELEE1', 1.0, -18.8), 'saw_melee2': ('MELEE2', 1.0, -19.1),
                       'saw_pose1': ('POSE1', 1.0, -17.2), 'saw_pose2': ('POSE2', 109 / 106.0, -32.4)},
                foley_mono=True,
+               # the H3EK's FSBank cannot add 6+ permutations to a non-empty bank
+               # (fsb5_merge.py): every sound gets its own fresh bank, merged afterwards
+               bank_merge=True,
                gain={'saw_reload': -7, 'saw_ready': -9, 'saw_melee1': -5, 'saw_melee2': -5,
                      'saw_pose1': -3, 'saw_pose2': -3}),
     # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
@@ -205,6 +208,7 @@ def import_sounds():
     # clean slate: the saw bank and the port's sound tags (data wavs are rewritten below)
     for f in glob.glob(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb*' % SUFFIX)):
         os.remove(f)
+    shutil.rmtree(_parts_dir(), ignore_errors=True)
     shutil.rmtree(os.path.join(TAGS, SND_DIR), ignore_errors=True)
     shutil.rmtree(os.path.join(EK, 'data', SND_DIR), ignore_errors=True)
     for name, (src, cls) in SOUNDS.items():
@@ -224,10 +228,16 @@ def import_sounds():
         perms = out.count('adding permutation')
         ok = os.path.exists(os.path.join(TAGS, SND_DIR, name + '.sound'))
         print('   %-13s %-22s %d permutation(s) %s' % (name, cls, perms, 'ok' if ok else 'FAILED'))
-        if not ok:
+        # '-ERROR-' too: a failed bank update still writes the tag (H3 melee, 2026-10-04)
+        if not ok or '-ERROR-' in out:
             print(out[-1500:])
             raise SystemExit('import failed')
+        if G.get('bank_merge'):
+            park_bank(name)
     bank = os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb' % SUFFIX)
+    if G.get('bank_merge'):
+        merge_banks()
+    check_bank_complete()
     print('   bank %s: %d bytes' % (bank, os.path.getsize(bank)))
     if G['route'] != 'pc':
         return
@@ -248,6 +258,46 @@ def import_sounds():
         if 'ms_adpcm' not in comp:
             print(out[-1500:])
             raise SystemExit('%s has no PC (ms_adpcm) encoding' % name)
+
+
+def _parts_dir():
+    return os.path.join(EK, 'temp', 'saw_bank_parts')
+
+
+def park_bank(name):
+    """Move the bank the last import wrote (that sound alone) aside, so the next import
+    starts a fresh one. Kept OUT of fmod\\pc: install() copies sfx.saw.fsb*."""
+    os.makedirs(_parts_dir(), exist_ok=True)
+    src = os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb' % SUFFIX)
+    n = len(glob.glob(os.path.join(_parts_dir(), '*.fsb')))
+    for ext in ('', '.info'):
+        shutil.move(src + ext, os.path.join(_parts_dir(), '%02d_%s.fsb%s' % (n, name, ext)))
+
+
+def merge_banks():
+    """The parked one-sound banks -> sfx.saw.fsb (+ .info), in import order. Proven
+    against the kit (2026-10-04): a merge of single banks is byte-identical to the bank
+    the H3EK builds itself, but for the 16-byte build hash every kit build changes."""
+    import fsb5_merge
+    parts = sorted(glob.glob(os.path.join(_parts_dir(), '*.fsb')))
+    n = fsb5_merge.merge(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb' % SUFFIX), parts)
+    shutil.rmtree(_parts_dir())
+    print('   merged %d one-sound banks: %d entries' % (len(parts), n))
+
+
+def check_bank_complete():
+    """Every imported wav has its bank entry (the .info path ends in <sound>\\<wav>)."""
+    import struct
+    d = open(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb.info' % SUFFIX), 'rb').read()
+    have = set()
+    for k in range(len(d) // 280):
+        p = d[k * 280 + 24:(k + 1) * 280].split(b'\0')[0].decode('latin-1').lower()
+        have.add(B.join(p.split(B)[-2:]))
+    want = set(B.join([n, w]).lower() for n in SOUNDS
+               for w in os.listdir(os.path.join(EK, 'data', SND_DIR, n)))
+    if want - have:
+        raise SystemExit('missing from the bank: %s' % sorted(want - have))
+    print('   bank complete: %d entries for %d wavs' % (len(have), len(want)))
 
 
 BLENDER = r'F:\Tools\blender-5.2.2-windows-x64\blender.exe'
