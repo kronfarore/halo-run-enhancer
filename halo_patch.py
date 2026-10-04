@@ -8424,12 +8424,13 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                  rep['script']),
                              new='+%d (%s +%d) in %d of %d %s, %s' % (
                                  rep['extra'],
-                                 'Legendary-only teams' if str(game).strip() == 'Halo 3'
+                                 'Legendary-only' if str(game).strip() in THIRD_GEN_GAMES
                                  else 'Insane count', rep['extra_insane'], rep['squads'],
                                  rep['of'],
-                                 'fire-teams' if str(game).strip() == 'Halo 3' else 'squads',
+                                 {'Halo 3': 'fire-teams', 'Halo 3: ODST': 'cells'}.get(
+                                     str(game).strip(), 'squads'),
                                  'counts only (the engine seats them)'
-                                 if str(game).strip() == 'Halo 3'
+                                 if str(game).strip() in THIRD_GEN_GAMES
                                  else '%d new locations' % rep['locations']))
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'enemy count failed'))

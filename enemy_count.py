@@ -108,7 +108,8 @@ TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'he
 #: story characters (a second Tartarus or Regret would break the fight scripts).
 BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'miranda',
               'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty',
-              '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero', 'scarab')
+              '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero', 'scarab',
+              'engineer_freeform')     # the freed Engineer of Data Hive / Coastal Highway
 #: ...and by the character's species folder: Halo 1's Keyes is `characters\captain\...`, a
 #: word that must not catch `brute_captain`.
 BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
