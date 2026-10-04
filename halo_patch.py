@@ -8398,9 +8398,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 results.append(r)
                 continue
             if op.get('squad_count'):
-                # More enemies (enemy_count.py): the operator on 0 is the share of the
-                # level's matching enemies -- script waves included -- added to its
-                # squads. The card's tag is a char pattern ('objects\characters\*' for
+                # More enemies, or allies with side 'ally' (enemy_count.py): the operator
+                # on 0 is the share of the level's matching actors -- script spawns
+                # included -- added to its squads. The card's tag is a char pattern ('objects\characters\*' for
                 # every enemy). Seeded per scenario and card, so co-op machines agree.
                 parsed = hm.parse_operator(op.get('op_str'))
                 if not parsed:
@@ -8413,12 +8413,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     _c, cpath = hm.split_tag(op['tag'])
                     base = {**base, 'tag': op['tag']}
                 import enemy_count
-                rep = enemy_count.scale_enemy_count(m, game, cpath, pct, seed=item['name'])
+                rep = enemy_count.scale_enemy_count(m, game, cpath, pct, seed=item['name'],
+                                                    side=op.get('side') or 'enemy')
                 r = {**base}
                 if rep.get('skip'):
                     r.update(ok=True, skip=True, reason=rep.get('reason'))
                 elif rep.get('ok'):
-                    r.update(ok=True, old='%d enemies (%d by script)' % (rep['base'], rep['script']),
+                    r.update(ok=True, old='%d %s (%d by script)' % (
+                                 rep['base'], 'allies' if op.get('side') == 'ally' else 'enemies',
+                                 rep['script']),
                              new='+%d (Insane count +%d) in %d of %d squads, %d new locations'
                                  % (rep['extra'], rep['extra_insane'], rep['squads'], rep['of'],
                                     rep['locations']))

@@ -5784,20 +5784,22 @@ class MagnitudeEditorDialog(QDialog):
             except Exception:
                 return '0.1 per kill (hardcoded in the game dll)'
         if target.get('squad_count'):
-            # More enemies: not a tag field -- a share of the level's matching enemies
-            # (script waves included) is added to its squads. Show how many there are.
+            # More enemies (or allies): not a tag field -- a share of the level's matching
+            # actors (script spawns included) is added to its squads. Show how many.
             try:
                 import enemy_count
-                tot = enemy_count.enemy_total(m, self.game, path)
+                side = target.get('side') or 'enemy'
+                who = 'allies' if side == 'ally' else 'enemies'
+                tot = enemy_count.enemy_total(m, self.game, path, side)
                 if tot is None:
-                    return "share of the level's enemies (not available in this game yet)"
+                    return "share of the level's %s (not available in this game yet)" % who
                 squad, script, n = tot
-                if not n:
+                if not n and not script:
                     return "— none on this level"
-                return ('%d enemies on this level (%d in %d squads, %d by script)  '
-                        '(+0.1 = 10%% more per pick)' % (squad + script, squad, n, script))
+                return ('%d %s on this level (%d in %d squads, %d by script)  '
+                        '(+0.1 = 10%% more per pick)' % (squad + script, who, squad, n, script))
             except Exception:
-                return "share of the level's enemies"
+                return "share of the level's actors"
         if target.get('move_speed'):
             # Halo 1 ground speed lives in the move animations' root motion: show the
             # plain run (fastest `stand` move-front) per graph in world units/s.
@@ -8544,6 +8546,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'infect_anim': t.get('infect_anim'),
                                          'move_speed': t.get('move_speed'),
                                          'squad_count': t.get('squad_count'),
+                                         'side': t.get('side'),
                                          'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a
