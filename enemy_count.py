@@ -127,8 +127,10 @@ BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'mi
 BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
                 'masterchief',
                 'spartans_ai', 'spartans_female_ai',   # Reach: Noble Team
-                'ambient_life',                        # Reach: Moas and other wildlife
                 'null')                                # vehicle-pilot placeholders
+#: Species on the player's side whatever their team says: Reach's Moas (ambient_life) --
+#: the user's call, they belong with the ally cards.
+ALLY_SPECIES = ('ambient_life',)
 #: Human species (by the character's folder under objects\characters): never enemies.
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
                  'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot')
@@ -285,7 +287,8 @@ def h2_squads(m, tree=None):
         sides = {steam} if steam else {teams[c] for c in ci}
         human = any(_is_human(c) for c in chars)
         # a character with no biped team (the infection form is a creature) is not a friend
-        enemy = bool(chars) and not human and not (sides & friends)
+        enemy = bool(chars) and not human and not (sides & friends) and \
+            not any(species(x) in ALLY_SPECIES for x in chars)
         out.append({'index': idx, 'off': sq,
                     'name': m.data[sq:sq + 0x20].split(b'\0')[0].decode('ascii', 'replace'),
                     'normal': _i16(m, sq + H2_NORMAL), 'insane': _i16(m, sq + H2_INSANE),
@@ -614,7 +617,8 @@ def h3_squads(m, tree=None):
             chars = {pal[x] for x in ci}
             sides = {steam} if steam else {teams[x] for x in ci}
             human = any(_is_human(x) for x in chars)
-            enemy = bool(chars) and not human and not (sides & friends)
+            enemy = bool(chars) and not human and not (sides & friends) and \
+            not any(species(x) in ALLY_SPECIES for x in chars)
             count = _i16(m, ft + H3_FT_COUNT)
             on = struct.unpack_from('<H', m.data, ft + H3_FT_PLACE_ON)[0]
             on_normal = on == 0 or bool(on & 2)
@@ -721,7 +725,8 @@ def cell_squads(m, game, tree=None):
         chars = {pal[x] for x in ci}
         sides = {x for x in u['steam'] if x} or {teams[x] for x in ci}
         human = any(_is_human(x) for x in chars)
-        enemy = bool(chars) and not human and not (sides & friends)
+        enemy = bool(chars) and not human and not (sides & friends) and \
+            not any(species(x) in ALLY_SPECIES for x in chars)
         count = _i16(m, cell + L['count'])
         on = struct.unpack_from('<H', m.data, cell + L['diff'])[0]
         on_normal = on == 0 or bool(on & 2)
@@ -761,14 +766,15 @@ def squads(m, game):
             h3_squads(m) if g == 'Halo 3' else cell_squads(m, g) if g in CELL_LAYOUT else None)
 
 
-def _matching(m, game, all_squads, pattern, side='enemy'):
+def _matching(m, game, all_squads, pattern, side='enemy', include_boss=False):
     """Infantry squads on `side` fielding a character the card's pattern names (a mixed
     squad counts for each species in it). Halo 1 patterns name actor variants (actv)."""
     cls = 'actv' if str(game).strip() == 'Halo 1' else 'char'
     names = {p.lower() for p, _b in m.find_tags(cls, pattern)} if pattern else None
     out = []
     for sq in all_squads:
-        if not sq[side] or sq['vehicle'] or sq['boss']:
+        # a boss is grown only by a card that names it (include_boss), never a general one
+        if not sq[side] or sq['vehicle'] or (sq['boss'] and not include_boss):
             continue
         if names is not None and not any(c.lower() in names for c in sq['chars']):
             continue
@@ -888,16 +894,16 @@ def _scnr_name(m, game):
     return found[0][0] if found else ''
 
 
-def enemy_total(m, game, pattern=None, side='enemy'):
+def enemy_total(m, game, pattern=None, side='enemy', include_boss=False):
     """(squad actors, script actors, squads) the card would count -- Normal difficulty."""
     if str(game).strip() not in GAMES:
         return None
-    sq = _matching(m, game, squads(m, game), pattern, side)
+    sq = _matching(m, game, squads(m, game), pattern, side, include_boss)
     return (sum(_spawns(s, 'normal') for s in sq if not s['script']),
             sum(s['script'] for s in sq), sum(1 for s in sq if _spawns(s, 'normal')))
 
 
-def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
+def scale_enemy_count(m, game, pattern, pct, seed, side='enemy', include_boss=False):
     """Add round(pct x the level's matching actors) actors to the matching squads.
 
     Returns {'ok', 'skip', 'reason' | 'base', 'script', 'extra', 'squads', 'locations'}."""
@@ -905,7 +911,7 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
         return {'ok': True, 'skip': True, 'reason': 'spawn count is not available in this game yet'}
     if pct <= 0:
         return {'ok': True, 'skip': True, 'reason': 'no increase'}
-    matched = [sq for sq in _matching(m, game, squads(m, game), pattern, side)
+    matched = [sq for sq in _matching(m, game, squads(m, game), pattern, side, include_boss)
                if _spawns(sq, 'normal') or _spawns(sq, 'insane')]
     if not matched:
         return {'ok': True, 'skip': True, 'reason': 'not present in this map'}

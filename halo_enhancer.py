@@ -5790,7 +5790,8 @@ class MagnitudeEditorDialog(QDialog):
                 import enemy_count
                 side = target.get('side') or 'enemy'
                 who = 'allies' if side == 'ally' else 'enemies'
-                tot = enemy_count.enemy_total(m, self.game, path, side)
+                tot = enemy_count.enemy_total(m, self.game, path, side,
+                                              bool(target.get('include_boss')))
                 if tot is None:
                     return "share of the level's %s (not available in this game yet)" % who
                 squad, script, n = tot
@@ -8547,6 +8548,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'move_speed': t.get('move_speed'),
                                          'squad_count': t.get('squad_count'),
                                          'side': t.get('side'),
+                                         'include_boss': t.get('include_boss'),
                                          'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a

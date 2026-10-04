@@ -8425,7 +8425,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     base = {**base, 'tag': op['tag']}
                 import enemy_count
                 rep = enemy_count.scale_enemy_count(m, game, cpath, pct, seed=item['name'],
-                                                    side=op.get('side') or 'enemy')
+                                                    side=op.get('side') or 'enemy',
+                                                    include_boss=bool(op.get('include_boss')))
                 r = {**base}
                 if rep.get('skip'):
                     r.update(ok=True, skip=True, reason=rep.get('reason'))
@@ -8435,14 +8436,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                  rep['script']),
                              new='+%d (%s +%d) in %d of %d %s, %s' % (
                                  rep['extra'],
-                                 'Legendary-only' if str(game).strip() in THIRD_GEN_GAMES
-                                 else 'Insane count', rep['extra_insane'], rep['squads'],
-                                 rep['of'],
-                                 {'Halo 3': 'fire-teams', 'Halo 3: ODST': 'cells'}.get(
-                                     str(game).strip(), 'squads'),
-                                 'counts only (the engine seats them)'
-                                 if str(game).strip() in THIRD_GEN_GAMES
-                                 else '%d new locations' % rep['locations']))
+                                 'Insane count' if str(game).strip() in SECOND_GEN_GAMES
+                                 or str(game).strip() == 'Halo 1' else 'Legendary-only',
+                                 rep['extra_insane'], rep['squads'], rep['of'],
+                                 'fire-teams' if str(game).strip() == 'Halo 3' else
+                                 'squads' if str(game).strip() in SECOND_GEN_GAMES
+                                 or str(game).strip() == 'Halo 1' else 'cells',
+                                 '%d new locations' % rep['locations']
+                                 if str(game).strip() in SECOND_GEN_GAMES
+                                 or str(game).strip() == 'Halo 1'
+                                 else 'counts only (the engine seats them)'))
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'enemy count failed'))
                 results.append(r)
