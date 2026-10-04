@@ -5135,6 +5135,8 @@ OTHER_WEIGHT_DEFAULTS = {'bane': 3.0}
 
 # How many picks one Bane card counts as (halo_patch.collect_effects).
 BANE_PICKS = 3
+# A tier-ladder choice row's default entry (Firing Noise): move a tier per pick.
+LADDER_BY_STEP = '(by step)'
 # Weapon Identity: the x2 card and the inverted card (keep in step with halo_patch)
 IDENTITY_UP_PICKS = 2
 IDENTITY_DOWN_PICKS = 1
@@ -5466,6 +5468,37 @@ class MagnitudeEditorDialog(QDialog):
                 return '*%g' % float(floor)
             return op
         return self._hp.stack_op(txt, n, vanilla, t.get('from_zero'), steps=steps)
+
+    def _choice_options(self, eff, t):
+        """{lowercased option name: value} of a choice target's enum in this game."""
+        _cls = self._hp.hm.split_tag(target_tag(eff, t))[0]
+        _plug = self.registry.get(_cls)
+        _fld = _plug.find(t['field'], t.get('block'), t.get('nth', 0) or 0) if _plug else None
+        return (_fld or {}).get('options') or {}
+
+    def _ladder_level(self, eff, t):
+        """(name, at_end) a tier-ladder choice (`ladder`, quietest first) lands on for
+        this card's picks: one tier per pick from the weapon's VANILLA level -- down
+        (quieter) normally, up when the step is inverted (a negative Weapon Identity
+        count or the Invert override). (None, False) when it cannot be worked out or
+        nothing moves. at_end = the far end in that direction (saturated)."""
+        lad = t.get('ladder') or []
+        cur = self._vanilla_num(target_tag(eff, t), t['field'], t.get('block'),
+                                t.get('nth', 0) or 0)
+        if not lad or cur is None:
+            return None, False
+        name = {v: k for k, v in self._choice_options(eff, t).items()}.get(int(cur))
+        low = [x.lower() for x in lad]
+        if not name or name.lower() not in low:
+            return None, False
+        n = eff.get('count')
+        n = 1 if n is None else int(n)
+        if n == 0:
+            return None, False
+        louder = self._step_inverted(eff) != (n < 0)
+        i = low.index(name.lower())
+        j = max(0, min(len(lad) - 1, i + abs(n) if louder else i - abs(n)))
+        return lad[j], j == (len(lad) - 1 if louder else 0)
 
     def _inverse_ladder(self, t):
         """A target's `inverse_steps` for this game: a list, or a per-game dict (the
@@ -7218,6 +7251,10 @@ class MagnitudeEditorDialog(QDialog):
                 # across games -- the pick is applied by name, so order is cosmetic.
                 _names = choice_option_names(_opts, t.get('options'))
                 le = QComboBox()
+                if t.get('ladder'):
+                    # tier ladder (Firing Noise): the default moves the weapon's own
+                    # level a tier per pick; a picked name overrides it
+                    le.addItem(LADDER_BY_STEP)
                 le.addItems(_names or ['(no options)'])
                 le.setMaximumWidth(140)
                 # Preselect the weapon's CURRENT value, not the first option. A
@@ -7228,12 +7265,19 @@ class MagnitudeEditorDialog(QDialog):
                     # picks made before the key stopped carrying the game
                     _prev = self.presets.get(self._hp.preset_key(
                         eff['tag'], eff['name'], t['field'], self.game))
-                if not _prev:
-                    _cur = self._vanilla_num(target_tag(eff, t), t['field'],
-                                             t.get('block'), t.get('nth', 0) or 0)
-                    if _cur is not None:
-                        _byval = {v: n for n, v in _opts.items()}
-                        _prev = (_byval.get(int(_cur)) or '').title() or None
+                _van = None
+                _cur = self._vanilla_num(target_tag(eff, t), t['field'],
+                                         t.get('block'), t.get('nth', 0) or 0)
+                if _cur is not None:
+                    _van = ({v: n for n, v in _opts.items()}.get(int(_cur)) or '').title() or None
+                if t.get('ladder'):
+                    # A stored pick equal to the weapon's own level is what the old
+                    # dropdown saved for an untouched card -- read it as 'by step'.
+                    if (not _prev or _prev == LADDER_BY_STEP
+                            or (_van and str(_prev).lower() == _van.lower())):
+                        _prev = LADDER_BY_STEP
+                elif not _prev:
+                    _prev = _van
                 if _prev:
                     _i = le.findText(str(_prev), Qt.MatchFixedString)
                     if _i >= 0:
@@ -7241,7 +7285,12 @@ class MagnitudeEditorDialog(QDialog):
                 le.setToolTip("Sets %s outright. Options come from this game's own "
                               "plugin and are applied by NAME, so the pick carries "
                               "across games even though Reach stores this enum in a "
-                              "different order." % t['field'])
+                              "different order." % t['field']
+                              + ("\n\n%s (the default): one tier per pick from the "
+                                 "weapon's own level along %s -- quieter, or louder when "
+                                 "the step is inverted; saturated at either end."
+                                 % (LADDER_BY_STEP, ' < '.join(t['ladder']))
+                                 if t.get('ladder') else ""))
             elif t.get('set') is not None:
                 # Fixed set (enum enabler): display-only, always applied with the effect.
                 le.setReadOnly(True)
@@ -8477,6 +8526,8 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             chosen = row_value(le).strip()
             self.presets[choice_preset_key(eff, t['field'])] = chosen
+            if chosen == LADDER_BY_STEP:
+                chosen = self._ladder_level(eff, t)[0] or ''
             if not chosen or chosen.startswith('('):
                 continue
             key = (eff['tag'], eff['name'])
@@ -8929,6 +8980,15 @@ class MagnitudeEditorDialog(QDialog):
                 continue
             ok = True
             for t in fields:
+                if t.get('ladder'):
+                    # tier ladder: saturated once the picks reach the far tier; a name
+                    # picked by hand never saturates
+                    rows_le = [le for e2, t2, le in self.rows if e2 is eff and t2 is t]
+                    by_step = bool(rows_le) and row_value(rows_le[0]).strip() == LADDER_BY_STEP
+                    if by_step and self._ladder_level(eff, t)[1]:
+                        continue
+                    ok = False
+                    break
                 n = max(1, int(eff.get('count') or 1))
                 lad = t.get('from_zero')
                 if lad and n >= len(lad) and self._stacked_op(eff, t, '') == str(lad[-1]):

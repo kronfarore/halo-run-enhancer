@@ -869,7 +869,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_assault_rifle\\storm_assault_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\assault rifle\\bullet", "Halo 3": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 3", "Halo Reach", "Halo 4"]}
 					]
@@ -1175,7 +1175,7 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_magnum\\storm_magnum"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\pistol\\bullet", "Halo 2": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 3: ODST": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet & objects\\weapons\\pistol\\automag\\projectiles\\automag_bullet", "Halo Reach": "proj objects\\weapons\\pistol\\magnum\\projectiles\\magnum_bullet", "Halo 4": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
@@ -1577,7 +1577,7 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol & objects\\weapons\\pistol\\storm_plasma_pistol\\storm_plasma_pistol_pve"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma pistol\\bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_charged_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\charged bolt", "Halo 2": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 3: ODST": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_charged_bolt", "Halo Reach": "proj objects\\weapons\\pistol\\plasma_pistol\\projectiles\\plasma_pistol_bolt", "Halo 4": "proj objects\\weapons\\pistol\\storm_plasma_pistol\\projectiles\\storm_plasma_pistol_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
@@ -2050,7 +2050,7 @@
 						"Halo Reach": "weap objects\\weapons\\rifle\\plasma_rifle\\plasma_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\bolt", "Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo 3: ODST": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo Reach": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\plasma rifle\\bolt", "Halo 2": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo 3": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo 3: ODST": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt", "Halo Reach": "proj objects\\weapons\\rifle\\plasma_rifle\\projectiles\\plasma_rifle_bolt"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"]}
 					]
@@ -2436,7 +2436,7 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_needler\\storm_needler"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\needler\\needle", "Halo 2": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo 3: ODST": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard\\needler_shard", "Halo Reach": "proj objects\\weapons\\pistol\\needler\\projectiles\\needler_shard", "Halo 4": "proj objects\\weapons\\pistol\\storm_needler\\projectiles\\storm_needler_shard"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
@@ -2869,7 +2869,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_sniper_rifle\\storm_sniper_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\sniper rifle\\sniper bullet", "Halo 2": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\sniper_rifle\\projectiles\\sniper_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
@@ -3208,7 +3208,7 @@
 						"Halo 4": "weap objects\\weapons\\support_high\\storm_rocket_launcher\\storm_rocket_launcher"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\rocket launcher\\rocket", "Halo 2": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo 3: ODST": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket", "Halo Reach": "proj objects\\weapons\\support_high\\rocket_launcher\\projectiles\\rocket_launcher_rocket", "Halo 4": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
@@ -3496,7 +3496,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_shotgun\\storm_shotgun"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 1": "proj weapons\\shotgun\\pellet", "Halo 2": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo Reach": "proj objects\\weapons\\rifle\\shotgun\\projectiles\\shotgun_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet"}, "follows_choice": true, "games": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]}
 					]
@@ -3810,7 +3810,7 @@
 						"Halo 3: ODST": "weap objects\\weapons\\rifle\\smg\\smg"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "Halo 3: ODST": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 3: ODST"]}
 					]
@@ -4073,7 +4073,7 @@
 						"Halo 2": "weap objects\\weapons\\rifle\\brute_plasma_rifle\\brute_plasma_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"}, "follows_choice": true, "games": ["Halo 2"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\brute_plasma_rifle\\projectiles\\brute_plasma_rifle_bolt"}, "follows_choice": true, "games": ["Halo 2"]}
 					]
@@ -4373,7 +4373,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_br\\storm_br"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 3": "proj objects\\weapons\\rifle\\battle_rifle\\projectiles\\battle_rifle_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_br\\projectiles\\storm_br_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
@@ -4633,7 +4633,7 @@
 						"Halo 3": "weap objects\\weapons\\support_low\\brute_shot\\brute_shot"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade", "Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade", "Halo 3": "proj objects\\weapons\\support_low\\brute_shot\\projectiles\\grenade\\grenade"}, "follows_choice": true, "games": ["Halo 2", "Halo 3"]}
 					]
@@ -4927,7 +4927,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_beam_rifle\\storm_beam_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 3": "proj objects\\weapons\\rifle\\beam_rifle\\projectiles\\beam_rifle_beam", "Halo 4": "proj objects\\weapons\\rifle\\storm_beam_rifle\\projectiles\\storm_beam_rifle_beam"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
@@ -5212,7 +5212,7 @@
 						"Halo 4": "weap objects\\weapons\\rifle\\storm_covenant_carbine\\storm_covenant_carbine"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 4": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 2": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 3": "proj objects\\weapons\\rifle\\covenant_carbine\\projectiles\\carbine_slug\\carbine_slug", "Halo 4": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"]}
 					]
@@ -5492,7 +5492,7 @@
 						"Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"]},
 						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"]}
 					]
@@ -5811,7 +5811,7 @@
 						"Halo 4": "weap objects\\weapons\\pistol\\storm_sentinel_beam\\storm_sentinel_beam"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] },
 						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam\\sentinel_aggressor_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 3": "proj objects\\weapons\\support_low\\sentinel_gun\\projectiles\\sentinel_gun_beam & objects\\characters\\sentinel_aggressor\\weapons\\welder\\sentinel_aggressor_welder", "Halo 4": "proj objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_enemy & objects\\weapons\\pistol\\storm_sentinel_beam\\projectiles\\storm_sentinel_beam_beam_friendly"}, "follows_choice": true, "games": ["Halo 2", "Halo 3", "Halo 4"] }
 					]
@@ -6060,7 +6060,7 @@
 						"Halo 2": "weap objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{ "field": "Impact Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] },
 						{ "field": "Detonation Noise", "tag": { "Halo 2": "proj objects\\characters\\sentinel_aggressor\\weapons\\beam_elim\\sent_agg_beam_elim" }, "follows_choice": true, "games": ["Halo 2", "Halo 3"] }
 					]
@@ -6556,7 +6556,7 @@
 						"Halo 3": "weap objects\\weapons\\pistol\\excavator\\excavator"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard"}, "follows_choice": true, "games": ["Halo 3"]},
 						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\pistol\\excavator\\projectiles\\excavator_shard"}, "follows_choice": true, "games": ["Halo 3"]}
 					]
@@ -6858,7 +6858,7 @@
 						"Halo Reach": "weap objects\\weapons\\rifle\\spike_rifle\\spike_rifle"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard"}, "follows_choice": true, "games": ["Halo 3"]},
 						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\rifle\\spike_rifle\\projectiles\\spike_shard\\spike_shard"}, "follows_choice": true, "games": ["Halo 3"]}
 					]
@@ -7317,7 +7317,7 @@
 						"Halo 4": "weap objects\\weapons\\support_high\\storm_spartan_laser\\storm_spartan_laser"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true }
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] }
 					]
 				},
 				"Heat Threshold": {
@@ -7538,7 +7538,7 @@
 						"Halo 3": "weap objects\\weapons\\turret\\flamethrower\\flamethrower"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{"field": "Impact Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream"}, "follows_choice": true, "games": ["Halo 3"]},
 						{"field": "Detonation Noise", "tag": {"Halo 3": "proj objects\\weapons\\turret\\flamethrower\\projectiles\\flamethrower_stream"}, "follows_choice": true, "games": ["Halo 3"]}
 					]
@@ -7801,7 +7801,7 @@
 						"Halo 4": "weap objects\\weapons\\turret\\storm_machinegun_turret\\storm_machinegun_turret & objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret_mounted\\machinegun_mounted & objects\\vehicles\\human\\storm_warthog\\weapons\\storm_warthogchaingun\\weapon\\storm_warthogchaingun"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
 						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo Reach": "proj objects\\vehicles\\human\\turrets\\machinegun\\weapon\\machinegun_turret\\projectiles\\machinegun_turret_bullet", "Halo 4": "proj objects\\weapons\\turret\\storm_machinegun_turret\\projectiles\\storm_machinegun_turret_bullet"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] }
 					]
@@ -8065,7 +8065,7 @@
 						"Halo 4": "weap objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_detached\\storm_plasma_turret & objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\plasma_turret_mounted"
 					},
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"] },
 						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt", "Halo 4": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\projectiles\\plasma_turret_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
 						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\turret\\plasma_cannon\\projectiles\\plasma_cannon_bolt", "Halo Reach": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret\\projectiles\\plasma_turret_bolt", "Halo 4": "proj objects\\vehicles\\covenant\\turrets\\plasma_turret\\weapon\\plasma_turret_mounted\\projectiles\\plasma_turret_bolt"}, "follows_choice": true, "games": ["Halo 3", "Halo 4"] }
 					]
@@ -8617,7 +8617,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\concussion_rifle\\concussion_rifle", "Halo 4": "weap objects\\weapons\\rifle\\storm_concussion_rifle\\storm_concussion_rifle"},
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": {"default": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "Halo 4": "proj objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\storm_concussion_rifle_grenade"}, "follows_choice": true},
 						{"field": "Detonation Noise", "tag": {"default": "proj objects\\weapons\\rifle\\concussion_rifle\\projectiles\\concussion_rifle_grenade", "Halo 4": "proj objects\\weapons\\rifle\\storm_concussion_rifle\\projectiles\\storm_concussion_rifle_grenade"}, "follows_choice": true}
 					]
@@ -8862,7 +8862,7 @@
 					"game": ["Halo Reach", "Halo 4"],
 					"tag": {"default": "weap objects\\weapons\\rifle\\dmr\\dmr", "Halo 4": "weap objects\\weapons\\rifle\\storm_dmr\\storm_dmr"},
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": {"default": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_dmr\\projectiles\\storm_dmr_bullet"}, "follows_choice": true},
 						{"field": "Detonation Noise", "tag": {"default": "proj objects\\weapons\\rifle\\dmr\\projectiles\\dmr_bullet", "Halo 4": "proj objects\\weapons\\rifle\\storm_dmr\\projectiles\\storm_dmr_bullet"}, "follows_choice": true}
 					]
@@ -9143,7 +9143,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\focus_rifle\\projectiles\\focus_rifle_beam", "follows_choice": true}
 					]
@@ -9415,7 +9415,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\grenade_launcher\\grenade_launcher",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\grenade_launcher\\projectiles\\grenade_launcher_grenade", "follows_choice": true}
 					]
@@ -9721,7 +9721,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\needle_rifle\\needle_rifle",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\needle_rifle\\projectiles\\needle_rifle_shard", "follows_choice": true}
 					]
@@ -10012,7 +10012,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\support_high\\plasma_launcher\\plasma_launcher",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\support_high\\plasma_launcher\\projectiles\\plasma_launcher_grenade", "follows_choice": true}
 					]
@@ -10329,7 +10329,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\rifle\\plasma_repeater\\plasma_repeater",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\plasma_repeater\\projectiles\\plasma_repeater_bolt", "follows_choice": true}
 					]
@@ -10778,7 +10778,7 @@
 					"game": ["Halo Reach"],
 					"tag": "weap objects\\weapons\\pistol\\target_laser\\target_laser",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_marker_round & objects\\weapons\\pistol\\target_laser\\projectiles\\airstrike_turret_round & objects\\weapons\\pistol\\target_laser\\projectiles\\target_laser_tracer", "follows_choice": true}
 					]
@@ -10873,7 +10873,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_assault_carbine\\storm_assault_carbine",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_carbine\\projectiles\\storm_assault_carbine_bolt", "follows_choice": true}
 					]
@@ -11175,19 +11175,19 @@
 					"game": ["Halo 4", "Halo 1", "Halo 2", "Halo 3", "Halo Reach"],
 					"tag": { "Halo 4": "weap objects\\weapons\\rifle\\storm_lmg\\storm_lmg", "Halo 1": "weap weapons\\saw\\saw", "Halo 2": "weap objects\\weapons\\rifle\\saw\\saw", "Halo 3": "weap objects\\weapons\\rifle\\saw\\saw", "Halo Reach": "weap objects\\weapons\\rifle\\saw\\saw" },
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "games": ["Halo 4"] },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 4"] },
 						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet", "follows_choice": true, "games": ["Halo 4"] },
 						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet", "follows_choice": true, "games": ["Halo 4"] },
-						{ "field": "Firing Noise", "block": "Triggers", "index": "all", "choice": true, "games": ["Halo 1"] },
+						{ "field": "Firing Noise", "block": "Triggers", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 1"] },
 						{ "field": "Impact Noise", "tag": "proj weapons\\assault rifle\\bullet", "follows_choice": true, "games": ["Halo 1"] },
 						{ "field": "Detonation Noise", "tag": "proj weapons\\assault rifle\\bullet", "follows_choice": true, "games": ["Halo 1"] },
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "games": ["Halo 2"] },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 2"] },
 						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "follows_choice": true, "games": ["Halo 2"] },
 						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\smg\\projectiles\\smg_bullet", "follows_choice": true, "games": ["Halo 2"] },
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "games": ["Halo 3", "Halo 3: ODST"] },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 3", "Halo 3: ODST"] },
 						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "follows_choice": true, "games": ["Halo 3", "Halo 3: ODST"] },
 						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "follows_choice": true, "games": ["Halo 3", "Halo 3: ODST"] },
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "games": ["Halo Reach"] },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo Reach"] },
 						{ "field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "follows_choice": true, "games": ["Halo Reach"] },
 						{ "field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\assault_rifle\\projectiles\\assault_rifle_bullet", "follows_choice": true, "games": ["Halo Reach"] }
 					]
@@ -11626,7 +11626,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun & objects\\weapons\\rifle\\storm_spread_gun\\storm_spread_gun_npc",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_shotgun\\projectiles\\storm_shotgun_bullet", "follows_choice": true}
 					]
@@ -11900,7 +11900,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle & objects\\weapons\\rifle\\storm_forerunner_rifle\\storm_forerunner_rifle_npc",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_covenant_carbine\\projectiles\\storm_covenant_carbine_bullet", "follows_choice": true}
 					]
@@ -12141,7 +12141,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_npc & objects\\weapons\\rifle\\storm_forerunner_smg\\storm_forerunner_smg_pawnhead",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_assault_rifle\\projectiles\\storm_assault_rifle_bullet", "follows_choice": true}
 					]
@@ -12452,7 +12452,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol & objects\\weapons\\pistol\\storm_stasis_pistol\\storm_stasis_pistol_pawnhead",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\pistol\\storm_magnum\\projectiles\\storm_magnum_bullet", "follows_choice": true}
 					]
@@ -12716,7 +12716,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_rail_gun\\storm_rail_gun_pve",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true}
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]}
 					]
 				},
 				"Heat Threshold": {
@@ -12982,7 +12982,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\pistol\\storm_sticky_detonator\\storm_sticky_detonator_pve",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\storm_sticky_detonator_grenade_pve", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\pistol\\storm_sticky_detonator\\projectiles\\storm_sticky_detonator_grenade_pve", "follows_choice": true}
 					]
@@ -13208,7 +13208,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle & objects\\weapons\\rifle\\storm_forerunner_sniper_rifle\\storm_forerunner_sniper_rifle_npc",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\rifle\\storm_sniper_rifle\\projectiles\\storm_sniper_rifle_bullet", "follows_choice": true}
 					]
@@ -13484,7 +13484,7 @@
 					"game": ["Halo 4"],
 					"tag": "weap objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher & objects\\weapons\\support_high\\storm_forerunner_incineration_launcher\\storm_forerunner_incineration_launcher_knight",
 					"targets": [
-						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true},
+						{"field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"]},
 						{"field": "Impact Noise", "tag": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket", "follows_choice": true},
 						{"field": "Detonation Noise", "tag": "proj objects\\weapons\\support_high\\storm_rocket_launcher\\projectiles\\storm_rocket_launcher_rocket", "follows_choice": true}
 					]
