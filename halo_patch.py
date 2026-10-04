@@ -8203,6 +8203,17 @@ def apply_weapon_ports(m, game, registry, ports):
                         'skip': bool(rep.get('skip')),
                         'old': 'port timing', 'new': 'x%.3f' % mult,
                         'reason': rep.get('reason')})
+            # a retimed animation whose sound was stretched to match: point it at the
+            # stretched one (Halo 1 SAW reload; port_sounds.retimed_anim_sound -- None
+            # for any port / game without one)
+            try:
+                import port_sounds
+                row = port_sounds.retimed_anim_sound(m, game, port, group, float(mult))
+            except Exception as e:
+                row = {'effect': '%s (ported)' % name, 'field': '%s sound' % group,
+                       'ok': False, 'reason': 'retimed sound not set: %s' % e}
+            if row:
+                out.append(row)
     return out
 
 
