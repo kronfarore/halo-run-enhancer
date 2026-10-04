@@ -69,7 +69,7 @@ RATE = 44100
 FORMAT = 'wav'
 #: the fire's TONE (h1_saw_tone.py candidates A-D; the user picks by ear): None = the plain
 #: import (thin and bright next to the H1 AR -- "a Pea Shooter")
-TONE = None
+TONE = 'D'          # user's pick 2026-10-04 (A, the plain import, was still 'a Pea Shooter')
 HEADROOM_DB = 3.0
 BACKUP = r'E:\HaloBackups\HCEEK_saw_before_sounds'
 #: playback fields copied from the AR's sound tag
