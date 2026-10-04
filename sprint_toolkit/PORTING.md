@@ -2391,8 +2391,8 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   _full) and repoint the graphs. Levels = each game's OWN donor (active RMS of the AR's
   reload/ready in its sfx.fsb + that tag's gain: H3 reload -38 dB effective, ODST -21,
   Reach -26), the volume marker kept. TRAP (Reach): repoint the graphs the WEAPON names
-  (saw.weapon jmad refs: sawp_saw_*p_saw_*, which keep their sounds in a
-  .frame_event_list too); sawpp_saw_*.model_animation_graph are unused leftovers --
+  (saw.weapon jmad refs: saw\fp_saw_*\fp_saw_*, which keep their sounds in a
+  .frame_event_list too); saw\fp\fp_saw_*.model_animation_graph are unused leftovers --
   a first build edited those and m20 kept the AR's. Verify on the BUILT map
   (port_sound_refs.sounds_of, frms refs), not the kit.
 Melee, idle fidgets, zoom and Reach's ready_hero are still the donors'.
