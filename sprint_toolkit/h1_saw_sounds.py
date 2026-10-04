@@ -12,8 +12,13 @@ and the weapon names them (in place here; saw_weapon.py does the same on a regen
 
 HOW CLASSIC HALO 1 PLAYS (measured on a10): the map carries the sound, Xbox ADPCM, the
 AR fire 22 kHz mono. The SAW audio (48 kHz stereo) is resampled to 44.1 kHz mono and
-imported with `tool sounds <data dir> xbox`; the playback fields (distances, pitch, cone,
-random gain) are copied from the AR's sound so it carries like the AR.
+imported UNCOMPRESSED (`tool sounds <data dir> wav` -> compression none): the kit's
+`xbox` route encodes through a Windows ACM codec this machine lacks -- it printed
+"MM: couldn't open stream (ACMERR_NOTPOSSIBLE)", still wrote the tag, with EMPTY
+permutations, and the first build shipped a silent SAW (2026-10-03; the user heard only
+the casing click and called it a pea shooter). Every permutation is now checked for
+samples. The playback fields (distances, pitch, cone, random gain) are copied from the
+AR's sound so it carries like the AR.
 
 VOLUME (port_volume.py): a Halo 1 sound tag holds its own gains -- there is no shared
 pool and no marker. The knob scales the permutations' GAIN (a linear fraction; 0 in a
@@ -43,6 +48,7 @@ from reclaimer.hek.defs.effe import effe_def                        # noqa: E402
 from reclaimer.hek.defs.snd_ import snd__def                        # noqa: E402
 from reclaimer.hek.defs.weap import weap_def                        # noqa: E402
 from saw_port_sounds import AUDIO, boosted                          # noqa: E402
+import h1_saw_tone as tone_mod                                      # noqa: E402
 
 HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
 TAGS = os.path.join(HCEEK, 'tags')
@@ -59,6 +65,11 @@ EFFECTS = {'fire bullet': (AR_FX + B + 'fire bullet', [(AR_SND + B + 'fire', SND
            'empty': (AR_FX + B + 'empty', [(AR_SND + B + 'dryfire', SND_DIR + B + 'saw_dryfire')])}
 WEAPON = B.join(['weapons', 'saw', 'saw.weapon'])
 RATE = 44100
+#: 'wav' = uncompressed (compression none); 'xbox' needs an ACM codec this machine lacks
+FORMAT = 'wav'
+#: the fire's TONE (h1_saw_tone.py candidates A-D; the user picks by ear): None = the plain
+#: import (thin and bright next to the H1 AR -- "a Pea Shooter")
+TONE = None
 HEADROOM_DB = 3.0
 BACKUP = r'E:\HaloBackups\HCEEK_saw_before_sounds'
 #: playback fields copied from the AR's sound tag
@@ -115,13 +126,22 @@ def import_sounds():
         d = os.path.join(HCEEK, 'data', SND_DIR, name)
         os.makedirs(d)
         for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
+            if name == 'saw_fire' and TONE:
+                # h1_saw_tone.py: the picked candidate, its shot levelled to the H1 AR's
+                # + the headroom (the permutation gain 0.708 takes those 3 dB back)
+                x, r = tone_mod.read(w)
+                x = tone_mod.resample(x, r, RATE)
+                y = tone_mod.level(tone_mod.tone(x, RATE, TONE), RATE,
+                                   tone_mod.AR_RMS_DB + HEADROOM_DB)
+                tone_mod.write(os.path.join(d, os.path.basename(w)), y, RATE)
+                continue
             tmp = os.path.join(d, '_44k.wav')
             mono_44k(w, tmp)
             boosted(tmp, os.path.join(d, os.path.basename(w)), HEADROOM_DB)
             os.remove(tmp)
-        out = tool('sounds', SND_DIR + B + name, 'xbox')
+        out = tool('sounds', SND_DIR + B + name, FORMAT)
         path = os.path.join(TAGS, SND_DIR, name + '.sound')
-        if not os.path.exists(path):
+        if not os.path.exists(path) or 'MM:' in out:
             print(out[-1500:])
             raise SystemExit('import failed: %s' % name)
         t = snd__def.build(filepath=path)
@@ -134,6 +154,10 @@ def import_sounds():
             p.gain = gain
         t.serialize(temp=False, backup=False)
         t = snd__def.build(filepath=path).data.tagdata
+        sizes = [len(p.samples.data) for pr in t.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE]
+        if not sizes or min(sizes) == 0:
+            raise SystemExit('%s: a permutation has NO samples %s -- the import failed' % (name, sizes))
+        print('   %-12s samples %s bytes' % (name, sizes))
         print('   %-12s %d permutation(s), %s %s %s, class %s, gain %s' % (
             name, len(perms), t.sample_rate.enum_name, t.encoding.enum_name,
             t.compression.enum_name, t.sound_class.enum_name,
