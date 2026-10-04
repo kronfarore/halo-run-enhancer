@@ -42,10 +42,21 @@ SND_DIR = B.join(['sound', 'weapons', 'saw_port'])
 WEAPON = B.join(['objects', 'weapons', 'rifle', 'saw', 'saw.weapon'])
 FIRE_FX = B.join(['effects', 'objects', 'weapons', 'rifle', 'saw', 'saw_fire.effect'])
 #: own sound -> (audio folder, sound class)
-SOUNDS = {'saw_fire': ('fire', 'weapon_fire'), 'saw_dryfire': ('dryfire', 'weapon_empty')}
+SOUNDS = {'saw_fire': ('fire', 'weapon_fire'), 'saw_dryfire': ('dryfire', 'weapon_empty'),
+          # RELOAD / READY (2026-10-04): Halo 4's SAW foley mixed at its frame cues
+          # (saw_port_foley.py). Both SAW graphs cue ONE sound per animation (frame 1) and
+          # their reload is 128 frames like Halo 4's -> the mix fits 1:1. Halo 4's own
+          # level (the donor SMG audio sits inside the map as Opus, not measured).
+          'saw_reload': ('foley:RELOAD', 'weapon_reload'), 'saw_ready': ('foley:READY', 'weapon_ready')}
+SMG = B.join(['sound', 'weapons', 'smg', ''])
+GRAPHS = [B.join(['objects', 'characters', s, 'fp', 'weapons', 'rifle', 'fp_saw',
+                  'fp_saw.model_animation_graph']) for s in ('masterchief', 'dervish')]
 #: (tag, the sound it names now, the own sound it should name)
 REPOINT = [(FIRE_FX, B.join(['sound', 'weapons', 'smg', 'fire']), SND_DIR + B + 'saw_fire'),
-           (WEAPON, B.join(['sound', 'weapons', 'battle_rifle', 'dryfire']), SND_DIR + B + 'saw_dryfire')]
+           (WEAPON, B.join(['sound', 'weapons', 'battle_rifle', 'dryfire']), SND_DIR + B + 'saw_dryfire')] + \
+          [(g, SMG + s, SND_DIR + B + n) for g in GRAPHS
+           for s, n in (('smg_reload', 'saw_reload'), ('smg_ready', 'saw_ready'))]
+GRAPH_BACKUP = r'E:\HaloBackups\H2EK_saw_graphs_before_foley'
 #: gain base per sound (dB, before the marker); the import gives -3
 GAIN = {'saw_fire': -3.0, 'saw_dryfire': -3.0}
 #: audio boost (dB, soft-limited; saw_port_sounds.boosted) per sound -- none until heard
@@ -85,13 +96,40 @@ def backup():
     print('backup: %s' % BACKUP)
 
 
+def render_foley(name, cues_name, d):
+    """One wav per variation set of the Halo 4 foley mix (48 kHz mono, as recorded)."""
+    import wave
+    import numpy as np
+    import saw_port_foley as foley
+    cues = getattr(foley, cues_name)
+    for k in range(foley.count(cues)):
+        x = foley.mix(cues, k)
+        if np.abs(x).max() > 0.95:
+            x = 0.95 * np.tanh(x / 0.95)
+        with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
+            o.setnchannels(1)
+            o.setsampwidth(2)
+            o.setframerate(foley.RATE)
+            o.writeframes(np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16).tobytes())
+
+
+def backup_graphs():
+    for g in GRAPHS:
+        keep = os.path.join(GRAPH_BACKUP, g)
+        if not os.path.exists(keep):
+            os.makedirs(os.path.dirname(keep), exist_ok=True)
+            shutil.copyfile(os.path.join(TAGS, g), keep)
+
+
 def import_sounds():
     shutil.rmtree(os.path.join(TAGS, SND_DIR), ignore_errors=True)
     shutil.rmtree(os.path.join(H2EK, 'data', SND_DIR), ignore_errors=True)
     for name, (src, cls) in SOUNDS.items():
         d = os.path.join(H2EK, 'data', SND_DIR, name)
         os.makedirs(d)
-        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
+        if src.startswith('foley:'):
+            render_foley(name, src.split(':', 1)[1], d)
+        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))) if ':' not in src else ():
             dst = os.path.join(d, os.path.basename(w))
             if BOOST.get(name):
                 boosted(w, dst, BOOST[name])
@@ -146,6 +184,7 @@ def main():
         print('(dry run -- pass --write)')
         return
     backup()
+    backup_graphs()
     import_sounds()
     set_gain()
     repoint()

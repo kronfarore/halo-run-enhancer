@@ -57,6 +57,27 @@ DRYFIRE = B.join(['sound', 'weapons', 'battle_rifle', 'dryfire'])
 FIRE = {'saw_fire': ('fire', 'weapon_fire')}
 TAILS = {'saw_tail_ext': ('tail', 'first_person_outside'), 'saw_tail_int': ('tail', 'first_person_inside')}
 DRY = {'saw_dryfire': ('dryfire', 'weapon_empty')}
+# RELOAD / READY (2026-10-04, user: "go ahead with reload and swap for all four games"):
+# Halo 4's SAW foley mixed at its frame cues (saw_port_foley.py) -- every SAW graph here
+# cues ONE sound per animation at frame 0, so one mix per animation. Halo 3 / ODST reload
+# 128 frames = Halo 4's (1:1); Reach's port reload is the AR's length (empty 68, full 59),
+# so the cues are compressed to it. Levelled to the GAME'S OWN donor (foley_levels, active
+# RMS of the AR's reload/ready in that game's sfx.fsb) with the donor's tag gain -- the
+# games mix these very differently (H3 reload -38 dB effective, ODST -21, Reach -26).
+RELOAD = {'saw_reload': ('foley', 'weapon_reload')}
+READY = {'saw_ready': ('foley', 'weapon_ready')}
+RELOAD_REACH = {'saw_reload_empty': ('foley', 'weapon_reload'),
+                'saw_reload_full': ('foley', 'weapon_reload')}
+FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', ''])
+GRAPH_PAIRS = [(AR_SND + B + 'ar_reload', SND_DIR + B + 'saw_reload'),
+               (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready')]
+ELITE = AR_SND + B + 'ar_elite_fp' + B
+GRAPH_PAIRS_REACH = [(AR_SND + B + 'ar_reload_empty', SND_DIR + B + 'saw_reload_empty'),
+                     (AR_SND + B + 'ar_reload_full', SND_DIR + B + 'saw_reload_full'),
+                     (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready'),
+                     (ELITE + 'elite_ar_reload_empty', SND_DIR + B + 'saw_reload_empty'),
+                     (ELITE + 'elite_ar_reload_full', SND_DIR + B + 'saw_reload_full'),
+                     (ELITE + 'elite_ar_ready', SND_DIR + B + 'saw_ready')]
 FIRE_PAIR = [(AR_SND + B + 'ar_fire', SND_DIR + B + 'saw_fire')]
 TAIL_PAIRS = [(AR_SND + B + 'ar_tail_ext', SND_DIR + B + 'saw_tail_ext'),
               (AR_SND + B + 'ar_tail_int', SND_DIR + B + 'saw_tail_int')]
@@ -69,14 +90,25 @@ DRY_PAIR = [(DRYFIRE, SND_DIR + B + 'saw_dryfire')]
 #: adpcm reimport gives uncompressed PCM and clears the bank suffix).
 GAMES = {
     'reach': dict(ek='HREK', folder='haloreach', route='pc',
-                  sounds=dict(FIRE, **TAILS, **DRY),
+                  sounds=dict(FIRE, **TAILS, **DRY, **RELOAD_REACH, **READY),
                   effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
-                           'empty': (AR_FX + B + 'empty', DRY_PAIR)}),
+                           'empty': (AR_FX + B + 'empty', DRY_PAIR)},
+                  graphs=[FP + 'fp_saw_spartans', FP + 'fp_saw_elite'],
+                  graph_pairs=GRAPH_PAIRS_REACH,
+                  # (cues, stretch = the port's frames / Halo 4's 128 or 35, donor active RMS)
+                  foley={'saw_reload_empty': ('RELOAD', 68 / 128.0, -14.7),
+                         'saw_reload_full': ('RELOAD', 59 / 128.0, -16.6),
+                         'saw_ready': ('READY', 1.0, -16.2)},
+                  gain={'saw_reload_empty': -11, 'saw_reload_full': -11, 'saw_ready': -17}),
     # Halo 3's AR firing effect has no tails: fire + distant fire only
     'h3': dict(ek='H3EK', folder='halo3', route='stock',
-               sounds=dict(FIRE, **DRY),
+               sounds=dict(FIRE, **DRY, **RELOAD, **READY),
                effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR),
-                        'empty': (BR_FX + B + 'empty', DRY_PAIR)}),
+                        'empty': (BR_FX + B + 'empty', DRY_PAIR)},
+               graphs=[FP + 'fp_saw_masterchief', FP + 'fp_saw_dervish'],
+               graph_pairs=GRAPH_PAIRS,
+               foley={'saw_reload': ('RELOAD', 1.0, -31.0), 'saw_ready': ('READY', 1.0, -23.7)},
+               gain={'saw_reload': -7, 'saw_ready': -9}),
     # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
     # in every game (-12 dBFS over the first 0.25 s, tag gain -3 = -15 effective), but the
     # games' own mixes differ: Halo 3's AR is -22 effective (the SAW stands 7 dB above it),
@@ -85,9 +117,13 @@ GAMES = {
     # CAPPED AT 0 dB (`tool process-sounds <dir> <spec> gain= 4` stays 0, gain+ stops at
     # 0): -3 -> 0 gives +3; the other +3 is the AUDIO, soft-limited (boosted()).
     'odst': dict(ek='H3ODSTEK', folder='halo3odst', route='stock',
-                 sounds=dict(FIRE, **TAILS, **DRY),
+                 sounds=dict(FIRE, **TAILS, **DRY, **RELOAD, **READY),
                  effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                           'empty': (BR_FX + B + 'empty', DRY_PAIR)},
+                 graphs=[FP + 'fp_saw_odst_recon'],
+                 graph_pairs=GRAPH_PAIRS,
+                 foley={'saw_reload': ('RELOAD', 1.0, -14.4), 'saw_ready': ('READY', 1.0, -8.3)},
+                 gain={'saw_reload': -7, 'saw_ready': -9},
                  # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between";
                  # +4.5 (gain 0 + boost 1.5) CONFIRMED. HEADROOM RULE (boot 2026-10-03: the
                  # engine CLAMPS Gain Base at 0 dB in the map, +12 was unmoved, -20 near
@@ -129,7 +165,9 @@ def import_sounds():
     for name, (src, cls) in SOUNDS.items():
         d = os.path.join(EK, 'data', SND_DIR, name)
         os.makedirs(d)
-        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
+        if src == 'foley':
+            render_foley(name, d)
+        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))) if src != 'foley' else ():
             dst = os.path.join(d, os.path.basename(w))
             if G.get('boost', {}).get(name):
                 boosted(w, dst, G['boost'][name])
@@ -227,6 +265,58 @@ def own_effects():
         raise SystemExit('the weapon no longer spans its file')
 
 
+def render_foley(name, d):
+    """The Halo 4 SAW foley mix for `name` (G['foley']: cues, stretch, target active RMS),
+    one wav per variation set, as dual-mono STEREO 48 kHz (Reach's PC re-encode filter
+    `stereo` must match every port tag)."""
+    import wave
+    import numpy as np
+    import saw_port_foley as foley
+    cues_name, stretch, target = G['foley'][name]
+    cues = getattr(foley, cues_name)
+    for k in range(foley.count(cues)):
+        x = foley.mix(cues, k, stretch)
+        act = x[np.abs(x) > 0.01]
+        x = x * 10 ** ((target - 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12)) / 20)
+        if np.abs(x).max() > 0.95:
+            x = 0.95 * np.tanh(x / 0.95)                  # peaks soft-limited
+        y = np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16)
+        with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
+            o.setnchannels(2)
+            o.setsampwidth(2)
+            o.setframerate(foley.RATE)
+            o.writeframes(np.repeat(y, 2).tobytes())
+
+
+GRAPH_BACKUP = r'E:\HaloBackups\%s_saw_graphs_before_foley'
+
+
+def own_graph_sounds():
+    """The SAW's first-person graphs name its own reload/ready sounds (G['graph_pairs'])."""
+    if not G.get('graphs'):
+        return
+    bk = GRAPH_BACKUP % G['ek']
+    for g in G['graphs']:
+        path = os.path.join(TAGS, g + '.model_animation_graph')
+        keep = os.path.join(bk, os.path.basename(path))
+        if not os.path.exists(keep):
+            os.makedirs(bk, exist_ok=True)
+            shutil.copyfile(path, keep)
+        t = h3tag.Tag(path)
+        for old, new in G['graph_pairs']:
+            n = t.repoint(old, new, 'snd!')
+            if n:
+                print('   %-22s %-28s -> %s  x%d' % (os.path.basename(g), old.rsplit(B, 1)[-1],
+                                                   new.rsplit(B, 1)[-1], n))
+        t.save()
+        if not h3tag.Tag(path).check()[0]:
+            raise SystemExit('%s no longer spans its file' % path)
+        left = [r[2] for r in h3tag.Tag(path).references() if r[1] == 'snd!'
+                and r[2].lower() in {o.lower() for o, _n in G['graph_pairs']}]
+        if left:
+            raise SystemExit('%s still names %s' % (path, sorted(set(left))))
+
+
 def boosted(src, dst, db):
     """The same sound, `db` louder: scaled, then a tanh soft limiter (the shots already peak
     near full scale, so plain scaling would clip). Same audio, more loudness."""
@@ -307,6 +397,7 @@ def main():
     if a.write:
         import_sounds()
         own_effects()
+        own_graph_sounds()
         if G['route'] == 'pc' and not a.both:
             pc_only()
         set_gain()
