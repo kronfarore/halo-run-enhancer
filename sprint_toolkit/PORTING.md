@@ -2384,8 +2384,18 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   RMS: ar_reload -20.9, weapon ready -13.1 dBFS). saw_anims.py points both animation
   sets at the own sounds (the balanced set at a 164/128-stretched reload -- that set is
   not in the built maps today). Melee keeps the AR's.
-Reload / ready / melee sounds of the OTHER ports are still their donors' -- the same
-mixdown applies where a game plays one sound per animation; H2-H4 graphs cue several.
+* **Reload + ready, Halo 2 / 3 / ODST / Reach (2026-10-04):** every SAW graph cues ONE
+  sound per animation at frame 0 (H2: frame 1), so the same saw_port_foley mixdown fits;
+  every port's reload is 128 frames = Halo 4's (cues 1:1). saw_port_sounds.py (h3/odst/
+  reach) and h2_saw_sounds.py import saw_reload / saw_ready (Reach: saw_reload_empty +
+  _full) and repoint the graphs. Levels = each game's OWN donor (active RMS of the AR's
+  reload/ready in its sfx.fsb + that tag's gain: H3 reload -38 dB effective, ODST -21,
+  Reach -26), the volume marker kept. TRAP (Reach): repoint the graphs the WEAPON names
+  (saw.weapon jmad refs: sawp_saw_*p_saw_*, which keep their sounds in a
+  .frame_event_list too); sawpp_saw_*.model_animation_graph are unused leftovers --
+  a first build edited those and m20 kept the AR's. Verify on the BUILT map
+  (port_sound_refs.sounds_of, frms refs), not the kit.
+Melee, idle fidgets, zoom and Reach's ready_hero are still the donors'.
 
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
 
