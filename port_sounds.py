@@ -229,7 +229,12 @@ def h1_wanted(volume=None):
     for man in sorted(glob.glob(os.path.join(_data_dir(), 'halo1', '*.json'))):
         m = json.load(open(man, encoding='utf-8'))
         db = min((volume or {}).get(m.get('weapon'), 0.0) or 0.0, H1_MAX_UP_DB)
-        for snd in m['sounds']:
+        # THE CLASSIC INDEX IS SORTED (lower-case path order; only a few stock Warthog
+        # engine entries break it) and the game evidently searches it: appended entries in
+        # manifest order (fire, dryfire, reload, ...) made the SAW fire silent and the AR
+        # misbehave (2026-10-04). So the port's entries -- and their subsongs, keeping the
+        # first-subsong column ascending like stock -- go in path order.
+        for snd in sorted(m['sounds'], key=lambda s: s['aliases'][0].lower()):
             i0 = len(samples)
             base = snd.get('name') or snd['tag'].replace('\\', '/').rsplit('/', 1)[-1]
             for k, f in enumerate(snd['perms']):
@@ -306,7 +311,11 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         first = h1_fsb.append_fsb(fsb, fsb, samples, keep=p0)
         ours = {a for a, _i, _c in index}
         kept = [e for e in entries if e[1] < p0 and e[0] not in ours]
-        h1_fsb.write_lst(lst, ver, kept + [(a, first + i, c) for a, i, c in index])
+        new = [(a, first + i, c) for a, i, c in index]
+        if kept and new and min(a.lower() for a, _i, _c in new) <= max(e[0].lower() for e in kept):
+            raise ValueError('a port path sorts before a stock path -- appending would break '
+                             'the sorted classic index')
+        h1_fsb.write_lst(lst, ver, kept + new)
         # the Anniversary index: drop our old entries, insert ours in its sort order
         dours = {t.lower() for t, _f, _c in want_debug}
         dkept = [e for e in dentries if e[0].lower() not in dours]
