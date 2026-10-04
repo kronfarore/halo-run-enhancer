@@ -94,13 +94,24 @@ H3_CHAR_UNIT, H3_CHAR_PARENT, H3_BIPD_TEAM = 0x14, 0x4, 0xFC
 H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT = 0x3EC, 0x34, 0x24
 H3_SCRIPT_PARAMS, H3_PARAM_SZ = 0x28, 0x24
 H3_CALL_FLAGS = (8, 10)
-ODST_PALETTE, ODST_GROUPS, ODST_SCRIPTS = 0x3E8, 0x3AC, 0x42C    # elements as Halo 3's
-ODST_SQUADS, ODST_SQ_SZ = 0x3B8, 0x6C        # Flags +0x20, Team +0x24, Group +0x26 as H3
-ODST_LOCS, ODST_LOC_SZ, ODST_LOC_CELL, ODST_LOC_CHAR = 0x3C, 0x90, 0x10, 0x32
-ODST_CELLS = (0x54, 0x60)                    # Designer / Templated Cells, element 0x84
-ODST_CELL_SZ, ODST_CELL_DIFF, ODST_CELL_COUNT, ODST_CELL_VEH = 0x84, 0x4, 0x10, 0x46
-ODST_CELL_CHARS, ODST_CHAR_SZ, ODST_CHAR_IDX = 0x14, 0x10, 0xC
-ODST_BIPD_TEAM = 0x10C        # expression flags of a call group (built-in / script)
+#: Halo Reach's Team enum differs from Halo 3's from 4 on.
+REACH_TEAMS = ('default', 'player', 'human', 'covenant', 'brute', 'mule', 'spare',
+               'covenant_player')
+#: The CELL family (ODST, Reach): squads hold Spawn Points / Single Locations and Designer /
+#: Templated Cells; a cell has a count, a difficulty mask and weighted Character Types.
+#: scripts = (block, element, root datum, parameters block, name kind).
+CELL_LAYOUT = {
+    'Halo 3: ODST': dict(palette=0x3E8, groups=0x3AC, squads=(0x3B8, 0x6C),
+                         locs=(0x3C, 0x90, 0x10, 0x32), cells=(0x54, 0x60), cell_sz=0x84,
+                         diff=0x4, count=0x10, veh=0x46, chars=(0x14, 0x10, 0xC),
+                         team=0x10C, scripts=(0x42C, 0x34, 0x24, 0x28, 'ascii'),
+                         teams=None),
+    'Halo Reach': dict(palette=0x3EC, groups=0x38C, squads=(0x398, 0x6C),
+                       locs=(0x3C, 0x7C, 0x10, 0x32), cells=(0x54, 0x60), cell_sz=0x6C,
+                       diff=0x4, count=0x10, veh=0x46, chars=(0x14, 0x10, 0xC),
+                       team=0x16C, scripts=(0x430, 0x18, 0x8, 0xC, 'sid'),
+                       teams=REACH_TEAMS),
+}        # expression flags of a call group (built-in / script)
 TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'heretic',
               'prophet', 'guilty')
 
@@ -109,16 +120,20 @@ TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'he
 BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'miranda',
               'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty',
               '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero', 'scarab',
-              'engineer_freeform')     # the freed Engineer of Data Hive / Coastal Highway
+              'engineer_freeform',     # the freed Engineer of Data Hive / Coastal Highway
+              'mule', 'halsey')        # Reach's Mule (a boss card of its own) and Halsey
 #: ...and by the character's species folder: Halo 1's Keyes is `characters\captain\...`, a
 #: word that must not catch `brute_captain`.
 BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
-                'masterchief')
+                'masterchief',
+                'spartans_ai', 'spartans_female_ai',   # Reach: Noble Team
+                'ambient_life',                        # Reach: Moas and other wildlife
+                'null')                                # vehicle-pilot placeholders
 #: Human species (by the character's folder under objects\characters): never enemies.
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
                  'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot')
 SPREAD = 0.6       # world units between a copied location and its source
-GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST')
+GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach')
 
 
 def _i16(m, o):
@@ -455,13 +470,17 @@ def h3_script_refs(m, tree=None, game='Halo 3'):
     t = tree or _tree(m, game)
     s = halo_patch._scnr_base(m)
     scripts = []
-    soff = ODST_SCRIPTS if str(game).strip() == 'Halo 3: ODST' else H3_SCRIPTS
-    for el in m.follow_all(s, [soff], [H3_SCRIPT_SZ], 'all'):
+    lay = CELL_LAYOUT.get(str(game).strip())
+    soff, ssz, sroot, spar, kind = (lay['scripts'] if lay else
+                                    (H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT, H3_SCRIPT_PARAMS,
+                                     'ascii'))
+    for el in m.follow_all(s, [soff], [ssz], 'all'):
         params = [m.data[p:p + 0x20].split(b'\0')[0].decode('latin-1').lower()
-                  for p in m.follow_all(el, [H3_SCRIPT_PARAMS], [H3_PARAM_SZ], 'all')]
+                  for p in m.follow_all(el, [spar], [H3_PARAM_SZ], 'all')]
         if params:
-            scripts.append((m.data[el:el + 0x20].split(b'\0')[0].decode('latin-1').lower(),
-                            params, m.u32(el + H3_SCRIPT_ROOT) & 0xFFFF))
+            sname = (m.resolve_stringid(m.u32(el)) or '' if kind == 'sid' else
+                     m.data[el:el + 0x20].split(b'\0')[0].decode('latin-1'))
+            scripts.append((sname.lower(), params, m.u32(el + sroot) & 0xFFFF))
 
     def body(root):
         seen, stack, out = set(), [root], []
@@ -616,7 +635,7 @@ def h3_squads(m, tree=None):
 
 # ---- Halo 3: ODST ---------------------------------------------------------------------
 
-def odst_squads(m, tree=None):
+def cell_squads(m, game, tree=None):
     """Every distinct CELL BLOCK, in the shape of h2_squads plus `mult`.
 
     ODST squads are built to spawn a cell's count with few or no starting locations --
@@ -633,26 +652,28 @@ def odst_squads(m, tree=None):
     them as well. A squad whose designer and templated cells are DIFFERENT blocks (1-6 per
     level) is counted from its templated cells and never grows."""
     import halo_patch
-    g = 'Halo 3: ODST'
+    g = str(game).strip()
+    L = CELL_LAYOUT[g]
     t = tree or _tree(m, g)
     s = halo_patch._scnr_base(m)
     pal, teams = [], []
-    for el in m.follow_all(s, [ODST_PALETTE], [H3_PAL_SZ], 'all'):
+    for el in m.follow_all(s, [L['palette']], [H3_PAL_SZ], 'all'):
         ident = m.u32(el + H3_PAL_ID)
         nm = halo_patch._tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
         pal.append(nm)
-        teams.append(_h3_char_team(m, nm, team_at=ODST_BIPD_TEAM))
+        teams.append(_h3_char_team(m, nm, team_at=L['team']))
     refs = h3_script_refs(m, t, g)
-    names_of = {TEAM_NAMES[k]: k for k in range(len(TEAM_NAMES))}
+    tn = L['teams'] or TEAM_NAMES
+    names_of = {tn[k]: k for k in range(len(tn))}
     removed = {b for a, b in refs['removed'] if a == 'player'} | \
               {a for a, b in refs['removed'] if b == 'player'}
     friends = {TEAM_PLAYER} | {names_of[n] for n in (
         ({b for a, b in refs['allied'] if a == 'player'} |
          {a for a, b in refs['allied'] if b == 'player'}) - removed) if n in names_of}
     groups = [(_cstr(m, x), _i16(m, x + 0x20))
-              for x in m.follow_all(s, [ODST_GROUPS], [H3_GROUP_SZ], 'all')]
+              for x in m.follow_all(s, [L['groups']], [H3_GROUP_SZ], 'all')]
     units, order = {}, []
-    for sq in m.follow_all(s, [ODST_SQUADS], [ODST_SQ_SZ], 'all'):
+    for sq in m.follow_all(s, [L['squads'][0]], [L['squads'][1]], 'all'):
         name = _cstr(m, sq)
         names, gi, hops = {name}, _i16(m, sq + H3_SQ_GROUP), 0
         while 0 <= gi < len(groups) and hops < 12:
@@ -666,11 +687,12 @@ def odst_squads(m, tree=None):
             any(n in refs['place'] for n in names))
         bound = any(n in refs['bound'] for n in names)
         literal = refs['literal'].get(name, 0)
-        dptr, tptr = m.u32(sq + ODST_CELLS[0] + 4), m.u32(sq + ODST_CELLS[1] + 4)
-        split = bool(m.u32(sq + ODST_CELLS[0]) and m.u32(sq + ODST_CELLS[1]) and dptr != tptr)
-        use = ODST_CELLS[1] if m.u32(sq + ODST_CELLS[1]) else ODST_CELLS[0]
-        cells = m.follow_all(sq, [use], [ODST_CELL_SZ], 'all')
-        locs = m.follow_all(sq, [ODST_LOCS], [ODST_LOC_SZ], 'all')
+        d_off, t_off = L['cells']
+        dptr, tptr = m.u32(sq + d_off + 4), m.u32(sq + t_off + 4)
+        split = bool(m.u32(sq + d_off) and m.u32(sq + t_off) and dptr != tptr)
+        use = t_off if m.u32(sq + t_off) else d_off
+        cells = m.follow_all(sq, [use], [L['cell_sz']], 'all')
+        locs = m.follow_all(sq, [L['locs'][0]], [L['locs'][1]], 'all')
         steam = _i16(m, sq + H3_TEAM)
         for n, cell in enumerate(cells):
             u = units.get(cell)
@@ -679,8 +701,8 @@ def odst_squads(m, tree=None):
                                    'bound': False, 'fixed': False, 'split': False, 'script': 0,
                                    'names': []}
                 order.append(cell)
-            u['chars'] |= {_i16(m, loc + ODST_LOC_CHAR) for loc in locs
-                           if _i16(m, loc + ODST_LOC_CELL) == n}
+            u['chars'] |= {_i16(m, loc + L['locs'][3]) for loc in locs
+                           if _i16(m, loc + L['locs'][2]) == n}
             u['steam'].add(steam)
             if placed:
                 u['users'] += 1
@@ -693,15 +715,15 @@ def odst_squads(m, tree=None):
     out = []
     for idx, cell in enumerate(order):
         u = units[cell]
-        ci = {_i16(m, e + ODST_CHAR_IDX)
-              for e in m.follow_all(cell, [ODST_CELL_CHARS], [ODST_CHAR_SZ], 'all')} | u['chars']
+        co, ce, cx = L['chars']
+        ci = {_i16(m, e + cx) for e in m.follow_all(cell, [co], [ce], 'all')} | u['chars']
         ci = {x for x in ci if 0 <= x < len(pal) and pal[x]}
         chars = {pal[x] for x in ci}
         sides = {x for x in u['steam'] if x} or {teams[x] for x in ci}
         human = any(_is_human(x) for x in chars)
         enemy = bool(chars) and not human and not (sides & friends)
-        count = _i16(m, cell + ODST_CELL_COUNT)
-        on = struct.unpack_from('<H', m.data, cell + ODST_CELL_DIFF)[0]
+        count = _i16(m, cell + L['count'])
+        on = struct.unpack_from('<H', m.data, cell + L['diff'])[0]
         on_normal = on == 0 or bool(on & 2)
         on_legend = on == 0 or bool(on & 8)
         out.append({'index': idx, 'off': cell,
@@ -712,11 +734,19 @@ def odst_squads(m, tree=None):
                     'insane': count if (on_legend and not on_normal) else 0,
                     'locs': 0, 'foot': 1, 'chars': chars, 'enemy': enemy,
                     'ally': bool(chars) and not enemy,
-                    'vehicle': _i16(m, cell + ODST_CELL_VEH) >= 0,
+                    'vehicle': _i16(m, cell + L['veh']) >= 0,
                     'boss': any(_is_boss(x) for x in chars),
                     'script': u['script'], 'fixed': u['fixed'] or u['split'],
                     'bound': u['bound'], 'placed': u['users'] > 0})
     return out
+
+
+def odst_squads(m, tree=None):
+    return cell_squads(m, 'Halo 3: ODST', tree)
+
+
+def reach_squads(m, tree=None):
+    return cell_squads(m, 'Halo Reach', tree)
 
 
 def _cstr(m, off):
@@ -728,7 +758,7 @@ def _cstr(m, off):
 def squads(m, game):
     g = str(game).strip()
     return (h1_squads(m) if g == 'Halo 1' else h2_squads(m) if g == 'Halo 2' else
-            h3_squads(m) if g == 'Halo 3' else odst_squads(m) if g == 'Halo 3: ODST' else None)
+            h3_squads(m) if g == 'Halo 3' else cell_squads(m, g) if g in CELL_LAYOUT else None)
 
 
 def _matching(m, game, all_squads, pattern, side='enemy'):
@@ -820,8 +850,8 @@ def grow_all(m, game, plan, spread=SPREAD):
     (2026-10-04). So Halo 3 needs no copied locations and no map space at all; copying them
     would have to relocate the block into scarce zero slack (Halo 3 cannot append)."""
     g = str(game).strip()
-    if g in ('Halo 3', 'Halo 3: ODST'):
-        at = H3_FT_COUNT if g == 'Halo 3' else ODST_CELL_COUNT
+    if g == 'Halo 3' or g in CELL_LAYOUT:
+        at = H3_FT_COUNT if g == 'Halo 3' else CELL_LAYOUT[g]['count']
         for sq, normal, insane in plan:
             struct.pack_into('<h', m.data, sq['off'] + at,
                              sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
