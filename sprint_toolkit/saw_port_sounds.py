@@ -69,6 +69,7 @@ READY = {'saw_ready': ('foley', 'weapon_ready')}
 RELOAD_REACH = {'saw_reload_empty': ('foley', 'weapon_reload'),
                 'saw_reload_full': ('foley', 'weapon_reload')}
 FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', ''])
+SAW_DIR = B.join(['objects', 'weapons', 'rifle', 'saw', ''])
 GRAPH_PAIRS = [(AR_SND + B + 'ar_reload', SND_DIR + B + 'saw_reload'),
                (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready')]
 ELITE = AR_SND + B + 'ar_elite_fp' + B
@@ -93,11 +94,16 @@ GAMES = {
                   sounds=dict(FIRE, **TAILS, **DRY, **RELOAD_REACH, **READY),
                   effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                            'empty': (AR_FX + B + 'empty', DRY_PAIR)},
-                  graphs=[FP + 'fp_saw_spartans', FP + 'fp_saw_elite'],
+                  # the graphs the weapon USES (saw.weapon jmad refs) keep their sounds in a
+                  # FRAME EVENT LIST too, as Halo 4 does; saw\fp\fp_saw_*.model_animation_graph
+                  # are unused leftovers (a first build edited those: m20 kept the AR's).
+                  graphs=[SAW_DIR + g + B + g + ext for g in ('fp_saw_spartans', 'fp_saw_elite')
+                          for ext in ('.model_animation_graph', '.frame_event_list')],
                   graph_pairs=GRAPH_PAIRS_REACH,
-                  # (cues, stretch = the port's frames / Halo 4's 128 or 35, donor active RMS)
-                  foley={'saw_reload_empty': ('RELOAD', 68 / 128.0, -14.7),
-                         'saw_reload_full': ('RELOAD', 59 / 128.0, -16.6),
+                  # (cues, stretch, donor active RMS) -- the port's reload is retimed to Halo
+                  # 4's own 128 frames (ready 24), so the cues fit 1:1
+                  foley={'saw_reload_empty': ('RELOAD', 1.0, -14.7),
+                         'saw_reload_full': ('RELOAD', 1.0, -16.6),
                          'saw_ready': ('READY', 1.0, -16.2)},
                   gain={'saw_reload_empty': -11, 'saw_reload_full': -11, 'saw_ready': -17}),
     # Halo 3's AR firing effect has no tails: fire + distant fire only
@@ -297,10 +303,11 @@ def own_graph_sounds():
         return
     bk = GRAPH_BACKUP % G['ek']
     for g in G['graphs']:
-        path = os.path.join(TAGS, g + '.model_animation_graph')
-        keep = os.path.join(bk, os.path.basename(path))
+        rel = g if os.path.splitext(g)[1] else g + '.model_animation_graph'
+        path = os.path.join(TAGS, rel)
+        keep = os.path.join(bk, rel)                  # full path: names repeat across folders
         if not os.path.exists(keep):
-            os.makedirs(bk, exist_ok=True)
+            os.makedirs(os.path.dirname(keep), exist_ok=True)
             shutil.copyfile(path, keep)
         t = h3tag.Tag(path)
         for old, new in G['graph_pairs']:
