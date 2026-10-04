@@ -55,10 +55,12 @@ import h1_fsb                                                       # noqa: E402
 HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
 TAGS = os.path.join(HCEEK, 'tags')
 B = '\\'
-# under sound\sfx like every stock classic sound: the classic index lists those as
-# sound\old_sfx\... (boot 2026-10-04: sound\weapons\saw_port and an old_ form were BOTH
-# never looked up)
-SND_DIR = B.join(['sound', 'sfx', 'weapons', 'saw_port'])
+# NOT under sound\sfx (2026-10-04): there the game CRASHED the moment the SAW became
+# active (halo1.dll+0xB3605D) -- with the stock bank, with our classic and Anniversary
+# index entries, and with stock-shaped 22 kHz ADPCM tags alike (tests 2-4); outside it
+# (tests 0-1) it never crashed. Working theory: MCC pairs every sound\sfx tag with an
+# Anniversary counterpart by path, and a new one has none.
+SND_DIR = B.join(['sound', 'weapons', 'saw_port'])
 AR_SND = B.join(['sound', 'sfx', 'weapons', 'assault rifle'])
 #: own sound -> (audio folder, the AR sound whose playback fields it takes)
 SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
@@ -251,10 +253,18 @@ def bank_wavs():
             tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
             perms.append(f)
         tag = SND_DIR + B + name
-        old = tag.replace(B.join(['sound', 'sfx', '']), B.join(['sound', 'old_sfx', '']), 1)
-        sounds.append({'tag': tag, 'aliases': [old, tag],
-                       'perms': perms,
-                       'remastered_from': REMASTERED_FROM[name]})
+        sfx = B.join(['sound', 'sfx', ''])
+        if tag.startswith(sfx):
+            # classic index form sound\old_sfx\..., and the Anniversary index entry
+            old = tag.replace(sfx, B.join(['sound', 'old_sfx', '']), 1)
+            entry = {'tag': tag, 'aliases': [old, tag], 'perms': perms,
+                     'remastered_from': REMASTERED_FROM[name]}
+        else:
+            # outside sound\sfx: the plain path (as the stock levels\test\... entries) and
+            # an old_ form; no Anniversary entry (tests 0-1 ran without one, no crash)
+            entry = {'tag': tag, 'perms': perms,
+                     'aliases': [tag, tag.replace('sound' + B, 'sound' + B + 'old_', 1)]}
+        sounds.append(entry)
         print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
     json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
               open(os.path.join(BANK_DIR, 'port_saw.json'), 'w'), indent=1)
