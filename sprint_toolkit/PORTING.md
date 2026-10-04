@@ -2365,6 +2365,15 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
     bank, with classic + Anniversary index entries, and with stock-shaped tags alike
     (tests 2-4). Presumably MCC pairs every sfx tag with an Anniversary counterpart.
   The index carries the plain path and an `old_` form (which one hits: not isolated).
+* **FSB5 sample headers (the 'pea shooter' + AR 'clipping', 2026-10-04):** bits 5-6 are
+  the CHANNEL count (0 mono, 1 stereo, 2 = 6, 3 = 8) and the data offset is bits 7-33 in
+  32-BYTE units; every sample must start 32-aligned (stock: all). h1_fsb.py first wrote
+  16-byte offsets -- a sample on an odd 16 read as 6-channel, 16 bytes early. The
+  2-entry build only worked because each fire permutation was 8032 bytes (a multiple
+  of 32). Also: halo1.dll SORTS the .lst entries itself after reading (file order is
+  irrelevant) and keys them by path; one entry per path (an alias pair on the same
+  subsongs made the summed count disagree with the bank). Bisect rule that found it:
+  old working map + new bank still broken => the bank.
 * **Halo 1 SAW reload + ready (2026-10-04):** the fp animation set (saw_anims.py, the
   AR's retimed) named the AR's reload / weapon ready. Halo 4 cues its SAW foley by FRAME
   (storm_fp_lmg.frame_event_list: reload fly_a@0 mech_a@15 mech_b@30 fly_b@54 mech_c@66
