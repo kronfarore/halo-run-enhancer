@@ -77,6 +77,10 @@ FORMAT = 'wav'
 #: the fire's TONE (h1_saw_tone.py candidates A-D; the user picks by ear): None = the plain
 #: import (thin and bright next to the H1 AR -- "a Pea Shooter")
 TONE = 'D'          # user's pick 2026-10-04 (A, the plain import, was still 'a Pea Shooter')
+#: the fire's level ABOVE the H1 AR's shot RMS (dB, soft-limited). 0 matched the AR on paper,
+#: but in game 'the AR is a good bit louder' (user, 2026-10-04): its shot peaks at full
+#: scale and is denser, so the same RMS reads quieter -> +4.
+LOUDER_DB = 4.0
 HEADROOM_DB = 0.0          # the map tag gain is not what plays (the FMOD bank is); stock-like 1.0
 BACKUP = r'E:\HaloBackups\HCEEK_saw_before_sounds'
 #: playback fields copied from the AR's sound tag
@@ -232,7 +236,7 @@ def processed(name, w):
     x, r = tone_mod.read(w)
     x = tone_mod.resample(x, r, 44100)
     if name == 'saw_fire' and TONE:
-        x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB)
+        x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB + LOUDER_DB)
     return tone_mod.resample(x, 44100, BANK_RATE)
 
 
