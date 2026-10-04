@@ -114,6 +114,7 @@ GAMES = {
                graphs=[FP + 'fp_saw_masterchief', FP + 'fp_saw_dervish'],
                graph_pairs=GRAPH_PAIRS,
                foley={'saw_reload': ('RELOAD', 1.0, -31.0), 'saw_ready': ('READY', 1.0, -23.7)},
+               foley_mono=True,
                gain={'saw_reload': -7, 'saw_ready': -9}),
     # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
     # in every game (-12 dBFS over the first 0.25 s, tag gain -3 = -15 effective), but the
@@ -129,6 +130,7 @@ GAMES = {
                  graphs=[FP + 'fp_saw_odst_recon'],
                  graph_pairs=GRAPH_PAIRS,
                  foley={'saw_reload': ('RELOAD', 1.0, -14.4), 'saw_ready': ('READY', 1.0, -8.3)},
+                 foley_mono=True,
                  gain={'saw_reload': -7, 'saw_ready': -9},
                  # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between";
                  # +4.5 (gain 0 + boost 1.5) CONFIRMED. HEADROOM RULE (boot 2026-10-03: the
@@ -273,8 +275,12 @@ def own_effects():
 
 def render_foley(name, d):
     """The Halo 4 SAW foley mix for `name` (G['foley']: cues, stretch, target active RMS),
-    one wav per variation set, as dual-mono STEREO 48 kHz (Reach's PC re-encode filter
-    `stereo` must match every port tag)."""
+    one wav per variation set, 48 kHz. Reach: dual-mono STEREO (its PC re-encode filter
+    `stereo` must match every port tag). Halo 3 / ODST: MONO (G['foley_mono']) -- the
+    stereo reload was 917 KB in the bank, over the engines' 0xC0000-byte (768 KB) chunk
+    size, and with it in the bank NO SAW sound played in either game (boot 2026-10-04;
+    the same bank cut back to the entries under the chunk size played; Reach plays the
+    same long entries fine)."""
     import wave
     import numpy as np
     import saw_port_foley as foley
@@ -287,11 +293,35 @@ def render_foley(name, d):
         if np.abs(x).max() > 0.95:
             x = 0.95 * np.tanh(x / 0.95)                  # peaks soft-limited
         y = np.clip(np.round(x * 32767), -32768, 32767).astype(np.int16)
+        mono = G.get('foley_mono')
         with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:
-            o.setnchannels(2)
+            o.setnchannels(1 if mono else 2)
             o.setsampwidth(2)
             o.setframerate(foley.RATE)
-            o.writeframes(np.repeat(y, 2).tobytes())
+            o.writeframes((y if mono else np.repeat(y, 2)).tobytes())
+
+
+#: the Halo 3 engine's chunk size for bank entries (halo3.dll .info parse: ceil(bytes /
+#: 0xC0000)); an entry over it broke the whole suffix bank in Halo 3 and ODST
+CHUNK_BYTES = 0xC0000
+
+
+def check_bank_entries():
+    """Halo 3 / ODST: refuse a bank entry over CHUNK_BYTES (the .info byte size)."""
+    import struct
+    info = os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb.info' % SUFFIX)
+    d = open(info, 'rb').read()
+    big = []
+    for k in range(len(d) // 280):
+        size = struct.unpack_from('<I', d, k * 280 + 4)[0]
+        name = d[k * 280 + 24:(k + 1) * 280].split(b'\0')[0].decode('latin-1')
+        if size > CHUNK_BYTES:
+            big.append((name.rsplit('\\', 1)[-1], size))
+    print('   bank entries: %d, largest %d bytes (limit %d)' % (
+        len(d) // 280, max(struct.unpack_from('<I', d, k * 280 + 4)[0] for k in range(len(d) // 280)),
+        CHUNK_BYTES))
+    if big:
+        raise SystemExit('bank entries over the %d-byte chunk size: %s' % (CHUNK_BYTES, big))
 
 
 GRAPH_BACKUP = r'E:\HaloBackups\%s_saw_graphs_before_foley'
@@ -408,6 +438,8 @@ def main():
         if G['route'] == 'pc' and not a.both:
             pc_only()
         set_gain()
+    if a.write and G['route'] == 'stock':
+        check_bank_entries()
     if a.install or (a.write and G['route'] == 'stock'):
         install()
     if not (a.write or a.install):
