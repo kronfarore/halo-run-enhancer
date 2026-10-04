@@ -1,7 +1,7 @@
 r"""Spawn-count test maps: multiply the counts of every squad a Spawn Count card would grow.
 
-Uses enemy_count's own squad reading and growth (grow_all: one slack reservation for
-every Halo 3 block) (counts + copied on-foot locations), so the
+Uses enemy_count's own squad reading and growth (grow_all: counts + copied on-foot
+locations in Halo 1/2, counts only in Halo 3), so the
 test exercises the patcher's code; only the share is fixed per squad (x --mult) instead of
 a percentage spread over the level. Squads that spawn by script or into a vehicle, bosses,
 vehicle squads and the other side are left alone -- exactly the cards' exclusions.

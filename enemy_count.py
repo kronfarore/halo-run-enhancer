@@ -686,144 +686,35 @@ def _copies(m, foot, loc_sz, pos_at, need, spread):
 
 
 def grow_all(m, game, plan, spread=SPREAD):
-    """Apply [(squad, new normal, new insane)]: write the counts and copy on-foot locations
-    up to the new count. Returns the number of locations added, or raises RuntimeError
-    when Halo 3 has no free space for them.
+    """Apply [(squad, new normal, new insane)] and return the number of locations added.
 
-    Halo 1 / Halo 2 append the grown block at the end of the tag data. Halo 3 cannot (a
-    block may only live where a partition maps it), so every grown location block moves
-    into zero slack -- all of them reserved in ONE run (halo_patch._h3_reserve), never
-    scattered over short runs."""
+    Halo 1 / Halo 2: write the counts and copy on-foot locations up to the new count
+    (the grown block is appended at the end of the tag data).
+
+    Halo 3: the COUNT alone. Its engine spawns a fire-team's whole count even past its
+    starting locations and the extras line up next to each other -- confirmed in game on
+    010 (two Chieftains from one location) and on 020 at x3 for enemies and allies alike
+    (2026-10-04). So Halo 3 needs no copied locations and no map space at all; copying them
+    would have to relocate the block into scarce zero slack (Halo 3 cannot append)."""
     g = str(game).strip()
-    if g != 'Halo 3':
-        h1 = g == 'Halo 1'
-        locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
-                                     (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
-        added = 0
+    if g == 'Halo 3':
         for sq, normal, insane in plan:
-            need = max(normal, insane) - sq['locs']
-            if need > 0 and sq['foot'] > 0:
-                foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
-                        if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
-                m.grow_block(sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread))
-                added += need
-            struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
-        return added
+            struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT,
+                             sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
+        return 0
+    h1 = g == 'Halo 1'
+    locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
+                                 (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
+    added = 0
     for sq, normal, insane in plan:
-        h3_queue(m, sq, sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
-    rep = h3_flush(m, spread)
-    if rep.get('dropped'):
-        raise RuntimeError(rep['reason'])
-    return rep.get('added', 0)
-
-
-# ---- Halo 3: deferred location growth ------------------------------------------------
-#
-# A grown fire-team's whole location block moves into zero slack, and slack is scarce
-# (the 8 KB+ runs hold 50-180 KB per map) and shared with every other block-growing
-# pass of the patch. So the cards only write COUNTS when they run and queue the team
-# (h3_queue); h3_flush, called once at the very end of the patch (after the weapon /
-# equipment spawns and the zoom UI have reserved theirs), copies the locations each queued
-# team needs and packs the blocks into runs of MIN_RUN bytes or more -- the largest runs first, the
-# largest blocks first. A team
-# grown by two cards moves once. A block that does not fit leaves its team at the count
-# its existing locations can seat, and the shortfall is reported.
-
-MIN_RUN = 8192       # shorter zero runs can be live data (the Halo 4 zone-tag lesson)
-
-
-def h3_queue(m, sq, count):
-    """Set a fire-team's count now; its locations follow in h3_flush."""
-    pend = m.__dict__.setdefault('_ec_pending', {})
-    if sq['off'] not in pend:
-        pend[sq['off']] = {'sq': sq, 'orig': sq['count']}
-    struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT, count)
-
-
-def _h3_free(m):
-    """[start, end) zero runs of MIN_RUN+ bytes the partition table maps, minus regions
-    reserved earlier on this map."""
-    import re
-    taken = sorted(getattr(m, '_h3_reserved', None) or [])
-    out = []
-    for _la, psz, fb in m.partitions:
-        if fb is None or not psz or fb + psz > len(m.data):
-            continue
-        for mo in re.finditer(rb'\x00{%d,}' % MIN_RUN, bytes(m.data[fb:fb + psz])):
-            segs = [[fb + mo.start() + 16, fb + mo.end() - 16]]
-            for a, b in taken:
-                nxt = []
-                for s0, e0 in segs:
-                    if b <= s0 or a >= e0:
-                        nxt.append([s0, e0])
-                    else:
-                        if a > s0:
-                            nxt.append([s0, a])
-                        if b < e0:
-                            nxt.append([b, e0])
-                segs = nxt
-            out.extend(segs)
-    return out
-
-
-def _h3_pack(m, sizes):
-    """Offsets for each size (None where nothing fits), first-fit decreasing over _h3_free;
-    the regions are recorded in m._h3_reserved like halo_patch._h3_reserve's."""
-    free = sorted(_h3_free(m), key=lambda seg: seg[0] - seg[1])   # the largest runs first
-    taken = m.__dict__.setdefault('_h3_reserved', [])
-    offs = [None] * len(sizes)
-    for i in sorted(range(len(sizes)), key=lambda k: -sizes[k]):
-        for seg in free:
-            cur = (seg[0] + 15) & ~15
-            if cur + sizes[i] > seg[1]:
-                continue
-            d = m.off2data(cur)
-            if d is None or m.data2off(d) != cur:
-                continue
-            offs[i] = cur
-            taken.append((cur, cur + sizes[i]))
-            seg[0] = cur + sizes[i]
-            break
-    return offs
-
-
-def h3_flush(m, spread=SPREAD):
-    """Copy the locations every queued fire-team needs and move the grown blocks into
-    slack. Returns {'added', 'blocks', 'bytes', 'dropped', 'reason'}; a no-op when nothing
-    is queued."""
-    pend = m.__dict__.pop('_ec_pending', None) or {}
-    jobs = []
-    for off, p in pend.items():
-        count = _i16(m, off + H3_FT_COUNT)
-        locs = m.follow_all(off, [H3_LOCS], [H3_LOC_SZ], 'all')
-        foot = [loc for loc in locs if _i16(m, loc + H3_LOC_VEH) < 0]
-        need = count - len(locs)
-        if need > 0 and foot:
-            old = b''.join(bytes(m.data[l:l + H3_LOC_SZ]) for l in locs)
-            jobs.append((off, p, len(locs), old + b''.join(
-                _copies(m, foot, H3_LOC_SZ, H3_LOC_POS, need, spread))))
-    offs = _h3_pack(m, [len(j[3]) for j in jobs])
-    added = dropped = placed = used = 0
-    for (off, p, nloc, blob), dest in zip(jobs, offs):
-        if dest is None:
-            # no room: keep what the existing locations can seat (never below the shipped
-            # count)
-            keep = max(nloc, p['orig'])
-            dropped += _i16(m, off + H3_FT_COUNT) - keep
-            struct.pack_into('<h', m.data, off + H3_FT_COUNT, keep)
-            continue
-        m.data[dest:dest + len(blob)] = blob
-        struct.pack_into('<i', m.data, off + H3_LOCS, len(blob) // H3_LOC_SZ)
-        struct.pack_into('<I', m.data, off + H3_LOCS + 4, m.off2data(dest))
-        added += len(blob) // H3_LOC_SZ - nloc
-        placed += 1
-        used += len(blob)
-    rep = {'added': added, 'blocks': placed, 'bytes': used, 'dropped': dropped,
-           'queued': len(pend)}
-    if dropped:
-        rep['reason'] = ('the map ran out of free space for %d more spawn location block(s): '
-                         '%d extra actor(s) not placed' % (len(jobs) - placed, dropped))
-    return rep
+        need = max(normal, insane) - sq['locs']
+        if need > 0 and sq['foot'] > 0:
+            foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
+                    if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
+            m.grow_block(sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread))
+            added += need
+        struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
+    return added
 
 
 def grow(m, game, sq, normal, insane, spread=SPREAD):
@@ -880,13 +771,7 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
         if dn or di:
             work.append((sq, sq['normal'] + dn if sq['normal'] > 0 else 0,
                          sq['insane'] + di if sq['insane'] > 0 else 0))
-    if str(game).strip() == 'Halo 3':
-        # counts now, locations at the end of the patch (h3_flush)
-        for sq, n, i in work:
-            h3_queue(m, sq, sq['count'] + (n - sq['normal']) + (i - sq['insane']))
-        locs = 'queued'
-    else:
-        locs = grow_all(m, game, work)
+    locs = grow_all(m, game, work)
     changed = len(work)
     return {'ok': True, 'skip': False, 'base': plan['normal'][0], 'script': script,
             'extra': plan['normal'][1], 'extra_insane': plan['insane'][1],

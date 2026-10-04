@@ -8428,8 +8428,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                  else 'Insane count', rep['extra_insane'], rep['squads'],
                                  rep['of'],
                                  'fire-teams' if str(game).strip() == 'Halo 3' else 'squads',
-                                 'locations at the end of the patch'
-                                 if rep['locations'] == 'queued'
+                                 'counts only (the engine seats them)'
+                                 if str(game).strip() == 'Halo 3'
                                  else '%d new locations' % rep['locations']))
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'enemy count failed'))
@@ -8835,18 +8835,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         # with, so anything that moves it -- a card, a skull, a port's balance -- is
         # already accounted for.
         results.extend(apply_ammo_display(m, game, registry, mags_before))
-
-    if getattr(m, '_ec_pending', None):
-        # Spawn Count on Halo 3 wrote its counts during the ops and queued the fire-teams;
-        # their grown location blocks go into zero slack LAST, after every other pass has
-        # reserved what it needs (enemy_count.h3_flush).
-        import enemy_count
-        rep = enemy_count.h3_flush(m)
-        results.append({'effect': 'Spawn Count', 'tag': 'scnr', 'field': 'Spawn locations',
-                        'ok': True, 'old': '%d fire-team(s) grown' % rep['queued'],
-                        'new': '%d location(s) in %d block(s), %d KB of map slack%s' % (
-                            rep['added'], rep['blocks'], rep['bytes'] // 1024,
-                            ('; ' + rep['reason']) if rep.get('dropped') else '')})
 
     backup_path = None
     if any(r.get('ok') and not r.get('skip') for r in results):
