@@ -17,11 +17,11 @@ tails are two tags by class (first_person_outside / _inside); the SAW tail is im
 twice so. Halo 3's AR firing effect has NO tails.
 
 ENCODING ROUTE per game (see GAMES):
-  * Reach, CONFIRMED IN GAME 2026-10-03: PC Reach plays the MS-ADPCM audio COMPILED INTO
-    THE MAP. Boot 1 (xma2 only) was silent; `reimport-sounds <dir> adpcm no no stereo`
-    re-encodes to MS-ADPCM only (test 1: same sound without XMA2) -- it clears the bank
-    suffix, which reach_sound_suffix.py restores; with the bank file REMOVED from the game
-    folder the SAW still plays (test 2). Nothing outside the map is needed.
+  * Reach: the tags are re-encoded to MS-ADPCM (`reimport-sounds <dir> adpcm no no
+    stereo`, which clears the bank suffix; reach_sound_suffix.py restores it) -- AND the
+    FMOD bank sfx.saw.fsb must be INSTALLED in haloreach\fmod\pc (2026-10-04: without it
+    the SAW was silent; the 2026-10-03 "plays without the bank" test had heard the
+    projectile / the AR's distant-fire layer, not the SAW's sound).
   * Halo 3 / ODST, first test pending: the stock tags carry xma v2.0 ONLY, so PC must play
     stock sounds from FMOD (sfx.fsb); the H3 kits' adpcm reimport gives uncompressed PCM
     and also clears the suffix. So the first test mirrors stock: the import's XMA2 + the
@@ -410,8 +410,8 @@ def main():
     ap.add_argument('--game', choices=sorted(GAMES), default='reach')
     ap.add_argument('--write', action='store_true')
     ap.add_argument('--install', action='store_true',
-                    help='copy the FMOD bank into the game folder (automatic on the stock route; '
-                         'Reach does not need it)')
+                    help='copy the FMOD bank into the game folder (automatic with --write); '
+                         'fails while MCC has that game loaded (the bank file is locked)')
     ap.add_argument('--boost', type=float, metavar='DB',
                     help="override the audio boost (dB) of every boosted sound of this game. "
                          "The boost lives in the BANK only, so on the stock route (H3/ODST) a "
@@ -440,7 +440,10 @@ def main():
         set_gain()
     if a.write and G['route'] == 'stock':
         check_bank_entries()
-    if a.install or (a.write and G['route'] == 'stock'):
+    # EVERY route installs the bank: Reach plays from it too (boot 2026-10-04 -- with
+    # sfx.saw.fsb installed for the first time the SAW's fire, reload and ready played;
+    # the earlier "bank not needed" test heard the projectile / AR distant layer)
+    if a.install or a.write:
         install()
     if not (a.write or a.install):
         print('(dry run -- pass --write)')
