@@ -93,14 +93,22 @@ H3_LOCS, H3_LOC_SZ, H3_LOC_POS, H3_LOC_CHAR, H3_LOC_VEH = 0x54, 0x88, 0x8, 0x28,
 H3_CHAR_UNIT, H3_CHAR_PARENT, H3_BIPD_TEAM = 0x14, 0x4, 0xFC
 H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT = 0x3EC, 0x34, 0x24
 H3_SCRIPT_PARAMS, H3_PARAM_SZ = 0x28, 0x24
-H3_CALL_FLAGS = (8, 10)        # expression flags of a call group (built-in / script)
+H3_CALL_FLAGS = (8, 10)
+ODST_PALETTE, ODST_GROUPS, ODST_SCRIPTS = 0x3E8, 0x3AC, 0x42C    # elements as Halo 3's
+ODST_SQUADS, ODST_SQ_SZ = 0x3B8, 0x6C        # Flags +0x20, Team +0x24, Group +0x26 as H3
+ODST_LOCS, ODST_LOC_SZ, ODST_LOC_CELL, ODST_LOC_CHAR = 0x3C, 0x90, 0x10, 0x32
+ODST_CELLS = (0x54, 0x60)                    # Designer / Templated Cells, element 0x84
+ODST_CELL_SZ, ODST_CELL_DIFF, ODST_CELL_COUNT, ODST_CELL_VEH = 0x84, 0x4, 0x10, 0x46
+ODST_CELL_CHARS, ODST_CHAR_SZ, ODST_CHAR_IDX = 0x14, 0x10, 0xC
+ODST_BIPD_TEAM = 0x10C        # expression flags of a call group (built-in / script)
 TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'heretic',
               'prophet', 'guilty')
 
 #: Characters never multiplied, and squads holding one are left alone: the bosses and the
 #: story characters (a second Tartarus or Regret would break the fight scripts).
 BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'miranda',
-              'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty')
+              'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty',
+              '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero', 'scarab')
 #: ...and by the character's species folder: Halo 1's Keyes is `characters\captain\...`, a
 #: word that must not catch `brute_captain`.
 BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
@@ -109,7 +117,7 @@ BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
                  'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot')
 SPREAD = 0.6       # world units between a copied location and its source
-GAMES = ('Halo 1', 'Halo 2', 'Halo 3')
+GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST')
 
 
 def _i16(m, o):
@@ -432,7 +440,7 @@ def _h3_effects(t, fn, a, placers, loaders):
     return placed, bound
 
 
-def h3_script_refs(m, tree=None):
+def h3_script_refs(m, tree=None, game='Halo 3'):
     """What the compiled scripts do with squads, by NAME: {'place': {name: calls},
     'literal': {name: actors}, 'bound': {names}, 'allied': set, 'removed': set}.
 
@@ -443,10 +451,11 @@ def h3_script_refs(m, tree=None):
     ai_vehicle_enter_immediate, ai_place_in_vehicle) a LOADER -- to a fixed point, since
     helpers call helpers."""
     import halo_patch
-    t = tree or _tree(m, 'Halo 3')
+    t = tree or _tree(m, game)
     s = halo_patch._scnr_base(m)
     scripts = []
-    for el in m.follow_all(s, [H3_SCRIPTS], [H3_SCRIPT_SZ], 'all'):
+    soff = ODST_SCRIPTS if str(game).strip() == 'Halo 3: ODST' else H3_SCRIPTS
+    for el in m.follow_all(s, [soff], [H3_SCRIPT_SZ], 'all'):
         params = [m.data[p:p + 0x20].split(b'\0')[0].decode('latin-1').lower()
                   for p in m.follow_all(el, [H3_SCRIPT_PARAMS], [H3_PARAM_SZ], 'all')]
         if params:
@@ -516,7 +525,7 @@ def h3_script_refs(m, tree=None):
     return out
 
 
-def _h3_char_team(m, name, depth=0):
+def _h3_char_team(m, name, depth=0, team_at=H3_BIPD_TEAM):
     if not name or depth > 6:
         return None
     f = m.find_tags('char', name)
@@ -527,11 +536,11 @@ def _h3_char_team(m, name, depth=0):
         import halo_patch
         un = halo_patch._tag_name_by_id(m, u)
         fb = m.find_tags('bipd', un) if un else []
-        return _i16(m, fb[0][1] + H3_BIPD_TEAM) if fb else None
+        return _i16(m, fb[0][1] + team_at) if fb else None
     p = m.u32(f[0][1] + H3_CHAR_PARENT + 0xC)
     if p != 0xFFFFFFFF:
         import halo_patch
-        return _h3_char_team(m, halo_patch._tag_name_by_id(m, p), depth + 1)
+        return _h3_char_team(m, halo_patch._tag_name_by_id(m, p), depth + 1, team_at)
     return None
 
 
@@ -604,12 +613,121 @@ def h3_squads(m, tree=None):
     return out
 
 
+# ---- Halo 3: ODST ---------------------------------------------------------------------
+
+def odst_squads(m, tree=None):
+    """Every distinct CELL BLOCK, in the shape of h2_squads plus `mult`.
+
+    ODST squads are built to spawn a cell's count with few or no starting locations --
+    6,079 of 6,823 campaign cells count past their single locations and 1,678 squads have
+    none -- so a cell grows by its COUNT alone, like a Halo 3 fire-team.
+
+    The ODST tool STORED IDENTICAL CELL ARRAYS ONCE: sc100's 449 cell blocks are 40
+    distinct ones, one of them used by 12 squads, and a squad's designer and templated
+    cells are nearly always the same block. So the unit here is the cell ELEMENT, and
+    `mult` is the number of campaign squads that use it: +1 on its count puts `mult` more
+    actors on the level. A cell any of whose squads spawns by script or into a vehicle
+    never grows (the shared write would reach that squad too). Firefight's `sq_sur_*`
+    squads share some blocks; they are not counted, but a shared cell they use grows for
+    them as well. A squad whose designer and templated cells are DIFFERENT blocks (1-6 per
+    level) is counted from its templated cells and never grows."""
+    import halo_patch
+    g = 'Halo 3: ODST'
+    t = tree or _tree(m, g)
+    s = halo_patch._scnr_base(m)
+    pal, teams = [], []
+    for el in m.follow_all(s, [ODST_PALETTE], [H3_PAL_SZ], 'all'):
+        ident = m.u32(el + H3_PAL_ID)
+        nm = halo_patch._tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
+        pal.append(nm)
+        teams.append(_h3_char_team(m, nm, team_at=ODST_BIPD_TEAM))
+    refs = h3_script_refs(m, t, g)
+    names_of = {TEAM_NAMES[k]: k for k in range(len(TEAM_NAMES))}
+    removed = {b for a, b in refs['removed'] if a == 'player'} | \
+              {a for a, b in refs['removed'] if b == 'player'}
+    friends = {TEAM_PLAYER} | {names_of[n] for n in (
+        ({b for a, b in refs['allied'] if a == 'player'} |
+         {a for a, b in refs['allied'] if b == 'player'}) - removed) if n in names_of}
+    groups = [(_cstr(m, x), _i16(m, x + 0x20))
+              for x in m.follow_all(s, [ODST_GROUPS], [H3_GROUP_SZ], 'all')]
+    units, order = {}, []
+    for sq in m.follow_all(s, [ODST_SQUADS], [ODST_SQ_SZ], 'all'):
+        name = _cstr(m, sq)
+        names, gi, hops = {name}, _i16(m, sq + H3_SQ_GROUP), 0
+        while 0 <= gi < len(groups) and hops < 12:
+            names.add(groups[gi][0])
+            gi, hops = groups[gi][1], hops + 1
+        # FIREFIGHT shares these maps: its `sq_sur_*` squads are spawned by the survival
+        # system (and a few by name from the survival scripts compiled in beside the
+        # campaign's) -- never campaign squads, so never counted.
+        placed = not name.startswith('sq_sur') and (
+            bool(m.u32(sq + H3_SQ_FLAGS) & H3_INITIALLY_PLACED) or
+            any(n in refs['place'] for n in names))
+        bound = any(n in refs['bound'] for n in names)
+        literal = refs['literal'].get(name, 0)
+        dptr, tptr = m.u32(sq + ODST_CELLS[0] + 4), m.u32(sq + ODST_CELLS[1] + 4)
+        split = bool(m.u32(sq + ODST_CELLS[0]) and m.u32(sq + ODST_CELLS[1]) and dptr != tptr)
+        use = ODST_CELLS[1] if m.u32(sq + ODST_CELLS[1]) else ODST_CELLS[0]
+        cells = m.follow_all(sq, [use], [ODST_CELL_SZ], 'all')
+        locs = m.follow_all(sq, [ODST_LOCS], [ODST_LOC_SZ], 'all')
+        steam = _i16(m, sq + H3_TEAM)
+        for n, cell in enumerate(cells):
+            u = units.get(cell)
+            if u is None:
+                u = units[cell] = {'off': cell, 'users': 0, 'chars': set(), 'steam': set(),
+                                   'bound': False, 'fixed': False, 'split': False, 'script': 0,
+                                   'names': []}
+                order.append(cell)
+            u['chars'] |= {_i16(m, loc + ODST_LOC_CHAR) for loc in locs
+                           if _i16(m, loc + ODST_LOC_CELL) == n}
+            u['steam'].add(steam)
+            if placed:
+                u['users'] += 1
+                u['names'].append(name)
+                u['bound'] |= bound
+                u['fixed'] |= bool(literal)
+                u['split'] |= split
+                if n == 0:
+                    u['script'] += literal
+    out = []
+    for idx, cell in enumerate(order):
+        u = units[cell]
+        ci = {_i16(m, e + ODST_CHAR_IDX)
+              for e in m.follow_all(cell, [ODST_CELL_CHARS], [ODST_CHAR_SZ], 'all')} | u['chars']
+        ci = {x for x in ci if 0 <= x < len(pal) and pal[x]}
+        chars = {pal[x] for x in ci}
+        sides = {x for x in u['steam'] if x} or {teams[x] for x in ci}
+        human = any(_is_human(x) for x in chars)
+        enemy = bool(chars) and not human and not (sides & friends)
+        count = _i16(m, cell + ODST_CELL_COUNT)
+        on = struct.unpack_from('<H', m.data, cell + ODST_CELL_DIFF)[0]
+        on_normal = on == 0 or bool(on & 2)
+        on_legend = on == 0 or bool(on & 8)
+        out.append({'index': idx, 'off': cell,
+                    'name': '%s (+%d)' % (u['names'][0], u['users'] - 1) if u['users'] > 1
+                    else (u['names'][0] if u['names'] else 'cell@%x' % cell),
+                    'count': count, 'mult': max(u['users'], 1),
+                    'normal': count if on_normal else 0,
+                    'insane': count if (on_legend and not on_normal) else 0,
+                    'locs': 0, 'foot': 1, 'chars': chars, 'enemy': enemy,
+                    'ally': bool(chars) and not enemy,
+                    'vehicle': _i16(m, cell + ODST_CELL_VEH) >= 0,
+                    'boss': any(_is_boss(x) for x in chars),
+                    'script': u['script'], 'fixed': u['fixed'] or u['split'],
+                    'bound': u['bound'], 'placed': u['users'] > 0})
+    return out
+
+
+def _cstr(m, off):
+    return m.data[off:off + 0x20].split(bytes(1))[0].decode('latin-1').strip().lower()
+
+
 # ---- shared ------------------------------------------------------------------------
 
 def squads(m, game):
     g = str(game).strip()
     return (h1_squads(m) if g == 'Halo 1' else h2_squads(m) if g == 'Halo 2' else
-            h3_squads(m) if g == 'Halo 3' else None)
+            h3_squads(m) if g == 'Halo 3' else odst_squads(m) if g == 'Halo 3: ODST' else None)
 
 
 def _matching(m, game, all_squads, pattern, side='enemy'):
@@ -634,7 +752,8 @@ def _spawns(sq, key):
         return sq['script']
     if sq.get('fixed'):        # another fire-team of a squad placed with a fixed count
         return 0
-    return max(sq[key], 0) if sq['placed'] else 0
+    # an ODST cell block shared by several squads spawns its count for each of them
+    return max(sq[key], 0) * sq.get('mult', 1) if sq['placed'] else 0
 
 
 def _takes_extras(sq):
@@ -644,30 +763,33 @@ def _takes_extras(sq):
 
 
 def _allocate(squads, key, extra, rng):
-    """{squad index: extra actors} -- `extra` spread over `squads` in proportion to their
-    `key` count: the whole part of each share, then the leftovers drawn by fractional
-    share without replacement."""
-    total = sum(sq[key] for sq in squads)
+    """{squad index: count increase} -- `extra` ACTORS spread over `squads` in proportion to
+    the actors each spawns (`key` count x `mult`): the whole part of each share, then the
+    leftovers drawn by fractional share without replacement. A unit with `mult` > 1 (an
+    ODST cell block shared by several squads) moves in steps of `mult` actors."""
+    total = sum(sq[key] * sq.get('mult', 1) for sq in squads)
     if extra <= 0 or total <= 0:
         return {}
-    got, frac = {}, []
+    got, frac, mult = {}, [], {}
     for sq in squads:
-        share = sq[key] * extra / float(total)
+        mu = sq.get('mult', 1)
+        mult[sq['index']] = mu
+        share = sq[key] * mu * extra / float(total) / mu      # in count steps
         whole = int(math.floor(share))
         if whole:
             got[sq['index']] = whole
         if share > whole:
             frac.append([sq['index'], share - whole])
-    left = extra - sum(got.values())
+    left = extra - sum(n * mult[i] for i, n in got.items())
     while left > 0 and frac:
         r = rng.random() * sum(w for _i, w in frac)
         for k, (i, w) in enumerate(frac):
             r -= w
             if r <= 0 or k == len(frac) - 1:
                 got[i] = got.get(i, 0) + 1
+                left -= mult[i]
                 frac.pop(k)
                 break
-        left -= 1
     return got
 
 
@@ -697,9 +819,10 @@ def grow_all(m, game, plan, spread=SPREAD):
     (2026-10-04). So Halo 3 needs no copied locations and no map space at all; copying them
     would have to relocate the block into scarce zero slack (Halo 3 cannot append)."""
     g = str(game).strip()
-    if g == 'Halo 3':
+    if g in ('Halo 3', 'Halo 3: ODST'):
+        at = H3_FT_COUNT if g == 'Halo 3' else ODST_CELL_COUNT
         for sq, normal, insane in plan:
-            struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT,
+            struct.pack_into('<h', m.data, sq['off'] + at,
                              sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
         return 0
     h1 = g == 'Halo 1'
