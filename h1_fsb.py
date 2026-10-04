@@ -15,9 +15,14 @@ FORMATS (measured):
   FSB5 v1    0x3C header: 'FSB5', version, sample count, sample-header size, name-table
              size, data size, mode (7 = IMA ADPCM), 8 zero, 16-byte hash, 8 more. Sample
              header = u64: bit 0 extra chunks (none here), bits 1-4 rate index (5 = 22050,
-             8 = 44100), bit 5 stereo, bits 6-33 data offset in 16-byte units, bits 34-63
-             sample count. Name table: u32 offset per sample, then NUL-terminated names,
-             padded so the data starts 32-aligned. Data: 16-aligned.
+             8 = 44100), bits 5-6 CHANNELS (0 mono, 1 stereo, 2 = 6 ch, 3 = 8 ch), bits
+             7-33 data offset in 32-BYTE units, bits 34-63 sample count. Name table: u32
+             offset per sample, then NUL-terminated names, padded so the data starts
+             32-aligned. Data: every sample 32-ALIGNED.
+             (2026-10-04: first written as "bit 5 stereo, bits 6-33 offset in 16-byte
+             units" with 16-byte padding -- a sample landing on an odd 16 then read as a
+             6-CHANNEL sound 16 bytes early: the SAW fire turned into the casing click
+             alone and the AR "clipped". Stock has every sample 32-aligned.)
   XBOX IMA   36-byte blocks (mono): s16 predictor, u8 step index, u8 0, 32 bytes = 64
              4-bit codes (low nibble first) -> 64 samples per block.
 
@@ -101,8 +106,20 @@ def read_fsb(path):
     return dict(head=head, n=n, shs=shs, nts=nts, ds=ds, mode=mode), sh, names, HDR + shs + nts
 
 
-def sample_header(rate, offset16, samples, stereo=False):
-    return (RATES[rate] << 1) | (int(stereo) << 5) | (offset16 << 6) | (samples << 34)
+def sample_header(rate, offset, samples, stereo=False):
+    """`offset` in BYTES from the data section start; must be 32-aligned."""
+    if offset % 32:
+        raise ValueError('FSB5 sample data must be 32-aligned (offset %d)' % offset)
+    return (RATES[rate] << 1) | (int(stereo) << 5) | ((offset // 32) << 7) | (samples << 34)
+
+
+def sample_offset(h):
+    """Byte offset of a sample's data within the data section."""
+    return ((h >> 7) & 0x7FFFFFF) * 32
+
+
+def sample_channels(h):
+    return (1, 2, 6, 8)[(h >> 5) & 3]
 
 
 def append_fsb(src, dst, new, keep=None):
@@ -114,16 +131,16 @@ def append_fsb(src, dst, new, keep=None):
         raise ValueError('bank mode %d, not IMA ADPCM' % info['mode'])
     if keep is not None and keep < info['n']:
         # drop the tail (an earlier install of port samples): data up to its first one
-        info['ds'] = ((sh[keep] >> 6) & 0x0FFFFFFF) * 16
+        info['ds'] = sample_offset(sh[keep])
         sh, names, info['n'] = sh[:keep], names[:keep], keep
-    pos = info['ds'] + (-info['ds'] % 16)
+    pos = info['ds'] + (-info['ds'] % 32)
     blobs = bytearray(b'\0' * (pos - info['ds']))
     sh = list(sh)
     for name, rate, blob, ns in new:
-        sh.append(sample_header(rate, pos // 16, ns))
+        sh.append(sample_header(rate, pos, ns))
         blobs += blob
         pos += len(blob)
-        pad = -pos % 16
+        pad = -pos % 32
         blobs += b'\0' * pad
         pos += pad
     names = names + [n for n, _r, _b, _s in new]

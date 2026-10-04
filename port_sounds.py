@@ -289,7 +289,9 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
             return False
         with open(fsb, 'rb') as f:
             for k, (_n, _r, blob, _ns) in enumerate(samples):
-                f.seek(data_at + ((sh[p0 + k] >> 6) & 0x0FFFFFFF) * 16)
+                if h1_fsb.sample_channels(sh[p0 + k]) != 1:
+                    return False                  # a mis-encoded header (old 16-byte layout)
+                f.seek(data_at + h1_fsb.sample_offset(sh[p0 + k]))
                 if f.read(len(blob)) != blob:
                     return False
         # EXACTLY ours: an entry left over from an earlier manifest (pointing into the
