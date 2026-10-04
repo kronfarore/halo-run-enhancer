@@ -15643,6 +15643,17 @@
 					{ "step": "*1.1", "field": "Maximum Velocity", "nth": {"default": 0, "Halo Reach": 2, "Halo 4": 2}, "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform", "Halo Reach": "bipd objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer", "Halo 4": "bipd objects\\characters\\storm_sentinel\\storm_sentinel & objects\\characters\\storm_bishop\\storm_bishop"}, "group": "Flight Speed", "min": 0 },
 					{ "step": "*1.1", "field": "Maximum Sidestep Velocity", "tag": {"Halo 1": "bipd characters\\sentinel\\sentinel", "Halo 2": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger", "Halo 3: ODST": "bipd objects\\characters\\sentinel_aggressor\\* & objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer & objects\\characters\\engineer\\engineer_freeform", "Halo Reach": "bipd objects\\characters\\bugger\\bugger & objects\\characters\\engineer\\engineer", "Halo 4": "bipd objects\\characters\\storm_sentinel\\storm_sentinel & objects\\characters\\storm_bishop\\storm_bishop"}, "group": "Flight Speed", "min": 0 }
 				]
+			},
+			"General Spawn Count": {
+				"color": "aggressive",
+				"desc": "How many enemies spawn.",
+				"debug_desc": "Each pick adds 10% more enemies to the level, spread over its enemy squads. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone. Stacks with each enemy's own Spawn Count card.",
+				"harder_when": "increased",
+				"game": ["Halo 2"],
+				"tag": "char objects\\characters\\*",
+				"targets": [
+					{ "step": "+0.1", "field": "Spawn Count", "squad_count": true, "min": 0 }
+				]
 			}
 		},
 		"Specific Enemy modifier": {
@@ -16511,6 +16522,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone. Elites include the Heretics (their leader is a boss and stays single).",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Hunter": {
@@ -17143,6 +17165,17 @@
 					"tag": {"Halo 1": "antr characters\\hunter\\hunter", "Halo 2": "jmad objects\\characters\\hunter\\hunter", "Halo 4": "jmad objects\\characters\\storm_hunter\\storm_hunter"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\hunter\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
 				}
 			},
@@ -17983,6 +18016,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone. Grunts include the Heretic Grunts.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Jackal": {
@@ -18788,6 +18832,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\jackal\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Flood Combat Form": {
@@ -19250,6 +19305,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Flood Infection Form": {
@@ -19521,6 +19587,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone. A squad of infection forms is counted in swarms.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\flood_infection\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Flood Carrier Form": {
@@ -19764,6 +19841,17 @@
 					"tag": {"Halo 1": "antr characters\\floodcarrier\\floodcarrier", "Halo 2": "jmad objects\\characters\\floodcarrier\\floodcarrier"},
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\floodcarrier\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
 				}
 			},
@@ -20752,6 +20840,17 @@
 						{ "step": "*1.2", "field": "Acceleration", "nth": {"default": 0, "Halo 4": 1}, "group": "Flight Acceleration", "min": 0 },
 						{ "step": "*1.2", "field": "Deceleration", "group": "Flight Acceleration", "min": 0 }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone. Aggressors and Constructors; Enforcers count only for the General card.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\sentinel_aggressor\\* & objects\\characters\\sentinel_constructor\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Bugger": {
@@ -21193,6 +21292,17 @@
 					"targets": [
 						{ "step": "*1.2", "field": "Acceleration", "nth": {"default": 0, "Halo Reach": 1}, "group": "Flight Acceleration", "min": 0 },
 						{ "step": "*1.2", "field": "Deceleration", "group": "Flight Acceleration", "min": 0 }
+					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\bugger\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
 				}
 			},
@@ -21883,6 +21993,17 @@
 					"tag": "jmad objects\\characters\\brute\\brute",
 					"targets": [
 						{ "step": "*1.2", "field": "Movement Animation", "move_speed": true }
+					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many of them spawn.",
+					"debug_desc": "Each pick adds 20% more of this enemy to the level: the share of the level's squads that field it. Halo 2 places min(difficulty count, starting locations) actors per squad, so this adds to the squads' Normal and Insane Difficulty Counts and copies their on-foot starting locations where the new count needs them (confirmed in game on 03a, 2026-10-04). The percentage is of every matching enemy the level spawns, script waves with a fixed count (ai_place squad N) included; those script-placed squads take no extras, the others share them in proportion to their size (whole shares first, leftovers drawn by a generator seeded per map and card, so co-op machines agree). A mixed squad counts for each species in it. Enemies = not allied with the player by the level's ai_allegiance calls and not human; vehicle squads, bosses (Tartarus, the Heretic Leader, Regret, Guilty Spark) and count-0 squads are left alone.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\brute\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
 				}
 			},

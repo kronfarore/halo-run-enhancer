@@ -5783,6 +5783,21 @@ class MagnitudeEditorDialog(QDialog):
                     'None' if amt is None else round(amt, 4), where)
             except Exception:
                 return '0.1 per kill (hardcoded in the game dll)'
+        if target.get('squad_count'):
+            # More enemies: not a tag field -- a share of the level's matching enemies
+            # (script waves included) is added to its squads. Show how many there are.
+            try:
+                import enemy_count
+                tot = enemy_count.enemy_total(m, self.game, path)
+                if tot is None:
+                    return "share of the level's enemies (not available in this game yet)"
+                squad, script, n = tot
+                if not n:
+                    return "— none on this level"
+                return ('%d enemies on this level (%d in %d squads, %d by script)  '
+                        '(+0.1 = 10%% more per pick)' % (squad + script, squad, n, script))
+            except Exception:
+                return "share of the level's enemies"
         if target.get('move_speed'):
             # Halo 1 ground speed lives in the move animations' root motion: show the
             # plain run (fastest `stand` move-front) per graph in world units/s.
@@ -8528,6 +8543,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'morph_anim': t.get('morph_anim'),
                                          'infect_anim': t.get('infect_anim'),
                                          'move_speed': t.get('move_speed'),
+                                         'squad_count': t.get('squad_count'),
                                          'sword_drain': t.get('sword_drain'),
                                          'equip_drop': t.get('equip_drop'),
                                          # optional bounds on the RESULT (e.g. a

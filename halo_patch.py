@@ -8397,6 +8397,35 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                     r.update(ok=False, reason=rep.get('reason', 'movement scale failed'))
                 results.append(r)
                 continue
+            if op.get('squad_count'):
+                # More enemies (enemy_count.py): the operator on 0 is the share of the
+                # level's matching enemies -- script waves included -- added to its
+                # squads. The card's tag is a char pattern ('objects\characters\*' for
+                # every enemy). Seeded per scenario and card, so co-op machines agree.
+                parsed = hm.parse_operator(op.get('op_str'))
+                if not parsed:
+                    results.append({**base, 'ok': False, 'reason': 'blank/invalid operator'})
+                    continue
+                oper, val = parsed
+                pct = hm.OP_FUNCS[oper](0.0, val)
+                cpath = path
+                if op.get('tag'):
+                    _c, cpath = hm.split_tag(op['tag'])
+                    base = {**base, 'tag': op['tag']}
+                import enemy_count
+                rep = enemy_count.scale_enemy_count(m, game, cpath, pct, seed=item['name'])
+                r = {**base}
+                if rep.get('skip'):
+                    r.update(ok=True, skip=True, reason=rep.get('reason'))
+                elif rep.get('ok'):
+                    r.update(ok=True, old='%d enemies (%d by script)' % (rep['base'], rep['script']),
+                             new='+%d (Insane count +%d) in %d of %d squads, %d new locations'
+                                 % (rep['extra'], rep['extra_insane'], rep['squads'], rep['of'],
+                                    rep['locations']))
+                else:
+                    r.update(ok=False, reason=rep.get('reason', 'enemy count failed'))
+                results.append(r)
+                continue
             if (op.get('reload_anim') or op.get('swap_anim') or op.get('berserk_anim')
                     or op.get('morph_anim') or op.get('infect_anim')):
                 # Halo 3 reload-speed: scale the first-person reload ANIMATION length
