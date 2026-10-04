@@ -349,6 +349,56 @@
      "value": 540,
      "card": "Ammo pickup",
      "original": null
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Sequence Index",
+     "block": "Meter Elements",
+     "index": 0,
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Alpha Multiplier",
+     "block": "Meter Elements",
+     "index": 0,
+     "value": 1,
+     "card": "Ammo display",
+     "original": 3
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Alpha Bias",
+     "block": "Meter Elements",
+     "index": 0,
+     "value": 2,
+     "card": "Ammo display",
+     "original": 1
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Sequence Index",
+     "block": "Static Elements",
+     "index": 0,
+     "value": 1,
+     "card": "Ammo display",
+     "original": 0
+    },
+    {
+     "class": "wphi",
+     "tag": "weapons\\saw\\saw",
+     "field": "Loaded Ammo Cutoff",
+     "block": null,
+     "index": 0,
+     "value": 22,
+     "card": "Ammo display",
+     "original": 12
     }
    ],
    "anims": {
