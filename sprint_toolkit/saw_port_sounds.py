@@ -68,17 +68,39 @@ RELOAD = {'saw_reload': ('foley', 'weapon_reload')}
 READY = {'saw_ready': ('foley', 'weapon_ready')}
 RELOAD_REACH = {'saw_reload_empty': ('foley', 'weapon_reload'),
                 'saw_reload_full': ('foley', 'weapon_reload')}
+# SECOND BATCH (2026-10-04): melee, idle fidgets, Reach's first draw -- same frame-cued
+# mixes (saw_port_foley MELEE1/2, POSE1/2, READY_INITIAL). Classes as the donors'.
+MELEE = {'saw_melee1': ('foley', 'weapon_melee'), 'saw_melee2': ('foley', 'weapon_melee')}
+POSE = {'saw_pose1': ('foley', 'weapon_idle'), 'saw_pose2': ('foley', 'weapon_idle')}
+FIRST_DRAW = {'saw_ready_initial': ('foley', 'weapon_ready'),
+              # Reach's first draw cues ar_ready_hero AND a second ar_ready reference (now
+              # saw_ready); Halo 4 plays its ready_initial alone (+ a silent cue), so that
+              # second reference points at this short silence (G['graph_last'])
+              'saw_silence': ('silence', 'weapon_ready')}
 FP = B.join(['objects', 'weapons', 'rifle', 'saw', 'fp', ''])
 SAW_DIR = B.join(['objects', 'weapons', 'rifle', 'saw', ''])
 GRAPH_PAIRS = [(AR_SND + B + 'ar_reload', SND_DIR + B + 'saw_reload'),
-               (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready')]
+               (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready'),
+               (AR_SND + B + 'ar_melee1', SND_DIR + B + 'saw_melee1'),
+               (AR_SND + B + 'ar_melee2', SND_DIR + B + 'saw_melee2'),
+               (AR_SND + B + 'assault_rifle_pose_var1', SND_DIR + B + 'saw_pose1'),
+               (AR_SND + B + 'assault_rifle_pose_var2', SND_DIR + B + 'saw_pose2')]
 ELITE = AR_SND + B + 'ar_elite_fp' + B
 GRAPH_PAIRS_REACH = [(AR_SND + B + 'ar_reload_empty', SND_DIR + B + 'saw_reload_empty'),
                      (AR_SND + B + 'ar_reload_full', SND_DIR + B + 'saw_reload_full'),
                      (AR_SND + B + 'ar_ready', SND_DIR + B + 'saw_ready'),
                      (ELITE + 'elite_ar_reload_empty', SND_DIR + B + 'saw_reload_empty'),
                      (ELITE + 'elite_ar_reload_full', SND_DIR + B + 'saw_reload_full'),
-                     (ELITE + 'elite_ar_ready', SND_DIR + B + 'saw_ready')]
+                     (ELITE + 'elite_ar_ready', SND_DIR + B + 'saw_ready'),
+                     (AR_SND + B + 'ar_melee_1', SND_DIR + B + 'saw_melee1'),
+                     (AR_SND + B + 'ar_melee_2', SND_DIR + B + 'saw_melee2'),
+                     (AR_SND + B + 'ar_pose_1', SND_DIR + B + 'saw_pose1'),
+                     (AR_SND + B + 'ar_pose_2', SND_DIR + B + 'saw_pose2'),
+                     (ELITE + 'elite_ar_melee1', SND_DIR + B + 'saw_melee1'),
+                     (ELITE + 'elite_ar_melee2', SND_DIR + B + 'saw_melee2'),
+                     (ELITE + 'elite_ar_pose1', SND_DIR + B + 'saw_pose1'),
+                     (ELITE + 'elite_ar_pose2', SND_DIR + B + 'saw_pose2'),
+                     (AR_SND + B + 'ar_ready_hero', SND_DIR + B + 'saw_ready_initial')]
 FIRE_PAIR = [(AR_SND + B + 'ar_fire', SND_DIR + B + 'saw_fire')]
 TAIL_PAIRS = [(AR_SND + B + 'ar_tail_ext', SND_DIR + B + 'saw_tail_ext'),
               (AR_SND + B + 'ar_tail_int', SND_DIR + B + 'saw_tail_int')]
@@ -91,7 +113,8 @@ DRY_PAIR = [(DRYFIRE, SND_DIR + B + 'saw_dryfire')]
 #: adpcm reimport gives uncompressed PCM and clears the bank suffix).
 GAMES = {
     'reach': dict(ek='HREK', folder='haloreach', route='pc',
-                  sounds=dict(FIRE, **TAILS, **DRY, **RELOAD_REACH, **READY),
+                  sounds=dict(FIRE, **TAILS, **DRY, **RELOAD_REACH, **READY, **MELEE, **POSE,
+                              **FIRST_DRAW),
                   effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                            'empty': (AR_FX + B + 'empty', DRY_PAIR)},
                   # the graphs the weapon USES (saw.weapon jmad refs) keep their sounds in a
@@ -104,20 +127,29 @@ GAMES = {
                   # 4's own 128 frames (ready 24), so the cues fit 1:1
                   foley={'saw_reload_empty': ('RELOAD', 1.0, -14.7),
                          'saw_reload_full': ('RELOAD', 1.0, -16.6),
-                         'saw_ready': ('READY', 1.0, -16.2)},
-                  gain={'saw_reload_empty': -11, 'saw_reload_full': -11, 'saw_ready': -17}),
+                         'saw_ready': ('READY', 1.0, -16.2),
+                         'saw_melee1': ('MELEE1', 1.0, -17.0), 'saw_melee2': ('MELEE2', 1.0, -16.4),
+                         'saw_pose1': ('POSE1', 1.0, -28.9), 'saw_pose2': ('POSE2', 1.0, -27.6),
+                         'saw_ready_initial': ('READY_INITIAL', 1.0, -13.7)},
+                  graph_last=[(SND_DIR + B + 'saw_ready', SND_DIR + B + 'saw_silence')],
+                  gain={'saw_reload_empty': -11, 'saw_reload_full': -11, 'saw_ready': -17,
+                        'saw_melee1': -12, 'saw_melee2': -12, 'saw_pose1': -17, 'saw_pose2': -17,
+                        'saw_ready_initial': -17, 'saw_silence': -17}),
     # Halo 3's AR firing effect has no tails: fire + distant fire only
     'h3': dict(ek='H3EK', folder='halo3', route='stock',
-               sounds=dict(FIRE, **DRY, **RELOAD, **READY),
+               sounds=dict(FIRE, **DRY, **RELOAD, **READY, **MELEE, **POSE),
                effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR),
                         'empty': (BR_FX + B + 'empty', DRY_PAIR)},
                graphs=[FP + 'fp_saw_masterchief', FP + 'fp_saw_dervish'],
                graph_pairs=GRAPH_PAIRS,
                # reload +4 dB over the H3 AR's own (-31): "could use a bit more volume" (user,
                # 2026-10-04) -- audio level only, so a bank reinstall, no rebuild
-               foley={'saw_reload': ('RELOAD', 1.0, -27.0), 'saw_ready': ('READY', 1.0, -23.7)},
+               foley={'saw_reload': ('RELOAD', 1.0, -27.0), 'saw_ready': ('READY', 1.0, -23.7),
+                      'saw_melee1': ('MELEE1', 1.0, -18.8), 'saw_melee2': ('MELEE2', 1.0, -19.1),
+                      'saw_pose1': ('POSE1', 1.0, -17.2), 'saw_pose2': ('POSE2', 109 / 106.0, -32.4)},
                foley_mono=True,
-               gain={'saw_reload': -7, 'saw_ready': -9}),
+               gain={'saw_reload': -7, 'saw_ready': -9, 'saw_melee1': -5, 'saw_melee2': -5,
+                     'saw_pose1': -3, 'saw_pose2': -3}),
     # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
     # in every game (-12 dBFS over the first 0.25 s, tag gain -3 = -15 effective), but the
     # games' own mixes differ: Halo 3's AR is -22 effective (the SAW stands 7 dB above it),
@@ -126,14 +158,17 @@ GAMES = {
     # CAPPED AT 0 dB (`tool process-sounds <dir> <spec> gain= 4` stays 0, gain+ stops at
     # 0): -3 -> 0 gives +3; the other +3 is the AUDIO, soft-limited (boosted()).
     'odst': dict(ek='H3ODSTEK', folder='halo3odst', route='stock',
-                 sounds=dict(FIRE, **TAILS, **DRY, **RELOAD, **READY),
+                 sounds=dict(FIRE, **TAILS, **DRY, **RELOAD, **READY, **MELEE, **POSE),
                  effects={'firing': (AR_FX + B + 'firing', FIRE_PAIR + TAIL_PAIRS),
                           'empty': (BR_FX + B + 'empty', DRY_PAIR)},
                  graphs=[FP + 'fp_saw_odst_recon'],
                  graph_pairs=GRAPH_PAIRS,
-                 foley={'saw_reload': ('RELOAD', 1.0, -14.4), 'saw_ready': ('READY', 1.0, -8.3)},
+                 foley={'saw_reload': ('RELOAD', 1.0, -14.4), 'saw_ready': ('READY', 1.0, -8.3),
+                        'saw_melee1': ('MELEE1', 1.0, -11.0), 'saw_melee2': ('MELEE2', 1.0, -14.3),
+                        'saw_pose1': ('POSE1', 1.0, -22.8), 'saw_pose2': ('POSE2', 109 / 106.0, -24.8)},
                  foley_mono=True,
-                 gain={'saw_reload': -7, 'saw_ready': -9},
+                 gain={'saw_reload': -7, 'saw_ready': -9, 'saw_melee1': -5, 'saw_melee2': -5,
+                       'saw_pose1': -3, 'saw_pose2': -3},
                  # +6 total (boost 3.0) was too loud (user, 2026-10-03): "somewhere in-between";
                  # +4.5 (gain 0 + boost 1.5) CONFIRMED. HEADROOM RULE (boot 2026-10-03: the
                  # engine CLAMPS Gain Base at 0 dB in the map, +12 was unmoved, -20 near
@@ -177,7 +212,9 @@ def import_sounds():
         os.makedirs(d)
         if src == 'foley':
             render_foley(name, d)
-        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))) if src != 'foley' else ():
+        elif src == 'silence':
+            render_silence(name, d)
+        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))) if src not in ('foley', 'silence') else ():
             dst = os.path.join(d, os.path.basename(w))
             if G.get('boost', {}).get(name):
                 boosted(w, dst, G['boost'][name])
@@ -303,6 +340,16 @@ def render_foley(name, d):
             o.writeframes((y if mono else np.repeat(y, 2)).tobytes())
 
 
+def render_silence(name, d):
+    """0.1 s of digital silence (stereo 48 kHz, like the Reach foley)."""
+    import wave
+    with wave.open(os.path.join(d, name + '.wav'), 'wb') as o:
+        o.setnchannels(2)
+        o.setsampwidth(2)
+        o.setframerate(48000)
+        o.writeframes(bytes(4 * 4800))
+
+
 #: the Halo 3 engine's chunk size for bank entries (halo3.dll .info parse: ceil(bytes /
 #: 0xC0000)); an entry over it broke the whole suffix bank in Halo 3 and ODST
 CHUNK_BYTES = 0xC0000
@@ -347,6 +394,14 @@ def own_graph_sounds():
             if n:
                 print('   %-22s %-28s -> %s  x%d' % (os.path.basename(g), old.rsplit(B, 1)[-1],
                                                    new.rsplit(B, 1)[-1], n))
+        # one-occurrence repoints (the LAST reference), only while the target is not named
+        # yet -- on a re-run the last `old` would be a different animation's
+        for old, new in G.get('graph_last') or ():
+            if any(r[1] == 'snd!' and r[2].lower() == new.lower() for r in t.references()):
+                continue
+            n = t.repoint(old, new, 'snd!', last=True)
+            print('   %-22s last %-23s -> %s  x%d' % (os.path.basename(g), old.rsplit(B, 1)[-1],
+                                                    new.rsplit(B, 1)[-1], n))
         t.save()
         if not h3tag.Tag(path).check()[0]:
             raise SystemExit('%s no longer spans its file' % path)

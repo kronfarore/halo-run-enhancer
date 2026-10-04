@@ -71,13 +71,17 @@ SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
           # first-person animations name these (saw_anims.py). `foley` sources, below.
           'saw_reload': ('foley', AR_ANIM + B + 'ar_reload'),
           'saw_reload_balanced': ('foley', AR_ANIM + B + 'ar_reload'),
-          'saw_ready': ('foley', AR_SND + B + 'weapon ready')}
+          'saw_ready': ('foley', AR_SND + B + 'weapon ready'),
+          # second batch: melee (the H1 animation set cues ONE melee sound, ar_melee)
+          'saw_melee': ('foley', AR_ANIM + B + 'ar_melee')}
 #: foley sound -> (cues, stretch, active-RMS target = the H1 AR's own, measured in the
 #: classic bank: ar_reload -20.9 dBFS, weapon ready -13.1). The balanced animation set
 #: (saw_anims.py balanced) plays the reload in 164 frames instead of 128.
 FOLEY = {'saw_reload': ('RELOAD', 1.0, -20.9),
          'saw_reload_balanced': ('RELOAD', 164 / 128.0, -20.9),
-         'saw_ready': ('READY', 1.0, -13.1)}
+         'saw_ready': ('READY', 1.0, -13.1),
+         # Halo 4's first melee set (8 variations) at the H1 AR melee's level (-16.2 avg)
+         'saw_melee': ('MELEE1', 1.0, -16.2)}
 AR_FX = B.join(['weapons', 'assault rifle', 'effects'])
 OWN_FX = B.join(['weapons', 'saw', 'effects'])
 #: own effect -> (the AR's, [(sound it names, own sound)])

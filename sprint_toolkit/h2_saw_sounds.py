@@ -47,7 +47,11 @@ SOUNDS = {'saw_fire': ('fire', 'weapon_fire'), 'saw_dryfire': ('dryfire', 'weapo
           # (saw_port_foley.py). Both SAW graphs cue ONE sound per animation (frame 1) and
           # their reload is 128 frames like Halo 4's -> the mix fits 1:1. Halo 4's own
           # level (the donor SMG audio sits inside the map as Opus, not measured).
-          'saw_reload': ('foley:RELOAD', 'weapon_reload'), 'saw_ready': ('foley:READY', 'weapon_ready')}
+          'saw_reload': ('foley:RELOAD', 'weapon_reload'), 'saw_ready': ('foley:READY', 'weapon_ready'),
+          # second batch: melee (graph melee_strike_1) and the idle fidget (posing var1,
+          # 70 frames here against Halo 4's 90 -> cues compressed: `@` = stretch)
+          'saw_melee1': ('foley:MELEE1', 'weapon_melee'),
+          'saw_pose1': ('foley:POSE1@%.6f' % (70 / 90.0), 'weapon_animation')}
 SMG = B.join(['sound', 'weapons', 'smg', ''])
 GRAPHS = [B.join(['objects', 'characters', s, 'fp', 'weapons', 'rifle', 'fp_saw',
                   'fp_saw.model_animation_graph']) for s in ('masterchief', 'dervish')]
@@ -55,7 +59,8 @@ GRAPHS = [B.join(['objects', 'characters', s, 'fp', 'weapons', 'rifle', 'fp_saw'
 REPOINT = [(FIRE_FX, B.join(['sound', 'weapons', 'smg', 'fire']), SND_DIR + B + 'saw_fire'),
            (WEAPON, B.join(['sound', 'weapons', 'battle_rifle', 'dryfire']), SND_DIR + B + 'saw_dryfire')] + \
           [(g, SMG + s, SND_DIR + B + n) for g in GRAPHS
-           for s, n in (('smg_reload', 'saw_reload'), ('smg_ready', 'saw_ready'))]
+           for s, n in (('smg_reload', 'saw_reload'), ('smg_ready', 'saw_ready'),
+                        ('smg_melee1', 'saw_melee1'), ('smg_posing_var0', 'saw_pose1'))]
 GRAPH_BACKUP = r'E:\HaloBackups\H2EK_saw_graphs_before_foley'
 #: gain base per sound (dB, before the marker); the import gives -3
 GAIN = {'saw_fire': -3.0, 'saw_dryfire': -3.0}
@@ -101,9 +106,11 @@ def render_foley(name, cues_name, d):
     import wave
     import numpy as np
     import saw_port_foley as foley
+    cues_name, _at, stretch = cues_name.partition('@')
+    stretch = float(stretch or 1.0)
     cues = getattr(foley, cues_name)
     for k in range(foley.count(cues)):
-        x = foley.mix(cues, k)
+        x = foley.mix(cues, k, stretch)
         if np.abs(x).max() > 0.95:
             x = 0.95 * np.tanh(x / 0.95)
         with wave.open(os.path.join(d, '%s_%d.wav' % (name, k + 1)), 'wb') as o:

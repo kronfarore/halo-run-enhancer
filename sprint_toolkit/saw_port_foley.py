@@ -31,6 +31,18 @@ RELOAD = [('play_wea_lmg_reload_fly_a', 0), ('play_wea_lmg_reload_mech_a', 15),
           ('play_wea_lmg_reload_mech_d', 90)]
 READY = [('play_wea_lmg_ready_fly', 0), ('play_wea_lmg_ready_mech', 0)]
 RELOAD_FRAMES, READY_FRAMES = 128, 35
+# second batch (2026-10-04): melee (one random recording of 8 / 6), the idle fidgets
+# (posing var1 / var2: three pieces at frames 0, 40, 80 of 90 / 106 frames) and the
+# first draw (ready_initial: THREE LAYERS played together -- 'all' sums every recording).
+# The SAW's zoom-in/out tags name events no Halo 4 bank in MCC contains: nothing to port.
+MELEE1 = [('play_wea_lmg1_foley_melee_player', 0)]
+MELEE2 = [('play_wea_lmg2_foley_melee_player', 0)]
+POSE1 = [('play_wea_lmg_pose_var_1_a', 0), ('play_wea_lmg_pose_var_1_b', 40),
+         ('play_wea_lmg_pose_var_1_c', 80)]
+POSE2 = [('play_wea_lmg_pose_var_2_a', 0), ('play_wea_lmg_pose_var_2_b', 40),
+         ('play_wea_lmg_pose_var_2_c', 80)]
+READY_INITIAL = [('play_wea_lmg_ready_initial', 0, 'all')]
+POSE1_FRAMES, POSE2_FRAMES, READY_INITIAL_FRAMES = 90, 106, 35
 
 
 def _read(p):
@@ -49,11 +61,16 @@ def variations(event):
 def mix(cues, k=0, stretch=1.0):
     """The cues mixed at their frames (x stretch), recording k of each event."""
     parts = []
-    for event, frame in cues:
+    for cue in cues:
+        event, frame = cue[0], cue[1]
         files = variations(event)
         if not files:
             raise SystemExit('no recordings for %s in %s' % (event, SRC))
-        parts.append((int(round(frame / FPS * stretch * RATE)), _read(files[k % len(files)])))
+        at = int(round(frame / FPS * stretch * RATE))
+        if len(cue) > 2 and cue[2] == 'all':            # layers, all played together
+            parts += [(at, _read(f)) for f in files]
+        else:
+            parts.append((at, _read(files[k % len(files)])))
     n = max(at + len(x) for at, x in parts)
     out = np.zeros(n)
     for at, x in parts:
@@ -63,4 +80,4 @@ def mix(cues, k=0, stretch=1.0):
 
 def count(cues):
     """How many distinct variation sets the cues offer (the largest container)."""
-    return max(len(variations(e)) for e, _f in cues)
+    return max(1 if len(c) > 2 and c[2] == 'all' else len(variations(c[0])) for c in cues)

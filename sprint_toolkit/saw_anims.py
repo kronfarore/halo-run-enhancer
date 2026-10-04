@@ -92,6 +92,8 @@ def main():
     snd = B.join(['sound', 'weapons', 'saw_port', ''])
     own = {B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'ar_reload']).lower():
                snd + ('saw_reload' if mode == 'original' else 'saw_reload_balanced'),
+           B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'ar_melee']).lower():
+               snd + 'saw_melee',
            B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'weapon ready']).lower():
                snd + 'saw_ready'}
     for ref in t.data.tagdata.sound_references.STEPTREE:

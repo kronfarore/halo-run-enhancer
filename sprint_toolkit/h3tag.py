@@ -127,9 +127,11 @@ class Tag(object):
             out.append((n.off, grp.strip(), path))
         return out
 
-    def repoint(self, old, new, group=None):
+    def repoint(self, old, new, group=None, last=False):
         """Point references to `old` at `new`. Rewrites the reference's length and every
-        ancestor's, so the tree still spans the file."""
+        ancestor's, so the tree still spans the file. `last`: only the LAST occurrence
+        in file order (e.g. one of two identical sound references of an animation graph,
+        each used by a different animation)."""
         changed = 0
         while True:
             target = None
@@ -140,8 +142,9 @@ class Tag(object):
                 path = bytes(self.data[n.payload_at + 4:n.payload_at + n.length]).decode('latin1')
                 if path == old and (group is None or grp.strip() == group):
                     target = n
-                    break
-            if target is None:
+                    if not last:
+                        break
+            if target is None or (last and changed):
                 return changed
             delta = len(new) - len(old)
             at = target.payload_at + 4

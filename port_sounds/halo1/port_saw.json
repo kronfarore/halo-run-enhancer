@@ -56,6 +56,22 @@
    "aliases": [
     "sound\\weapons\\saw_port\\saw_ready"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_melee",
+   "perms": [
+    "saw_melee_1.wav",
+    "saw_melee_2.wav",
+    "saw_melee_3.wav",
+    "saw_melee_4.wav",
+    "saw_melee_5.wav",
+    "saw_melee_6.wav",
+    "saw_melee_7.wav",
+    "saw_melee_8.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_melee"
+   ]
   }
  ]
 }
