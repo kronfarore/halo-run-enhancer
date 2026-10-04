@@ -287,7 +287,10 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
                 f.seek(data_at + ((sh[p0 + k] >> 6) & 0x0FFFFFFF) * 16)
                 if f.read(len(blob)) != blob:
                     return False
-        return want_index <= set(entries) and want_debug <= set(dentries)
+        # EXACTLY ours: an entry left over from an earlier manifest (pointing into the
+        # port range) is stale and makes the install not present
+        ours_now = {e for e in entries if e[1] >= p0}
+        return ours_now == want_index and want_debug <= set(dentries)
     if present():
         return [dict(row, ok=True, skip=True, reason='port sounds present')]
     what = ', '.join(sorted({s[0].rsplit('_', 1)[0] for s in samples}))

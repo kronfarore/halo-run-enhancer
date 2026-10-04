@@ -14,8 +14,7 @@
     "saw_fire_6.wav"
    ],
    "aliases": [
-    "sound\\weapons\\saw_port\\saw_fire",
-    "sound\\old_weapons\\saw_port\\saw_fire"
+    "sound\\weapons\\saw_port\\saw_fire"
    ]
   },
   {
@@ -24,8 +23,7 @@
     "saw_dryfire_1.wav"
    ],
    "aliases": [
-    "sound\\weapons\\saw_port\\saw_dryfire",
-    "sound\\old_weapons\\saw_port\\saw_dryfire"
+    "sound\\weapons\\saw_port\\saw_dryfire"
    ]
   }
  ]

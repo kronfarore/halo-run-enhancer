@@ -264,10 +264,12 @@ def bank_wavs():
             entry = {'tag': tag, 'aliases': [old, tag], 'perms': perms,
                      'remastered_from': REMASTERED_FROM[name]}
         else:
-            # outside sound\sfx: the plain path (as the stock levels\test\... entries) and
-            # an old_ form; no Anniversary entry (tests 0-1 ran without one, no crash)
-            entry = {'tag': tag, 'perms': perms,
-                     'aliases': [tag, tag.replace('sound' + B, 'sound' + B + 'old_', 1)]}
+            # outside sound\sfx: the PLAIN path only, as the stock levels\test\... entries;
+            # no Anniversary entry (tests 0-1 ran without one, no crash). Test 5 also listed
+            # an old_ form on the SAME subsongs -- nothing stock references a subsong twice,
+            # and after the SAW fired the AR started CLIPPING (user, 2026-10-04: AR fine,
+            # SAW fine, AR again clipped) -- dropped, suspected double release.
+            entry = {'tag': tag, 'perms': perms, 'aliases': [tag]}
         sounds.append(entry)
         print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
     json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
