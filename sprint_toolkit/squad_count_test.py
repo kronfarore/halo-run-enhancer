@@ -30,14 +30,16 @@ def main():
     ap.add_argument('--side', default='enemy', choices=('enemy', 'ally'))
     ap.add_argument('--show', action='store_true')
     ap.add_argument('--counts-only', action='store_true',
-                    help='write the counts only, no copied locations, and only on squads with no '
-                         'spare location (count >= locations): does the engine spawn past them?')
+                    help='write the counts only, no copied locations')
+    ap.add_argument('--no-spare', action='store_true',
+                    help='only squads with no spare location (count >= locations): does the '
+                         'engine spawn past them?')
     a = ap.parse_args()
     m = hp.open_map(a.map, a.game)
     rows = ec.squads(m, a.game)
     side = [s for s in rows if s[a.side] and s['chars']]
     grow = [s for s in side if not s['vehicle'] and not s['boss'] and ec._takes_extras(s)]
-    if a.counts_only:
+    if a.no_spare:
         grow = [s for s in grow if max(s['normal'], s['insane'], s.get('count', 0)) >= s['locs']]
     why = {'vehicle squad': lambda s: s['vehicle'], 'boss/story': lambda s: s['boss'],
            'spawns by script': lambda s: s['script'], 'put into a vehicle': lambda s: s['bound'],
