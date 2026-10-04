@@ -2365,8 +2365,18 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
     bank, with classic + Anniversary index entries, and with stock-shaped tags alike
     (tests 2-4). Presumably MCC pairs every sfx tag with an Anniversary counterpart.
   The index carries the plain path and an `old_` form (which one hits: not isolated).
-Reload / ready / melee sounds are cued at animation frames in each port's (retimed) fp
-graph -- a separate step after the firing sounds.
+* **Halo 1 SAW reload + ready (2026-10-04):** the fp animation set (saw_anims.py, the
+  AR's retimed) named the AR's reload / weapon ready. Halo 4 cues its SAW foley by FRAME
+  (storm_fp_lmg.frame_event_list: reload fly_a@0 mech_a@15 mech_b@30 fly_b@54 mech_c@66
+  fly_c@90 mech_d@90 of 128; ready fly+mech@0 of 35); a Halo 1 animation plays ONE sound,
+  so saw_port_foley.py MIXES the cues at their frames (variation set k = recording k of
+  each event -> permutations), stretched for a retimed animation. The H1 SAW's reload is
+  128 frames like Halo 4's, so the cues land 1:1. Levelled to the H1 AR's own (active
+  RMS: ar_reload -20.9, weapon ready -13.1 dBFS). saw_anims.py points both animation
+  sets at the own sounds (the balanced set at a 164/128-stretched reload -- that set is
+  not in the built maps today). Melee keeps the AR's.
+Reload / ready / melee sounds of the OTHER ports are still their donors' -- the same
+mixdown applies where a game plays one sound per animation; H2-H4 graphs cue several.
 
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
 

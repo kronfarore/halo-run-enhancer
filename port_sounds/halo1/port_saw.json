@@ -25,6 +25,37 @@
    "aliases": [
     "sound\\weapons\\saw_port\\saw_dryfire"
    ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_reload",
+   "perms": [
+    "saw_reload_1.wav",
+    "saw_reload_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_reload"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_reload_balanced",
+   "perms": [
+    "saw_reload_balanced_1.wav",
+    "saw_reload_balanced_2.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_reload_balanced"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_ready",
+   "perms": [
+    "saw_ready_1.wav",
+    "saw_ready_2.wav",
+    "saw_ready_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_ready"
+   ]
   }
  ]
 }

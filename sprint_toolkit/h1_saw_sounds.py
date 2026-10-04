@@ -63,8 +63,21 @@ B = '\\'
 SND_DIR = B.join(['sound', 'weapons', 'saw_port'])
 AR_SND = B.join(['sound', 'sfx', 'weapons', 'assault rifle'])
 #: own sound -> (audio folder, the AR sound whose playback fields it takes)
+AR_ANIM = B.join(['sound', 'sfx', 'weapons', 'weapon_anims'])
 SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
-          'saw_dryfire': ('dryfire', AR_SND + B + 'dryfire')}
+          'saw_dryfire': ('dryfire', AR_SND + B + 'dryfire'),
+          # RELOAD / READY (2026-10-04, user: the SAW "still holds the AR swap and reload
+          # sounds"): Halo 4's SAW foley mixed at its frame cues (saw_port_foley.py); the
+          # first-person animations name these (saw_anims.py). `foley` sources, below.
+          'saw_reload': ('foley', AR_ANIM + B + 'ar_reload'),
+          'saw_reload_balanced': ('foley', AR_ANIM + B + 'ar_reload'),
+          'saw_ready': ('foley', AR_SND + B + 'weapon ready')}
+#: foley sound -> (cues, stretch, active-RMS target = the H1 AR's own, measured in the
+#: classic bank: ar_reload -20.9 dBFS, weapon ready -13.1). The balanced animation set
+#: (saw_anims.py balanced) plays the reload in 164 frames instead of 128.
+FOLEY = {'saw_reload': ('RELOAD', 1.0, -20.9),
+         'saw_reload_balanced': ('RELOAD', 164 / 128.0, -20.9),
+         'saw_ready': ('READY', 1.0, -13.1)}
 AR_FX = B.join(['weapons', 'assault rifle', 'effects'])
 OWN_FX = B.join(['weapons', 'saw', 'effects'])
 #: own effect -> (the AR's, [(sound it names, own sound)])
@@ -137,10 +150,9 @@ def import_sounds():
         d = os.path.join(HCEEK, 'data', SND_DIR, name)
         os.makedirs(d)
         pcm = []
-        for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
-            # the SAME audio the bank carries (processed(): 22 kHz mono, the fire in TONE)
-            y = processed(name, w)
-            tone_mod.write(os.path.join(d, os.path.basename(w)), y, BANK_RATE)
+        for f, y in rendered(name):
+            # the SAME audio the bank carries (rendered(): 22 kHz mono)
+            tone_mod.write(os.path.join(d, f), y, BANK_RATE)
             pcm.append(np.clip(np.round(y * 32767), -32768, 32767).astype(np.int32))
         out = tool('sounds', SND_DIR + B + name, FORMAT)
         path = os.path.join(TAGS, SND_DIR, name + '.sound')
@@ -240,6 +252,28 @@ def processed(name, w):
     return tone_mod.resample(x, 44100, BANK_RATE)
 
 
+def rendered(name):
+    """[(file name, 22 kHz mono float)] -- the permutations of one own sound, as both the
+    map's tag and the FMOD bank carry it."""
+    src = SOUNDS[name][0]
+    if src != 'foley':
+        return [('%s_%d.wav' % (name, i + 1), processed(name, w))
+                for i, w in enumerate(sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))))]
+    import saw_port_foley as foley
+    cues_name, stretch, target = FOLEY[name]
+    cues = getattr(foley, cues_name)
+    out = []
+    for k in range(foley.count(cues)):
+        x = foley.mix(cues, k, stretch)
+        act = x[np.abs(x) > 0.01]
+        x = x * 10 ** ((target - 20 * np.log10(np.sqrt((act ** 2).mean()) + 1e-12)) / 20)
+        if np.abs(x).max() > 0.95:
+            x = 0.95 * np.tanh(x / 0.95)                 # peaks soft-limited
+        x = tone_mod.resample(tone_mod.resample(x, foley.RATE, 44100), 44100, BANK_RATE)
+        out.append(('%s_%d.wav' % (name, k + 1), x))
+    return out
+
+
 def bank_wavs():
     """The SAW's bank audio, 22 kHz mono, the fire in TONE at the H1 AR's level, plus the
     manifest port_sounds.py reads: each sound's tag path, the index ALIASES (how classic
@@ -251,9 +285,7 @@ def bank_wavs():
     sounds = []
     for name, (src, _ar) in SOUNDS.items():
         perms = []
-        for i, w in enumerate(sorted(glob.glob(os.path.join(AUDIO, src, '*.wav')))):
-            y = processed(name, w)
-            f = '%s_%d.wav' % (name, i + 1)
+        for f, y in rendered(name):
             tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
             perms.append(f)
         tag = SND_DIR + B + name

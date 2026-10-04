@@ -28,6 +28,7 @@ from reclaimer.hek.defs.antr import antr_def
 TAGS = os.path.join('F:' + os.sep, 'SteamLibrary', 'steamapps', 'common', 'HCEEK', 'tags')
 DONOR = os.path.join(TAGS, 'weapons', 'assault rifle', 'fp', 'fp.model_animations')
 OUT = os.path.join(TAGS, 'weapons', 'saw', 'fp', 'fp.model_animations')
+B = chr(92)
 # the balanced timing ships as a SECOND tag: the patcher's balance option repoints the
 # weapon at it (a tag reference), because it cannot resample animations in a built map
 # measured frame counts: (ported in source game, donor in source game)
@@ -85,6 +86,19 @@ def main():
                 rows.append('%-34s %s %3d -> %3d frames (%.2fs -> %.2fs)' % (
                     anim.name, group, old, new, old / 30.0, new / 30.0))
             break
+    # ITS OWN RELOAD / READY SOUNDS (2026-10-04): the donor's references name the AR's;
+    # h1_saw_sounds.py makes the SAW's (Halo 4's foley mixed at its frame cues -- the
+    # balanced set's reload stretched to its 164 frames). Only when they exist.
+    snd = B.join(['sound', 'weapons', 'saw_port', ''])
+    own = {B.join(['sound', 'sfx', 'weapons', 'weapon_anims', 'ar_reload']).lower():
+               snd + ('saw_reload' if mode == 'original' else 'saw_reload_balanced'),
+           B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'weapon ready']).lower():
+               snd + 'saw_ready'}
+    for ref in t.data.tagdata.sound_references.STEPTREE:
+        new = own.get(ref.sound.filepath.lower())
+        if new and os.path.exists(os.path.join(TAGS, new + '.sound')):
+            rows.append('sound %s -> %s' % (ref.sound.filepath, new))
+            ref.sound.filepath = new
     out = OUT if mode == 'original' else OUT.replace('fp.model_animations', 'fp_balanced.model_animations')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     t.filepath = out
