@@ -208,16 +208,24 @@ H1_FSB = os.path.join('halo1', 'sound', 'pc', 'sounds_adpcm.fsb')
 H1_LST = os.path.join('halo1', 'sound', 'pc', 'lst', 'sounds_adpcm.lst.bin')
 H1_PREFIX = 'port_'
 H1_MAX_UP_DB = 6.0
+# THE ANNIVERSARY INDEX TOO (2026-10-04): a sound tag under sound\sfx needs an entry in
+# sounds_debug.lst.bin as well -- with only the classic one the game crashed the moment
+# the port became active (halo1.dll+0xB3605D, a garbage tag pointer). That bank is CELT
+# (not writable here) and the user plays classic only, so the port's entry BORROWS a stock
+# Anniversary sound's subsongs (manifest `remastered_from`). The index is SORTED; entries
+# are inserted in order, the stock ones keep theirs.
+H1_DEBUG_LST = os.path.join('halo1', 'sound', 'pc', 'lst', 'sounds_debug.lst.bin')
 
 
 def h1_wanted(volume=None):
-    """[(subsong name, rate, adpcm bytes, sample count)] and [(index path, i0, count)]
-    (i0 relative to the first port subsong) from the halo1 manifests."""
+    """[(subsong name, rate, adpcm bytes, sample count)], [(classic index path, i0, count)]
+    (i0 relative to the first port subsong) and [(tag path, stock Anniversary path,
+    count)] from the halo1 manifests."""
     import json
     import wave
     import numpy as np
     import h1_fsb
-    samples, index = [], []
+    samples, index, remastered = [], [], []
     for man in sorted(glob.glob(os.path.join(_data_dir(), 'halo1', '*.json'))):
         m = json.load(open(man, encoding='utf-8'))
         db = min((volume or {}).get(m.get('weapon'), 0.0) or 0.0, H1_MAX_UP_DB)
@@ -238,21 +246,32 @@ def h1_wanted(volume=None):
                 samples.append(('%s%s_%d' % (H1_PREFIX, base, k), rate, blob, ns))
             for alias in snd['aliases']:
                 index.append((alias, i0, len(snd['perms'])))
-    return samples, index
+            if snd.get('remastered_from'):
+                remastered.append((snd['tag'], snd['remastered_from'], len(snd['perms'])))
+    return samples, index, remastered
 
 
 def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
     import h1_fsb
     row = {'effect': 'port sound bank', 'field': 'halo1 sounds_adpcm.fsb'}
     fsb, lst = os.path.join(mcc_root, H1_FSB), os.path.join(mcc_root, H1_LST)
-    if not (os.path.exists(fsb) and os.path.exists(lst)):
+    dlst = os.path.join(mcc_root, H1_DEBUG_LST)
+    if not (os.path.exists(fsb) and os.path.exists(lst) and os.path.exists(dlst)):
         return [dict(row, ok=True, skip=True, reason='bank not installed')]
     try:
-        samples, index = h1_wanted(volume)
+        samples, index, remastered = h1_wanted(volume)
         if not samples:
             return []
         info, sh, names, data_at = h1_fsb.read_fsb(fsb)
         ver, entries = h1_fsb.read_lst(lst)
+        dver, dentries = h1_fsb.read_lst(dlst)
+        dmap = {e[0].lower(): e for e in dentries}
+        want_debug = set()
+        for tag, src, count in remastered:
+            s = dmap.get(src.lower())
+            if s is None:
+                raise ValueError('no Anniversary entry %s to borrow' % src)
+            want_debug.add((tag, s[1], min(count, s[2])))
     except Exception as e:
         return [dict(row, ok=False, reason='unreadable: %s' % e)]
     p0 = next((i for i, n in enumerate(names) if n.startswith(H1_PREFIX)), info['n'])
@@ -268,7 +287,7 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
                 f.seek(data_at + ((sh[p0 + k] >> 6) & 0x0FFFFFFF) * 16)
                 if f.read(len(blob)) != blob:
                     return False
-        return want_index <= set(entries)
+        return want_index <= set(entries) and want_debug <= set(dentries)
     if present():
         return [dict(row, ok=True, skip=True, reason='port sounds present')]
     what = ', '.join(sorted({s[0].rsplit('_', 1)[0] for s in samples}))
@@ -276,7 +295,7 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         return [dict(row, ok=True, old='without %s' % what, new='%s added (dry run)' % what)]
     try:
         if backup_dir:
-            for p, rel in ((fsb, H1_FSB), (lst, H1_LST)):
+            for p, rel in ((fsb, H1_FSB), (lst, H1_LST), (dlst, H1_DEBUG_LST)):
                 keep = os.path.join(backup_dir, rel)
                 if not os.path.exists(keep):
                     os.makedirs(os.path.dirname(keep), exist_ok=True)
@@ -285,8 +304,13 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         ours = {a for a, _i, _c in index}
         kept = [e for e in entries if e[1] < p0 and e[0] not in ours]
         h1_fsb.write_lst(lst, ver, kept + [(a, first + i, c) for a, i, c in index])
+        # the Anniversary index: drop our old entries, insert ours in its sort order
+        dours = {t.lower() for t, _f, _c in want_debug}
+        dkept = [e for e in dentries if e[0].lower() not in dours]
+        h1_fsb.write_lst(dlst, dver, sorted(dkept + sorted(want_debug), key=lambda e: e[0].lower()))
         info, sh, names, data_at = h1_fsb.read_fsb(fsb)
         ver, entries = h1_fsb.read_lst(lst)
+        dver, dentries = h1_fsb.read_lst(dlst)
         if not present():
             return [dict(row, ok=False, reason='written, but the port sounds do not read back')]
     except Exception as e:

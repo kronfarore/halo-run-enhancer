@@ -209,6 +209,13 @@ def repoint_weapon():
 #: (patch time / by hand); the map's own copy of the audio is never played.
 BANK_DIR = os.path.join(os.path.dirname(HERE), 'port_sounds', 'halo1')
 BANK_RATE = 22050            # the stock classic bank: 22 kHz mono XBOX IMA ADPCM
+#: the ANNIVERSARY index (sounds_debug, CELT -- not writable here) must name a sound tag
+#: under sound\sfx too: with only the classic entry the game CRASHED the moment the SAW
+#: became active (2026-10-04, halo1.dll+0xB3605D, a garbage tag pointer; also with the
+#: stock bank). Classic only, so its entry borrows a stock Anniversary sound's subsongs
+#: (the first `perms` of them) -- never heard in classic view.
+REMASTERED_FROM = {'saw_fire': B.join(['sound', 'sfx', 'weapons', 'rocket launcher', 'fire']),
+                   'saw_dryfire': B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'dryfire'])}
 
 
 def bank_wavs():
@@ -234,7 +241,8 @@ def bank_wavs():
         tag = SND_DIR + B + name
         old = tag.replace(B.join(['sound', 'sfx', '']), B.join(['sound', 'old_sfx', '']), 1)
         sounds.append({'tag': tag, 'aliases': [old, tag],
-                       'perms': perms})
+                       'perms': perms,
+                       'remastered_from': REMASTERED_FROM[name]})
         print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
     json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
               open(os.path.join(BANK_DIR, 'port_saw.json'), 'w'), indent=1)

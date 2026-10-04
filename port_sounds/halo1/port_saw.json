@@ -4,10 +4,10 @@
  "rate": 22050,
  "sounds": [
   {
-   "tag": "sound\\weapons\\saw_port\\saw_fire",
+   "tag": "sound\\sfx\\weapons\\saw_port\\saw_fire",
    "aliases": [
-    "sound\\weapons\\saw_port\\saw_fire",
-    "sound\\old_weapons\\saw_port\\saw_fire"
+    "sound\\old_sfx\\weapons\\saw_port\\saw_fire",
+    "sound\\sfx\\weapons\\saw_port\\saw_fire"
    ],
    "perms": [
     "saw_fire_1.wav",
@@ -16,17 +16,19 @@
     "saw_fire_4.wav",
     "saw_fire_5.wav",
     "saw_fire_6.wav"
-   ]
+   ],
+   "remastered_from": "sound\\sfx\\weapons\\rocket launcher\\fire"
   },
   {
-   "tag": "sound\\weapons\\saw_port\\saw_dryfire",
+   "tag": "sound\\sfx\\weapons\\saw_port\\saw_dryfire",
    "aliases": [
-    "sound\\weapons\\saw_port\\saw_dryfire",
-    "sound\\old_weapons\\saw_port\\saw_dryfire"
+    "sound\\old_sfx\\weapons\\saw_port\\saw_dryfire",
+    "sound\\sfx\\weapons\\saw_port\\saw_dryfire"
    ],
    "perms": [
     "saw_dryfire_1.wav"
-   ]
+   ],
+   "remastered_from": "sound\\sfx\\weapons\\assault rifle\\dryfire"
   }
  ]
 }
