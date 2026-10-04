@@ -53,7 +53,10 @@ import h1_saw_tone as tone_mod                                      # noqa: E402
 HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
 TAGS = os.path.join(HCEEK, 'tags')
 B = '\\'
-SND_DIR = B.join(['sound', 'weapons', 'saw_port'])
+# under sound\sfx like every stock classic sound: the classic index lists those as
+# sound\old_sfx\... (boot 2026-10-04: sound\weapons\saw_port and an old_ form were BOTH
+# never looked up)
+SND_DIR = B.join(['sound', 'sfx', 'weapons', 'saw_port'])
 AR_SND = B.join(['sound', 'sfx', 'weapons', 'assault rifle'])
 #: own sound -> (audio folder, the AR sound whose playback fields it takes)
 SOUNDS = {'saw_fire': ('fire', AR_SND + B + 'fire'),
@@ -229,7 +232,8 @@ def bank_wavs():
             tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
             perms.append(f)
         tag = SND_DIR + B + name
-        sounds.append({'tag': tag, 'aliases': [tag, tag.replace('sound' + B, 'sound' + B + 'old_', 1)],
+        old = tag.replace(B.join(['sound', 'sfx', '']), B.join(['sound', 'old_sfx', '']), 1)
+        sounds.append({'tag': tag, 'aliases': [old, tag],
                        'perms': perms})
         print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
     json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
