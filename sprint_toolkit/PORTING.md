@@ -2228,6 +2228,13 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
      import); the tags keep suffix 'saw' (the tested state; an empty suffix is untested).
      Observation from Reach; Halo 3 / ODST use the same kit route and are expected to
      behave alike -- confirm on their first port.
+     **WITHDRAWN 2026-10-04: Test 2 was misheard.** The SAW's firing effect also plays the
+     AR's distant-fire layer (assault_rifle_lod_far) and the projectile has sounds of its
+     own; with the bank out of the folder those were what played. Installing sfx.saw.fsb
+     in haloreachmod\pc for the first time (2026-10-04) made the SAW's fire, reload and
+     ready audible. **Reach plays port sounds from the FMOD bank, like Halo 3 / ODST** --
+     saw_port_sounds.py now installs it on every route. Lesson: a "still plays" test
+     needs a sound that cannot be confused with another layer (a test tone).
 **Halo 3 / ODST (2026-10-03, built, first boot pending)** -- `saw_port_sounds.py --game h3|odst
 --write` (one script for all three kits now; reach_saw_sounds.py is a wrapper):
 * both SAWs fired through the AR's firing effect, the dry fire through the BATTLE RIFLE's
@@ -2395,6 +2402,13 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   .frame_event_list too); saw\fp\fp_saw_*.model_animation_graph are unused leftovers --
   a first build edited those and m20 kept the AR's. Verify on the BUILT map
   (port_sound_refs.sounds_of, frms refs), not the kit.
+* **The H3-engine chunk-size trap (Halo 3 / ODST, 2026-10-04):** with the reload in
+  sfx.saw.fsb as dual-mono STEREO (917 KB, over the 0xC0000 = 768 KB chunk size the
+  halo3.dll .info parser splits entries by) NO SAW sound played in either game --
+  the fire neither (bisect: the same bank cut to the entries under 768 KB played; the
+  structurally identical Reach bank with the same long entries plays). Foley is MONO
+  there now (reload 459 KB) and check_bank_entries refuses entries over the size.
+  MCC LOCKS a loaded game's sfx.saw.fsb -- install banks with that game closed.
 Melee, idle fidgets, zoom and Reach's ready_hero are still the donors'.
 
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
