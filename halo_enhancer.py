@@ -5477,10 +5477,12 @@ class MagnitudeEditorDialog(QDialog):
         return (_fld or {}).get('options') or {}
 
     def _ladder_level(self, eff, t):
-        """(name, at_end) a tier-ladder choice (`ladder`, quietest first) lands on for
-        this card's picks: one tier per pick from the weapon's VANILLA level -- down
-        (quieter) normally, up when the step is inverted (a negative Weapon Identity
-        count or the Invert override). (None, False) when it cannot be worked out or
+        """(name, at_end) a tier-ladder choice lands on for this card's picks. The
+        `ladder` lists the options BEST FIRST (Firing Noise: Silent .. Shout; Movement
+        Penalized: When Zoomed Or Reloading, Always): one step per pick from the
+        weapon's VANILLA setting toward the start, toward the end when the step is
+        inverted (a negative Weapon Identity count or the Invert override).
+        (None, False) when it cannot be worked out or
         nothing moves. at_end = the far end in that direction (saturated)."""
         lad = t.get('ladder') or []
         cur = self._vanilla_num(target_tag(eff, t), t['field'], t.get('block'),
@@ -7286,10 +7288,11 @@ class MagnitudeEditorDialog(QDialog):
                               "plugin and are applied by NAME, so the pick carries "
                               "across games even though Reach stores this enum in a "
                               "different order." % t['field']
-                              + ("\n\n%s (the default): one tier per pick from the "
-                                 "weapon's own level along %s -- quieter, or louder when "
-                                 "the step is inverted; saturated at either end."
-                                 % (LADDER_BY_STEP, ' < '.join(t['ladder']))
+                              + ("\n\n%s (the default): one step per pick from the "
+                                 "weapon's own setting along %s -- toward the first "
+                                 "(the better end), or toward the last when the step is "
+                                 "inverted; saturated at either end."
+                                 % (LADDER_BY_STEP, ' -> '.join(t['ladder']))
                                  if t.get('ladder') else ""))
             elif t.get('set') is not None:
                 # Fixed set (enum enabler): display-only, always applied with the effect.
