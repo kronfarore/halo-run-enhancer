@@ -82,15 +82,34 @@ H1_ENEMY_SPECIES = ('elite', 'grunt', 'jackal', 'hunter', 'flood', 'sentinel')
 
 TEAM_PLAYER, TEAM_HUMAN, TEAM_SENTINEL = 1, 2, 5
 
+H3_PALETTE, H3_PAL_SZ, H3_PAL_ID = 0x3A8, 0x10, 0xC
+H3_GROUPS, H3_GROUP_SZ = 0x378, 0x28            # Squad Groups: name, Parent Index +0x20
+H3_SQUADS, H3_SQ_SZ = 0x384, 0x40
+H3_SQ_FLAGS, H3_TEAM, H3_SQ_GROUP = 0x20, 0x24, 0x26
+H3_INITIALLY_PLACED = 1 << 4
+H3_FIRETEAMS, H3_FT_SZ = 0x30, 0x60
+H3_FT_PLACE_ON, H3_FT_COUNT, H3_FT_CHAR, H3_FT_VEH = 0x0, 0x4, 0x8, 0x12
+H3_LOCS, H3_LOC_SZ, H3_LOC_POS, H3_LOC_CHAR, H3_LOC_VEH = 0x54, 0x88, 0x8, 0x28, 0x30
+H3_CHAR_UNIT, H3_CHAR_PARENT, H3_BIPD_TEAM = 0x14, 0x4, 0xFC
+H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT = 0x3EC, 0x34, 0x24
+H3_SCRIPT_PARAMS, H3_PARAM_SZ = 0x28, 0x24
+H3_CALL_FLAGS = (8, 10)        # expression flags of a call group (built-in / script)
+TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'heretic',
+              'prophet', 'guilty')
+
 #: Characters never multiplied, and squads holding one are left alone: the bosses and the
 #: story characters (a second Tartarus or Regret would break the fight scripts).
 BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'miranda',
-              'cortana', 'dervish', 'masterchief', 'captain', 'keyes')
+              'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty')
+#: ...and by the character's species folder: Halo 1's Keyes is `characters\captain\...`, a
+#: word that must not catch `brute_captain`.
+BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
+                'masterchief')
 #: Human species (by the character's folder under objects\characters): never enemies.
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
                  'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot')
 SPREAD = 0.6       # world units between a copied location and its source
-GAMES = ('Halo 1', 'Halo 2')
+GAMES = ('Halo 1', 'Halo 2', 'Halo 3')
 
 
 def _i16(m, o):
@@ -106,7 +125,7 @@ def species(name):
 
 def _is_boss(name):
     low = (name or '').lower().rsplit('\\', 1)[-1]
-    return any(w in low for w in BOSS_WORDS)
+    return any(w in low for w in BOSS_WORDS) or species(name) in BOSS_SPECIES
 
 
 def _is_human(name):
@@ -367,11 +386,230 @@ def h1_squads(m, tree=None):
     return out
 
 
+# ---- Halo 3 --------------------------------------------------------------------------
+
+def _h3_flags(m, t, i):
+    return struct.unpack_from('<H', m.data, t.base + i * t.size + 6)[0]
+
+
+def _h3_name(node):
+    """The squad an ai argument's text names: 'squad', 'squad/location' -> 'squad'."""
+    s = (node or {}).get('string') or ''
+    return s.split('/')[0].strip().lower()
+
+
+def _h3_ai_arg(t, node):
+    """The ai text a loading call's object argument carries: `(ai_actors X)` -> X."""
+    if not node or _h3_flags(t.m, t, node['i']) not in H3_CALL_FLAGS:
+        return None
+    g = t.at(node['value'] & 0xFFFF)
+    if g and g['string'] == 'ai_actors':
+        a = _args(t, g, 1)
+        return a[0] if a else None
+    return None
+
+
+def _h3_effects(t, fn, a, placers, loaders):
+    """(placed nodes, bound nodes) of one call `fn` with argument nodes `a`."""
+    placed, bound = [], []
+    if fn == 'ai_place' and a:
+        placed.append(a[0])
+    elif fn == 'vehicle_load_magic' and len(a) >= 3:
+        x = _h3_ai_arg(t, a[2])
+        if x:
+            bound.append(x)
+    elif fn in ('ai_vehicle_enter_immediate', 'ai_place_in_vehicle') and a:
+        bound.append(a[0])
+        if fn == 'ai_place_in_vehicle':
+            placed.append(a[0])
+    for k in placers.get(fn, ()):
+        if k < len(a):
+            placed.append(a[k])
+    for k in loaders.get(fn, ()):
+        if k < len(a):
+            bound.append(a[k])
+            placed.append(a[k])
+    return placed, bound
+
+
+def h3_script_refs(m, tree=None):
+    """What the compiled scripts do with squads, by NAME: {'place': {name: calls},
+    'literal': {name: actors}, 'bound': {names}, 'allied': set, 'removed': set}.
+
+    Level helper scripts take a squad as a parameter (`(ai_gc_jackal sq_gc_jackal_03)`,
+    the global `ai_trickle_via_phantom pilot squad`), so each script with parameters is
+    walked first: a parameter that reaches ai_place makes the script a PLACER of that
+    argument, one that reaches a loading call (vehicle_load_magic ... (ai_actors p),
+    ai_vehicle_enter_immediate, ai_place_in_vehicle) a LOADER -- to a fixed point, since
+    helpers call helpers."""
+    import halo_patch
+    t = tree or _tree(m, 'Halo 3')
+    s = halo_patch._scnr_base(m)
+    scripts = []
+    for el in m.follow_all(s, [H3_SCRIPTS], [H3_SCRIPT_SZ], 'all'):
+        params = [m.data[p:p + 0x20].split(b'\0')[0].decode('latin-1').lower()
+                  for p in m.follow_all(el, [H3_SCRIPT_PARAMS], [H3_PARAM_SZ], 'all')]
+        if params:
+            scripts.append((m.data[el:el + 0x20].split(b'\0')[0].decode('latin-1').lower(),
+                            params, m.u32(el + H3_SCRIPT_ROOT) & 0xFFFF))
+
+    def body(root):
+        seen, stack, out = set(), [root], []
+        while stack:
+            i = stack.pop()
+            if i in seen or i >= t.n:
+                continue
+            seen.add(i)
+            r = t.at(i)
+            if not r:
+                continue
+            out.append(r)
+            if r['next'] != 0xFFFFFFFF:
+                stack.append(r['next'] & 0xFFFF)
+            if _h3_flags(m, t, i) in H3_CALL_FLAGS and r['value'] != 0xFFFFFFFF:
+                stack.append(r['value'] & 0xFFFF)
+        return out
+
+    bodies = {name: (params, [r for r in body(root) if r['vtype'] == 2]) for name, params, root in scripts}
+    placers, loaders = {}, {}
+    for _round in range(6):
+        changed = False
+        for name, (params, calls) in bodies.items():
+            for r in calls:
+                p, b = _h3_effects(t, (r['string'] or '').lower(), _args(t, r), placers, loaders)
+                for nodes, table in ((p, placers), (b, loaders)):
+                    for x in nodes:
+                        nm = ((x or {}).get('string') or '').lower()
+                        if nm in params:
+                            k = params.index(nm)
+                            if k not in table.setdefault(name, set()):
+                                table[name].add(k)
+                                changed = True
+        if not changed:
+            break
+    out = {'place': {}, 'literal': {}, 'bound': set(), 'allied': set(), 'removed': set()}
+    for i in range(t.n):
+        r = t.at(i)
+        if not r or r['vtype'] != 2 or r['next'] == 0xFFFFFFFF:
+            continue
+        fn = (r['string'] or '').lower()
+        a = _args(t, r)
+        if fn in ('ai_allegiance', 'ai_allegiance_remove'):
+            if len(a) >= 2:
+                pr = ((a[0]['string'] or '').lower(), (a[1]['string'] or '').lower())
+                out['allied' if fn == 'ai_allegiance' else 'removed'].add(pr)
+            continue
+        p, b = _h3_effects(t, fn, a, placers, loaders)
+        for x in p:
+            n = _h3_name(x)
+            if n:
+                out['place'][n] = out['place'].get(n, 0) + 1
+        for x in b:
+            if _h3_name(x):
+                out['bound'].add(_h3_name(x))
+        if fn == 'ai_place' and len(a) >= 2 and _h3_name(a[0]):
+            if a[1]['vtype'] in (T_SHORT, T_SHORT + 1) and _h3_flags(m, t, a[1]['i']) == F_PRIMITIVE:
+                n = int(t.number(a[1]) or 0)
+                if n > 0:
+                    k = _h3_name(a[0])
+                    out['literal'][k] = out['literal'].get(k, 0) + n
+    return out
+
+
+def _h3_char_team(m, name, depth=0):
+    if not name or depth > 6:
+        return None
+    f = m.find_tags('char', name)
+    if not f:
+        return None
+    u = m.u32(f[0][1] + H3_CHAR_UNIT + 0xC)
+    if u != 0xFFFFFFFF:
+        import halo_patch
+        un = halo_patch._tag_name_by_id(m, u)
+        fb = m.find_tags('bipd', un) if un else []
+        return _i16(m, fb[0][1] + H3_BIPD_TEAM) if fb else None
+    p = m.u32(f[0][1] + H3_CHAR_PARENT + 0xC)
+    if p != 0xFFFFFFFF:
+        import halo_patch
+        return _h3_char_team(m, halo_patch._tag_name_by_id(m, p), depth + 1)
+    return None
+
+
+def h3_squads(m, tree=None):
+    """Every FIRE-TEAM (Halo 3's unit of count, character and locations) in the shape of
+    h2_squads; squad-level facts (team, placement, script use) are copied onto each.
+    `normal` = the count when the team plays on Normal, `insane` = the count of a team that
+    plays on Legendary but not Normal (difficulty variants are separate fire-teams)."""
+    import halo_patch
+    t = tree or _tree(m, 'Halo 3')
+    s = halo_patch._scnr_base(m)
+    pal, teams = [], []
+    for el in m.follow_all(s, [H3_PALETTE], [H3_PAL_SZ], 'all'):
+        ident = m.u32(el + H3_PAL_ID)
+        nm = halo_patch._tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
+        pal.append(nm)
+        teams.append(_h3_char_team(m, nm))
+    refs = h3_script_refs(m, t)
+    names_of = {TEAM_NAMES[k]: k for k in range(len(TEAM_NAMES))}
+    removed = {b for a, b in refs['removed'] if a == 'player'} | \
+              {a for a, b in refs['removed'] if b == 'player'}
+    friends = {TEAM_PLAYER} | {names_of[n] for n in (
+        ({b for a, b in refs['allied'] if a == 'player'} |
+         {a for a, b in refs['allied'] if b == 'player'}) - removed) if n in names_of}
+    groups = [(m.data[g:g + 0x20].split(b'\0')[0].decode('latin-1').lower(), _i16(m, g + 0x20))
+              for g in m.follow_all(s, [H3_GROUPS], [H3_GROUP_SZ], 'all')]
+    out = []
+    idx = 0
+    for sq in m.follow_all(s, [H3_SQUADS], [H3_SQ_SZ], 'all'):
+        name = m.data[sq:sq + 0x20].split(b'\0')[0].decode('latin-1').lower()
+        names, gi, hops = {name}, _i16(m, sq + H3_SQ_GROUP), 0
+        while 0 <= gi < len(groups) and hops < 12:
+            names.add(groups[gi][0])
+            gi, hops = groups[gi][1], hops + 1
+        steam = _i16(m, sq + H3_TEAM)
+        initial = bool(m.u32(sq + H3_SQ_FLAGS) & H3_INITIALLY_PLACED)
+        placed = initial or any(n in refs['place'] for n in names)
+        bound = any(n in refs['bound'] for n in names)
+        literal = refs['literal'].get(name, 0)
+        fts = m.follow_all(sq, [H3_FIRETEAMS], [H3_FT_SZ], 'all')
+        for k, ft in enumerate(fts):
+            c = _i16(m, ft + H3_FT_CHAR)
+            locs = m.follow_all(ft, [H3_LOCS], [H3_LOC_SZ], 'all')
+            ci = {c} if not locs else set()
+            foot = 0
+            for loc in locs:
+                o = _i16(m, loc + H3_LOC_CHAR)
+                ci.add(o if o >= 0 else c)
+                foot += _i16(m, loc + H3_LOC_VEH) < 0
+            ci = {x for x in ci if 0 <= x < len(pal) and pal[x]}
+            chars = {pal[x] for x in ci}
+            sides = {steam} if steam else {teams[x] for x in ci}
+            human = any(_is_human(x) for x in chars)
+            enemy = bool(chars) and not human and not (sides & friends)
+            count = _i16(m, ft + H3_FT_COUNT)
+            on = struct.unpack_from('<H', m.data, ft + H3_FT_PLACE_ON)[0]
+            on_normal = on == 0 or bool(on & 2)
+            on_legend = on == 0 or bool(on & 8)
+            out.append({'index': idx, 'off': ft, 'name': '%s[%d]' % (name, k),
+                        'count': count,
+                        'normal': count if on_normal else 0,
+                        'insane': count if (on_legend and not on_normal) else 0,
+                        'locs': len(locs), 'foot': foot, 'chars': chars, 'enemy': enemy,
+                        'ally': bool(chars) and not enemy,
+                        'vehicle': _i16(m, ft + H3_FT_VEH) >= 0,
+                        'boss': any(_is_boss(x) for x in chars),
+                        'script': literal if k == 0 else 0, 'fixed': bool(literal),
+                        'bound': bound, 'placed': placed})
+            idx += 1
+    return out
+
+
 # ---- shared ------------------------------------------------------------------------
 
 def squads(m, game):
     g = str(game).strip()
-    return h1_squads(m) if g == 'Halo 1' else h2_squads(m) if g == 'Halo 2' else None
+    return (h1_squads(m) if g == 'Halo 1' else h2_squads(m) if g == 'Halo 2' else
+            h3_squads(m) if g == 'Halo 3' else None)
 
 
 def _matching(m, game, all_squads, pattern, side='enemy'):
@@ -394,11 +632,14 @@ def _spawns(sq, key):
     one-at-a-time spawns) replaces the squad count; an unplaced squad puts none."""
     if sq['script']:
         return sq['script']
+    if sq.get('fixed'):        # another fire-team of a squad placed with a fixed count
+        return 0
     return max(sq[key], 0) if sq['placed'] else 0
 
 
 def _takes_extras(sq):
-    return (not sq['script'] and not sq['bound'] and sq['placed'] and sq['foot'] > 0
+    return (not sq['script'] and not sq.get('fixed') and not sq['bound'] and sq['placed']
+            and sq['foot'] > 0
             and (sq['normal'] > 0 or sq['insane'] > 0))
 
 
@@ -430,30 +671,77 @@ def _allocate(squads, key, extra, rng):
     return got
 
 
-def grow(m, game, sq, normal, insane, spread=SPREAD):
-    """Write the new counts and copy on-foot locations up to the larger of them."""
-    h1 = str(game).strip() == 'Halo 1'
-    locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
-                                 (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
-    off = sq['off']
-    need = max(normal, insane) - sq['locs']
-    added = 0
-    if need > 0 and sq['foot'] > 0:
-        foot = [loc for loc in m.follow_all(off, [locs_off], [loc_sz], 'all')
-                if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
-        copies = []
-        for k in range(need):
-            e = bytearray(m.data[foot[k % len(foot)]:foot[k % len(foot)] + loc_sz])
-            x, y, z = struct.unpack_from('<fff', e, 0)
-            ring = k // len(foot) + 1
-            ang = 2.0 * math.pi * (k % len(foot)) / len(foot) + ring
-            struct.pack_into('<fff', e, 0, x + spread * ring * math.cos(ang),
-                             y + spread * ring * math.sin(ang), z)
-            copies.append(bytes(e))
-        m.grow_block(off, locs_off, loc_sz, copies)
-        added = need
-    struct.pack_into('<hh', m.data, off + cnt_off, normal, insane)
+def _copies(m, foot, loc_sz, pos_at, need, spread):
+    """`need` copies of the on-foot locations `foot`, cycling, nudged around their source."""
+    out = []
+    for k in range(need):
+        e = bytearray(m.data[foot[k % len(foot)]:foot[k % len(foot)] + loc_sz])
+        x, y, z = struct.unpack_from('<fff', e, pos_at)
+        ring = k // len(foot) + 1
+        ang = 2.0 * math.pi * (k % len(foot)) / len(foot) + ring
+        struct.pack_into('<fff', e, pos_at, x + spread * ring * math.cos(ang),
+                         y + spread * ring * math.sin(ang), z)
+        out.append(bytes(e))
+    return out
+
+
+def grow_all(m, game, plan, spread=SPREAD):
+    """Apply [(squad, new normal, new insane)]: write the counts and copy on-foot locations
+    up to the new count. Returns the number of locations added, or raises RuntimeError
+    when Halo 3 has no free space for them.
+
+    Halo 1 / Halo 2 append the grown block at the end of the tag data. Halo 3 cannot (a
+    block may only live where a partition maps it), so every grown location block moves
+    into zero slack -- all of them reserved in ONE run (halo_patch._h3_reserve), never
+    scattered over short runs."""
+    g = str(game).strip()
+    if g != 'Halo 3':
+        h1 = g == 'Halo 1'
+        locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
+                                     (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
+        added = 0
+        for sq, normal, insane in plan:
+            need = max(normal, insane) - sq['locs']
+            if need > 0 and sq['foot'] > 0:
+                foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
+                        if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
+                m.grow_block(sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread))
+                added += need
+            struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
+        return added
+    import halo_patch
+    jobs = []
+    for sq, normal, insane in plan:
+        count = sq['count'] + (normal - sq['normal']) + (insane - sq['insane'])
+        need = count - sq['locs']
+        blob = None
+        if need > 0 and sq['foot'] > 0:
+            locs = m.follow_all(sq['off'], [H3_LOCS], [H3_LOC_SZ], 'all')
+            foot = [loc for loc in locs if _i16(m, loc + H3_LOC_VEH) < 0]
+            old = b''.join(bytes(m.data[l:l + H3_LOC_SZ]) for l in locs)
+            blob = old + b''.join(_copies(m, foot, H3_LOC_SZ, H3_LOC_POS, need, spread))
+        jobs.append((sq, count, blob))
+    sizes = [len(b) for _sq, _c, b in jobs if b]
+    offs = halo_patch._h3_reserve(m, sizes) if sizes else []
+    if offs is None:
+        raise RuntimeError('no free space in the map for %d grown location blocks (%d bytes)'
+                           % (len(sizes), sum(sizes)))
+    added, k = 0, 0
+    for sq, count, blob in jobs:
+        if blob:
+            dest = offs[k]
+            k += 1
+            m.data[dest:dest + len(blob)] = blob
+            struct.pack_into('<i', m.data, sq['off'] + H3_LOCS, len(blob) // H3_LOC_SZ)
+            struct.pack_into('<I', m.data, sq['off'] + H3_LOCS + 4, m.off2data(dest))
+            added += len(blob) // H3_LOC_SZ - sq['locs']
+        struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT, count)
     return added
+
+
+def grow(m, game, sq, normal, insane, spread=SPREAD):
+    """One squad (see grow_all)."""
+    return grow_all(m, game, [(sq, normal, insane)], spread)
 
 
 def _scnr_name(m, game):
@@ -477,7 +765,7 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
 
     Returns {'ok', 'skip', 'reason' | 'base', 'script', 'extra', 'squads', 'locations'}."""
     if str(game).strip() not in GAMES:
-        return {'ok': True, 'skip': True, 'reason': 'spawn count is Halo 1 / Halo 2 only so far'}
+        return {'ok': True, 'skip': True, 'reason': 'spawn count is not available in this game yet'}
     if pct <= 0:
         return {'ok': True, 'skip': True, 'reason': 'no increase'}
     matched = [sq for sq in _matching(m, game, squads(m, game), pattern, side)
@@ -498,15 +786,18 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
         extra = int(round(pct * base))
         rng = random.Random('%s|%s' % (seed, key))
         plan[key] = (base, extra, _allocate(takers, key, extra, rng))
-    locs, changed = 0, 0
+    work = []
     for sq in takers:
         dn = plan['normal'][2].get(sq['index'], 0)
         di = plan['insane'][2].get(sq['index'], 0)
-        if not dn and not di:
-            continue
-        locs += grow(m, game, sq, sq['normal'] + dn if sq['normal'] > 0 else 0,
-                     sq['insane'] + di if sq['insane'] > 0 else 0)
-        changed += 1
+        if dn or di:
+            work.append((sq, sq['normal'] + dn if sq['normal'] > 0 else 0,
+                         sq['insane'] + di if sq['insane'] > 0 else 0))
+    try:
+        locs = grow_all(m, game, work)
+    except RuntimeError as e:
+        return {'ok': False, 'reason': str(e)}
+    changed = len(work)
     return {'ok': True, 'skip': False, 'base': plan['normal'][0], 'script': script,
             'extra': plan['normal'][1], 'extra_insane': plan['insane'][1],
             'squads': changed, 'of': len(takers), 'locations': locs}

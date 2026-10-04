@@ -1,11 +1,13 @@
 r"""Spawn-count test maps: multiply the counts of every squad a Spawn Count card would grow.
 
-Uses enemy_count's own squad reading and growth (counts + copied on-foot locations), so the
+Uses enemy_count's own squad reading and growth (grow_all: one slack reservation for
+every Halo 3 block) (counts + copied on-foot locations), so the
 test exercises the patcher's code; only the share is fixed per squad (x --mult) instead of
 a percentage spread over the level. Squads that spawn by script or into a vehicle, bosses,
 vehicle squads and the other side are left alone -- exactly the cards' exclusions.
 
     python squad_count_test.py --game "Halo 1" --map <map> --show
+    (Halo 3: `normal` = fire-teams playing on Normal, `insane` = Legendary-only teams)
     python squad_count_test.py --game "Halo 1" --map <in> --out <out> --mult 2 [--side ally]
 """
 import argparse
@@ -41,7 +43,7 @@ def main():
         hit = [s['name'] for s in side if s not in grow and f(s)]
         if hit:
             print('  left alone (%s): %d  %s' % (k, len(hit), ', '.join(hit[:6]) + (' ...' if len(hit) > 6 else '')))
-    before, after, added = [0, 0], [0, 0], 0
+    before, after, plan = [0, 0], [0, 0], []
     for s in grow:
         sp = '+'.join(sorted({ec.species(c) for c in s['chars']}))
         n = int(math.ceil(s['normal'] * a.mult)) if s['normal'] > 0 else 0
@@ -53,10 +55,10 @@ def main():
         if a.show:
             print('  %-44s %-26s normal %2d insane %2d locs %2d' % (s['name'], sp, s['normal'], s['insane'], s['locs']))
             continue
-        got = ec.grow(m, a.game, s, n, i)
-        added += got
-        print('  %-44s %-26s normal %2d->%2d insane %2d->%2d locs %2d+%d' % (
-            s['name'], sp, s['normal'], n, s['insane'], i, s['locs'], got))
+        plan.append((s, n, i))
+        print('  %-44s %-26s normal %2d->%2d insane %2d->%2d locs %2d' % (
+            s['name'], sp, s['normal'], n, s['insane'], i, s['locs']))
+    added = 0 if a.show else ec.grow_all(m, a.game, plan)
     print('actors (grown squads): normal %d -> %d, insane %d -> %d, %d new locations' % (
         before[0], after[0], before[1], after[1], added))
     if a.show:
