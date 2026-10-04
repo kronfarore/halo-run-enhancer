@@ -1,0 +1,32 @@
+{
+ "game": "Halo 1",
+ "weapon": "SAW",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_fire",
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_fire",
+    "sound\\old_weapons\\saw_port\\saw_fire"
+   ],
+   "perms": [
+    "saw_fire_1.wav",
+    "saw_fire_2.wav",
+    "saw_fire_3.wav",
+    "saw_fire_4.wav",
+    "saw_fire_5.wav",
+    "saw_fire_6.wav"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\saw_port\\saw_dryfire",
+   "aliases": [
+    "sound\\weapons\\saw_port\\saw_dryfire",
+    "sound\\old_weapons\\saw_port\\saw_dryfire"
+   ],
+   "perms": [
+    "saw_dryfire_1.wav"
+   ]
+  }
+ ]
+}

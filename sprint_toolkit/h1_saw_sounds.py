@@ -70,7 +70,7 @@ FORMAT = 'wav'
 #: the fire's TONE (h1_saw_tone.py candidates A-D; the user picks by ear): None = the plain
 #: import (thin and bright next to the H1 AR -- "a Pea Shooter")
 TONE = 'D'          # user's pick 2026-10-04 (A, the plain import, was still 'a Pea Shooter')
-HEADROOM_DB = 3.0
+HEADROOM_DB = 0.0          # the map tag gain is not what plays (the FMOD bank is); stock-like 1.0
 BACKUP = r'E:\HaloBackups\HCEEK_saw_before_sounds'
 #: playback fields copied from the AR's sound tag
 COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fraction',
@@ -198,18 +198,65 @@ def repoint_weapon():
     print('   weapon: %d effect reference(s) -> own' % n)
 
 
+#: MCC PLAYS HALO 1 SOUNDS FROM FMOD BANKS, NOT FROM THE MAP (2026-10-04, h1_fsb.py): the
+#: classic view's sounds_adpcm.fsb, found by tag path through lst\sounds_adpcm.lst.bin.
+#: A port's sound tag is silent until its audio is in that bank under its path -- every
+#: build before this played only the casing click ("a Pea Shooter", A and D alike). The
+#: bank audio ships with the tool (port_sounds\halo1) and tool\port_sounds.py puts it in
+#: (patch time / by hand); the map's own copy of the audio is never played.
+BANK_DIR = os.path.join(os.path.dirname(HERE), 'port_sounds', 'halo1')
+BANK_RATE = 22050            # the stock classic bank: 22 kHz mono XBOX IMA ADPCM
+
+
+def bank_wavs():
+    """The SAW's bank audio, 22 kHz mono, the fire in TONE at the H1 AR's level, plus the
+    manifest port_sounds.py reads: each sound's tag path, the index ALIASES (how classic
+    view maps a path outside sound\\sfx is not known yet -- the plain path and an `old_`
+    form are both listed), and its permutations in order."""
+    import json
+    shutil.rmtree(BANK_DIR, ignore_errors=True)
+    os.makedirs(BANK_DIR)
+    sounds = []
+    for name, (src, _ar) in SOUNDS.items():
+        perms = []
+        for i, w in enumerate(sorted(glob.glob(os.path.join(AUDIO, src, '*.wav')))):
+            x, r = tone_mod.read(w)
+            x = tone_mod.resample(x, r, 44100)
+            if name == 'saw_fire' and TONE:
+                x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB)
+            y = tone_mod.resample(x, 44100, BANK_RATE)
+            f = '%s_%d.wav' % (name, i + 1)
+            tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
+            perms.append(f)
+        tag = SND_DIR + B + name
+        sounds.append({'tag': tag, 'aliases': [tag, tag.replace('sound' + B, 'sound' + B + 'old_', 1)],
+                       'perms': perms})
+        print('   bank audio %-12s %d permutation(s) at %d Hz' % (name, len(perms), BANK_RATE))
+    json.dump({'game': 'Halo 1', 'weapon': 'SAW', 'rate': BANK_RATE, 'sounds': sounds},
+              open(os.path.join(BANK_DIR, 'port_saw.json'), 'w'), indent=1)
+    print('   wrote %s' % BANK_DIR)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('--write', action='store_true')
+    ap.add_argument('--bank-only', action='store_true',
+                    help='only rewrite the bank audio (port_sounds\\halo1); no tags, no rebuild')
     a = ap.parse_args()
     if not a.write:
         print('(dry run -- pass --write)')
+        return
+    if a.bank_only:
+        bank_wavs()
+        print('done -- install with: python ..\\port_sounds.py --write')
         return
     backup()
     import_sounds()
     own_effects()
     repoint_weapon()
-    print('done -- rebuild (h1_rebuild_all.py --maps a10 for a test)')
+    bank_wavs()
+    print('done -- rebuild (h1_rebuild_all.py --maps a10 for a test), then '
+          'python ..\\port_sounds.py --write')
 
 
 if __name__ == '__main__':

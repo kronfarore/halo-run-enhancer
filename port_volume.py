@@ -60,10 +60,12 @@ LAYOUT = {'Halo 3': (0x0C, 0x10, 0x44, 0x1C),
           # Parameters" (0x38) with Gain Base +0x10 -- pooled too (03a: 871 sounds share
           # the SMG fire's entry). Whether it clamps at 0 like Halo 3: untested, so the
           # headroom rule applies (built at -3.01).
-          'Halo 2': (0x06, 0x08, 0x38, 0x10),
-          # Halo 1: no gestalt, no pooling -- each sound tag's own permutation gains
-          # (_h1_gains); the headroom rule still applies (built at 0.708 = -3 dB)
-          'Halo 1': None}
+          'Halo 2': (0x06, 0x08, 0x38, 0x10)}
+# HALO 1 IS NOT HERE (2026-10-04): MCC plays Halo 1 sounds from its FMOD bank
+# (halo1\sound\pc\sounds_adpcm.fsb, by tag path), never the map's audio, so a map gain
+# turns nothing. Its knob is port_sounds.ensure('halo1', root, volume={'SAW': dB}), which
+# re-encodes the port's bank audio at that volume. (_h1_gains below reads the map's
+# per-tag gains; kept for reports, not used by apply().)
 #: game -> its maps folder under the MCC install
 FOLDER = {'Halo 3': 'halo3\\maps', 'Halo 3: ODST': 'halo3odst\\maps', 'Halo Reach': 'haloreach\\maps',
           'Halo 2': 'halo2\\h2_maps_win64_dx11', 'Halo 1': 'halo1\\maps'}
