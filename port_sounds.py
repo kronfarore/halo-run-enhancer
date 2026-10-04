@@ -223,7 +223,7 @@ def h1_wanted(volume=None):
         db = min((volume or {}).get(m.get('weapon'), 0.0) or 0.0, H1_MAX_UP_DB)
         for snd in m['sounds']:
             i0 = len(samples)
-            base = snd['tag'].replace('\\', '/').rsplit('/', 1)[-1]
+            base = snd.get('name') or snd['tag'].replace('\\', '/').rsplit('/', 1)[-1]
             for k, f in enumerate(snd['perms']):
                 with wave.open(os.path.join(os.path.dirname(man), f), 'rb') as r:
                     if r.getnchannels() != 1 or r.getsampwidth() != 2:
