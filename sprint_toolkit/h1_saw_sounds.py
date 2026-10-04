@@ -49,6 +49,8 @@ from reclaimer.hek.defs.snd_ import snd__def                        # noqa: E402
 from reclaimer.hek.defs.weap import weap_def                        # noqa: E402
 from saw_port_sounds import AUDIO, boosted                          # noqa: E402
 import h1_saw_tone as tone_mod                                      # noqa: E402
+sys.path.insert(0, os.path.dirname(HERE))
+import h1_fsb                                                       # noqa: E402
 
 HCEEK = r'F:\SteamLibrary\steamapps\common\HCEEK'
 TAGS = os.path.join(HCEEK, 'tags')
@@ -128,20 +130,12 @@ def import_sounds():
     for name, (src, ar) in SOUNDS.items():
         d = os.path.join(HCEEK, 'data', SND_DIR, name)
         os.makedirs(d)
+        pcm = []
         for w in sorted(glob.glob(os.path.join(AUDIO, src, '*.wav'))):
-            if name == 'saw_fire' and TONE:
-                # h1_saw_tone.py: the picked candidate, its shot levelled to the H1 AR's
-                # + the headroom (the permutation gain 0.708 takes those 3 dB back)
-                x, r = tone_mod.read(w)
-                x = tone_mod.resample(x, r, RATE)
-                y = tone_mod.level(tone_mod.tone(x, RATE, TONE), RATE,
-                                   tone_mod.AR_RMS_DB + HEADROOM_DB)
-                tone_mod.write(os.path.join(d, os.path.basename(w)), y, RATE)
-                continue
-            tmp = os.path.join(d, '_44k.wav')
-            mono_44k(w, tmp)
-            boosted(tmp, os.path.join(d, os.path.basename(w)), HEADROOM_DB)
-            os.remove(tmp)
+            # the SAME audio the bank carries (processed(): 22 kHz mono, the fire in TONE)
+            y = processed(name, w)
+            tone_mod.write(os.path.join(d, os.path.basename(w)), y, BANK_RATE)
+            pcm.append(np.clip(np.round(y * 32767), -32768, 32767).astype(np.int32))
         out = tool('sounds', SND_DIR + B + name, FORMAT)
         path = os.path.join(TAGS, SND_DIR, name + '.sound')
         if not os.path.exists(path) or 'MM:' in out:
@@ -153,7 +147,19 @@ def import_sounds():
         for f in COPY:
             setattr(dd, f, getattr(arT, f))
         perms = [p for pr in dd.pitch_ranges.STEPTREE for p in pr.permutations.STEPTREE]
-        for p in perms:
+        if len(perms) != len(pcm):
+            raise SystemExit('%s: %d permutations for %d wavs' % (name, len(perms), len(pcm)))
+        # STOCK-SHAPED: every stock classic sound is 22 kHz XBOX ADPCM, and a sound\sfx
+        # tag left as 44 kHz PCM ('none') CRASHED the game the moment the SAW became active
+        # (2026-10-04, halo1.dll+0xB3605D) -- the kit's own xbox route cannot encode here
+        # (missing ACM codec), so the permutations get h1_fsb's encoder output: the same
+        # 36-byte XBOX IMA blocks the stock tags carry.
+        dd.sample_rate.data = 0                       # khz_22
+        dd.compression.data = 1                       # xbox_adpcm
+        for p, x in zip(perms, pcm):
+            blob, _ns = h1_fsb.encode_xbox_ima(x)
+            p.samples.data = bytearray(blob)
+            p.compression.data = 1
             p.gain = gain
         t.serialize(temp=False, backup=False)
         t = snd__def.build(filepath=path).data.tagdata
@@ -218,6 +224,16 @@ REMASTERED_FROM = {'saw_fire': B.join(['sound', 'sfx', 'weapons', 'rocket launch
                    'saw_dryfire': B.join(['sound', 'sfx', 'weapons', 'assault rifle', 'dryfire'])}
 
 
+def processed(name, w):
+    """One SAW wav as Halo 1 carries it: 22 kHz mono float, the fire in TONE at the H1
+    AR's shot level. The map's tags and the FMOD bank both get exactly this."""
+    x, r = tone_mod.read(w)
+    x = tone_mod.resample(x, r, 44100)
+    if name == 'saw_fire' and TONE:
+        x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB)
+    return tone_mod.resample(x, 44100, BANK_RATE)
+
+
 def bank_wavs():
     """The SAW's bank audio, 22 kHz mono, the fire in TONE at the H1 AR's level, plus the
     manifest port_sounds.py reads: each sound's tag path, the index ALIASES (how classic
@@ -230,11 +246,7 @@ def bank_wavs():
     for name, (src, _ar) in SOUNDS.items():
         perms = []
         for i, w in enumerate(sorted(glob.glob(os.path.join(AUDIO, src, '*.wav')))):
-            x, r = tone_mod.read(w)
-            x = tone_mod.resample(x, r, 44100)
-            if name == 'saw_fire' and TONE:
-                x = tone_mod.level(tone_mod.tone(x, 44100, TONE), 44100, tone_mod.AR_RMS_DB)
-            y = tone_mod.resample(x, 44100, BANK_RATE)
+            y = processed(name, w)
             f = '%s_%d.wav' % (name, i + 1)
             tone_mod.write(os.path.join(BANK_DIR, f), y, BANK_RATE)
             perms.append(f)
