@@ -2231,7 +2231,7 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
      **WITHDRAWN 2026-10-04: Test 2 was misheard.** The SAW's firing effect also plays the
      AR's distant-fire layer (assault_rifle_lod_far) and the projectile has sounds of its
      own; with the bank out of the folder those were what played. Installing sfx.saw.fsb
-     in haloreachmod\pc for the first time (2026-10-04) made the SAW's fire, reload and
+     in haloreach\fmod\pc for the first time (2026-10-04) made the SAW's fire, reload and
      ready audible. **Reach plays port sounds from the FMOD bank, like Halo 3 / ODST** --
      saw_port_sounds.py now installs it on every route. Lesson: a "still plays" test
      needs a sound that cannot be confused with another layer (a test tone).
