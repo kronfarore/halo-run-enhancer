@@ -1,6 +1,7 @@
 # halo_enhancer.py - Final version
 
 import copy
+import glob
 import hashlib
 import html
 import json
@@ -5137,6 +5138,26 @@ OTHER_WEIGHT_DEFAULTS = {'bane': 3.0}
 BANE_PICKS = 3
 # A tier-ladder choice row's default entry (Firing Noise): move a tier per pick.
 LADDER_BY_STEP = '(by step)'
+
+# Game folders whose ported weapons' sounds live in a package outside the map (port_sounds):
+# Halo 4's Wwise sfxbank.pck, Halo 1's FMOD sounds_adpcm.fsb.
+PORT_SOUND_FOLDERS = ('halo4', 'halo1')
+
+
+def _h1_bank_ports():
+    """Weapons whose Halo 1 sounds port_sounds installs into the FMOD bank (the
+    manifests' `weapon`): their volume knob drives that bank, not the map."""
+    try:
+        import port_sounds
+        out = set()
+        for man in glob.glob(os.path.join(port_sounds._data_dir(), 'halo1', '*.json')):
+            with open(man, encoding='utf-8') as f:
+                w = json.load(f).get('weapon')
+            if w:
+                out.add(w)
+        return out
+    except Exception:
+        return set()
 # Weapon Identity: the x2 card and the inverted card (keep in step with halo_patch)
 IDENTITY_UP_PICKS = 2
 IDENTITY_DOWN_PICKS = 1
@@ -6801,10 +6822,14 @@ class MagnitudeEditorDialog(QDialog):
         a ported weapon's own bank (port_sounds.py) must be in it or the port fires
         silently. A Steam verify restores the stock file and a co-op partner never had
         it, so every Halo 4 patch makes sure. Present = a header read; missing = a
-        ~400 MB rewrite (seconds), hence the busy dialog. Never fatal to the map patch."""
+        ~400 MB rewrite (seconds), hence the busy dialog. Never fatal to the map patch.
+
+        Halo 1 the same way: MCC plays Halo 1 sounds from its FMOD bank
+        (halo1\\sound\\pc\\sounds_adpcm.fsb, found by tag path), never from the map, so a
+        port's sounds are silent until they are appended there."""
         folder = (CONFIG.get('map_game_folder', {}).get(self.game) or '')
         folder = folder.replace('/', '\\').split('\\')[0]
-        if folder != 'halo4':
+        if folder not in PORT_SOUND_FOLDERS:
             return []
         # the per-port volume knob (Options -> Weapon ports): a turned bank replaces the
         # as-built one; 0 dB values are left out, so a knob set back to 0 restores it
@@ -12108,10 +12133,21 @@ class OptionsDialog(QDialog):
         except Exception:
             return None
         bank = game in port_volume.BANK_GAMES and weapon in port_volume.PORT_BANKS
-        if not bank and (game not in port_volume.LAYOUT or weapon not in port_volume.PORT_SOUNDS):
+        h1 = game == 'Halo 1' and weapon in _h1_bank_ports()
+        if not (bank or h1) and (game not in port_volume.LAYOUT
+                                 or weapon not in port_volume.PORT_SOUNDS):
             return None
         top = 3.0                         # map ports ship at -3 dB; the engine clamps at 0
-        if bank:
+        if h1:
+            # Halo 1: the volume of the port's subsongs in MCC's FMOD bank
+            # (port_sounds.ensure('halo1', volume=...)); louder is soft-limited past +6
+            try:
+                import port_sounds
+                top = float(port_sounds.H1_MAX_UP_DB)
+            except Exception:
+                top = 6.0
+            bank = True
+        elif bank:
             # a Halo 4 port's own Wwise bank: its root mixer's headroom (the Focus Rifle
             # ships at -6 dB)
             try:
@@ -12136,9 +12172,9 @@ class OptionsDialog(QDialog):
                    "built. 0 = as built. +%g is the most the knob can raise it (the "
                    "loudest the bank's mixers can be set, measured in game); down has no "
                    "limit."
-                   "\n\nApplied to Halo 4's sound package on every Halo 4 patch -- no map "
+                   "\n\nApplied to %s's sound package on every %s patch -- no map "
                    "rebuild needed. Your own setting: not part of the run, so a co-op partner "
-                   "sets theirs." % top)
+                   "sets theirs (or turn on Sync to partner)." % (top, game, game))
         else:
             tip = ("How loud this port's own sounds play, in dB against the map as built. 0 = "
                    "as built. Every port ships at -3 dB on purpose: the engine plays nothing "
