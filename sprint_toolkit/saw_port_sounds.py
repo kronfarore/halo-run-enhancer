@@ -113,7 +113,9 @@ GAMES = {
                         'empty': (BR_FX + B + 'empty', DRY_PAIR)},
                graphs=[FP + 'fp_saw_masterchief', FP + 'fp_saw_dervish'],
                graph_pairs=GRAPH_PAIRS,
-               foley={'saw_reload': ('RELOAD', 1.0, -31.0), 'saw_ready': ('READY', 1.0, -23.7)},
+               # reload +4 dB over the H3 AR's own (-31): "could use a bit more volume" (user,
+               # 2026-10-04) -- audio level only, so a bank reinstall, no rebuild
+               foley={'saw_reload': ('RELOAD', 1.0, -27.0), 'saw_ready': ('READY', 1.0, -23.7)},
                foley_mono=True,
                gain={'saw_reload': -7, 'saw_ready': -9}),
     # GAIN (user, 2026-10-03: "noticeably quieter in ODST"). The SAW's shot measures the same
