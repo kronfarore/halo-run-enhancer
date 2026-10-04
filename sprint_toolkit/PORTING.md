@@ -2354,6 +2354,17 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   the stock files backed up (F:\HaloPortBackups\sound_stock). Volume = re-encoding at
   install (ensure(volume=...)); the map's tag gains do nothing. A Steam verify restores
   the stock bank: run `python port_sounds.py --write` (or patch) again.
+* **CONFIRMED (test 5, 2026-10-04): the bank lookup works for a port sound OUTSIDE
+  sound\sfx** -- the beep placed in the bank under `sound\weapons\saw_port\saw_fire`
+  played. Two conditions, both learned the hard way:
+  * the tag must be STOCK-SHAPED: 22 kHz XBOX ADPCM (h1_saw_sounds writes h1_fsb's
+    encoder output into the permutations). With 44 kHz uncompressed tags (tests 0-1) the
+    game never asked the bank -- only the effect's casing click played;
+  * the tag must NOT live under sound\sfx: a new tag there CRASHED the game the moment
+    the SAW became active (halo1.dll+0xB3605D, a garbage tag pointer) -- with the stock
+    bank, with classic + Anniversary index entries, and with stock-shaped tags alike
+    (tests 2-4). Presumably MCC pairs every sfx tag with an Anniversary counterpart.
+  The index carries the plain path and an `old_` form (which one hits: not isolated).
 Reload / ready / melee sounds are cued at animation frames in each port's (retimed) fp
 graph -- a separate step after the firing sounds.
 
