@@ -2409,7 +2409,22 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   structurally identical Reach bank with the same long entries plays). Foley is MONO
   there now (reload 459 KB) and check_bank_entries refuses entries over the size.
   MCC LOCKS a loaded game's sfx.saw.fsb -- install banks with that game closed.
-Melee, idle fidgets, zoom and Reach's ready_hero are still the donors'.
+* **Second batch (2026-10-04): melee, idle fidgets, Reach's first draw** -- same mixdown
+  (saw_port_foley MELEE1/2, POSE1/2, READY_INITIAL). H4 has no SAW zoom audio in any MCC
+  bank, so the ports keep their zoom. Halo 1: melee via the bank; the BALANCED reload
+  (the patcher retimes the reload x1.28125 in the map) swaps to a mix stretched for it
+  -- saw_anims.py ships it as an unused sound reference, the catalog's `anim_sounds`
+  names the swap, port_sounds.retimed_anim_sound does it at patch time.
+* **The H3EK FSBank trap (2026-10-04):** ONE `sounds-single-layer` call that puts 6+
+  permutations into a NON-EMPTY bank fails -- `FSBank error! (7) An operating system
+  based file error` -- for any sound (fire too), re-imported permutations count, 1-3 work,
+  any count into an EMPTY bank works; one core or NUMBER_OF_PROCESSORS=1 change nothing.
+  The tool STILL WRITES THE TAG, so the build carries on and the map names hashes the bank
+  lacks (the H3 melee shipped silent). The ODST and Reach kits have no such limit. Fix:
+  every sound into its own fresh bank, merged by fsb5_merge.py (byte-identical to a
+  kit-built bank but for the per-build hash); every import fails on `-ERROR-`, and
+  check_bank_complete wants one bank entry per imported wav. A bank-only fix needs no
+  rebuild: the map's subsound hashes come from the wav paths.
 
 ## Halo 4 as the TARGET -- the H4 port kit (started 2026-09-30)
 

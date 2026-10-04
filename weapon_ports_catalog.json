@@ -466,6 +466,13 @@
       "label": "Sniper Rifle Ammo"
      }
     ]
+   },
+   "anim_sounds": {
+    "reload": {
+     "mult": 1.28125,
+     "from": "sound\\weapons\\saw_port\\saw_reload",
+     "to": "sound\\weapons\\saw_port\\saw_reload_balanced"
+    }
    }
   }
  ],

@@ -27,6 +27,8 @@ FOR THE ENHANCER (patch time, Halo 4 and Halo 1):
                                    # per-port volume knob, dB relative to the bank as built
                                    # (port_volume.bank_volume: the root mixer's Volume)
     problems = port_sounds.problems(mcc_root())           # validator messages
+    row = port_sounds.retimed_anim_sound(m, game, port, 'reload', mult)
+                                   # after the balance retime: Halo 1's stretched reload sound
 A frozen build needs datas += [('port_sounds', 'port_sounds')] in halo_enhancer.spec.
 
 COMMAND LINE (cmd.exe):
@@ -331,6 +333,48 @@ def h1_ensure(mcc_root, write=True, backup_dir=None, volume=None):
         return [dict(row, ok=False, reason='could not write: %s' % e)]
     return [dict(row, ok=True, old='without %s' % what,
                  new='%s added (%d subsongs from %d)' % (what, len(samples), first))]
+
+
+# --- Halo 1: an animation sound that follows the balance retime ---
+# A Halo 1 animation plays ONE sound (index into its antr's Sound References, cued at its
+# sound frame). The patcher's balance retimes the SAW's first-person reload x1.28125 in the
+# map (halo3_reload.scale_reload), which the 128-frame reload mix does not follow: its
+# later clicks land up to 1.2 s early. So the map also carries a mix stretched for that
+# retime -- an UNUSED sound reference of the same antr (sprint_toolkit\saw_anims.py) -- and
+# the catalog names the swap: port['anim_sounds'][group] = {'mult', 'from', 'to'}.
+H1_ANTR_SOUNDS, H1_SOUND_EL = 0x54, 0x14      # Sound References: tagref (id @+0xC) + pad
+H1_ANIM_BLK, H1_ANIM_EL, H1_ANIM_SOUND = 0x74, 0xB4, 0x3C   # animation: Sound i16 @0x3C
+
+
+def retimed_anim_sound(m, game, port, group, mult):
+    """After the patcher retimes `group` of `port` by `mult`: point the animations that
+    play the port's `from` sound at its `to` sound (stretched for exactly that mult).
+    Returns a patcher-style row, or None when the port names no such swap."""
+    spec = (port.get('anim_sounds') or {}).get(group)
+    if not spec or str(game).strip() != 'Halo 1' or not port.get('fp_animations'):
+        return None
+    fp = port['fp_animations']
+    row = {'effect': '%s (ported)' % (port.get('weapon') or 'port'),
+           'tag': fp.rsplit('\\', 1)[-1], 'field': '%s sound' % group,
+           'old': spec['from'].rsplit('\\', 1)[-1], 'new': spec['to'].rsplit('\\', 1)[-1]}
+    if abs(float(mult) - float(spec['mult'])) > 1e-3:
+        return dict(row, ok=True, skip=True,
+                    reason='the stretched sound fits x%.4f, not x%.4f' % (spec['mult'], mult))
+    changed = 0
+    for _p, base in m.find_tags('antr', fp):
+        refs = m.follow_all(base, [H1_ANTR_SOUNDS], [H1_SOUND_EL], 'all')
+        names = [(m.tag_name_by_id(m.u32(el + 0xC)) or '').lower() for el in refs]
+        if spec['from'].lower() not in names or spec['to'].lower() not in names:
+            return dict(row, ok=False, reason='%s does not carry both sounds (map built '
+                        'before 2026-10-04?)' % fp)
+        old, new = names.index(spec['from'].lower()), names.index(spec['to'].lower())
+        for el in m.follow_all(base, [H1_ANIM_BLK], [H1_ANIM_EL], 'all'):
+            if struct.unpack_from('<h', m.data, el + H1_ANIM_SOUND)[0] == old:
+                struct.pack_into('<h', m.data, el + H1_ANIM_SOUND, new)
+                changed += 1
+    if not changed:
+        return dict(row, ok=True, skip=True, reason='no animation plays %s' % spec['from'])
+    return dict(row, ok=True, new='%s (%d animation(s))' % (row['new'], changed))
 
 
 def problems(mcc_root, volume=None):

@@ -101,6 +101,18 @@ def main():
         if new and os.path.exists(os.path.join(TAGS, new + '.sound')):
             rows.append('sound %s -> %s' % (ref.sound.filepath, new))
             ref.sound.filepath = new
+    # THE BALANCED RELOAD SOUND rides along UNUSED (2026-10-04): the shipped set is this
+    # original one, and the patcher's balance retimes its reload x1.28 in the map -- then
+    # points the reload at this mix, stretched for exactly that (port_sounds.
+    # retimed_anim_sound, catalog `anim_sounds`). A sound reference is what makes the
+    # map carry the tag.
+    extra = snd + 'saw_reload_balanced'
+    refs = t.data.tagdata.sound_references.STEPTREE
+    if mode == 'original' and os.path.exists(os.path.join(TAGS, extra + '.sound')):
+        refs.append()
+        refs[-1].sound.tag_class.set_to('sound')
+        refs[-1].sound.filepath = extra
+        rows.append('sound + %s (unused until the balance retime)' % extra)
     out = OUT if mode == 'original' else OUT.replace('fp.model_animations', 'fp_balanced.model_animations')
     os.makedirs(os.path.dirname(out), exist_ok=True)
     t.filepath = out

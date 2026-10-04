@@ -21,6 +21,7 @@ ANIM = {'reload': (128, 164), 'swap': (35, 34)}
 # runs `ammo_meter.py 72 135`), and its HUD's low-ammo flash at the port's own 72
 METER_SIZES = [72, 135]
 LOADED_CUTOFF = 12
+SND = 'sound' + B + 'weapons' + B + 'saw_port' + B
 
 
 def main():
@@ -76,7 +77,12 @@ def main():
                      % (t['ported'], t['source'], t['donor']),
              'fp_animations': 'weapons' + B + 'saw' + B + 'fp' + B + 'fp',
              'balance': rows,
-             'anims': {k: round(new / float(old), 6) for k, (old, new) in ANIM.items()}}
+             'anims': {k: round(new / float(old), 6) for k, (old, new) in ANIM.items()},
+             # the reload SOUND that follows the balance retime (port_sounds.
+             # retimed_anim_sound): h1_saw_sounds.py stretches the mix 164/128, saw_anims.py
+             # ships it as an unused sound reference of the fp animations
+             'anim_sounds': {'reload': {'mult': round(ANIM['reload'][1] / float(ANIM['reload'][0]), 6),
+                                        'from': SND + 'saw_reload', 'to': SND + 'saw_reload_balanced'}}}
     cat = {}
     if os.path.exists(OUT):
         cat = json.load(open(OUT, encoding='utf-8'))
