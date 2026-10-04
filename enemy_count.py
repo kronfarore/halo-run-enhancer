@@ -709,34 +709,121 @@ def grow_all(m, game, plan, spread=SPREAD):
                 added += need
             struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
         return added
-    import halo_patch
-    jobs = []
     for sq, normal, insane in plan:
-        count = sq['count'] + (normal - sq['normal']) + (insane - sq['insane'])
-        need = count - sq['locs']
-        blob = None
-        if need > 0 and sq['foot'] > 0:
-            locs = m.follow_all(sq['off'], [H3_LOCS], [H3_LOC_SZ], 'all')
-            foot = [loc for loc in locs if _i16(m, loc + H3_LOC_VEH) < 0]
+        h3_queue(m, sq, sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
+    rep = h3_flush(m, spread)
+    if rep.get('dropped'):
+        raise RuntimeError(rep['reason'])
+    return rep.get('added', 0)
+
+
+# ---- Halo 3: deferred location growth ------------------------------------------------
+#
+# A grown fire-team's whole location block moves into zero slack, and slack is scarce
+# (the 8 KB+ runs hold 50-180 KB per map) and shared with every other block-growing
+# pass of the patch. So the cards only write COUNTS when they run and queue the team
+# (h3_queue); h3_flush, called once at the very end of the patch (after the weapon /
+# equipment spawns and the zoom UI have reserved theirs), copies the locations each queued
+# team needs and packs the blocks into runs of MIN_RUN bytes or more -- the largest runs first, the
+# largest blocks first. A team
+# grown by two cards moves once. A block that does not fit leaves its team at the count
+# its existing locations can seat, and the shortfall is reported.
+
+MIN_RUN = 8192       # shorter zero runs can be live data (the Halo 4 zone-tag lesson)
+
+
+def h3_queue(m, sq, count):
+    """Set a fire-team's count now; its locations follow in h3_flush."""
+    pend = m.__dict__.setdefault('_ec_pending', {})
+    if sq['off'] not in pend:
+        pend[sq['off']] = {'sq': sq, 'orig': sq['count']}
+    struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT, count)
+
+
+def _h3_free(m):
+    """[start, end) zero runs of MIN_RUN+ bytes the partition table maps, minus regions
+    reserved earlier on this map."""
+    import re
+    taken = sorted(getattr(m, '_h3_reserved', None) or [])
+    out = []
+    for _la, psz, fb in m.partitions:
+        if fb is None or not psz or fb + psz > len(m.data):
+            continue
+        for mo in re.finditer(rb'\x00{%d,}' % MIN_RUN, bytes(m.data[fb:fb + psz])):
+            segs = [[fb + mo.start() + 16, fb + mo.end() - 16]]
+            for a, b in taken:
+                nxt = []
+                for s0, e0 in segs:
+                    if b <= s0 or a >= e0:
+                        nxt.append([s0, e0])
+                    else:
+                        if a > s0:
+                            nxt.append([s0, a])
+                        if b < e0:
+                            nxt.append([b, e0])
+                segs = nxt
+            out.extend(segs)
+    return out
+
+
+def _h3_pack(m, sizes):
+    """Offsets for each size (None where nothing fits), first-fit decreasing over _h3_free;
+    the regions are recorded in m._h3_reserved like halo_patch._h3_reserve's."""
+    free = sorted(_h3_free(m), key=lambda seg: seg[0] - seg[1])   # the largest runs first
+    taken = m.__dict__.setdefault('_h3_reserved', [])
+    offs = [None] * len(sizes)
+    for i in sorted(range(len(sizes)), key=lambda k: -sizes[k]):
+        for seg in free:
+            cur = (seg[0] + 15) & ~15
+            if cur + sizes[i] > seg[1]:
+                continue
+            d = m.off2data(cur)
+            if d is None or m.data2off(d) != cur:
+                continue
+            offs[i] = cur
+            taken.append((cur, cur + sizes[i]))
+            seg[0] = cur + sizes[i]
+            break
+    return offs
+
+
+def h3_flush(m, spread=SPREAD):
+    """Copy the locations every queued fire-team needs and move the grown blocks into
+    slack. Returns {'added', 'blocks', 'bytes', 'dropped', 'reason'}; a no-op when nothing
+    is queued."""
+    pend = m.__dict__.pop('_ec_pending', None) or {}
+    jobs = []
+    for off, p in pend.items():
+        count = _i16(m, off + H3_FT_COUNT)
+        locs = m.follow_all(off, [H3_LOCS], [H3_LOC_SZ], 'all')
+        foot = [loc for loc in locs if _i16(m, loc + H3_LOC_VEH) < 0]
+        need = count - len(locs)
+        if need > 0 and foot:
             old = b''.join(bytes(m.data[l:l + H3_LOC_SZ]) for l in locs)
-            blob = old + b''.join(_copies(m, foot, H3_LOC_SZ, H3_LOC_POS, need, spread))
-        jobs.append((sq, count, blob))
-    sizes = [len(b) for _sq, _c, b in jobs if b]
-    offs = halo_patch._h3_reserve(m, sizes) if sizes else []
-    if offs is None:
-        raise RuntimeError('no free space in the map for %d grown location blocks (%d bytes)'
-                           % (len(sizes), sum(sizes)))
-    added, k = 0, 0
-    for sq, count, blob in jobs:
-        if blob:
-            dest = offs[k]
-            k += 1
-            m.data[dest:dest + len(blob)] = blob
-            struct.pack_into('<i', m.data, sq['off'] + H3_LOCS, len(blob) // H3_LOC_SZ)
-            struct.pack_into('<I', m.data, sq['off'] + H3_LOCS + 4, m.off2data(dest))
-            added += len(blob) // H3_LOC_SZ - sq['locs']
-        struct.pack_into('<h', m.data, sq['off'] + H3_FT_COUNT, count)
-    return added
+            jobs.append((off, p, len(locs), old + b''.join(
+                _copies(m, foot, H3_LOC_SZ, H3_LOC_POS, need, spread))))
+    offs = _h3_pack(m, [len(j[3]) for j in jobs])
+    added = dropped = placed = used = 0
+    for (off, p, nloc, blob), dest in zip(jobs, offs):
+        if dest is None:
+            # no room: keep what the existing locations can seat (never below the shipped
+            # count)
+            keep = max(nloc, p['orig'])
+            dropped += _i16(m, off + H3_FT_COUNT) - keep
+            struct.pack_into('<h', m.data, off + H3_FT_COUNT, keep)
+            continue
+        m.data[dest:dest + len(blob)] = blob
+        struct.pack_into('<i', m.data, off + H3_LOCS, len(blob) // H3_LOC_SZ)
+        struct.pack_into('<I', m.data, off + H3_LOCS + 4, m.off2data(dest))
+        added += len(blob) // H3_LOC_SZ - nloc
+        placed += 1
+        used += len(blob)
+    rep = {'added': added, 'blocks': placed, 'bytes': used, 'dropped': dropped,
+           'queued': len(pend)}
+    if dropped:
+        rep['reason'] = ('the map ran out of free space for %d more spawn location block(s): '
+                         '%d extra actor(s) not placed' % (len(jobs) - placed, dropped))
+    return rep
 
 
 def grow(m, game, sq, normal, insane, spread=SPREAD):
@@ -793,10 +880,13 @@ def scale_enemy_count(m, game, pattern, pct, seed, side='enemy'):
         if dn or di:
             work.append((sq, sq['normal'] + dn if sq['normal'] > 0 else 0,
                          sq['insane'] + di if sq['insane'] > 0 else 0))
-    try:
+    if str(game).strip() == 'Halo 3':
+        # counts now, locations at the end of the patch (h3_flush)
+        for sq, n, i in work:
+            h3_queue(m, sq, sq['count'] + (n - sq['normal']) + (i - sq['insane']))
+        locs = 'queued'
+    else:
         locs = grow_all(m, game, work)
-    except RuntimeError as e:
-        return {'ok': False, 'reason': str(e)}
     changed = len(work)
     return {'ok': True, 'skip': False, 'base': plan['normal'][0], 'script': script,
             'extra': plan['normal'][1], 'extra_insane': plan['insane'][1],
