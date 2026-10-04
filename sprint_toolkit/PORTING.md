@@ -2339,6 +2339,21 @@ sound from that: 6 permutations of crack + body, the 3 tails, the dry fire (48 k
   at 0.708 with the audio +3 dB soft-limited (headroom rule). All ten maps carry the SAW;
   a10 rebuilt + shipped (`h1_rebuild_all.py --maps a10`), the other nine still play the
   AR's sounds until rebuilt.
+* **HALO 1 PLAYS FROM FMOD BANKS, NOT THE MAP (2026-10-04).** The first H1 builds were
+  silent ("a Pea Shooter" = the casing click left in the effect), first because `tool
+  sounds ... xbox` needs a Windows ACM codec missing here (it prints "MM: couldn't open
+  stream" and still writes EMPTY permutations -- now `wav` + a samples check), then
+  because MCC never plays a Halo 1 map's sound data at all: it plays
+  halo1\sound\pc\sounds_adpcm.fsb (classic view: 3106 XBOX IMA ADPCM subsongs, the
+  classic tags' own audio sample for sample) found by TAG PATH through
+  lst\sounds_adpcm.lst.bin (`sound\old_sfx\...` for the maps' `sound\sfx\...`; the
+  Anniversary view uses sounds_debug, CELT). Formats in tool\h1_fsb.py. The port's audio
+  ships in tool\port_sounds\halo1 (h1_saw_sounds.py: tone D at the AR's level, 22 kHz
+  mono) and tool\port_sounds.py appends it as `port_*` tail subsongs + index entries
+  (the plain path AND an `old_` form, until a boot shows which lookup applies), with
+  the stock files backed up (F:\HaloPortBackups\sound_stock). Volume = re-encoding at
+  install (ensure(volume=...)); the map's tag gains do nothing. A Steam verify restores
+  the stock bank: run `python port_sounds.py --write` (or patch) again.
 Reload / ready / melee sounds are cued at animation frames in each port's (retimed) fp
 graph -- a separate step after the firing sounds.
 
