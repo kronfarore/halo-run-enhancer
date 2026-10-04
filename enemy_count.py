@@ -705,15 +705,20 @@ def grow_all(m, game, plan, spread=SPREAD):
     h1 = g == 'Halo 1'
     locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
                                  (H2_LOCS, H2_LOC_SZ, H2_NORMAL))
-    added = 0
+    added, jobs = 0, []
     for sq, normal, insane in plan:
         need = max(normal, insane) - sq['locs']
         if need > 0 and sq['foot'] > 0:
             foot = [loc for loc in m.follow_all(sq['off'], [locs_off], [loc_sz], 'all')
                     if h1 or _i16(m, loc + H2_LOC_VEH) < 0]
-            m.grow_block(sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread))
+            jobs.append((sq['off'], locs_off, loc_sz, _copies(m, foot, loc_sz, 0, need, spread)))
             added += need
         struct.pack_into('<hh', m.data, sq['off'] + cnt_off, normal, insane)
+    if h1:
+        for job in jobs:
+            m.grow_block(*job)          # Halo 1 appends 4-aligned: no pad to save
+    else:
+        m.grow_blocks(jobs)             # Halo 2: one region, one 4 KB pad for them all
     return added
 
 

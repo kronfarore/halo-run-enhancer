@@ -396,6 +396,43 @@ class Halo2Map:
         struct.pack_into('<I', self.data, 0x2D8, self.tag_data_size)
         return new_off
 
+    def grow_blocks(self, jobs):
+        """grow_block for many reflexives at once: [(tag_base, block_offset, elem_size,
+        new_elems)]. Every relocated block goes into ONE appended region with one
+        SEGMENT_ALIGN pad at its end, instead of a pad per block -- growing 150 squads one
+        by one cost 4 KB each for a few hundred bytes of locations. Blocks inside the
+        region stay 16-byte aligned. Returns the new blocks' file offsets."""
+        jobs = [j for j in jobs if j[3]]
+        if not jobs:
+            return []
+        if self.compressed:
+            raise NotImplementedError("cannot grow a compressed map")
+        blob, offs, base = bytearray(), [], len(self.data)
+        for tag_base, block_offset, elem_size, new_elems in jobs:
+            if any(len(e) != elem_size for e in new_elems):
+                raise ValueError("every new element must be elem_size bytes")
+            count = self.i32(tag_base + block_offset)
+            old_ptr = self.u32(tag_base + block_offset + 4)
+            existing = b'' if count == 0 else \
+                bytes(self.data[self.p2o(old_ptr):self.p2o(old_ptr) + count * elem_size])
+            blob += bytearray((-len(blob)) & 15)
+            offs.append(base + len(blob))
+            blob += existing + b''.join(bytes(e) for e in new_elems)
+        delta = (len(blob) + self.SEGMENT_ALIGN - 1) & ~(self.SEGMENT_ALIGN - 1)
+        self.data += blob + bytearray(delta - len(blob))
+        for (tag_base, block_offset, elem_size, new_elems), off in zip(jobs, offs):
+            total = self.i32(tag_base + block_offset) + len(new_elems)
+            ptr = (off - self.meta_offset + self.mask) & 0xFFFFFFFF
+            struct.pack_into('<i', self.data, tag_base + block_offset, total)
+            struct.pack_into('<I', self.data, tag_base + block_offset + 4, ptr)
+        self.file_size += delta
+        self.meta_size += delta
+        self.tag_data_size += delta
+        struct.pack_into('<I', self.data, 0x8, self.file_size)
+        struct.pack_into('<I', self.data, 0x14, self.meta_size)
+        struct.pack_into('<I', self.data, 0x2D8, self.tag_data_size)
+        return offs
+
     def append_block_element(self, tag_base, block_offset, elem_size, elem_bytes):
         """Back-compat: grow an EMPTY reflexive (count 0) to a single element.
         Delegates to grow_block; kept for the init_defaults seeder."""
