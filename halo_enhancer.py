@@ -9502,6 +9502,9 @@ class OptionsDialog(QDialog):
                      'assassins': 'Assassins (per enemy)',
                      'thunderstorm': 'Thunderstorm (per enemy)',
                      'downpour': 'Downpour (per enemy)'}
+    # games a skull deliberately skips, and why
+    _SKULL_NOT_IN = {'schism': {'Halo Reach': 'no non-human allies'},
+                     'fog': {'Halo 3: ODST': 'no motion tracker'}}
     _SKULL_PER_ENEMY = {
         'assassins': "One card per enemy type: that enemy spawns cloaked.",
         'thunderstorm': "One card per enemy type: that enemy is promoted one species up "
@@ -9551,7 +9554,22 @@ class OptionsDialog(QDialog):
                 continue
             c = cats[k]
             label = self._SKULL_LABELS.get(k, k.title())
-            games = ', '.join(sorted(c['games'])) or 'all games'
+            # Only the exceptions: every skull runs in every game except where the game
+            # has nothing for it to act on (ODST inherits Halo 3's cards).
+            gs = set(c['games'])
+            if 'Halo 3' in gs:
+                gs.add('Halo 3: ODST')
+            gs -= set(self._SKULL_NOT_IN.get(k, {}))
+            missing = [g for g in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach',
+                                   'Halo 4') if g not in gs]
+            if k in self._SKULL_PER_ENEMY:
+                games = 'where that enemy fights'
+            elif missing:
+                games = 'not in ' + ', '.join(
+                    '%s (%s)' % (g, self._SKULL_NOT_IN.get(k, {}).get(g, 'not built'))
+                    for g in missing)
+            else:
+                games = 'every game'
             cb = QCheckBox("%s  -  %d card%s; %s" % (label, c['cards'],
                                                     '' if c['cards'] == 1 else 's', games))
             cb.setChecked(k not in disabled)
