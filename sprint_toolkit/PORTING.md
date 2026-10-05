@@ -257,6 +257,18 @@ the AR's magazine readout (`master rounds` child, 4-tick meter), keeps 4 rounds 
 charge / rod projectile. Player biped `characters\cyborg\cyborg` taught `fr` (from `pc`)
 and `fb` (from `b`) -- 15 weapon types.
 
+**First dry test (a50, 2026-10-05):** both stay on the ground, FP models render, idle /
+ready / melee right. Found: the fuel rod Grunts drop it EMPTY (actv drop_weapon_loaded and
+drop_weapon_ammo 0..0 -- now 0.5-1.0 / 2-6); left hand clipped the fuel rod (now a 2-bone
+IK offset in gun space, `left_hand_offset`); MCC has no localized line for message 8
+("need string insert here": the sword now has its own appended pair, 49/50); icons too
+small or missing (own icons from the models, 27/28 -- `add_msg_icon.py` now edits the
+CURRENT sheet: it used to rebuild from stock and would have dropped the SAW's). Fuel rod HUD
+is now the rocket launcher's, its two rockets redrawn as four (`h1_rocket_meter.py`).
+Sword: plasma pistol HUD (crosshair + battery = energy) and an EXPERIMENTAL lunge on fire --
+an invisible 1.5 wu strike with the sword's melee damage plus a firing damage with
+instantaneous acceleration 3.0 on the wielder (direction not yet seen), 0.1 energy each.
+
 **Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
 (left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
 model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:
