@@ -94,6 +94,12 @@ weapon than its yardstick (Halo 2: the GPMG + the Warthog turret's bullet ->
 h2_saw_yardstick.py). It reads the CATALOG for what balance covers (derived rows
 included). Done for all five SAW ports: nothing left to port.
 
+**And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>
+[--balanced]` puts the port beside the weapons whose role it shares -- damage per shot,
+dps, shots/seconds to overheat, overheat recovery, battery, headshots, range, zoom, aim
+assist -- built and balanced. Sets live in its SETS table (first: the H4 Focus Rifle
+against the Beam Rifle, the Sentinel Beam and the Sniper Rifle bridge).
+
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
 `weapons\saw\bullet` (proj + jpt!), but the weapon tag's trigger was a copy of the
