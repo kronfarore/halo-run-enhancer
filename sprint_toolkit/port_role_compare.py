@@ -96,7 +96,8 @@ def metrics(kit, wtag, stem, overrides=None):
     over_loss = o('overheated heat loss per second', num(w, 'overheated heat loss per second'))
     loss = o('heat loss per second', num(w, 'heat loss per second'))
     age = o('age generated per round', num(w, 'age generated per round'))
-    flags = str(first(d, 'flags', default=''))
+    flags = first(d, 'flags', default='')
+    flags = '%d' % flags[0] if isinstance(flags, list) and flags else str(flags)
     specific = str(first(d, 'specific_damage', default=''))
     m = {'hit': hit * pps, 'interval': interval, 'rps': 1.0 / interval if interval else 0.0,
          'dps_raw': hit * pps / interval if interval else 0.0,
