@@ -176,7 +176,7 @@ def audit(game, show_all=False):
         s_port, s_donor = (flatten(SOURCE['kit'], t) for t in SOURCE['tags'][kind])
         t_port, t_donor = (flatten(G['kit'], t) for t in G['tags'][kind])
         cov = covered.get(CLASS[kind], {})
-        rows = {'same': 0, 'refs': 0, 'port': [], 'decide': [], 'covered': []}
+        rows = {'same': 0, 'refs': 0, 'port': [], 'done': [], 'decide': [], 'covered': []}
         for path, (typ, sv) in s_port.items():
             dv = s_donor.get(path, (None, None))[1]
             if dv == sv:
@@ -216,7 +216,10 @@ def audit(game, show_all=False):
                     rows['decide'].append(dict(row, why='a zero on one side: no ratio, '
                                                'suggested = the source value'))
                 else:
-                    rows['port'].append(row)
+                    have = nums(row['target_port'] or '')
+                    done = have is not None and len(have) == len(sug) and all(
+                        abs(h - g) < 1e-4 for h, g in zip(have, sug))
+                    rows['done' if done else 'port'].append(row)
         report['kinds'][kind] = rows
     return report
 
@@ -227,7 +230,8 @@ def show(report, show_all=False):
         print('\n== %s: %d same in the source pair (kept), %d reference/name differences '
               '(steps 3/8/10), %d already ported by the balance table'
               % (kind, r['same'], r['refs'], len(r['covered'])))
-        print('-- 2. WEAPON differences to port (%d)' % len(r['port']))
+        print('-- 2. WEAPON differences to port (%d; %d already written: %s)' % (
+            len(r['port']), len(r['done']), ', '.join(leaf(x['target_field']) for x in r['done']) or '-'))
         for x in r['port']:
             flag = '' if x['target_port'] == x['target_donor'] else '   (port already %s)' % x['target_port']
             print('   %-58s H4 SAW %-16s AR %-16s | tgt AR %-16s -> %s%s%s' % (

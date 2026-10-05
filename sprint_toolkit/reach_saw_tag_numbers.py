@@ -68,6 +68,19 @@ EDITS = [
      [(0, '<f', 7.5, 'damage lower bound'),
       (4, '<f', 7.5, 'damage upper bound[0]'),
       (8, '<f', 7.5, 'damage upper bound[1]')]),
+    # FIELDS NO CARD COVERS (port_field_audit.py --game reach, 2026-10-05): where the
+    # Halo 4 SAW differs from the Halo 4 AR, the clone still carried the AR's value.
+    (SAW + B + 'saw.weapon',
+     # event sync projectiles/s, max barrel error for event sync, firing error struct:
+     # deceleration time, damage error x2, min error look pitch rate
+     struct.pack('<6f', 8.0, 0.7, 0.5, 0.0, 0.0, 0.0),
+     [(4, '<f', 0.5, 'maximum_barrel_error_for_event_synchronization'),
+      # `#2`: the weapon names TWO "deceleration time" fields; the first is the barrel's
+      # rate-of-fire one (0), the firing error's comes second
+      (8, '<f', 0.49, 'deceleration time#2')]),
+    (BULLET + '.damage_effect',
+     struct.pack('<fiffff', 0.0, 1, 0.125, 1.0, 1.0, 0.0),  # stun time, damage stun (int),
+     [(8, '<f', 0.15, 'instantaneous acceleration')]),     # inst. accel., rider scales
 ]
 
 
@@ -95,13 +108,17 @@ def field_values(tag_rel, names):
     for name in names:
         member = None
         bare = name
-        if name.endswith(']') and '[' in name:
-            bare, _, idx = name[:-1].partition('[')
+        nth = 1                                    # `name#2`: the second field so named
+        if '#' in bare:
+            bare, _, n = bare.partition('#')
+            nth = int(n)
+        if bare.endswith(']') and '[' in bare:
+            bare, _, idx = bare[:-1].partition('[')
             member = int(idx)
-        m = re.search(r'<field name="%s" value="([^"]*)"' % re.escape(bare), xml)
-        if not m:
+        found = re.findall(r'<field name="%s" value="([^"]*)"' % re.escape(bare), xml)
+        if len(found) < nth:
             continue
-        value = m.group(1)
+        value = found[nth - 1]
         got[name] = value.split(',')[member].strip() if member is not None else value
     return got
 
@@ -130,7 +147,9 @@ def main():
             if off + struct.calcsize(fmt) <= len(sig):
                 struct.pack_into(fmt, done, off, new)
         hits = _find_all(d, sig)
-        if not hits and _find_all(d, bytes(done)):
+        # DONE FIRST (2026-10-05): a written run can contain the signature again, shifted
+        # (Halo 3's damage run did, and a re-run wrote the wrong field)
+        if _find_all(d, bytes(done)):
             where = _find_all(d, bytes(done))
             if len(where) != 1:
                 raise SystemExit('   already written, but in %d places -- refusing to '
