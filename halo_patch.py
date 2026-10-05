@@ -2700,7 +2700,7 @@ def _ts_rank(name):
     return next((r for r in _TS_RANKS if r in leaf), None)
 
 
-def _ts_moves(game, entries, up, down, allowed=None):
+def _ts_moves(game, entries, up, down, allowed=None, pools=None):
     """{palette index: palette index} from [(name, species, eligible)] -- `up` / `down`
     are the family names whose Thunderstorm / Downpour is active. `allowed(src, dst)`
     may veto a target (residency); the next tier in that direction is tried then."""
@@ -2733,6 +2733,8 @@ def _ts_moves(game, entries, up, down, allowed=None):
             same = [j for j in pool if _ts_rank(entries[j][0]) == rank]
             plain = [j for j in pool if _ts_rank(entries[j][0]) is None]
             out[i] = min(same or plain or pool, key=lambda j: len(entries[j][0]))
+            if pools is not None:
+                pools[i] = pool
             break
     return out
 
@@ -2768,8 +2770,35 @@ def _apply_ladder(m, game, registry, up, down):
             names.append(name)
         ok = [bool(n) and not ec._is_human(u) and not ec._is_boss(n) and not ec._is_boss(u)
               for n, u in zip(names, units)]
+        pools = {}
         moves = _ts_moves(game, [(n, ec.species(u), o) for n, u, o in zip(names, units, ok)],
-                          up, down)
+                          up, down, pools=pools)
+        # How often each variant spawns on this level BEFORE any move: a promoted unit
+        # draws its new variant by these weights, so promoted Grunts take the Jackals'
+        # real mix -- an Armed card's weapon slots included, at their share -- instead of
+        # every one becoming the single shortest-named variant (usually an Armed slot).
+        used = {}
+        for e in m.follow_all(scnr_base, [ec.H1_ENCOUNTERS], [ec.H1_ENC_SZ], 'all'):
+            for sq in m.follow_all(e, [ec.H1_SQUADS], [ec.H1_SQ_SZ], 'all'):
+                a = i16(sq + ec.H1_ACTOR)
+                locs = m.follow_all(sq, [ec.H1_LOCS], [ec.H1_LOC_SZ], 'all')
+                for loc in locs or [None]:
+                    o = i16(loc + ec.H1_LOC_ACTOR) if loc is not None else -1
+                    c = o if o >= 0 else a
+                    used[c] = used.get(c, 0) + 1
+        salt = str(getattr(m, 'path', '') or '').rsplit(chr(92), 1)[-1]
+
+        def target(a, addr):
+            pool = [j for j in pools.get(a, ()) if used.get(j)]
+            if len(pool) < 2:
+                return moves[a]
+            h = int(hashlib.sha256(('%s|%s|%s' % (salt, addr, a)).encode())
+                    .hexdigest()[:8], 16) % sum(used[j] for j in pool)
+            for j in pool:
+                if h < used[j]:
+                    return j
+                h -= used[j]
+            return moves[a]
 
         def h1(addr):
             if addr in done:
@@ -2777,8 +2806,9 @@ def _apply_ladder(m, game, registry, up, down):
             done.add(addr)
             a = i16(addr)
             if a in moves:
-                put(addr, moves[a])
-                note(units[a], units[moves[a]])
+                t = target(a, addr)
+                put(addr, t)
+                note(units[a], units[t])
         for e in m.follow_all(scnr_base, [ec.H1_ENCOUNTERS], [ec.H1_ENC_SZ], 'all'):
             for sq in m.follow_all(e, [ec.H1_SQUADS], [ec.H1_SQ_SZ], 'all'):
                 h1(sq + ec.H1_ACTOR)
@@ -9512,6 +9542,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
               h4_keep_loadout=False, clear_profile_equipment=False,
               clear_profile_grenades=False, spawn_grenades=None,
               h4_ability_visibility=None, h1_enemy_weapons=None,
+              camo_after_ladder=False,
               baseline_root=None, map_subdir=None):
     """Apply a plan to the map. Each plan item: {tag, name, ops:[{field, block,
     difficulty, op_str}]}. `starting` optionally sets the player Starting Profile
@@ -9601,16 +9632,23 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         elif s == 'famine':
             results.extend(_apply_famine(m, g, registry))
         elif s == 'assassins' and spec.get('tag'):
-            camo_specs.append(spec)
+            if camo_after_ladder:
+                camo_specs.append(spec)
+            else:
+                _c, cpath = hm.split_tag(spec['tag'])
+                results.append({'tag': spec['tag'], **_apply_camo(
+                    m, g, cpath, registry, spec.get('name') or 'Assassins')})
         elif s == 'thunderstorm' and spec.get('enemy'):
             ladder_up.add(spec['enemy'])
         elif s == 'downpour' and spec.get('enemy'):
             ladder_down.add(spec['enemy'])
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
-    # Assassins AFTER Thunderstorm / Downpour: Assassins: Elite cloaks the Elites the level
-    # actually fields -- promoted Jackals included, Elites promoted into Hunters not (an
-    # H2 test had invisible Hunters: their squads kept the Elites' camo orders).
+    # Assassins runs BEFORE Thunderstorm / Downpour by default (user, 2026-10-05): what
+    # was cloaked stays cloaked when it is promoted (Halo 2 carries the camo on the
+    # squad's orders, so Elites promoted into Hunters are invisible Hunters). Options ->
+    # Skulls 'Thunderstorm / Downpour first' (camo_after_ladder) flips it: then
+    # Assassins: Elite cloaks what the level fields as Elites after the moves.
     for spec in camo_specs:
         _c, cpath = hm.split_tag(spec['tag'])
         results.append({'tag': spec['tag'], **_apply_camo(

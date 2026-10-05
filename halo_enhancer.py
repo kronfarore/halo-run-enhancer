@@ -432,7 +432,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_chance', 'other_weights', 'other_hero_enabled',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
-               'skull_single_map', 'skull_disabled',
+               'skull_single_map', 'skull_disabled', 'skull_camo_after_ladder',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1193,6 +1193,7 @@ CONFIG = {
     # co-op partner loading the run plays under the same skull rules.
     "skull_single_map": False,   # a drawn skull governs only the map it was drawn on
     "skull_disabled": [],        # skull categories (halo.json `skull` keys) never offered
+    "skull_camo_after_ladder": False,   # Thunderstorm / Downpour before Assassins
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -3923,8 +3924,9 @@ class ModifierDatabase:
                          'enemy_type': 'Marine' if ally else enemy, 'step': self.ARMED_STEP}],
         }
 
-    def armed_cards(self, mission_id, weapons, game, ally=False):
-        """The Armed cards this level can offer for the players' `weapons`."""
+    def armed_cards(self, mission_id, weapons, game, ally=False, vanished=()):
+        """The Armed cards this level can offer for the players' `weapons` -- none for
+        an enemy type a Thunderstorm / Downpour took out of the run."""
         if game != 'Halo 1' or not CONFIG.get('h1_enemy_weapon_cards', True):
             return []
         used = self.h1_used_weapons()
@@ -3942,7 +3944,8 @@ class ModifierDatabase:
         if ally:
             return [self.armed_card('Marine', w, ally=True) for w in names]
         here = (self.mission_enemies.get(mission_id) or {}).get('enemies', [])
-        return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES if e in here for w in names]
+        return [self.armed_card(e, w) for e in self.H1_ARMED_ENEMIES
+                if e in here and e not in set(vanished or ()) for w in names]
 
     def map_equip_mod(self, name, game):
         """The equipment counterpart of map_swap_mod, for a game whose equipment has
@@ -8952,6 +8955,7 @@ class MagnitudeEditorDialog(QDialog):
                 remove_cutscenes=remove_cutscenes,
                 keep_title_hud=bool(CONFIG.get('keep_title_hud')),
                 skulls=skulls,
+                camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                 equipment_swaps=equip_swaps or None,
                 spawn_equipment=spawn_equipment,
                 spawn_weapons=spawn_weapons,
@@ -8994,6 +8998,7 @@ class MagnitudeEditorDialog(QDialog):
                     self.target_difficulty, game=self.game,
                     **baseline_args(self.game),
                     skulls=skulls,
+                camo_after_ladder=bool(CONFIG.get('skull_camo_after_ladder')),
                     enemy_colors=self._enemy_colors_for_patch(),
                 weapon_ports=self._weapon_ports_for_patch(),
                 port_volume=self._port_volume_for_patch(),
@@ -9544,6 +9549,15 @@ class OptionsDialog(QDialog):
             "into the pool afterwards. Iron and Betrayal scoring are put back by the next "
             "patch of another map.\n\nShared: travels with the run to a co-op partner.")
         lay.addWidget(self.skull_single_map_cb)
+        self.skull_camo_order_cb = QCheckBox("Thunderstorm / Downpour first, then Assassins")
+        self.skull_camo_order_cb.setChecked(bool(CONFIG.get('skull_camo_after_ladder')))
+        self.skull_camo_order_cb.setToolTip(
+            "Off (default): Assassins cloaks first, and a cloaked enemy stays cloaked when "
+            "Thunderstorm / Downpour moves it (an Assassins Elite promoted into a Hunter is "
+            "an invisible Hunter).\nOn: the species move first; Assassins: Elite then "
+            "cloaks whatever is an Elite when the level starts.\n\nShared with a co-op "
+            "partner through the run.")
+        lay.addWidget(self.skull_camo_order_cb)
         hint = QLabel("Untick a category to keep it out of the draw. Cards already drawn "
                       "stay. Shared with a co-op partner through the run.")
         hint.setWordWrap(True)
@@ -12561,6 +12575,7 @@ class OptionsDialog(QDialog):
             'other_bane_enabled': self.other_weight_boxes['bane'][0].isChecked(),
             'identity_other_card': self.identity_other_cb.isChecked(),
             'skull_single_map': self.skull_single_map_cb.isChecked(),
+            'skull_camo_after_ladder': self.skull_camo_order_cb.isChecked(),
             'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
                                      if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
@@ -16357,7 +16372,8 @@ class RunEnhancer:
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
                                                           betrayal=self._betrayal_active(), vanished=self._vanished())
         enemy_mods += self.db.filter_blacklisted(
-            self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
+            self.db.armed_cards(mid, self._run_weapons(), game,
+                                vanished=self._vanished()), bl, game)
         wpool = self._new_weapon_pool(for_player)
 
         # A level with a named STORY fight gets a guaranteed Boss card on every pair.
@@ -16621,7 +16637,8 @@ class RunEnhancer:
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
                                                           betrayal=self._betrayal_active(), vanished=self._vanished())
         enemy_mods += self.db.filter_blacklisted(
-            self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
+            self.db.armed_cards(mid, self._run_weapons(), game,
+                                vanished=self._vanished()), bl, game)
         enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)
                    else [random.choice(enemy_mods) if enemy_mods else None for _ in slots])
         # Option: the Other slot too, rolled exactly like a normal round's (_draw_other)
