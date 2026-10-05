@@ -9170,6 +9170,8 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             ladder_down.add(spec['enemy'])
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
+    betrayed = any(str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
+                   == 'betrayal' for x in (skulls or ()))
     # (effect name, tag) of every card for which "not present in this map" is an
     # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
     # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).
@@ -9195,6 +9197,15 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                       '(remove it from the run, or re-add the effect)'})
             continue
         cls, path = hm.split_tag(item['tag'])
+        if betrayed and str(item.get('name') or '').startswith('Friend ') and cls != 'matg'                 and not any(op.get('squad_count') for op in item.get('ops') or ()):
+            # Betrayal turned the humans these ally cards edit by tag (their animations,
+            # their models): an ally card must not act on them any more (user, 2026-10-05).
+            # Friend Spawn Count stays -- it counts allies by team, and the turned squads
+            # are no longer on the player's side. The matg Friend dials are the engine's.
+            results.append({'effect': item['name'], 'tag': item['tag'], 'field': '',
+                            'ok': True, 'skip': True,
+                            'reason': 'Betrayal: the allies this card acts on fight you now'})
+            continue
         plugin = registry.get(cls)
         if item.get('init_defaults'):
             # Seed enemies that lack a field/block by default (e.g. Elite grenades)

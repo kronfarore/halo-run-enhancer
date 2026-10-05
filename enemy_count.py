@@ -164,6 +164,14 @@ def _is_boss(name):
     return any(w in low for w in BOSS_WORDS) or species(name) in BOSS_SPECIES
 
 
+def _turned(sides, friends):
+    """A HUMAN squad on an explicit team that is neither the player's, the humans' nor
+    allied: the Betrayal skull put it there (it runs before every card), so it fights the
+    player -- an enemy for the Spawn Count cards, and no longer the ally cards' business."""
+    return any(t not in (None, 0, TEAM_PLAYER, TEAM_HUMAN) and t not in friends
+               for t in sides)
+
+
 def _is_human(name):
     sp = species(name)
     return any(sp.startswith(h) for h in HUMAN_SPECIES)
@@ -297,7 +305,7 @@ def h2_squads(m, tree=None):
         sides = {steam} if steam else {teams[c] for c in ci}
         human = any(_is_human(c) for c in chars)
         # a character with no biped team (the infection form is a creature) is not a friend
-        enemy = bool(chars) and not human and not (sides & friends) and \
+        enemy = bool(chars) and (_turned(sides, friends) if human else not (sides & friends)) and \
             not any(species(x) in ALLY_SPECIES for x in chars)
         out.append({'index': idx, 'off': sq,
                     'name': m.data[sq:sq + 0x20].split(b'\0')[0].decode('ascii', 'replace'),
@@ -674,7 +682,7 @@ def h3_squads(m, tree=None):
             chars = {pal[x] for x in ci}
             sides = {steam} if steam else {teams[x] for x in ci}
             human = any(_is_human(x) for x in chars)
-            enemy = bool(chars) and not human and not (sides & friends) and \
+            enemy = bool(chars) and (_turned(sides, friends) if human else not (sides & friends)) and \
             not any(species(x) in ALLY_SPECIES for x in chars)
             count = _i16(m, ft + H3_FT_COUNT)
             on = struct.unpack_from('<H', m.data, ft + H3_FT_PLACE_ON)[0]
@@ -796,7 +804,7 @@ def cell_squads(m, game, tree=None):
         chars = {pal[x] for x in ci}
         sides = {x for x in u['steam'] if x} or {teams[x] for x in ci}
         human = any(_is_human(x) for x in chars)
-        enemy = bool(chars) and not human and not (sides & friends) and \
+        enemy = bool(chars) and (_turned(sides, friends) if human else not (sides & friends)) and \
             not any(species(x) in ALLY_SPECIES for x in chars)
         count = _i16(m, cell + L['count'])
         on = struct.unpack_from('<H', m.data, cell + L['diff'])[0]
