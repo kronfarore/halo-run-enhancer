@@ -2157,7 +2157,9 @@ def active_skull_names(run_state):
             names.add(mod.get('name'))
 
     for rd in getattr(run_state, 'rounds', None) or []:
-        for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2',
+        # Skulls have their own slot now (skull1/2); the older keys stay for saved
+        # runs from when a skull rode in the enemy slot.
+        for k in ('enemy1', 'enemy2', 'wildcard', 'wildcard2', 'skull1', 'skull2',
                   'boss1', 'boss2', 'exhaust1', 'exhaust2'):
             scan(rd.get(k))
         for pk in ('player1', 'player2'):
@@ -2165,7 +2167,7 @@ def active_skull_names(run_state):
     for pk in ('player1', 'player2'):
         sel = (getattr(run_state, 'selected_pairs', None) or {}).get(pk)
         if isinstance(sel, dict):
-            for k in ('enemy_mod', 'wildcard_mod', 'boss_mod', 'exhaust_mod'):
+            for k in ('enemy_mod', 'wildcard_mod', 'skull_mod', 'boss_mod', 'exhaust_mod'):
                 scan(sel.get(k))
     return names
 
