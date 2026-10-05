@@ -8811,7 +8811,9 @@ class MagnitudeEditorDialog(QDialog):
                   + (["first-person view for zoomed turrets"] if turret_fp else [])
                   + (["keep the reticle while zoomed"] if CONFIG.get('keep_reticle_zoomed', True) else [])
                   + (["remove Cortana/Gravemind cutscenes"] if remove_cutscenes else [])
-                  + ([f"apply skull: {', '.join(skulls)}"] if skulls else [])
+                  # a per-enemy skull is a dict (_skull_specs): show its card name
+                  + ([f"apply skull: {', '.join(s.get('name') or s.get('skull') if isinstance(s, dict) else s for s in skulls)}"]
+                     if skulls else [])
                   + ([f"enable {', '.join(active_abilities)}"] if sprint_on else [])
                   + (["restore Halo 4's sprint equipment (innate sprint off)"]
                      if h4_restore else [])
