@@ -1264,6 +1264,16 @@
      "card": "Error Angle",
      "original": 2.750000005377918,
      "nth": 1
+    },
+    {
+     "class": "weap",
+     "tag": "objects\\weapons\\rifle\\saw\\saw",
+     "field": "Rounds Total Maximum",
+     "block": "Magazines",
+     "value": 411.428571,
+     "card": "Magazine",
+     "original": null,
+     "note": "derived from Rounds Inventory Maximum + Rounds Loaded Maximum"
     }
    ],
    "fp_animations": "objects\\characters\\*\\fp\\weapons\\rifle\\fp_saw\\fp_saw",

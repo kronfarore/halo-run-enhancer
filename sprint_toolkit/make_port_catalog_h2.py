@@ -84,6 +84,19 @@ def main():
             row['index'] = r['dst_index']
         rows.append(row)
 
+    # DERIVED (2026-10-05): Halo 2 keeps Rounds Total Maximum = Rounds Inventory Maximum +
+    # Rounds Loaded Maximum (the Magazine card writes the inventory and DERIVES the total,
+    # halo.json). Port balance rows are written field by field (apply_weapon_ports), never
+    # derived, so without this row the balanced reserve sat beside the built total (288).
+    have = {r['field']: r['value'] for r in rows if r.get('block') == 'Magazines'}
+    parts = ('Rounds Inventory Maximum', 'Rounds Loaded Maximum')
+    if all(isinstance(have.get(p), (int, float)) for p in parts):
+        rows.append({'class': 'weap', 'tag': SAW + B + 'saw', 'field': 'Rounds Total Maximum',
+                     'block': 'Magazines', 'value': round(float(sum(have[p] for p in parts)), 6),
+                     'card': 'Magazine', 'original': None,
+                     'note': 'derived from %s' % ' + '.join(parts)})
+    else:
+        print('   Rounds Total Maximum: cannot derive (%s)' % {p: have.get(p) for p in parts})
     entry = {
         'weapon': t['ported'], 'source': t['source'], 'donor': t['donor'],
         'default_on': True,
