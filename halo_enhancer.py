@@ -4598,6 +4598,66 @@ class WeaponSelectionCard(QGroupBox):
         if self.parent_widget:
             self.parent_widget.add_to_blacklist(mod_data, source)
 
+# Debug mode: the Level dropdown shows each map's id (03a, m10, sc130...) in a deeper green
+# ahead of its name -- in the list and in the closed box (user, 2026-10-05).
+LEVEL_PREFIX_ROLE = Qt.UserRole + 7
+LEVEL_PREFIX_COLOR = '#2E7D32'
+LEVEL_NAME_COLOR = '#4CAF50'
+
+
+def _level_html(prefix, name):
+    return ('<span style="color:%s">%s</span>&nbsp;&nbsp;<span style="color:%s">%s</span>'
+            % (LEVEL_PREFIX_COLOR, html.escape(prefix), LEVEL_NAME_COLOR, html.escape(name)))
+
+
+class _LevelPrefixDelegate(QStyledItemDelegate):
+    def paint(self, painter, option, index):
+        prefix = index.data(LEVEL_PREFIX_ROLE)
+        if not prefix:
+            return super().paint(painter, option, index)
+        opt = QStyleOptionViewItem(option)
+        self.initStyleOption(opt, index)
+        text = opt.text
+        opt.text = ''
+        (opt.widget.style() if opt.widget else QApplication.style()).drawControl(
+            QStyle.CE_ItemViewItem, opt, painter, opt.widget)
+        doc = QTextDocument()
+        doc.setDefaultFont(opt.font)
+        doc.setHtml(_level_html(prefix, text))
+        painter.save()
+        painter.translate(opt.rect.left() + 4,
+                          opt.rect.top() + (opt.rect.height() - doc.size().height()) / 2)
+        doc.drawContents(painter)
+        painter.restore()
+
+
+class LevelCombo(QComboBox):
+    """QComboBox that draws the debug-mode map id in its own colour."""
+
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.setItemDelegate(_LevelPrefixDelegate(self))
+
+    def paintEvent(self, event):
+        prefix = self.currentData(LEVEL_PREFIX_ROLE)
+        if not prefix:
+            return super().paintEvent(event)
+        painter = QStylePainter(self)
+        opt = QStyleOptionComboBox()
+        self.initStyleOption(opt)
+        name = opt.currentText
+        opt.currentText = ''
+        painter.drawComplexControl(QStyle.CC_ComboBox, opt)
+        painter.drawControl(QStyle.CE_ComboBoxLabel, opt)
+        rect = self.style().subControlRect(QStyle.CC_ComboBox, opt,
+                                           QStyle.SC_ComboBoxEditField, self)
+        doc = QTextDocument()
+        doc.setDefaultFont(self.font())
+        doc.setHtml(_level_html(prefix, name))
+        painter.translate(rect.left(), rect.top() + (rect.height() - doc.size().height()) / 2)
+        doc.drawContents(painter)
+
+
 class PairCard(QGroupBox):
     def __init__(self, pair, parent=None, show_player1=True, show_player2=True):
         super().__init__(parent)
@@ -14442,7 +14502,7 @@ class HaloGUI(QMainWindow):
             self.game_combo.setCurrentIndex(gi)
         header_layout.addWidget(self.game_combo)
 
-        self.mission_combo = QComboBox()
+        self.mission_combo = LevelCombo()
         self.mission_combo.setStyleSheet(combo_style % 250)
         self._fill_mission_combo(cur_game, select_mid=self.run_state.mission_id)
         sel_mid = self.mission_combo.currentData()
@@ -14761,6 +14821,9 @@ class HaloGUI(QMainWindow):
             missions = [("a10", "The Pillar of Autumn")]
         for mid, name in missions:
             self.mission_combo.addItem(name, mid)
+            if CONFIG.get('debug_mode'):
+                self.mission_combo.setItemData(self.mission_combo.count() - 1, mid,
+                                               LEVEL_PREFIX_ROLE)
         idx = self.mission_combo.findData(select_mid) if select_mid else -1
         self.mission_combo.setCurrentIndex(idx if idx >= 0 else 0)
         self.mission_combo.blockSignals(False)
@@ -15633,6 +15696,10 @@ class HaloGUI(QMainWindow):
             self._ensure_port_levels()
             if hasattr(self, 'add_mod_btn'):        # debug tools show/hide live
                 self.add_mod_btn.setVisible(bool(CONFIG.get('debug_mode')))
+            if hasattr(self, 'mission_combo'):      # ...and the level ids with them
+                self._fill_mission_combo(self.game_combo.currentData(),
+                                         select_mid=self.run_state.mission_id)
+                self.mission_combo.update()
             # Re-render the CURRENT screen (weapon selection or pairs) so appearance
             # options (hide tags/fields, card width) apply immediately.
             if getattr(self, '_last_weapon_display', None) and self.pair_cards:
