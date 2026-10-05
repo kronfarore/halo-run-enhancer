@@ -2260,8 +2260,8 @@ def _apply_tilt(m, game, registry):
         return [{**ref, 'ok': False, 'reason': 'damage table is empty'}]
     return [{**ref, 'tag': tag, 'field': 'Damage modifiers (weakness/resistance)', 'ok': True,
              'old': 'as the map defines',
-             'new': 'x%g away from 1: %d of %d modifier(s) in %s' % (
-                 _TILT_FACTOR, changed, values, where)}]
+             'new': 'weaknesses x%g, the rest /%g: %d of %d modifier(s) in %s' % (
+                 _TILT_FACTOR, _TILT_FACTOR, changed, values, where)}]
 
 
 # "Fog": no motion tracker. Each generation hides it a different way:
