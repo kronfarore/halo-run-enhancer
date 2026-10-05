@@ -2768,15 +2768,10 @@ def _apply_ladder(m, game, registry, up, down):
             u = m.u32(found[0][1] + ec.H1_ACTV_UNIT + 0xC) if found else 0xFFFFFFFF
             units.append((_tag_name_by_id(m, u) if u != 0xFFFFFFFF else None) or name)
             names.append(name)
-        ok = [bool(n) and not ec._is_human(u) and not ec._is_boss(n) and not ec._is_boss(u)
-              for n, u in zip(names, units)]
-        pools = {}
-        moves = _ts_moves(game, [(n, ec.species(u), o) for n, u, o in zip(names, units, ok)],
-                          up, down, pools=pools)
         # How often each variant spawns on this level BEFORE any move: a promoted unit
-        # draws its new variant by these weights, so promoted Grunts take the Jackals'
-        # real mix -- an Armed card's weapon slots included, at their share -- instead of
-        # every one becoming the single shortest-named variant (usually an Armed slot).
+        # draws its new variant by these weights (the species' real mix), and a variant
+        # that never spawns is no target -- the empty Armed slots are in the palette
+        # until the Armed pass, which runs after the skulls, fills them.
         used = {}
         for e in m.follow_all(scnr_base, [ec.H1_ENCOUNTERS], [ec.H1_ENC_SZ], 'all'):
             for sq in m.follow_all(e, [ec.H1_SQUADS], [ec.H1_SQ_SZ], 'all'):
@@ -2786,6 +2781,11 @@ def _apply_ladder(m, game, registry, up, down):
                     o = i16(loc + ec.H1_LOC_ACTOR) if loc is not None else -1
                     c = o if o >= 0 else a
                     used[c] = used.get(c, 0) + 1
+        ok = [bool(n) and not ec._is_human(u) and not ec._is_boss(n) and not ec._is_boss(u)
+              and bool(used.get(k)) for k, (n, u) in enumerate(zip(names, units))]
+        pools = {}
+        moves = _ts_moves(game, [(n, ec.species(u), o) for n, u, o in zip(names, units, ok)],
+                          up, down, pools=pools)
         salt = str(getattr(m, 'path', '') or '').rsplit(chr(92), 1)[-1]
 
         def target(a, addr):
@@ -9600,14 +9600,6 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     if equipment_swaps:
         # Same placement-scatter idea, on the equipment block.
         results.extend(_apply_equipment_swaps(m, str(game).strip(), equipment_swaps))
-    if h1_enemy_weapons and str(game).strip() == 'Halo 1':
-        # What weapons the AI carries (h1_enemy_weapons.py): the starting-weapon
-        # replacement and the 'Armed: <weapon>' cards. After the weapon ports (a ported
-        # weapon can be handed out) and BEFORE the effect ops, which reach the filled
-        # variant slots through the map's actv aliases.
-        import sys as _sys
-        import h1_enemy_weapons as _ew
-        results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
     # Skulls are whole-map rules, applied BEFORE the per-field ops. Order matters for
     # any skull that zeroes a field a normal effect also touches (Eyepatch vs an
     # aim-assist buff): running the skull first leaves the effect something to act on,
@@ -9653,6 +9645,17 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         _c, cpath = hm.split_tag(spec['tag'])
         results.append({'tag': spec['tag'], **_apply_camo(
             m, str(game).strip(), cpath, registry, spec.get('name') or 'Assassins')})
+    if h1_enemy_weapons and str(game).strip() == 'Halo 1':
+        # What weapons the AI carries (h1_enemy_weapons.py): the starting-weapon
+        # replacement and the 'Armed: <weapon>' cards. AFTER the skulls (user,
+        # 2026-10-05): Thunderstorm / Downpour decide who is what first, so Armed: Jackal
+        # arms exactly its share of the Jackals the level fields, promoted ones included.
+        # A slot copies its source variant whole, so a skull's actv edits (Assassins'
+        # camo flag, Famine's drops) carry over. Still BEFORE the effect ops, which reach
+        # the filled slots through the map's actv aliases.
+        import sys as _sys
+        import h1_enemy_weapons as _ew
+        results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
     _skull_names = {str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
                     for x in (skulls or ())}
     betrayed = 'betrayal' in _skull_names
