@@ -130,6 +130,14 @@ FIELDS = {
     ('jpt!', 'Damage Upper Bound Max'): ('tag', 'damage.damage_upper_bound', 'to', 1.0),
 }
 
+#: (pair key, where, dotted path, member, TAG value, index, label) -- fields no card
+#: targets, so no balance row carries them (port_field_audit.py). Error deceleration
+#: time: H4 SAW 0.49 / H4 AR 0.5 x H1 AR 1.0 = 0.98.
+EXTRA = [
+    (('weap', _AR + 'assault rifle'), 'trigger', 'firing.error_deceleration_time', None,
+     0.98, 0, 'Error Deceleration Time'),
+]
+
 #: Factors that could not be PROVEN from the donor because the donor's value is zero,
 #: and zero survives any factor. They are assigned by kind -- an angle is an angle, a
 #: velocity is a velocity -- and listed here so the claim is visible rather than implied.
@@ -270,6 +278,20 @@ def main():
                 changes.append((port, r['dst_field'], i, was, want))
             if a.write:
                 _write(root, where, dotted, member, want, i)
+
+    # FIELDS NO CARD COVERS (port_field_audit.py --game h1, 2026-10-05): the Halo 4 SAW
+    # differs from the Halo 4 AR there, and the clone still carried the AR's value. In
+    # TAG units: the ratio rule ported_src * donor_dst / donor_src, read on the tags.
+    for key, where, dotted, member, want, i, label in EXTRA:
+        port, ext, definition = PAIRS[key]
+        if port + ext not in tags:
+            tags[port + ext] = load(port + ext, definition)
+        root = tags[port + ext].data.tagdata
+        was = _read(root, where, dotted, member, i)
+        if abs(was - want) > 1e-6:
+            changes.append((port, label, i, was, want))
+        if a.write:
+            _write(root, where, dotted, member, want, i)
 
     for port, field, i, was, want in changes:
         print('   %-18s %-24s [%d]  %-12.6g -> %.6g'
