@@ -9508,7 +9508,7 @@ class OptionsDialog(QDialog):
                         "its ladder (Grunt > Jackal > Elite/Brute > Hunter; Flood "
                         "Infection > Carrier > Combat > Pure).",
         'downpour': "One card per enemy type: that enemy is demoted one species, and the "
-                    "lower species gets x1.5 shield, vitality and fire rate."}
+                    "lower species gets x2 shield, vitality and fire rate."}
 
     def _build_skull_page(self, parent):
         db = getattr(parent, 'db', None)

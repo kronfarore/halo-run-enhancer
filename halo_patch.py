@@ -2091,7 +2091,17 @@ def _apply_betrayal(m, game, registry):
 # games (H3 additionally has the two Falloff Range fields). Deviation Angle is
 # deliberately NOT included -- that's AI projectile scatter, not player aim assist.
 _AIM_ASSIST_FIELDS = ('Autoaim Angle', 'Autoaim Range', 'Autoaim Falloff Range',
-                      'Magnetism Angle', 'Magnetism Range', 'Magnetism Falloff Range')
+                      'Autoaim Near Falloff Range',
+                      'Magnetism Angle', 'Magnetism Range', 'Magnetism Falloff Range',
+                      'Magnetism Near Falloff Range')
+# Halo 4's live aim assist is per mode (normal / zoomed): weap 'Aim Assist Modes' block
+# (0x3F0, 0x44); the top-level copy is labelled DEPRECATED and differs from it. Stick
+# Angle is a real pull there (Bishop / Sentinel beams).
+_AIM_ASSIST_BLOCK = ('Aim Assist Modes', _AIM_ASSIST_FIELDS + ('Autoaim Stick Angle',))
+# Halo 2's weap plugin has a Melee Aim Assist pair named Magnetism Angle / Range FIRST
+# (0x19C/0x1A0); the weapon's own pair is the second (0x210/0x214) -- as the weapon
+# Magnetism cards' `nth: 1` already says. Eyepatch zeroed the melee lunge instead.
+_AIM_ASSIST_NTH = {'Halo 2': {'Magnetism Angle': 1, 'Magnetism Range': 1}}
 
 
 _RED_PLASMA_TAG = ('objects' + chr(92) + 'weapons' + chr(92) + 'rifle' + chr(92)
@@ -2170,8 +2180,20 @@ def _apply_eyepatch(m, game, registry):
     if not tags:
         return [{'effect': 'Eyepatch', 'ok': False, 'reason': 'no weapons in this map'}]
     zeroed, touched = 0, set()
+    blk, bfields = _AIM_ASSIST_BLOCK
+    for field in bfields:
+        fld = plugin.find(field, blk)
+        if not fld:
+            continue
+        fmt, _ = hm.TYPE_FMT[fld['type']]
+        for name, base in tags:
+            for leaf in m.follow_all(base, fld['block_offsets'], fld['block_sizes'],
+                                     ['all'] * len(fld['block_offsets'])):
+                struct.pack_into(fmt, m.data, leaf + fld['offset'], 0)
+                zeroed += 1
+                touched.add(name)
     for field in _AIM_ASSIST_FIELDS:
-        fld = plugin.find(field)
+        fld = plugin.find(field, nth=_AIM_ASSIST_NTH.get(game, {}).get(field, 0))
         if not fld or fld['block_chain']:        # not in this game's plugin
             continue
         fmt, _ = hm.TYPE_FMT[fld['type']]
@@ -2581,7 +2603,7 @@ def _apply_schism(m, game, registry):
 
 # "Thunderstorm" / "Downpour" (this toolkit's versions, per enemy type, user 2026-10-05):
 # Thunderstorm: <enemy> promotes that enemy one SPECIES up its faction's ladder,
-# Downpour: <enemy> demotes it one down (its card also carries x1.5 shield / vitality /
+# Downpour: <enemy> demotes it one down (its card also carries x2 shield / vitality /
 # fire-rate rows for the lower species, applied by the normal ops). Every squad entry
 # moves to the nearest tier in that direction that this map's character palette holds;
 # a tier with nothing in the palette is skipped.
@@ -2799,7 +2821,7 @@ def _apply_ladder(m, game, registry, up, down):
             if u['kind'] == 'cell':
                 if not write_char(u['char_at'], c):
                     continue
-                w = weapon_for(moves[c])
+                w = weapon_for(moves[c], u['char_at'])
                 if w is not None:
                     for a_ in u['weap_at']:
                         if weap_free(a_, moves[c]):
@@ -2810,7 +2832,7 @@ def _apply_ladder(m, game, registry, up, down):
                 continue
             if not write_char(u['char_at'], c):
                 continue
-            w = weapon_for(moves[c])
+            w = weapon_for(moves[c], u['char_at'])
             if w is not None:
                 write_weap(u['weap_at'][0], w)
                 write_weap(u['weap_at'][1], -1)
@@ -2831,7 +2853,9 @@ def _apply_ladder(m, game, registry, up, down):
 # a squad the scripts load into a Phantom is not moved to one. Measured on the Phantom
 # seat labels: Halo 3 Jackals 26 of 42, Elites 5, Hunters 4, Drones 4; ODST Hunters 24 of
 # 54 (Grunts / Jackals / Brutes 48-50). Elsewhere unmeasured: Hunters only.
-_TS_NO_RIDE = {'Halo 3': ('jackal', 'elite', 'hunter', 'bugger')}
+# Halo 3 holds EVERY script-loaded squad: with only the non-riders held, some promoted
+# Phantom passengers still never unloaded in game (user, 2026-10-05). '' matches all.
+_TS_NO_RIDE = {'Halo 3': ('',)}
 _TS_NO_RIDE_DEFAULT = ('hunter',)
 
 
@@ -2977,6 +3001,7 @@ class _TsWeapons:
         self.units = units
 
     def bind(self, m):
+        self.salt = str(getattr(m, 'path', '') or getattr(m, 'map_path', '') or '')
         tally = {}
         for u in self.units:
             c = u.get('char')
@@ -2989,13 +3014,30 @@ class _TsWeapons:
                     tally.setdefault(c, {})
                     tally[c][w] = tally[c].get(w, 0) + 1
         self.best = {c: max(t, key=t.get) for c, t in tally.items()}
+        # the species' whole loadout on this map, as (weapon, weight) -- a moved unit
+        # draws from it, so promoted Grunts do not all carry the same gun (user test)
+        self.dist = {c: sorted(t.items()) for c, t in tally.items()}
         return self
 
-    def __call__(self, c):
+    def __call__(self, c, key=None):
         name = (self.names[c] or '').lower() if 0 <= c < len(self.names) else ''
         if 'hunter' in name:
             return -1
-        return self.best.get(c)
+        dist = self.dist.get(c)
+        if not dist:
+            return None
+        if key is None or len(dist) == 1:
+            return self.best.get(c)
+        # deterministic per entry: the same map patched twice (or by the co-op
+        # partner) hands every unit the same weapon
+        h = int(hashlib.sha256(('%s|%s|%s' % (self.salt.rsplit(chr(92), 1)[-1], key, c))
+                               .encode()).hexdigest()[:8], 16)
+        pick = h % sum(w for _x, w in dist)
+        for weap, w in dist:
+            if pick < w:
+                return weap
+            pick -= w
+        return dist[-1][0]
 
 
 def _ts_resident_gate(m, game, names):
@@ -9508,7 +9550,7 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # whereas running it last would flatten the effect's result to the skull's value.
     # A skull is a name ('tilt'), or a dict for a per-enemy one: {'skull', 'enemy', 'tag',
     # 'name'} (Assassins / Thunderstorm / Downpour name the enemy type they act on).
-    ladder_up, ladder_down = set(), set()
+    ladder_up, ladder_down, camo_specs = set(), set(), []
     for skull in (skulls or ()):
         spec = skull if isinstance(skull, dict) else {'skull': skull}
         s = str(spec.get('skull')).strip().lower()
@@ -9526,15 +9568,20 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         elif s == 'famine':
             results.extend(_apply_famine(m, g, registry))
         elif s == 'assassins' and spec.get('tag'):
-            _c, cpath = hm.split_tag(spec['tag'])
-            results.append({'tag': spec['tag'], **_apply_camo(
-                m, g, cpath, registry, spec.get('name') or 'Assassins')})
+            camo_specs.append(spec)
         elif s == 'thunderstorm' and spec.get('enemy'):
             ladder_up.add(spec['enemy'])
         elif s == 'downpour' and spec.get('enemy'):
             ladder_down.add(spec['enemy'])
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
+    # Assassins AFTER Thunderstorm / Downpour: Assassins: Elite cloaks the Elites the level
+    # actually fields -- promoted Jackals included, Elites promoted into Hunters not (an
+    # H2 test had invisible Hunters: their squads kept the Elites' camo orders).
+    for spec in camo_specs:
+        _c, cpath = hm.split_tag(spec['tag'])
+        results.append({'tag': spec['tag'], **_apply_camo(
+            m, str(game).strip(), cpath, registry, spec.get('name') or 'Assassins')})
     _skull_names = {str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
                     for x in (skulls or ())}
     betrayed = 'betrayal' in _skull_names
