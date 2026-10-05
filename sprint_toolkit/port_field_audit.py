@@ -44,7 +44,7 @@ SOURCE = dict(kit='H4EK', tags={
                       r'objects\weapons\rifle\storm_assault_rifle\projectiles\storm_assault_rifle_bullet.damage_effect')})
 #: per target game: the kit, the port's tags and the donor's, the balance table
 GAMES = {
-    'h3': dict(kit='H3EK', game='Halo 3', table='balance_SAW_Halo4_to_Halo3.json', tags={
+    'h3': dict(kit='H3EK', game='Halo 3', tags={
         'weapon': (r'objects\weapons\rifle\saw\saw.weapon',
                    r'objects\weapons\rifle\assault_rifle\assault_rifle.weapon'),
         'projectile': (r'objects\weapons\rifle\saw\projectiles\saw_bullet_h4_original_numbers.projectile',
@@ -112,15 +112,17 @@ def nums(v):
         return None
 
 
-def covered_fields(table):
-    """{class: set(lower field names)} the balance table already writes."""
-    p = os.path.join(HERE, table)
+def covered_fields(game, weapon='SAW'):
+    """{class: {lower field name: catalog value}} the patcher's balance writes -- read from
+    weapon_ports_catalog.json, NOT a balance table: the catalog adds derived and measured
+    rows (Halo 3: Rounds Total Maximum = inventory + loaded) a table does not have."""
+    cat = json.load(open(os.path.join(os.path.dirname(HERE), 'weapon_ports_catalog.json'),
+                         encoding='utf-8')).get(game) or []
     out = {}
-    if os.path.exists(p):
-        for r in json.load(open(p, encoding='utf-8'))['rows']:
-            for f in (r.get('dst_field'), r.get('field')):
-                if f and r.get('dst_class'):
-                    out.setdefault(r['dst_class'], set()).add(f.lower())
+    for e in (cat if isinstance(cat, list) else [cat]):
+        if e.get('weapon') == weapon:
+            for r in e.get('balance') or ():
+                out.setdefault(r['class'], {})[r['field'].lower()] = r.get('value')
     return out
 
 
@@ -145,12 +147,12 @@ def match(path, target):
 
 def audit(game, show_all=False):
     G = GAMES[game]
-    covered = covered_fields(G['table'])
+    covered = covered_fields(G['game'])
     report = {'game': G['game'], 'kinds': {}}
     for kind in ('weapon', 'projectile', 'damage_effect'):
         s_port, s_donor = (flatten(SOURCE['kit'], t) for t in SOURCE['tags'][kind])
         t_port, t_donor = (flatten(G['kit'], t) for t in G['tags'][kind])
-        cov = covered.get(CLASS[kind], set())
+        cov = covered.get(CLASS[kind], {})
         rows = {'same': 0, 'refs': 0, 'port': [], 'decide': [], 'covered': []}
         for path, (typ, sv) in s_port.items():
             dv = s_donor.get(path, (None, None))[1]
@@ -168,7 +170,7 @@ def audit(game, show_all=False):
             ttyp, tv = t_donor[tp]
             row.update(target_field=tp, target_donor=tv, target_port=t_port.get(tp, (None, None))[1])
             if leaf(tp) in cov or leaf(path) in cov:
-                rows['covered'].append(row)
+                rows['covered'].append(dict(row, balanced=cov.get(leaf(tp), cov.get(leaf(path)))))
                 continue
             a, b, c = nums(sv), nums(dv) if dv is not None else None, nums(tv)
             if typ == 'count' or ttyp == 'count':
@@ -216,7 +218,8 @@ def show(report, show_all=False):
         if show_all:
             print('-- covered by the balance table (%d)' % len(r['covered']))
             for x in r['covered']:
-                print('   %-58s H4 SAW %-16s -> port %s' % (x['target_field'][-58:], x['h4_port'][:16], x['target_port']))
+                print('   %-58s H4 SAW %-16s tags %-16s balanced %s' % (
+                    x['target_field'][-58:], x['h4_port'][:16], x['target_port'], x.get('balanced')))
 
 
 def main():
