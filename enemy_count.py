@@ -93,7 +93,6 @@ H3_LOCS, H3_LOC_SZ, H3_LOC_POS, H3_LOC_CHAR, H3_LOC_VEH = 0x54, 0x88, 0x8, 0x28,
 H3_CHAR_UNIT, H3_CHAR_PARENT, H3_BIPD_TEAM = 0x14, 0x4, 0xFC
 H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT = 0x3EC, 0x34, 0x24
 H3_SCRIPT_PARAMS, H3_PARAM_SZ = 0x28, 0x24
-H3_CALL_FLAGS = (8, 10)
 #: Halo Reach's Team enum differs from Halo 3's from 4 on.
 REACH_TEAMS = ('default', 'player', 'human', 'covenant', 'brute', 'mule', 'spare',
                'covenant_player')
@@ -111,6 +110,11 @@ CELL_LAYOUT = {
                        diff=0x4, count=0x10, veh=0x46, chars=(0x14, 0x10, 0xC),
                        team=0x16C, scripts=(0x430, 0x18, 0x8, 0xC, 'sid'),
                        teams=REACH_TEAMS),
+    'Halo 4': dict(palette=0x444, groups=0x3E4, squads=(0x3F0, 0x6C),
+                   locs=(0x3C, 0x7C, 0x8, 0x2E), cells=(0x54, 0x60), cell_sz=0x64,
+                   diff=0x4, count=0x8, veh=0x3E, chars=(0xC, 0x8, 0x4),
+                   team=0x1DC, scripts=None, teams=REACH_TEAMS + ('forerunner',),
+                   twins=True),
 }        # expression flags of a call group (built-in / script)
 TEAM_NAMES = ('default', 'player', 'human', 'covenant', 'flood', 'sentinel', 'heretic',
               'prophet', 'guilty')
@@ -121,21 +125,23 @@ BOSS_WORDS = ('tartarus', 'heretic_leader', 'prophet', 'monitor', 'johnson', 'mi
               'cortana', 'dervish', 'masterchief', 'arbiter', 'truth', 'gravemind', 'guilty',
               '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero', 'scarab',
               'engineer_freeform',     # the freed Engineer of Data Hive / Coastal Highway
-              'mule', 'halsey')        # Reach's Mule (a boss card of its own) and Halsey
+              'mule', 'halsey',        # Reach's Mule (a boss card of its own) and Halsey
+              # Reach's Noble Team by name (Halo 4's Infinity Spartans are ordinary allies)
+              'spartan_carter', 'spartan_emile', 'spartan_jorge', 'spartan_jun', 'spartan_kat',
+              'lasky', 'palmer', 'del_rio', 'didact', 'librarian')     # Halo 4's story cast
 #: ...and by the character's species folder: Halo 1's Keyes is `characters\captain\...`, a
 #: word that must not catch `brute_captain`.
 BOSS_SPECIES = ('captain', 'keyes', 'johnson', 'miranda', 'cortana', 'monitor', 'dervish',
                 'masterchief',
-                'spartans_ai', 'spartans_female_ai',   # Reach: Noble Team
                 'null')                                # vehicle-pilot placeholders
 #: Species on the player's side whatever their team says: Reach's Moas (ambient_life) --
 #: the user's call, they belong with the ally cards.
 ALLY_SPECIES = ('ambient_life',)
 #: Human species (by the character's folder under objects\characters): never enemies.
 HUMAN_SPECIES = ('marine', 'masterchief', 'dervish', 'miranda', 'johnson', 'cortana',
-                 'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot')
+                 'odst', 'civilian', 'crewman', 'captain', 'keyes', 'pilot', 'spartan')
 SPREAD = 0.6       # world units between a copied location and its source
-GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach')
+GAMES = ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 
 
 def _i16(m, o):
@@ -143,10 +149,14 @@ def _i16(m, o):
 
 
 def species(name):
+    """The character's folder under characters\\ -- Halo 4's `storm_` prefix dropped, so
+    storm_marine is a marine and storm_grunt a grunt."""
     parts = (name or '').lower().split('\\')
     if 'characters' in parts and parts.index('characters') + 1 < len(parts):
-        return parts[parts.index('characters') + 1]
-    return parts[-1]
+        sp = parts[parts.index('characters') + 1]
+    else:
+        sp = parts[-1]
+    return sp[6:] if sp.startswith('storm_') else sp
 
 
 def _is_boss(name):
@@ -416,7 +426,22 @@ def h1_squads(m, tree=None):
 # ---- Halo 3 --------------------------------------------------------------------------
 
 def _h3_flags(m, t, i):
-    return struct.unpack_from('<H', m.data, t.base + i * t.size + 6)[0]
+    """Expression flags: +0x6 in the third-generation record, +0x14 in Halo 4's (0x1C)."""
+    return struct.unpack_from('<H', m.data, t.base + i * t.size + (0x14 if t.size == 0x1C else 6))[0]
+
+
+def _is_call(t, node):
+    """Is `node` a call group? Decided by structure -- its value is the datum of a function
+    name node -- because the flag values differ by game (Halo 3: 8 / 10, Halo 4: 32 / 34)."""
+    if not node or node['value'] == 0xFFFFFFFF or node['vtype'] == 2:
+        return False
+    ch = t.at(node['value'] & 0xFFFF)
+    return bool(ch) and ch['vtype'] == 2 and (node['value'] >> 16) == ch['salt'] and \
+        ch['i'] != node['i']
+
+
+#: expression flags of a literal (primitive) argument
+LITERAL_FLAGS = {'Halo 4': (0x21,)}
 
 
 def _h3_name(node):
@@ -427,7 +452,7 @@ def _h3_name(node):
 
 def _h3_ai_arg(t, node):
     """The ai text a loading call's object argument carries: `(ai_actors X)` -> X."""
-    if not node or _h3_flags(t.m, t, node['i']) not in H3_CALL_FLAGS:
+    if not _is_call(t, node):
         return None
     g = t.at(node['value'] & 0xFFFF)
     if g and g['string'] == 'ai_actors':
@@ -459,6 +484,48 @@ def _h3_effects(t, fn, a, placers, loaders):
     return placed, bound
 
 
+def _script_units(m, game, tree=None):
+    """[(Tree, [(script name, [parameter names], root index)])] -- one per script container:
+    the scenario (Halo 3 / ODST / Reach) or every hsdt tag (Halo 4, whose compiled scripts
+    live in hs_script_data tags: Scripts +0xC elem 0x20, name string id +0x0, root +0xC,
+    Parameters +0x14 elem 0x24)."""
+    import halo_patch
+    import hud_titles
+    g = str(game).strip()
+    out = []
+    if g == 'Halo 4':
+        for tag in (m.tags.values() if isinstance(m.tags, dict) else m.tags):
+            if not isinstance(tag, dict) or tag.get('class') != 'hsdt' or not tag.get('base'):
+                continue
+            t = hud_titles.Tree(m, g, halo_patch._block_base, None, container=tag['base'])
+            if not t.ok():
+                continue
+            scripts = []
+            for el in m.follow_all(tag['base'], [0xC], [0x20], 'all'):
+                params = [m.data[q:q + 0x20].split(b'\0')[0].decode('latin-1').lower()
+                          for q in m.follow_all(el, [0x14], [H3_PARAM_SZ], 'all')]
+                if params:
+                    scripts.append(((m.resolve_stringid(m.u32(el)) or '').lower(), params,
+                                    m.u32(el + 0xC) & 0xFFFF))
+            out.append((t, scripts))
+        return out
+    t = tree or _tree(m, g)
+    s = halo_patch._scnr_base(m)
+    lay = CELL_LAYOUT.get(g)
+    soff, ssz, sroot, spar, kind = (lay['scripts'] if lay else
+                                    (H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT, H3_SCRIPT_PARAMS,
+                                     'ascii'))
+    scripts = []
+    for el in m.follow_all(s, [soff], [ssz], 'all'):
+        params = [m.data[q:q + 0x20].split(b'\0')[0].decode('latin-1').lower()
+                  for q in m.follow_all(el, [spar], [H3_PARAM_SZ], 'all')]
+        if params:
+            sname = (m.resolve_stringid(m.u32(el)) or '' if kind == 'sid' else
+                     m.data[el:el + 0x20].split(b'\0')[0].decode('latin-1'))
+            scripts.append((sname.lower(), params, m.u32(el + sroot) & 0xFFFF))
+    return [(t, scripts)]
+
+
 def h3_script_refs(m, tree=None, game='Halo 3'):
     """What the compiled scripts do with squads, by NAME: {'place': {name: calls},
     'literal': {name: actors}, 'bound': {names}, 'allied': set, 'removed': set}.
@@ -468,24 +535,12 @@ def h3_script_refs(m, tree=None, game='Halo 3'):
     walked first: a parameter that reaches ai_place makes the script a PLACER of that
     argument, one that reaches a loading call (vehicle_load_magic ... (ai_actors p),
     ai_vehicle_enter_immediate, ai_place_in_vehicle) a LOADER -- to a fixed point, since
-    helpers call helpers."""
-    import halo_patch
-    t = tree or _tree(m, game)
-    s = halo_patch._scnr_base(m)
-    scripts = []
-    lay = CELL_LAYOUT.get(str(game).strip())
-    soff, ssz, sroot, spar, kind = (lay['scripts'] if lay else
-                                    (H3_SCRIPTS, H3_SCRIPT_SZ, H3_SCRIPT_ROOT, H3_SCRIPT_PARAMS,
-                                     'ascii'))
-    for el in m.follow_all(s, [soff], [ssz], 'all'):
-        params = [m.data[p:p + 0x20].split(b'\0')[0].decode('latin-1').lower()
-                  for p in m.follow_all(el, [spar], [H3_PARAM_SZ], 'all')]
-        if params:
-            sname = (m.resolve_stringid(m.u32(el)) or '' if kind == 'sid' else
-                     m.data[el:el + 0x20].split(b'\0')[0].decode('latin-1'))
-            scripts.append((sname.lower(), params, m.u32(el + sroot) & 0xFFFF))
+    helpers call helpers (in Halo 4 across hsdt tags: the global script container's
+    helpers are called from the scenario's)."""
+    units = _script_units(m, game, tree)
+    lit_flags = LITERAL_FLAGS.get(str(game).strip(), (F_PRIMITIVE,))
 
-    def body(root):
+    def body(t, root):
         seen, stack, out = set(), [root], []
         while stack:
             i = stack.pop()
@@ -498,15 +553,16 @@ def h3_script_refs(m, tree=None, game='Halo 3'):
             out.append(r)
             if r['next'] != 0xFFFFFFFF:
                 stack.append(r['next'] & 0xFFFF)
-            if _h3_flags(m, t, i) in H3_CALL_FLAGS and r['value'] != 0xFFFFFFFF:
+            if _is_call(t, r):
                 stack.append(r['value'] & 0xFFFF)
         return out
 
-    bodies = {name: (params, [r for r in body(root) if r['vtype'] == 2]) for name, params, root in scripts}
+    bodies = [(t, name, params, [r for r in body(t, root) if r['vtype'] == 2])
+              for t, scripts in units for name, params, root in scripts]
     placers, loaders = {}, {}
     for _round in range(6):
         changed = False
-        for name, (params, calls) in bodies.items():
+        for t, name, params, calls in bodies:
             for r in calls:
                 p, b = _h3_effects(t, (r['string'] or '').lower(), _args(t, r), placers, loaders)
                 for nodes, table in ((p, placers), (b, loaders)):
@@ -520,27 +576,28 @@ def h3_script_refs(m, tree=None, game='Halo 3'):
         if not changed:
             break
     out = {'place': {}, 'literal': {}, 'bound': set(), 'allied': set(), 'removed': set()}
-    for i in range(t.n):
-        r = t.at(i)
-        if not r or r['vtype'] != 2 or r['next'] == 0xFFFFFFFF:
-            continue
-        fn = (r['string'] or '').lower()
-        a = _args(t, r)
-        if fn in ('ai_allegiance', 'ai_allegiance_remove'):
-            if len(a) >= 2:
-                pr = ((a[0]['string'] or '').lower(), (a[1]['string'] or '').lower())
-                out['allied' if fn == 'ai_allegiance' else 'removed'].add(pr)
-            continue
-        p, b = _h3_effects(t, fn, a, placers, loaders)
-        for x in p:
-            n = _h3_name(x)
-            if n:
-                out['place'][n] = out['place'].get(n, 0) + 1
-        for x in b:
-            if _h3_name(x):
-                out['bound'].add(_h3_name(x))
-        if fn == 'ai_place' and len(a) >= 2 and _h3_name(a[0]):
-            if a[1]['vtype'] in (T_SHORT, T_SHORT + 1) and _h3_flags(m, t, a[1]['i']) == F_PRIMITIVE:
+    for t, _scripts in units:
+        for i in range(t.n):
+            r = t.at(i)
+            if not r or r['vtype'] != 2 or r['next'] == 0xFFFFFFFF:
+                continue
+            fn = (r['string'] or '').lower()
+            a = _args(t, r)
+            if fn in ('ai_allegiance', 'ai_allegiance_remove'):
+                if len(a) >= 2:
+                    pr = ((a[0]['string'] or '').lower(), (a[1]['string'] or '').lower())
+                    out['allied' if fn == 'ai_allegiance' else 'removed'].add(pr)
+                continue
+            p, b = _h3_effects(t, fn, a, placers, loaders)
+            for x in p:
+                n = _h3_name(x)
+                if n:
+                    out['place'][n] = out['place'].get(n, 0) + 1
+            for x in b:
+                if _h3_name(x):
+                    out['bound'].add(_h3_name(x))
+            if fn == 'ai_place' and len(a) >= 2 and _h3_name(a[0]) and not _is_call(t, a[1]) \
+                    and _h3_flags(m, t, a[1]['i']) in lit_flags:
                 n = int(t.number(a[1]) or 0)
                 if n > 0:
                     k = _h3_name(a[0])
@@ -658,7 +715,7 @@ def cell_squads(m, game, tree=None):
     import halo_patch
     g = str(game).strip()
     L = CELL_LAYOUT[g]
-    t = tree or _tree(m, g)
+    t = tree if (tree or g == 'Halo 4') else _tree(m, g)     # Halo 4: scripts in hsdt tags
     s = halo_patch._scnr_base(m)
     pal, teams = [], []
     for el in m.follow_all(s, [L['palette']], [H3_PAL_SZ], 'all'):
@@ -696,6 +753,16 @@ def cell_squads(m, game, tree=None):
         split = bool(m.u32(sq + d_off) and m.u32(sq + t_off) and dptr != tptr)
         use = t_off if m.u32(sq + t_off) else d_off
         cells = m.follow_all(sq, [use], [L['cell_sz']], 'all')
+        # Halo 4 keeps no shared blocks, and a squad's designer and templated cells are
+        # separate copies with the same counts: grow the designer twin with its templated
+        # cell, whichever of the two the engine reads.
+        twins = (m.follow_all(sq, [d_off], [L['cell_sz']], 'all')
+                 if split and L.get('twins') else [])
+        if twins and len(twins) == len(cells) and all(
+                _i16(m, a + L['count']) == _i16(m, b + L['count']) for a, b in zip(cells, twins)):
+            split = False
+        else:
+            twins = []
         locs = m.follow_all(sq, [L['locs'][0]], [L['locs'][1]], 'all')
         steam = _i16(m, sq + H3_TEAM)
         for n, cell in enumerate(cells):
@@ -703,11 +770,15 @@ def cell_squads(m, game, tree=None):
             if u is None:
                 u = units[cell] = {'off': cell, 'users': 0, 'chars': set(), 'steam': set(),
                                    'bound': False, 'fixed': False, 'split': False, 'script': 0,
-                                   'names': []}
+                                   'names': [], 'twins': []}
                 order.append(cell)
             u['chars'] |= {_i16(m, loc + L['locs'][3]) for loc in locs
                            if _i16(m, loc + L['locs'][2]) == n}
             u['steam'].add(steam)
+            if twins:
+                u['twins'].append(twins[n])
+                co, ce, cx = L['chars']
+                u['chars'] |= {_i16(m, e + cx) for e in m.follow_all(twins[n], [co], [ce], 'all')}
             if placed:
                 u['users'] += 1
                 u['names'].append(name)
@@ -739,7 +810,7 @@ def cell_squads(m, game, tree=None):
                     'insane': count if (on_legend and not on_normal) else 0,
                     'locs': 0, 'foot': 1, 'chars': chars, 'enemy': enemy,
                     'ally': bool(chars) and not enemy,
-                    'vehicle': _i16(m, cell + L['veh']) >= 0,
+                    'vehicle': _i16(m, cell + L['veh']) >= 0, 'twins': u['twins'],
                     'boss': any(_is_boss(x) for x in chars),
                     'script': u['script'], 'fixed': u['fixed'] or u['split'],
                     'bound': u['bound'], 'placed': u['users'] > 0})
@@ -859,8 +930,9 @@ def grow_all(m, game, plan, spread=SPREAD):
     if g == 'Halo 3' or g in CELL_LAYOUT:
         at = H3_FT_COUNT if g == 'Halo 3' else CELL_LAYOUT[g]['count']
         for sq, normal, insane in plan:
-            struct.pack_into('<h', m.data, sq['off'] + at,
-                             sq['count'] + (normal - sq['normal']) + (insane - sq['insane']))
+            n = sq['count'] + (normal - sq['normal']) + (insane - sq['insane'])
+            for off in [sq['off']] + list(sq.get('twins') or ()):
+                struct.pack_into('<h', m.data, off + at, n)
         return 0
     h1 = g == 'Halo 1'
     locs_off, loc_sz, cnt_off = ((H1_LOCS, H1_LOC_SZ, H1_NORMAL) if h1 else
