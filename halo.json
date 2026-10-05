@@ -25984,9 +25984,10 @@
 		},
 		"Fog": {
 			"desc": "No motion tracker.",
-			"debug_desc": "Halo 1: hudg Motion Sensor Range 0.01 and the cyborg unhi dial bitmaps nulled. Halo 2: hudg range 0.01 and every nhdt widget drawn on 'Motion Sensor Enabled' gets 'Default' in its [No] flags. Halo 3/ODST: chdt Motion Sensor widgets (Scripting Class 6) draw only while the tracker is disabled (Unit Misc State 2). Reach/Halo 4: matg Default Player Traits sensor trait Motion Tracker = Disabled/Off. Untested in game.",
+			"debug_desc": "Halo 1: hudg Motion Sensor Range 0.01 and the cyborg unhi dial bitmaps nulled. Halo 2: hudg range 0.01 and every nhdt widget drawn on 'Motion Sensor Enabled' gets 'Default' in its [No] flags. Halo 3: the chdt dial widget (class 6) draws only while the tracker is disabled, and the chgd HUD globals' Sensor Origin goes to (2000, 2000) with Blip Radius 0 -- the blips are drawn from there, not by a widget (Bungie removed ODST's tracker the same way). Reach: matg Default Player Traits Motion Tracker = Disabled. Halo 4: the radar cusc's blip-opacity expression '1-a' becomes '0-a' (the sensor trait is written too but the H4 radar ignores it; the dial stays). Not offered in ODST: it has no motion tracker. Confirmed in game: Halo 1, Halo 2, Reach.",
 			"skull": "fog",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"skip_games": ["Halo 3: ODST"],
 			"tag": {"Halo 1": "hudg", "Halo 2": "nhdt", "Halo 3": "chdt", "Halo Reach": "matg"},
 			"targets": []
 		},

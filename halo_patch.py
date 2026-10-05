@@ -2271,7 +2271,22 @@ def _apply_tilt(m, game, registry):
 _FOG_RANGE = 0.01
 _FOG_H1_UNHI_BITMAPS = (0x290, 0x2F8)            # Background, Foreground tagRefs
 _FOG_H2_NHDT = {'widgets': (0x8, 0x64), 'yes': 0x8, 'no': 0x10, 'sensor_bit': 11}
-_FOG_H3_MISC_AT = {'Halo 3': 0x1A, 'Halo 3: ODST': 0x2A}
+_FOG_H3_MISC_AT = {'Halo 3': 0x1A}
+# Halo 3 draws the BLIPS itself, from chgd `ui\chud\globals`, not from any chdt widget
+# (the class-6 widget is only the dial art -- in game the Infection Forms still showed).
+# HUD Globals (0x0, 0x1C8) -> Curvature Infos (+0x74, 0x64): Sensor Origin +0x18 (two
+# floats), Blip Radius +0x24. Origin goes to (2000, 2000), off screen: exactly how
+# Bungie removed the tracker from ODST, whose chgd ships that value. ODST itself has no
+# motion tracker (its class-6 widgets are the helmet frame), so Fog is not offered there.
+_FOG_H3_CHGD = {'globals': (0x0, 0x1C8), 'curv': (0x74, 0x64), 'origin': 0x18,
+                'blip_radius': 0x24}
+# Halo 4 ignores the sensor TRAIT for its radar (written, measured, still shown): the
+# radar is the cusc `ui\hud\player_huds\shared\radar\radar`, whose expression "1-a"
+# drives the blips' opacity. Expressions (+0x7C, 0x110) -> Steps (+0x104, 0xC), Real
+# Value at step +4: step 0's 1.0 becomes 0.0, so every blip is transparent (the dial stays).
+_FOG_H4_RADAR = 'ui' + chr(92) + 'hud' + chr(92) + 'player_huds' + chr(92) + 'shared' + \
+    chr(92) + 'radar' + chr(92) + 'radar'
+_FOG_H4_EXPR = {'exprs': (0x7C, 0x110), 'steps': (0x104, 0xC), 'value': 0x4}
 _FOG_H3_SENSOR_CLASS, _FOG_H3_DISABLED = 6, 0x2
 # (Default Player Traits block, element), (Sensor Traits block, element), enum byte,
 # the value that means off.
@@ -2303,8 +2318,43 @@ def _fog_hudg_range(m, registry):
 def _apply_fog(m, game, registry):
     ref = {'effect': 'Fog'}
     out = []
+    if game == 'Halo 3: ODST':
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': 'ODST has no motion tracker (its chgd draws the blips off screen)'}]
     if game in ('Halo 1', 'Halo 2'):
         out += _fog_hudg_range(m, registry)
+    if game == 'Halo 3':
+        L = _FOG_H3_CHGD
+        moved = 0
+        for t in m.tags:
+            if not isinstance(t, dict) or t.get('class') != 'chgd' or not t.get('base'):
+                continue
+            for hg in _h3_chud_elems(m, t['base'], L['globals']):
+                for cv in _h3_chud_elems(m, hg, L['curv']):
+                    struct.pack_into('<ff', m.data, cv + L['origin'], 2000.0, 2000.0)
+                    struct.pack_into('<f', m.data, cv + L['blip_radius'], 0.0)
+                    moved += 1
+        out.append({**ref, 'tag': 'chgd *', 'field': 'Sensor Origin / Blip Radius',
+                    'ok': bool(moved), 'old': 'on the dial',
+                    'new': 'blips off screen on %d HUD layout(s)' % moved if moved else None,
+                    'reason': None if moved else 'no chgd curvature info found'})
+    if game == 'Halo 4':
+        L = _FOG_H4_EXPR
+        hit = None
+        for name, base in m.find_tags('cusc', _FOG_H4_RADAR):
+            for ex in _h3_chud_elems(m, base, L['exprs']):
+                if b'1-a' not in bytes(m.data[ex:ex + L['exprs'][1]]):
+                    continue
+                steps = _h3_chud_elems(m, ex, L['steps'])
+                if steps:
+                    v = struct.unpack_from('<f', m.data, steps[0] + L['value'])[0]
+                    if abs(v - 1.0) < 1e-6:
+                        struct.pack_into('<f', m.data, steps[0] + L['value'], 0.0)
+                        hit = name
+                break
+        out.append({**ref, 'tag': 'cusc radar', 'field': 'blip opacity expression "1-a"',
+                    'ok': bool(hit), 'old': '1 - age', 'new': '0 - age (blips invisible)' if hit else None,
+                    'reason': None if hit else 'radar expression not found in this map'})
     if game == 'Halo 1':
         hidden = []
         for name, base in m.find_tags('unhi', '*'):
