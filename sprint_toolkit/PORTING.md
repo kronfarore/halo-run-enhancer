@@ -2232,9 +2232,13 @@ re-run the sound script and load the map again. Gains (tag) need a rebuild.
 (Halo 1 / Halo 4 banks on any machine), `port_sounds.retimed_anim_sound` (Halo 1: a
 retimed animation swaps to the sound stretched for it; catalog `anim_sounds`).
 
-**OPEN:** the Halo 3 / ODST / Reach `sfx.saw.fsb` banks are installed on THIS machine only
--- `port_sounds.py` carries Halo 1 and Halo 4, not them, so a Steam verify or a co-op
-partner's install has the maps' sound references and no bank (silent SAW).
+**On every machine (2026-10-05):** `saw_port_sounds.py --write` also copies the bank to
+`tool\port_sounds\<game>\` -- COMMIT IT after every bank change -- and
+`port_sounds.ensure('<game>')` (fmod_ensure) copies it into `<game>\fmod\pc` when missing
+or different; a bank MCC holds open (a map of that game loaded) is reported, not forced.
+The enhancer calls it for the folders in its PORT_SOUND_FOLDERS. Patch time needs nothing
+outside the frozen app: plain file copies here, numpy (bundled) only for Halo 1's ADPCM;
+vgmstream is a BUILD-time tool.
 
 **Checks** (closing step 6): `port_sound_refs.py --game "<game>"` on the built map;
 bank live == kit and every map hash in it; `port_volume.py` headroom 3.

@@ -509,9 +509,17 @@ def set_gain():
 
 def install():
     dst = os.path.join(MCC, G['folder'], 'fmod', 'pc')
-    for f in glob.glob(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb*' % SUFFIX)):
+    # and the repo's copy: tool\port_sounds\<game>\ is what port_sounds.py (the enhancer,
+    # at patch time) puts back after a Steam verify or onto a co-op partner's install --
+    # commit it after every bank change
+    carry = os.path.join(os.path.dirname(HERE), 'port_sounds', G['folder'])
+    os.makedirs(carry, exist_ok=True)
+    for f in glob.glob(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb' % SUFFIX)) + \
+            glob.glob(os.path.join(EK, 'fmod', 'pc', 'sfx.%s.fsb.info' % SUFFIX)):
         shutil.copyfile(f, os.path.join(dst, os.path.basename(f)))
-        print('   installed %s' % os.path.join(dst, os.path.basename(f)))
+        shutil.copyfile(f, os.path.join(carry, os.path.basename(f)))
+        print('   installed %s (+ port_sounds\\%s)' % (os.path.join(dst, os.path.basename(f)),
+                                                     G['folder']))
 
 
 def main():

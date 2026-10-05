@@ -13,7 +13,7 @@ means rebuilding it from scratch:
 `--game` picks which port is backed up; `--no-maps` skips the cache files, which are
 the slow part and are only worth keeping when a built map exists.
 """
-import argparse, datetime, filecmp, os, shutil, sys
+import argparse, datetime, filecmp, glob, os, shutil, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 F = 'F:' + os.sep
@@ -268,15 +268,34 @@ REACH_FILES += SOUND_FILES
 REACH_SCRIPTS += SOUND_SCRIPTS + ('saw_port_sounds.py', 'fsb5_merge.py', 'reach_sound_suffix.py')
 
 
-# Halo 3 and ODST had NO profile until 2026-10-05. These keep the SAW's own folder (weapon,
-# graphs, effects), its sounds, the FMOD bank and the sound tooling -- NOT yet the shared
-# edits of steps 7/8 (chud, fonts, messages, localization): extend before relying on them
-# for a full rebuild.
-def h3_family(ek, mcc_folder, maps):
+# Halo 3 and ODST had NO profile until 2026-10-05: the SAW's own folder (weapon, graphs,
+# effects), its sounds + FMOD bank (step 10), and the SHARED files steps 7/8 edit in place
+# -- the chud and its bitmap sheets (meter, schematic, sprite boxes), hud_messages (tag +
+# its .txt in every language), the live icon font packages and MCC's loose localization
+# .bin files (each beside its pre-port copy on E:), and the scenario the SAW is PLACED in
+# by hand (Sapien + starting profile).
+def h3_family(ek, mcc_folder, maps, loc_game, short, scenario):
     trees = [(os.path.join(ek, 'tags', 'objects', 'weapons', 'rifle', 'saw'),
-              'tags/objects/weapons/rifle/saw', True)] + sound_trees(ek) + SOUND_SOURCE
+              'tags/objects/weapons/rifle/saw', True)] + sound_trees(ek) + SOUND_SOURCE + [
+        (os.path.join(ek, 'tags', 'ui', 'chud', 'bitmaps'), 'tags/ui/chud/bitmaps', True),
+        (os.path.join(GAME, mcc_folder, 'maps', 'fonts'), 'shared/fonts_live', True),
+        (os.path.join(E_BACKUPS, '%s_live_fonts' % short), 'shared/fonts.stock', True)]
     shared = [(os.path.join(ek, 'fmod', 'pc', 'sfx.saw.fsb' + x), 'fmod/pc/sfx.saw.fsb' + x)
-              for x in ('', '.info')]
+              for x in ('', '.info')] + [
+        (os.path.join(ek, 'tags', 'ui', 'chud', 'saw.chud_definition'),
+         'tags/ui/chud/saw.chud_definition'),
+        (os.path.join(ek, 'tags', 'ui', 'hud', 'hud_messages.multilingual_unicode_string_list'),
+         'tags/ui/hud/hud_messages.multilingual_unicode_string_list'),
+        (os.path.join(ek, 'tags', *scenario.split('/')), 'tags/' + scenario)]
+    for d in sorted(glob.glob(os.path.join(ek, 'data*'))):           # data + data_<lang>
+        p = os.path.join(d, 'ui', 'hud', 'hud_messages.txt')
+        if os.path.exists(p):
+            shared.append((p, '%s/ui/hud/hud_messages.txt' % os.path.basename(d)))
+    loc = os.path.join(GAME, 'data', 'UI', 'Localization')
+    for f in sorted(glob.glob(os.path.join(loc, '*_%s.bin' % loc_game))):
+        shared.append((f, 'shared/localization/' + os.path.basename(f)))
+        shared.append((os.path.join(E_BACKUPS, 'mcc_localization', os.path.basename(f)),
+                       'shared/localization.stock/' + os.path.basename(f)))
     files = [(os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
              (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md')] + SOUND_FILES
     return trees, shared, files, [(os.path.join(GAME, mcc_folder, 'maps', m + '.map'),
@@ -285,9 +304,17 @@ def h3_family(ek, mcc_folder, maps):
 
 H3_SCRIPTS = SOUND_SCRIPTS + ('saw_port_sounds.py', 'fsb5_merge.py', 'h3_build_map.py',
                               'h3_saw_deploy.py', 'h3_chunk_check.py', 'h3_saw_animations.py',
-                              'h3_make_saw.py', 'port_backup.py', 'PORTING.md')
-H3_T, H3_S, H3_F, H3_M = h3_family(H3EK, 'halo3', ['010_jungle'])
-ODST_T, ODST_S, ODST_F, ODST_M = h3_family(H3ODSTEK, 'halo3odst', ['sc150'])
+                              'h3_make_saw.py', 'port_backup.py', 'PORTING.md',
+                              # steps 7 / 8: the HUD and the pickup text
+                              'h3_kit.py', 'h3_saw_chud.py', 'h3_meter_art.py',
+                              'h3_chud_sequence.py', 'h3_sprite_box.py', 'h3_weapon_glyph.py',
+                              'h3_weapon_schematic.py', 'h3_saw_pickup_icon.py',
+                              'h3_mcc_localization.py', 'h3_port_messages.py',
+                              'h3_font_package.py', 'h3_font_codec.py', 'h3_font_repack.py')
+H3_T, H3_S, H3_F, H3_M = h3_family(H3EK, 'halo3', ['010_jungle'], 'Halo3', 'h3',
+                                   'levels/solo/010_jungle/010_jungle.scenario')
+ODST_T, ODST_S, ODST_F, ODST_M = h3_family(H3ODSTEK, 'halo3odst', ['sc150'], 'Halo3ODST', 'odst',
+                                           'levels/atlas/sc150/sc150.scenario')
 
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,

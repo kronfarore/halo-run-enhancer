@@ -17,6 +17,9 @@ when they are the file's tail, else left unreferenced). The package is written t
 file and swapped in, then read back. Proven in game (2026-10-03, boot 30): a bank
 APPENDED to the package and named by its table entry plays.
 
+HALO 3 / ODST / REACH (2026-10-05): a port's own FMOD bank FILE beside sfx.fsb, copied
+into <game>\fmod\pc when missing or different -- see fmod_ensure().
+
 HALO 1 TOO (2026-10-04): MCC plays Halo 1 sounds from the classic FMOD bank
 sounds_adpcm.fsb, by tag path -- see h1_ensure(); port_sounds\halo1 carries the audio.
 
@@ -160,6 +163,8 @@ def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
     the knob (a bank at another volume is simply replaced)."""
     if game == 'halo1':
         return h1_ensure(mcc_root, write=write, backup_dir=backup_dir, volume=volume)
+    if game in FMOD_GAMES:
+        return fmod_ensure(game, mcc_root, write=write)
     try:
         want = banks(game, volume)
     except ValueError as e:
@@ -196,6 +201,67 @@ def ensure(game, mcc_root, write=True, backup_dir=None, volume=None):
     except Exception as e:
         return rows + [dict(row, ok=False, reason='could not write: %s' % e)]
     return rows + [dict(row, ok=True, old='without %s' % names, new='%s added' % names)]
+
+
+# ---- Halo 3 / ODST / Reach: a port's OWN FMOD bank FILE (2026-10-05) -----------------
+# These games play their sounds from <game>\fmod\pc\sfx.<suffix>.fsb + .info, one bank per
+# suffix; a port's sound tags carry their own suffix (the SAW: 'saw'), so its bank is a
+# SEPARATE file beside the stock sfx.fsb -- nothing stock is touched. Built by the kit
+# (sprint_toolkit\saw_port_sounds.py, which also copies it to port_sounds\<game>\); here
+# it is only copied into place when missing or different. MCC holds a game's bank open
+# while one of that game's maps is loaded, so a locked file is reported, not forced.
+# The volume knob is in the MAP for these games (port_volume.py), not in the bank.
+FMOD_GAMES = ('halo3', 'halo3odst', 'haloreach')
+
+
+def _same(a, b):
+    if not os.path.exists(b) or os.path.getsize(a) != os.path.getsize(b):
+        return False
+    with open(a, 'rb') as f, open(b, 'rb') as g:
+        while True:
+            x, y = f.read(CHUNK), g.read(CHUNK)
+            if x != y:
+                return False
+            if not x:
+                return True
+
+
+def fmod_ensure(game, mcc_root, write=True):
+    rows = []
+    pc = os.path.join(mcc_root, game, 'fmod', 'pc')
+    for fsb in sorted(glob.glob(os.path.join(_data_dir(), game, 'sfx.*.fsb'))):
+        name = os.path.basename(fsb)
+        row = {'effect': 'port sound bank', 'field': '%s %s' % (game, name)}
+        if not os.path.exists(fsb + '.info'):
+            rows.append(dict(row, ok=False, reason='%s.info missing from port_sounds' % name))
+            continue
+        if not os.path.isdir(pc):
+            rows.append(dict(row, ok=True, skip=True, reason='game not installed'))
+            continue
+        pairs = [(fsb, os.path.join(pc, name)), (fsb + '.info', os.path.join(pc, name + '.info'))]
+        stale = [(s, d) for s, d in pairs if not _same(s, d)]
+        if not stale:
+            rows.append(dict(row, ok=True, skip=True, reason='bank present'))
+            continue
+        old = 'without %s' % name if not os.path.exists(pairs[0][1]) else 'a different %s' % name
+        if not write:
+            rows.append(dict(row, ok=True, old=old, new='%s installed (dry run)' % name))
+            continue
+        try:
+            for s, d in stale:                    # temp + replace: never a half-written bank
+                shutil.copyfile(s, d + '.tmp')
+                os.replace(d + '.tmp', d)
+        except PermissionError:
+            rows.append(dict(row, ok=False, reason='%s is in use -- MCC holds it while a %s map '
+                             'is loaded; leave the map and patch again' % (name, game)))
+            continue
+        except Exception as e:
+            rows.append(dict(row, ok=False, reason='could not write: %s' % e))
+            continue
+        bad = [d for s, d in pairs if not _same(s, d)]
+        rows.append(dict(row, ok=not bad, old=old, new='%s installed' % name,
+                         reason=('written, but %s does not read back' % bad) if bad else None))
+    return rows
 
 
 # ---- Halo 1: the classic FMOD bank (h1_fsb.py) --------------------------------------
@@ -377,11 +443,14 @@ def retimed_anim_sound(m, game, port, group, mult):
     return dict(row, ok=True, new='%s (%d animation(s))' % (row['new'], changed))
 
 
+ALL_GAMES = tuple(PACKAGES) + FMOD_GAMES
+
+
 def problems(mcc_root, volume=None):
     """Validator: a port bank missing from (or stale in) a live package. Pass the same
     `volume` the patch used, or a turned bank reads as stale."""
     out = []
-    for game in PACKAGES:
+    for game in ALL_GAMES:
         for r in ensure(game, mcc_root, write=False, volume=volume):
             if not r.get('ok'):
                 out.append('sound %s: %s' % (r['field'], r.get('reason')))
@@ -404,7 +473,7 @@ def main():
             print(' ', p)
         print('%d sound problem(s)' % len(found))
         sys.exit(1 if found else 0)
-    for game in PACKAGES:
+    for game in ALL_GAMES:
         for r in ensure(game, a.mcc, write=a.write, backup_dir=a.backup_dir):
             state = 'skip' if r.get('skip') else ('ok' if r['ok'] else 'FAIL')
             print('%-5s %-34s %s' % (state, r['field'], r.get('reason') or
