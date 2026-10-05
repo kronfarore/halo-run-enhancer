@@ -316,6 +316,18 @@ H3_T, H3_S, H3_F, H3_M = h3_family(H3EK, 'halo3', ['010_jungle'], 'Halo3', 'h3',
 ODST_T, ODST_S, ODST_F, ODST_M = h3_family(H3ODSTEK, 'halo3odst', ['sc150'], 'Halo3ODST', 'odst',
                                            'levels/atlas/sc150/sc150.scenario')
 
+# --- STEP 4b, the fields no card covers (port_field_audit.py, 2026-10-05) -------------
+# the audit + the before/after proof in every profile; each game's writer beside it
+FIELD_SCRIPTS = ('port_field_audit.py', 'kit_tag_diff.py', 'h4_weapon_diff.py')
+SCRIPTS += FIELD_SCRIPTS + ('saw_port_values.py', 'make_port_catalog.py')
+H2_SCRIPTS += FIELD_SCRIPTS + ('h2_saw_yardstick.py', 'h2_saw_numbers.py', 'h2_tagfield.py',
+                               'h2_tagfield_offsets.json', 'make_port_catalog_h2.py',
+                               'h2_saw_weapon.py')
+REACH_SCRIPTS += FIELD_SCRIPTS + ('reach_saw_tag_numbers.py',)
+H3_SCRIPTS += FIELD_SCRIPTS + ('h3_saw_tag_numbers.py', 'make_port_catalog_h3.py',
+                               'make_port_catalog_odst.py', 'balance_port.py')
+H4_SCRIPTS += FIELD_SCRIPTS
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},

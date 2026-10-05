@@ -43,6 +43,7 @@ quietly shipped without the last three until the user caught it:
 | 2 | textures / shaders | done | done |
 | 3 | its own projectile + damage effect AND the weapon names them (H1: its own melee too) -- `port_refs_audit.py` | done | done |
 | 4 | numbers: the source game's values in the tags | done | done |
+| 4b | the fields NO card covers: `port_field_audit.py` shows nothing left to port | done | done |
 | 5 | balance rows, with per-game field coverage audited | done | done |
 | 6 | ammo pickup: which item tops it up (a port has none of its own) | done | n/a |
 | 7 | ammo meter / HUD readout sized for the port's magazine | done | done |
@@ -74,7 +75,10 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    PORT_SOUNDS, e.g. 0.02, never one another port uses) and its sounds set to gain -3
    minus it before the build; `python port_volume.py --game "<game>" --map <map>` on the
    rebuilt map must list the entries with no SHARED and headroom 3.
-6. Step 10 checks on the REBUILT map: `python port_sound_refs.py --game "<game>"` -- every
+6. Step 4b: `python port_field_audit.py --game <h1|h2|h3|odst|reach>` -- list 2 must say
+   "0 to port"; lists 4/5 hold only what was KEPT on purpose (written down in the
+   game's writer). Every tag write is proven with `kit_tag_diff.py <kit> snap|diff`.
+7. Step 10 checks on the REBUILT map: `python port_sound_refs.py --game "<game>"` -- every
    fire / dry / animation sound names the port's own folder; Halo 3 / ODST / Reach: the
    installed `<game>\fmod\pc\sfx.<suffix>.fsb` equals the kit's and holds every hash the
    map names; Halo 1 / Halo 4: `python port_sounds.py --check`.
@@ -155,7 +159,8 @@ What it chains, and what each piece is for:
    `h1_saw_sounds.py --write` runs BEFORE `saw_anims.py` (**step 10**: its own sounds; the
    animations only name them once the tags exist), and after the deploy
    `..\port_sounds.py --write` puts the audio into the FMOD bank MCC actually plays.
-6. `saw_port_values.py --write` — **step 4**: the port's own Halo 4 numbers into its
+6. `saw_port_values.py --write` — **step 4** (its `EXTRA` list = step 4b, the fields no
+   card covers): the port's own Halo 4 numbers into its
    Halo 1 tags, so the map ships the SAW and the patcher applies the balance on top.
    Both halves read the same `balance_SAW_Halo4_to_Halo1.json`, one taking `original`
    and the other `balanced`, so they cannot drift. **Assembly's units are not
@@ -214,6 +219,8 @@ Halo 3 has no single orchestrator; the order is:
     h3_build_map.py         build
     h3_saw_deploy.py        install + baseline, and --check
     h3_apply_saw_numbers.py balance rows onto the map
+    h3_saw_tag_numbers.py   the port's own H4 numbers + step 4b fields (PORT_EK=h3)
+    port_field_audit.py --game h3   nothing left to port            (step 4b)
 
 ### The traps, each of which cost a build
 
@@ -313,7 +320,8 @@ Every tool takes the kit from `PORT_EK`, so set it once:
     h3_saw_wire_model.py    fp model                                      (step 1)
     h3_region_name.py       'default' -> 'standard' on all FOUR models -- LAST, because
                             the two wiring steps re-render
-    h3_saw_tag_numbers.py   the port's own H4 numbers into its tags       (step 4)
+    h3_saw_tag_numbers.py   the port's own H4 numbers into its tags       (step 4, 4b)
+    port_field_audit.py --game odst   nothing left to port              (step 4b)
     h3_saw_chud.py          clone the chud, low-ammo 18                   (step 7)
     h3_sprite_box.py        give a spare sprite a REAL box on blank canvas (steps 7, 8)
     h3_meter_art.py         the 72-tick meter, sprite 1                   (step 7)
@@ -987,7 +995,8 @@ up front.
     reach_saw_textures.py --write     the H4 skin into both shaders       (step 2)
     tool render ... final             a THIRD time, for the same reason
     balance_port.py SAW "Assault Rifle" "Halo 4" "Halo Reach"           (the table)
-    reach_saw_tag_numbers.py --write  the H4 numbers into the tags        (step 4)
+    reach_saw_tag_numbers.py --write  the H4 numbers into the tags        (step 4, 4b)
+    port_field_audit.py --game reach  nothing left to port              (step 4b)
     saw_port_sounds.py --game reach --write  own sounds + graphs + bank   (step 10, later)
 
 Six tags, every chunk tree spanning its file, every reference resolving:
