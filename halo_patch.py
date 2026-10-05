@@ -2374,6 +2374,410 @@ def _apply_fog(m, game, registry):
     return out
 
 
+# "Schism": Betrayal for everyone ELSE on your side. Every non-human squad a level allies
+# with the player -- the Arbiter levels' Covenant in Halo 2, Halo 3's Elites, allied
+# Sentinels and the Flood of 100, ODST's Engineers, Halo 4's Sentinels -- turns on you.
+#
+# No game has a tag-side alliance table: teams are hostile unless the level's script
+# allies them (`ai_allegiance`), so "allied" is read from the compiled scripts with
+# enemy_count's helpers, and the squad's Team is rewritten to a team no script allies
+# with the player. A squad counts when every character in it is non-human, none is a
+# story character (Arbiter, Monitor, the freed Engineer...) and its team -- its own, or
+# its characters' biped team when the squad leaves Team at Default -- is one the player
+# is allied with on this map.
+#
+# Target team: Halo 1 Covenant (the Unused slots' hostility is untested); Halo 2/3/ODST
+# Heretic; Halo 4 Mule (no Halo 4 map uses it; Brute is Betrayal's, Spare is allied on
+# m80). Halo 4's Sentinels also get the hostile-sentinels recipe, without which a hostile
+# Sentinel never leaves its spawn (it is built as a flyer). Reach fields no non-human ally.
+_SCHISM_TEAM = {'Halo 1': 3, 'Halo 2': 6, 'Halo 3': 6, 'Halo 3: ODST': 6, 'Halo 4': 5}
+
+
+def _player_friends(m, game, names, ids):
+    """(teams the player is allied with on this map, each palette character's biped team).
+    No game has a tag-side alliance table, so the allies come from the level's compiled
+    `ai_allegiance` calls (minus `ai_allegiance_remove`), read by enemy_count."""
+    import enemy_count as ec
+    if game == 'Halo 2':
+        byidx = {x['index']: x for x in m.tags}
+        return ec.h2_friend_teams(m), [ec._char_team(m, byidx, byidx.get(i & 0xFFFF))
+                                       if i != 0xFFFFFFFF else None for i in ids]
+    t = None if game == 'Halo 4' else ec._tree(m, game)
+    refs = ec.h3_script_refs(m, t, game)
+    tn = (ec.CELL_LAYOUT[game]['teams'] if game in ec.CELL_LAYOUT
+          and ec.CELL_LAYOUT[game]['teams'] else ec.TEAM_NAMES)
+    by_name = {tn[k]: k for k in range(len(tn))}
+    removed = ({b for a, b in refs['removed'] if a == 'player'}
+               | {a for a, b in refs['removed'] if b == 'player'})
+    friends = {ec.TEAM_PLAYER} | {by_name[n] for n in (
+        ({b for a, b in refs['allied'] if a == 'player'}
+         | {a for a, b in refs['allied'] if b == 'player'}) - removed) if n in by_name}
+    team_at = ec.CELL_LAYOUT[game]['team'] if game in ec.CELL_LAYOUT else ec.H3_BIPD_TEAM
+    return friends, [ec._h3_char_team(m, n, team_at=team_at) for n in names]
+
+
+def _schism_loyal(name):
+    import enemy_count as ec
+    return _is_loyal_tag(name) or ec._is_boss(name)
+
+
+def _apply_schism(m, game, registry):
+    import enemy_count as ec
+    ref = {'effect': 'Schism'}
+    team = _SCHISM_TEAM.get(game)
+    if team is None:
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': f'{game} fields no non-human allies'}]
+    scnr_base = _scnr_base(m)
+    if scnr_base is None:
+        return [{**ref, 'ok': False, 'reason': 'scenario tag unavailable'}]
+    out, flipped = [], []
+    if game == 'Halo 1':
+        refs = ec.h1_script_refs(m)
+        allied = ({b for a, b in refs['allegiance'] if a == 'player'}
+                  | {a for a, b in refs['allegiance'] if b == 'player'})
+        # Halo 1's allegiance calls are not trustworthy: c10 allies the player with the
+        # Flood at startup and the removal is commented out, yet the Flood attacks. Only
+        # the Sentinels (c10, c20) are real allies -- enemy_count's rule too.
+        allied &= {'sentinel'}
+        species = []
+        for el in m.follow_all(scnr_base, [0x420], [0x10], 'all'):
+            ident = struct.unpack_from('<I', m.data, el + 0xC)[0]
+            name = _tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
+            found = m.find_tags('actv', name) if name else []
+            u = m.u32(found[0][1] + ec.H1_ACTV_UNIT + 0xC) if found else 0xFFFFFFFF
+            unit = (_tag_name_by_id(m, u) if u != 0xFFFFFFFF else None) or name
+            species.append((name, unit))
+        for e in m.follow_all(scnr_base, [0x42C], [0xB0], 'all'):
+            kinds = set()
+            for sq in m.follow_all(e, [0x80], [0xE8], 'all'):
+                ati = struct.unpack_from('<h', m.data, sq + 0x20)[0]
+                if 0 <= ati < len(species) and species[ati][0]:
+                    kinds.add(species[ati])
+            if not kinds or any(_is_human_tag(n) or ec._is_human(u) or _schism_loyal(n)
+                                or _schism_loyal(u) for n, u in kinds):
+                continue
+            et = struct.unpack_from('<h', m.data, e + 0x24)[0]
+            if et:
+                sides = {ec.TEAM_NAMES[et]} if et < len(ec.TEAM_NAMES) else set()
+            else:
+                sides = {'sentinel' if ec.species(u).startswith('sentinel') else
+                         'flood' if ec.species(u).startswith('flood') else 'covenant'
+                         for _n, u in kinds}
+            if et == ec.TEAM_PLAYER or (sides & allied):
+                struct.pack_into('<h', m.data, e + 0x24, team)
+                flipped.append(_cstr_at(m, e))
+        label = 'encounters'
+    else:
+        lay = _BETRAYAL.get(game)
+        if not lay:
+            return [{**ref, 'ok': False, 'reason': f'not supported in {game}'}]
+        poff, pel = lay['palette']
+        names = []
+        for el in m.follow_all(scnr_base, [poff], [pel], 'all'):
+            ident = struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0]
+            names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+        pal_ids = [struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0]
+                   for el in m.follow_all(scnr_base, [poff], [pel], 'all')]
+        friends, char_team = _player_friends(m, game, names, pal_ids)
+        soff, sel = lay['squads']
+        for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
+            if lay.get('cells'):
+                idxs = _odst_squad_chars(m, sq, lay)
+            elif lay['fireteams']:
+                foff, fel = lay['fireteams']
+                idxs = [struct.unpack_from('<h', m.data, ft + lay['char_idx'])[0]
+                        for ft in m.follow_all(sq, [foff], [fel], 'all')]
+            else:
+                idxs = [struct.unpack_from('<h', m.data, sq + lay['char_idx'])[0]]
+            idxs = [i for i in idxs if 0 <= i < len(names) and names[i]]
+            kinds = {names[i] for i in idxs}
+            if not kinds or any(_is_human_tag(k) or ec._is_human(k) or _schism_loyal(k)
+                                or ec.species(k) in ec.ALLY_SPECIES for k in kinds):
+                continue
+            steam = struct.unpack_from('<h', m.data, sq + lay['team'])[0]
+            sides = {steam} if steam else {char_team[i] for i in idxs}
+            if sides & friends:
+                struct.pack_into('<h', m.data, sq + lay['team'], team)
+                flipped.append(_cstr_at(m, sq))
+        label = 'squads'
+    if game == 'Halo 4':
+        out += _h4_hostile_sentinels(m, game)
+    out.insert(0, {**ref, 'field': f'Squad Team ({label})', 'ok': True,
+                   'old': 'as the map defines',
+                   'new': f'{len(flipped)} allied {label} -> team {team}',
+                   'detail': ', '.join(flipped[:12]) + ('…' if len(flipped) > 12 else '')})
+    return out
+
+
+# "Thunderstorm" (this toolkit's version): enemies are promoted a SPECIES up its faction's
+# ladder, not a rank -- every squad's character moves to the next tier that this map's
+# character palette holds. A tier with nothing in the palette is skipped; the top tier
+# stays. User's ladders (2026-10-05):
+#   Covenant    Grunt -> Jackal / Drone / Skirmisher -> Elite / Brute -> Hunter
+#   Flood       Infection -> Carrier -> Combat -> Pure (Halo 3's pure forms)
+#   Prometheans Crawler -> Watcher -> Knight
+# A tier with several species takes them in the ladder's order (Jackal, then Skirmisher,
+# then Drone) -- and for Elite / Brute the game's own line first: Brutes in Halo 3 and
+# ODST, Elites elsewhere. Within the target species the source's RANK word
+# (minor, major, ultra, captain...) is kept when the palette has it, else the plain one.
+#
+# A target must be an ENEMY on this map: from Halo 2 on a character's team comes from its
+# biped, and Halo 3's Elites are on the Covenant team the player is allied with -- a
+# Jackal promoted to an Elite there would quietly become a friend. Bosses, story
+# characters and humans are never promoted, and squads / fire-teams / cells that spawn in
+# a vehicle are left alone (a Grunt's turret seat is no Hunter's).
+#
+# Weapons: Halo 2 on name a weapon per squad / location almost every time, and a Grunt's
+# plasma pistol in a Hunter's hands is nonsense, so every promoted entry's Initial Weapon
+# indices are reset to -1 = the character's own default. Halo 1 carries the weapon in the
+# actor variant, so nothing to do there.
+#
+# RESIDENCY IS NOT CHECKED. Halo 1 and 2 load the whole palette; from Halo 3 on a target
+# that is not resident in a zone set will fail to spawn there (or worse) -- untested.
+_TS_TIERS = (
+    ('covenant', ((1, ('grunt',)), (2, ('jackal', 'skirmisher', 'bugger')),
+                  (3, ('elite', 'brute')), (4, ('hunter',)))),
+    ('flood', ((1, ('infection',)), (2, ('carrier',)), (3, ('combat',)),
+               (4, ('pure', 'ranged', 'tank', 'stalker')))),
+    ('promethean', ((1, ('pawn', 'crawler')), (2, ('bishop', 'watcher')),
+                    (3, ('knight',)))),
+)
+_TS_PREFER = {'Halo 3': 'brute', 'Halo 3: ODST': 'brute'}
+_TS_RANKS = ('minor', 'major', 'ultra', 'captain', 'general', 'zealot', 'ranger', 'spec_ops',
+             'stealth', 'commander', 'chieftain', 'heavy', 'sniper', 'officer')
+# Per game: where a squad unit names its character, its weapons and its vehicle.
+_TS_LAYOUT = {
+    'Halo 2': {'squad': {'char': 0x36, 'weap': (0x3C, 0x3E), 'veh': 0x34},
+               'locs': ((0x48, 0x64), {'char': 0x20, 'weap': (0x22, 0x24), 'veh': 0x28})},
+    'Halo 3': {'fireteams': ((0x30, 0x60), {'char': 0x8, 'weap': (0xA, 0xC), 'veh': 0x12}),
+               'ft_locs': ((0x54, 0x88), {'char': 0x28, 'weap': (0x2A, 0x2C), 'veh': 0x30})},
+    'Halo 3: ODST': {'spawns': ((0x3C, 0x90), {'char': 0x32, 'weap': (0x34, 0x36)}),
+                     'cells': (((0x54, 0x84), (0x60, 0x84)), (0x14, 0x10, 0xC),
+                               ((0x20, 0x10, 0xC), (0x2C, 0x10, 0xC)), 0x46)},
+    'Halo Reach': {'spawns': ((0x3C, 0x7C), {'char': 0x32, 'weap': (0x34, 0x36)}),
+                   'cells': (((0x54, 0x6C), (0x60, 0x6C)), (0x14, 0x10, 0xC),
+                             ((0x20, 0x10, 0xC), (0x2C, 0x10, 0xC)), 0x46)},
+    'Halo 4': {'spawns': ((0x3C, 0x7C), {'char': 0x2E, 'weap': (0x30, 0x32)}),
+               'cells': (((0x54, 0x64), (0x60, 0x64)), (0xC, 0x8, 0x4),
+                         ((0x18, 0x8, 0x4), (0x24, 0x8, 0x4)), 0x3E)},
+}
+
+
+def _ts_tier(species):
+    sp = (species or '').lower()
+    # The Flood ladder only for Flood species, and only it: `floodcombat elite` is no
+    # Elite, and Halo 3's `brute_stalker` is no Flood stalker.
+    flood = 'flood' in sp
+    for faction, tiers in _TS_TIERS:
+        if (faction == 'flood') != flood:
+            continue
+        for tier, words in tiers:
+            if any(w in sp for w in words):
+                return faction, tier
+    return None, None
+
+
+def _ts_rank(name):
+    leaf = (name or '').lower().rsplit(chr(92), 1)[-1]
+    return next((r for r in _TS_RANKS if r in leaf), None)
+
+
+def _ts_promotions(game, entries):
+    """{palette index: palette index} from [(name, species, eligible_target)]."""
+    by_tier = {}
+    for i, (name, sp, ok) in enumerate(entries):
+        f, t = _ts_tier(sp)
+        if f and ok:
+            by_tier.setdefault((f, t), []).append(i)
+    prefer = _TS_PREFER.get(game)
+    out = {}
+    for i, (name, sp, ok) in enumerate(entries):
+        f, t = _ts_tier(sp)
+        if not f or not name:
+            continue
+        ups = sorted(k[1] for k in by_tier if k[0] == f and k[1] > t)
+        if not ups:
+            continue
+        cands = by_tier[(f, ups[0])]
+        # within a tier the ladder's own order decides (a Grunt becomes a Jackal before
+        # a Drone), unless the game's line says otherwise (Brute before Elite in H3/ODST)
+        words = dict(dict(_TS_TIERS)[f])[ups[0]]
+        species_there = sorted({entries[j][1] for j in cands}, key=lambda s: (
+            not (prefer and prefer in s),
+            next((k for k, w in enumerate(words) if w in s), len(words)), s))
+        pool = [j for j in cands if entries[j][1] == species_there[0]]
+        rank = _ts_rank(name)
+        same = [j for j in pool if _ts_rank(entries[j][0]) == rank]
+        plain = [j for j in pool if _ts_rank(entries[j][0]) is None]
+        pick = (same or plain or pool)
+        out[i] = min(pick, key=lambda j: len(entries[j][0]))
+    return out
+
+
+def _apply_thunderstorm(m, game, registry):
+    import enemy_count as ec
+    ref = {'effect': 'Thunderstorm'}
+    scnr_base = _scnr_base(m)
+    if scnr_base is None:
+        return [{**ref, 'ok': False, 'reason': 'scenario tag unavailable'}]
+
+    def i16(o):
+        return struct.unpack_from('<h', m.data, o)[0]
+
+    def put(o, v):
+        struct.pack_into('<h', m.data, o, v)
+
+    moved = {}
+
+    def note(old, new):
+        k = '%s->%s' % (ec.species(old), ec.species(new))
+        moved[k] = moved.get(k, 0) + 1
+
+    if game == 'Halo 1':
+        names, units = [], []
+        for el in m.follow_all(scnr_base, [ec.H1_PALETTE], [ec.H1_PAL_SZ], 'all'):
+            ident = m.u32(el + ec.H1_PAL_ID)
+            name = _tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
+            found = m.find_tags('actv', name) if name else []
+            u = m.u32(found[0][1] + ec.H1_ACTV_UNIT + 0xC) if found else 0xFFFFFFFF
+            units.append((_tag_name_by_id(m, u) if u != 0xFFFFFFFF else None) or name)
+            names.append(name)
+        ok = [bool(n) and not ec._is_human(u) and not ec._is_boss(n) and not ec._is_boss(u)
+              for n, u in zip(names, units)]
+        promo = _ts_promotions(game, [(n, ec.species(u), o)
+                                      for n, u, o in zip(names, units, ok)])
+        promo = {k: v for k, v in promo.items() if ok[k]}
+        for e in m.follow_all(scnr_base, [ec.H1_ENCOUNTERS], [ec.H1_ENC_SZ], 'all'):
+            for sq in m.follow_all(e, [ec.H1_SQUADS], [ec.H1_SQ_SZ], 'all'):
+                a = i16(sq + ec.H1_ACTOR)
+                if a in promo:
+                    put(sq + ec.H1_ACTOR, promo[a])
+                    note(units[a], units[promo[a]])
+                for loc in m.follow_all(sq, [ec.H1_LOCS], [ec.H1_LOC_SZ], 'all'):
+                    o = i16(loc + ec.H1_LOC_ACTOR)
+                    if o in promo:
+                        put(loc + ec.H1_LOC_ACTOR, promo[o])
+                        note(units[o], units[promo[o]])
+    else:
+        lay = _BETRAYAL.get(game)
+        ts = _TS_LAYOUT.get(game)
+        if not lay or not ts:
+            return [{**ref, 'ok': False, 'reason': f'not supported in {game}'}]
+        poff, pel = lay['palette']
+        pal_els = m.follow_all(scnr_base, [poff], [pel], 'all')
+        ids = [struct.unpack_from('<I', m.data, el + lay['pal_id_at'])[0] for el in pal_els]
+        names = [_tag_name_by_id(m, i) if i != 0xFFFFFFFF else None for i in ids]
+        friends, char_team = _player_friends(m, game, names, ids)
+        ok = [bool(n) and not ec._is_human(n) and not _is_human_tag(n) and not ec._is_boss(n)
+              and not _is_loyal_tag(n) and (char_team[k] not in friends)
+              for k, n in enumerate(names)]
+        promo = {k: v for k, v in _ts_promotions(
+            game, [(n, ec.species(n), o) for n, o in zip(names, ok)]).items() if ok[k]}
+
+        def unit(base, spec):
+            """Promote one squad / fire-team / location / spawn point in place."""
+            if 'veh' in spec and i16(base + spec['veh']) >= 0:
+                return
+            c = i16(base + spec['char'])
+            if c in promo:
+                put(base + spec['char'], promo[c])
+                for w in spec['weap']:
+                    put(base + w, -1)
+                note(names[c], names[promo[c]])
+
+        soff, sel = lay['squads']
+        seen_cells = set()
+        for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
+            if 'squad' in ts:
+                unit(sq, ts['squad'])
+                (lo, le), spec = ts['locs']
+                for loc in m.follow_all(sq, [lo], [le], 'all'):
+                    unit(loc, spec)
+            if 'fireteams' in ts:
+                (fo, fe), fspec = ts['fireteams']
+                (lo, le), lspec = ts['ft_locs']
+                for ft in m.follow_all(sq, [fo], [fe], 'all'):
+                    unit(ft, fspec)
+                    for loc in m.follow_all(ft, [lo], [le], 'all'):
+                        unit(loc, lspec)
+            if 'spawns' in ts:
+                (so, se), spec = ts['spawns']
+                for sp in m.follow_all(sq, [so], [se], 'all'):
+                    unit(sp, spec)
+                cells, (co, ce, cx), weaps, veh = ts['cells']
+                for off, esz in cells:
+                    for cell in m.follow_all(sq, [off], [esz], 'all'):
+                        if cell in seen_cells:          # ODST/Reach share cell blocks
+                            continue
+                        seen_cells.add(cell)
+                        if i16(cell + veh) >= 0:
+                            continue
+                        hit = False
+                        for ct in m.follow_all(cell, [co], [ce], 'all'):
+                            c = i16(ct + cx)
+                            if c in promo:
+                                put(ct + cx, promo[c])
+                                note(names[c], names[promo[c]])
+                                hit = True
+                        if hit:
+                            for wo, we, wx in weaps:
+                                for w in m.follow_all(cell, [wo], [we], 'all'):
+                                    put(w + wx, -1)
+    if not moved:
+        return [{**ref, 'ok': True, 'skip': True,
+                 'reason': 'no enemy here has a higher tier in this map\'s palette'}]
+    return [{**ref, 'field': 'Squad characters (species promotion)', 'ok': True,
+             'old': 'as the map defines',
+             'new': ', '.join('%s x%d' % kv for kv in sorted(moved.items()))}]
+
+
+# "Famine": weapons dropped by the AI carry half the ammo. Every character's Weapons
+# Properties (Halo 1: every actor variant) holds two ranges: Drop Weapon Loaded (fraction
+# of a magazine -- and the charge of an energy weapon, which has no separate battery
+# field) and Drop Weapon Ammo (reserve rounds; ignored for energy weapons). Both ends of
+# both ranges are halved on EVERY char tag, not just ai\generic: Grunts, Jackals and the
+# Flood define their own block and would be missed (the Dropped Ammo card's gap). Halo 3
+# and ODST ship Ammo 0 = "weapon default", which stays 0 -- there only the magazine
+# moves. Allies' drops are halved too, as the real skull does.
+_FAMINE_FACTOR = 0.5
+_FAMINE_FIELDS = ('Drop Weapon Loaded', 'Drop Weapon Loaded Max',
+                  'Drop Weapon Ammo', 'Drop Weapon Ammo Max')
+
+
+def _apply_famine(m, game, registry):
+    ref = {'effect': 'Famine'}
+    cls = 'actv' if game == 'Halo 1' else 'char'
+    plugin = registry.get(cls)
+    if plugin is None:
+        return [{**ref, 'ok': False, 'reason': 'no %s plugin' % cls}]
+    flds = [f for f in (plugin.find(n) for n in _FAMINE_FIELDS) if f]
+    if len(flds) != len(_FAMINE_FIELDS):
+        return [{**ref, 'ok': False, 'reason': 'drop fields not in the %s plugin' % cls}]
+    writes, touched = 0, 0
+    for _name, base in m.find_tags(cls, '*'):
+        hit = False
+        for f in flds:
+            fmt, _ = hm.TYPE_FMT[f['type']]
+            for el in m.follow_all(base, f['block_offsets'], f['block_sizes'], 'all'):
+                off = el + f['offset']
+                v = struct.unpack_from(fmt, m.data, off)[0]
+                if not v:
+                    continue
+                nv = v * _FAMINE_FACTOR
+                if isinstance(v, int):
+                    nv = int(round(nv))
+                struct.pack_into(fmt, m.data, off, nv)
+                writes += 1
+                hit = True
+        touched += hit
+    if not writes:
+        return [{**ref, 'ok': False, 'reason': 'no character defines drop ammo here'}]
+    return [{**ref, 'tag': cls + ' *', 'field': 'Drop Weapon Loaded / Ammo (both ends)',
+             'ok': True, 'old': 'as the map defines',
+             'new': 'x%g on %d tag(s), %d value(s)' % (_FAMINE_FACTOR, touched, writes)}]
+
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -8521,6 +8925,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_tilt(m, str(game).strip(), registry))
         elif s == 'fog':
             results.extend(_apply_fog(m, str(game).strip(), registry))
+        elif s == 'schism':
+            results.extend(_apply_schism(m, str(game).strip(), registry))
+        elif s == 'thunderstorm':
+            results.extend(_apply_thunderstorm(m, str(game).strip(), registry))
+        elif s == 'famine':
+            results.extend(_apply_famine(m, str(game).strip(), registry))
     # (effect name, tag) of every card for which "not present in this map" is an
     # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
     # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).

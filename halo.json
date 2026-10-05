@@ -25484,6 +25484,30 @@
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": "MCC process",
 			"targets": []
+		},
+		"Schism": {
+			"desc": "Your non-human allies turn on you. The Arbiter's Covenant, Halo 3's Elites, allied Sentinels, ODST's Engineers and Halo 4's Sentinels all join a third side.",
+			"debug_desc": "Rewrites the Team of every non-human squad the level's scripts ally with the player (ai_allegiance, minus ai_allegiance_remove; no game has a tag-side alliance table) to a team no script allies with anyone: Halo 1 Covenant (only the Sentinels of c10/c20 -- Halo 1's Flood allegiance is a script artefact), Halo 2/3/ODST Heretic, Halo 4 Mule plus the hostile-Sentinels recipe (a hostile Sentinel never leaves its spawn without it). Story characters stay: the Arbiter, the Monitor, the freed Engineer. Reach fields no non-human ally, so it is not offered there. Untested in game.",
+			"skull": "schism",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 4"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"Thunderstorm": {
+			"desc": "Every enemy is promoted one species up its ladder: Grunts become Jackals, Jackals Elites or Brutes, Elites Hunters; Infection Forms become Carriers, Carriers Combat Forms; Crawlers become Watchers, Watchers Knights.",
+			"debug_desc": "Repoints each squad / fire-team / location / cell character to the next tier this map's character palette holds (a missing tier is skipped, the top tier stays): Covenant Grunt > Jackal/Drone/Skirmisher > Elite/Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3); Prometheans Crawler > Watcher > Knight. The source's rank word is kept when the target has it. Targets must be enemies on this map (Halo 3's allied Elites are not targets), bosses/story characters/humans and vehicle crews are never promoted, and every promoted entry's Initial Weapon becomes -1 (the character's own). RESIDENCY IS NOT CHECKED: from Halo 3 on a target not resident in a zone set may fail to spawn. Untested in game.",
+			"skull": "thunderstorm",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"Famine": {
+			"desc": "Dropped weapons carry half the ammo.",
+			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first).",
+			"skull": "famine",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv", "Halo 2": "char"},
+			"targets": []
 		}
 	},
 	"Friend modifiers": {
