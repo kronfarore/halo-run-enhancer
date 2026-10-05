@@ -1997,7 +1997,10 @@ _BETRAYAL_LOYAL = (
 
 
 def _is_loyal_tag(name):
-    return bool(name) and any(w in name.lower() for w in _BETRAYAL_LOYAL)
+    # never a Covenant/Flood/Sentinel species: 'captain' is Keyes, not brute_captain
+    low = (name or '').lower()
+    return bool(name) and not any(w in low for w in _NONHUMAN_WORDS) and \
+        any(w in low for w in _BETRAYAL_LOYAL)
 
 
 def _is_human_tag(name):
@@ -2616,13 +2619,13 @@ _TS_LAYOUT = {
                'locs': ((0x48, 0x64), {'char': 0x20, 'weap': (0x22, 0x24), 'veh': 0x28})},
     'Halo 3': {'fireteams': ((0x30, 0x60), {'char': 0x8, 'weap': (0xA, 0xC), 'veh': 0x12}),
                'ft_locs': ((0x54, 0x88), {'char': 0x28, 'weap': (0x2A, 0x2C), 'veh': 0x30})},
-    'Halo 3: ODST': {'spawns': ((0x3C, 0x90), {'char': 0x32, 'weap': (0x34, 0x36)}),
+    'Halo 3: ODST': {'spawns': ((0x3C, 0x90), {'char': 0x32, 'weap': (0x34, 0x36), 'veh': 0x3A}),
                      'cells': (((0x54, 0x84), (0x60, 0x84)), (0x14, 0x10, 0xC),
                                ((0x20, 0x10, 0xC), (0x2C, 0x10, 0xC)), 0x46)},
-    'Halo Reach': {'spawns': ((0x3C, 0x7C), {'char': 0x32, 'weap': (0x34, 0x36)}),
+    'Halo Reach': {'spawns': ((0x3C, 0x7C), {'char': 0x32, 'weap': (0x34, 0x36), 'veh': 0x3A}),
                    'cells': (((0x54, 0x6C), (0x60, 0x6C)), (0x14, 0x10, 0xC),
                              ((0x20, 0x10, 0xC), (0x2C, 0x10, 0xC)), 0x46)},
-    'Halo 4': {'spawns': ((0x3C, 0x7C), {'char': 0x2E, 'weap': (0x30, 0x32)}),
+    'Halo 4': {'spawns': ((0x3C, 0x7C), {'char': 0x2E, 'weap': (0x30, 0x32), 'veh': 0x36}),
                'cells': (((0x54, 0x64), (0x60, 0x64)), (0xC, 0x8, 0x4),
                          ((0x18, 0x8, 0x4), (0x24, 0x8, 0x4)), 0x3E)},
 }
@@ -2645,9 +2648,10 @@ def _ts_rank(name):
     return next((r for r in _TS_RANKS if r in leaf), None)
 
 
-def _ts_moves(game, entries, up, down):
+def _ts_moves(game, entries, up, down, allowed=None):
     """{palette index: palette index} from [(name, species, eligible)] -- `up` / `down`
-    are the family names whose Thunderstorm / Downpour is active."""
+    are the family names whose Thunderstorm / Downpour is active. `allowed(src, dst)`
+    may veto a target (residency); the next tier in that direction is tried then."""
     fam_of = [_ts_family(sp) for _n, sp, _ok in entries]
     targets = {}
     for i, ((name, sp, ok), (fam, fac, tier)) in enumerate(zip(entries, fam_of)):
@@ -2664,16 +2668,20 @@ def _ts_moves(game, entries, up, down):
             continue
         tiers = sorted((t for f, t in targets if f == fac and (t - tier) * step > 0),
                        key=lambda t: abs(t - tier))
-        if not tiers:
-            continue
-        cands = targets[(fac, tiers[0])]
-        fams = sorted({fam_of[j][0] for j in cands},
-                      key=lambda f: (f != prefer, order.index(f)))
-        pool = [j for j in cands if fam_of[j][0] == fams[0]]
-        rank = _ts_rank(name)
-        same = [j for j in pool if _ts_rank(entries[j][0]) == rank]
-        plain = [j for j in pool if _ts_rank(entries[j][0]) is None]
-        out[i] = min(same or plain or pool, key=lambda j: len(entries[j][0]))
+        # the NEAREST tier the palette holds, or nothing: a residency veto never sends a
+        # Grunt past the Jackals to the Elites (user, Halo 4 test 2026-10-05)
+        for t in tiers[:1]:
+            cands = [j for j in targets[(fac, t)] if allowed is None or allowed(i, j)]
+            if not cands:
+                continue
+            fams = sorted({fam_of[j][0] for j in cands},
+                          key=lambda f: (f != prefer, order.index(f)))
+            pool = [j for j in cands if fam_of[j][0] == fams[0]]
+            rank = _ts_rank(name)
+            same = [j for j in pool if _ts_rank(entries[j][0]) == rank]
+            plain = [j for j in pool if _ts_rank(entries[j][0]) is None]
+            out[i] = min(same or plain or pool, key=lambda j: len(entries[j][0]))
+            break
     return out
 
 
@@ -2737,63 +2745,72 @@ def _apply_ladder(m, game, registry, up, down):
         ok = [bool(n) and not ec._is_human(n) and not _is_human_tag(n) and not ec._is_boss(n)
               and not _is_loyal_tag(n) and (char_team[k] not in friends)
               for k, n in enumerate(names)]
-        moves = _ts_moves(game, [(n, ec.species(n), o) for n, o in zip(names, ok)], up, down)
-        weapon_for = _ts_weapons(m, game, scnr_base, lay, ts, names)
+        moves = _ts_moves(game, [(n, ec.species(n), o) for n, o in zip(names, ok)], up, down,
+                          allowed=_ts_resident_gate(m, game, names))
+        units = _ts_units(m, game, scnr_base, lay, ts, moves, names)
+        weapon_for = _ts_weapon_table(units, names).bind(m)    # from the shipped arrays
+        if 'cells' in ts and moves:
+            # The tools store identical Character Type / Initial Weapon arrays ONCE, so a
+            # Grunt cell shares them with Phantom passengers and other species: give
+            # every cell that will move its own copies first, then read the units again.
+            _ts_unshare_cells(m, ts, units, moves)
+            units = _ts_units(m, game, scnr_base, lay, ts, moves, names)
 
-        def unit(base, spec):
-            """Move one squad / fire-team / location / spawn point in place."""
-            if base in done:
-                return
-            done.add(base)
-            if 'veh' in spec and i16(base + spec['veh']) >= 0:
-                return
-            c = i16(base + spec['char'])
-            if c in moves:
-                put(base + spec['char'], moves[c])
+        def write_char(addr, c):
+            if addr in done:                    # shared arrays: one write per field
+                return False
+            done.add(addr)
+            put(addr, moves[c])
+            note(names[c], names[moves[c]])
+            return True
+
+        def write_weap(addr, w):
+            if addr not in done:
+                done.add(addr)
+                put(addr, w)
+
+        # A cell weapon element is shared by every cell with the same loadout -- other
+        # species' cells, protected ones. It is rewritten only when ALL its users become
+        # the same new character; otherwise the promoted cells keep their weapon.
+        users = {}
+        for u in units:
+            if u['kind'] == 'cell':
+                for a_ in list(u['weap_at']) + list(u['weap2_at']):
+                    users.setdefault(a_, []).append(u)
+
+        def weap_free(a_, new):
+            return all(not x['protected'] and x['char'] in moves and moves[x['char']] == new
+                       for x in users.get(a_, ()))
+
+        for u in units:
+            if u['protected']:
+                continue
+            c = u['char']
+            if c not in moves:
+                continue
+            if u['kind'] == 'cell':
+                if not write_char(u['char_at'], c):
+                    continue
                 w = weapon_for(moves[c])
                 if w is not None:
-                    put(base + spec['weap'][0], w)
-                    put(base + spec['weap'][1], -1)
-                note(names[c], names[moves[c]])
-
-        soff, sel = lay['squads']
-        for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
-            if 'squad' in ts:
-                unit(sq, ts['squad'])
-                (lo, le), spec = ts['locs']
-                for loc in m.follow_all(sq, [lo], [le], 'all'):
-                    unit(loc, spec)
-            if 'fireteams' in ts:
-                (fo, fe), fspec = ts['fireteams']
-                (lo, le), lspec = ts['ft_locs']
-                for ft in m.follow_all(sq, [fo], [fe], 'all'):
-                    unit(ft, fspec)
-                    for loc in m.follow_all(ft, [lo], [le], 'all'):
-                        unit(loc, lspec)
-            if 'spawns' in ts:
-                (so, se), spec = ts['spawns']
-                for sp in m.follow_all(sq, [so], [se], 'all'):
-                    unit(sp, spec)
-                cells, (co, ce, cx), weaps, veh = ts['cells']
-                for off, esz in cells:
-                    for cell in m.follow_all(sq, [off], [esz], 'all'):
-                        if cell in done:
-                            continue
-                        done.add(cell)
-                        if i16(cell + veh) >= 0:
-                            continue
-                        new = None
-                        for ct in m.follow_all(cell, [co], [ce], 'all'):
-                            c = i16(ct + cx)
-                            if c in moves:
-                                put(ct + cx, moves[c])
-                                note(names[c], names[moves[c]])
-                                new = moves[c]
-                        w = weapon_for(new) if new is not None else None
-                        if w is not None:
-                            for wo, we, wx in weaps[:1]:
-                                for el in m.follow_all(cell, [wo], [we], 'all'):
-                                    put(el + wx, w)
+                    for a_ in u['weap_at']:
+                        if weap_free(a_, moves[c]):
+                            write_weap(a_, w)
+                    for a_ in u['weap2_at']:
+                        if weap_free(a_, moves[c]):
+                            write_weap(a_, -1)
+                continue
+            if not write_char(u['char_at'], c):
+                continue
+            w = weapon_for(moves[c])
+            if w is not None:
+                write_weap(u['weap_at'][0], w)
+                write_weap(u['weap_at'][1], -1)
+                # locations that inherit this unit's character (char -1) inherit its
+                # weapon too once theirs is -1 -- else a promoted Grunt fire-team's
+                # locations kept their needlers
+                for a_ in u.get('inherit_weap_at', ()):
+                    write_weap(a_, -1)
     if not moved:
         return [{**ref, 'ok': True, 'skip': True,
                  'reason': 'no picked enemy has a tier to move to in this map\'s palette'}]
@@ -2802,11 +2819,238 @@ def _apply_ladder(m, game, registry, up, down):
              'new': ', '.join('%s x%d' % kv for kv in sorted(moved.items()))}]
 
 
-def _ts_weapons(m, game, scnr_base, lay, ts, names):
-    """palette index -> the weapon to hand a unit that became that character, or None to
-    leave its weapon alone. PLACEHOLDER until the per-game weapon semantics are settled:
-    keeps the unit's own weapon (never -1, which left promoted units unarmed)."""
-    return lambda _c: None
+# Species that cannot take a dropship's passenger seats (their jmad lacks the seat's mode):
+# a squad the scripts load into a Phantom is not moved to one. Measured on the Phantom
+# seat labels: Halo 3 Jackals 26 of 42, Elites 5, Hunters 4, Drones 4; ODST Hunters 24 of
+# 54 (Grunts / Jackals / Brutes 48-50). Elsewhere unmeasured: Hunters only.
+_TS_NO_RIDE = {'Halo 3': ('jackal', 'elite', 'hunter', 'bugger')}
+_TS_NO_RIDE_DEFAULT = ('hunter',)
+
+
+def _ts_units(m, game, scnr_base, lay, ts, moves=None, names=None):
+    """Every place a squad names a character, as dicts: kind, char (the palette index the
+    entry resolves to -- a location with -1 inherits its squad's / fire-team's), char_at
+    (the field to write; None when inherited), weap_at, protected. Read entirely BEFORE
+    any write. Protected: spawns in a vehicle, or belongs to a squad the scripts load
+    into a vehicle when its move would seat a species that cannot ride (_TS_NO_RIDE),
+    and every shared array element such an entry reaches."""
+    import enemy_count as ec
+    no_ride = _TS_NO_RIDE.get(game, _TS_NO_RIDE_DEFAULT)
+
+    def i16(o):
+        return struct.unpack_from('<h', m.data, o)[0]
+    if game == 'Halo 2':
+        bound_idx, bound_names = ec.h2_vehicle_bound(m), set()
+    else:
+        t = None if game == 'Halo 4' else ec._tree(m, game)
+        bound_idx, bound_names = set(), set(ec.h3_script_refs(m, t, game)['bound'])
+    units, guarded = [], set()
+    soff, sel = lay['squads']
+    for si, sq in enumerate(m.follow_all(scnr_base, [soff], [sel], 'all')):
+        name = m.data[sq:sq + 0x20].split(bytes(1))[0].decode('latin-1').strip().lower()
+        loaded = si in bound_idx or name in bound_names
+
+        def held(c):
+            """A script-loaded entry stays only when its move would seat a non-rider."""
+            if not loaded:
+                return False
+            if not moves or c is None or c not in moves or not names:
+                return True
+            return any(w in (names[moves[c]] or '').lower() for w in no_ride)
+
+        def add(kind, base, spec, parent=None):
+            own = i16(base + spec['char'])
+            veh = 'veh' in spec and i16(base + spec['veh']) >= 0
+            bound = held(own if own >= 0 else parent)
+            u = {'kind': kind, 'char': own if own >= 0 else parent,
+                 'char_at': base + spec['char'] if own >= 0 else None,
+                 'weap_at': tuple(base + w for w in spec['weap']),
+                 'protected': bound or veh, 'inherit_weap_at': []}
+            if u['protected']:
+                guarded.add(base + spec['char'])
+            units.append(u)
+            return u
+        if 'squad' in ts:
+            top = add('squad', sq, ts['squad'])
+            (lo, le), spec = ts['locs']
+            for loc in m.follow_all(sq, [lo], [le], 'all'):
+                u = add('loc', loc, spec, parent=top['char'])
+                if u['char_at'] is None:
+                    top['inherit_weap_at'].append(loc + spec['weap'][0])
+        if 'fireteams' in ts:
+            (fo, fe), fspec = ts['fireteams']
+            (lo, le), lspec = ts['ft_locs']
+            for ft in m.follow_all(sq, [fo], [fe], 'all'):
+                top = add('fireteam', ft, fspec)
+                for loc in m.follow_all(ft, [lo], [le], 'all'):
+                    u = add('loc', loc, lspec, parent=top['char'])
+                    if u['char_at'] is None:
+                        top['inherit_weap_at'].append(loc + lspec['weap'][0])
+        if 'spawns' in ts:
+            (so, se), spec = ts['spawns']
+            for sp in m.follow_all(sq, [so], [se], 'all'):
+                add('spawn', sp, spec)
+            cells, (co, ce, cx), weaps, veh = ts['cells']
+            for off, esz in cells:
+                for cell in m.follow_all(sq, [off], [esz], 'all'):
+                    cveh = i16(cell + veh) >= 0
+                    (wo, we, wx), (wo2, we2, wx2) = weaps
+                    w1 = [el + wx for el in m.follow_all(cell, [wo], [we], 'all')]
+                    w2 = [el + wx2 for el in m.follow_all(cell, [wo2], [we2], 'all')]
+                    for ct in m.follow_all(cell, [co], [ce], 'all'):
+                        bound = held(i16(ct + cx))
+                        u = {'kind': 'cell', 'char': i16(ct + cx), 'char_at': ct + cx,
+                             'weap_at': w1, 'weap2_at': w2, 'protected': bound or cveh,
+                             'cell': cell, 'own': bound or cveh}
+                        if u['protected']:
+                            guarded.add(ct + cx)
+                        units.append(u)
+    # a shared element any protected entry reaches stays as it is for everyone
+    for u in units:
+        if u['char_at'] is None:
+            u['protected'] = True               # inherited: moves with its parent
+        elif u['char_at'] in guarded:
+            u['protected'] = True
+    return units
+
+
+def _ts_unshare_cells(m, ts, units, moves):
+    """Give every cell that will move private copies of its Character Type and Initial
+    Weapon arrays wherever another cell shares them. A cell reached from a protected
+    squad (vehicle, script-loaded) keeps the shared originals; so does any cell the map
+    has no slack for (_h3_reserve -> None), which then simply stays as shipped."""
+    _cells, (co, ce, _cx), weaps, _veh = ts['cells']
+    fields = [(co, ce)] + [(wo, we) for wo, we, _wx in weaps]
+    by_cell, refs = {}, {}
+    for u in units:
+        if u['kind'] == 'cell':
+            by_cell.setdefault(u['cell'], []).append(u)
+    for cell in by_cell:
+        for fo, _fe in fields:
+            p = m.u32(cell + fo + 4)
+            if p and m.i32(cell + fo) > 0:
+                refs.setdefault(p, set()).add(cell)
+    copied = 0
+    for cell, us in by_cell.items():
+        if any(u.get('own') for u in us) or not any(u['char'] in moves for u in us):
+            continue
+        todo = []
+        for fo, fe in fields:
+            n, p = m.i32(cell + fo), m.u32(cell + fo + 4)
+            if n > 0 and p and len(refs.get(p, ())) > 1:
+                todo.append((fo, fe, n, p))
+        if not todo:
+            continue
+        got = _h3_reserve(m, [n * fe for _fo, fe, n, _p in todo])
+        if got is None:
+            continue
+        for (fo, fe, n, p), dst in zip(todo, got):
+            src = _block_base(m, cell + fo)
+            m.data[dst:dst + n * fe] = m.data[src:src + n * fe]
+            struct.pack_into('<I', m.data, cell + fo + 4, m.off2data(dst))
+            refs[p].discard(cell)
+            copied += 1
+    return copied
+
+
+def _ts_weapon_table(units, names):
+    """palette index -> the weapon a unit that became that character gets: the weapon
+    that species most often carries in this map's own placements (read before any write).
+    Hunters carry their gun in their unit: -1. A species placed nowhere: None -- the
+    unit keeps its own weapon (-1 is NO weapon from Halo 2 to ODST; only Reach and Halo 4
+    units carry a default, so writing -1 left H2/H3/ODST units unarmed)."""
+    return _TsWeapons(units, names)
+
+
+class _TsWeapons:
+    def __init__(self, units, names):
+        self.names = names
+        self.best = {}
+        self.units = units
+
+    def bind(self, m):
+        tally = {}
+        for u in self.units:
+            c = u.get('char')
+            if c is None or c < 0:
+                continue
+            ats = u['weap_at'] if u['kind'] == 'cell' else u['weap_at'][:1]
+            for a in ats:
+                w = struct.unpack_from('<h', m.data, a)[0]
+                if w >= 0:
+                    tally.setdefault(c, {})
+                    tally[c][w] = tally[c].get(w, 0) + 1
+        self.best = {c: max(t, key=t.get) for c, t in tally.items()}
+        return self
+
+    def __call__(self, c):
+        name = (self.names[c] or '').lower() if 0 <= c < len(self.names) else ''
+        if 'hunter' in name:
+            return -1
+        return self.best.get(c)
+
+
+def _ts_resident_gate(m, game, names):
+    """Reach: allowed(src, dst) -- the target's character and biped tags are
+    resident in every Scenario zone set the source's are (Global covers all). Halo 3 and
+    ODST pool bits cannot be read reliably, Halo 1/2 load the whole palette: no gate."""
+    # Reach only. Halo 4 keeps residency per DESIGNER zone (Grunts in zones whose pools
+    # hold no Jackal tag), so a whole-map check vetoes every move -- yet Grunt -> Jackal
+    # spawned fine there in game (user, 2026-10-05). Reach's m20 test is the opposite:
+    # every enemy became a Hunter that only 2 of 8 zone sets hold, and nothing spawned.
+    if game != 'Halo Reach':
+        return None
+    import sys as _sys
+    _tk = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'sprint_toolkit')
+    if _tk not in _sys.path:
+        _sys.path.insert(0, _tk)
+    try:
+        if game == 'Halo Reach':
+            import reach_pools as rp
+            rp.bind(m, game)
+            sets = rp.zone_sets(m, rp.zone_base(m))
+
+            def where(ti):
+                return set(rp.resident_in(m, sets, ti))
+        else:
+            import h4_pools as hp4
+            sets = hp4.zone_sets(m, hp4.zone_base(m))
+
+            def where(ti):
+                return {lab for lab, _o in hp4.tag_sets(m, sets, ti)}
+    except BaseException:
+        return None
+    index = {(t.get('class'), t.get('name')): t.get('index') for t in m.tags
+             if isinstance(t, dict)}
+    memo = {}
+
+    def sets_of(c):
+        if c in memo:
+            return memo[c]
+        n = names[c] if 0 <= c < len(names) else None
+        found = m.find_tags('char', n) if n else []
+        tis = [index.get(('char', n))]
+        if found:
+            u = m.u32(found[0][1] + 0x14 + 0xC)
+            un = _tag_name_by_id(m, u) if u != 0xFFFFFFFF else None
+            if un:
+                tis.append(index.get(('bipd', un)))
+        res = None                              # None = everywhere (Global)
+        for ti in tis:
+            if ti is None:
+                continue
+            w = where(ti)
+            if any(x.startswith('Global') for x in w):
+                continue
+            w = {x for x in w if x.startswith('Scenario')}
+            res = w if res is None else res & w
+        memo[c] = res
+        return res
+
+    def allowed(src, dst):
+        need, have = sets_of(src), sets_of(dst)
+        return have is None or (need is not None and need <= have)
+    return allowed
 
 
 # "Famine": weapons dropped by the AI carry half the ammo. Every character's Weapons
