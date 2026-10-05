@@ -15597,10 +15597,12 @@ class HaloGUI(QMainWindow):
                           "padding:5px; border-radius:3px; } "
                           "QListWidget { background-color:#1a1a1a; color:#e0e0e0; border:1px solid #3a3a3a; }")
         v = QVBoxLayout(dlg)
-        v.addWidget(QLabel("Type to filter; double-click (or OK) to add the effect to this run:"))
+        v.addWidget(QLabel("Type to filter; double-click (or OK) to add the effect to this run.\n"
+                           "Ctrl/Shift-click selects several -- each is added as its own round:"))
         search = QLineEdit()
         search.setPlaceholderText("e.g. jackal special, pistol magazine…")
         lst = QListWidget()
+        lst.setSelectionMode(QAbstractItemView.ExtendedSelection)
         for label, _ in entries:
             lst.addItem(label)
 
@@ -15641,12 +15643,20 @@ class HaloGUI(QMainWindow):
             self.update_history()
             self.update_status(f"(debug) Added all {len(entries)} effects to the run.")
             return
-        if result != QDialog.Accepted or lst.currentRow() < 0 or lst.currentItem().isHidden():
+        if result != QDialog.Accepted:
             return
-        label, mod = entries[lst.currentRow()]
-        self.run_state.rounds.append(self._debug_mod_round(label, mod))
+        # every selected, visible row, in list order (several at once since 2026-10-05)
+        rows = sorted(lst.row(it) for it in lst.selectedItems() if not it.isHidden())
+        if not rows and lst.currentRow() >= 0 and not lst.currentItem().isHidden():
+            rows = [lst.currentRow()]
+        if not rows:
+            return
+        for r in rows:
+            label, mod = entries[r]
+            self.run_state.rounds.append(self._debug_mod_round(label, mod))
         self.update_history()
-        self.update_status(f"(debug) Added to run: {label}")
+        self.update_status("(debug) Added to run: %s" % (
+            entries[rows[0]][0] if len(rows) == 1 else '%d effects' % len(rows)))
 
     def on_compare_patches(self):
         """Open the patch comparer, seeded with the map this run is on.
