@@ -2188,7 +2188,9 @@ def _apply_eyepatch(m, game, registry):
 # "Tilt": every damage weakness and resistance becomes more extreme. A modifier of 1 is
 # neutral, above 1 a weakness, below 1 a resistance and 0 an immunity, so the skull
 # pushes each one away from 1 by a factor: a weakness multiplies, a resistance divides,
-# and 1 and 0 stay put. NOT 1 + (v-1)*k, which turns an immunity negative.
+# a neutral 1.0 is HALVED as well (user's rule, 2026-10-05) and only 0 stays put. NOT
+# 1 + (v-1)*k, which turns an immunity negative. From Halo 2 on a matchup with NO row in
+# the table is also 1.0, but the engine supplies it, so it stays neutral.
 #
 # Halo 1 keeps the table on every damage effect -- 33 floats, one per material, at jpt!
 # 0x200-0x280 (Dirt .. Hunter Shield). From Halo 2 on it is ONE global table in matg
@@ -2205,7 +2207,9 @@ _TILT_H1_JPT = (0x200, 33)
 def _tilt_value(v):
     if v > 1.0:
         return v * _TILT_FACTOR
-    if 0.0 < v < 1.0:
+    if 0.0 < v <= 1.0:
+        # a neutral 1.0 is cut too (user, 2026-10-05): with Tilt nothing is neutral --
+        # a matchup is a weakness or it is resisted
         return v / _TILT_FACTOR
     return v
 

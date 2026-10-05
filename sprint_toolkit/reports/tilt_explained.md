@@ -1,5 +1,7 @@
 # What the Enhancer's "Tilt" skull does, per game
 
+> **Rule change 2026-10-05 (user):** a neutral **1.0 is now halved to 0.5** as well. Every "1 -> 1 (no change)" row below now reads 1 -> 0.5 -- e.g. bullets against Elite and player shields from Halo 3 on do half. A matchup with NO row in the Halo 2+ table stays 1 (the engine's default), and only element [0] of the H3+ table is written.
+
 **The rule** (`_apply_tilt`, halo_patch.py): every damage multiplier moves further away from 1.
 A value above 1 doubles, a value between 0 and 1 halves, and 0 and 1 stay as they are.
 So a weakness gets twice as strong, a resistance gets twice as strong, an immunity stays an immunity,

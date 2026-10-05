@@ -25975,8 +25975,8 @@
 			"targets": []
 		},
 		"Tilt": {
-			"desc": "Strengths and weaknesses are doubled. Plasma strips shields twice as fast, bullets bite flesh harder, and armour shrugs off what it already resisted.",
-			"debug_desc": "Pushes every damage modifier away from 1 by x2: a weakness (>1) is multiplied, a resistance (<1) divided, 1 and 0 (immunity) stay. Halo 1 keeps the table on each damage effect (jpt! 0x200-0x280, 33 materials); Halo 2 on it is the one matg Damage Table (Damage Groups -> Armor Modifiers -> Damage Multiplier), both elements from Halo 3 on. Applies to damage the player TAKES too.",
+			"desc": "Weaknesses doubled, everything else halved: plasma strips shields twice as fast, and a weapon with no edge against a target now does half.",
+			"debug_desc": "Every damage modifier v: v > 1 -> v x2 (weakness doubled), 0 < v <= 1 -> v / 2 (resistance AND neutral halved), 0 (immunity) stays. Halo 1: the 33 per-material floats on every jpt! (0x200-0x280). Halo 2 on: the matg Damage Table rows (damage group x armour); from Halo 3 on only element [0] -- [1] is the game's own Tilt table, used only with MCC's native skull. A matchup with no row in the H2+ table stays 1 (engine default). The player shares the Elites' armour rows from Halo 2 on, so it applies to damage you take. Per game: sprint_toolkit/reports/tilt_explained.md (written before the 1.0 -> 0.5 rule).",
 			"skull": "tilt",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "jpt!", "Halo 2": "matg"},
