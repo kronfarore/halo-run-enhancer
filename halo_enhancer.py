@@ -432,6 +432,7 @@ OPTION_KEYS = ('target_difficulty', 'remove_single_game_mods', 'remove_boss_mods
                'other_chance', 'other_weights', 'other_hero_enabled',
                'other_exhaust_enabled', 'other_skull_enabled', 'other_ally_enabled',
                'other_bane_enabled', 'identity_other_card',
+               'skull_single_map', 'skull_disabled',
                'set_starting_equipment', 'equipment_all_selected',
                'h2_add_respawn_profile', 'h2_extra_squads', 'swap_player_loadouts',
                'h3_all_chief_profiles',
@@ -1188,6 +1189,10 @@ CONFIG = {
     "other_skull_enabled": True,
     "other_ally_enabled": True,
     "other_bane_enabled": True,
+    # Skulls (Options -> Skulls). Both travel with the run's options snapshot, so a
+    # co-op partner loading the run plays under the same skull rules.
+    "skull_single_map": False,   # a drawn skull governs only the map it was drawn on
+    "skull_disabled": [],        # skull categories (halo.json `skull` keys) never offered
     # Weapon Identity rounds also roll the Other slot (Hero / Exhaust / Skull / Ally /
     # Bane) like a normal round: a fourth card on the offer. Off = the identity pair and
     # one enemy card only.
@@ -2152,8 +2157,12 @@ def active_skull_names(run_state):
     if run_state is None:
         return names
 
+    mid = getattr(run_state, 'mission_id', None)
+
     def scan(mod):
-        if isinstance(mod, dict) and mod.get('skull'):
+        # a one-map skull (Options -> Skulls) governs only the mission it was drawn on
+        if isinstance(mod, dict) and mod.get('skull') and \
+                mod.get('_skull_mission') in (None, mid):
             names.add(mod.get('name'))
 
     for rd in getattr(run_state, 'rounds', None) or []:
@@ -4101,8 +4110,12 @@ class ModifierDatabase:
         gone = self.vanished_enemies(active)
         taken = {(self.skull_kind(n), self.skull_enemy(n)) for n in active}
 
+        disabled = {str(x).lower() for x in (CONFIG.get('skull_disabled') or ())}
+
         def ok(m):
             if m.get('name') in active:
+                return False
+            if str(m.get('skull') or '').lower() in disabled:
                 return False
             enemy = m.get('skull_enemy')
             if not enemy:
@@ -9422,6 +9435,71 @@ class OptionsDialog(QDialog):
             if lbl is not None:
                 lbl.setVisible(on)
 
+    # Options -> Skulls: one row per skull CATEGORY (the halo.json `skull` key); the
+    # per-enemy ones (Assassins / Thunderstorm / Downpour) are one row each.
+    _SKULL_LABELS = {'eyepatch': 'Eyepatch', 'betrayal': 'Betrayal', 'schism': 'Schism',
+                     'tilt': 'Tilt', 'fog': 'Fog', 'iron': 'Iron', 'famine': 'Famine',
+                     'assassins': 'Assassins (per enemy)',
+                     'thunderstorm': 'Thunderstorm (per enemy)',
+                     'downpour': 'Downpour (per enemy)'}
+    _SKULL_PER_ENEMY = {
+        'assassins': "One card per enemy type: that enemy spawns cloaked.",
+        'thunderstorm': "One card per enemy type: that enemy is promoted one species up "
+                        "its ladder (Grunt > Jackal > Elite/Brute > Hunter; Flood "
+                        "Infection > Carrier > Combat > Pure).",
+        'downpour': "One card per enemy type: that enemy is demoted one species, and the "
+                    "lower species gets x1.5 shield, vitality and fire rate."}
+
+    def _build_skull_page(self, parent):
+        db = getattr(parent, 'db', None)
+        data = getattr(db, 'data', None)
+        if not data:
+            try:
+                with open(os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                                       'halo.json'), encoding='utf-8') as f:
+                    data = json.load(f)
+            except Exception:
+                data = {}
+        cats = {}
+        for name, card in (data.get('Skull modifiers') or {}).items():
+            k = str(card.get('skull') or '').lower()
+            if not k:
+                continue
+            c = cats.setdefault(k, {'cards': 0, 'games': set(), 'desc': card.get('desc', '')})
+            c['cards'] += 1
+            g = card.get('game') or []
+            c['games'].update([g] if isinstance(g, str) else g)
+        box = QGroupBox("Skull cards")
+        lay = QVBoxLayout(box)
+        self.skull_single_map_cb = QCheckBox("A skull lasts one map only")
+        self.skull_single_map_cb.setChecked(bool(CONFIG.get('skull_single_map')))
+        self.skull_single_map_cb.setToolTip(
+            "Off: a drawn skull governs every later patch for the rest of the run.\n"
+            "On: it applies only to the map it was drawn on (like an Exhaust) and goes back "
+            "into the pool afterwards. Iron and Betrayal scoring are put back by the next "
+            "patch of another map.\n\nShared: travels with the run to a co-op partner.")
+        lay.addWidget(self.skull_single_map_cb)
+        hint = QLabel("Untick a category to keep it out of the draw. Cards already drawn "
+                      "stay. Shared with a co-op partner through the run.")
+        hint.setWordWrap(True)
+        lay.addWidget(hint)
+        disabled = {str(x).lower() for x in (CONFIG.get('skull_disabled') or ())}
+        self.skull_cat_boxes = {}
+        order = list(self._SKULL_LABELS) + sorted(k for k in cats if k not in self._SKULL_LABELS)
+        for k in order:
+            if k not in cats:
+                continue
+            c = cats[k]
+            label = self._SKULL_LABELS.get(k, k.title())
+            games = ', '.join(sorted(c['games'])) or 'all games'
+            cb = QCheckBox("%s  -  %d card%s; %s" % (label, c['cards'],
+                                                    '' if c['cards'] == 1 else 's', games))
+            cb.setChecked(k not in disabled)
+            cb.setToolTip(self._SKULL_PER_ENEMY.get(k) or c['desc'])
+            lay.addWidget(cb)
+            self.skull_cat_boxes[k] = cb
+        self._opt_page("Skulls").addWidget(box)
+
     def _opt_page(self, name):
         page = self._opt_pages.get(name)
         if page is None:
@@ -9536,7 +9614,8 @@ class OptionsDialog(QDialog):
 
         # Pre-create the pages so the nav order is the designed one rather than
         # whichever group happens to be built first.
-        for _name in ['Run rules', 'Loadout', 'Co-op', 'Abilities', 'Patching', 'Interface']:
+        for _name in ['Run rules', 'Skulls', 'Loadout', 'Co-op', 'Abilities', 'Patching',
+                      'Interface']:
             self._opt_page(_name)
 
         # ---- Map archive: first, because it is about protecting what everything
@@ -10633,6 +10712,7 @@ class OptionsDialog(QDialog):
             "Other-card chance and the kinds and weights above) -- a fourth card. A Bane "
             "takes the enemy card's place there too, as it always does.")
         rform.addRow("", self.identity_other_cb)
+        self._build_skull_page(parent)
 
         self.new_weapon_chance = QDoubleSpinBox()
         self.new_weapon_chance.setRange(0.0, 1.0)
@@ -12400,6 +12480,9 @@ class OptionsDialog(QDialog):
             'other_ally_enabled': self.other_weight_boxes['ally'][0].isChecked(),
             'other_bane_enabled': self.other_weight_boxes['bane'][0].isChecked(),
             'identity_other_card': self.identity_other_cb.isChecked(),
+            'skull_single_map': self.skull_single_map_cb.isChecked(),
+            'skull_disabled': sorted(k for k, cb in self.skull_cat_boxes.items()
+                                     if not cb.isChecked()),
             'new_weapon_chance': round(self.new_weapon_chance.value(), 2),
             'new_equipment_chance': round(self.new_equipment_chance.value(), 2),
             'balance_item_counts': self.balance_items_cb.isChecked(),
@@ -15126,6 +15209,13 @@ class HaloGUI(QMainWindow):
                     self.run_state.free_negative_pending[
                         'player1' if pk == 'exhaust1' else 'player2'] = True
                 round_data[pk] = ex
+            # Options -> Skulls: a one-map skull is stamped like an Exhaust, so it only
+            # patches this mission and re-enters the pool afterwards.
+            if CONFIG.get('skull_single_map'):
+                for sk in ('skull1', 'skull2'):
+                    if isinstance(round_data.get(sk), dict):
+                        round_data[sk] = {**round_data[sk],
+                                          '_skull_mission': self.run_state.mission_id}
             self.run_state.rounds.append(round_data)
             self._blacklist_exclusive_siblings(round_data)
             self._update_special_counters(p1_pair.get('player1_mod'), p2_pair.get('player2_mod'))
@@ -16333,7 +16423,8 @@ class RunEnhancer:
         for rd in self.run_state.rounds:
             for k in ('enemy1', 'enemy2', 'skull1', 'skull2'):
                 m = rd.get(k)
-                if isinstance(m, dict):
+                # a one-map skull drawn on another mission is back in the pool
+                if isinstance(m, dict) and m.get('_skull_mission') in (None, mid):
                     names.add(m.get('name'))
             for k in ('exhaust1', 'exhaust2'):
                 m = rd.get(k)

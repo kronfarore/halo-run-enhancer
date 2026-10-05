@@ -206,7 +206,11 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
         # Skulls carry no per-field targets; they reach the patcher through their
         # `skull` key, and they only get there by being collected here first.
         for k in ('skull1', 'skull2'):
-            add(rd.get(k), 'Skull', 4)
+            sk = rd.get(k)
+            # a one-map skull (Options -> Skulls) is collected only for its own mission
+            if isinstance(sk, dict) and (mission_id is None or sk.get('_skull_mission')
+                                         in (None, mission_id)):
+                add(sk, 'Skull', 4)
         for k in ('exhaust1', 'exhaust2'):
             ex = rd.get(k)
             if isinstance(ex, dict) and (mission_id is None
