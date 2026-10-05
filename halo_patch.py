@@ -1900,7 +1900,14 @@ def _apply_starting_equipment(m, game, registry, starting):
 # enum on a squad (0 Default, 1 Player, 2 Human, 3 Covenant, 4 Flood, 5 Sentinel,
 # 6 Heretic, 7 Prophet, 8 Guilty), so the value carries; what differs is where the
 # squad's CHARACTER reference lives, which is what _BETRAYAL below describes.
-_BETRAYAL_TEAM = {'Halo 1': 4, 'Halo 2': 6, 'Halo 3': 6, 'Halo 3: ODST': 6}
+# Reach and Halo 4 renumbered the enum from 4 on (4 Brute, 5 Mule, 6 Spare, 7 Covenant
+# Player; Halo 4 adds 8 Forerunner). Reach: Spare -- no campaign squad and no script uses
+# it (Reach's Brutes ship on team Covenant, and Brute is Schism's lever). Halo 4: Brute --
+# m80 ALLIES Spare with covenant, human and player, so Spare would change nothing there;
+# Brute appears once, on a null pilot of m40. No game has a tag-side alliance table: teams
+# are hostile unless a level's script allies them, so an unused team fights everyone.
+_BETRAYAL_TEAM = {'Halo 1': 4, 'Halo 2': 6, 'Halo 3': 6, 'Halo 3: ODST': 6,
+                  'Halo Reach': 6, 'Halo 4': 4}
 _BETRAYAL = {
     'Halo 2': {'squads': (0x160, 0x74), 'team': 0x24, 'char_idx': 0x36,
                'palette': (0x178, 0x08), 'pal_id_at': 0x4, 'fireteams': None},
@@ -1915,14 +1922,18 @@ _BETRAYAL = {
                      'palette': (0x3E8, 0x10), 'pal_id_at': 0xC, 'fireteams': None,
                      'single_locations': (0x3C, 0x90, 0x32),
                      'cells': ((0x54, 0x84), (0x60, 0x84)), 'cell_char': (0x14, 0x10, 0xC)},
-    # REACH IS NOT WIRED. Its plugin describes the same shape one step further along
-    # -- squads 0x398/0x6C with Team at 0x24, palette 0x3EC, Spawn Points 0x3C/0x7C
-    # with Character Type Index at 0x32 -- but the shipped maps do not match it: the
-    # block at scnr+0x398 reads a count of ZERO on 30_settlement, through both the raw
-    # offset and the plugin path that the rest of Reach support uses. So the real
-    # scenario layout differs from the plugin and has to be located the way ODST's was
-    # before this can be turned on. Wiring it from the plugin alone would produce a
-    # Betrayal that silently flips nothing.
+    # Reach and Halo 4 share ODST's cell shape (enemy_count.CELL_LAYOUT reads the same
+    # blocks for the Spawn Count cards). Reach was once thought unwired because scnr+0x398
+    # read a count of zero -- on 30_settlement, which is a MULTIPLAYER map; the campaign
+    # maps carry their squads exactly where the plugin says.
+    'Halo Reach': {'squads': (0x398, 0x6C), 'team': 0x24, 'char_idx': None,
+                   'palette': (0x3EC, 0x10), 'pal_id_at': 0xC, 'fireteams': None,
+                   'single_locations': (0x3C, 0x7C, 0x32),
+                   'cells': ((0x54, 0x6C), (0x60, 0x6C)), 'cell_char': (0x14, 0x10, 0xC)},
+    'Halo 4': {'squads': (0x3F0, 0x6C), 'team': 0x24, 'char_idx': None,
+               'palette': (0x444, 0x10), 'pal_id_at': 0xC, 'fireteams': None,
+               'single_locations': (0x3C, 0x7C, 0x2E),
+               'cells': ((0x54, 0x64), (0x60, 0x64)), 'cell_char': (0xC, 0x8, 0x4)},
 }
 
 
@@ -1947,7 +1958,8 @@ def _odst_squad_chars(m, sq, lay):
 # like "commander" also matches `elite commander energy sword`, which flipped a
 # Covenant encounter on b30 until it was removed.
 _HUMAN_WORDS = ('marine', 'crewman', 'captain', 'johnson', 'miranda', 'keyes',
-                'sergeant', 'pilot', 'civilian', 'odst')
+                'sergeant', 'pilot', 'civilian', 'odst',
+                'trooper', 'spartan', 'scientist', 'fleet_officer')     # Reach, Halo 4
 
 
 # Belt-and-braces: whatever _HUMAN_WORDS matches, a tag naming a Covenant/Flood/
@@ -1975,6 +1987,9 @@ _NONHUMAN_WORDS = ('elite', 'grunt', 'jackal', 'brute', 'hunter', 'flood', 'sent
 _BETRAYAL_LOYAL = (
     'johnson', 'miranda', 'cortana', 'dervish', 'captain',
     '_buck', '_dare', 'oni_op', '_dutch', '_romeo', '_mickey', 'sgt_hero',
+    # Reach: Noble Team and Halsey. Halo 4: the Infinity's story cast.
+    'spartan_carter', 'spartan_emile', 'spartan_jorge', 'spartan_jun', 'spartan_kat',
+    'halsey', 'lasky', 'palmer', 'del_rio',
 )
 
 
@@ -2001,7 +2016,8 @@ def _apply_betrayal(m, game, registry):
     team = _BETRAYAL_TEAM.get(game)
     if team is None:
         return [{'effect': 'Betrayal', 'ok': False, 'reason': f'not supported in {game}'}]
-    team_name = {4: 'Flood', 6: 'Heretic'}.get(team, str(team))
+    team_name = ({4: 'Brute', 6: 'Spare'} if game in ('Halo Reach', 'Halo 4')
+                 else {4: 'Flood', 6: 'Heretic'}).get(team, str(team))
 
     flipped, skipped = [], 0
     if game == 'Halo 1':
