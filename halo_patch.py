@@ -2191,8 +2191,9 @@ def _apply_eyepatch(m, game, registry):
 # 0x200-0x280 (Dirt .. Hunter Shield). From Halo 2 on it is ONE global table in matg
 # (Damage Table -> Damage Groups -> Armor Modifiers -> Damage Multiplier) that each
 # jpt! selects a row of by name, so a single tag covers every weapon, ported and AI ones
-# included. Halo 3 onwards ship TWO table elements with the same rows and different
-# values (campaign and multiplayer, unverified which is which), so both are written.
+# included. Halo 3 onwards ship TWO table elements: [0] the normal table (every mode),
+# [1] the game's own Tilt skull table -- only [0] is written (see _apply_tilt), and the
+# per-game explanation is sprint_toolkit/reports/tilt_explained.md.
 # Plasma vs shields, Hunter armour and the anti-Flood rows are already in these tables.
 _TILT_FACTOR = 2.0
 _TILT_H1_JPT = (0x200, 33)
@@ -2230,7 +2231,11 @@ def _apply_tilt(m, game, registry):
         hits = m.find_tags('matg', 'globals' + chr(92) + 'globals')
         if fld is None or not hits:
             return [{**ref, 'ok': False, 'reason': 'matg Damage Table not resolvable'}]
-        leaves = m.follow_all(hits[0][1], fld['block_offsets'], fld['block_sizes'], 'all')
+        # Damage Table element [0] only: from Halo 3 on, element [1] is the game's OWN
+        # Tilt skull table ("tilt skull active" in the H4EK export, armor_vs_damage_tilted
+        # .csv in every kit), which the engine uses only while MCC's native Tilt is on.
+        idx = [0] + ['all'] * (len(fld['block_offsets']) - 1)
+        leaves = m.follow_all(hits[0][1], fld['block_offsets'], fld['block_sizes'], idx)
         for el in leaves:
             off = el + fld['offset']
             v = struct.unpack_from('<f', m.data, off)[0]
