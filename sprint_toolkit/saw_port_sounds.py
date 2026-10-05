@@ -144,9 +144,10 @@ GAMES = {
                graph_pairs=GRAPH_PAIRS,
                # reload +4 dB over the H3 AR's own (-31): "could use a bit more volume" (user,
                # 2026-10-04) -- audio level only, so a bank reinstall, no rebuild
-               foley={'saw_reload': ('RELOAD', 1.0, -27.0), 'saw_ready': ('READY', 1.0, -23.7),
-                      'saw_melee1': ('MELEE1', 1.0, -18.8), 'saw_melee2': ('MELEE2', 1.0, -19.1),
-                      'saw_pose1': ('POSE1', 1.0, -17.2), 'saw_pose2': ('POSE2', 109 / 106.0, -32.4)},
+               # all foley +2 dB more (user, 2026-10-05: "they could all be a tad louder")
+               foley={'saw_reload': ('RELOAD', 1.0, -25.0), 'saw_ready': ('READY', 1.0, -21.7),
+                      'saw_melee1': ('MELEE1', 1.0, -16.8), 'saw_melee2': ('MELEE2', 1.0, -17.1),
+                      'saw_pose1': ('POSE1', 1.0, -15.2), 'saw_pose2': ('POSE2', 109 / 106.0, -30.4)},
                foley_mono=True,
                # the H3EK's FSBank cannot add 6+ permutations to a non-empty bank
                # (fsb5_merge.py): every sound gets its own fresh bank, merged afterwards
