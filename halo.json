@@ -25476,6 +25476,14 @@
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "hudg", "Halo 2": "nhdt", "Halo 3": "chdt", "Halo Reach": "matg"},
 			"targets": []
+		},
+		"Iron": {
+			"desc": "Iron. Solo, dying restarts the mission. In co-op, if anyone dies, everyone goes back to the last checkpoint.",
+			"debug_desc": "The real skull, switched on in the running game dll by sprint_toolkit/iron_live.py (MCC must be running; in co-op both machines patch). H1: the two Iron consumers' je NOPed. H2: co-op respawn off, any death = loss, solo loss = restart. H3/ODST: the primary-skull getter ORs Iron in. Reach/H4: the load-time skull-mask copy ORs Iron in (takes effect at the next level load). A patch without Iron, or for another game, puts the dll back. Untested in game.",
+			"skull": "iron",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": "MCC process",
+			"targets": []
 		}
 	},
 	"Friend modifiers": {

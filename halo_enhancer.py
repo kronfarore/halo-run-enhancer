@@ -6689,6 +6689,23 @@ class MagnitudeEditorDialog(QDialog):
         return rows
 
     @staticmethod
+    def _iron_drawn(skulls):
+        return any(str(s).strip().lower() == 'iron' for s in (skulls or ()))
+
+    def _apply_iron(self, skulls):
+        """The Iron skull is engine code, not tag data: iron_live patches the running
+        game dll (all six games). On for this patch's game when drawn, and put back
+        everywhere else -- so a run without Iron, or a patch for another game, undoes
+        what an earlier one left on. Nothing at all when MCC is closed and Iron is off."""
+        sys.path.insert(0, str(Path(__file__).resolve().parent / 'sprint_toolkit'))
+        try:
+            import iron_live
+        except Exception as e:
+            return [{'tag': 'MCC process', 'effect': 'Iron', 'field': 'Iron skull',
+                     'ok': False, 'reason': str(e)}]
+        return iron_live.sync(self.game if self._iron_drawn(skulls) else None)
+
+    @staticmethod
     def _betrayal_drawn(skulls):
         return any(str(s).strip().lower() == 'betrayal' for s in (skulls or ()))
 
@@ -8397,6 +8414,11 @@ class MagnitudeEditorDialog(QDialog):
                         'the cost per kill is hardcoded in the game dll and set in the '
                         'running game',
                         self._apply_sword_drain_live))
+        if self._iron_drawn(skulls):
+            out.append(('Iron',
+                        'the skull is code in the game dll, switched on in the running '
+                        'game; in co-op BOTH machines must patch',
+                        lambda: self._apply_iron(skulls)))
         if CONFIG.get('betrayal_marines_score') and (
                 self._betrayal_drawn(skulls) or self._betrayal_left_on()):
             out.append(('Betrayal scoring',
@@ -8884,6 +8906,7 @@ class MagnitudeEditorDialog(QDialog):
                            else "Putting Marine scoring back")))
 
         # Same footing: a live write to another process, never fatal to the map patch.
+        results.extend(self._apply_iron(skulls))
         if CONFIG.get('death_penalty_scaling'):
             results.extend(self._apply_death_penalty())
         results.extend(self._restore_sword_drain(plan))
