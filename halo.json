@@ -24753,6 +24753,17 @@
 						{ "step": "*0.8", "field": "Maximum Right Turn (Negative)", "harder_when": "decreased" },
 						{ "step": "*1.2", "field": "Turn Rate" }
 					]
+				},
+				"Spawn Count": {
+					"color": "aggressive",
+					"desc": "How many Enforcers spawn.",
+					"debug_desc": "Each pick adds 20% more Sentinel Enforcers to the level: the share of its squads that field them (Sacred Icon, Quarantine Zone; 33 on Normal across Halo 2). The only enemy character in all six games that no specific Spawn Count card reached (audit 2026-10-05); the Sentinel card covers Aggressors and Constructors. Same mechanism as the other Halo 2 Spawn Count cards: squad Normal/Insane counts plus copied on-foot starting locations.",
+					"harder_when": "increased",
+					"game": ["Halo 2"],
+					"tag": "char objects\\characters\\sentinel_enforcer\\*",
+					"targets": [
+						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
+					]
 				}
 			},
 			"Elite Honor Guard": {
