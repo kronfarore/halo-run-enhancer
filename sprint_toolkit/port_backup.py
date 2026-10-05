@@ -319,7 +319,7 @@ ODST_T, ODST_S, ODST_F, ODST_M = h3_family(H3ODSTEK, 'halo3odst', ['sc150'], 'Ha
 # --- STEP 4b, the fields no card covers (port_field_audit.py, 2026-10-05) -------------
 # the audit + the before/after proof in every profile; each game's writer beside it
 FIELD_SCRIPTS = ('port_field_audit.py', 'kit_tag_diff.py', 'h4_weapon_diff.py',
-                 'port_role_compare.py')
+                 'port_role_compare.py', 'port_ttk.py')
 SCRIPTS += FIELD_SCRIPTS + ('saw_port_values.py', 'make_port_catalog.py')
 H2_SCRIPTS += FIELD_SCRIPTS + ('h2_saw_yardstick.py', 'h2_saw_numbers.py', 'h2_tagfield.py',
                                'h2_tagfield_offsets.json', 'make_port_catalog_h2.py',

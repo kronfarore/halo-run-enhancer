@@ -99,6 +99,10 @@ included). Done for all five SAW ports: nothing left to port.
 dps, shots/seconds to overheat, overheat recovery, battery, headshots, range, zoom, aim
 assist -- built and balanced. Sets live in its SETS table (first: the H4 Focus Rifle
 against the Beam Rifle, the Sentinel Beam and the Sniper Rifle bridge).
+`python port_ttk.py <set> [--why]` turns that into TIME TO KILL on the game's real enemies:
+character vitality (normal/legendary, parent chain), the model's shield/body materials, the
+globals damage table (damage group x armor, printed per lookup), overheat pauses (heat cools
+only while NOT firing -- confirmed), shield overflow into the body. Body shots only.
 
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
