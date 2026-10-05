@@ -21,7 +21,7 @@ text are steps 3, 8 and 10.
 READ-ONLY. Values come from the kits' `export-tag-to-xml` (fields named; structs nest by
 indentation only, so paths are built from it).
 
-    python port_field_audit.py --game h3 [--json out.json] [--all]
+    python port_field_audit.py --game h3|odst|reach [--json out.json] [--all]
 """
 import argparse
 import json
@@ -51,6 +51,21 @@ GAMES = {
                        r'objects\weapons\rifle\assault_rifle\projectiles\assault_rifle_bullet.projectile'),
         'damage_effect': (r'objects\weapons\rifle\saw\damage_effects\saw_bullet_h4_original_numbers.damage_effect',
                           r'objects\weapons\rifle\assault_rifle\damage_effects\assault_rifle_bullet.damage_effect')}),
+    'odst': dict(kit='H3ODSTEK', game='Halo 3: ODST', tags={
+        'weapon': (r'objects\weapons\rifle\saw\saw.weapon',
+                   r'objects\weapons\rifle\assault_rifle\assault_rifle.weapon'),
+        'projectile': (r'objects\weapons\rifle\saw\projectiles\saw_bullet_h4_original_numbers.projectile',
+                       r'objects\weapons\rifle\assault_rifle\projectiles\assault_rifle_bullet.projectile'),
+        'damage_effect': (r'objects\weapons\rifle\saw\damage_effects\saw_bullet_h4_original_numbers.damage_effect',
+                          r'objects\weapons\rifle\assault_rifle\damage_effects\assault_rifle_bullet.damage_effect')}),
+    # Reach keeps the damage effect BESIDE the projectile
+    'reach': dict(kit='HREK', game='Halo Reach', tags={
+        'weapon': (r'objects\weapons\rifle\saw\saw.weapon',
+                   r'objects\weapons\rifle\assault_rifle\assault_rifle.weapon'),
+        'projectile': (r'objects\weapons\rifle\saw\projectiles\saw_bullet_h4_original_numbers.projectile',
+                       r'objects\weapons\rifle\assault_rifle\projectiles\assault_rifle_bullet.projectile'),
+        'damage_effect': (r'objects\weapons\rifle\saw\projectiles\saw_bullet_h4_original_numbers.damage_effect',
+                          r'objects\weapons\rifle\assault_rifle\projectiles\assault_rifle_bullet.damage_effect')}),
 }
 SKIP_TYPES = ('pad', 'skip', 'explanation', 'struct', 'unknown', 'data')
 REF_TYPES = ('tag reference', 'string id', 'old string id', 'long string', 'string')
@@ -71,6 +86,7 @@ def flatten(kit, tag):
     if not os.path.exists(out) or not os.path.getsize(out):
         raise SystemExit('could not export %s from %s' % (tag, kit))
     stack, vals = [], {}                       # stack: (indent, name)
+    reach_block = {}                           # Reach: indent -> the block field just seen
     for line in open(out, encoding='utf-8', errors='replace'):
         s = line.lstrip(' ')
         ind = len(line) - len(s)
@@ -87,7 +103,10 @@ def flatten(kit, tag):
             continue
         m = re.match(r'<element index="(\d+)"', s)
         if m:
-            stack.append((ind, '[%s]' % m.group(1)))
+            # Reach writes a block as a self-closing FIELD and its elements as SIBLINGS at
+            # the same indent; Halo 3 / Halo 4 nest them inside <block>
+            owner = reach_block.get(ind)
+            stack.append((ind, '%s/[%s]' % (owner, m.group(1)) if owner else '[%s]' % m.group(1)))
             continue
         m = re.match(r'<field name="([^"]*)" value="([^"]*)" type="([^"]*)"', s)
         if not m:
@@ -96,8 +115,12 @@ def flatten(kit, tag):
         if typ == 'struct':
             stack.append((ind, name))
             continue
-        if typ in SKIP_TYPES or not name:
+        if typ == 'block':                        # Reach
+            vals[(here + '/' if here else '') + name + '/#count'] = ('count', val)
+            reach_block[ind] = name
             continue
+        if typ in SKIP_TYPES or not name or name.startswith('runtime'):
+            continue                          # runtime fields: the compiler fills them
         key = (here + '/' if here else '') + name
         while key in vals:                    # same leaf twice in one struct (rare)
             key += "'"
@@ -207,12 +230,12 @@ def show(report, show_all=False):
         print('-- 2. WEAPON differences to port (%d)' % len(r['port']))
         for x in r['port']:
             flag = '' if x['target_port'] == x['target_donor'] else '   (port already %s)' % x['target_port']
-            print('   %-58s H4 SAW %-16s AR %-16s | H3 AR %-16s -> %s%s%s' % (
+            print('   %-58s H4 SAW %-16s AR %-16s | tgt AR %-16s -> %s%s%s' % (
                 x['target_field'][-58:], x['h4_port'][:16], (x['h4_donor'] or '-')[:16],
                 x['target_donor'][:16], x['suggested'], '' if x['match'] == 'exact' else '  [%s]' % x['match'], flag))
         print('-- 3. decide by hand (%d)' % len(r['decide']))
         for x in r['decide']:
-            print('   %-58s H4 SAW %-16s AR %-16s | H3 AR %-16s  %s' % (
+            print('   %-58s H4 SAW %-16s AR %-16s | tgt AR %-16s  %s' % (
                 (x.get('target_field') or x['field'])[-58:], x['h4_port'][:16], (x['h4_donor'] or '-')[:16],
                 (x.get('target_donor') or '-')[:16], x['why']))
         if show_all:
