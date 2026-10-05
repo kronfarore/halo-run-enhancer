@@ -2907,6 +2907,64 @@ def _apply_camo(m, game, pattern, registry, label):
                 _short_name(n) for n, _b in models))}
 
 
+def _famine_placements(m, game, registry):
+    """Famine, second half: halve the ammo of every weapon PLACED on the map (scnr Weapons,
+    _MAP_WEAPONS). Run by apply_run just before the tool appends its own marker weapons,
+    so those are never touched, and after the card ops, so a Magazine card's new magazine
+    is what a "default" placement is halved from. A placement's Rounds Left / Loaded of 0
+    means "the weapon's default" (Halo 3 010 and Halo 4 m020 ship every placement at 0),
+    so a 0 becomes half the default (Magazines[0] Rounds Total Initial, and the loaded
+    magazine capped by it) and nothing is ever written as 0 -- 0 would mean full again.
+    Battery weapons (no magazine) carry no charge field in a placement: left alone."""
+    lay = _MAP_WEAPONS.get(game)
+    ref = {'effect': 'Famine', 'field': 'Placed weapons: Rounds Left / Loaded'}
+    plug = registry.get('weap')
+    scnr = _scnr_base(m)
+    if not lay or plug is None or scnr is None:
+        return [{**ref, 'ok': False, 'reason': 'placements not readable in ' + game}]
+    poff, pel = lay['palette']
+    pal = []
+    for el in m.follow_all(scnr, [poff], [pel], 'all'):
+        ident = m.u32(el + lay['pal_id_at'])
+        name = _tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None
+        found = m.find_tags('weap', name) if name else []
+        pal.append(found[0][1] if found else None)
+    mags = {}
+
+    def magazine(wb):
+        if wb not in mags:
+            try:
+                ti = m.read_tag_field(wb, 'Rounds Total Initial', plug, block='Magazines', index=0)
+                lm = m.read_tag_field(wb, 'Rounds Loaded Maximum', plug, block='Magazines', index=0)
+            except Exception:
+                ti = lm = None
+            mags[wb] = (int(ti or 0), int(lm or 0))
+        return mags[wb]
+    woff, wel = lay['weapons']
+    halved = skipped = 0
+    for el in m.follow_all(scnr, [woff], [wel], 'all'):
+        pi = struct.unpack_from('<h', m.data, el + lay['palette_index'])[0]
+        wb = pal[pi] if 0 <= pi < len(pal) else None
+        if wb is None:
+            continue
+        total, loaded_max = magazine(wb)
+        if not total and not loaded_max:
+            skipped += 1                       # battery weapon: no ammo in a placement
+            continue
+        left = struct.unpack_from('<h', m.data, el + lay['rounds_left'])[0]
+        loaded = struct.unpack_from('<h', m.data, el + lay['rounds_loaded'])[0]
+        left = left if left > 0 else total
+        loaded = loaded if loaded > 0 else min(loaded_max or total, total or loaded_max)
+        struct.pack_into('<h', m.data, el + lay['rounds_left'], max(1, left // 2))
+        struct.pack_into('<h', m.data, el + lay['rounds_loaded'], max(1, loaded // 2))
+        halved += 1
+    if not halved:
+        return [{**ref, 'ok': True, 'skip': True, 'reason': 'no magazine weapon placed here'}]
+    return [{**ref, 'ok': True, 'tag': 'scnr', 'old': 'as placed (0 = weapon default)',
+             'new': 'halved on %d placement(s)%s' % (
+                 halved, ', %d battery weapon(s) left' % skipped if skipped else '')}]
+
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -9170,8 +9228,9 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             ladder_down.add(spec['enemy'])
     if ladder_up or ladder_down:
         results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
-    betrayed = any(str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
-                   == 'betrayal' for x in (skulls or ()))
+    _skull_names = {str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
+                    for x in (skulls or ())}
+    betrayed = 'betrayal' in _skull_names
     # (effect name, tag) of every card for which "not present in this map" is an
     # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
     # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).
@@ -9544,6 +9603,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                                               equipment=clear_profile_equipment,
                                               grenades=clear_profile_grenades))
 
+    if 'famine' in _skull_names:
+        # Famine's placed-weapon half: after the card ops (a Magazine card sets the
+        # default it halves) and BEFORE the tool appends its own marker weapons below.
+        results.extend(_famine_placements(m, str(game).strip(), registry))
     if spawn_weapons:
         results.extend(_apply_spawn_weapons(m, game, spawn_weapons, registry))
     if spawn_equipment:

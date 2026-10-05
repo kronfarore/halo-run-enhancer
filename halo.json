@@ -26007,8 +26007,8 @@
 			"targets": []
 		},
 		"Famine": {
-			"desc": "Dropped weapons carry half the ammo.",
-			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first).",
+			"desc": "Dropped weapons carry half the ammo, and so do the weapons lying around the level.",
+			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first). Second half: every weapon PLACED on the map (scnr Weapons) gets half its Rounds Left / Loaded -- a 0 (= the weapon's default) becomes half the weapon's Magazines[0] default, never 0. Runs after the card ops (a Magazine card sets that default) and before the tool appends its marker weapons, which keep their ammo. Battery weapons have no charge field in a placement and stay full.",
 			"skull": "famine",
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv", "Halo 2": "char"},
