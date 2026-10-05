@@ -207,6 +207,63 @@ from its own backup of the stock tag.
 ratio. `port_anim_measure.py` measures frame counts and reproduces the table, which is
 what makes it trustworthy for other games.
 
+### Halo 1: enemy-only weapons made pickable, with HALO 3 first-person animations (2026-10-05)
+
+Halo 1 ships the Elites' Energy Sword and the Grunts' Fuel Rod as enemy-only items: weapon
+flag `detonates_when_dropped`, and no first-person model, animations or (fuel rod) HUD.
+The user's call: pick up the ORIGINAL weapons, behaviour unchanged, FP animations ported
+from Halo 3. Status: tags written and maps BUILD; **not yet seen in game**.
+
+**The finding that makes it cheap: Halo 3's FP arm skeleton IS Halo 1's.**
+`objects\characters\masterchief\fp\fp.render_model` (H3EK) and
+`characters\cyborg\fp\fp.gbxmodel` (HCEEK) have the same 37 nodes, parents and bind
+positions to two decimals (shoulders y +-9.40, elbow x 10.25, wrist 21.14, every knuckle).
+`base` = `frame bone24`, `l_hand` = `frame l wriste`, `l_middle_low` = `frame l middlelow`,
+the rest by name. Two conventions differ:
+* **Quaternions**: Halo 1 tags (and its JMAs) store the INVERSE rotation, Halo 3 the
+  rotation. H1 = conjugate(H3). Proven by `fp_render.py`: the H1 AR idle draws right only
+  when its tag quaternions are conjugated.
+* **Camera**: H3 animates `camera_control` and offsets `base` against it; Halo 1's camera
+  is the animation origin. Every frame is re-expressed in camera_control's frame.
+Halo 3 omits nodes at bind from an animation (the sword idle stores 5 of 40
+translations) -- those come from the H3 render models' default transforms.
+
+**Tools** (sprint_toolkit):
+* `h3_fp_pose.py` -- full per-node poses from an H3 kit jmad (static default_data +
+  animated tracks + node masks; builds on h3_anim_decode).
+* `h1_fp_retarget.py <weapon> --list | --preview <anim> | --write` -- H3 -> H1 JMAs into
+  `HCEEK\data\<weapon>\fp\animations`, then `tool animations "<weapon>\fp"`. Solved in world
+  space; weapon nodes get a bind correction: `same_space` (sword: H1 and H3 models share a
+  model space, only the `blades` pivot differs) or `node` (fuel rod: grip node to grip node).
+* `fp_render.py` -- offline FP view (H1 hands + weapon, any frame of any H1 antr). Check
+  every retarget with it before a build.
+* `h1_scaled_model.py` -- a scaled gbxmodel copy (the fuel rod's FP model: its own world
+  mesh x0.75 -- 0.57 long is alien-sized; H3's FP fuel rod is 0.43, H1's PC one 0.41).
+* `h1_pickable_weapons.py --write` -- the kit tag edits (below). Rerun after every
+  `tool animations`: recompiling resets the key frames and sounds it sets.
+
+**JMA facts, from an exact roundtrip** (Oddball FP antr -> Reclaimer JMAs -> HCEEK tool
+-> identical to 0.00003): JMA quaternions are the tag's; a BASE animation's JMA has one
+frame more than the tag (the tool drops the last -- append frame 0 to a loop, repeat the
+last frame of a one-shot); an OVERLAY's JMO has a reference frame first, and only its
+ANIMATED tracks are deltas. Node order = depth, then name (the tool's own).
+
+**What h1_pickable_weapons.py writes** (stock tags kept as `<tag>.before_pickable`):
+sword -- flag cleared, FP model = its own world model, FP animations, no HUD/trigger
+(the oddball's setup), melee key 5 + the Elite's sword-swing sound. Fuel rod -- flag
+cleared, scaled FP model, FP animations from H3's flak_cannon (fire, both reloads), own
+melee (`weapons\fuel rod gun\melee`, the PC fuel rod's), HUD = the PC fuel rod's with
+the AR's magazine readout (`master rounds` child, 4-tick meter), keeps 4 rounds / 1.25 s
+charge / rod projectile. Player biped `characters\cyborg\cyborg` taught `fr` (from `pc`)
+and `fb` (from `b`) -- 15 weapon types.
+
+**Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
+(left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
+model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:
+composition order assumed); the fuel rod's 4-tick HUD; the sword's fire button (no trigger,
+like the oddball). Not done: own sounds (step 10: reload silent, no sword ready sound),
+pickup icons, enhancer cards, Sentinel Beam (H3 geometry reads with `h4_rm.load`).
+
 ---
 
 ## Halo 3
