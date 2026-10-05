@@ -5139,9 +5139,10 @@ BANE_PICKS = 3
 # A tier-ladder choice row's default entry (Firing Noise): move a tier per pick.
 LADDER_BY_STEP = '(by step)'
 
-# Game folders whose ported weapons' sounds live in a package outside the map (port_sounds):
-# Halo 4's Wwise sfxbank.pck, Halo 1's FMOD sounds_adpcm.fsb.
-PORT_SOUND_FOLDERS = ('halo4', 'halo1')
+# Game folders whose ported weapons' sounds live in a file outside the map (port_sounds):
+# Halo 4's Wwise sfxbank.pck, Halo 1's FMOD sounds_adpcm.fsb, and the port's own FMOD bank
+# <game>\fmod\pc\sfx.saw.fsb (+ .info) in Halo 3, ODST and Reach.
+PORT_SOUND_FOLDERS = ('halo4', 'halo1', 'halo3', 'halo3odst', 'haloreach')
 
 
 def _h1_bank_ports():
@@ -6844,7 +6845,12 @@ class MagnitudeEditorDialog(QDialog):
 
         Halo 1 the same way: MCC plays Halo 1 sounds from its FMOD bank
         (halo1\\sound\\pc\\sounds_adpcm.fsb, found by tag path), never from the map, so a
-        port's sounds are silent until they are appended there."""
+        port's sounds are silent until they are appended there.
+
+        Halo 3, ODST and Reach play a port from its OWN FMOD bank file,
+        <game>\\fmod\\pc\\sfx.saw.fsb (+ .info), copied in when missing or different. A bank
+        MCC holds open (a map of that game loaded) reports one row to leave the map and
+        patch again. Their volume knob is in the map (port_volume), not here."""
         folder = (CONFIG.get('map_game_folder', {}).get(self.game) or '')
         folder = folder.replace('/', '\\').split('\\')[0]
         if folder not in PORT_SOUND_FOLDERS:
