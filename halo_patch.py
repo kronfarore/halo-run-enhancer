@@ -2304,6 +2304,8 @@ def _apply_tilt(m, game, registry):
 # sensor widget whose array another widget also uses gets a private copy first.
 _FOG_RANGE = 0.01
 _FOG_H1_UNHI_BITMAPS = (0x290, 0x2F8)            # Background, Foreground tagRefs
+_FOG_H2_BLANK = ('shaders' + chr(92) + 'default_bitmaps' + chr(92) + 'bitmaps' + chr(92) +
+                 'color_black_alpha_black')
 _FOG_H2_NHDT = {'widgets': (0x8, 0x64), 'yes': 0x8, 'no': 0x10, 'sensor_bit': 11}
 _FOG_H3_MISC_AT = {'Halo 3': 0x1A}
 # Halo 3 draws the BLIPS itself, from chgd `ui\chud\globals`, not from any chdt widget
@@ -2403,6 +2405,25 @@ def _apply_fog(m, game, registry):
                     'old': 'as the map defines',
                     'new': 'nulled on ' + (', '.join(hidden) if hidden else 'no HUD')})
     elif game == 'Halo 2':
+        # The sweep and the blips are drawn by the ENGINE from matg Interface Tags
+        # (0x110, element 0x98): Sweep Bitmap +0x38 and Blip Bitmap +0x60 (8-byte
+        # tagRefs, datum +4). They point at a fully transparent bitmap present on every
+        # map -- the range edit alone left the sweep running (user's H2 test).
+        blank = m.find_tags('bitm', _FOG_H2_BLANK)
+        swapped = 0
+        if blank:
+            datum = next((t['datum'] for t in m.tags if t.get('name') == blank[0][0]
+                          and t.get('class') == 'bitm'), None)
+            for _n, mb in m.find_tags('matg', 'globals' + chr(92) + 'globals'):
+                for el in m.follow_all(mb, [0x110], [0x98], [0]):
+                    for r in (0x38, 0x60):
+                        if datum is not None:
+                            struct.pack_into('<I', m.data, el + r + 4, datum)
+                            swapped += 1
+        out.append({**ref, 'tag': 'matg globals', 'field': 'Interface Tags sweep / blip bitmaps',
+                    'ok': bool(swapped), 'old': 'hud_sweeper / hud_sensor_blip',
+                    'new': 'transparent (%d refs)' % swapped if swapped else None,
+                    'reason': None if swapped else 'transparent bitmap not in this map'})
         lay = _FOG_H2_NHDT
         hidden = []
         for name, base in m.find_tags('nhdt', '*'):
@@ -3170,7 +3191,7 @@ _CAMO_H2 = {'orders': (0x240, 0x7C), 'flags': 0x24, 'bit': 6, 'squads': (0x160, 
 _CAMO_CHAR_UNIT, _CAMO_CHAR_PARENT = 0x14, 0x4          # H3+ char tagRefs (ident +0xC)
 # bipd (object) Model tagRef; the plugin loader keeps no tagRef fields, so by game (MCC
 # plugins: Halo4MCC says 0x64 where the plain Halo4 plugin says 0x88).
-_CAMO_BIPD_MODEL = {'Halo 3': 0x34, 'Halo 3: ODST': 0x34, 'Halo Reach': 0x64, 'Halo 4': 0x64}
+_CAMO_BIPD_MODEL = {'Halo 2': 0x34, 'Halo 3': 0x34, 'Halo 3: ODST': 0x34, 'Halo Reach': 0x64, 'Halo 4': 0x64}
 
 
 def _camo_bit_field(plugin, bit_name):
@@ -3217,23 +3238,31 @@ def _apply_camo(m, game, pattern, registry, label):
             struct.pack_into('<I', m.data, a, m.u32(a) | (1 << L['bit']))
         if not squads:
             return {**ref, 'ok': True, 'skip': True, 'reason': 'not in this map'}
-        return {**ref, 'ok': True, 'old': 'off',
-                'new': 'camo order flag on %d order(s) (%d squad(s))' % (len(done), squads)}
+        # ...and the model flag too, as from Halo 3 on: the order bit drops whenever a
+        # squad moves to another order (user's H2 test), the model bit would not. No
+        # shipped H2 model sets it, so untested -- the order bit stays as the fallback.
+        h2_orders = 'camo order flag on %d order(s) (%d squad(s))' % (len(done), squads)
+    else:
+        h2_orders = None
     hp_ = registry.get('hlmt')
     model_at = _CAMO_BIPD_MODEL.get(game)
     flag = _camo_bit_field(hp_, 'active camo always on') if hp_ else None
     if model_at is None or not flag:
         return {**ref, 'ok': False, 'reason': 'hlmt camo flag / bipd Model unknown for ' + game}
     off, bit, fmt = flag
+    # tagRef datum offsets: Halo 2 tagRefs are 8 bytes (datum +4), later ones 16 (+0xC)
+    unit_id, parent_id, model_id = ((0xC + 4, 0x4 + 4, model_at + 4) if game == 'Halo 2'
+                                    else (_CAMO_CHAR_UNIT + 0xC, _CAMO_CHAR_PARENT + 0xC,
+                                          model_at + 0xC))
 
     def unit_of(name, depth=0):
         found = m.find_tags('char', name) if name else []
         if not found or depth > 6:
             return None
-        u = m.u32(found[0][1] + _CAMO_CHAR_UNIT + 0xC)
+        u = m.u32(found[0][1] + unit_id)
         if u != 0xFFFFFFFF:
             return _tag_name_by_id(m, u)
-        p = m.u32(found[0][1] + _CAMO_CHAR_PARENT + 0xC)
+        p = m.u32(found[0][1] + parent_id)
         return unit_of(_tag_name_by_id(m, p), depth + 1) if p != 0xFFFFFFFF else None
 
     models = set()
@@ -3242,7 +3271,7 @@ def _apply_camo(m, game, pattern, registry, label):
         fb = m.find_tags('bipd', u) if u else []
         if not fb:
             continue
-        mid = m.u32(fb[0][1] + model_at + 0xC)
+        mid = m.u32(fb[0][1] + model_id)
         mn = _tag_name_by_id(m, mid) if mid != 0xFFFFFFFF else None
         fh = m.find_tags('hlmt', mn) if mn else []
         if fh:
@@ -3250,11 +3279,14 @@ def _apply_camo(m, game, pattern, registry, label):
     for _mn, base in models:
         v = struct.unpack_from(fmt, m.data, base + off)[0]
         struct.pack_into(fmt, m.data, base + off, v | (1 << bit))
+    hl = ('Active Camo Always On: ' + ', '.join(sorted(_short_name(n) for n, _b in models))
+          if models else None)
+    if h2_orders:
+        return {**ref, 'ok': True, 'old': 'off',
+                'new': h2_orders + ('; ' + hl if hl else '')}
     if not models:
         return {**ref, 'ok': True, 'skip': True, 'reason': 'not in this map'}
-    return {**ref, 'ok': True, 'old': 'off', 'tag': 'hlmt',
-            'new': 'Active Camo Always On: ' + ', '.join(sorted(
-                _short_name(n) for n, _b in models))}
+    return {**ref, 'ok': True, 'old': 'off', 'tag': 'hlmt', 'new': hl}
 
 
 def _famine_placements(m, game, registry):
