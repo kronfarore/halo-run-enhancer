@@ -79,6 +79,17 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    installed `<game>\fmod\pc\sfx.<suffix>.fsb` equals the kit's and holds every hash the
    map names; Halo 1 / Halo 4: `python port_sounds.py --check`.
 
+**Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
+only knows fields some card targets; every other field of a clone is its donor's. Run
+`python port_field_audit.py --game h3|odst|reach|h2|h1` (read-only): per field it compares
+the SOURCE pair (H4 SAW vs H4 AR) -- same there = the target donor's value is right;
+different + the same numeric field in the target = port it by the ratio rule (writers:
+h3_saw_tag_numbers / reach_saw_tag_numbers / saw_port_values EXTRA / h2_saw_numbers);
+otherwise an engine difference to decide. Lists 4 and 5 catch a port cloned from ANOTHER
+weapon than its yardstick (Halo 2: the GPMG + the Warthog turret's bullet ->
+h2_saw_yardstick.py). It reads the CATALOG for what balance covers (derived rows
+included). Done for all five SAW ports: nothing left to port.
+
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
 `weapons\saw\bullet` (proj + jpt!), but the weapon tag's trigger was a copy of the
@@ -455,6 +466,8 @@ Each of these is one script, and each proves its own work before it keeps it.
     h2_saw_messages.py                                the pickup prompts
     h2_saw_animations.py --force                   9. its own animation graphs
     h2_anim_retime.py <graph> reloads 128 --write     and its own reload length
+    h2_saw_yardstick.py --write                    4b. GPMG / turret leftovers -> the SMG (then
+                                                      h2_saw_numbers.py again)
     h2_saw_sounds.py --write                      10. its own sounds (classic), graphs repointed
     h2_saw_place.py --level <name> --build --deploy   put it in the player's hands
 

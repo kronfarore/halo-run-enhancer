@@ -1,7 +1,8 @@
 {
  "damage_effect": {
   "damage lower bound": 108,
-  "damage upper bound": 112
+  "damage upper bound": 112,
+  "instantaneous acceleration": 148
  },
  "model_animation_graph": {
   "animations[12].desired compression": 4104
@@ -38,10 +39,17 @@
   "bitmap widgets[9].quarterscreen sequence index": 1302
  },
  "weapon": {
+  "ai scariness": 1268,
+  "barrels[0].acceleration time": 3415,
+  "barrels[0].acceleration time#1": 3459,
+  "barrels[0].angle change per shot": 3595,
+  "barrels[0].deceleration time": 3419,
+  "barrels[0].deceleration time#1": 3463,
+  "barrels[0].ejection port recovery time": 3575,
   "barrels[0].error angle#1": 3548,
+  "barrels[0].illumination recovery time": 3579,
   "barrels[0].minimum error#1": 3544,
   "barrels[0].rounds per second": 3436,
-  "magazines[0].reload time": 2514,
   "magazines[0].rounds loaded maximum": 3126,
   "magazines[0].rounds reloaded": 3140,
   "magazines[0].rounds total initial": 3122,

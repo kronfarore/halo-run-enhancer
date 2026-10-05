@@ -51,6 +51,11 @@ NUMBERS = [
     (WEAPON, 'error angle', 'barrels', 0, 1, [0.3, 2.75]),
     (BULLET, 'damage lower bound', '', 0, 0, 7.5),
     (BULLET, 'damage upper bound', '', 0, 0, [7.5, 7.5]),
+    # fields NO CARD covers where the Halo 4 SAW differs from the Halo 4 AR
+    # (port_field_audit.py, 2026-10-05); the rest follows the SMG (h2_saw_yardstick.py).
+    # nth 1 = the Error struct's pair -- the first is the Firing (fire-rate) one
+    (WEAPON, 'deceleration time', 'barrels', 0, 1, 0.49),
+    (BULLET, 'instantaneous acceleration', '', 0, 0, 0.15),
 ]
 
 #: Halo 4 values deliberately NOT carried across, and why.
