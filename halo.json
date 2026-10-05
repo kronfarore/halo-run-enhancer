@@ -25460,6 +25460,22 @@
 			"game": ["Halo 1", "Halo 2", "Halo 3"],
 			"tag": "scnr",
 			"targets": []
+		},
+		"Tilt": {
+			"desc": "Strengths and weaknesses are doubled. Plasma strips shields twice as fast, bullets bite flesh harder, and armour shrugs off what it already resisted.",
+			"debug_desc": "Pushes every damage modifier away from 1 by x2: a weakness (>1) is multiplied, a resistance (<1) divided, 1 and 0 (immunity) stay. Halo 1 keeps the table on each damage effect (jpt! 0x200-0x280, 33 materials); Halo 2 on it is the one matg Damage Table (Damage Groups -> Armor Modifiers -> Damage Multiplier), both elements from Halo 3 on. Applies to damage the player TAKES too.",
+			"skull": "tilt",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "jpt!", "Halo 2": "matg"},
+			"targets": []
+		},
+		"Fog": {
+			"desc": "No motion tracker.",
+			"debug_desc": "Halo 1: hudg Motion Sensor Range 0.01 and the cyborg unhi dial bitmaps nulled. Halo 2: hudg range 0.01 and every nhdt widget drawn on 'Motion Sensor Enabled' gets 'Default' in its [No] flags. Halo 3/ODST: chdt Motion Sensor widgets (Scripting Class 6) draw only while the tracker is disabled (Unit Misc State 2). Reach/Halo 4: matg Default Player Traits sensor trait Motion Tracker = Disabled/Off. Untested in game.",
+			"skull": "fog",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "hudg", "Halo 2": "nhdt", "Halo 3": "chdt", "Halo Reach": "matg"},
+			"targets": []
 		}
 	},
 	"Friend modifiers": {

@@ -2163,6 +2163,201 @@ def _apply_eyepatch(m, game, registry):
              'new': f'zeroed on {len(touched)} weapon(s), {zeroed} field write(s)'}]
 
 
+# "Tilt": every damage weakness and resistance becomes more extreme. A modifier of 1 is
+# neutral, above 1 a weakness, below 1 a resistance and 0 an immunity, so the skull
+# pushes each one away from 1 by a factor: a weakness multiplies, a resistance divides,
+# and 1 and 0 stay put. NOT 1 + (v-1)*k, which turns an immunity negative.
+#
+# Halo 1 keeps the table on every damage effect -- 33 floats, one per material, at jpt!
+# 0x200-0x280 (Dirt .. Hunter Shield). From Halo 2 on it is ONE global table in matg
+# (Damage Table -> Damage Groups -> Armor Modifiers -> Damage Multiplier) that each
+# jpt! selects a row of by name, so a single tag covers every weapon, ported and AI ones
+# included. Halo 3 onwards ship TWO table elements with the same rows and different
+# values (campaign and multiplayer, unverified which is which), so both are written.
+# Plasma vs shields, Hunter armour and the anti-Flood rows are already in these tables.
+_TILT_FACTOR = 2.0
+_TILT_H1_JPT = (0x200, 33)
+
+
+def _tilt_value(v):
+    if v > 1.0:
+        return v * _TILT_FACTOR
+    if 0.0 < v < 1.0:
+        return v / _TILT_FACTOR
+    return v
+
+
+def _apply_tilt(m, game, registry):
+    ref = {'effect': 'Tilt'}
+    changed, values = 0, 0
+    if game == 'Halo 1':
+        start, n = _TILT_H1_JPT
+        tags = m.find_tags('jpt!', '*')
+        if not tags:
+            return [{**ref, 'ok': False, 'reason': 'no damage effects in this map'}]
+        for _name, base in tags:
+            for i in range(n):
+                off = base + start + 4 * i
+                v = struct.unpack_from('<f', m.data, off)[0]
+                values += 1
+                nv = _tilt_value(v)
+                if nv != v:
+                    struct.pack_into('<f', m.data, off, nv)
+                    changed += 1
+        where, tag = '%d damage effect(s)' % len(tags), 'jpt! *'
+    else:
+        plugin = registry.get('matg')
+        fld = plugin.find('Damage Multiplier', block='Armor Modifiers') if plugin else None
+        hits = m.find_tags('matg', 'globals' + chr(92) + 'globals')
+        if fld is None or not hits:
+            return [{**ref, 'ok': False, 'reason': 'matg Damage Table not resolvable'}]
+        leaves = m.follow_all(hits[0][1], fld['block_offsets'], fld['block_sizes'], 'all')
+        for el in leaves:
+            off = el + fld['offset']
+            v = struct.unpack_from('<f', m.data, off)[0]
+            values += 1
+            nv = _tilt_value(v)
+            if nv != v:
+                struct.pack_into('<f', m.data, off, nv)
+                changed += 1
+        where, tag = 'the damage table', 'matg globals' + chr(92) + 'globals'
+    if not values:
+        return [{**ref, 'ok': False, 'reason': 'damage table is empty'}]
+    return [{**ref, 'tag': tag, 'field': 'Damage modifiers (weakness/resistance)', 'ok': True,
+             'old': 'as the map defines',
+             'new': 'x%g away from 1: %d of %d modifier(s) in %s' % (
+                 _TILT_FACTOR, changed, values, where)}]
+
+
+# "Fog": no motion tracker. Each generation hides it a different way:
+#   Halo 1  hudg Motion Sensor Range -> 0.01 (no blips; not 0, the blip maths divides
+#           by it) and the dial's Background/Foreground bitmaps nulled in every unhi
+#           that has them (only the cyborg HUDs do; vehicle HUDs ship them null).
+#   Halo 2  hudg range the same, and every nhdt bitmap widget that draws on "Motion
+#           Sensor Enabled" ([Yes] bit 11) gets "Default" in its [No] flags: a widget
+#           does not draw when any No flag is true, and Default always is.
+#   Halo 3 / ODST  every chdt widget of Scripting Class 6 (Motion Sensor) gets Unit
+#           Misc State = 2, "Motion Sensor Disabled", on every State Data element, so
+#           it only draws while the engine has disabled the tracker. No vehicle chud
+#           carries its own tracker, so the player's covers vehicles too.
+#   Reach / Halo 4  the matg Default Player Traits sensor trait: Motion Tracker
+#           Disabled / Off.
+# The H3-family state arrays can be shared between widgets (see _unshare_chain), so a
+# sensor widget whose array another widget also uses gets a private copy first.
+_FOG_RANGE = 0.01
+_FOG_H1_UNHI_BITMAPS = (0x290, 0x2F8)            # Background, Foreground tagRefs
+_FOG_H2_NHDT = {'widgets': (0x8, 0x64), 'yes': 0x8, 'no': 0x10, 'sensor_bit': 11}
+_FOG_H3_MISC_AT = {'Halo 3': 0x1A, 'Halo 3: ODST': 0x2A}
+_FOG_H3_SENSOR_CLASS, _FOG_H3_DISABLED = 6, 0x2
+# (Default Player Traits block, element), (Sensor Traits block, element), enum byte,
+# the value that means off.
+_FOG_TRAITS = {
+    'Halo Reach': ((0x420, 0x3C), (0x30, 0x4), 0x0, 1),
+    'Halo 4': ((0x5B0, 0x3C), (0x30, 0x14), 0xC, 1),
+}
+
+
+def _short_name(name):
+    return str(name).rsplit(chr(92), 1)[-1]
+
+
+def _fog_hudg_range(m, registry):
+    plugin = registry.get('hudg')
+    fld = plugin.find('Motion Sensor Range') if plugin else None
+    if fld is None or fld['block_chain']:
+        return []
+    out = []
+    for name, base in m.find_tags('hudg', '*'):
+        off = base + fld['offset']
+        old = struct.unpack_from('<f', m.data, off)[0]
+        struct.pack_into('<f', m.data, off, _FOG_RANGE)
+        out.append({'effect': 'Fog', 'tag': 'hudg ' + str(name), 'field': 'Motion Sensor Range',
+                    'ok': True, 'old': round(old, 4), 'new': _FOG_RANGE})
+    return out
+
+
+def _apply_fog(m, game, registry):
+    ref = {'effect': 'Fog'}
+    out = []
+    if game in ('Halo 1', 'Halo 2'):
+        out += _fog_hudg_range(m, registry)
+    if game == 'Halo 1':
+        hidden = []
+        for name, base in m.find_tags('unhi', '*'):
+            hit = False
+            for r in _FOG_H1_UNHI_BITMAPS:
+                if struct.unpack_from('<I', m.data, base + r + 0xC)[0] != 0xFFFFFFFF:
+                    struct.pack_into('<I', m.data, base + r + 0xC, 0xFFFFFFFF)
+                    hit = True
+            if hit:
+                hidden.append(_short_name(name))
+        out.append({**ref, 'tag': 'unhi *', 'field': 'Motion sensor dial bitmaps', 'ok': True,
+                    'old': 'as the map defines',
+                    'new': 'nulled on ' + (', '.join(hidden) if hidden else 'no HUD')})
+    elif game == 'Halo 2':
+        lay = _FOG_H2_NHDT
+        hidden = []
+        for name, base in m.find_tags('nhdt', '*'):
+            for w in m.follow_all(base, [lay['widgets'][0]], [lay['widgets'][1]], 'all'):
+                yes = struct.unpack_from('<H', m.data, w + lay['yes'])[0]
+                if not yes & (1 << lay['sensor_bit']):
+                    continue
+                no = struct.unpack_from('<H', m.data, w + lay['no'])[0]
+                struct.pack_into('<H', m.data, w + lay['no'], no | 1)
+                hidden.append(_short_name(name))
+        if not hidden:
+            return out + [{**ref, 'ok': False, 'reason': 'no motion sensor widget found'}]
+        out.append({**ref, 'tag': 'nhdt *', 'field': 'Motion sensor widget [No] Default',
+                    'ok': True, 'old': 'drawn',
+                    'new': 'hidden on ' + ', '.join(sorted(set(hidden)))})
+    elif game in _FOG_H3_MISC_AT:
+        misc = _FOG_H3_MISC_AT[game]
+        lay = _H3_CHUD_STATE_LAYOUT[game]
+        B = _chud_blocks(game)
+        sensors, users = [], {}
+        for t in m.tags:
+            if not isinstance(t, dict) or t.get('class') != 'chdt' or not t.get('base'):
+                continue
+            for w in _h3_chud_elems(m, t['base'], B['widgets']):
+                p = m.u32(w + lay['states'][0] + 4)
+                if p:
+                    users[p] = users.get(p, 0) + 1
+                if struct.unpack_from('<H', m.data, w + 4)[0] == _FOG_H3_SENSOR_CLASS:
+                    sensors.append((t['name'], w))
+        hidden, failed = [], []
+        for name, w in sensors:
+            p = m.u32(w + lay['states'][0] + 4)
+            if p and users.get(p, 0) > 1:
+                if _unshare_chain(m, game, w) is None:
+                    failed.append(_short_name(name))
+                    continue
+                users[p] -= 1
+            for sd in _h3_chud_elems(m, w, lay['states']):
+                struct.pack_into('<H', m.data, sd + misc, _FOG_H3_DISABLED)
+            hidden.append(_short_name(name))
+        if not hidden:
+            return [{**ref, 'ok': False, 'reason': 'no motion sensor widget in this map'}]
+        out.append({**ref, 'tag': 'chdt *', 'field': 'Motion sensor Unit Misc State',
+                    'ok': True, 'old': 'as the map defines',
+                    'new': 'only while disabled: ' + ', '.join(sorted(set(hidden)))
+                           + ('; NO SLACK to unshare: ' + ', '.join(failed) if failed else '')})
+    elif game in _FOG_TRAITS:
+        (pt, pes), (st, ses), at, off_v = _FOG_TRAITS[game]
+        for name, base in m.find_tags('matg', 'globals' + chr(92) + 'globals'):
+            for i, e in enumerate(_h3_chud_elems(m, base, (pt, pes))):
+                for sd in _h3_chud_elems(m, e, (st, ses)):
+                    old = m.data[sd + at]
+                    m.data[sd + at] = off_v
+                    out.append({**ref, 'tag': 'matg ' + str(name),
+                                'field': 'Default Player Traits[%d] Motion Tracker' % i,
+                                'ok': True, 'old': old, 'new': off_v})
+        if not out:
+            return [{**ref, 'ok': False, 'reason': "no sensor traits in this map's globals"}]
+    else:
+        return [{**ref, 'ok': False, 'reason': f'not supported in {game}'}]
+    return out
+
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -8306,6 +8501,10 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
             results.extend(_apply_betrayal(m, str(game).strip(), registry))
         elif s == 'eyepatch':
             results.extend(_apply_eyepatch(m, str(game).strip(), registry))
+        elif s == 'tilt':
+            results.extend(_apply_tilt(m, str(game).strip(), registry))
+        elif s == 'fog':
+            results.extend(_apply_fog(m, str(game).strip(), registry))
     # (effect name, tag) of every card for which "not present in this map" is an
     # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
     # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).
