@@ -2520,6 +2520,8 @@ class ModifierDatabase:
             # the enemy type a per-enemy skull acts on (Assassins / Thunderstorm /
             # Downpour). Not `enemy`: that key makes a card an Enemy-slot card.
             'skull_enemy': mod_data.get('enemy') if mod_data.get('skull') else None,
+            # weight points a skull adds to the score rescale (Options -> score scaling)
+            'score_points': mod_data.get('score_points'),
             # Name(s) of skull(s) that neutralise this effect. Only surfaced on the
             # card while one of them is actually active in the run.
             'affected_by_skull': mod_data.get('affected_by_skull'),

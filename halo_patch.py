@@ -139,6 +139,7 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          # a per-enemy skull (Assassins / Thunderstorm / Downpour) names
                          # the enemy type it acts on
                          'skull_enemy': mod.get('skull_enemy'),
+                         'score_points': mod.get('score_points'),
                          'affected_by_skull': mod.get('affected_by_skull'),
                          'harder_when': mod.get('harder_when'),
                          'easier_when': mod.get('easier_when'),

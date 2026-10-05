@@ -51,6 +51,13 @@ ENEMY_TO_BUCKET = {
     # ODST only. Engineers are not enemies in Halo 3, but they are in Mombasa
     # Streets, Kikowani Station and Data Hive, and scoredb.xml already scores them.
     'Engineer': 'engineer',
+    # Reach / Halo 4 rows scoredb.xml already has (pawn = Crawler, bishop = Watcher)
+    'Skirmisher': 'skirmisher',
+    'Knight': 'knight',
+    'Crawler': 'pawn',
+    'Watcher': 'bishop',
+    # the Human family is only drawn under Betrayal, when Marines score as enemies
+    'Human': 'marine',
 }
 
 # Bosses need class+type precision: Tartarus is not "every brute", he is the
@@ -278,6 +285,28 @@ def _lookup(multipliers, bucket):
     return multipliers.get(('*', typ))
 
 
+def _skull_buckets(eff):
+    """('*', type) rows a per-enemy skull's points go to; None for a general skull.
+    Thunderstorm: <enemy> also pays on the tier above (kills of the promoted units score
+    as that species), Downpour: <enemy> on the tier below, by halo_patch's ladder."""
+    enemy = eff.get('skull_enemy')
+    if not enemy:
+        return None
+    kind = str(eff.get('skull') or '').lower()
+    names = [enemy]
+    if kind in ('thunderstorm', 'downpour'):
+        try:
+            import halo_patch
+            fams = {f: (fac, t) for f, fac, t, _w in halo_patch._TS_FAMILIES}
+        except Exception:
+            fams = {}
+        if enemy in fams:
+            fac, tier = fams[enemy]
+            want = tier + (1 if kind == 'thunderstorm' else -1)
+            names += [f for f, (fc, t) in fams.items() if fc == fac and t == want]
+    return [('*', ENEMY_TO_BUCKET[n]) for n in names if ENEMY_TO_BUCKET.get(n)]
+
+
 def multipliers_for(effects, specific_group, weights=None, step=0.05,
                     cap_mult=None):
     """Turn a run's applied effects into a per-bucket score multiplier.
@@ -289,7 +318,25 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     pays more for Elites specifically.
     """
     totals = {}
+    general = 0     # skull points every enemy row takes ('*', '*'; see scale_xml)
     for eff in effects or []:
+        if eff.get('skull'):
+            # Skull cards: their halo.json `score_points` -- the real skull's MCC
+            # multiplier (careerdb.xml) in weight points -- on every enemy (a general
+            # skull) or on the enemy a per-enemy skull names. Not times `count`: a skull
+            # is drawn once.
+            pts = int(eff.get('score_points') or 0)
+            if not pts:
+                continue
+            rows = _skull_buckets(eff)
+            if rows is None:
+                general += pts
+                if str(eff.get('skull')).lower() == 'betrayal':
+                    totals[('*', 'marine')] = totals.get(('*', 'marine'), 0) + pts
+            else:
+                for b in rows:
+                    totals[b] = totals.get(b, 0) + pts
+            continue
         if eff.get('cat') not in (2, 3, 5):      # enemy-specific / enemy-general / boss
             continue
         w = weight_of(eff.get('name'), weights)
@@ -317,7 +364,12 @@ def multipliers_for(effects, specific_group, weights=None, step=0.05,
     # in _lookup and a boss can end up worth LESS than a rank-and-file enemy.
     for (cls, typ) in list(totals):
         if cls != '*':
-            totals[(cls, typ)] += totals.get(('*', typ), 0)
+            totals[(cls, typ)] += totals.get(('*', typ), 0) or general
+    if general:
+        for b in list(totals):
+            if b[0] == '*':
+                totals[b] += general
+        totals[('*', '*')] = general        # every other enemy row (scale_xml)
 
     out = {}
     for bucket, total in totals.items():
@@ -340,6 +392,14 @@ def scale_xml(xml_text, multipliers, cap=None):
     changed = 0
     for (start, end), attrs in entries:
         mult = _lookup(multipliers, bucket_of(attrs))
+        if mult is None and ('*', '*') in multipliers:
+            # a general skull's points reach every ENEMY row (positive score) the run's
+            # cards did not name -- never a betrayal row (negative) or a 0
+            try:
+                if float(attrs.get('score', 0)) > 0:
+                    mult = multipliers[('*', '*')]
+            except ValueError:
+                pass
         if not mult or mult == 1:
             continue
         chunk = xml_text[start:end]
