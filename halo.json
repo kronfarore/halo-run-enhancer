@@ -15573,7 +15573,7 @@
 					"Halo 1": [
 					],
 					"default": [
-						{ "step": "*1.1", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				}
 			},
@@ -15844,11 +15844,11 @@
 							{ "step": "*1.2", "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 4": [
-							{ "step": "*1.2", "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "step": "*0.9", "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
 							{ "step": "*1.2", "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 2": [
-							{ "step": "*1.2", "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
+							{ "step": "*0.9", "field": "Cover Shield Fraction", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" },
 							{ "step": "*1.2", "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1", "group": "Shield Fractions" }
 						]
 					}
@@ -17315,10 +17315,10 @@
 						"Halo 1": [
 						],
 						"Halo 4": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						],
 						"Halo 2": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -18329,13 +18329,13 @@
 							{ "step": "*1.2", "field": "Pursue Shield Fraction", "min": "0", "max": "1", "group": "Shield Fractions" }
 						],
 						"Halo 2": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 						],
 						"Halo 4": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
 						],
 						"Halo Reach": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
 						]
 					}
 				},
@@ -19929,7 +19929,7 @@
 					"tag": "char objects\\characters\\flood*\\ai\\flood_pureform*",
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Body Vitality": {
@@ -20410,10 +20410,10 @@
 						"Halo 1": [
 						],
 						"Halo 4": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
 						],
 						"Halo 2": [
-							{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
+							{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": 0, "min": "0", "max": "1" }
 						]
 					}
 				},
@@ -20966,7 +20966,7 @@
 					"tag": {"Halo 2": "char objects\\characters\\bugger\\ai\\bugger*", "Halo 3": "char objects\\characters\\bugger\\ai\\bugger*"},
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Dive From Grenade Chance": {
@@ -21450,7 +21450,7 @@
 					"tag": {"Halo 2": "char objects\\characters\\brute\\ai\\brute*", "Halo 3": "char objects\\characters\\brute\\ai\\brute*"},
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Body Vitality": {
@@ -22173,7 +22173,7 @@
 					"constraints": [{"field": "Hide Behind Cover Time Max", "of": "Hide Behind Cover Time", "not_below": true, "block": "Cover Properties"}],
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": 0, "max": 1 }
 					]
 				},
 				"Dive From Grenade Chance": {
@@ -22398,7 +22398,7 @@
 					"tag": "char objects\\characters\\engineer\\ai\\engineer*",
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Cover Chance": {
@@ -22705,7 +22705,7 @@
 					"tag": "char objects\\characters\\storm_knight\\ai\\storm_knight*",
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Shield Fraction", "block": "Cover Properties", "group": "Shield Fractions", "min": "0", "max": "1", "index": "all" },
+						{ "step": "*0.9", "field": "Cover Shield Fraction", "block": "Cover Properties", "group": "Shield Fractions", "min": "0", "max": "1", "index": "all" },
 						{ "step": "*1.2", "field": "Emerge From Cover When Shield Fraction Reaches Threshold", "block": "Cover Properties", "group": "Shield Fractions", "min": "0", "max": "1", "index": "all" }
 					]
 				},
@@ -23184,7 +23184,7 @@
 					"tag": "char objects\\characters\\storm_pawn\\ai\\storm_pawn*",
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "min": "0", "max": "1", "index": "all" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "min": "0", "max": "1", "index": "all" }
 					]
 				},
 				"Body Vitality": {
@@ -24061,7 +24061,7 @@
 					"desc": "How hurt they have to be before they run for cover.",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 					"tag": {"Halo 2": "char objects\\characters\\marine\\ai\\marine & objects\\characters\\marine\\ai\\marine_female & objects\\characters\\marine\\ai\\marine_odst & objects\\characters\\marine\\ai\\marine_sgt & objects\\characters\\marine\\ai\\marine_dress & objects\\characters\\marine\\ai\\marine_wounded", "Halo 3": "char objects\\characters\\marine\\ai\\marine & objects\\characters\\marine\\ai\\marine_female & objects\\characters\\marine\\ai\\marine_odst & objects\\characters\\marine\\ai\\marine_odst_sgt & objects\\characters\\marine\\ai\\marine_pilot & objects\\characters\\marine\\ai\\marine_sgt & objects\\characters\\marine\\ai\\marine_wounded & objects\\characters\\marine\\ai\\naval_officer", "Halo Reach": "char objects\\characters\\marine\\ai\\trooper* & objects\\characters\\marine_female\\ai\\trooper_female & objects\\characters\\spartans_ai\\ai\\spartan_generic", "Halo 4": "char objects\\characters\\storm_marine\\ai\\storm_marine* & objects\\characters\\storm_marine\\ai\\storm_fleet_officer & objects\\characters\\storm_spartans_ai\\ai\\storm_spartan_ai & objects\\characters\\storm_civilian_male\\ai\\storm_scientist_male_armed & objects\\characters\\storm_civilian_female\\ai\\storm_scientist_female_armed"},
-					"targets": {"Halo 2": [{"step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo 3": [{"step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo Reach": [{"step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo 4": [{"step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}]},
+					"targets": {"Halo 2": [{"step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo 3": [{"step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo Reach": [{"step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}], "Halo 4": [{"step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1"}]},
 					"skip_games": ["Halo 3: ODST"],
 					"debug_desc": "Human family: offered only while the Betrayal skull is active (it turns every non-story human squad hostile). Same mechanism as the per-enemy card of the same name, aimed at the human AI tags; story characters are left out of the tag lists. Measured on the baseline maps (combat human tags that define it, value range): Halo 2 Cover Vitality Threshold: marine 1; Halo 3 Cover Vitality Threshold: marine 1; Halo Reach Cover Vitality Threshold: spartan_generic, trooper 0.5..1.1; Halo 4 Cover Vitality Threshold: storm_marine, storm_marine_m60, storm_spartan_ai 0.5..1.1."
 				},
@@ -24899,7 +24899,7 @@
 					"tag": "char objects\\characters\\brute\\ai\\brute_tartarus",
 					"split_from": "Cover Properties",
 					"targets": [
-						{ "step": "*1.2", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
+						{ "step": "*0.9", "field": "Cover Vitality Threshold", "block": "Cover Properties", "index": "all", "min": "0", "max": "1" }
 					]
 				},
 				"Maximum Firing Distance": {
