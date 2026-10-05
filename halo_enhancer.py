@@ -2404,7 +2404,8 @@ class ModifierDatabase:
         self.positive_pool = []
         self.negative_pool = []
         self.wildcard_pool = []
-        self.skull_pool = []        # #7: negative-slot alternatives, whole-map rules
+        self.skull_pool = []
+        self.skull_defs = {}        # #7: negative-slot alternatives, whole-map rules
         self.weapon_mods = {}
         self.enemy_mods = {}
         self.boss_mods = {}         # boss name -> mods (Boss enemy modifier section)
@@ -2507,6 +2508,9 @@ class ModifierDatabase:
             'skip_games': self._parse_games(mod_data.get('skip_games')),
             'wildcard': bool(mod_data.get('wildcard', False)),
             'skull': mod_data.get('skull'),   # #7: whole-map rule, not a tag edit
+            # the enemy type a per-enemy skull acts on (Assassins / Thunderstorm /
+            # Downpour). Not `enemy`: that key makes a card an Enemy-slot card.
+            'skull_enemy': mod_data.get('enemy') if mod_data.get('skull') else None,
             # Name(s) of skull(s) that neutralise this effect. Only surfaced on the
             # card while one of them is actually active in the run.
             'affected_by_skull': mod_data.get('affected_by_skull'),
@@ -2627,6 +2631,7 @@ class ModifierDatabase:
         # so they're drawn in place of a normal negative rather than alongside one.
         if 'Skull modifiers' in self.data:
             for mod_name, mod_data in self.data['Skull modifiers'].items():
+                self.skull_defs[mod_name] = mod_data
                 self.skull_pool.append(self._build_mod(mod_name, mod_data))
         # Wildcard pool: Friend modifiers are wildcards by nature, plus any mod
         # anywhere flagged `wildcard: true`.
@@ -2922,7 +2927,7 @@ class ModifierDatabase:
                             'name': f'{name} {m["name"]}'})
         return out
 
-    def get_enemy_modifiers(self, mission_id, betrayal=False):
+    def get_enemy_modifiers(self, mission_id, betrayal=False, vanished=()):
         if mission_id not in self.mission_enemies:
             return list(self.negative_pool)
         enemy_names = list(self.mission_enemies[mission_id]['enemies'])
@@ -2932,6 +2937,8 @@ class ModifierDatabase:
             # family joins the Enemy slot -- and only then. A mission that fields no
             # humans at all says so with "humans": false.
             enemy_names.append('Human')
+        # An enemy type a Thunderstorm / Downpour took out of the run is not drawn for.
+        enemy_names = [e for e in enemy_names if e not in set(vanished or ())]
         if (CONFIG.get('h4_hostile_sentinels')
                 and mission_id in (CONFIG.get('h4_sentinel_missions') or ())
                 and 'Sentinel' not in enemy_names):
@@ -4056,8 +4063,9 @@ class ModifierDatabase:
                 mods.append(extra)
         return self.filter_blacklisted(mods, blacklist, game)
 
-    def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None, betrayal=False):
-        mods = self.get_enemy_modifiers(mission_id, betrayal)
+    def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None, betrayal=False,
+                                     vanished=()):
+        mods = self.get_enemy_modifiers(mission_id, betrayal, vanished)
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_wildcard_modifier_filtered(self, blacklist, game=None):
@@ -4077,13 +4085,63 @@ class ModifierDatabase:
         available = self.filter_blacklisted(self.wildcard_pool, blacklist, game)
         return random.choice(available) if available else None
 
-    def get_skull_modifier_filtered(self, active_names, blacklist, game=None):
+    def get_skull_modifier_filtered(self, active_names, blacklist, game=None,
+                                    mission_id=None):
         """#7: draw a Skull to stand in for a normal negative. A skull is a whole-map
         rule, so the same one twice does nothing extra — already-active skulls are
-        excluded. Whether skulls are offered at all is the Other slot's own switch."""
+        excluded. Whether skulls are offered at all is the Other slot's own switch.
+
+        A per-enemy skull (Assassins / Thunderstorm / Downpour: <enemy>) is offered only
+        on a level that fields that enemy, never once the enemy has vanished from the
+        run (vanished_enemies), and Thunderstorm and Downpour exclude each other for the
+        same enemy (user, 2026-10-05)."""
+        active = set(active_names or ())
+        here = set((self.mission_enemies.get(mission_id) or {}).get('enemies') or ()) \
+            if mission_id else None
+        gone = self.vanished_enemies(active)
+        taken = {(self.skull_kind(n), self.skull_enemy(n)) for n in active}
+
+        def ok(m):
+            if m.get('name') in active:
+                return False
+            enemy = m.get('skull_enemy')
+            if not enemy:
+                return True
+            if (here is not None and enemy not in here) or enemy in gone:
+                return False
+            kind = str(m.get('skull') or '').lower()
+            other = {'thunderstorm': 'downpour', 'downpour': 'thunderstorm'}.get(kind)
+            return not (other and (other, enemy) in taken)
         available = [m for m in self.filter_blacklisted(self.skull_pool, blacklist, game)
-                     if m.get('name') not in active_names]
+                     if ok(m)]
         return random.choice(available) if available else None
+
+    def skull_kind(self, name):
+        return str((self.skull_defs.get(name) or {}).get('skull') or '').lower()
+
+    def skull_enemy(self, name):
+        d = self.skull_defs.get(name) or {}
+        return d.get('enemy') if d.get('skull') else None
+
+    def vanished_enemies(self, active_names):
+        """Enemy types no longer in the run's levels: moved away by an active Thunderstorm
+        or Downpour with nothing moved INTO them -- no Thunderstorm on the tier below and
+        no Downpour on the tier above (user, 2026-10-05: their cards leave the pool;
+        cards already drawn stay). Ladder by halo_patch._TS_FAMILIES."""
+        import halo_patch
+        fams = {f: (fac, tier) for f, fac, tier, _w in halo_patch._TS_FAMILIES}
+        up = {self.skull_enemy(n) for n in active_names or () if self.skull_kind(n) == 'thunderstorm'}
+        down = {self.skull_enemy(n) for n in active_names or () if self.skull_kind(n) == 'downpour'}
+        gone = set()
+        for e in (up | down) - set(halo_patch._TS_NEVER_MOVED):
+            if e not in fams:
+                continue
+            fac, tier = fams[e]
+            refill = any(fams.get(x, (None,))[0] == fac and fams[x][1] == tier - 1 for x in up) or \
+                any(fams.get(x, (None,))[0] == fac and fams[x][1] == tier + 1 for x in down)
+            if not refill:
+                gone.add(e)
+        return gone
 
     def get_exhaust_modifier_filtered(self, active_names, blacklist, game=None):
         """#5: draw a one-map Exhaust from the general negative pool, excluding
@@ -6697,9 +6755,28 @@ class MagnitudeEditorDialog(QDialog):
                          'reason': pushed.get('reason')})
         return rows
 
+    def _skull_specs(self):
+        """The skulls of this patch, for apply_run: a name, or for a per-enemy skull a
+        dict with the enemy it acts on and its tag resolved for this game."""
+        out = []
+        for e in self.effects:
+            if not e.get('skull'):
+                continue
+            if e.get('skull_enemy'):
+                out.append({'skull': e['skull'], 'enemy': e['skull_enemy'],
+                            'name': e.get('name'),
+                            'tag': resolve_gamed(e.get('tag'), self.game)})
+            else:
+                out.append(e['skull'])
+        return out
+
+    @staticmethod
+    def _skull_name(s):
+        return str(s.get('skull') if isinstance(s, dict) else s).strip().lower()
+
     @staticmethod
     def _iron_drawn(skulls):
-        return any(str(s).strip().lower() == 'iron' for s in (skulls or ()))
+        return any(MagnitudeEditorDialog._skull_name(s) == 'iron' for s in (skulls or ()))
 
     def _apply_iron(self, skulls):
         """The Iron skull is engine code, not tag data: iron_live patches the running
@@ -6716,7 +6793,7 @@ class MagnitudeEditorDialog(QDialog):
 
     @staticmethod
     def _betrayal_drawn(skulls):
-        return any(str(s).strip().lower() == 'betrayal' for s in (skulls or ()))
+        return any(MagnitudeEditorDialog._skull_name(s) == 'betrayal' for s in (skulls or ()))
 
     def _betrayal_left_on(self):
         """True when an earlier Betrayal run is still in effect: a positive Marine row
@@ -8357,7 +8434,7 @@ class MagnitudeEditorDialog(QDialog):
         patch log, no patch code. For after an MCC start, when those steps have been
         discarded but the map patch still stands, so re-patching the map is not needed.
         Covers exactly what `_mcc_required` lists; the warning reads the same list."""
-        skulls = [e['skull'] for e in self.effects if e.get('skull')]
+        skulls = self._skull_specs()
         need = self._mcc_required(skulls)
         if not need:
             QMessageBox.information(
@@ -8468,7 +8545,7 @@ class MagnitudeEditorDialog(QDialog):
             return
         # Before anything is written: live steps fail with MCC closed, and that is the
         # user's call to make, not a surprise in the results.
-        if not self._confirm_mcc_closed([e['skull'] for e in self.effects if e.get('skull')]):
+        if not self._confirm_mcc_closed(self._skull_specs()):
             return
 
         # #7: canonicalize every entry BEFORE it is read, so the magnitudes stored in
@@ -8709,7 +8786,7 @@ class MagnitudeEditorDialog(QDialog):
         remove_cutscenes =bool(CONFIG.get('remove_h3_cutscenes')) and self.game == 'Halo 3'
         # #7: skulls carry no per-field targets, so they never reach plan_map — collect
         # them straight off the effects list.
-        skulls = [e['skull'] for e in self.effects if e.get('skull')]
+        skulls = self._skull_specs()
         sprint = self._sprint_spec()
         # A spec that turns everything OFF rides along with other edits; it shouldn't
         # force a patch on an otherwise-empty selection (only ENABLING is standalone).
@@ -10708,9 +10785,8 @@ class OptionsDialog(QDialog):
             "Each grenade type a player has drafted is placed where their starting "
             "weapons are dropped, stacked exactly on the marker, as many as that type's "
             "Maximum Count (the most a player can carry -- a shared value, so a Maximum "
-            "Count card changes it). Reach and Halo 4 use the enhancer marker; Halo 3 "
-            "and ODST the spot their starting equipment goes. Not built for Halo 1 and "
-            "Halo 2 yet.")
+            "Count card changes it). Halo 1, Halo 2, Reach and Halo 4 use the enhancer "
+            "marker; Halo 3 and ODST the spot their starting equipment goes.")
         allform.addRow("", self.spawn_grenades_cb)
 
         strength_row = QHBoxLayout()
@@ -13398,11 +13474,15 @@ class HaloGUI(QMainWindow):
         """Is the Betrayal skull in force in this run? It opens the Human enemy cards."""
         return 'Betrayal' in active_skull_names(self.run_state)
 
+    def _vanished(self):
+        """Enemy types an active Thunderstorm / Downpour took out of the run."""
+        return self.db.vanished_enemies(active_skull_names(self.run_state))
+
     def _enemy_pool(self):
         # Already includes the general negative pool and is blacklist-filtered.
         return self.db.get_enemy_modifiers_filtered(
             self.run_state.mission_id, self.run_state.blacklist, self._current_game(),
-            betrayal=self._betrayal_active())
+            betrayal=self._betrayal_active(), vanished=self._vanished())
 
     def _pick_enemy(self, enemy_mods, used_enemies):
         available = [e for e in enemy_mods if e.get('name', '') not in used_enemies]
@@ -15121,7 +15201,7 @@ class HaloGUI(QMainWindow):
             ident[part] = copy.deepcopy(random.choice(cands))
         elif mod_type == 'enemy':
             mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game,
-                                                        betrayal=self._betrayal_active())
+                                                        betrayal=self._betrayal_active(), vanished=self._vanished())
             pair['enemy_mod'] = random.choice(mods) if mods else None
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
@@ -15141,7 +15221,8 @@ class HaloGUI(QMainWindow):
                 pair[f'{mod_type}_mod'] = make_boss_mod(random.choice(boss_mods), name)
         elif mod_type == 'skull':
             active = self.enhancer._active_negative_names()
-            pair['skull_mod'] = self.db.get_skull_modifier_filtered(active, bl, game)
+            pair['skull_mod'] = self.db.get_skull_modifier_filtered(
+                active, bl, game, mission_id=self.run_state.mission_id)
         show_p1 = self.run_state.current_turn == 'player1'
         show_p2 = self.run_state.current_turn == 'player2'
         self.display_pairs(self.run_state.pairs, show_p1, show_p2)
@@ -16041,7 +16122,8 @@ class RunEnhancer:
             elif picked == 'exhaust':
                 mod = self.db.get_exhaust_modifier_filtered(active_neg, bl, game)
             elif picked == 'skull':
-                mod = self.db.get_skull_modifier_filtered(active_neg, bl, game)
+                mod = self.db.get_skull_modifier_filtered(active_neg, bl, game,
+                                                          mission_id=mid)
             elif picked == 'ally':
                 mod = self.db.get_wildcard_modifier_filtered(bl, game)
                 # Marine 'Armed' cards ride the Ally pool at the LOWEST priority (user,
@@ -16084,7 +16166,7 @@ class RunEnhancer:
         pmods = self.db.get_player_modifiers_filtered(
             self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active())
+                                                          betrayal=self._betrayal_active(), vanished=self._vanished())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         wpool = self._new_weapon_pool(for_player)
@@ -16230,6 +16312,10 @@ class RunEnhancer:
         """Is the Betrayal skull in force in this run? It opens the Human enemy cards."""
         return 'Betrayal' in active_skull_names(self.run_state)
 
+    def _vanished(self):
+        """Enemy types an active Thunderstorm / Downpour took out of the run."""
+        return self.db.vanished_enemies(active_skull_names(self.run_state))
+
     def _active_negative_names(self):
         """Names of negatives already active this run — every enemy card, every SKULL,
         plus Exhausts still bound to the current mission. Keeps a fresh Exhaust or
@@ -16343,7 +16429,7 @@ class RunEnhancer:
             return []
 
         enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
-                                                          betrayal=self._betrayal_active())
+                                                          betrayal=self._betrayal_active(), vanished=self._vanished())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)

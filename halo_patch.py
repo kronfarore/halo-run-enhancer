@@ -136,6 +136,9 @@ def collect_effects(rounds, mission_id=None, valid_bosses=None):
                          'desc_overrides': mod.get('desc_overrides'),  # #7
                          'tag': tag, 'targets': list(mod.get('targets') or []),
                          'skull': mod.get('skull'),
+                         # a per-enemy skull (Assassins / Thunderstorm / Downpour) names
+                         # the enemy type it acts on
+                         'skull_enemy': mod.get('skull_enemy'),
                          'affected_by_skull': mod.get('affected_by_skull'),
                          'harder_when': mod.get('harder_when'),
                          'easier_when': mod.get('easier_when'),
@@ -2510,40 +2513,46 @@ def _apply_schism(m, game, registry):
     return out
 
 
-# "Thunderstorm" (this toolkit's version): enemies are promoted a SPECIES up its faction's
-# ladder, not a rank -- every squad's character moves to the next tier that this map's
-# character palette holds. A tier with nothing in the palette is skipped; the top tier
-# stays. User's ladders (2026-10-05):
-#   Covenant    Grunt -> Jackal / Drone / Skirmisher -> Elite / Brute -> Hunter
-#   Flood       Infection -> Carrier -> Combat -> Pure (Halo 3's pure forms)
-#   Prometheans Crawler -> Watcher -> Knight
+# "Thunderstorm" / "Downpour" (this toolkit's versions, per enemy type, user 2026-10-05):
+# Thunderstorm: <enemy> promotes that enemy one SPECIES up its faction's ladder,
+# Downpour: <enemy> demotes it one down (its card also carries x1.5 shield / vitality /
+# fire-rate rows for the lower species, applied by the normal ops). Every squad entry
+# moves to the nearest tier in that direction that this map's character palette holds;
+# a tier with nothing in the palette is skipped.
+#   Covenant  Grunt -> Jackal / Skirmisher / Drone -> Elite / Brute -> Hunter
+#   Flood     Infection -> Carrier -> Combat -> Pure (Halo 3's pure forms)
+# Drones are never moved (a flying swarm replaced by walkers breaks the encounters built
+# for it), but other species may be promoted or demoted INTO them. Prometheans and
+# Sentinels are out of the system: their movement types do not survive a swap.
 # A tier with several species takes them in the ladder's order (Jackal, then Skirmisher,
 # then Drone) -- and for Elite / Brute the game's own line first: Brutes in Halo 3 and
-# ODST, Elites elsewhere. Within the target species the source's RANK word
-# (minor, major, ultra, captain...) is kept when the palette has it, else the plain one.
+# ODST, Elites elsewhere. Within the target species the source's RANK word (minor, major,
+# ultra, captain...) is kept when the palette has it, else the plain one.
+#
+# NO DOUBLE MOVES: the mapping is computed once from the map as shipped and every squad /
+# location / spawn point / cell entry is written at most once -- the tools store
+# identical arrays ONCE, so the same element is reached from several squads.
 #
 # A target must be an ENEMY on this map: from Halo 2 on a character's team comes from its
-# biped, and Halo 3's Elites are on the Covenant team the player is allied with -- a
-# Jackal promoted to an Elite there would quietly become a friend. Bosses, story
-# characters and humans are never promoted, and squads / fire-teams / cells that spawn in
-# a vehicle are left alone (a Grunt's turret seat is no Hunter's).
-#
-# Weapons: Halo 2 on name a weapon per squad / location almost every time, and a Grunt's
-# plasma pistol in a Hunter's hands is nonsense, so every promoted entry's Initial Weapon
-# indices are reset to -1 = the character's own default. Halo 1 carries the weapon in the
-# actor variant, so nothing to do there.
-#
-# RESIDENCY IS NOT CHECKED. Halo 1 and 2 load the whole palette; from Halo 3 on a target
-# that is not resident in a zone set will fail to spawn there (or worse) -- untested.
-_TS_TIERS = (
-    ('covenant', ((1, ('grunt',)), (2, ('jackal', 'skirmisher', 'bugger')),
-                  (3, ('elite', 'brute')), (4, ('hunter',)))),
-    ('flood', ((1, ('infection',)), (2, ('carrier',)), (3, ('combat',)),
-               (4, ('pure', 'ranged', 'tank', 'stalker')))),
-    ('promethean', ((1, ('pawn', 'crawler')), (2, ('bishop', 'watcher')),
-                    (3, ('knight',)))),
+# biped, and Halo 3's Elites are on the Covenant team the player is allied with. Bosses,
+# story characters and humans are never moved, and entries that spawn in a vehicle are
+# left alone (a Grunt's turret seat is no Hunter's).
+_TS_FAMILIES = (
+    # family (the card's `enemy`), faction, tier, species words
+    ('Grunt', 'covenant', 1, ('grunt',)),
+    ('Jackal', 'covenant', 2, ('jackal',)),
+    ('Skirmisher', 'covenant', 2, ('skirmisher',)),
+    ('Bugger', 'covenant', 2, ('bugger',)),
+    ('Elite', 'covenant', 3, ('elite',)),
+    ('Brute', 'covenant', 3, ('brute',)),
+    ('Hunter', 'covenant', 4, ('hunter',)),
+    ('Flood Infection Form', 'flood', 1, ('infection',)),
+    ('Flood Carrier Form', 'flood', 2, ('carrier',)),
+    ('Flood Combat Form', 'flood', 3, ('combat',)),
+    ('Flood Pure Form', 'flood', 4, ('pure', 'ranged', 'tank', 'stalker')),
 )
-_TS_PREFER = {'Halo 3': 'brute', 'Halo 3: ODST': 'brute'}
+_TS_NEVER_MOVED = ('Bugger',)
+_TS_PREFER = {'Halo 3': 'Brute', 'Halo 3: ODST': 'Brute'}
 _TS_RANKS = ('minor', 'major', 'ultra', 'captain', 'general', 'zealot', 'ranger', 'spec_ops',
              'stealth', 'commander', 'chieftain', 'heavy', 'sniper', 'officer')
 # Per game: where a squad unit names its character, its weapons and its vehicle.
@@ -2564,18 +2573,16 @@ _TS_LAYOUT = {
 }
 
 
-def _ts_tier(species):
+def _ts_family(species):
+    """(family, faction, tier) of a character species, or (None, None, None). The Flood
+    families only for Flood species, and only them: `floodcombat elite` is no Elite, and
+    Halo 3's `brute_stalker` is no Flood stalker."""
     sp = (species or '').lower()
-    # The Flood ladder only for Flood species, and only it: `floodcombat elite` is no
-    # Elite, and Halo 3's `brute_stalker` is no Flood stalker.
     flood = 'flood' in sp
-    for faction, tiers in _TS_TIERS:
-        if (faction == 'flood') != flood:
-            continue
-        for tier, words in tiers:
-            if any(w in sp for w in words):
-                return faction, tier
-    return None, None
+    for fam, faction, tier, words in _TS_FAMILIES:
+        if (faction == 'flood') == flood and any(w in sp for w in words):
+            return fam, faction, tier
+    return None, None, None
 
 
 def _ts_rank(name):
@@ -2583,41 +2590,42 @@ def _ts_rank(name):
     return next((r for r in _TS_RANKS if r in leaf), None)
 
 
-def _ts_promotions(game, entries):
-    """{palette index: palette index} from [(name, species, eligible_target)]."""
-    by_tier = {}
-    for i, (name, sp, ok) in enumerate(entries):
-        f, t = _ts_tier(sp)
-        if f and ok:
-            by_tier.setdefault((f, t), []).append(i)
+def _ts_moves(game, entries, up, down):
+    """{palette index: palette index} from [(name, species, eligible)] -- `up` / `down`
+    are the family names whose Thunderstorm / Downpour is active."""
+    fam_of = [_ts_family(sp) for _n, sp, _ok in entries]
+    targets = {}
+    for i, ((name, sp, ok), (fam, fac, tier)) in enumerate(zip(entries, fam_of)):
+        if fam and ok:
+            targets.setdefault((fac, tier), []).append(i)
+    order = [f for f, *_ in _TS_FAMILIES]
     prefer = _TS_PREFER.get(game)
     out = {}
-    for i, (name, sp, ok) in enumerate(entries):
-        f, t = _ts_tier(sp)
-        if not f or not name:
+    for i, ((name, sp, ok), (fam, fac, tier)) in enumerate(zip(entries, fam_of)):
+        if not fam or not ok or fam in _TS_NEVER_MOVED:
             continue
-        ups = sorted(k[1] for k in by_tier if k[0] == f and k[1] > t)
-        if not ups:
+        step = 1 if fam in up else -1 if fam in down else 0
+        if not step:
             continue
-        cands = by_tier[(f, ups[0])]
-        # within a tier the ladder's own order decides (a Grunt becomes a Jackal before
-        # a Drone), unless the game's line says otherwise (Brute before Elite in H3/ODST)
-        words = dict(dict(_TS_TIERS)[f])[ups[0]]
-        species_there = sorted({entries[j][1] for j in cands}, key=lambda s: (
-            not (prefer and prefer in s),
-            next((k for k, w in enumerate(words) if w in s), len(words)), s))
-        pool = [j for j in cands if entries[j][1] == species_there[0]]
+        tiers = sorted((t for f, t in targets if f == fac and (t - tier) * step > 0),
+                       key=lambda t: abs(t - tier))
+        if not tiers:
+            continue
+        cands = targets[(fac, tiers[0])]
+        fams = sorted({fam_of[j][0] for j in cands},
+                      key=lambda f: (f != prefer, order.index(f)))
+        pool = [j for j in cands if fam_of[j][0] == fams[0]]
         rank = _ts_rank(name)
         same = [j for j in pool if _ts_rank(entries[j][0]) == rank]
         plain = [j for j in pool if _ts_rank(entries[j][0]) is None]
-        pick = (same or plain or pool)
-        out[i] = min(pick, key=lambda j: len(entries[j][0]))
+        out[i] = min(same or plain or pool, key=lambda j: len(entries[j][0]))
     return out
 
 
-def _apply_thunderstorm(m, game, registry):
+def _apply_ladder(m, game, registry, up, down):
+    """Thunderstorm (`up`) and Downpour (`down`) for the named enemy families, in one pass."""
     import enemy_count as ec
-    ref = {'effect': 'Thunderstorm'}
+    ref = {'effect': 'Thunderstorm / Downpour'}
     scnr_base = _scnr_base(m)
     if scnr_base is None:
         return [{**ref, 'ok': False, 'reason': 'scenario tag unavailable'}]
@@ -2628,7 +2636,7 @@ def _apply_thunderstorm(m, game, registry):
     def put(o, v):
         struct.pack_into('<h', m.data, o, v)
 
-    moved = {}
+    moved, done = {}, set()
 
     def note(old, new):
         k = '%s->%s' % (ec.species(old), ec.species(new))
@@ -2645,20 +2653,22 @@ def _apply_thunderstorm(m, game, registry):
             names.append(name)
         ok = [bool(n) and not ec._is_human(u) and not ec._is_boss(n) and not ec._is_boss(u)
               for n, u in zip(names, units)]
-        promo = _ts_promotions(game, [(n, ec.species(u), o)
-                                      for n, u, o in zip(names, units, ok)])
-        promo = {k: v for k, v in promo.items() if ok[k]}
+        moves = _ts_moves(game, [(n, ec.species(u), o) for n, u, o in zip(names, units, ok)],
+                          up, down)
+
+        def h1(addr):
+            if addr in done:
+                return
+            done.add(addr)
+            a = i16(addr)
+            if a in moves:
+                put(addr, moves[a])
+                note(units[a], units[moves[a]])
         for e in m.follow_all(scnr_base, [ec.H1_ENCOUNTERS], [ec.H1_ENC_SZ], 'all'):
             for sq in m.follow_all(e, [ec.H1_SQUADS], [ec.H1_SQ_SZ], 'all'):
-                a = i16(sq + ec.H1_ACTOR)
-                if a in promo:
-                    put(sq + ec.H1_ACTOR, promo[a])
-                    note(units[a], units[promo[a]])
+                h1(sq + ec.H1_ACTOR)
                 for loc in m.follow_all(sq, [ec.H1_LOCS], [ec.H1_LOC_SZ], 'all'):
-                    o = i16(loc + ec.H1_LOC_ACTOR)
-                    if o in promo:
-                        put(loc + ec.H1_LOC_ACTOR, promo[o])
-                        note(units[o], units[promo[o]])
+                    h1(loc + ec.H1_LOC_ACTOR)
     else:
         lay = _BETRAYAL.get(game)
         ts = _TS_LAYOUT.get(game)
@@ -2672,22 +2682,26 @@ def _apply_thunderstorm(m, game, registry):
         ok = [bool(n) and not ec._is_human(n) and not _is_human_tag(n) and not ec._is_boss(n)
               and not _is_loyal_tag(n) and (char_team[k] not in friends)
               for k, n in enumerate(names)]
-        promo = {k: v for k, v in _ts_promotions(
-            game, [(n, ec.species(n), o) for n, o in zip(names, ok)]).items() if ok[k]}
+        moves = _ts_moves(game, [(n, ec.species(n), o) for n, o in zip(names, ok)], up, down)
+        weapon_for = _ts_weapons(m, game, scnr_base, lay, ts, names)
 
         def unit(base, spec):
-            """Promote one squad / fire-team / location / spawn point in place."""
+            """Move one squad / fire-team / location / spawn point in place."""
+            if base in done:
+                return
+            done.add(base)
             if 'veh' in spec and i16(base + spec['veh']) >= 0:
                 return
             c = i16(base + spec['char'])
-            if c in promo:
-                put(base + spec['char'], promo[c])
-                for w in spec['weap']:
-                    put(base + w, -1)
-                note(names[c], names[promo[c]])
+            if c in moves:
+                put(base + spec['char'], moves[c])
+                w = weapon_for(moves[c])
+                if w is not None:
+                    put(base + spec['weap'][0], w)
+                    put(base + spec['weap'][1], -1)
+                note(names[c], names[moves[c]])
 
         soff, sel = lay['squads']
-        seen_cells = set()
         for sq in m.follow_all(scnr_base, [soff], [sel], 'all'):
             if 'squad' in ts:
                 unit(sq, ts['squad'])
@@ -2708,28 +2722,36 @@ def _apply_thunderstorm(m, game, registry):
                 cells, (co, ce, cx), weaps, veh = ts['cells']
                 for off, esz in cells:
                     for cell in m.follow_all(sq, [off], [esz], 'all'):
-                        if cell in seen_cells:          # ODST/Reach share cell blocks
+                        if cell in done:
                             continue
-                        seen_cells.add(cell)
+                        done.add(cell)
                         if i16(cell + veh) >= 0:
                             continue
-                        hit = False
+                        new = None
                         for ct in m.follow_all(cell, [co], [ce], 'all'):
                             c = i16(ct + cx)
-                            if c in promo:
-                                put(ct + cx, promo[c])
-                                note(names[c], names[promo[c]])
-                                hit = True
-                        if hit:
-                            for wo, we, wx in weaps:
-                                for w in m.follow_all(cell, [wo], [we], 'all'):
-                                    put(w + wx, -1)
+                            if c in moves:
+                                put(ct + cx, moves[c])
+                                note(names[c], names[moves[c]])
+                                new = moves[c]
+                        w = weapon_for(new) if new is not None else None
+                        if w is not None:
+                            for wo, we, wx in weaps[:1]:
+                                for el in m.follow_all(cell, [wo], [we], 'all'):
+                                    put(el + wx, w)
     if not moved:
         return [{**ref, 'ok': True, 'skip': True,
-                 'reason': 'no enemy here has a higher tier in this map\'s palette'}]
-    return [{**ref, 'field': 'Squad characters (species promotion)', 'ok': True,
+                 'reason': 'no picked enemy has a tier to move to in this map\'s palette'}]
+    return [{**ref, 'field': 'Squad characters (species ladder)', 'ok': True,
              'old': 'as the map defines',
              'new': ', '.join('%s x%d' % kv for kv in sorted(moved.items()))}]
+
+
+def _ts_weapons(m, game, scnr_base, lay, ts, names):
+    """palette index -> the weapon to hand a unit that became that character, or None to
+    leave its weapon alone. PLACEHOLDER until the per-game weapon semantics are settled:
+    keeps the unit's own weapon (never -1, which left promoted units unarmed)."""
+    return lambda _c: None
 
 
 # "Famine": weapons dropped by the AI carry half the ammo. Every character's Weapons
@@ -5311,6 +5333,10 @@ def grenade_supply(m, game, registry, index):
 # The Grenades element's Equipment tagRef (16-byte, ident at +0xC), per MCC plugin; the
 # plugin lookup skips tagRefs. Halo 4's PvE equipment first.
 _GRENADE_EQUIPMENT_REF = {'Halo 3': (0x14,), 'Halo 3: ODST': (0x14,),
+                          # Halo 1 matg Grenades (0x128, 0x44): throwing effect 0x4,
+                          # hud interface 0x14, Equipment 0x24, projectile 0x34
+                          # (checked on a30: 'piqe' at 0x24 for frag and plasma)
+                          'Halo 1': (0x24,),
                           'Halo Reach': (0x18,), 'Halo 4': (0x58, 0x38),
                           # Halo2MCC/matg.xml: Grenades (0x100, 0x2C) Equipment @0x1C
                           'Halo 2': (0x1C,)}
@@ -5595,10 +5621,10 @@ def _apply_spawn_grenades(m, game, registry, spec):
     groups = spec.get('groups') or []
     if not any(groups):
         return []
-    if game not in ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4'):
+    if game not in ('Halo 1', 'Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach',
+                    'Halo 4'):
         return [{'effect': 'starting grenades', 'ok': True, 'skip': True,
-                 'reason': 'not built for %s yet (Halo 2, 3, ODST, Reach, Halo 4 only)'
-                           % game}]
+                 'reason': 'not built for %s yet' % game}]
     out, tag_groups = [], []
     for g in groups:
         tg = []
@@ -5620,6 +5646,10 @@ def _apply_spawn_grenades(m, game, registry, spec):
         # Halo 2's own placer (second-generation scenario), stacked on the marker
         return out + [r for r in _h2_place_at_markers(m, 'equipment', tag_groups,
                                                       stack=True) if not r.get('ok')]
+    if game == 'Halo 1':
+        # Halo 1's own placer (first-generation scenario), stacked on the marker
+        return out + [r for r in _h1_place_equipment_at_markers(m, tag_groups)
+                      if not r.get('ok')]
     points = None
     if game in MARKER_GAMES:
         named = reach_named_markers(m, game)
@@ -5642,6 +5672,95 @@ def _apply_spawn_grenades(m, game, registry, spec):
     placed = _apply_spawn_equipment(m, game, {'groups': tag_groups, 'points': points,
                                               'stack': True})
     return out + [r for r in placed if not r.get('ok')]
+
+
+def _h1_place_equipment_at_markers(m, groups):
+    """Halo 1: APPEND equipment placements of `groups` (eqip tag paths; group i ->
+    enhancer_marker<i+1>), each stacked exactly on its marker. First-generation
+    scenario, so the same shape _apply_spawn_weapons_h1 writes: palette index (0x0),
+    name (0x2), flags (0x4, bit 0 NOT AUTOMATICALLY -> cleared), position (0x8),
+    rotation (0x14). A type the level never placed (a30 stocks only the frag) gets a
+    palette entry first -- copy of entry 0 with the tag's name pointer and id -- as long
+    as its tag is in the cache, which a grenade always is (globals references it).
+    Both blocks grow through HaloMap.grow_block (relocate to EOF, repoint)."""
+    game = 'Halo 1'
+    eff = 'starting grenades'
+    out = []
+    E = _MAP_EQUIPMENT.get(game)
+    scnr = _scnr_base(m)
+    groups = [[t for t in (g or []) if t] for g in (groups or [])]
+    if not E or scnr is None or not any(groups):
+        return out
+    named = reach_named_markers(m, game)
+    if not named:
+        return [{'effect': eff, 'ok': False,
+                 'reason': 'this map carries no enhancer markers'}]
+    eoff, ees = E['items']
+    poff, pes = E['palette']
+    N = max(0, m.i32(scnr + eoff))
+    base = _block_base(m, scnr + eoff)
+    pc = max(0, m.i32(scnr + poff))
+    pbase = _block_base(m, scnr + poff)
+    if not base or not N or not pbase or not pc:
+        return [{'effect': eff, 'ok': False,
+                 'reason': 'level has no equipment placements to extend'}]
+
+    def _k(t):
+        return str(t).replace('/', chr(92)).lower()
+
+    pal = {}
+    for i in range(pc):
+        nm = _tag_name_by_id(m, m.u32(pbase + i * pes + E['pal_id_at']))
+        if isinstance(nm, str):
+            pal.setdefault(_k(nm), i)
+    by_key = {_k(p): p for (c, p) in m.tags if c == 'eqip'}
+    new_pal = []
+    for t in dict.fromkeys(t for g in groups for t in g):
+        k = _k(t)
+        if k in pal or k not in by_key:
+            continue
+        key = ('eqip', by_key[k])
+        e = bytearray(m.data[pbase:pbase + pes])           # an eqip tagRef template
+        struct.pack_into('<I', e, 0x4, m.tag_name_ptr(key))
+        struct.pack_into('<I', e, E['pal_id_at'], m.tag_id(key))
+        pal[k] = pc + len(new_pal)
+        new_pal.append(bytes(e))
+    if new_pal:
+        m.grow_block(scnr, poff, pes, new_pal)
+
+    LIFT = 0.30
+    tmpl = bytes(m.data[base:base + ees])
+    elems, done = [], []
+    for gi, g in enumerate(groups):
+        key = '%s%d' % (REACH_MARKER_PREFIX, gi + 1)
+        idx = named.get(key)
+        if idx is None:
+            for t in g:
+                out.append({'effect': eff, 'field': str(t).rsplit(chr(92), 1)[-1],
+                            'ok': False, 'reason': 'no %s on this map' % key})
+            continue
+        ax, ay, az = struct.unpack_from('<fff', m.data, base + idx * ees + _EQ_POS)
+        for t in g:
+            short = str(t).rsplit(chr(92), 1)[-1]
+            pi = pal.get(_k(t))
+            if pi is None:
+                out.append({'effect': eff, 'field': short, 'ok': False,
+                            'reason': 'not in this map (its tag is not in the cache)'})
+                continue
+            e = bytearray(tmpl)
+            struct.pack_into('<h', e, _EQ_PALETTE, pi)
+            struct.pack_into('<h', e, _EQ_NAME, -1)              # unnamed
+            struct.pack_into('<I', e, _EQ_FLAGS, 0)              # clear NOT AUTOMATICALLY
+            struct.pack_into('<fff', e, _EQ_POS, ax, ay, az + LIFT)
+            struct.pack_into('<fff', e, 0x14, 0.0, 0.0, 0.0)     # rotation
+            elems.append(bytes(e))
+            done.append((short, key, (ax, ay, az + LIFT)))
+    if elems:
+        m.grow_block(scnr, eoff, ees, elems)
+    for short, key, pos in done:
+        out.append({'effect': eff, 'field': short, 'ok': True, 'old': key,
+                    'new': 'placed at (%.1f, %.1f, %.1f)' % pos})
+    return out
 
 
 def _apply_spawn_equipment(m, game, spec, odst_all_insertions=False):
@@ -9022,22 +9141,35 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
     # any skull that zeroes a field a normal effect also touches (Eyepatch vs an
     # aim-assist buff): running the skull first leaves the effect something to act on,
     # whereas running it last would flatten the effect's result to the skull's value.
+    # A skull is a name ('tilt'), or a dict for a per-enemy one: {'skull', 'enemy', 'tag',
+    # 'name'} (Assassins / Thunderstorm / Downpour name the enemy type they act on).
+    ladder_up, ladder_down = set(), set()
     for skull in (skulls or ()):
-        s = str(skull).strip().lower()
+        spec = skull if isinstance(skull, dict) else {'skull': skull}
+        s = str(spec.get('skull')).strip().lower()
+        g = str(game).strip()
         if s == 'betrayal':
-            results.extend(_apply_betrayal(m, str(game).strip(), registry))
+            results.extend(_apply_betrayal(m, g, registry))
         elif s == 'eyepatch':
-            results.extend(_apply_eyepatch(m, str(game).strip(), registry))
+            results.extend(_apply_eyepatch(m, g, registry))
         elif s == 'tilt':
-            results.extend(_apply_tilt(m, str(game).strip(), registry))
+            results.extend(_apply_tilt(m, g, registry))
         elif s == 'fog':
-            results.extend(_apply_fog(m, str(game).strip(), registry))
+            results.extend(_apply_fog(m, g, registry))
         elif s == 'schism':
-            results.extend(_apply_schism(m, str(game).strip(), registry))
-        elif s == 'thunderstorm':
-            results.extend(_apply_thunderstorm(m, str(game).strip(), registry))
+            results.extend(_apply_schism(m, g, registry))
         elif s == 'famine':
-            results.extend(_apply_famine(m, str(game).strip(), registry))
+            results.extend(_apply_famine(m, g, registry))
+        elif s == 'assassins' and spec.get('tag'):
+            _c, cpath = hm.split_tag(spec['tag'])
+            results.append({'tag': spec['tag'], **_apply_camo(
+                m, g, cpath, registry, spec.get('name') or 'Assassins')})
+        elif s == 'thunderstorm' and spec.get('enemy'):
+            ladder_up.add(spec['enemy'])
+        elif s == 'downpour' and spec.get('enemy'):
+            ladder_down.add(spec['enemy'])
+    if ladder_up or ladder_down:
+        results.extend(_apply_ladder(m, str(game).strip(), registry, ladder_up, ladder_down))
     # (effect name, tag) of every card for which "not present in this map" is an
     # expected outcome rather than a failure: enemy/boss cards (that enemy doesn't
     # fight here) and the ODST escort mirrors (Data Hive has no olifaunt).

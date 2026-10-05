@@ -16533,15 +16533,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Hunter": {
@@ -17186,15 +17177,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "actv characters\\hunter\\*", "Halo 2": "char objects\\characters\\hunter\\*", "Halo 4": "char objects\\characters\\storm_hunter\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Grunt": {
@@ -18045,15 +18027,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Jackal": {
@@ -18870,15 +18843,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Combat Form": {
@@ -19352,15 +19316,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Infection Form": {
@@ -19643,15 +19598,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Carrier Form": {
@@ -19907,15 +19853,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Pure Form": {
@@ -20382,15 +20319,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 3"],
-					"tag": "char objects\\characters\\flood_stalker\\* & objects\\characters\\flood_tank\\* & objects\\characters\\flood_ranged\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Sentinel": {
@@ -20934,15 +20862,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 1", "Halo 2", "Halo 3"],
-					"tag": {"Halo 1": "actv characters\\sentinel\\*", "Halo 2": "char objects\\characters\\sentinel_aggressor\\* & objects\\characters\\sentinel_constructor\\*"},
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Bugger": {
@@ -21396,15 +21315,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\bugger\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Brute": {
@@ -22106,15 +22016,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 2", "Halo 3", "Halo Reach"],
-					"tag": "char objects\\characters\\brute\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Skirmisher": {
@@ -22715,15 +22616,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 3: ODST", "Halo Reach"],
-					"tag": "char objects\\characters\\engineer\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Knight": {
@@ -23204,15 +23096,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 4"],
-					"tag": "char objects\\characters\\storm_knight\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Crawler": {
@@ -23604,15 +23487,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 4"],
-					"tag": "char objects\\characters\\storm_pawn\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Watcher": {
@@ -24073,15 +23947,6 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
-				},
-				"Active Camo": {
-					"color": "aggressive",
-					"desc": "They spawn cloaked.",
-					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
-					"harder_when": "increased",
-					"game": ["Halo 4"],
-					"tag": "char objects\\characters\\storm_bishop\\*",
-					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Human": {
@@ -26141,14 +26006,6 @@
 			"tag": "scnr",
 			"targets": []
 		},
-		"Thunderstorm": {
-			"desc": "Every enemy is promoted one species up its ladder: Grunts become Jackals, Jackals Elites or Brutes, Elites Hunters; Infection Forms become Carriers, Carriers Combat Forms; Crawlers become Watchers, Watchers Knights.",
-			"debug_desc": "Repoints each squad / fire-team / location / cell character to the next tier this map's character palette holds (a missing tier is skipped, the top tier stays): Covenant Grunt > Jackal/Drone/Skirmisher > Elite/Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3); Prometheans Crawler > Watcher > Knight. The source's rank word is kept when the target has it. Targets must be enemies on this map (Halo 3's allied Elites are not targets), bosses/story characters/humans and vehicle crews are never promoted, and every promoted entry's Initial Weapon becomes -1 (the character's own). RESIDENCY IS NOT CHECKED: from Halo 3 on a target not resident in a zone set may fail to spawn. Untested in game.",
-			"skull": "thunderstorm",
-			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-			"tag": "scnr",
-			"targets": []
-		},
 		"Famine": {
 			"desc": "Dropped weapons carry half the ammo.",
 			"debug_desc": "Halves both ends of Drop Weapon Loaded (magazine fraction; an energy weapon's charge) and Drop Weapon Ammo (reserve; ignored for energy weapons) on EVERY character tag (Halo 1: every actv), so Grunts, Jackals and the Flood -- which define their own Weapons Properties -- are reached too. Halo 3/ODST ship Ammo 0 = weapon default, which stays; only the magazine moves there. Allies' drops are halved as well. Composes with the Dropped Ammo card (the skull runs first).",
@@ -26156,6 +26013,293 @@
 			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
 			"tag": {"Halo 1": "actv", "Halo 2": "char"},
 			"targets": []
+		},
+		"Assassins: Elite": {
+			"desc": "Elites spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Elite",
+			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
+			"targets": []
+		},
+		"Assassins: Hunter": {
+			"desc": "Hunters spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Hunter",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\hunter\\*", "Halo 2": "char objects\\characters\\hunter\\*", "Halo 4": "char objects\\characters\\storm_hunter\\*"},
+			"targets": []
+		},
+		"Assassins: Grunt": {
+			"desc": "Grunts spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Grunt",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
+			"targets": []
+		},
+		"Assassins: Jackal": {
+			"desc": "Jackals spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Jackal",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
+			"targets": []
+		},
+		"Assassins: Combat Form": {
+			"desc": "Combat Forms spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Flood Combat Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
+			"targets": []
+		},
+		"Assassins: Infection Form": {
+			"desc": "Infection Forms spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Flood Infection Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
+			"targets": []
+		},
+		"Assassins: Carrier Form": {
+			"desc": "Carrier Forms spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Flood Carrier Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
+			"targets": []
+		},
+		"Assassins: Pure Form": {
+			"desc": "Pure Forms spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Flood Pure Form",
+			"game": ["Halo 3"],
+			"tag": "char objects\\characters\\flood_stalker\\* & objects\\characters\\flood_tank\\* & objects\\characters\\flood_ranged\\*",
+			"targets": []
+		},
+		"Assassins: Sentinel": {
+			"desc": "Sentinels spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Sentinel",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\sentinel\\*", "Halo 2": "char objects\\characters\\sentinel_aggressor\\* & objects\\characters\\sentinel_constructor\\*"},
+			"targets": []
+		},
+		"Assassins: Drone": {
+			"desc": "Drones spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Bugger",
+			"game": ["Halo 2", "Halo 3", "Halo Reach"],
+			"tag": "char objects\\characters\\bugger\\*",
+			"targets": []
+		},
+		"Assassins: Brute": {
+			"desc": "Brutes spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Brute",
+			"game": ["Halo 2", "Halo 3", "Halo Reach"],
+			"tag": "char objects\\characters\\brute\\*",
+			"targets": []
+		},
+		"Assassins: Engineer": {
+			"desc": "Engineers spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Engineer",
+			"game": ["Halo 3: ODST", "Halo Reach"],
+			"tag": "char objects\\characters\\engineer\\*",
+			"targets": []
+		},
+		"Assassins: Knight": {
+			"desc": "Knights spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Knight",
+			"game": ["Halo 4"],
+			"tag": "char objects\\characters\\storm_knight\\*",
+			"targets": []
+		},
+		"Assassins: Crawler": {
+			"desc": "Crawlers spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Crawler",
+			"game": ["Halo 4"],
+			"tag": "char objects\\characters\\storm_pawn\\*",
+			"targets": []
+		},
+		"Assassins: Watcher": {
+			"desc": "Watchers spawn cloaked.",
+			"debug_desc": "Assassins for one enemy type: its characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"skull": "assassins",
+			"enemy": "Watcher",
+			"game": ["Halo 4"],
+			"tag": "char objects\\characters\\storm_bishop\\*",
+			"targets": []
+		},
+		"Thunderstorm: Grunt": {
+			"desc": "Every Grunt is promoted: they become Jackals.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Grunt",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
+			"targets": []
+		},
+		"Thunderstorm: Jackal": {
+			"desc": "Every Jackal is promoted: they become Elites or Brutes.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Jackal",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
+			"targets": []
+		},
+		"Thunderstorm: Skirmisher": {
+			"desc": "Every Skirmisher is promoted: they become Elites or Brutes.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Skirmisher",
+			"game": ["Halo Reach"],
+			"tag": "scnr",
+			"targets": []
+		},
+		"Thunderstorm: Elite": {
+			"desc": "Every Elite is promoted: they become Hunters.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Elite",
+			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
+			"targets": []
+		},
+		"Thunderstorm: Brute": {
+			"desc": "Every Brute is promoted: they become Hunters.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Brute",
+			"game": ["Halo 2", "Halo 3", "Halo Reach"],
+			"tag": "char objects\\characters\\brute\\*",
+			"targets": []
+		},
+		"Thunderstorm: Infection Form": {
+			"desc": "Every Infection Form is promoted: they become Carrier Forms.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Flood Infection Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
+			"targets": []
+		},
+		"Thunderstorm: Carrier Form": {
+			"desc": "Every Carrier Form is promoted: they become Combat Forms.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Flood Carrier Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
+			"targets": []
+		},
+		"Thunderstorm: Combat Form": {
+			"desc": "Every Combat Form is promoted: they become Pure Forms.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier up (_apply_ladder). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"skull": "thunderstorm",
+			"enemy": "Flood Combat Form",
+			"game": ["Halo 3"],
+			"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
+			"targets": []
+		},
+		"Downpour: Jackal": {
+			"desc": "Every Jackal is demoted one tier, and the Grunts get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Grunt) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Jackal",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\ai\\grunt* & objects\\characters\\heretic_grunt\\ai\\heretic_grunt", "Halo 3": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 3: ODST": "char objects\\characters\\grunt\\ai\\grunt*", "Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*", "Halo 4": "char objects\\characters\\storm_grunt\\ai\\storm_grunt*"},
+			"targets": {"Halo 1": [{"step": "*1.5", "field": "Body Vitality", "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "group": "Rate of Fire"}], "Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}], "Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}], "Halo Reach": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "group": "Rate of Fire"}], "Halo 4": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}]}
+		},
+		"Downpour: Skirmisher": {
+			"desc": "Every Skirmisher is demoted one tier, and the Grunts get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Grunt) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Skirmisher",
+			"game": ["Halo Reach"],
+			"tag": {"Halo Reach": "char objects\\characters\\grunt\\ai\\grunt*"},
+			"targets": {"Halo Reach": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "group": "Rate of Fire"}]}
+		},
+		"Downpour: Elite": {
+			"desc": "Every Elite is demoted one tier, and the Jackals get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Jackal) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Elite",
+			"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 4": "char objects\\characters\\storm_jackal\\ai\\storm_jackal*"},
+			"targets": {"Halo 1": [{"step": "*1.5", "field": "Body Vitality", "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "group": "Rate of Fire"}], "Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}], "Halo Reach": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "group": "Rate of Fire"}], "Halo 4": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "zero_is": 5, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "group": "Rate of Fire"}]}
+		},
+		"Downpour: Brute": {
+			"desc": "Every Brute is demoted one tier, and the Jackals get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Jackal) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Brute",
+			"game": ["Halo 2", "Halo 3", "Halo Reach"],
+			"tag": {"Halo 2": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3": "char objects\\characters\\jackal\\ai\\jackal*", "Halo 3: ODST": "char objects\\characters\\jackal\\ai\\jackal*", "Halo Reach": "char objects\\characters\\jackal\\ai\\jackal*"},
+			"targets": {"Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}], "Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}], "Halo Reach": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "min": 0, "group": "Rate of Fire"}]}
+		},
+		"Downpour: Hunter": {
+			"desc": "Every Hunter is demoted one tier, and the lower speciess get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Elite (Brute in Halo 3/ODST)) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Hunter",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\ai\\elite* & objects\\characters\\heretic\\ai\\heretic & objects\\characters\\heretic\\ai\\heretic_leader & objects\\characters\\heretic\\ai\\heretic_major", "Halo 3": "char objects\\characters\\brute\\ai\\brute*", "Halo 3: ODST": "char objects\\characters\\brute\\ai\\brute*", "Halo Reach": "char objects\\characters\\elite\\ai\\elite*", "Halo 4": "char objects\\characters\\storm_elite\\ai\\storm_elite*"},
+			"targets": {"Halo 1": [{"step": "*1.5", "field": "Body Vitality", "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "group": "Rate of Fire"}], "Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}], "Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo Reach": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "zero_is": 1.0, "min": 0, "group": "Rate of Fire"}], "Halo 4": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}]}
+		},
+		"Downpour: Carrier Form": {
+			"desc": "Every Carrier Form is demoted one tier, and the Infection Forms get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Infection Form) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Flood Carrier Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char ai\\generic", "Halo 3": "char ai\\generic", "Halo 3: ODST": "char ai\\generic"},
+			"targets": {"Halo 1": [{"step": "*1.5", "field": "Body Vitality", "group": "Body Vitality"}], "Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "index": "all", "diff_prefix_nl": true, "group": "Body Vitality"}]}
+		},
+		"Downpour: Combat Form": {
+			"desc": "Every Combat Form is demoted one tier, and the Carrier Forms get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Carrier Form) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Flood Combat Form",
+			"game": ["Halo 1", "Halo 2", "Halo 3"],
+			"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\ai\\flood_carrier*", "Halo 3": "char objects\\characters\\floodcarrier\\ai\\flood_carrier", "Halo 3: ODST": "char objects\\characters\\floodcarrier\\ai\\flood_carrier"},
+			"targets": {"Halo 1": [{"step": "*1.5", "field": "Body Vitality", "group": "Body Vitality"}], "Halo 2": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}]}
+		},
+		"Downpour: Pure Form": {
+			"desc": "Every Pure Form is demoted one tier, and the Combat Forms get tougher: shield, vitality and fire rate x1.5.",
+			"debug_desc": "Repoints every squad / fire-team / location / cell entry of this enemy to the next tier DOWN (_apply_ladder), and raises the lower species (Combat Form) by the rows below (x1.5 each, the shield / vitality / fire-rate rows of that species' own cards; they hit every member of it, not only the demoted ones). Ladders: Covenant Grunt > Jackal / Skirmisher / Drone > Elite / Brute (Brute first in Halo 3 and ODST) > Hunter; Flood Infection > Carrier > Combat > Pure (Halo 3). The nearest tier this map's character palette holds; Drones are never moved but can be moved into; Prometheans and Sentinels are out of the system. Rank word kept when the target has it. Never a double move. Targets must be enemies here; bosses, story characters, humans and vehicle crews stay. Thunderstorm and Downpour exclude each other per enemy; an enemy moved away with nothing moved into it leaves the draw pool. Untested in game.",
+			"harder_when": "increased",
+			"skull": "downpour",
+			"enemy": "Flood Pure Form",
+			"game": ["Halo 3"],
+			"tag": {"Halo 3": "char objects\\characters\\floodcombat*", "Halo 3: ODST": "char objects\\characters\\floodcombat*"},
+			"targets": {"Halo 3": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}], "Halo 3: ODST": [{"step": "*1.5", "field": "Body Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Body Vitality"}, {"step": "*1.5", "field": "Shield Vitality", "block": "Vitality Properties", "diff_prefix_nl": true, "group": "Shield Vitality"}, {"step": "*1.5", "field": "Rate Of Fire", "block": "Firing Pattern Properties/Firing Patterns", "index": "all", "group": "Rate of Fire"}]}
 		}
 	},
 	"Friend modifiers": {
