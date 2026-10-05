@@ -63,6 +63,10 @@ def main():
     py('make_icon.py', os.path.join(HCEEK, 'data', 'weapons', 'saw', 'models', 'saw.jms'),
        os.path.join(HERE, 'h1mp', 'saw_icon.png'), '110')
     py('add_msg_icon.py', os.path.join(HERE, 'h1mp', 'saw_icon.png'), 'saw')
+    # STEP 10, its own sounds (2026-10-05): BEFORE saw_anims, which only names the own
+    # reload / melee / ready sounds when their tags exist; also writes the bank audio
+    # (tool\port_sounds\halo1) that port_sounds.py installs after the deploy
+    py('h1_saw_sounds.py', '--write')
     py('saw_anims.py', 'original')
     py('saw_anims.py', 'balanced')      # shipped too, for the patcher's balance option
     py('ammo_meter.py', '72', '135',
@@ -91,6 +95,8 @@ def main():
         shutil.copy2(live, bak)
     shutil.copy2(os.path.join(HCEEK, 'maps', a.map + '.map'), live)
     print('deployed %s (scale %.2f); original kept at %s' % (a.map, a.scale, bak))
+    # MCC's Halo 1 plays its sounds from the FMOD bank, not the map (port_sounds.py)
+    run([sys.executable, os.path.join(os.path.dirname(HERE), 'port_sounds.py'), '--write'])
 
 
 if __name__ == '__main__':

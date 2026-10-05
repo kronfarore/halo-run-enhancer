@@ -7,6 +7,10 @@ package by that id.
 
     python h4_wwise.py --bank sentinel                 bank entry + HIRC summary
     python h4_wwise.py --event play_wea_sentinel_friendly_beam_fire_in --bank sentinel
+    python h4_wwise.py --extract <bank> <out dir> <event> [<event> ...]
+                                 decode each event's media to <out dir>\<event>\*.wav
+                                 (vgmstream) -- the source of a port's own sounds
+                                 (PORTING.md, Step 10)
 """
 import argparse
 import os

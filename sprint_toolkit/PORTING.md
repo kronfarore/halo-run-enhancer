@@ -48,6 +48,12 @@ quietly shipped without the last three until the user caught it:
 | 7 | ammo meter / HUD readout sized for the port's magazine | done | done |
 | 8 | pickup icon, and the HUD schematic beside the ammo | done | done |
 | 9 | reload and swap animation timing | done | done |
+| 10 | its OWN SOUNDS: fire, dry fire, reload, swap, melee, idle fidgets (+ first draw) -- see **Step 10** | done | done |
+
+Step 10 was added 2026-10-05 after the SAW had shipped in five games on the donor's
+sounds (the H3/ODST/Reach SAW fired through the REAL Assault Rifle's firing effect). It is
+done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game recipe is in
+**Step 10, the port's own sounds** below.
 
 **When a port is done -- the closing steps (all games):**
 0. `python port_refs_audit.py --game "<game>"` on the REBUILT map: the weapon fires its own
@@ -68,6 +74,10 @@ quietly shipped without the last three until the user caught it:
    PORT_SOUNDS, e.g. 0.02, never one another port uses) and its sounds set to gain -3
    minus it before the build; `python port_volume.py --game "<game>" --map <map>` on the
    rebuilt map must list the entries with no SHARED and headroom 3.
+6. Step 10 checks on the REBUILT map: `python port_sound_refs.py --game "<game>"` -- every
+   fire / dry / animation sound names the port's own folder; Halo 3 / ODST / Reach: the
+   installed `<game>\fmod\pc\sfx.<suffix>.fsb` equals the kit's and holds every hash the
+   map names; Halo 1 / Halo 4: `python port_sounds.py --check`.
 
 **Step 3 is TWO things, and the Halo 1 SAW shipped with only one of them** (found
 2026-10-02). `saw_port_values.py` wrote the port's own numbers into
@@ -131,6 +141,9 @@ What it chains, and what each piece is for:
    skeleton**, so the donor's animations drive it. See *Reading H4 geometry* below.
 4. `tool model weapons\saw\fp` and `weapons\saw` — gbxmodels.
 5. `make_icon.py` + `add_msg_icon.py` + `saw_weapon.py` — see step 8 below.
+   `h1_saw_sounds.py --write` runs BEFORE `saw_anims.py` (**step 10**: its own sounds; the
+   animations only name them once the tags exist), and after the deploy
+   `..\port_sounds.py --write` puts the audio into the FMOD bank MCC actually plays.
 6. `saw_port_values.py --write` — **step 4**: the port's own Halo 4 numbers into its
    Halo 1 tags, so the map ships the SAW and the patcher applies the balance on top.
    Both halves read the same `balance_SAW_Halo4_to_Halo1.json`, one taking `original`
@@ -186,6 +199,7 @@ Halo 3 has no single orchestrator; the order is:
     h3_saw_pickup_icon.py   the weapon's five message string ids (step 8)
     h3_mcc_localization.py  the strings the game ACTUALLY shows  (step 8)
     h3_saw_animations.py    retime reload / ready         (step 9)
+    saw_port_sounds.py --game h3 --write   own sounds + graphs + bank  (step 10)
     h3_build_map.py         build
     h3_saw_deploy.py        install + baseline, and --check
     h3_apply_saw_numbers.py balance rows onto the map
@@ -297,6 +311,7 @@ Every tool takes the kit from `PORT_EK`, so set it once:
     h3_weapon_glyph.py      the pickup glyph, 0xE04A                      (step 8)
     h3_port_messages.py     its own messages, all languages, --repoint    (step 8)
     h3_saw_animations.py    retime reload/ready on the odst_recon graph   (step 9)
+    saw_port_sounds.py --game odst --write  own sounds + graph + bank    (step 10)
     make_port_catalog_odst.py --write                                     (step 5)
     <place it in Sapien AND give it a starting profile>
     odst_ek_build.py --build sc150
@@ -440,6 +455,7 @@ Each of these is one script, and each proves its own work before it keeps it.
     h2_saw_messages.py                                the pickup prompts
     h2_saw_animations.py --force                   9. its own animation graphs
     h2_anim_retime.py <graph> reloads 128 --write     and its own reload length
+    h2_saw_sounds.py --write                      10. its own sounds (classic), graphs repointed
     h2_saw_place.py --level <name> --build --deploy   put it in the player's hands
 
 Two tools underneath all of it:
@@ -959,6 +975,7 @@ up front.
     tool render ... final             a THIRD time, for the same reason
     balance_port.py SAW "Assault Rifle" "Halo 4" "Halo Reach"           (the table)
     reach_saw_tag_numbers.py --write  the H4 numbers into the tags        (step 4)
+    saw_port_sounds.py --game reach --write  own sounds + graphs + bank   (step 10, later)
 
 Six tags, every chunk tree spanning its file, every reference resolving:
 
@@ -1397,6 +1414,10 @@ values, and damage moves by the same ratio.
 
 `port_env.py` puts the vendored Reclaimer stack under `pylibs/` on `sys.path` — pure
 Python, no compiler. Import it before anything from `reclaimer`.
+
+Step 10 (sounds) also needs **numpy** and **vgmstream-cli** at
+`F:\Tools\vgmstream\vgmstream-cli.exe` (h4_wwise.py --extract, port_sound_levels.py) --
+outside the repo, so reinstall it on a new machine.
 
 ---
 
@@ -2166,6 +2187,57 @@ Three traps, all measured:
 The originals stay in `saw\fp\` (plus `.before_retime` copies of them and of saw.weapon).
 
 ---
+
+## Step 10, the port's own sounds -- THE RECIPE (2026-10-05)
+
+The history and every trap are in the next section; this is the run order. All of it is
+in git (sprint_toolkit + the tool-root modules) and in `port_backup.py --game <g>`.
+
+**Source, once per source weapon (Halo 4 here):**
+
+    h4_wwise.py --extract <bank> <out dir> <event> ...   the events' audio (vgmstream);
+                                    the SAW: bank light_machine_gun_player -> H4EK\temp\saw_sounds,
+                                    events play_wea_lmg_player_fire_in / _fire_out,
+                                    play_weapons_storm_light_machine_gun_player_dryfire,
+                                    play_wea_lmg_ready_fly / _mech / _initial,
+                                    play_wea_lmg_reload_fly_a.._c, _mech_a.._d,
+                                    play_wea_lmg_pose_var_1_a.._c, _2_a.._c,
+                                    play_wea_lmg1_foley_melee_player, play_wea_lmg2_foley_melee_player
+                                    (event names: the H4EK sound tags)
+    saw_port_audio.py               per-shot fire mixes, tails, dry fire -> H4EK\temp\saw_port_audio
+    graph_sound_events.py <kit> <graph>   which sound each target animation cues, at which
+                                    frame (a target graph cues ONE sound per animation)
+    saw_port_foley.py               the source's foley cue lists by FRAME, mixed into one
+                                    sound per animation (stretch for a retimed animation)
+    port_sound_levels.py --game <g> <donor sounds>   the donor's active RMS + tag gain =
+                                    the level targets (`--foley`: the mixes' own)
+
+**Per game** (each script repoints the port's effects AND first-person graphs at its own
+sounds, builds them with the volume marker, and refuses on a failed import):
+
+| game | sounds | then | where MCC plays it from |
+|------|--------|------|-------------------------|
+| Halo 1 | `h1_saw_sounds.py --write` (in saw_build.py; then saw_anims.py) | rebuild; `..\port_sounds.py --write` | classic FMOD bank sounds_adpcm.fsb, BY TAG PATH (22 kHz XBOX ADPCM, never under sound\sfx) |
+| Halo 2 | `h2_saw_sounds.py --write` | rebuild (03a; 01b reserved) | the map (Opus, classic) |
+| Halo 3 | `saw_port_sounds.py --game h3 --write` | rebuild + `h3_saw_deploy.py --install --baseline` | `halo3\fmod\pc\sfx.saw.fsb` (installed by --write; MONO foley; per-sound banks merged -- the H3EK FSBank trap) |
+| ODST | `saw_port_sounds.py --game odst --write` | `odst_ek_build.py`, `h3_chunk_check.py`, deploy | `halo3odst\fmod\pc\sfx.saw.fsb` (MONO foley) |
+| Reach | `saw_port_sounds.py --game reach --write` | `reach_ek_build.py --maps m20` | `haloreach\fmod\pc\sfx.saw.fsb` -- NEEDED, despite an early test that seemed to say not |
+| Halo 4 | `h4_sound_bank.py` | `..\port_sounds.py --write` (no rebuild) | its own Wwise bank in sfxbank.pck |
+
+**Level changes without a rebuild:** H3/ODST/Reach foley targets / `--boost` and H1
+`--bank-only` change only the bank (the map's subsound hashes come from the wav paths), so
+re-run the sound script and load the map again. Gains (tag) need a rebuild.
+
+**The patcher's side:** `port_volume.py` (the knob, needs the marker), `port_sounds.ensure`
+(Halo 1 / Halo 4 banks on any machine), `port_sounds.retimed_anim_sound` (Halo 1: a
+retimed animation swaps to the sound stretched for it; catalog `anim_sounds`).
+
+**OPEN:** the Halo 3 / ODST / Reach `sfx.saw.fsb` banks are installed on THIS machine only
+-- `port_sounds.py` carries Halo 1 and Halo 4, not them, so a Steam verify or a co-op
+partner's install has the maps' sound references and no bank (silent SAW).
+
+**Checks** (closing step 6): `port_sound_refs.py --game "<game>"` on the built map;
+bank live == kit and every map hash in it; `port_volume.py` headroom 3.
 
 ## The SAW ports' OWN SOUNDS (started 2026-10-03)
 

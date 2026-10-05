@@ -8,7 +8,7 @@ means rebuilding it from scratch:
   * the built cache file, which is the only artifact co-op partners can be given, and
   * the build scripts and the catalog the patcher reads.
 
-    python port_backup.py --game h2|reach|h4 [--label saw-h2] [--no-maps]
+    python port_backup.py --game h1|h2|h3|odst|reach|h4 [--label saw-h2] [--no-maps]
 
 `--game` picks which port is backed up; `--no-maps` skips the cache files, which are
 the slow part and are only worth keeping when a built map exists.
@@ -237,11 +237,67 @@ H4_SCRIPTS = ('port_refs_audit.py', 'h4_weapon_diff.py', 'h4_cusc_dump.py', 'rea
               'h4_sound_bank.py',
               'make_port_catalog_h4.py', 'port_backup.py', 'PORTING.md')
 
+# --- STEP 10, the SAW's OWN SOUNDS (2026-10-05), in every SAW profile -----------------
+# The Halo 4 source audio (h4_wwise.py --extract + saw_port_audio.py) sits in H4EK\temp,
+# which nothing else keeps; each kit's sound tags + the wavs/mixes they were imported
+# from; and the tool-root modules + Halo 1 bank audio the patcher installs from.
+H3ODSTEK = os.path.join(F, 'SteamLibrary', 'steamapps', 'common', 'H3ODSTEK')
+H4EK_TEMP = os.path.join(F, 'SteamLibrary', 'steamapps', 'common', 'H4EK', 'temp')
+SND = os.path.join('sound', 'weapons', 'saw_port')
+SOUND_SOURCE = [(os.path.join(H4EK_TEMP, 'saw_sounds'), 'source/h4_saw_sounds', True),
+                (os.path.join(H4EK_TEMP, 'saw_port_audio'), 'source/h4_saw_port_audio', True)]
+SOUND_FILES = [(os.path.join(TOOL, m), 'tool/' + m) for m in ('port_volume.py', 'port_sounds.py', 'h1_fsb.py')]
+SOUND_SCRIPTS = ('h4_wwise.py', 'saw_port_audio.py', 'saw_port_foley.py', 'port_sound_levels.py',
+                 'graph_sound_events.py', 'port_sound_refs.py', 'h3tag.py')
+
+
+def sound_trees(ek):
+    return [(os.path.join(ek, 'tags', SND), 'tags/sound/weapons/saw_port', True),
+            (os.path.join(ek, 'data', SND), 'data/sound/weapons/saw_port', True)]
+
+
+TREES += sound_trees(HCEEK) + SOUND_SOURCE + [
+    (os.path.join(TOOL, 'port_sounds', 'halo1'), 'tool/port_sounds/halo1', True)]
+FILES += SOUND_FILES
+SCRIPTS += SOUND_SCRIPTS + ('h1_saw_sounds.py', 'h1_saw_tone.py', 'h1_rebuild_all.py')
+H2_TREES += sound_trees(H2EK) + SOUND_SOURCE
+H2_FILES += SOUND_FILES
+H2_SCRIPTS += SOUND_SCRIPTS + ('h2_saw_sounds.py',)
+REACH_TREES += SOUND_SOURCE
+REACH_FILES += SOUND_FILES
+REACH_SCRIPTS += SOUND_SCRIPTS + ('saw_port_sounds.py', 'fsb5_merge.py', 'reach_sound_suffix.py')
+
+
+# Halo 3 and ODST had NO profile until 2026-10-05. These keep the SAW's own folder (weapon,
+# graphs, effects), its sounds, the FMOD bank and the sound tooling -- NOT yet the shared
+# edits of steps 7/8 (chud, fonts, messages, localization): extend before relying on them
+# for a full rebuild.
+def h3_family(ek, mcc_folder, maps):
+    trees = [(os.path.join(ek, 'tags', 'objects', 'weapons', 'rifle', 'saw'),
+              'tags/objects/weapons/rifle/saw', True)] + sound_trees(ek) + SOUND_SOURCE
+    shared = [(os.path.join(ek, 'fmod', 'pc', 'sfx.saw.fsb' + x), 'fmod/pc/sfx.saw.fsb' + x)
+              for x in ('', '.info')]
+    files = [(os.path.join(TOOL, 'weapon_ports_catalog.json'), 'catalog/weapon_ports_catalog.json'),
+             (os.path.join(HERE, 'PORTING.md'), 'catalog/PORTING.md')] + SOUND_FILES
+    return trees, shared, files, [(os.path.join(GAME, mcc_folder, 'maps', m + '.map'),
+                                   'maps/%s.map' % m) for m in maps]
+
+
+H3_SCRIPTS = SOUND_SCRIPTS + ('saw_port_sounds.py', 'fsb5_merge.py', 'h3_build_map.py',
+                              'h3_saw_deploy.py', 'h3_chunk_check.py', 'h3_saw_animations.py',
+                              'h3_make_saw.py', 'port_backup.py', 'PORTING.md')
+H3_T, H3_S, H3_F, H3_M = h3_family(H3EK, 'halo3', ['010_jungle'])
+ODST_T, ODST_S, ODST_F, ODST_M = h3_family(H3ODSTEK, 'halo3odst', ['sc150'])
+
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,
            'scripts': SCRIPTS, 'label': 'saw-h1'},
     'h2': {'trees': H2_TREES, 'shared': H2_SHARED, 'files': H2_FILES, 'maps': [],
            'scripts': H2_SCRIPTS, 'label': 'saw-h2'},
+    'h3': {'trees': H3_T, 'shared': H3_S, 'files': H3_F, 'maps': H3_M,
+           'scripts': H3_SCRIPTS, 'label': 'saw-h3'},
+    'odst': {'trees': ODST_T, 'shared': ODST_S, 'files': ODST_F, 'maps': ODST_M,
+             'scripts': H3_SCRIPTS + ('odst_ek_build.py',), 'label': 'saw-odst'},
     'reach': {'trees': REACH_TREES, 'shared': REACH_SHARED, 'files': REACH_FILES,
               'maps': REACH_MAPS, 'scripts': REACH_SCRIPTS, 'label': 'saw-reach'},
     'h4': {'trees': H4_TREES, 'shared': H4_SHARED, 'files': H4_FILES, 'maps': H4_MAPS,
