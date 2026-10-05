@@ -77,6 +77,21 @@ OWN = [
         ('Age Per Round', 'Age Generated Per Round', 'Barrels', 0.0016125))
 ]
 
+#: ROLE-BALANCED heat (user, 2026-10-05, "option 2"): measured against the weapons whose
+#: role the Focus Rifle shares (port_role_compare.py / port_ttk.py focus_rifle), its
+#: OVERHEAT RECOVERY was the longest of the three -- 3.9 s against the Beam Rifle's 3.0 and
+#: the Sentinel Beam's 1.8. Balanced, it recovers in 2.4 s, their midpoint:
+#: (overheated threshold 1 - recovery threshold 0.1) / 2.4 = 0.375. Its 40-tick burst,
+#: damage and battery stay Reach's; every time to kill stays between its neighbours
+#: (Elite General legendary 15.9 -> 11.3 s; Beam Rifle 7.6, Sentinel Beam 21.3).
+#: Built stays the Reach value (original); only the balanced value moves.
+ROLE = {'Overheated Heat Loss Per Second': (0.375, 'role-balanced: overheat recovery 2.4 s, '
+                                                    'between the Beam Rifle (3.0) and the '
+                                                    'Sentinel Beam (1.8)')}
+for _r in OWN:
+    if _r['field'] in ROLE:
+        _r['value'], _r['note'] = ROLE[_r['field']]
+
 DST_GAME = 'Halo 4'
 
 

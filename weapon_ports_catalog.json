@@ -2607,10 +2607,10 @@
      "tag": "objects\\weapons\\rifle\\focus_rifle\\focus_rifle",
      "field": "Overheated Heat Loss Per Second",
      "block": null,
-     "value": 0.23,
+     "value": 0.375,
      "card": "Heat Loss",
      "original": 0.23,
-     "note": "the port's own; the donor has none"
+     "note": "role-balanced: overheat recovery 2.4 s, between the Beam Rifle (3.0) and the Sentinel Beam (1.8)"
     },
     {
      "class": "weap",
