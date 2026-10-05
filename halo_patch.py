@@ -2778,6 +2778,113 @@ def _apply_famine(m, game, registry):
              'new': 'x%g on %d tag(s), %d value(s)' % (_FAMINE_FACTOR, touched, writes)}]
 
 
+# "Active Camo" cards (the Assassins skull, per enemy): the matching characters spawn
+# cloaked and stay cloaked. Each generation keeps camo somewhere else:
+#   Halo 1  actor variant Flags bit 4 "Active Camouflage" -- how the stealth Elites ship
+#           (confirmed on the shipped tags).
+#   Halo 2  no character field: camo is per AI ORDER (scnr Orders 0x240/0x7C, Flags +0x24
+#           bit 6), how 01b/07a's stealth squads ship. Set on the INITIAL order of every
+#           squad that fields the enemy (squad char +0x36 or a starting location's
+#           +0x20; Initial Order Index +0x42). Orders are shared, so another species on
+#           the same order cloaks too; a script `ai_orders` or an order ending moves the
+#           squad to an order without the bit and the camo drops.
+#   Halo 3 on  the character's MODEL: hlmt Flags "Active Camo Always On" (bit 0), reached
+#           char -> Unit (bipd) -> Model. Per model, so every rank of the species and
+#           anyone else wearing that model cloaks; no shipped model sets it -- untested.
+_CAMO_H1_FLAGS, _CAMO_H1_BIT = 0x0, 4
+_CAMO_H2 = {'orders': (0x240, 0x7C), 'flags': 0x24, 'bit': 6, 'squads': (0x160, 0x74),
+            'char': 0x36, 'locs': (0x48, 0x64), 'loc_char': 0x20, 'order': 0x42,
+            'palette': (0x178, 0x8), 'pal_id': 0x4}
+_CAMO_CHAR_UNIT, _CAMO_CHAR_PARENT = 0x14, 0x4          # H3+ char tagRefs (ident +0xC)
+# bipd (object) Model tagRef; the plugin loader keeps no tagRef fields, so by game (MCC
+# plugins: Halo4MCC says 0x64 where the plain Halo4 plugin says 0x88).
+_CAMO_BIPD_MODEL = {'Halo 3': 0x34, 'Halo 3: ODST': 0x34, 'Halo Reach': 0x64, 'Halo 4': 0x64}
+
+
+def _camo_bit_field(plugin, bit_name):
+    for f in plugin.fields:
+        if not f['block_chain'] and bit_name in (f.get('bits') or {}):
+            return f['offset'], f['bits'][bit_name], hm.TYPE_FMT[f['type']][0]
+    return None
+
+
+def _apply_camo(m, game, pattern, registry, label):
+    ref = {'effect': label, 'field': 'Active camo'}
+    if game == 'Halo 1':
+        tags = m.find_tags('actv', pattern)
+        for _name, base in tags:
+            f = struct.unpack_from('<I', m.data, base + _CAMO_H1_FLAGS)[0]
+            struct.pack_into('<I', m.data, base + _CAMO_H1_FLAGS, f | (1 << _CAMO_H1_BIT))
+        if not tags:
+            return {**ref, 'ok': True, 'skip': True, 'reason': 'not in this map'}
+        return {**ref, 'ok': True, 'old': 'off',
+                'new': 'Active Camouflage on %d actor variant(s)' % len(tags)}
+    if game == 'Halo 2':
+        L = _CAMO_H2
+        s = _scnr_base(m)
+        want = {p for p, _o in m.find_tags('char', pattern)}
+        names = []
+        for el in m.follow_all(s, [L['palette'][0]], [L['palette'][1]], 'all'):
+            ident = m.u32(el + L['pal_id'])
+            names.append(_tag_name_by_id(m, ident) if ident != 0xFFFFFFFF else None)
+        hit = {i for i, n in enumerate(names) if n in want}
+        orders = m.follow_all(s, [L['orders'][0]], [L['orders'][1]], 'all')
+        done, squads = set(), 0
+        for sq in m.follow_all(s, [L['squads'][0]], [L['squads'][1]], 'all'):
+            chars = {struct.unpack_from('<h', m.data, sq + L['char'])[0]}
+            chars |= {struct.unpack_from('<h', m.data, loc + L['loc_char'])[0]
+                      for loc in m.follow_all(sq, [L['locs'][0]], [L['locs'][1]], 'all')}
+            o = struct.unpack_from('<h', m.data, sq + L['order'])[0]
+            if not (chars & hit) or not 0 <= o < len(orders):
+                continue
+            squads += 1
+            if o in done:
+                continue
+            done.add(o)
+            a = orders[o] + L['flags']
+            struct.pack_into('<I', m.data, a, m.u32(a) | (1 << L['bit']))
+        if not squads:
+            return {**ref, 'ok': True, 'skip': True, 'reason': 'not in this map'}
+        return {**ref, 'ok': True, 'old': 'off',
+                'new': 'camo order flag on %d order(s) (%d squad(s))' % (len(done), squads)}
+    hp_ = registry.get('hlmt')
+    model_at = _CAMO_BIPD_MODEL.get(game)
+    flag = _camo_bit_field(hp_, 'active camo always on') if hp_ else None
+    if model_at is None or not flag:
+        return {**ref, 'ok': False, 'reason': 'hlmt camo flag / bipd Model unknown for ' + game}
+    off, bit, fmt = flag
+
+    def unit_of(name, depth=0):
+        found = m.find_tags('char', name) if name else []
+        if not found or depth > 6:
+            return None
+        u = m.u32(found[0][1] + _CAMO_CHAR_UNIT + 0xC)
+        if u != 0xFFFFFFFF:
+            return _tag_name_by_id(m, u)
+        p = m.u32(found[0][1] + _CAMO_CHAR_PARENT + 0xC)
+        return unit_of(_tag_name_by_id(m, p), depth + 1) if p != 0xFFFFFFFF else None
+
+    models = set()
+    for name, _b in m.find_tags('char', pattern):
+        u = unit_of(name)
+        fb = m.find_tags('bipd', u) if u else []
+        if not fb:
+            continue
+        mid = m.u32(fb[0][1] + model_at + 0xC)
+        mn = _tag_name_by_id(m, mid) if mid != 0xFFFFFFFF else None
+        fh = m.find_tags('hlmt', mn) if mn else []
+        if fh:
+            models.add((mn, fh[0][1]))
+    for _mn, base in models:
+        v = struct.unpack_from(fmt, m.data, base + off)[0]
+        struct.pack_into(fmt, m.data, base + off, v | (1 << bit))
+    if not models:
+        return {**ref, 'ok': True, 'skip': True, 'reason': 'not in this map'}
+    return {**ref, 'ok': True, 'old': 'off', 'tag': 'hlmt',
+            'new': 'Active Camo Always On: ' + ', '.join(sorted(
+                _short_name(n) for n, _b in models))}
+
+
 # Brute equipment loadout: char 'Equipment Definitions' (H3), elem 0x24 —
 # Equipment tagRef @0x0 (ident at +0xC), Flags @0x10, Relative Drop Chance @0x14.
 _EQUIP_DEFS = {'Halo 3': {'block': 0x1B0, 'elem': 0x24, 'id_at': 0xC, 'chance': 0x14},
@@ -9032,6 +9139,16 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
                 else:
                     r.update(ok=False, reason=rep.get('reason', 'movement scale failed'))
                 results.append(r)
+                continue
+            if op.get('camo'):
+                # Active camo on the card's characters (_apply_camo): an on/off rule,
+                # so any operator switches it on.
+                cpath = path
+                if op.get('tag'):
+                    _c, cpath = hm.split_tag(op['tag'])
+                    base = {**base, 'tag': op['tag']}
+                results.append({**base, **_apply_camo(m, str(game).strip(), cpath,
+                                                      registry, item['name'])})
                 continue
             if op.get('squad_count'):
                 # More enemies, or allies with side 'ally' (enemy_count.py): the operator

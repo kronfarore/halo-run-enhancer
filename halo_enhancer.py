@@ -2650,7 +2650,8 @@ class ModifierDatabase:
                         # Optional free-text warning for levels whose behaviour is
                         # driven by their script rather than their tags — see
                         # mission_note().
-                        'note': mission_data.get('note')
+                        'note': mission_data.get('note'),
+                        'humans': mission_data.get('humans', True),
                     }
                     self.mission_games[mission_id] = game
                     self.mission_weapons[mission_id] = mission_data.get('weapons', [])
@@ -2921,10 +2922,16 @@ class ModifierDatabase:
                             'name': f'{name} {m["name"]}'})
         return out
 
-    def get_enemy_modifiers(self, mission_id):
+    def get_enemy_modifiers(self, mission_id, betrayal=False):
         if mission_id not in self.mission_enemies:
             return list(self.negative_pool)
         enemy_names = list(self.mission_enemies[mission_id]['enemies'])
+        if betrayal and self.mission_enemies[mission_id].get('humans', True) \
+                and 'Human' not in enemy_names:
+            # Under the Betrayal skull every human squad fights the player, so the human
+            # family joins the Enemy slot -- and only then. A mission that fields no
+            # humans at all says so with "humans": false.
+            enemy_names.append('Human')
         if (CONFIG.get('h4_hostile_sentinels')
                 and mission_id in (CONFIG.get('h4_sentinel_missions') or ())
                 and 'Sentinel' not in enemy_names):
@@ -4049,8 +4056,8 @@ class ModifierDatabase:
                 mods.append(extra)
         return self.filter_blacklisted(mods, blacklist, game)
 
-    def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None):
-        mods = self.get_enemy_modifiers(mission_id)
+    def get_enemy_modifiers_filtered(self, mission_id, blacklist, game=None, betrayal=False):
+        mods = self.get_enemy_modifiers(mission_id, betrayal)
         return self.filter_blacklisted(mods, blacklist, game)
 
     def get_wildcard_modifier_filtered(self, blacklist, game=None):
@@ -5786,6 +5793,8 @@ class MagnitudeEditorDialog(QDialog):
                     'None' if amt is None else round(amt, 4), where)
             except Exception:
                 return '0.1 per kill (hardcoded in the game dll)'
+        if target.get('camo'):
+            return 'off (any value switches active camo on)'
         if target.get('squad_count'):
             # More enemies (or allies): not a tag field -- a share of the level's matching
             # actors (script spawns included) is added to its squads. Show how many.
@@ -8577,6 +8586,7 @@ class MagnitudeEditorDialog(QDialog):
                                          'infect_anim': t.get('infect_anim'),
                                          'move_speed': t.get('move_speed'),
                                          'squad_count': t.get('squad_count'),
+                                         'camo': t.get('camo'),
                                          'side': t.get('side'),
                                          'include_boss': t.get('include_boss'),
                                          'sword_drain': t.get('sword_drain'),
@@ -13384,10 +13394,15 @@ class HaloGUI(QMainWindow):
     def _current_game(self):
         return self.db.get_game_for_mission(self.run_state.mission_id)
 
+    def _betrayal_active(self):
+        """Is the Betrayal skull in force in this run? It opens the Human enemy cards."""
+        return 'Betrayal' in active_skull_names(self.run_state)
+
     def _enemy_pool(self):
         # Already includes the general negative pool and is blacklist-filtered.
         return self.db.get_enemy_modifiers_filtered(
-            self.run_state.mission_id, self.run_state.blacklist, self._current_game())
+            self.run_state.mission_id, self.run_state.blacklist, self._current_game(),
+            betrayal=self._betrayal_active())
 
     def _pick_enemy(self, enemy_mods, used_enemies):
         available = [e for e in enemy_mods if e.get('name', '') not in used_enemies]
@@ -15105,7 +15120,8 @@ class HaloGUI(QMainWindow):
                 return
             ident[part] = copy.deepcopy(random.choice(cands))
         elif mod_type == 'enemy':
-            mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game)
+            mods = self.db.get_enemy_modifiers_filtered(self.run_state.mission_id, bl, game,
+                                                        betrayal=self._betrayal_active())
             pair['enemy_mod'] = random.choice(mods) if mods else None
         elif mod_type == 'wildcard':
             pair['wildcard_mod'] = self.db.get_wildcard_modifier_filtered(bl, game)
@@ -16067,7 +16083,8 @@ class RunEnhancer:
         # a Weapon Identity pair's cards only ever appear as that pair
         pmods = self.db.get_player_modifiers_filtered(
             self.run_state.weapons_for(for_player), list(bl) + self.identity_locked_labels(), game)
-        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
+        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
+                                                          betrayal=self._betrayal_active())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         wpool = self._new_weapon_pool(for_player)
@@ -16209,6 +16226,10 @@ class RunEnhancer:
         self.run_state.current_turn = for_player
         return pairs
 
+    def _betrayal_active(self):
+        """Is the Betrayal skull in force in this run? It opens the Human enemy cards."""
+        return 'Betrayal' in active_skull_names(self.run_state)
+
     def _active_negative_names(self):
         """Names of negatives already active this run — every enemy card, every SKULL,
         plus Exhausts still bound to the current mission. Keeps a fresh Exhaust or
@@ -16321,7 +16342,8 @@ class RunEnhancer:
         if not slots:
             return []
 
-        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game)
+        enemy_mods = self.db.get_enemy_modifiers_filtered(mid, bl, game,
+                                                          betrayal=self._betrayal_active())
         enemy_mods += self.db.filter_blacklisted(
             self.db.armed_cards(mid, self._run_weapons(), game), bl, game)
         enemies = (random.sample(enemy_mods, len(slots)) if len(enemy_mods) >= len(slots)

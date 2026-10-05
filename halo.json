@@ -16533,6 +16533,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\elite\\*", "Halo 2": "char objects\\characters\\elite\\* & objects\\characters\\heretic\\*", "Halo 4": "char objects\\characters\\storm_elite\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Hunter": {
@@ -17177,6 +17186,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\hunter\\*", "Halo 2": "char objects\\characters\\hunter\\*", "Halo 4": "char objects\\characters\\storm_hunter\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Grunt": {
@@ -18027,6 +18045,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\grunt\\*", "Halo 2": "char objects\\characters\\grunt\\* & objects\\characters\\heretic_grunt\\*", "Halo 4": "char objects\\characters\\storm_grunt\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Jackal": {
@@ -18843,6 +18870,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": {"Halo 1": "actv characters\\jackal\\*", "Halo 2": "char objects\\characters\\jackal\\*", "Halo 4": "char objects\\characters\\storm_jackal\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Combat Form": {
@@ -19316,6 +19352,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {"Halo 1": "actv characters\\floodcombat*", "Halo 2": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\*", "Halo 3": "char objects\\characters\\floodcombat_elite\\* & objects\\characters\\floodcombat_human\\* & objects\\characters\\floodcombat_brute\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Infection Form": {
@@ -19598,6 +19643,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {"Halo 1": "actv characters\\flood_infection\\*", "Halo 2": "char objects\\characters\\flood_infection\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Carrier Form": {
@@ -19853,6 +19907,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {"Halo 1": "actv characters\\floodcarrier\\*", "Halo 2": "char objects\\characters\\floodcarrier\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Flood Pure Form": {
@@ -20319,6 +20382,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 3"],
+					"tag": "char objects\\characters\\flood_stalker\\* & objects\\characters\\flood_tank\\* & objects\\characters\\flood_ranged\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Sentinel": {
@@ -20862,6 +20934,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 1", "Halo 2", "Halo 3"],
+					"tag": {"Halo 1": "actv characters\\sentinel\\*", "Halo 2": "char objects\\characters\\sentinel_aggressor\\* & objects\\characters\\sentinel_constructor\\*"},
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Bugger": {
@@ -21315,6 +21396,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": "char objects\\characters\\bugger\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Brute": {
@@ -22016,6 +22106,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 2", "Halo 3", "Halo Reach"],
+					"tag": "char objects\\characters\\brute\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Skirmisher": {
@@ -22616,6 +22715,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 3: ODST", "Halo Reach"],
+					"tag": "char objects\\characters\\engineer\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Knight": {
@@ -23096,6 +23204,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_knight\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Crawler": {
@@ -23487,6 +23604,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_pawn\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			},
 			"Watcher": {
@@ -23947,6 +24073,15 @@
 					"targets": [
 						{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "min": 0 }
 					]
+				},
+				"Active Camo": {
+					"color": "aggressive",
+					"desc": "They spawn cloaked.",
+					"debug_desc": "Assassins, per enemy: the matching characters spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+					"harder_when": "increased",
+					"game": ["Halo 4"],
+					"tag": "char objects\\characters\\storm_bishop\\*",
+					"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 				}
 			}
 		},
@@ -25556,6 +25691,13 @@
 			"targets": [
 				{ "step": "+0.2", "field": "Spawn Count", "squad_count": true, "side": "ally", "min": 0 }
 			]
+		},
+		"Friend Active Camo": {
+			"desc": "Your allies are cloaked.",
+			"debug_desc": "The ally twin of the Active Camo enemy cards: human allies spawn cloaked. Halo 1: actor variant Flags bit 4 'Active Camouflage' (how the stealth Elites ship). Halo 2: no character field -- bit 6 'Active Camo' on the INITIAL order of every squad fielding this enemy (scnr Orders); orders are shared, so another species on the same order cloaks too, and a script order change or order ending drops it. Halo 3 on: the character's model (char -> Unit -> Model), hlmt Flags 'Active Camo Always On' -- per model, so every rank and anyone wearing that model; no shipped model sets it, UNTESTED in game. Any value switches it on.",
+			"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+			"tag": {"Halo 1": "actv characters\\marine\\* & characters\\marine_armored\\* & characters\\crewman\\*", "Halo 2": "char objects\\characters\\marine\\*", "Halo Reach": "char objects\\characters\\marine\\*", "Halo 4": "char objects\\characters\\storm_marine\\*"},
+			"targets": [{"step": "=1", "field": "Active Camo", "camo": true}]
 		}
 	}
 }

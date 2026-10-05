@@ -109,7 +109,7 @@ for game, subs, mps in CASES:
         if not tags:
             continue
         for t in ts:
-            if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'morph_anim', 'infect_anim', 'move_speed', 'squad_count', 'map_swap',
+            if any(t.get(k) for k in ('reload_anim', 'swap_anim', 'berserk_anim', 'sword_drain', 'morph_anim', 'infect_anim', 'move_speed', 'squad_count', 'camo', 'map_swap',
                                       'map_equip', 'equip_drop', 'choice', 'derived')):
                 continue
             f = t.get('field')
