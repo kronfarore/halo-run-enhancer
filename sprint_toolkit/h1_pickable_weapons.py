@@ -229,8 +229,7 @@ WEAPONS['sentinel_beam'] = {
                'first-person overheating': SBS + 'beam_overheat'},
     # THE HUM: a sound_looping (a clone of the flamethrower's fire_ft: fade in/out) with
     # Halo 3's in / 0.5 s seamless loop / out, on the trigger's RATE OF FIRE: input C =
-    # `primary rate of fire`, function 3 (the template's `age`, which drives nothing
-    # here) = 'one' scaled by it, the loop on D_out. That input ramps up over the
+    # `primary rate of fire`, function 0 = 'one' scaled by it, the loop on A_out. That input ramps up over the
     # trigger's acceleration time while fire is held and down over its deceleration time
     # (0.1 s) after -- smooth, no per-round toggling. The rate bounds differ (29..30) so
     # the ramp is not 0/0 (both fire every 2nd tick = 15/s).
@@ -244,10 +243,15 @@ WEAPONS['sentinel_beam'] = {
     #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
     # So the illumination signal lingers whatever its hold: the rate of fire instead
     'rewire': {'inputs': ('heat', 'illumination', 'primary_rate_of_fire', 'age'),
-               'functions': {3: (2, 'C_in', 'fire loop')}},
+               # test 7: holding fire on an EMPTY battery kept the hum going (the trigger
+               # still ramps). The template's function 3 is already the battery left
+               # (age, `invert`; its heat flare turns off with it): the hum goes into
+               # function 0 instead (the colour wander -- change colour A is red at both
+               # ends now) and turns off with function 3 the same way
+               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 3})}},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
-                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'D_out'},
+                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'A_out'},
     # THE FIRING EFFECT (own, every round): the plasma rifle's flash particles only (no
     # smoke, no tracer, no sound), recoloured to the Sentinel gunlight's red, plus the
     # muzzle light. Test 5: a light/lens flare in the effect showed ABOVE THE RIGHT ARM
@@ -255,7 +259,11 @@ WEAPONS['sentinel_beam'] = {
     # `first person only` and spawn at the first-person muzzle -- the visible glow
     'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
                     'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light',
-                    'keep_particles': 'flash', 'tint': (1.0, 1.0, 0.45, 0.4)},
+                    # test 7: still blue-white -- not the colour source: five additive
+                    # flash sprites, ~20 alive at 15 rounds/s, saturate to white (the
+                    # plasma pistol's green flash IS an RGB tint on the same sprite). One
+                    # sprite (`flash c generic` exactly), a deep red tint
+                    'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.15, 0.05)},
     # test 6: the glow came out plasma rifle blue-white anyway -- the `c generic`
     # particles take the WEAPON's change colour A (the template wanders teal..blue), not
     # the effect's tint. Change colour A = the Sentinel gunlight's red (rgb, rgb)
@@ -303,7 +311,8 @@ WEAPONS['sentinel_beam'] = {
                 # test 5: 'halfway back to the left and down'
                 # test 6: good -- then the FP rig went 1 unit down, the start with it
                 # test 7: rig 1 more unit down, the start with it
-                'first_person_offset': (0.0, -0.025, -0.07),
+                # test 8: rig 0.25 down, the start with it
+                'first_person_offset': (0.0, -0.025, -0.0725),
                 # the muzzle light's hold (the hum no longer follows it)
                 'illumination_recovery_time': 0.15},
     'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
@@ -564,7 +573,7 @@ def rewire(d, r):
     old = [copy.deepcopy(f) for f in o.functions.STEPTREE]
     for slot, inp in zip('ABCD', r['inputs']):
         getattr(d.weap_attrs, slot + '_in').set_to(inp)
-    for i, (src, by, usage) in r['functions'].items():
+    for i, (src, by, usage, *extra) in r['functions'].items():
         if isinstance(src, tuple):
             other = weap_def.build(filepath=path(src[0], '.weapon')).data.tagdata
             fn = copy.deepcopy(other.obje_attrs.functions.STEPTREE[src[1]])
@@ -572,6 +581,11 @@ def rewire(d, r):
             fn = copy.deepcopy(old[src])
         fn.scale_function_by.set_to(by)
         fn.usage = usage
+        for k, v in (extra[0] if extra else {}).items():
+            if k == 'turn_off_with':
+                fn.turn_off_with = v
+            else:
+                setattr(fn.flags, k, v)
         o.functions.STEPTREE[i] = fn
     for x in o.attachments.STEPTREE:
         sc = x.primary_scale.enum_name
@@ -734,7 +748,7 @@ def edit_weapon(key, write):
         keep = F.get('keep_particles')            # particle tags whose path holds this
         pts = ev.particles.STEPTREE
         for i in range(len(pts) - 1, -1, -1):
-            if not keep or keep not in pts[i].particle_type.filepath:
+            if not keep or not pts[i].particle_type.filepath.endswith(keep):
                 pts.pop(i)
         for x in pts:
             if 'tint' in F:
