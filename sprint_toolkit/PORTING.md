@@ -50,7 +50,7 @@ quietly shipped without the last three until the user caught it:
 | 8 | pickup icon, and the HUD schematic beside the ammo | done | done |
 | 9 | reload and swap animation timing | done | done |
 | 10 | its OWN SOUNDS: fire, dry fire, reload, swap, melee, idle fidgets (+ first draw) -- see **Step 10** | done | done |
-| 11 | ARMED card: enemies can be given the port -- it needs AI firing data (Halo 1 only) -- see **Step 11** | done | n/a |
+| 11 | ARMED card: enemies can be given the port -- it needs AI firing data (Halo 1 only) -- see **Step 11** | done | no Armed cards yet |
 
 Step 10 was added 2026-10-05 after the SAW had shipped in five games on the donor's
 sounds (the H3/ODST/Reach SAW fired through the REAL Assault Rifle's firing effect). It is
