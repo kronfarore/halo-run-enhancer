@@ -227,24 +227,26 @@ WEAPONS['sentinel_beam'] = {
                'first-person posing': SBS + 'beam_pose',
                'first-person melee': SBS + 'beam_melee',
                'first-person overheating': SBS + 'beam_overheat'},
-    # the beam's hum: Halo 3's in/loop/out as a sound_looping on the muzzle, scaled by the
-    # template's ILLUMINATION function (C_out: up on every round, 0.15 s to fall -- held
-    # through 15 rounds/s; the muzzle light runs on it, seen working). Test 1 tried
-    # `primary firing on` through a repurposed function: silent
-    'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\plasma rifle\charging',
-                  'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
-                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'C_out'},
-    # no firing effect: Halo 1's Sentinel gun has none (the plasma rifle's muzzle burst and
-    # per-shot sound were the template's). The muzzle light: test 2 used the Sentinel's
-    # own gunlight and it was not visible -- that light is NOT dynamic (a 0.5 wu glow for
-    # the Sentinel's body). Own light = the plasma rifle muzzle flash (dynamic, 2 wu) in
-    # the gunlight's colour and with its lens flare
-    'no_firing_effect': True,
+    # THE FIRING EFFECT (own, every round, at the first-person muzzle): the hum as a
+    # per-shot GRAIN of Halo 3's loop (h1_port_sounds grains; overlapping at 15/s) and the
+    # muzzle light. History: tests 1-4 ran the hum as a sound_looping attachment scaled
+    # by a function -- `primary firing on` was silent, the illumination function toggled
+    # per round and QUEUED start/end tracks (the tail grew with how long fire was held).
+    # The light as an object attachment never showed in first person (tests 2-4, even at
+    # radius 6 full colour); stock weapons light their muzzle from the firing effect.
+    # No particles: Halo 1's Sentinel gun has no muzzle burst (the plasma rifle's was the
+    # template's)
+    'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
+                    'out': SB + 'effects\\fire', 'sound': SBS + 'beam_fire_grain',
+                    'light': SB + 'muzzle light'},
+    # the light: test 2 used the Sentinel's own gunlight -- NOT dynamic (a 0.5 wu glow
+    # for the Sentinel's body). Own light = the plasma rifle muzzle flash (dynamic) in the
+    # gunlight's colour and with its lens flare, alive `duration` s per round
     'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
                   'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light',
                   # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
                   # brightness on both bounds), to be paddled back once it shows
-                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4)},
+                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1},
     'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
     # the template's attachments sit on plasma rifle markers this model lacks
     # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
@@ -268,7 +270,9 @@ WEAPONS['sentinel_beam'] = {
                 'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),
                 'rounds_between_tracers': 0,
                 # wu: right, down -- test 3: y -0.04 sat right of the muzzle ('further to the left')
-                'first_person_offset': (0.0, -0.02, -0.035),
+                # test 4: 'a bit up and right', and the FP rig went 2 units down (the
+                # muzzle with it): y -0.03, z -0.035 + 0.01 - 0.02
+                'first_person_offset': (0.0, -0.03, -0.045),
                 # test 2: the hum ran on too long after letting go -- the illumination
                 # it follows held 0.15 s past the last round; one 15/s interval is 0.067
                 'illumination_recovery_time': 0.08},
@@ -634,17 +638,35 @@ def edit_weapon(key, write):
                       lt.data.tagdata.color.color_upper_bound):
             if 'argb' in L:
                 bound.a, bound.r, bound.g, bound.b = L['argb']
+        if 'duration' in L:
+            lt.data.tagdata.effect_parameters.duration = L['duration']
         save(lt, path(L['out'], '.light'), write)
+    if 'fire_effect' in w:
+        from reclaimer.hek.defs.effe import effe_def
+        F = w['fire_effect']
+        et = effe_def.build(filepath=path(F['from'], '.effect'))
+        evs = et.data.tagdata.events.STEPTREE
+        while len(evs) > 1:                       # one event: the grain + the light
+            evs.pop()
+        ev = evs[0]
+        while len(ev.particles.STEPTREE):
+            ev.particles.STEPTREE.pop()
+        parts = ev.parts.STEPTREE
+        parts[0].type.filepath = F['sound']
+        parts.append(copy.deepcopy(parts[0]))
+        lp = parts[len(parts) - 1]
+        lp.type.tag_class.set_to('light')
+        lp.type.filepath = F['light']
+        save(et, path(F['out'], '.effect'), write)
+        for tr in a.triggers.STEPTREE:
+            for fe in tr.firing_effects.STEPTREE:
+                fe.firing_effect.filepath = F['out']
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
     if 'hum' in w:
         add_hum(d, w['hum'], write)
     if 'fire_loop' in w:
         add_fire_loop(d, w['fire_loop'], write)
-    if w.get('no_firing_effect'):
-        for tr in a.triggers.STEPTREE:
-            for fe in tr.firing_effects.STEPTREE:
-                fe.firing_effect.filepath = ''
     for x in d.obje_attrs.attachments.STEPTREE:
         x.marker = w.get('attach_markers', {}).get(x.marker, x.marker)
         x.type.filepath = w.get('attach_swap', {}).get(x.type.filepath, x.type.filepath)

@@ -114,6 +114,7 @@ WEAPONS = {
             'beam_melee': (['sentinel_melee'], ANIMS + B + 'plasrifle_melee', -16.2),
             'beam_fire_in': ([SG + 'in'], PR + B + 'fire', -16.0),
             'beam_fire_loop': ([SG + 'loop'], PR + B + 'fire', -16.0),
+            'beam_fire_grain': ([SG + 'loop'], PR + B + 'fire', -19.0),
             'beam_fire_out': ([SG + 'out'], PR + B + 'fire', -16.0),
             'beam_overheat': ([tuple(OH + k for k in ('in', 'loop', 'out'))],
                               PR + B + 'overheat', -18.0),
@@ -121,6 +122,12 @@ WEAPONS = {
         # Halo 1 lets a looping sound finish its current pass before the end track: Halo
         # 3's 4.3 s loop hummed on for seconds after the trigger was let go (test 3)
         'loop_len': {'beam_fire_loop': 0.5},
+        # test 4: the hum still lingered, LONGER the longer fire was held -- the loop
+        # attachment toggled per round and queued its start/end tracks. The hum is now
+        # per SHOT, like every stock weapon's fire sound: grains of the loop (seconds,
+        # count -> permutations from spread offsets, faded ends), one per round at 15/s,
+        # overlapping into a steady tone that ends with the last round
+        'grains': {'beam_fire_grain': (0.13, 8)},
     },
 }
 
@@ -183,6 +190,14 @@ def render(weapon):
                 y[:f] = x[:f] * ramp + x[n:n + f] * (1 - ramp)
                 x = y
             perms.append(x)
+        if name in w.get('grains', {}):
+            seconds, count = w['grains'][name]
+            n, f = int(seconds * RATE), int(0.02 * RATE)
+            env = np.ones(n)
+            env[:f], env[-f:] = np.linspace(0, 1, f), np.linspace(1, 0, f)
+            src = perms[0]
+            step = (len(src) - n) // max(1, count - 1)
+            perms = [src[k * step:k * step + n] * env for k in range(count)]
         out[name] = perms
     return out
 

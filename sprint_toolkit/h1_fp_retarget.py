@@ -95,7 +95,8 @@ WEAPONS = {
         # pushed 1.5 units AWAY from the camera (wrong way: test 2 'still too far forward,
         # set it back another 3 units'); now 3 units back from that, 1.5 toward the camera
         # test 3: 'making progress, another 1 unit'
-        'view_offset': (-0.025, 0.0, 0.0),
+        # test 4: 'down 2 units'
+        'view_offset': (-0.025, 0.0, -0.02),
         'anims': {
             'first_person:idle:var1': 'first-person idle',
             'first_person:ready': 'first-person ready',
