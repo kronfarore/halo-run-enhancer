@@ -242,19 +242,27 @@ WEAPONS['sentinel_beam'] = {
     #           (input B, its function 1, B_out) -- that input never reaches this weapon
     #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
     # So the illumination signal lingers whatever its hold: the rate of fire instead
-    # The trigger keeps ramping while fire is HELD, so the hum must also go off whenever
-    # no rounds come out: it turns off with function 2, the ILLUMINATION (1 on every
-    # round, ramping to 0 over illumination_recovery_time 0.15 s -- the tool derives the
-    # rate). At 15 rounds/s (0.067 s apart) it never reaches 0 mid-burst; on an overheat,
-    # an empty battery or release it is 0 within 0.15 s.
+    # The trigger keeps ramping while fire is HELD, so the hum must also go off when the
+    # weapon cannot fire -- `turn off with` (a function is off when its value is 0, and
+    # off with whatever its own turn-off function is off with: test 9 showed the chain
+    # carries the battery link):
     #   test 7: an empty battery kept the hum going -> off with function 3 (the template's
-    #           battery left): worked (test 8)
-    #   test 8: an overheat with fire held kept it going -> a chain via `overheated`
-    #           (inverted, function 1): no effect (test 9) -- that input, like `primary
-    #           firing on`, does not seem to reach this weapon
+    #           battery left, age inverted): WORKS (test 8)
+    #   test 8: an overheat with fire held kept it going ->
+    #     test 9  chain via `overheated` (inverted, function 1)         no effect
+    #     test 10 off with the illumination function                    no effect; and
+    #             it broke the battery case: illumination stays up while fire is HELD
+    #             (silent on a fresh press with a dead battery) -- trigger-driven, like
+    #             the rate of fire, not per round
+    #   Inputs that never move here: `primary firing on`, `overheated`. Weapon-state
+    #   inputs that do: age (battery), heat.
+    #     test 11 chain via `ready` (function 1, off with 3): if the weapon is not
+    #             `ready` while overheated, this ends the overheat hum; if `ready` stays
+    #             1, it is test 8's behaviour (battery only)
     # The template's heat-flare lights (blue plasma rifle flares, function 1) are gone
-    'rewire': {'inputs': ('heat', 'illumination', 'primary_rate_of_fire', 'age'),
-               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 2})},
+    'rewire': {'inputs': ('ready', 'illumination', 'primary_rate_of_fire', 'age'),
+               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
+                             1: (2, 'A_in', 'ready', {'turn_off_with': 3})},
                'drop_attachments_on': ('B_out',)},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
