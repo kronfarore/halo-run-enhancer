@@ -91,6 +91,9 @@ RANGE_TYPES = {
     # A 2D position (Reach airstrike Fire Offsets). Same trap as degree2 before it:
     # unflattened, the field never appears and a card naming it finds nothing.
     'point2': ('float32', 4, (' x', ' y')),
+    # A 3D vector, one leaf per component (Halo 1's jpt Instantaneous Acceleration: only
+    # ' i' is used unless the effect sets 'Use 3D Instantaneous Acceleration').
+    'vector3': ('float32', 4, (' i', ' j', ' k')),
 }
 
 # XML node tags that introduce a nested reflexive (block) in Halo 1 plugins.
@@ -283,7 +286,8 @@ class Plugin:
                 # the kind — rangef/ranged are two float32s, range16 two int16s.
                 sub_type, width, suffixes = RANGE_TYPES[t]
                 o = int(off, 16)
-                for suffix, delta in zip(suffixes, (0, width)):
+                for k, suffix in enumerate(suffixes):
+                    delta = k * width
                     self.fields.append({
                         'name': name + suffix,
                         'block_chain': list(chain),

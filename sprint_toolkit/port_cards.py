@@ -86,14 +86,14 @@ class Checker:
                     self.where = mid
                     break
 
-    def ok(self, cls, path):
+    def ok(self, cls, path, exists_only=False):
         if self.game in KIT_TAGS:
             if '*' in path:
                 return True                       # a pattern: resolved at patch time
             ext = KIT_EXT.get(cls)
             if not ext or not os.path.exists(os.path.join(KIT_TAGS[self.game], path + '.' + ext)):
                 return False
-            if cls in ('proj', 'jpt!') and self.refs:
+            if cls in ('proj', 'jpt!') and self.refs and not exists_only:
                 return path.encode('latin-1') in self.refs
             return True
         return self.map is not None and bool(self.map.find_tags(cls, path))
@@ -138,14 +138,21 @@ def plan(weapon):
             if not isinstance(tag, str) or not tag:
                 continue
             mapped, bad = [], None
+            tag_map = port.get('tag_map') or {}
             for cls, path in _tag_parts(tag):
-                m = he.ModifierDatabase._port_tag('%s %s' % (cls, path), dpath, dfolder, dbase,
-                                                  wpath, ptags, port.get('fp_animations'))
+                # the catalog's explicit donor -> port tag map wins (names that share no
+                # word: Halo 1's rocket -> the fuel rod's 'grunt fuel rod'); it only has
+                # to EXIST -- a damage effect reached through an effect tag is not named
+                # by the weapon or its projectile, so the reference check would refuse it
+                explicit = tag_map.get('%s %s' % (cls, path))
+                m = explicit or he.ModifierDatabase._port_tag(
+                    '%s %s' % (cls, path), dpath, dfolder, dbase, wpath, ptags,
+                    port.get('fp_animations'))
                 if m is None:
                     bad = 'no %s counterpart for %s' % (weapon, path)
                     break
                 mc, _s, mp = m.partition(' ')
-                if not check.ok(mc, mp):
+                if not check.ok(mc, mp, exists_only=bool(explicit)):
                     bad = '%s %s does not exist in %s' % (mc, mp, game)
                     break
                 mapped.append(m)
