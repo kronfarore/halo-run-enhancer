@@ -61,10 +61,15 @@ COPY = ('flags', 'sound_class', 'minimum_distance', 'maximum_distance', 'skip_fr
         'random_pitch_bounds', 'inner_cone_angle', 'outer_cone_angle', 'outer_cone_gain',
         'gain_modifier', 'maximum_bend_per_second')
 
+PR = B.join(['sound', 'sfx', 'weapons', 'plasma rifle'])
+SG = B.join(['sentinel_gun', 'sent_gun', ''])
+OH = B.join(['sentinel_beam_overheat', 'beam_overheat', ''])
 IMPACTS = B.join(['sound', 'sfx', 'impulse', 'melee'])
 #: weapon -> tag folder (never under sound\sfx) and its sounds:
 #:   name -> (Halo 3 sound folders mixed together, stock H1 sound to copy playback from,
 #:            active-RMS target dBFS[, sound class override])
+#:   a folder given as a TUPLE is its pieces played one after another (permutation 1 of
+#:   each): Halo 3's in/loop/out sound_looping parts as one Halo 1 one-shot
 WEAPONS = {
     'energy_sword': {
         'dir': B.join(['sound', 'weapons', 'energy_sword_port']),
@@ -94,6 +99,24 @@ WEAPONS = {
             'rod_pose': (['flak_cannon_posing_var1'], ANIMS + B + 'rocket_posing', -20.0),
             'rod_melee': (['flak_cannon_melee'], ANIMS + B + 'fuelrod_melee', -16.2),
             'rod_fire': (['flak_cannon_fire_animation'], ANIMS + B + 'rocket_fire', -18.0),
+        },
+    },
+    # the Sentinel Beam (a full port): Halo 3's player weapon cues the Sentinel's own
+    # sounds. The fire loop is a Halo 1 sound_looping (start/loop/end tracks), scaled by
+    # the weapon's illumination; the overheat is in + loop + out as one 2.4 s one-shot on
+    # the overheated effect (the vent is 2.2 s)
+    'sentinel_beam': {
+        'dir': B.join(['sound', 'weapons', 'sentinel_beam_port']),
+        'h3_dir': 'data\\sound\\characters\\sentinel\\',
+        'sounds': {
+            'beam_ready': (['sentinel_ready'], ANIMS + B + 'plasrifle_ready', -13.1),
+            'beam_pose': (['sentinel_posing'], ANIMS + B + 'plasrifle_posing', -20.0),
+            'beam_melee': (['sentinel_melee'], ANIMS + B + 'plasrifle_melee', -16.2),
+            'beam_fire_in': ([SG + 'in'], PR + B + 'fire', -16.0),
+            'beam_fire_loop': ([SG + 'loop'], PR + B + 'fire', -16.0),
+            'beam_fire_out': ([SG + 'out'], PR + B + 'fire', -16.0),
+            'beam_overheat': ([tuple(OH + k for k in ('in', 'loop', 'out'))],
+                              PR + B + 'overheat', -18.0),
         },
     },
 }
@@ -128,11 +151,15 @@ def render(weapon):
     for name, (folders, _like, target, *_cls) in w['sounds'].items():
         sets = []
         for f in folders:
-            key = (w['h3_dir'] + f + '\\').lower()
-            subs = idx.get(key)
-            if not subs:
-                raise SystemExit('%s: no %s in Halo 3\'s bank' % (name, key))
-            sets.append([tone.resample(*decode(s), RATE) for s in subs])
+            pieces = []
+            for g in (f if isinstance(f, tuple) else (f,)):
+                key = (w['h3_dir'] + g + '\\').lower()
+                subs = idx.get(key)
+                if not subs:
+                    raise SystemExit('%s: no %s in Halo 3\'s bank' % (name, key))
+                pieces.append([tone.resample(*decode(s), RATE) for s in subs])
+            sets.append([np.concatenate([p[0] for p in pieces])] if isinstance(f, tuple)
+                        else pieces[0])
         perms = []
         for k in range(max(len(s) for s in sets)):
             parts = [s[k % len(s)] for s in sets]

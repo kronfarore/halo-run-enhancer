@@ -183,6 +183,70 @@ WEAPONS = {
                   r'characters\grunt\grunt specops fuel rod airdef': ((0.5, 1.0), (2, 6))},
     },
 }
+# ---------------------------------------------------------------------------------------
+# A FULL PORT, not a restoration: the Sentinel Beam, built from Halo 3 (geometry + look
+# h1_h3_weapon_model.py, FP animations h1_fp_retarget.py) on a COPY of the plasma rifle
+# (`template`: a heat + battery automatic, the closest Halo 1 weapon). Numbers by the
+# PORTING step-4 RATIO RULE, the plasma rifle as the yardstick both games have:
+#   H1 value = H1 plasma rifle x (H3 sentinel beam / H3 plasma rifle)
+#   damage / round   13 x 4 / 10            = 5.2   (156 dps; H1 PR ~110 -- x1.4, H3 x1.6)
+#   heat / round     0.08 x 0.04 / 0.15     = 0.0213 (overheats after ~2.6 s, H3 2.57 s)
+#   heat loss / s    0.3 x 0.8525 / 0.8525  = 0.3   (0.9 -> 0.25 in 2.2 s = H3's 69-frame vent)
+#   thresholds       overheat 1.0 x 0.9 / 1 = 0.9, recovery 0.25 x 0.1 / 0.1 = 0.25
+#   battery / round  0.005 x 0.003 / 0.0025 = 0.006 (167 rounds; H1 batteries are half H3's)
+#   rate 30/s (H3 and Halo 1's own Sentinel alike); aim assist Halo 3's (1/12, 9/18)
+# The damage effect is a copy of the plasma rifle BOLT's (x2 on shields, x0.5 on armour --
+# the yardstick's, and Halo 3's beam is plasma-category); the projectile a copy of Halo 1's
+# own Sentinel beam (its contrail is the Sentinel look) with Halo 3's 120 wu range.
+SB = 'weapons\\sentinel beam\\'
+SBS = 'sound\\weapons\\sentinel_beam_port\\'
+WEAPONS['sentinel_beam'] = {
+    'weapon': SB + 'sentinel beam',
+    'template': r'weapons\plasma rifle\plasma rifle',
+    'world_model': SB + 'sentinel beam',
+    'fp_model': SB + 'fp\\fp',
+    'fp_anims': SB + 'fp\\fp',
+    'label': 'sb',
+    'teach': ('sb', 'pr'),
+    'keys': {'first-person melee': 5},
+    # Halo 3's own (the Sentinel's) sounds, h1_port_sounds.py sentinel_beam. Halo 1's
+    # plasma rifle cues its overheat from the FP overheating animation, so this does too
+    'sounds': {'first-person ready': SBS + 'beam_ready',
+               'first-person posing': SBS + 'beam_pose',
+               'first-person melee': SBS + 'beam_melee',
+               'first-person overheating': SBS + 'beam_overheat'},
+    # the beam's hum: Halo 3's in/loop/out as a sound_looping on the muzzle, on while the
+    # trigger fires (`primary firing on`, through the input slot and function given --
+    # the plasma rifle's four functions are all taken, the 4th (age) drives nothing
+    # here); the template's per-shot plasma rifle fire sound is taken off (30 shots/s)
+    'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\plasma rifle\charging',
+                  'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
+                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger',
+                  'input': 'primary_firing_on', 'slot': 'C', 'function': 3},
+    'silent_fire': SB + 'effects\\',
+    # the template's attachments sit on plasma rifle markers this model lacks
+    # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
+    # death effect spawns the beam as a weapon part beside the debris. `death` is the
+    # coll's body DESTROYED effect, whose threshold is 0 -- it plays on every kill
+    'death_drop': [r'characters\sentinel\effects\death'],
+    'attach_markers': {'secondary trigger': 'primary trigger', 'heat flare': 'overheat',
+                       'heat flare1': 'overheat'},
+    'melee': (r'weapons\plasma rifle\melee', SB + 'melee'),
+    'melee_response': r'weapons\plasma rifle\melee_response',
+    'messages': ('Picked up a sentinel beam', 'Picked up %d rounds for sentinel beam'),
+    'icon': 'sentinel beam',
+    'hud': {'donor': r'weapons\plasma rifle\plasma rifle', 'out': SB + 'sentinel beam',
+            'reticle': ('hud_reticles', 21, 'sentinel beam')},
+    'aiming': {'autoaim_angle': 1.0, 'autoaim_range': 12.0,
+               'magnetism_angle': 9.0, 'magnetism_range': 18.0},
+    'beam': {'projectile': (r'characters\sentinel\beam', SB + 'beam'),
+             'damage': (r'weapons\plasma rifle\bolt', SB + 'beam'),
+             'range': 120.0, 'dmg': 5.2, 'acceleration': 0.05},
+    'trigger': {'rounds_per_second': 30.0, 'heat_generated_per_round': 0.0213,
+                'age_generated_per_round': 0.006, 'error_angle': (0.0, 0.0)},
+    'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
+             'loss_per_second': 0.3},
+}
 MESSAGES = r'ui\hud\hud_item_messages'
 STOCK_MESSAGES = 47       # entries 0..46 ship with the game; ports append (the SAW is 47/48)
 ICONS = r'ui\hud\bitmaps\combined\hud_msg_icons'
@@ -385,6 +449,25 @@ def own_projectile(a, o, write):
             tr.projectile.projectile.filepath = p_own
 
 
+def own_beam(a, b, write):
+    """The weapon's own projectile (a copy of `projectile[0]`, range set) and its own
+    impact damage (a copy of `damage[0]`, damage + instantaneous acceleration set)."""
+    (p_src, p_own), (j_src, j_own) = b['projectile'], b['damage']
+    jt = jpt__def.build(filepath=path(j_src, '.damage_effect'))
+    dm = jt.data.tagdata.damage
+    dm.damage_lower_bound = b['dmg']
+    dm.damage_upper_bound[0] = dm.damage_upper_bound[1] = b['dmg']
+    dm.instantaneous_acceleration = b['acceleration']
+    save(jt, path(j_own, '.damage_effect'), write)
+    pt = proj_def.build(filepath=path(p_src, '.projectile'))
+    pd = pt.data.tagdata.proj_attrs
+    pd.physics.impact_damage.filepath = j_own
+    pd.detonation.maximum_range = b['range']
+    save(pt, path(p_own, '.projectile'), write)
+    for tr in a.triggers.STEPTREE:
+        tr.projectile.projectile.filepath = p_own
+
+
 def add_hum(d, h, write):
     """An always-on looping sound on the weapon: a sound_looping cloned from `like`,
     its loop track naming our sound, attached unscaled at `marker`."""
@@ -409,6 +492,55 @@ def add_hum(d, h, write):
     x.primary_scale.set_to('none')
     x.secondary_scale.set_to('none')
     x.change_color.set_to('none')
+
+
+def add_fire_loop(d, f, write):
+    """A start/loop/end sound_looping (cloned from `like`) at `marker`, playing while the
+    weapon input `input` is up: the input goes into slot `slot`, object function
+    `function` is replaced by a plain 'one' scaled by that slot, and the attachment's
+    primary scale is that function's output."""
+    from reclaimer.hek.defs.lsnd import lsnd_def
+    lt = lsnd_def.build(filepath=path(f['like'], '.sound_looping'))
+    ld = lt.data.tagdata
+    tr = ld.tracks.STEPTREE[0]
+    tr.start.filepath, tr.loop.filepath, tr.end.filepath = f['start'], f['loop'], f['end']
+    while len(ld.tracks.STEPTREE) > 1:
+        ld.tracks.STEPTREE.pop()
+    save(lt, path(f['tag'], '.sound_looping'), write)
+    o = d.obje_attrs
+    getattr(d.weap_attrs, f['slot'] + '_in').set_to(f['input'])
+    tmpl = weap_def.build(filepath=path(r'weapons\plasma pistol\plasma pistol', '.weapon'))
+    fn = copy.deepcopy(tmpl.data.tagdata.obje_attrs.functions.STEPTREE[3])   # 'one' x input
+    fn.scale_function_by.set_to(f['slot'] + '_in')
+    fn.usage = 'fire loop'
+    o.functions.STEPTREE[f['function']] = fn
+    atts = o.attachments.STEPTREE
+    atts.append(copy.deepcopy(atts[0]))
+    x = atts[len(atts) - 1]
+    x.type.tag_class.set_to('sound_looping')
+    x.type.filepath = f['tag']
+    x.marker = f['marker']
+    x.primary_scale.set_to('ABCD'[f['function']] + '_out')
+    x.secondary_scale.set_to('none')
+    x.change_color.set_to('none')
+
+
+def silent_fire(a, out_dir, write):
+    """Every trigger's firing effect copied into `out_dir` without its sound parts."""
+    from reclaimer.hek.defs.effe import effe_def
+    for tr in a.triggers.STEPTREE:
+        for fe in tr.firing_effects.STEPTREE:
+            src = fe.firing_effect.filepath
+            if not src:
+                continue
+            own = out_dir + src.rsplit('\\', 1)[-1]
+            et = effe_def.build(filepath=path(src, '.effect'))
+            for ev in et.data.tagdata.events.STEPTREE:
+                for pt in ev.parts.STEPTREE:
+                    if pt.type.tag_class.enum_name == 'sound':
+                        pt.type.filepath = ''
+            save(et, path(own, '.effect'), write)
+            fe.firing_effect.filepath = own
 
 
 def add_charge_loop(d, c):
@@ -440,7 +572,10 @@ def add_charge_loop(d, c):
 def edit_weapon(key, write):
     w = WEAPONS[key]
     p = path(w['weapon'], '.weapon')
-    src = p + BACKUP if os.path.exists(p + BACKUP) else p
+    if w.get('template'):                    # a NEW weapon: always rebuilt from its template
+        src = path(w['template'], '.weapon')
+    else:
+        src = p + BACKUP if os.path.exists(p + BACKUP) else p
     t = weap_def.build(filepath=src)
     d = t.data.tagdata
     a = d.weap_attrs
@@ -463,10 +598,32 @@ def edit_weapon(key, write):
         make_lunge(w, a, write)
     if 'own_projectile' in w:
         own_projectile(a, w['own_projectile'], write)
+    if w.get('world_model'):
+        d.obje_attrs.model.filepath = w['world_model']
+    if w.get('label'):
+        a.label = w['label']
+    if 'beam' in w:
+        own_beam(a, w['beam'], write)
+    for k, v in w.get('trigger', {}).items():
+        for tr in a.triggers.STEPTREE:
+            if k == 'rounds_per_second':
+                tr.firing.rounds_per_second[0] = tr.firing.rounds_per_second[1] = v
+            elif k == 'error_angle':
+                tr.projectile.error_angle[0], tr.projectile.error_angle[1] = v
+            else:
+                setattr(tr.misc, k, v)
+    for k, v in w.get('heat', {}).items():
+        setattr(a.heat, k, v)
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
     if 'hum' in w:
         add_hum(d, w['hum'], write)
+    if 'fire_loop' in w:
+        add_fire_loop(d, w['fire_loop'], write)
+    if 'silent_fire' in w:
+        silent_fire(a, w['silent_fire'], write)
+    for x in d.obje_attrs.attachments.STEPTREE:
+        x.marker = w.get('attach_markers', {}).get(x.marker, x.marker)
     if 'hit_sound' in w:
         jp = path(a.melee.player_damage.filepath, '.damage_effect')
         jt = jpt__def.build(filepath=jp + BACKUP if os.path.exists(jp + BACKUP) else jp)
@@ -485,6 +642,27 @@ def edit_weapon(key, write):
              d.item_attrs.message_index, len(a.triggers.STEPTREE)))
     t.filepath = p
     save(t, p, write)
+
+
+def edit_death_drop(key, write):
+    """The weapon as a part of event 0 of each `death_drop` effect (an enemy that has no
+    weapon to drop leaves one when it dies). The part copies the event's first part
+    (location, velocity, cone), its type the weapon."""
+    from reclaimer.hek.defs.effe import effe_def
+    w = WEAPONS[key]
+    for rel in w.get('death_drop', []):
+        p = path(rel, '.effect')
+        src = p + BACKUP if os.path.exists(p + BACKUP) else p
+        t = effe_def.build(filepath=src)
+        parts = t.data.tagdata.events.STEPTREE[0].parts.STEPTREE
+        parts.append(copy.deepcopy(parts[0]))
+        x = parts[len(parts) - 1]
+        x.type.tag_class.set_to('weapon')
+        x.type.filepath = w['weapon']
+        x.angular_velocity_bounds[0] = x.angular_velocity_bounds[1] = 0.0
+        print('   %s: + weapon part %s (%d parts)' % (rel, w['weapon'], len(parts)))
+        t.filepath = p
+        save(t, p, write)
 
 
 def edit_drops(key, write):
@@ -558,6 +736,7 @@ def main():
     for key in WEAPONS:
         edit_weapon(key, a.write)
         edit_drops(key, a.write)
+        edit_death_drop(key, a.write)
         if os.path.exists(path(WEAPONS[key]['fp_anims'], '.model_animations')):
             edit_fp_anims(key, a.write)
         else:

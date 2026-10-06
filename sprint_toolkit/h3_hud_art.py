@@ -29,13 +29,13 @@ import h4_bitmap                # noqa: E402  (chain_size, FOURCC)
 REL = 'ui\\chud\\bitmaps\\%s.bitmap'
 
 
-def sheet(name):
-    """(RGBA image, [sprite boxes]) of a whole sheet."""
-    xml = h1_fp_retarget.export_xml(REL % name)
+def decode(rel):
+    """(RGBA image of the top mip, sprite boxes) of ANY Halo 3 bitmap tag (H3EK path)."""
+    xml = h1_fp_retarget.export_xml(rel)
     s = io.open(xml, encoding='utf-8', errors='replace').read()
     g = lambda k: re.search(r'name="%s" value="([^"]*)"' % k, s).group(1)   # noqa: E731
     w, h, fmt = int(g('width')), int(g('height')), g('format')
-    tag = h3tag.Tag(os.path.join(h1_fp_retarget.H3EK, 'tags', REL % name))
+    tag = h3tag.Tag(os.path.join(h1_fp_retarget.H3EK, 'tags', rel))
     nd = max((x for x in tag.nodes() if x.marker == 'tgda'), key=lambda x: x.length)
     blob = bytes(tag.data[nd.payload_at:nd.payload_at + nd.length])
     if fmt == 'a8r8g8b8':
@@ -49,8 +49,13 @@ def sheet(name):
         img.load()
         img = img.convert('RGBA')
     else:
-        raise SystemExit('%s: format %s not handled' % (name, fmt))
+        raise SystemExit('%s: format %s not handled' % (rel, fmt))
     return img, h3_sprite_box.sprites(xml)
+
+
+def sheet(name):
+    """(RGBA image, [sprite boxes]) of a whole HUD sheet."""
+    return decode(REL % name)
 
 
 def sprite(name, index):

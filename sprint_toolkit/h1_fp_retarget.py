@@ -79,6 +79,34 @@ WEAPONS = {
             'first_person:throw_grenade': 'first-person throw-grenade',
         },
     },
+    # A FULL PORT, geometry and all (h1_h3_weapon_model.py): Halo 1's FP model IS Halo 3's
+    # (h3_rm_to_jms keeps its nodes), so the models share one space exactly.
+    'sentinel_beam': {
+        'graph': FP_GRAPHS + r'\support_low\fp_sentinel_beam\fp_sentinel_beam.model_animation_graph',
+        'render_model': r'objects\weapons\support_low\sentinel_gun\fp_sentinel_gun'
+                        r'\fp_sentinel_gun.render_model',
+        'nodes': {n: 'frame ' + n.replace('_', ' ') for n in
+                  ('gun', 'barrel', 'clamp_left', 'clamp_right', 'powercore', 'powercore2',
+                   'shield')},
+        'h1_dir': r'weapons\sentinel beam\fp',
+        'h1_model': r'weapons\sentinel beam\fp\fp',
+        'align': 'same_space',
+        'anims': {
+            'first_person:idle:var1': 'first-person idle',
+            'first_person:ready': 'first-person ready',
+            'first_person:put_away': 'first-person put-away',
+            'first_person:fire_1:var1': 'first-person fire-1',
+            'first_person:melee_strike_1': 'first-person melee',
+            'first_person:moving': 'first-person moving',
+            'first_person:overlays': 'first-person overlays',
+            'first_person:posing:var1': 'first-person posing',
+            # 69 frames = Halo 3's whole overheat recovery, (0.9 - 0.1) / 0.35 per s = 2.3 s
+            'first_person:overheating': 'first-person overheating',
+            'first_person:o_h_exit': 'first-person o-h-exit',
+            'first_person:throw_grenade': 'first-person throw-grenade',
+            'first_person:throw_overheated': 'first-person throw-overheated',
+        },
+    },
     # Halo 3's fuel rod is the flak_cannon. Its FP graph drives the ORIGINAL Halo 1 fuel
     # rod (the Grunts' weapons\fuel rod gun\fuel rod gun model, one node `frame gun`).
     # H3's reload parts (ammo, barrel, cowling) have no counterpart there: dropped.

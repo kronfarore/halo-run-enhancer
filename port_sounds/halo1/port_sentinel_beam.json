@@ -1,0 +1,70 @@
+{
+ "game": "Halo 1",
+ "weapon": "sentinel_beam",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_ready",
+   "perms": [
+    "beam_ready_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_pose",
+   "perms": [
+    "beam_pose_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_pose"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_melee",
+   "perms": [
+    "beam_melee_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_fire_in",
+   "perms": [
+    "beam_fire_in_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_fire_in"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_fire_loop",
+   "perms": [
+    "beam_fire_loop_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_fire_loop"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_fire_out",
+   "perms": [
+    "beam_fire_out_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_fire_out"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\sentinel_beam_port\\beam_overheat",
+   "perms": [
+    "beam_overheat_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\sentinel_beam_port\\beam_overheat"
+   ]
+  }
+ ]
+}
