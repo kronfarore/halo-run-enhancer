@@ -312,6 +312,11 @@ WEAPONS['sentinel_beam'] = {
     # death effect spawns the beam as a weapon part beside the debris. `death` is the
     # coll's body DESTROYED effect, whose threshold is 0 -- it plays on every kill
     'death_drop': [r'characters\sentinel\effects\death'],
+    # IN EVERY MAP: the death effect only brings the beam into levels with Sentinels (c10,
+    # c20, c40, d40); the enhancer may offer it anywhere, so it is APPENDED to every
+    # level's weapons palette, like the SAW / sword / fuel rod (a palette entry is enough
+    # for tool to build the tag in; appending keeps every existing palette index)
+    'palette_levels': ['a10', 'a30', 'a50', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'],
     'attach_markers': {'secondary trigger': 'primary trigger', 'heat flare': 'overheat',
                        'heat flare1': 'overheat'},
     'melee': (r'weapons\plasma rifle\melee', SB + 'melee'),
@@ -836,6 +841,43 @@ def edit_weapon(key, write):
     save(t, p, write)
 
 
+def edit_palettes(key, write):
+    """The weapon appended to each `palette_levels` scenario's weapons palette."""
+    from reclaimer.hek.defs.scnr import scnr_def
+    w = WEAPONS[key]
+    for lvl in w.get('palette_levels', []):
+        p = path('levels\\%s\\%s' % (lvl, lvl), '.scenario')
+        t = scnr_def.build(filepath=p)
+        pal = t.data.tagdata.weapons_palette.STEPTREE
+        names = [e.name.filepath.lower() for e in pal]
+        if w['weapon'].lower() in names:
+            idx = names.index(w['weapon'].lower())
+        else:
+            pal.append()
+            pal[-1].name.filepath = w['weapon']
+            idx = len(pal) - 1
+        # a palette entry ALONE is not built in (a10 test, 2026-10-06): tool keeps only
+        # what a placement uses. Like the SAW: ONE placement, `not placed: automatically`
+        # (never spawns, only makes the tag resident for the enhancer's own placements),
+        # a copy of the SAW's
+        places = t.data.tagdata.weapons.STEPTREE
+        if any(x.type == idx for x in places):
+            print('   %s: palette #%d + placement already there' % (lvl, idx))
+            continue
+        saw = names.index(r'weapons\saw\saw')
+        src = [x for x in places if x.type == saw and x.not_placed.automatically]
+        if not src:
+            raise SystemExit('%s: no resident-only SAW placement to copy' % lvl)
+        places.append(copy.deepcopy(src[0]))
+        x = places[len(places) - 1]
+        x.type = idx
+        x.rounds_left = x.rounds_loaded = 0
+        print('   %s: palette #%d + resident-only placement (the SAW\'s, at %s)'
+              % (lvl, idx, tuple(round(c, 1) for c in x.position)))
+        t.filepath = p
+        save(t, p, write)
+
+
 def edit_death_drop(key, write):
     """The weapon as a part of event 0 of each `death_drop` effect (an enemy that has no
     weapon to drop leaves one when it dies). The part copies the event's first part
@@ -929,6 +971,7 @@ def main():
         edit_weapon(key, a.write)
         edit_drops(key, a.write)
         edit_death_drop(key, a.write)
+        edit_palettes(key, a.write)
         if os.path.exists(path(WEAPONS[key]['fp_anims'], '.model_animations')):
             edit_fp_anims(key, a.write)
         else:

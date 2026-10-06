@@ -23,6 +23,12 @@ is not simulated (a burst from cold).
 
     python h1_role_compare.py flak_cannon [--balanced]
     python h1_role_compare.py energy_blade [--balanced]
+    python h1_role_compare.py sentinel_beam [--balanced]
+
+A weapon entry may carry a 4th element {'rate': rounds/s}: the rate MEASURED in game,
+used instead of the tag's (the Sentinel Beam's 30/s fires 15/s, PORTING.md). Stock
+weapons keep their tag rate: the tick rule is an observation on one weapon, unverified on
+the others. A weapon with heat or battery also gets a sustained-fire table.
 
 --balanced applies the catalog's balance rows (weapon_ports_catalog.json, Halo 1) the
 fields this tool knows -- what the enhancer's per-port Balanced box turns on.
@@ -66,6 +72,23 @@ SETS = {
         ('Assault Rifle melee', W + r'assault rifle\assault rifle', 'melee'),
         ('Rocket Launcher melee', W + r'rocket launcher\rocket launcher', 'melee'),
         ('Oddball melee', W + r'ball\ball', 'melee'),
+    ]},
+    # the Sentinel Beam (a full Halo 3 port) against Halo 1's SENTINEL GUN -- the direct
+    # yardstick: Halo 3's Sentinels carry the player's own sentinel_gun, so the H1 player
+    # beam = the H1 Sentinel gun x 1 for damage / rate / range -- and the automatics of
+    # Halo 1. Both Sentinel weapons are tagged 30/s and fire 15/s (measured on the port).
+    'sentinel_beam': {'port': 'Sentinel Beam', 'weapons': [
+        ('Sentinel Beam (port)', W + r'sentinel beam\sentinel beam', 'shot', {'rate': 15.0}),
+        ('Sentinel gun (H1 AI)', r'characters\sentinel\sentinel', 'shot', {'rate': 15.0}),
+        ('Plasma Rifle', W + r'plasma rifle\plasma rifle', 'shot'),
+        ('Assault Rifle', W + r'assault rifle\assault rifle', 'shot'),
+        ('Needler', W + r'needler\needler', 'shot'),
+        ('Pistol', W + r'pistol\pistol', 'shot'),
+    ], 'enemies': [
+        ('Flood combat (elite)', r'characters\floodcombat elite\floodcombat elite plasma rifle',
+         'floodcombat elite'),
+        ('Sentinel', r'characters\sentinel\sentinel', 'sentinel'),
+        ('Sentinel (shielded)', r'characters\sentinel\sentinel_shielded', 'sentinel'),
     ]},
 }
 
@@ -126,7 +149,7 @@ def anim_seconds(rel, names):
     return None
 
 
-def weapon(label, rel, mode, overrides):
+def weapon(label, rel, mode, overrides, extra=None):
     d = load(weap_def, rel, '.weapon')
     w = d.weap_attrs
     fp = w.interface.first_person_animations.filepath
@@ -156,6 +179,14 @@ def weapon(label, rel, mode, overrides):
                       else None)
         out['rounds_per_shot'] = tr.firing.rounds_per_shot
         out['reload'] = anim_seconds(fp, ('first-person reload-empty', 'first-person reload-full'))
+        out['tag_rps'] = out['rps']
+        if extra and extra.get('rate'):
+            out['rps'] = extra['rate']
+            out['interval'] = 1.0 / out['rps']
+        h = w.heat
+        out['heat'] = (tr.misc.heat_generated_per_round, h.overheated_threshold,
+                       h.loss_per_second, h.recovery_threshold)
+        out['age'] = tr.misc.age_generated_per_round
     apply_rows(out, overrides)
     return out
 
@@ -262,25 +293,53 @@ def main():
     a = ap.parse_args()
     s = SETS[a.set]
     over = balanced_overrides(s['port']) if a.balanced else []
-    rows = [weapon(lbl, rel, mode, over if '(restored)' in lbl else [])
-            for lbl, rel, mode in s['weapons']]
+    rows = [weapon(e[0], e[1], e[2], over if '(restored)' in e[0] or '(port)' in e[0] else [],
+                   e[3] if len(e) > 3 else None)
+            for e in s['weapons']]
+    enemies = ENEMIES + s.get('enemies', [])
     print('%s%s\n' % (s['port'], '  -- BALANCED rows applied' if a.balanced else ''))
-    print('%-26s %8s %7s %8s %6s %5s %6s %6s  %s' % ('weapon', 'damage', 'splash', 'interval',
-                                                     'charge', 'mag', 'reload', 'speed',
-                                                     'aim assist (deg/wu auto, magnet)'))
+    print('%-26s %8s %7s %8s %6s %6s %5s %6s %6s %6s  %s' % (
+        'weapon', 'damage', 'splash', 'interval', 'rate', 'dps', 'mag', 'reload', 'speed',
+        'range', 'aim assist (deg/wu auto, magnet)'))
     for r in rows:
         dmg = '+'.join('%g' % round(d['dmg'], 1) for d in r['damage']) or '-'
         spl = max((d['radius'][1] for d in r['damage']), default=0)
-        print('%-26s %8s %7s %7.2fs %5.2fs %5s %5s %6s  %4.1f/%-4g %4.1f/%-4g'
-              % (r['label'], dmg, '%.2f' % spl if spl else '-', r['interval'], r['charge'],
+        rate = 1.0 / r['interval'] if r['interval'] else 0
+        dps = sum(d['dmg'] for d in r['damage']) * r['per_shot'] * rate
+        tag = r.get('tag_rps')
+        rtxt = ('%g' % rate) + ('*' if tag and abs(tag - rate) > 0.01 else '')
+        print('%-26s %8s %7s %7.2fs %6s %6.0f %5s %6s %6s %6s  %4.1f/%-4g %4.1f/%-4g'
+              % (r['label'], dmg, '%.2f' % spl if spl else '-', r['interval'], rtxt, dps,
                  r.get('mag') or '-', '%.1fs' % r['reload'] if r.get('reload') else '-',
-                 '%g' % r['speed'] if r.get('speed') else '-', *r['aim']))
+                 '%g' % r['speed'] if r.get('speed') else '-',
+                 '%g' % r['range'] if r.get('range') else '-', *r['aim']))
+    if any(r.get('tag_rps') and abs(r['tag_rps'] - 1.0 / r['interval']) > 0.01 for r in rows
+           if r['interval']):
+        print('  * measured in game, not the tag rate (tag: %s)' % ', '.join(
+            '%s %g/s' % (r['label'], r['tag_rps']) for r in rows
+            if r.get('tag_rps') and r['interval'] and abs(r['tag_rps'] - 1.0 / r['interval']) > 0.01))
+    hot = [r for r in rows if r.get('heat') and (r['heat'][0] or r.get('age'))]
+    if hot:
+        print('\nSUSTAINED FIRE (heat / battery)')
+        print('%-26s %9s %9s %9s %10s %8s %10s %9s' % ('weapon', 'heat/rnd', 'overheat', 'loss/s',
+                                                      'to overheat', 'vent', 'battery', 'per batt'))
+        for r in hot:
+            hpr, oh, loss, rec = r['heat']
+            rate = 1.0 / r['interval']
+            net = hpr * rate - loss
+            t_oh = ('%.1fs' % (oh / net)) if hpr and net > 0 else 'never'
+            vent = ('%.1fs' % ((oh - rec) / loss)) if hpr and loss else '-'
+            rounds = (1.0 / r['age']) if r.get('age') else 0
+            print('%-26s %9.4f %9g %9g %10s %8s %10s %9s'
+                  % (r['label'], hpr, oh, loss, t_oh, vent,
+                     ('%d rnds' % rounds) if rounds else '-',
+                     ('%.1fs' % (rounds / rate)) if rounds else '-'))
     sc = scales()
     for diff in ('normal', 'legendary'):
         vs, ss = sc[diff]
         print('\nTIME TO KILL, %s (shots / seconds, burst from cold, direct hits)' % diff)
-        print('%-26s' % 'weapon' + ''.join('%-17s' % e[0][:16] for e in ENEMIES))
-        stats = [(lbl,) + enemy(p, ch) for lbl, p, ch in ENEMIES]
+        print('%-26s' % 'weapon' + ''.join('%-17s' % e[0][:16] for e in enemies))
+        stats = [(lbl,) + enemy(p, ch) for lbl, p, ch in enemies]
         for r in rows:
             line = '%-26s' % r['label']
             for _l, body, shield, bm, sm in stats:

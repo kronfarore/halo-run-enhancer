@@ -365,6 +365,10 @@ TREES += [(os.path.join(HCEEK, 'tags', 'weapons', 'sentinel beam'), 'tags/weapon
 for _x in ('', '.before_pickable'):
     SHARED.append((os.path.join(HCEEK, 'tags', 'characters', 'sentinel', 'effects', 'death.effect') + _x,
                    'shared/characters/sentinel/effects/death.effect' + _x))
+    # every level's scenario: the beam's weapons-palette entry + resident-only placement
+    for _l in ('a10', 'a30', 'b30', 'b40', 'c10', 'c20', 'c40', 'd20', 'd40'):  # a50 above
+        SHARED.append((os.path.join(HCEEK, 'tags', 'levels', _l, _l + '.scenario') + _x,
+                       'shared/levels/%s/%s.scenario%s' % (_l, _l, _x)))
 SCRIPTS += ('h3_rm_to_jms.py', 'h1_h3_weapon_model.py', 'h1_enemy_test_map.py',
             'make_port_catalog_h1_restored.py')
 
