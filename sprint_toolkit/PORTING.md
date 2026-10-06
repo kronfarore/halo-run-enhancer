@@ -94,6 +94,16 @@ weapon than its yardstick (Halo 2: the GPMG + the Warthog turret's bullet ->
 h2_saw_yardstick.py). It reads the CATALOG for what balance covers (derived rows
 included). Done for all five SAW ports: nothing left to port.
 
+**STEP 5b, MEASURING THE BALANCED VALUES** (made a heading of its own 2026-10-06 -- the user
+could not find it): a balanced value is never a guess. Put the port beside the weapons whose
+role it shares and read time to kill on the game's real enemies, then propose rows that move
+it INTO that role -- and run the same check on the balanced numbers. Halo 4 / Reach:
+`port_role_compare.py` + `port_ttk.py` (below). HALO 1: `h1_role_compare.py <set>
+[--balanced]` (role table + time to kill at normal / legendary from HCEEK tags: per-material
+damage modifiers, actor-variant vitality, globals difficulty scales). It found, on the
+restored fuel rod, that its explosion does x0 to Hunters (Bungie's Grunt friendly-fire
+guard) and that 'Charging Time 0' alone leaves it firing 10 rounds/s.
+
 **And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>
 [--balanced]` puts the port beside the weapons whose role it shares -- damage per shot,
 dps, shots/seconds to overheat, overheat recovery, battery, headshots, range, zoom, aim
