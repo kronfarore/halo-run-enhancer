@@ -242,18 +242,19 @@ WEAPONS['sentinel_beam'] = {
     #           (input B, its function 1, B_out) -- that input never reaches this weapon
     #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
     # So the illumination signal lingers whatever its hold: the rate of fire instead
-    # The trigger keeps ramping while fire is HELD, so the hum must also go off when the
-    # weapon cannot fire -- a CHAIN of `turn off with` (one link per function):
-    #   function 0  hum        'one' x rate of fire     off with 1
-    #   function 1  can fire   'one' x overheated, invert   off with 3
-    #   function 3  battery    the template's age (`invert` = battery left), as stock
-    # test 7: an empty battery kept the hum going (fixed, test 8: off with 3); test 8:
-    # so did an overheat with fire held (the stretch until it recovers and fires again).
-    # Function 1 was the template's heat flare (blue plasma rifle flare lights at the
-    # vents): those lights go, not part of the Sentinel look
-    'rewire': {'inputs': ('overheated', 'illumination', 'primary_rate_of_fire', 'age'),
-               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
-                             1: (2, 'A_in', 'can fire', {'invert': True, 'turn_off_with': 3})},
+    # The trigger keeps ramping while fire is HELD, so the hum must also go off whenever
+    # no rounds come out: it turns off with function 2, the ILLUMINATION (1 on every
+    # round, ramping to 0 over illumination_recovery_time 0.15 s -- the tool derives the
+    # rate). At 15 rounds/s (0.067 s apart) it never reaches 0 mid-burst; on an overheat,
+    # an empty battery or release it is 0 within 0.15 s.
+    #   test 7: an empty battery kept the hum going -> off with function 3 (the template's
+    #           battery left): worked (test 8)
+    #   test 8: an overheat with fire held kept it going -> a chain via `overheated`
+    #           (inverted, function 1): no effect (test 9) -- that input, like `primary
+    #           firing on`, does not seem to reach this weapon
+    # The template's heat-flare lights (blue plasma rifle flares, function 1) are gone
+    'rewire': {'inputs': ('heat', 'illumination', 'primary_rate_of_fire', 'age'),
+               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 2})},
                'drop_attachments_on': ('B_out',)},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
@@ -271,8 +272,8 @@ WEAPONS['sentinel_beam'] = {
                     # sprite (`flash c generic` exactly), a deep red tint
                     'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.15, 0.05),
                     # test 8: red, right -- '0.25 units up and right on the muzzle'
-                    # (wu, marker space: forward, left, up)
-                    'particle_offset': (0.0, -0.0025, 0.0025)},
+                    # (wu, marker space: forward, left, up); test 9: right way, 0.5 more
+                    'particle_offset': (0.0, -0.0075, 0.0075)},
     # test 6: the glow came out plasma rifle blue-white anyway -- the `c generic`
     # particles take the WEAPON's change colour A (the template wanders teal..blue), not
     # the effect's tint. Change colour A = the Sentinel gunlight's red (rgb, rgb)
