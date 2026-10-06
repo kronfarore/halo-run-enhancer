@@ -586,7 +586,7 @@
    "donor": "Rocket Launcher",
    "default_on": false,
    "desc": "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and sounds on the original gun. Hold fire to charge; it fires when full.",
-   "balance_desc": "Instant fire at 2.5 rods/s and it hurts Hunters (the Grunts' fuel rods change the same way).",
+   "balance_desc": "Instant fire at 2.5 rods/s and it hurts Hunters (the Grunts' fuel rods too; they fire two rods per burst instead of one).",
    "fp_animations": "weapons\\fuel rod gun\\fp\\fp",
    "requires": [
     "proj weapons\\fuel rod gun\\grunt fuel rod"
@@ -636,6 +636,24 @@
      "block": null,
      "value": 1.0,
      "card": "Hunter damage",
+     "original": 0.0
+    },
+    {
+     "class": "actv",
+     "tag": "characters\\grunt\\grunt specops fuel rod",
+     "field": "Rate Of Fire",
+     "block": null,
+     "value": 0.75,
+     "card": "Grunt fuel rod rate",
+     "original": 0.0
+    },
+    {
+     "class": "actv",
+     "tag": "characters\\grunt\\grunt specops fuel rod airdef",
+     "field": "Rate Of Fire",
+     "block": null,
+     "value": 0.75,
+     "card": "Grunt fuel rod rate",
      "original": 0.0
     }
    ],

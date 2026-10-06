@@ -35,6 +35,7 @@ SWORD = B.join(['weapons', 'energy sword', 'energy sword'])
 STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
 ROD = B.join(['weapons', 'fuel rod gun', 'fuel rod'])
 ROD_BLAST = B.join(['weapons', 'fuel rod gun', 'grunt explosion'])
+GRUNT_ROD = B.join(['characters', 'grunt', 'grunt specops fuel rod'])
 
 
 RENAMED = ('Energy Sword',)
@@ -81,7 +82,7 @@ ENTRIES = [
      'desc': "The Grunts' fuel rod, made pickable: Halo 3's first-person animations and "
              "sounds on the original gun. Hold fire to charge; it fires when full.",
      'balance_desc': 'Instant fire at 2.5 rods/s and it hurts Hunters (the Grunts\' fuel '
-                     'rods change the same way).',
+                     'rods too; they fire two rods per burst instead of one).',
      'fp_animations': B.join(['weapons', 'fuel rod gun', 'fp', 'fp']),
      # its own projectile (step 3) exists only in the player build
      'requires': ['proj ' + B.join(['weapons', 'fuel rod gun', 'grunt fuel rod'])],
@@ -97,6 +98,13 @@ ENTRIES = [
          # the rocket launcher does x1. Grunts' fuel rods can then hurt Hunters too.
          row('jpt!', ROD_BLAST, 'Hunter Armor', 1.0, 0.0, 'Hunter damage'),
          row('jpt!', ROD_BLAST, 'Hunter Skin', 1.0, 0.0, 'Hunter damage'),
+         # THE GRUNTS (a50 test 2026-10-06, user: "without the charge time they get to spam"):
+         # their actor variants hold the trigger (Rate Of Fire 0) through 2.2 s bursts every
+         # ~5 s. Vanilla, the 1.25 s charge allowed ONE rod per burst (~12/min); balanced,
+         # the weapon's 2.5/s allows six (~46-69/min). 0.75 pulls/s = TWO rods per burst
+         # (~23/min, twice vanilla) -- AI only, the player's fuel rod keeps 2.5/s.
+         row('actv', GRUNT_ROD, 'Rate Of Fire', 0.75, 0.0, 'Grunt fuel rod rate'),
+         row('actv', GRUNT_ROD + ' airdef', 'Rate Of Fire', 0.75, 0.0, 'Grunt fuel rod rate'),
      ]},
 ]
 
