@@ -2570,7 +2570,8 @@ class ModifierDatabase:
           * a card whose every target SETS a value (=n): a set has no direction."""
         if mod.get('invertible') is False or mod.get('synth'):
             return False
-        ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)]
+        ts = [t for t in (mod.get('targets') or []) if isinstance(t, dict)
+              and (game is None or target_applies(t, game))]   # only THIS game's targets
         if any(t.get('map_swap') or t.get('map_equip') for t in ts):
             return False
         for t in ts:

@@ -5392,9 +5392,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
-						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
 						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
 						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
@@ -5411,9 +5411,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] },
-						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] },
 						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo Reach", "Halo 4"] },
 						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] },
@@ -5438,7 +5438,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*", "Halo 4": "jmad *fp_fuel_rod_cannon*", "Halo 1": "antr weapons\\fuel rod gun\\fp\\fp" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true, "games": ["Halo 1"] }
 					]
 				},
@@ -5482,8 +5482,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "field": "Distribution Function", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "set": "horizontal fan", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Distribution Angle", "block": { "Halo 1": "Triggers", "default": "Barrels" }, "index": "all", "zero_is": 0.1, "min": 0, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "field": "Distribution Function", "block": "Triggers", "index": "all", "set": "horizontal fan", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Distribution Angle", "block": "Triggers", "index": "all", "zero_is": 0.1, "min": 0, "games": ["Halo 1"] }
 					]
@@ -5494,7 +5494,7 @@
 					"game": ["Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 3", "Halo Reach", "Halo 4"] },
+						{ "field": "Firing Noise", "block": "Barrels", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "field": "Impact Noise", "tag": { "Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt" }, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
 						{ "field": "Detonation Noise", "tag": { "Halo 3": "proj objects\\weapons\\support_high\\flak_cannon\\projectiles\\flak_bolt\\flak_bolt", "Halo 4": "proj objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\flak_bolt" }, "follows_choice": true, "games": ["Halo 3", "Halo 4"] },
 						{ "field": "Firing Noise", "block": "Triggers", "index": "all", "choice": true, "ladder": ["Silent", "Quiet", "Medium", "Loud", "Shout"], "games": ["Halo 1"] },
@@ -5541,11 +5541,11 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4"] },
+						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Water Damage Range", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Water Damage Range Max", "group": "Range", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Maximum Range", "group": "Range", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Air Damage Range", "group": "Range", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Air Damage Range Max", "group": "Range", "games": ["Halo 1"] },
@@ -5560,9 +5560,9 @@
 					"game": ["Halo 2", "Halo 3", "Halo 4", "Halo 1"],
 					"split_from": "Projectile",
 					"targets": [
-						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "games": ["Halo 2", "Halo 3", "Halo 4"] },
-						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "games": ["Halo 2", "Halo 3", "Halo 4"] },
+						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "games": ["Halo 2", "Halo 3", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Initial Velocity", "group": "Velocity", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Final Velocity", "group": "Velocity", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Minimum Velocity", "group": "Velocity", "min": 0, "games": ["Halo 1"] }
@@ -5594,8 +5594,8 @@
 					"desc": "Min to Max Radius of the flak explosion",
 					"tag": { "Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 1": "jpt! weapons\\fuel rod gun\\grunt explosion" },
 					"targets": [
-						{ "step": "*1.2", "field": "Radius", "group": "Radius", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Radius", "group": "Radius", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Radius", "group": "Radius", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Radius Max", "group": "Radius", "games": ["Halo 1"] }
 					],
@@ -5605,9 +5605,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Covers both the direct impact and the explosion.",
 					"tag": { "Halo 2": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo 3": "jpt! objects\\weapons\\support_high\\flak_cannon\\damage_effects\\flak_explosion", "Halo Reach": "jpt! objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\flak_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 4": "jpt! objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_explosion & objects\\weapons\\support_high\\storm_fuel_rod_cannon\\projectiles\\damage_effects\\flak_bolt_impact", "Halo 1": "jpt! weapons\\fuel rod gun\\grunt explosion" },
 					"targets": [
-						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 1"] }
@@ -5618,9 +5618,9 @@
 					"desc": "Damage Lower Bound, Damage Upper Bound. Uses a melee damage type, that is shared with different weapons.",
 					"tag": { "Halo 2": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\smash_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee & globals\\damage_effects\\gun_to_gun_clang_melee & globals\\damage_effects\\gun_to_sword_clang_melee", "Halo 1": "jpt! weapons\\fuel rod gun\\melee" },
 					"targets": [
-						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach"] },
-						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach"] },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach"] },
+						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
+						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 2", "Halo 3", "Halo 4", "Halo Reach", "Halo 3: ODST"] },
 						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage", "games": ["Halo 1"] },
 						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage", "games": ["Halo 1"] },
 						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage", "games": ["Halo 1"] }
@@ -5629,13 +5629,16 @@
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
-					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon" },
+					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": ["=0"], "Halo 3": ["=0"], "Halo 3: ODST": ["=0"], "Halo Reach": ["=0"], "Halo 4": ["=0"] }, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": null, "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": null, "games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": null, "games": ["Halo 1"] }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
+					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
@@ -5651,8 +5654,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Total Initial", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Inventory Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Total Initial", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Inventory Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] },
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Total Initial", "block": "Magazines", "games": ["Halo 1"] },
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 1"] }
@@ -5664,8 +5667,8 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"split_from": "Magazine",
 					"targets": [
-						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Loaded Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Reloaded", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Loaded Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Reloaded", "block": "Magazines", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "field": "Rounds Total Maximum", "block": "Magazines", "games": ["Halo 2", "Halo 4"], "derived": ["Rounds Inventory Maximum", "Rounds Loaded Maximum"] },
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Loaded Maximum", "block": "Magazines", "games": ["Halo 1"] },
 						{ "min": 1, "step": "*1.5", "inverse_steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Rounds Reloaded", "block": "Magazines", "games": ["Halo 1"] }
@@ -5677,7 +5680,7 @@
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 1"],
 					"tag": { "Halo 2": "jmad *fp_flak_cannon*", "Halo Reach": "jmad *fp_flak_cannon*", "Halo 4": "jmad *fp_fuel_rod_cannon*", "Halo 1": "antr weapons\\fuel rod gun\\fp\\fp" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Reload Animation", "reload_anim": true, "games": ["Halo 1"] }
 					]
 				},
@@ -5688,10 +5691,10 @@
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"easier_when": "increased",
 					"targets": [
-						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
-						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Barrels", "group": "Rounds Per Second", "zero_is": 30, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Shots Per Fire", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
+						{ "step": "+1", "field": "Shots Per Fire Max", "block": "Barrels", "group": "Shots Per Fire", "zero_is": 1, "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "*1.2", "field": "Rounds Per Second", "block": "Triggers", "group": "Rounds Per Second", "games": ["Halo 1"] },
 						{ "step": "*1.2", "field": "Rounds Per Second Max", "block": "Triggers", "group": "Rounds Per Second", "games": ["Halo 1"] }
 					],
@@ -5711,7 +5714,7 @@
 					"desc": "For every projectily, fire this many",
 					"tag": { "Halo 2": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 3": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo Reach": "weap objects\\weapons\\support_high\\flak_cannon\\flak_cannon", "Halo 4": "weap objects\\weapons\\support_high\\storm_fuel_rod_cannon\\storm_fuel_rod_cannon", "Halo 1": "weap weapons\\fuel rod gun\\fuel rod" },
 					"targets": [
-						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"] },
+						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Barrels", "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4", "Halo 3: ODST"] },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Barrels", "harder_when": "increased", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
 						{ "step": "+1", "field": "Projectiles Per Shot", "block": "Triggers", "group": "Projectiles Per Shot", "games": ["Halo 1"] },
 						{ "step": "+1", "field": "Rounds Per Shot", "block": "Triggers", "harder_when": "increased", "min": 0, "zero_is": 1, "group": "Projectiles Per Shot", "games": ["Halo 1"] }
@@ -6226,49 +6229,49 @@
 				"Magnetism": {
 					"desc": "How hard your aim is pulled toward a target.",
 					"debug_desc": "`Magnetism Angle` and `Magnetism Range` are the pull on your reticle near a target, with `Magnetism Falloff Range` (Halo 3 onward) and Reach's `Magnetism Near Falloff Range` shaping where it fades. One decision, one input.\\n\\n**Halo 2 declares this pair TWICE** (weap root 0x19C and 0x210) and the first is a different, mostly-zero field -- reading it makes Halo 2 look like it barely uses magnetism. The real pair is the second, next to Autoaim, so every Halo 2 row here is pinned to `nth: 1`. Every other game states nth 0 explicitly, because a gamed value falls back to the nearest EARLIER game and Halo 3 would otherwise inherit Halo 2's 1.\\n\\nThis is the weapon's own magnetism. The general Magnetism card is a different thing -- matg's Magnetism Friction and Adhesion, the controller-level aim friction that applies to everything.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+					"tag": { "Halo 1": "weap weapons\\energy sword\\energy sword", "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
-						{ "step": "*1.2","field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{ "step": "*1.2","field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
-						{ "step": "*1.2","field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{ "step": "*1.2","field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{ "step": "*1.2","field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": {"Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0}},
-						{ "step": "*1.2","field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": {"Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1}}
+						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "step": "*1.2", "field": "Magnetism Angle", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
+						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "step": "*1.2", "field": "Magnetism Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "step": "*1.2", "field": "Magnetism Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo Reach", "Halo 4"], "nth": { "Halo 1": 0, "Halo 2": 1, "Halo 3": 0, "Halo Reach": 0 } },
+						{ "step": "*1.2", "field": "Magnetism Near Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Magnetism", "harder_when": "decreased", "min": 0, "games": ["Halo 4"], "nth": { "Halo 3": 0, "Halo 3: ODST": 0, "Halo Reach": 0, "Halo 4": 0, "Halo 2": 1 } }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Autoaim": {
 					"desc": "How hard the game steers your shots onto a target.",
 					"debug_desc": "`Autoaim Angle` is the cone the game will bend a shot into, `Autoaim Range` how far out it does so, and `Autoaim Falloff Range` (Halo 3 onward) where that help starts tapering off. All three are one decision -- how much the game shoots for you -- so they share one input.\\n\\nAutoaim is the shot bending toward the target; Magnetism is your reticle being pulled. They are separate fields and separate cards.\\n\\nShipped values differ wildly by weapon and game: the Halo 3 assault rifle is 5deg/15 with falloff 7.5, the sniper 1deg/10, and Reach's sniper 0.8deg/20. Cutting these to 0 removes aim assist entirely, which is the harder direction.",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+					"tag": { "Halo 1": "weap weapons\\energy sword\\energy sword", "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
-						{ "step": "*1.2","field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{ "step": "*1.2","field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
-						{ "step": "*1.2","field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0},
-						{ "step": "*1.2","field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"]},
-						{ "step": "*1.2","field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"]}
+						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "step": "*1.2", "field": "Autoaim Angle", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "harder_when": "decreased", "min": 0 },
+						{ "step": "*1.2", "field": "Autoaim Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"] },
+						{ "step": "*1.2", "field": "Autoaim Falloff Range", "block": "Aim Assist Modes", "index": "all", "group": "Autoaim", "harder_when": "decreased", "min": 0, "games": ["Halo 4"] }
 					],
 					"affected_by_skull": "Eyepatch"
 				},
 				"Weapon Swap Speed": {
 					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
 					"debug_desc": "Scales the `ready` and `put_away` first-person ANIMATIONS -- which is what weapon swap speed actually is. No weapon field drives it: `Ready Time` is non-zero on three weapons in Halo 3 and one in Reach (which is why testing it in Halo 2 showed nothing), `Weapon Ready-For-Use Time` on three, and ODST's promisingly-named `Weapon Ready 1st Person Animation Playback Scale` on none at all.\n\nMeasured lengths, at 30fps: Halo 3's assault rifle readies in 20 frames (0.67s) and stows in 6 (0.20s); the battle rifle 19/4; the shotgun 23/7; Halo 2's SMG 20/10. A swap plays the outgoing weapon's put_away and the incoming weapon's ready, so scaling both halves is what makes the whole exchange faster.\n\nSame machinery as Reload Time -- the animation graph selects actions by label name, so this is the same code matching `ready`/`put_away` instead of `reload`. Halo Reach has no jmad layout yet, so it is not offered there (its Reload Time cards do not cover Reach either).",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "jmad *fp_energy_blade*", "Halo 3": "jmad *fp_energy_blade*", "Halo 3: ODST": "jmad *fp_energy_blade*", "Halo Reach": "jmad *fp_energy_sword*"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+					"tag": { "Halo 1": "antr weapons\\energy sword\\fp\\fp", "Halo 2": "jmad *fp_energy_blade*", "Halo 3": "jmad *fp_energy_blade*", "Halo 3: ODST": "jmad *fp_energy_blade*", "Halo Reach": "jmad *fp_energy_sword*" },
 					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"],"field": "Ready / Put Away Animation", "swap_anim": true}
+						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
 					]
 				},
 				"Melee Seeking Angles": {
 					"desc": "Damage Pyramid Angles y, Damage Pyramid Angles p",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Angles y", "group": "Damage Pyramid Angles", "harder_when": "decreased", "min": 0 },
@@ -6279,7 +6282,7 @@
 					"desc": "Damage Pyramid Depth",
 					"debug_desc": "The melee damage pyramid: `Damage Pyramid Angles` y and p are the cone your swing sweeps (yaw and pitch), `Damage Pyramid Depth` how far in front of you it reaches.\n\nReach MOVED these into a `Melee Damage Parameters` block rather than deleting them, so the card carries a per-game block instead of needing a separate card. Halo 1 has none of these fields at all.\n\nReach also re-tuned them: Halo 2 through ODST ship a wide, flat 12.512 x 6.062 at depth 0.6, while Reach squares it off to 9.211 x 9.211 -- narrower horizontally, much taller. Outliers worth knowing: the Energy Blade at 24.046 x 13.817 depth 0.9, the ODST Gravity Hammer / Flamethrower / turrets at 11.459 x 11.459 depth 0.8, Reach's Gravity Hammer at 20.854 x 15.352 depth 1.0, and Reach's Needler, which alone kept the old 12.512 x 6.062.\n\nWidening the angles or deepening it makes melee more forgiving, so the harder direction is DOWN.",
 					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"split_from": "Melee Seeking",
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Pyramid Depth", "harder_when": "decreased", "min": 0 }
@@ -6287,9 +6290,7 @@
 				},
 				"Slice Damage": {
 					"desc": "Normal Swing damage. Uses a melee damage type, that is shared with different weapons.",
-					"tag": {
-						"Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee"
-					},
+					"tag": { "Halo 2": "jpt! objects\\weapons\\damage_effects\\slice_melee" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
@@ -6299,18 +6300,19 @@
 				},
 				"Strike Damage": {
 					"desc": "Damage of the depleted sword. Uses a melee damage type, that is shared with different weapons.",
-					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee"},
+					"tag": { "Halo 1": "jpt! weapons\\energy sword\\melee", "Halo 2": "jpt! objects\\weapons\\damage_effects\\strike_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\strike_melee & objects\\weapons\\damage_effects\\clang_melee", "Halo Reach": "jpt! globals\\damage_effects\\strike_melee", "Halo 4": "jpt! globals\\damage_effects\\strike_melee" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound Max", "group": "Damage" }
 					],
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"]
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"desc_overrides": { "Halo 1": "How hard a plain sword swing hits. Elites' swords hit harder too." }
 				},
 				"Dash Damage": {
 					"desc": "Damage of the lunge attack",
-					"game": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo Reach": "jpt! globals\\damage_effects\\dash_melee", "Halo 4": "jpt! globals\\damage_effects\\dash_melee"},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
+					"tag": { "Halo 1": "jpt! weapons\\energy sword\\lunge strike", "Halo 2": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo 3": "jpt! objects\\weapons\\damage_effects\\dash_melee", "Halo Reach": "jpt! globals\\damage_effects\\dash_melee", "Halo 4": "jpt! globals\\damage_effects\\dash_melee" },
 					"targets": [
 						{ "step": "*1.2", "field": "Damage Lower Bound", "group": "Damage" },
 						{ "step": "*1.2", "field": "Damage Upper Bound", "group": "Damage" },
@@ -6319,28 +6321,30 @@
 				},
 				"Lunge Range": {
 					"desc": "How far you travel to land the hit.",
-					"debug_desc": "Reach's `Maximum Lunge Range` in `Melee Damage Parameters`: the distance you actually cover lunging at a target.\\n\\nThis card used to carry `Autoaim Range` too -- how far the game helps the swing find a target -- but that field now belongs to this weapon's own Autoaim card, and two cards writing one field compound. Autoaim Range is the only aim-assist field the older games give these weapons, so what remains here is Reach-only.",
-					"game": ["Halo Reach", "Halo 4"],
+					"debug_desc": "Reach's `Maximum Lunge Range` in `Melee Damage Parameters`: the distance you actually cover lunging at a target.\\n\\nThis card used to carry `Autoaim Range` too -- how far the game helps the swing find a target -- but that field now belongs to this weapon's own Autoaim card, and two cards writing one field compound. Autoaim Range is the only aim-assist field the older games give these weapons, so what remains here is Reach-only.\n\njpt weapons\\energy sword\\lunge push: the firing damage effect on the wielder, its Instantaneous Acceleration (negative = toward the aim; user-tuned at -10). Scaling it scales the shove.",
+					"game": ["Halo 1", "Halo Reach", "Halo 4"],
 					"ignore": true,
-					"tag": {"default": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"tag": { "Halo 1": "jpt! weapons\\energy sword\\lunge push", "default": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
-						{ "step": "*1.2","field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0}
-					]
+						{ "step": "*1.2", "field": "Maximum Lunge Range", "block": "Melee Damage Parameters", "harder_when": "decreased", "min": 0, "skip_games": ["Halo 1"] },
+						{ "step": "*1.2", "field": "Instantaneous Acceleration i", "games": ["Halo 1"] }
+					],
+					"desc_overrides": { "Halo 1": "How far the lunge carries you. A strong lunge can slam you into things hard enough to hurt yourself." }
 				},
 				"Zoom": {
 					"desc": "Magnification Levels, Magnification Range",
 					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
-						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
-						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} },
-						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": {"Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null} }
+						{ "step": "+1", "field": "Magnification Levels", "max": 2, "from_zero": ["=1", "=2"], "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null } },
+						{ "step": "*1.2", "field": "Magnification Range", "from_zero": ["=2", "=2"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null } },
+						{ "step": "*1.2", "field": "Magnification Range Max", "from_zero": ["=2", "=4"], "zero_field": "Magnification Levels", "inverse_steps": { "Halo 2": null, "Halo 3": null, "Halo 3: ODST": null, "Halo Reach": null, "Halo 4": null } }
 					]
 				},
 				"Zoom Time": {
 					"desc": "Weapon Zoom Time: how long zooming in and out takes",
 					"game": ["Halo 3", "Halo 3: ODST", "Halo Reach", "Halo 4"],
-					"tag": {"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"},
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
 						{ "step": "*0.8", "field": "Weapon Zoom Time", "min": 0, "zero_is": 0.2 }
 					]
@@ -6348,30 +6352,31 @@
 				"Energy Use": {
 					"desc": "How much energy each kill or hit costs.",
 					"debug_desc": "Halo 4: `Per Kill Or Hit Aging Amount` in the tag (0.1 = 10 kills), applied under the sword's 'ages with each kill' / 'ages when damage is inflicted' flags.\n\nHalo 2, 3, ODST and Reach have no such field -- the cost is HARDCODED in each game's dll (0.1 per kill; in Halo 2/3/ODST a Flood or Sentinel kill costs a quarter of it, Halo 3/ODST only in campaign). Those rows are a live memory patch (sprint_toolkit/sword_energy_live.py): MCC keeps every game dll locked while running, so the one instruction that reads the constant is repointed at a private float in the running process. It takes effect at the next kill, needs MCC OPEN when you patch, is gone when MCC closes, and is put back by any patch of that game whose run no longer sets it. The operator applies to the stock 0.1.",
-					"game": ["Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
-						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
-						"Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword",
-						"Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"
-					},
+					"game": ["Halo 1", "Halo 2", "Halo 3", "Halo Reach", "Halo 4"],
+					"tag": { "Halo 1": "weap weapons\\energy sword\\energy sword", "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
 						{ "step": "*1.2", "field": "Per Kill Or Hit Aging Amount", "games": ["Halo 4"], "min": 0, "max": 1 },
-						{ "step": "*1.2", "field": "Energy Per Kill (live)", "sword_drain": true, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "max": 1 }
-					]
+						{ "step": "*1.2", "field": "Energy Per Kill (live)", "sword_drain": true, "games": ["Halo 2", "Halo 3", "Halo 3: ODST", "Halo Reach"], "min": 0, "max": 1 },
+						{ "step": "*0.8", "field": "Age Generated Per Round", "block": "Triggers", "min": 0, "games": ["Halo 1"] }
+					],
+					"desc_overrides": { "Halo 1": "How much of the sword's energy each lunge uses. A plain swing is free." }
 				},
 				"Energy Recharge": {
 					"desc": "Lets the weapon slowly recharge its energy over time.",
 					"debug_desc": "Halo 4 only: `Age Recovered Per Second`, which NO weapon ships (0 everywhere). Read in the Halo 4 DLL (2026-09-17): every tick, a weapon with some age loses Age Recovered Per Second x frame time of it, down to 0, unless it is firing or reloading. zero_is 0.02 (empty to full in 50 s) gives the operator something to act on.",
 					"game": ["Halo 4"],
-					"tag": {
-						"Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
-						"Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade",
-						"Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword",
-						"Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator"
-					},
+					"tag": { "Halo 2": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo 3": "weap objects\\weapons\\melee\\energy_blade\\energy_blade", "Halo Reach": "weap objects\\weapons\\melee\\energy_sword\\energy_sword", "Halo 4": "weap objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword & objects\\weapons\\melee\\storm_energy_sword\\storm_energy_sword_elevator" },
 					"targets": [
 						{ "step": "*1.2", "field": "Age Recovered Per Second", "zero_is": 0.02, "min": 0 }
+					]
+				},
+				"Lunge Reach": {
+					"desc": "How far ahead of you the lunge can still strike.",
+					"debug_desc": "proj weapons\\energy sword\\lunge: the invisible strike's Maximum Range (1.5 world units as built).",
+					"game": ["Halo 1"],
+					"tag": "proj weapons\\energy sword\\lunge",
+					"targets": [
+						{ "step": "*1.2", "field": "Maximum Range", "min": 0 }
 					]
 				}
 			},
@@ -13708,83 +13713,6 @@
 							{ "step": "*0.8","field": "Don't Drop Grenades Chance", "block": "Grenades Properties", "index": "all", "min": 0, "max": 1, "harder_when": "increased"}
 						]
 					}
-				}
-			},
-			"Energy Sword": {
-				"Autoaim": {
-					"desc": "How hard the game steers your swings and lunges onto a target.",
-					"game": ["Halo 1"],
-					"tag": "weap weapons\\energy sword\\energy sword",
-					"targets": [
-						{ "step": "*1.2", "field": "Autoaim Angle", "group": "Autoaim", "min": 0 },
-						{ "step": "*1.2", "field": "Autoaim Range", "group": "Autoaim", "min": 0 }
-					]
-				},
-				"Magnetism": {
-					"desc": "How hard your aim is pulled toward a target.",
-					"game": ["Halo 1"],
-					"tag": "weap weapons\\energy sword\\energy sword",
-					"targets": [
-						{ "step": "*1.2", "field": "Magnetism Angle", "group": "Magnetism", "min": 0, "nth": 0 },
-						{ "step": "*1.2", "field": "Magnetism Range", "group": "Magnetism", "min": 0, "nth": 0 }
-					]
-				},
-				"Melee Damage": {
-					"desc": "How hard a plain sword swing hits. Elites' swords hit harder too.",
-					"debug_desc": "jpt weapons\\energy sword\\melee is the sword's own melee, which the Elites' swords share (the port split only the LUNGE strike off into its own damage effect), so this card reaches sword Elites as well.",
-					"game": ["Halo 1"],
-					"tag": "jpt! weapons\\energy sword\\melee",
-					"targets": [
-						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
-					]
-				},
-				"Lunge Damage": {
-					"desc": "How hard the sword's lunge (fire) strikes.",
-					"debug_desc": "jpt weapons\\energy sword\\lunge strike: the impact damage of the invisible lunge projectile, the player's own (Elites never lunge with it).",
-					"game": ["Halo 1"],
-					"tag": "jpt! weapons\\energy sword\\lunge strike",
-					"targets": [
-						{ "step": "*1.1", "field": "Damage Lower Bound", "group": "Damage" },
-						{ "step": "*1.1", "field": "Damage Upper Bound", "group": "Damage" },
-						{ "step": "*1.1", "field": "Damage Upper Bound Max", "group": "Damage" }
-					]
-				},
-				"Lunge Distance": {
-					"desc": "How far the lunge carries you forward.",
-					"debug_desc": "jpt weapons\\energy sword\\lunge push: the firing damage effect on the wielder, its Instantaneous Acceleration (negative = toward the aim; user-tuned at -10). Scaling it scales the shove.",
-					"game": ["Halo 1"],
-					"tag": "jpt! weapons\\energy sword\\lunge push",
-					"targets": [
-						{ "step": "*1.2", "field": "Instantaneous Acceleration i" }
-					]
-				},
-				"Lunge Reach": {
-					"desc": "How far ahead of you the lunge can still strike.",
-					"debug_desc": "proj weapons\\energy sword\\lunge: the invisible strike's Maximum Range (1.5 world units as built).",
-					"game": ["Halo 1"],
-					"tag": "proj weapons\\energy sword\\lunge",
-					"targets": [
-						{ "step": "*1.2", "field": "Maximum Range", "min": 0 }
-					]
-				},
-				"Energy Per Lunge": {
-					"desc": "How much of the sword's energy each lunge uses. A plain swing is free.",
-					"debug_desc": "weap Triggers[0] Age Generated Per Round (0.1 as built): the battery is the weapon's age, and Halo 1 has no per-kill hook, so the lunge pays for itself.",
-					"game": ["Halo 1"],
-					"tag": "weap weapons\\energy sword\\energy sword",
-					"targets": [
-						{ "step": "*0.8", "field": "Age Generated Per Round", "block": "Triggers", "min": 0 }
-					]
-				},
-				"Weapon Swap Speed": {
-					"desc": "How fast you bring this weapon up and put it away. *0.5 is twice as fast.",
-					"game": ["Halo 1"],
-					"tag": "antr weapons\\energy sword\\fp\\fp",
-					"targets": [
-						{ "step": "*0.75", "inverse_step": "*1.25", "steps": ["*0.75", "*0.5", "*0.25", "*0.1"], "field": "Ready / Put Away Animation", "swap_anim": true }
-					]
 				}
 			}
 		}

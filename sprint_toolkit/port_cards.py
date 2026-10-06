@@ -192,7 +192,14 @@ def plan(weapon):
                 if isinstance(card.get('targets'), list):
                     for t in card['targets']:
                         if isinstance(t, dict) and 'games' not in t:
-                            t['games'] = list(old_games)      # keep them where they were
+                            # keep them where they were -- and target 'games' are matched
+                            # LITERALLY, so a game that INHERITS (ODST from Halo 3) has to
+                            # be named or it silently loses the target
+                            pinned = list(old_games)
+                            for base, kids in INHERITS.items():
+                                if base in pinned:
+                                    pinned += [k for k in kids if k not in pinned]
+                            t['games'] = pinned
                     card['targets'] += new_targets
                 else:
                     card.setdefault('targets', {})[game] = new_targets
