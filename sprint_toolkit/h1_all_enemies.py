@@ -59,6 +59,53 @@ ENEMY_SPECIES = ('elite', 'grunt', 'jackal', 'hunter', 'flood', 'sentinel')
 COVENANT = ('elite', 'grunt', 'jackal', 'hunter')
 BACKUP = '.before_allenemies'
 
+# HUMANS (2026-10-06, for the Human ally card): c20/c40/d20/d40 field no Marines and
+# a50/c10/c40/d40 have no palette room. So slot CHAIN_SLOT's Major Variant heads a CHAIN
+# of kit COPIES of the 13 Marine variants -- each copy names the next as its Major
+# Variant, the last names the slot's own enemy anchor -- and the build tool follows the
+# chain, so one slot makes all of them resident. A copy lives at
+# 'characters\<species>\anchor\<name>' (species wildcards still reach it). ITS MAJOR
+# VARIANT IS THE CHAIN, NOT A PROMOTION: whatever spawns a copy must first set the
+# copy's Major Variant (+0x24) to plan['chain_major'][copy] (or none).
+CHAIN_SLOT = 20
+HUMANS = [BS.join(('characters', d, n)) for d, n in (
+    ('marine', 'marine assault rifle'),
+    ('marine', 'marine needler'),
+    ('marine', 'marine plasma rifle'),
+    ('marine', 'marine shotgun'),
+    ('marine_armored', 'marine_armored assault rifle'),
+    ('marine_armored', 'marine_armored needler'),
+    ('marine_armored', 'marine_armored plasma rifle'),
+    ('marine_armored', 'marine_armored sniper rifle'),
+    ('marine', 'marine assault rifle major'),
+    ('marine_armored', 'marine_armored assault rifle major'),
+    ('marine_armored', 'marine_armored plasma rifle major'),
+    ('marine_armored', 'marine_armored shotgun major'),
+    ('marine_armored', 'marine_armored sniper rifle major'),
+)]
+
+
+def anchor_copy(path):
+    p = path.split(BS)
+    return BS.join(p[:2] + ['anchor'] + p[2:])
+
+
+def chain_plan(plan):
+    """Add the human chain to the plan: the copies in order, their stock sources, and
+    each copy's REAL major (as a copy path) for whoever spawns it."""
+    if 'chain' in plan:
+        return plan
+    real = {}
+    for src in HUMANS:
+        _h, _b, refs, _c = kit.read(src)
+        real[anchor_copy(src)] = anchor_copy(refs[0x24]) if refs.get(0x24) else None
+    plan['chain'] = [anchor_copy(h) for h in HUMANS]
+    plan['chain_source'] = {anchor_copy(h): h for h in HUMANS}
+    plan['chain_major'] = real
+    with open(PLAN, 'w') as f:
+        json.dump(plan, f, indent=1)
+    return plan
+
 
 def species(name):
     p = name.split(BS)
@@ -141,6 +188,17 @@ def kit_files(levels):
            [_scenario(lv) for lv in levels]
 
 
+def write_chain(plan):
+    """Write the human chain copies (see CHAIN_SLOT). Returns the chain head."""
+    chain = plan['chain']
+    for i, copy in enumerate(chain):
+        head, body, refs, colours = kit.read(plan['chain_source'][copy])
+        refs[0x24] = chain[i + 1] if i + 1 < len(chain) else plan['anchors'][CHAIN_SLOT - 1]
+        body[0x24:0x28] = kit.GROUPS[0x24]
+        kit.write(copy, head, body, refs, colours)
+    return chain[0]
+
+
 def kit_backup(levels):
     for f in kit_files(levels):
         if os.path.exists(f + BACKUP):
@@ -160,9 +218,10 @@ def kit_apply(plan, levels):
     missing = [r for r in plan['roots'] if not os.path.isfile(kit.tag_file(r))]
     if missing:
         raise SystemExit('not in the kit: %s' % missing)
+    head_of_chain = write_chain(plan) if plan.get('chain') else None
     for i, anchor in enumerate(plan['anchors'], 1):
         head, body, refs, colours = kit.read(vs.slot_path(i))
-        refs[0x24] = anchor
+        refs[0x24] = head_of_chain if (i == CHAIN_SLOT and head_of_chain) else anchor
         body[0x24:0x28] = kit.GROUPS[0x24]
         kit.write(vs.slot_path(i), head, body, refs, colours)
     for lv in levels:
@@ -191,10 +250,10 @@ def build(lv):
 # ----------------------------------------------------------------------------- map side
 def verify(m, plan):
     actv = set(n for c, n in m.tags if c == 'actv')
-    lost = [n for n in plan['roots'] + plan['majors'] if n not in actv]
-    print('resident: %d of %d roots + majors%s' % (
-        len(plan['roots']) + len(plan['majors']) - len(lost),
-        len(plan['roots']) + len(plan['majors']), ('; MISSING ' + ', '.join(lost)) if lost else ''))
+    want = plan['roots'] + plan['majors'] + plan.get('chain', [])
+    lost = [n for n in want if n not in actv]
+    print('resident: %d of %d (roots + majors + human chain)%s' % (
+        len(want) - len(lost), len(want), ('; MISSING ' + ', '.join(lost)) if lost else ''))
     return not lost
 
 
@@ -324,7 +383,7 @@ def main():
     if a.cmd == 'plan':
         show(load_plan(a.replan))
         return
-    plan = load_plan()
+    plan = chain_plan(load_plan())
     if a.cmd == 'apply':
         levels = [x for x in a.levels.split(',') if x]
         keep = os.path.join('E:' + os.sep, 'HaloBackups', 'kit-h1-before-allenemies')

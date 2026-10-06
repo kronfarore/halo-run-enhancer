@@ -206,5 +206,50 @@
   "c40": 59,
   "d20": 52,
   "d40": 55
+ },
+ "chain": [
+  "characters\\marine\\anchor\\marine assault rifle",
+  "characters\\marine\\anchor\\marine needler",
+  "characters\\marine\\anchor\\marine plasma rifle",
+  "characters\\marine\\anchor\\marine shotgun",
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle",
+  "characters\\marine_armored\\anchor\\marine_armored needler",
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle",
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle",
+  "characters\\marine\\anchor\\marine assault rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored shotgun major",
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle major"
+ ],
+ "chain_source": {
+  "characters\\marine\\anchor\\marine assault rifle": "characters\\marine\\marine assault rifle",
+  "characters\\marine\\anchor\\marine needler": "characters\\marine\\marine needler",
+  "characters\\marine\\anchor\\marine plasma rifle": "characters\\marine\\marine plasma rifle",
+  "characters\\marine\\anchor\\marine shotgun": "characters\\marine\\marine shotgun",
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle": "characters\\marine_armored\\marine_armored assault rifle",
+  "characters\\marine_armored\\anchor\\marine_armored needler": "characters\\marine_armored\\marine_armored needler",
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle": "characters\\marine_armored\\marine_armored plasma rifle",
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle": "characters\\marine_armored\\marine_armored sniper rifle",
+  "characters\\marine\\anchor\\marine assault rifle major": "characters\\marine\\marine assault rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle major": "characters\\marine_armored\\marine_armored assault rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle major": "characters\\marine_armored\\marine_armored plasma rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored shotgun major": "characters\\marine_armored\\marine_armored shotgun major",
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle major": "characters\\marine_armored\\marine_armored sniper rifle major"
+ },
+ "chain_major": {
+  "characters\\marine\\anchor\\marine assault rifle": "characters\\marine\\anchor\\marine assault rifle major",
+  "characters\\marine\\anchor\\marine needler": "characters\\marine\\anchor\\marine assault rifle major",
+  "characters\\marine\\anchor\\marine plasma rifle": null,
+  "characters\\marine\\anchor\\marine shotgun": "characters\\marine_armored\\anchor\\marine_armored shotgun major",
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle": "characters\\marine_armored\\anchor\\marine_armored assault rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored needler": null,
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle": "characters\\marine_armored\\anchor\\marine_armored plasma rifle major",
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle": "characters\\marine_armored\\anchor\\marine_armored sniper rifle major",
+  "characters\\marine\\anchor\\marine assault rifle major": null,
+  "characters\\marine_armored\\anchor\\marine_armored assault rifle major": null,
+  "characters\\marine_armored\\anchor\\marine_armored plasma rifle major": null,
+  "characters\\marine_armored\\anchor\\marine_armored shotgun major": null,
+  "characters\\marine_armored\\anchor\\marine_armored sniper rifle major": null
  }
 }
