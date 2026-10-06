@@ -36,13 +36,21 @@ STRIKE = B.join(['weapons', 'energy sword', 'lunge strike'])
 ROD = B.join(['weapons', 'fuel rod gun', 'fuel rod'])
 
 
+RENAMED = ('Energy Sword',)
+# NOT emitted here, on purpose: keys the enhancer session owns survive the merge -- the
+# Flak Cannon's 'tag_map'; its 'skip_cards' was removed (user: the Zoom card GIVES the
+# fuel rod a zoom), so do not add it back.
+
+
 def row(cls, tag, field, value, original, card, block=None):
     return {'class': cls, 'tag': tag, 'field': field, 'block': block, 'value': value,
             'card': card, 'original': original}
 
 
 ENTRIES = [
-    {'weapon': 'Energy Sword', 'source': 'Halo 1', 'donor': None, 'default_on': False,
+    # 'Energy Blade', not 'Energy Sword' (user, 2026-10-06): halo.json's H2-H4 sword entry,
+    # so a run carries ONE sword across games
+    {'weapon': 'Energy Blade', 'source': 'Halo 1', 'donor': None, 'default_on': False,
      'desc': "The Elites' energy sword, made pickable: Halo 3's first-person animations "
              "and sounds, Halo 1's own sword. Fire lunges (costs energy), melee slashes.",
      'balance_desc': 'Stronger lunge aim assist (15 deg / 3.5 wu autoaim, 15 deg / 8 wu '
@@ -76,6 +84,7 @@ ENTRIES = [
 def main():
     cat = json.load(open(OUT, encoding='utf-8')) if os.path.exists(OUT) else {}
     h1 = cat.setdefault('Halo 1', [])
+    h1[:] = [e for e in h1 if e.get('weapon') not in RENAMED]   # entries under an old name
     for entry in ENTRIES:
         old = next((e for e in h1 if e.get('weapon') == entry['weapon']), {})
         merged = dict(old, **entry)              # keep what other tools added (e.g. 'ammo')
