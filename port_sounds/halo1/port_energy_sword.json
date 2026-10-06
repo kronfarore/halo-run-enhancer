@@ -1,0 +1,49 @@
+{
+ "game": "Halo 1",
+ "weapon": "energy_sword",
+ "rate": 22050,
+ "sounds": [
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_melee",
+   "perms": [
+    "sword_melee_1.wav",
+    "sword_melee_2.wav",
+    "sword_melee_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_melee"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_lunge",
+   "perms": [
+    "sword_lunge_1.wav",
+    "sword_lunge_2.wav",
+    "sword_lunge_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_lunge"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_ready",
+   "perms": [
+    "sword_ready_1.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_ready"
+   ]
+  },
+  {
+   "tag": "sound\\weapons\\energy_sword_port\\sword_pose",
+   "perms": [
+    "sword_pose_1.wav",
+    "sword_pose_2.wav",
+    "sword_pose_3.wav"
+   ],
+   "aliases": [
+    "sound\\weapons\\energy_sword_port\\sword_pose"
+   ]
+  }
+ ]
+}

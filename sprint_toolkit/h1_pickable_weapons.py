@@ -56,6 +56,7 @@ BACKUP = '.before_pickable'
 CYBORG = r'characters\cyborg\cyborg'
 
 SWORD_SWING = r'sound\sfx\impulse\animations\elite\stand_sword_melee.mov'
+SWORD_SOUNDS = 'sound\\weapons\\energy_sword_port\\'
 
 WEAPONS = {
     'energy_sword': {
@@ -64,7 +65,12 @@ WEAPONS = {
         'fp_anims': r'weapons\energy sword\fp\fp',
         'teach': ('fb', 'b'),
         'keys': {'first-person melee': 5},
-        'sounds': {'first-person melee': SWORD_SWING, 'first-person fire-1': SWORD_SWING},
+        # Halo 3's own sword sounds (h1_port_sounds.py energy_sword): the Elite's swing
+        # (SWORD_SWING) is silent for 0.45 s and was heard 0.3 s late (user, 2026-10-06)
+        'sounds': {'first-person melee': SWORD_SOUNDS + 'sword_melee',
+                   'first-person fire-1': SWORD_SOUNDS + 'sword_lunge',
+                   'first-person ready': SWORD_SOUNDS + 'sword_ready',
+                   'first-person posing': SWORD_SOUNDS + 'sword_pose'},
         # MCC's Halo 1 localization has no line for message 8 ("need string insert here"
         # in game, 2026-10-05): the sword gets its own appended pair, like the SAW's 47/48
         'messages': ('Picked up an energy sword', 'Picked up %d rounds for energy sword'),

@@ -293,6 +293,17 @@ pushes the player BACK, negative forward; too much hurts (-2.0 now). Fuel rod ch
 plasma pistol's charging loop as an attachment scaled by `primary_charged` -- Halo 1 has
 no FP slot that plays during a charge. Rod meter in one row (`h3_rods_row`).
 
+**Fourth round (2026-10-06), own sounds:** the sword cued the Elite's third-person swing,
+silent for its first 0.45 s (timed to the Elite's wind-up), so the first-person slash and
+lunge sounded 0.3 s late. `h1_port_sounds.py <weapon>` is the GENERIC Halo 1 own-sounds
+tool (the SAW's h1_saw_sounds.py stays SAW-only): Halo 3 audio straight from MCC's
+`halo3mod\pc\sfx.fsb` (its `.info` names every subsong's source file; vgmstream
+decodes), several H3 sounds MIXED where H3 cues them on one frame (lunge = hum + cloth),
+22 kHz mono at the stock level, stock-shaped ADPCM tags under `sound\weapons\<x>_port`,
+and only its OWN files + manifest in port_sounds\halo1 (h1_saw_sounds' bank step wipes that
+folder -- run port_sounds.py --write after either). Sword: melee, lunge, ready (ignition),
+posing. Balanced build note (user): a small radius on the lunge strike's damage.
+
 **Open for the first boot**: does the dropped sword/fuel rod stay; the FP pose and grip
 (left hand vs the H1 fuel rod's front -- H3's hand is 13 cm ahead of the grip, the scaled
 model's own `cyborg left hand` marker 20 cm); overlay deltas (`moving`, aim `overlays`:
