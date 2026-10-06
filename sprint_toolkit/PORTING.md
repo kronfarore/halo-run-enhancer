@@ -50,6 +50,7 @@ quietly shipped without the last three until the user caught it:
 | 8 | pickup icon, and the HUD schematic beside the ammo | done | done |
 | 9 | reload and swap animation timing | done | done |
 | 10 | its OWN SOUNDS: fire, dry fire, reload, swap, melee, idle fidgets (+ first draw) -- see **Step 10** | done | done |
+| 11 | ARMED card: enemies can be given the port -- it needs AI firing data (Halo 1 only) -- see **Step 11** | done | n/a |
 
 Step 10 was added 2026-10-05 after the SAW had shipped in five games on the donor's
 sounds (the H3/ODST/Reach SAW fired through the REAL Assault Rifle's firing effect). It is
@@ -82,6 +83,8 @@ done for the SAW in all five games plus the Halo 4 Focus Rifle; the per-game rec
    fire / dry / animation sound names the port's own folder; Halo 3 / ODST / Reach: the
    installed `<game>\fmod\pc\sfx.<suffix>.fsb` equals the kit's and holds every hash the
    map names; Halo 1 / Halo 4: `python port_sounds.py --check`.
+8. Step 11 (Halo 1): the port is in `h1_enemy_weapons.used_weapons()` and `best_donor` /
+   `donor_for` names a firing donor for a Grunt and an Elite slot -- see **Step 11**.
 
 **Step 4 has a second half: the fields NO CARD covers (2026-10-05).** The balance table
 only knows fields some card targets; every other field of a clone is its donor's. Run
@@ -103,6 +106,46 @@ it INTO that role -- and run the same check on the balanced numbers. Halo 4 / Re
 damage modifiers, actor-variant vitality, globals difficulty scales). It found, on the
 restored fuel rod, that its explosion does x0 to Hunters (Bungie's Grunt friendly-fire
 guard) and that 'Charging Time 0' alone leaves it firing 10 rounds/s.
+
+**STEP 11, THE ARMED CARD (Halo 1 only, 2026-10-06).** 'Armed: <weapon>' cards are not in
+halo.json: the enhancer SYNTHESIZES them (`armed_card` / `armed_cards`) for every weapon a
+player holds, per enemy type (Grunt, Jackal, Elite, Flood combat form, Sentinel; Marines
+through the Ally pool; never the Hunter). Each pick moves 10% of that enemy's spawns onto
+a variant carrying the weapon -- an existing one, or one of the level's 20 spare enemy
+slots, filled with the source variant + the weapon + the FIRING BLOCK of a donor actor
+variant (actv 0x74-0x15F, 0x1D8-0x1E3). A port only gets the card while ports are offered
+on the level, and only if it is in `h1_enemy_weapons.used_weapons()`: weapons some
+character SPAWNS with, plus every weapon with a FIRING PROFILE in
+`tool\ai_firing_profiles.json`. Which case a port is:
+
+  carried in game     Halo 1 restorations: the Energy Blade (Elite commander / stealth
+                      Elite major) and the Flak Cannon (spec-ops Grunts) -- nothing to do;
+                      the donor is the most similar carrier (`best_donor`)
+  a foreign source    the SAW: `ai_firing_profile.py --from-map <source game's map>
+                      --from-weapon <source tag> --to-weapon <port>` copies the source
+                      game's ai\generic firing values (fields matched by NAME), laid over a
+                      base donor found by the port's animation LABEL (the SAW is 'ar': an
+                      AR carrier)
+  a same-game stand-in  the Sentinel Beam: its label 'sb' is unique, so the label search
+                      finds no base. `ai_firing_profile.py --to-weapon <port>
+                      --donor-weapon <a Halo 1 weapon> [--set 0xOFF=VALUE:NAME ...]`:
+                      fire like the characters carrying that weapon (the beam: Halo 1's
+                      Sentinel gun, `characters\sentinel\sentinel`) -- `donor_for` reads
+                      'donor_weapon'
+
+THE TRAP in a donor's firing block: it carries the donor's OTHER behaviour too. The
+Sentinel never drops a weapon (Drop Weapon Loaded +0x1D8/+0x1DC = 0/0), so a beam-armed
+Grunt or Elite may have dropped it empty. `--set` writes explicit fields over the donor (the
+beam: 0.7 / 0.9, the plasma-rifle Elite's). Read every field the copy carries (the
+enhancer session's review found this one). The donor's Weapon Damage Modifier (+0xC4)
+rides along too: the beam's 0.0 = Sentinel strength, matching its 4.64 calibration -- a
+knob if beam-armed Elites prove too strong. Animation: `ensure_label` teaches the port's
+label to each enemy from TEACH_DONORS ('pr' first); a melee-only weapon on a unit with no
+melee (Energy Blade on Grunts/Jackals) gets a stand-in swing (enhancer side, 5dc3f23).
+
+Check (closing step 8): the port is in `used_weapons()`, and the donor for a Grunt slot
+and an Elite slot is the intended one. Back up `ai_firing_profiles.json`,
+`ai_firing_profile.py` and `h1_enemy_weapons.py` (port_backup h1 carries them).
 
 **And step 5 has a ROLE check (2026-10-05):** `python port_role_compare.py <set>
 [--balanced]` puts the port beside the weapons whose role it shares -- damage per shot,
@@ -394,7 +437,7 @@ What Halo 1 did that the data did not say (each one cost a boot):
   left). `turn off with` CHAINS. A per-shot sound in the firing effect instead was heard as
   static.
 
-Open: catalogued as 'Sentinel Beam' (donor Plasma Rifle, no balance rows); the enhancer
+Catalogued as 'Sentinel Beam' (donor Plasma Rifle; balanced: 11.6 damage, ratio-rule aim, H3 battery; default damage 4.64 from the Sentinel yardstick); Armed card via a same-game firing profile (step 11). The enhancer
 session wires cards/pools. A cyan layer under the muzzle glow while firing, probably the
 beam's own start; kept (user).
 
