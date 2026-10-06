@@ -242,13 +242,19 @@ WEAPONS['sentinel_beam'] = {
     #           (input B, its function 1, B_out) -- that input never reaches this weapon
     #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
     # So the illumination signal lingers whatever its hold: the rate of fire instead
-    'rewire': {'inputs': ('heat', 'illumination', 'primary_rate_of_fire', 'age'),
-               # test 7: holding fire on an EMPTY battery kept the hum going (the trigger
-               # still ramps). The template's function 3 is already the battery left
-               # (age, `invert`; its heat flare turns off with it): the hum goes into
-               # function 0 instead (the colour wander -- change colour A is red at both
-               # ends now) and turns off with function 3 the same way
-               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 3})}},
+    # The trigger keeps ramping while fire is HELD, so the hum must also go off when the
+    # weapon cannot fire -- a CHAIN of `turn off with` (one link per function):
+    #   function 0  hum        'one' x rate of fire     off with 1
+    #   function 1  can fire   'one' x overheated, invert   off with 3
+    #   function 3  battery    the template's age (`invert` = battery left), as stock
+    # test 7: an empty battery kept the hum going (fixed, test 8: off with 3); test 8:
+    # so did an overheat with fire held (the stretch until it recovers and fires again).
+    # Function 1 was the template's heat flare (blue plasma rifle flare lights at the
+    # vents): those lights go, not part of the Sentinel look
+    'rewire': {'inputs': ('overheated', 'illumination', 'primary_rate_of_fire', 'age'),
+               'functions': {0: (2, 'C_in', 'fire loop', {'turn_off_with': 1}),
+                             1: (2, 'A_in', 'can fire', {'invert': True, 'turn_off_with': 3})},
+               'drop_attachments_on': ('B_out',)},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
                   'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'A_out'},
@@ -263,7 +269,10 @@ WEAPONS['sentinel_beam'] = {
                     # flash sprites, ~20 alive at 15 rounds/s, saturate to white (the
                     # plasma pistol's green flash IS an RGB tint on the same sprite). One
                     # sprite (`flash c generic` exactly), a deep red tint
-                    'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.15, 0.05)},
+                    'keep_particles': 'flash c generic', 'tint': (1.0, 1.0, 0.15, 0.05),
+                    # test 8: red, right -- '0.25 units up and right on the muzzle'
+                    # (wu, marker space: forward, left, up)
+                    'particle_offset': (0.0, -0.0025, 0.0025)},
     # test 6: the glow came out plasma rifle blue-white anyway -- the `c generic`
     # particles take the WEAPON's change colour A (the template wanders teal..blue), not
     # the effect's tint. Change colour A = the Sentinel gunlight's red (rgb, rgb)
@@ -587,10 +596,13 @@ def rewire(d, r):
             else:
                 setattr(fn.flags, k, v)
         o.functions.STEPTREE[i] = fn
-    for x in o.attachments.STEPTREE:
-        sc = x.primary_scale.enum_name
-        if sc in r.get('attach_scale', {}):
-            x.primary_scale.set_to(r['attach_scale'][sc])
+    atts = o.attachments.STEPTREE
+    for i in range(len(atts) - 1, -1, -1):
+        sc = atts[i].primary_scale.enum_name
+        if sc in r.get('drop_attachments_on', ()):
+            atts.pop(i)
+        elif sc in r.get('attach_scale', {}):
+            atts[i].primary_scale.set_to(r['attach_scale'][sc])
 
 
 def add_fire_loop(d, f, write):
@@ -755,6 +767,9 @@ def edit_weapon(key, write):
                 x.flags.tint_as_hsv = False
                 for b in (x.tint_lower_bound, x.tint_upper_bound):
                     b.a, b.r, b.g, b.b = F['tint']
+            if 'particle_offset' in F:
+                o = x.relative_offset
+                o.i, o.j, o.k = F['particle_offset']
         parts = ev.parts.STEPTREE
         if F['sound']:
             parts[0].type.filepath = F['sound']
