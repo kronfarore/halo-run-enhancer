@@ -64,6 +64,21 @@ ENEMIES = [e for e, _k in ENEMY_UNITS if e != 'Marine']
 # animation types to copy when teaching a label, most similar first
 TEACH_DONORS = ('pr', 'ar', 'pp', 'ne', 'hp', 'sg')
 
+# MELEE for a melee-only weapon (the energy sword; weap +0x308 bit 15 'AIs Use Weapon
+# Melee Damage') on a unit that cannot melee. Measured on b30 (2026-10-06, two boots):
+# Grunt / Jackal / Marine graphs have no 'melee' animation (weapon-class slot 39) in any
+# class -- sword Grunts charged and stood -- and their bipeds no Melee Damage (+0x288):
+# with a stand-in animation they swung for no damage; with a melee damage ref as well,
+# the hits hurt. So: a FASTER COPY of the unit's own arm swing (throw-grenade, else
+# signal-attack, else warn) becomes the melee of every class holding the weapon's label,
+# and an empty biped Melee Damage takes the weapon's own melee damage effect.
+WEAP_FLAGS, AI_WEAPON_MELEE = 0x308, 1 << 15
+WEAP_MELEE_DAMAGE = 0x394                  # 'Player Melee Damage' tagref
+BIPD_MELEE_DAMAGE = 0x288
+CLASS_ANIMS, SLOT_MELEE = 0x98, 39
+STAND_IN_SLOTS = (20, 33, 34)              # throw-grenade, signal-attack, warn
+MELEE_FRAMES = 28                          # the Elite's sword melee is 28-35 frames
+
 
 def enemy_of_unit(unit):
     u = (unit or '').lower()
@@ -369,6 +384,46 @@ class Level:
             return 'taught %r (from %r, %d classes)' % (label, donor, n)
         return None
 
+    def ensure_melee(self, unit, weapon):
+        """Give `unit` a melee for a melee-only `weapon` (see MELEE_FRAMES). A note, or
+        None when nothing was needed."""
+        wb = dict(self.m.find_tags('weap', weapon)).get(weapon)
+        if wb is None or not self.m.u32(wb + WEAP_FLAGS) & AI_WEAPON_MELEE:
+            return None
+        bipd = dict(self.m.find_tags('bipd', unit or '-')).get(unit)
+        if bipd is None:
+            return None
+        notes = []
+        if hv._ref_name(self.m, bipd, BIPD_MELEE_DAMAGE) is None:
+            ref = bytes(self.m.data[wb + WEAP_MELEE_DAMAGE:wb + WEAP_MELEE_DAMAGE + 16])
+            if hv._ref_name(self.m, wb, WEAP_MELEE_DAMAGE):
+                self.m.data[bipd + BIPD_MELEE_DAMAGE:bipd + BIPD_MELEE_DAMAGE + 16] = ref
+                notes.append('melee damage %s' % hv._ref_name(self.m, wb, WEAP_MELEE_DAMAGE)
+                             .rsplit(BS, 1)[-1])
+        label = self.m.weapon_label(weapon)
+        antr = hv._ref_name(self.m, bipd, 0x38)
+        done = self.__dict__.setdefault('_melee_copies', {})
+        for _p, base in self.m.find_tags('antr', antr or '-'):
+            n = 0
+            for _ul, _u, _cn, w, labs in tw.walk(self.m, base):
+                if label not in labs:
+                    continue
+                slots = tw._elems(self.m, w + CLASS_ANIMS, 2)
+                if len(slots) <= SLOT_MELEE or _i16(self.m, slots[SLOT_MELEE]) >= 0:
+                    continue
+                src = next((_i16(self.m, slots[k]) for k in STAND_IN_SLOTS
+                            if len(slots) > k and _i16(self.m, slots[k]) >= 0), None)
+                if src is None:
+                    continue
+                if (antr, src) not in done:
+                    done[(antr, src)] = _fast_copy(self.m, base, src, MELEE_FRAMES)
+                    base = dict(self.m.find_tags('antr', antr))[antr]   # block moved
+                struct.pack_into('<h', self.m.data, slots[SLOT_MELEE], done[(antr, src)])
+                n += 1
+            if n:
+                notes.append('melee animation in %d class(es)' % n)
+        return ', '.join(notes) or None
+
     # --- clones
     def clone(self, source, weapon, index):
         """Palette index of a variant like `source` carrying `weapon`: an existing
@@ -418,7 +473,12 @@ class Level:
         write_profile(self.m, vs.fill_slot(self.m, sl, self.tags[source], weref, dmin, major_ref), prof)
         self.alias[vs.slot_path(sl)] = source + hv.CLONE_SEP + weapon.rsplit(BS, 1)[-1]
         self.log.append((sl, self.alias[vs.slot_path(sl)], dname))
-        taught = self.ensure_label(unit, weapon)
+        # a major has a biped of its own (Jackal major), which needs the melee too
+        major_unit = self.ref(major, hv.REF_UNIT) if need == 2 else None
+        taught = '; '.join(x for x in (
+            self.ensure_label(unit, weapon), self.ensure_melee(unit, weapon),
+            self.ensure_melee(major_unit, weapon) if major_unit not in (None, unit) else None)
+            if x)
         idx = self.palette_index(vs.slot_path(sl))
         self.clones[key] = idx
         return idx, 'slot %02d%s, firing from %s%s' % (
@@ -427,6 +487,66 @@ class Level:
 
 
 # ----------------------------------------------------------------------------- passes
+def _i16(m, off):
+    return struct.unpack_from('<h', m.data, off)[0]
+
+
+def _fast_copy(m, antr_base, src, frames):
+    """Append to the antr's Animations block a copy of animation `src` resampled to at
+    most `frames` frames, with buffers of its OWN (the original keeps playing as it was:
+    Grunts still throw grenades with it). Returns the copy's index."""
+    import halo3_reload as hr
+    el = tw._elems(m, antr_base + hr.H1_ANIM_BLK, hr.H1_ANIM_EL)[src]
+    new = bytearray(m.data[el:el + hr.H1_ANIM_EL])
+    fc = _i16(m, el + hr.H1_FC)
+    nf = max(2, min(fc, frames))
+    flags = struct.unpack_from('<H', m.data, el + 0x3A)[0]
+    if nf != fc and not flags & 1:                     # compressed data: keep its length
+        per = [(hr.H1_FRAME_DATA, _i16(m, el + hr.H1_FRAME_SIZE))]
+        itype = _i16(m, el + hr.H1_INFO_TYPE)
+        if 0 <= itype < len(hr.H1_INFO_SIZES) and hr.H1_INFO_SIZES[itype]:
+            per.append((hr.H1_FRAME_INFO, hr.H1_INFO_SIZES[itype]))
+        for off, size in per:
+            n, at = hr._h1_dataref(m, el, off)
+            have = min(fc, n // size) if at is not None and size > 0 else 0
+            if have < 1:
+                continue
+            out = bytearray()
+            for i in range(nf):
+                k = int(round(i * (have - 1) / float(nf - 1)))
+                if off == hr.H1_FRAME_INFO:
+                    # root motion is per-frame movement: keep the total distance
+                    out += _scaled_info(m.data[at + k * size:at + (k + 1) * size], fc / float(nf))
+                else:
+                    out += m.data[at + k * size:at + (k + 1) * size]
+            na = m.append_raw(bytes(out))
+            struct.pack_into('<i', new, off, len(out))
+            struct.pack_into('<I', new, off + 0xC, (na + m.magic) & 0xFFFFFFFF)
+        struct.pack_into('<h', new, hr.H1_FC, nf)
+        mult = nf / float(fc)
+        for off in hr.H1_I16_FRAMES:
+            v = struct.unpack_from('<h', new, off)[0]
+            struct.pack_into('<h', new, off, max(0, min(nf - 1, int(round(v * mult)))))
+        for off in hr.H1_I8_FRAMES:
+            if new[off] not in (0, 0xFF):
+                new[off] = max(0, min(nf - 1, int(round(new[off] * mult))))
+    nf = struct.unpack_from('<h', new, hr.H1_FC)[0]
+    if struct.unpack_from('<h', new, 0x34)[0] <= 0:    # the hit lands at the key frame
+        struct.pack_into('<h', new, 0x34, nf // 2)
+    struct.pack_into('<h', new, 0x38, -1)              # no next animation
+    name = tw._ascii(m, el).rsplit(' ', 1)[0] + ' melee (enhancer)'
+    new[0:0x20] = name.encode('latin-1')[:0x1F].ljust(0x20, b'\0')
+    count = m.u32(antr_base + hr.H1_ANIM_BLK)
+    m.grow_block(antr_base, hr.H1_ANIM_BLK, hr.H1_ANIM_EL, [bytes(new)])
+    return count
+
+
+def _scaled_info(frame, k):
+    """One Frame Info record (dx, dy[, dz][, dyaw] floats) times k."""
+    vals = struct.unpack('<%df' % (len(frame) // 4), bytes(frame))
+    return struct.pack('<%df' % len(vals), *(v * k for v in vals))
+
+
 def _row(effect, field, ok=True, skip=False, old=None, new=None, reason=None):
     r = {'effect': effect, 'field': field, 'ok': ok, 'tag': 'scnr'}
     if skip:
