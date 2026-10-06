@@ -537,8 +537,8 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
         return {'ok': False, 'reason': f'no reload layout for {game}'}
     if mult > 1 and str(game).strip() not in LENGTHEN_GAMES:
         # Only the Frame Count could be raised here, and the engine would then read past
-        # the stored frames (memory h3-animation-format). Halo 1 resamples and the
-        # resource games rebuild them (h3_anim_lengthen); Halo 2 is not done yet.
+        # the stored frames (memory h3-animation-format). Halo 1 resamples and every
+        # later game rebuilds them (h3_anim_lengthen).
         return {'ok': True, 'skip': True,
                 'reason': f'animations cannot be made longer in {game} yet'}
     if not hasattr(m, 'resolve_stringid'):
@@ -549,11 +549,12 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     graphs = anims_scaled = edits = capped = 0
     seen_events = set()          # (frame_field_addr) — event blocks are shared between anims
     fo = L['frame_off']
-    # LONGER (an inverted card): Halo 3 / ODST / Reach / Halo 4 rebuild the frames
+    # LONGER (an inverted card): Halo 2 / 3 / ODST / Reach / Halo 4 rebuild the frames
     # themselves (h3_anim_lengthen); raising the Frame Count alone reads past the stored
     # frames. An animation that cannot be rebuilt keeps its length rather than break.
     grow = mult > 1 and str(game).strip() in LENGTHEN_GAMES
-    lg = _H3Lengthener(m, str(game).strip()) if grow else None
+    lg = ((_H2Lengthener(m) if str(game).strip() == 'Halo 2' else
+           _H3Lengthener(m, str(game).strip())) if grow else None)
     not_longer = {}
     for _, base in tags:
         idxs = _reload_anim_indices(m, base, L, match)
@@ -619,7 +620,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
 
 # games whose animations h3_anim_lengthen rebuilds at a new length (Halo 1 resamples its
 # own uncompressed frames in _scale_reload_h1)
-LENGTHEN_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+LENGTHEN_GAMES = ('Halo 2', 'Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
 # per game: jmad Tag Resource Groups; the Shared Animation Data block (None = the
 # animation element itself) with its resource group/member and Frame Count offsets
 _RES_LAYOUT = {
@@ -628,6 +629,23 @@ _RES_LAYOUT = {
     'Halo Reach': dict(groups=0x1AC, shared=(0x30, 0xD4), gm=0x20, fc=0x2),
     'Halo 4': dict(groups=0x1E4, shared=(0x34, 0xDC), gm=0x18, fc=0x0),
 }
+
+
+class _H2Lengthener:
+    """Halo 2: the frames are a blob in the tag data per animation (h3_anim_lengthen.
+    H2Animations); rebuilt blobs are appended at the end of the tag data at finish()."""
+
+    def __init__(self, m):
+        _h3_pages()                            # puts sprint_toolkit on the path
+        import h3_anim_lengthen as hl
+        self.m, self.anims = m, hl.H2Animations(m)
+
+    def lengthen(self, base, el, mult):
+        fc = struct.unpack_from('<h', self.m.data, el + 0x14)[0]
+        return self.anims.lengthen(el, max(1, min(FRAME_LIMIT, int(round(fc * mult)))))
+
+    def finish(self):
+        return [('appended', self.anims.finish())] if self.anims.pending else []
 
 
 class _H3Lengthener:

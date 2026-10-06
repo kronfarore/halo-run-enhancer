@@ -446,6 +446,115 @@ def write_back(pages):
     return out
 
 
+# ----------------------------------------------------------------------------- Halo 2
+def rebuild(secs, blob, fc, new_fc, per_frame=None):
+    """A member/animation blob rebuilt at `new_fc` frames: (new blob, new compressed
+    size, {section index: new size}, actual frames) or a reason str. `secs` are the
+    section sizes in BLOB order [default, compressed, static flags, animated flags,
+    movement, pill, ...]; `per_frame` {section: bytes per frame} besides root motion."""
+    per_frame = dict(per_frame or {})
+    for i, v in enumerate(secs):
+        if i < 4 or not v or (i in per_frame and v == per_frame[i] * fc):
+            continue
+        if i == 4 and v % fc == 0 and v // fc in (8, 12, 16):
+            per_frame[4] = v // fc
+            continue
+        return 'carries data section #%d' % i
+    parts, at = [], 0
+    for v in secs:
+        parts.append(bytes(blob[at:at + v]))
+        at += v
+    comp = parts[1]
+    if comp and comp[0] in KEYFRAME_CODECS:
+        new_fc = min(new_fc, KEYFRAME_MAX)
+        new = retime_keyframes(comp, fc, new_fc)
+        if new is None:
+            return 'keyframe codec %d layout not recognised' % comp[0]
+    else:
+        a = decode(comp, fc, len(comp))
+        if a is None:
+            return 'codec %d is not handled' % (comp[0] if comp else -1)
+        if len(encode(a)) != len(comp):
+            return 'codec data carries %d unknown trailing bytes' % (len(comp) - len(encode(a)))
+        new = encode(resample(a, new_fc))
+    parts[1] = new
+    extra = {}
+    for i, per in per_frame.items():
+        if i < len(parts) and parts[i]:
+            parts[i] = _resample_floats(parts[i], per, fc, new_fc,
+                                        fc / float(new_fc) if i == 4 else 1.0)
+            extra[i] = len(parts[i])
+    return b''.join(parts), len(new), extra, new_fc
+
+
+class H2Animations:
+    """Halo 2: each jmad animation (Animations +0x2C, elem 0x60) points straight at its
+    blob in the TAG DATA -- data ref size i32 +0x28, pointer +0x2C; frame count i16 +0x14;
+    sizes at +0x30 packed like Halo 3's member record (u8 static flags, u8 animated
+    flags, i16 movement, i16 pill, i16 default, i32 uncompressed, i32 compressed); blob
+    order [default][compressed][static][animated][movement][pill]. Its codecs are Halo
+    3's (3 / 4 / 6 on the first-person graphs, 2026-10-06 on 03a). A rebuilt blob goes
+    into ONE region appended at the end of the tag data, 16-byte aligned inside and
+    padded to SEGMENT_ALIGN, the header sizes grown -- Halo2Map.grow_blocks' recipe."""
+
+    SIZES = 0x30
+
+    def __init__(self, m):
+        self.m = m
+        self.pending = []                        # (element, new blob)
+        self.done = {}
+
+    def lengthen(self, el, new_fc):
+        m = self.m
+        if el in self.done:
+            return self.done[el]
+        fc = struct.unpack_from('<h', m.data, el + 0x14)[0]
+        rsize, rptr = struct.unpack_from('<iI', m.data, el + 0x28)
+        sf, af, mv, pill, dflt, unc, cmp = struct.unpack_from('<BBhhhii', m.data, el + self.SIZES)
+        if fc < 2 or rsize <= 0 or sf + af + mv + pill + dflt + unc + cmp != rsize:
+            got = 'sizes do not add up'
+        elif unc:
+            got = 'carries uncompressed data'
+        else:
+            at = m.p2o(rptr)
+            got = rebuild([dflt, cmp, sf, af, mv, pill], m.data[at:at + rsize], fc, new_fc)
+        if isinstance(got, str):
+            self.done[el] = (got, None)
+            return self.done[el]
+        blob, ncmp, extra, nf = got
+        struct.pack_into('<i', m.data, el + self.SIZES + 0xC, ncmp)
+        for i, v in extra.items():                      # i16 movement +0x2, pill +0x4
+            struct.pack_into('<h', m.data, el + self.SIZES + {4: 0x2, 5: 0x4}[i], v)
+        self.pending.append((el, blob))
+        self.done[el] = (None, nf)
+        return self.done[el]
+
+    def finish(self):
+        """Append every rebuilt blob and repoint its animation. Returns bytes added."""
+        m = self.m
+        if not self.pending:
+            return 0
+        region, offs = bytearray(), []
+        for el, blob in self.pending:
+            region += bytes((-len(region)) & 15)
+            offs.append(len(region))
+            region += blob
+        base = len(m.data)
+        delta = (len(region) + m.SEGMENT_ALIGN - 1) & ~(m.SEGMENT_ALIGN - 1)
+        m.data += region + bytearray(delta - len(region))
+        for (el, blob), off in zip(self.pending, offs):
+            ptr = (base + off - m.meta_offset + m.mask) & 0xFFFFFFFF
+            struct.pack_into('<iI', m.data, el + 0x28, len(blob), ptr)
+        m.file_size += delta
+        m.meta_size += delta
+        m.tag_data_size += delta
+        struct.pack_into('<I', m.data, 0x8, m.file_size)
+        struct.pack_into('<I', m.data, 0x14, m.meta_size)
+        struct.pack_into('<I', m.data, 0x2D8, m.tag_data_size)
+        self.pending = []
+        return delta
+
+
 # ----------------------------------------------------------------------------- check
 def main():
     import halo_patch as HP
