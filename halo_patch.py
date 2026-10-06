@@ -9451,6 +9451,39 @@ def apply_port_volume(m, game, volume):
     return out
 
 
+def _port_actv_carriers(m, registry, ports):
+    """Halo 1: write each port's `actv` balance rows to every actor variant whose Weapon
+    (+0x64) is the port's weapon -- stock carriers, filled slots and clones alike. Each
+    row writes its own value, so Original puts the stock number back as well."""
+    out = []
+    import weapon_ports as _wp
+    plug = registry.get('actv') if registry is not None else None
+    if plug is None:
+        return out
+    for port in ports or ():
+        # one write per field: the rows name each stock carrier, with the same value
+        rows = list({(r.get('field'), r.get('block')): r for r in port.get('balance') or ()
+                     if r.get('class') == 'actv' and r.get('value') is not None}.values())
+        weap = _wp.weap_path(port)
+        if not rows or not weap:
+            continue
+        carriers = [(name, base) for (cls, name), base in m.tags.items() if cls == 'actv'
+                    and _tag_name_by_id(m, m.u32(base + 0x64 + 0xC)) == weap]
+        wrote = 0
+        for name, base in carriers:
+            for r in rows:
+                res = m.apply_field('actv', name, r['field'], 'set', r['value'], plug,
+                                    r.get('block'), r.get('index', 0) or 0)
+                wrote += sum(1 for x in res if x.get('ok'))
+        if carriers:
+            out.append({'effect': '%s (ported)' % (port.get('weapon') or 'port'),
+                        'tag': 'actv', 'field': 'carriers of %s' % weap.rsplit(chr(92), 1)[-1],
+                        'ok': bool(wrote), 'old': '%d variant(s)' % len(carriers),
+                        'new': '%d field(s) set (%s)' % (wrote, ', '.join(
+                            '%s %s' % (r['field'], r['value']) for r in rows))})
+    return out
+
+
 def apply_weapon_ports(m, game, registry, ports):
     """Write each enabled port's balance rows and retime its animations.
 
@@ -9656,6 +9689,12 @@ def apply_run(map_path, plan, registry, target_difficulty, backup=True, game=Non
         import sys as _sys
         import h1_enemy_weapons as _ew
         results.extend(_ew.apply(m, _sys.modules[__name__], h1_enemy_weapons))
+    if weapon_ports and str(game).strip() == 'Halo 1':
+        # A port's actv balance rows (the fuel rod's AI Rate Of Fire) belong to EVERY
+        # variant that carries the port's weapon, not only the stock ones the rows name:
+        # a slot filled by the enemy-weapon pass copies its firing block from a donor
+        # PROFILE read off the stock baselines, which still holds the AI-only values.
+        results.extend(_port_actv_carriers(m, registry, weapon_ports))
     _skull_names = {str(x.get('skull') if isinstance(x, dict) else x).strip().lower()
                     for x in (skulls or ())}
     betrayed = 'betrayal' in _skull_names
