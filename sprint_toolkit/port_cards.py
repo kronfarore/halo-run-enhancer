@@ -131,6 +131,10 @@ def plan(weapon):
             # 'dual_wield': true) -- the SAW cannot (user, 2026-10-03)
             if name.startswith('Dual ') and not port.get('dual_wield'):
                 continue
+            # donor cards the port has no use for (catalog 'skip_cards': the Halo 1 fuel
+            # rod has no zoom, the Rocket Launcher does)
+            if name in (port.get('skip_cards') or ()):
+                continue
             card = port_cards.get(name)
             if card is not None and game in (card.get('game') or []):
                 continue                                     # already covered: never overwrite

@@ -571,7 +571,10 @@
     "proj weapons\\rocket launcher\\rocket": "proj weapons\\fuel rod gun\\grunt fuel rod",
     "jpt! weapons\\rocket launcher\\explosion": "jpt! weapons\\fuel rod gun\\grunt explosion",
     "jpt! weapons\\rocket launcher\\melee": "jpt! weapons\\fuel rod gun\\melee"
-   }
+   },
+   "skip_cards": [
+    "Zoom"
+   ]
   }
  ],
  "Halo 3": [
