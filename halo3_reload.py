@@ -565,8 +565,9 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
             if not (0 <= ai < len(anims)):
                 continue
             el = anims[ai]
+            built = None
             if grow:
-                why = lg.lengthen(base, el, mult)
+                why, built = lg.lengthen(base, el, mult)
                 if why:
                     not_longer[why] = not_longer.get(why, 0) + 1
                     continue
@@ -578,6 +579,11 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
                     continue
                 el = shared[0]
             _, new_fc = _scale_frame(m, el + L['fc_off'], mult, FRAME_LIMIT)
+            if built is not None and built != new_fc:
+                # the rebuilt frames stopped short (a byte-keyframe codec ends at 256)
+                new_fc = built
+                struct.pack_into('<h', m.data, el + L['fc_off'], new_fc)
+                capped += 1
             capped += new_fc >= FRAME_LIMIT
             if new_fc < 1:
                 new_fc = 1
@@ -624,26 +630,26 @@ class _H3Lengthener:
         self.done = {}
 
     def lengthen(self, base, el, mult):
-        """None when animation `el` was rebuilt (the caller then scales its Frame Count
-        and events by the same rounding), else why it was not."""
+        """(None, frames it was rebuilt at) -- the caller then scales its Frame Count and
+        events by the same rounding -- or (why not, None)."""
         m = self.m
         groups = m.follow_all(base, [0xF8], [0xC], 'all')
         g, k = struct.unpack_from('<hh', m.data, el + 0x28)
         if not (0 <= g < len(groups)):
-            return 'animation borrowed from another graph'
+            return 'animation borrowed from another graph', None
         rid = m.u32(groups[g] + 4) & 0xFFFF
         if rid not in self.res:
             self.res[rid] = self.hl.Resource(m, self.pages, rid)
         r = self.res[rid]
         if not r.usable():
-            return 'frames stored outside this map'
+            return 'frames stored outside this map', None
         if not (0 <= k < len(r.members)):
-            return 'no such resource member'
+            return 'no such resource member', None
         if (rid, k) not in self.done:
             fc = struct.unpack_from('<h', m.data, el + 0x10)[0]
             new_fc = max(1, min(FRAME_LIMIT, int(round(fc * mult))))
             got = r.lengthen(k, new_fc)
-            self.done[(rid, k)] = got if isinstance(got, str) else None
+            self.done[(rid, k)] = (got, None) if isinstance(got, str) else (None, got[1])
         return self.done[(rid, k)]
 
     def finish(self):

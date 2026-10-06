@@ -107,6 +107,52 @@ def encode(a):
     return bytes(out)
 
 
+# Keyframe codecs 4 and 6 (byte keyframes; 6 lists its tracks in reverse order): the
+# header is 48 bytes, +12..+40 the starts of [translation descriptors, scale descriptors,
+# rotation key frames, translation key frames, scale key frames, rotation data (8-byte
+# aligned), translation data, scale data]. Rotation descriptors start at +48, one u32 per
+# track: key count (low 12 bits) | first key << 12. A key frame is ONE BYTE (its frame
+# number); a key's value is 8 bytes (int16 quaternion), 12 (translation) or 4 (scale).
+# Lengthening only renumbers the key frames: same keys, same size, same values.
+KEYFRAME_CODECS = (4, 6)
+KEYFRAME_MAX = 256                       # frame numbers are bytes: 0..255
+
+
+def keyframes(buf):
+    """(rot, trans, scale) key-frame (offset, count) of a byte-keyframe codec, or None
+    when the layout does not add up exactly."""
+    if buf[0] not in KEYFRAME_CODECS or len(buf) < 48:
+        return None
+    w0, = struct.unpack_from('<I', buf, 0)
+    R, T = (w0 >> 8) & 0xFF, (w0 >> 16) & 0xFF
+    o = struct.unpack_from('<8I', buf, 12)
+    S = (o[2] - o[1]) // 4
+    if o[0] != 48 + 4 * R or o[1] != o[0] + 4 * T or S < 0:
+        return None
+
+    def keys(at, n):
+        return sum(struct.unpack_from('<I', buf, at + 4 * i)[0] & 0xFFF for i in range(n))
+    kr, kt, ks = keys(48, R), keys(o[0], T), keys(o[1], S)
+    if (o[3] != o[2] + kr or o[4] != o[3] + kt or o[5] < o[4] + ks or o[5] % 8
+            or o[6] != o[5] + 8 * kr or o[7] != o[6] + 12 * kt or len(buf) != o[7] + 4 * ks):
+        return None
+    return (o[2], kr), (o[3], kt), (o[4], ks)
+
+
+def retime_keyframes(buf, fc, nf):
+    """`buf` with every key frame renumbered for `nf` frames (first and last kept on the
+    ends). None if the layout is not recognised."""
+    parts = keyframes(buf)
+    if parts is None:
+        return None
+    out = bytearray(buf)
+    k = (nf - 1) / float(max(1, fc - 1))
+    for at, n in parts:
+        for i in range(n):
+            out[at + i] = max(0, min(nf - 1, int(round(buf[at + i] * k))))
+    return bytes(out)
+
+
 def _slerp(a, b, u):
     d = sum(x * y for x, y in zip(a, b))
     if d < 0:
@@ -218,6 +264,14 @@ class Resource:
             return 'carries %s' % ('uncompressed data' if s['unc'] else 'root motion')
         blob = self.blob(k)
         comp = blob[s['dflt']:s['dflt'] + s['cmp']]
+        if comp and comp[0] in KEYFRAME_CODECS:
+            new_fc = min(new_fc, KEYFRAME_MAX)
+            new = retime_keyframes(comp, fc, new_fc)
+            if new is None:
+                return 'keyframe codec %d layout not recognised' % comp[0]
+            x['data'] = bytes(blob[:s['dflt']]) + new + bytes(blob[s['dflt'] + s['cmp']:])
+            struct.pack_into('<h', m.data, x['rec'] + 8, new_fc)
+            return fc, new_fc
         a = decode(comp, fc, s['cmp'])
         if a is None:
             return 'codec %d is not handled' % comp[0]
