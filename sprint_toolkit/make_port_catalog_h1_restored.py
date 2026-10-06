@@ -115,7 +115,7 @@ ENTRIES = [
     {'weapon': 'Sentinel Beam', 'source': 'Halo 3', 'donor': 'Plasma Rifle', 'default_on': False,
      'desc': "Halo 3's Sentinel Beam: its model, first-person animations and sounds. "
              "Dropped by Sentinels when they die. A continuous beam on heat and battery.",
-     'balance_desc': "11.6 damage per round instead of the Legendary Sentinel's 1.8, Halo "
+     'balance_desc': "11.6 damage per round instead of 4.64, Halo "
                      "1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu magnetism) "
                      "and Halo 3's battery: 11 s of fire instead of 5.6 s.",
      'fp_animations': B.join(['weapons', 'sentinel beam', 'fp', 'fp']),
@@ -135,12 +135,13 @@ ENTRIES = [
          # 15/s that is 167 rounds = 0.006 per round (default 0.012 = 5.6 s)
          row('weap', SB, 'Age Generated Per Round', 0.006, 0.012, 'Battery per round',
              block='Triggers'),
-         # damage: the default is Halo 1's Legendary Sentinel (1.8/round); balanced = the
+         # damage: the default 4.64/round = what an H1 Sentinel would need to kill the Chief
+         # in as many rounds as an H3 Sentinel on Legendary; balanced = the
          # plasma-rifle ratio PER SECOND: H3 beam 120 / H3 plasma rifle 90 (10 x 9/s) x H1
          # plasma rifle 130 (13 x 10/s) = 173/s, / the real 15/s = 11.6 per round
-         row('jpt!', SB_BEAM, 'Damage Lower Bound', 11.6, 1.8, 'Beam damage'),
-         row('jpt!', SB_BEAM, 'Damage Upper Bound', 11.6, 1.8, 'Beam damage'),
-         row('jpt!', SB_BEAM, 'Damage Upper Bound Max', 11.6, 1.8, 'Beam damage'),
+         row('jpt!', SB_BEAM, 'Damage Lower Bound', 11.6, 4.64, 'Beam damage'),
+         row('jpt!', SB_BEAM, 'Damage Upper Bound', 11.6, 4.64, 'Beam damage'),
+         row('jpt!', SB_BEAM, 'Damage Upper Bound Max', 11.6, 4.64, 'Beam damage'),
      ]},
 ]
 
