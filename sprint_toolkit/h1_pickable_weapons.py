@@ -329,7 +329,13 @@ WEAPONS['sentinel_beam'] = {
                'magnetism_angle': 9.0, 'magnetism_range': 18.0},
     'beam': {'projectile': (r'characters\sentinel\beam', SB + 'beam'),
              'damage': (r'weapons\plasma rifle\bolt', SB + 'beam'),
-             'range': 120.0, 'dmg': 10.4, 'acceleration': 0.05},
+             # DAMAGE (user, step 5b, 2026-10-06): the DEFAULT build matches Halo 1's own
+             # Sentinel on Legendary -- its beam (1.0/round, every material x1 on the
+             # player) x the Legendary enemy-damage scale 1.8 = 1.8/round (27/s at the
+             # real 15/s). The plasma-rifle ratio's 10.4 (5.2 x 2 for the 15/s) and its
+             # per-SECOND form 11.6 (120/90 x 130 dps / 15) were the alternatives; 11.6
+             # is the BALANCED row (weapon_ports_catalog.json)
+             'range': 120.0, 'dmg': 1.8, 'acceleration': 0.05},
     'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0426,
                 'acceleration_time': 0.05, 'deceleration_time': 0.1,
                 'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),

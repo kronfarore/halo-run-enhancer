@@ -371,6 +371,11 @@ for _x in ('', '.before_pickable'):
                        'shared/levels/%s/%s.scenario%s' % (_l, _l, _x)))
 SCRIPTS += ('h3_rm_to_jms.py', 'h1_h3_weapon_model.py', 'h1_enemy_test_map.py',
             'make_port_catalog_h1_restored.py')
+# step 5b + staging tools, and every local module the restored-weapon tools import
+# (closure checked 2026-10-06)
+SCRIPTS += ('h1_role_compare.py', 'h1_stage_balanced.py', 'fsb5_merge.py', 'h1_loosetag.py',
+            'h3_anim_decode.py', 'h3_kit.py', 'install_script.py', 'paths.py', 'port_env.py',
+            'saw_port_sounds.py')
 
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,

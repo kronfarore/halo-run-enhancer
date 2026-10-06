@@ -711,6 +711,33 @@
      "value": 0.006,
      "card": "Battery per round",
      "original": 0.012
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sentinel beam\\beam",
+     "field": "Damage Lower Bound",
+     "block": null,
+     "value": 11.6,
+     "card": "Beam damage",
+     "original": 1.8
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sentinel beam\\beam",
+     "field": "Damage Upper Bound",
+     "block": null,
+     "value": 11.6,
+     "card": "Beam damage",
+     "original": 1.8
+    },
+    {
+     "class": "jpt!",
+     "tag": "weapons\\sentinel beam\\beam",
+     "field": "Damage Upper Bound Max",
+     "block": null,
+     "value": 11.6,
+     "card": "Beam damage",
+     "original": 1.8
     }
    ],
    "tag_map": {
@@ -725,7 +752,7 @@
     "Ramp Up",
     "Salvo Shooting"
    ],
-   "balance_desc": "Halo 1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu magnetism) and Halo 3's battery: 11 s of fire instead of 5.6 s."
+   "balance_desc": "11.6 damage per round instead of the Legendary Sentinel's 1.8, Halo 1-style aim assist (1 deg / 25 wu autoaim, 12 deg / 25 wu magnetism) and Halo 3's battery: 11 s of fire instead of 5.6 s."
   }
  ],
  "Halo 3": [
