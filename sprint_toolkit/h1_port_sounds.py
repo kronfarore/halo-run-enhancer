@@ -118,6 +118,9 @@ WEAPONS = {
             'beam_overheat': ([tuple(OH + k for k in ('in', 'loop', 'out'))],
                               PR + B + 'overheat', -18.0),
         },
+        # Halo 1 lets a looping sound finish its current pass before the end track: Halo
+        # 3's 4.3 s loop hummed on for seconds after the trigger was let go (test 3)
+        'loop_len': {'beam_fire_loop': 0.5},
     },
 }
 
@@ -172,6 +175,13 @@ def render(weapon):
             x = x * 10 ** ((target - rms) / 20)
             if np.abs(x).max() > 0.95:
                 x = 0.95 * np.tanh(x / 0.95)
+            seconds = w.get('loop_len', {}).get(name)
+            if seconds:                      # a short SEAMLESS loop: the tail crossfaded
+                n, f = int(seconds * RATE), int(0.05 * RATE)       # into the head
+                ramp = np.linspace(0.0, 1.0, f)
+                y = x[:n].copy()
+                y[:f] = x[:f] * ramp + x[n:n + f] * (1 - ramp)
+                x = y
             perms.append(x)
         out[name] = perms
     return out

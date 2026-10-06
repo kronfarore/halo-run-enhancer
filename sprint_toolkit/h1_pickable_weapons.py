@@ -241,7 +241,10 @@ WEAPONS['sentinel_beam'] = {
     # the gunlight's colour and with its lens flare
     'no_firing_effect': True,
     'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
-                  'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light'},
+                  'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light',
+                  # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
+                  # brightness on both bounds), to be paddled back once it shows
+                  'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4)},
     'attach_swap': {r'weapons\plasma rifle\muzzle flash': SB + 'muzzle light'},
     # the template's attachments sit on plasma rifle markers this model lacks
     # THE DROP (user's option B): Halo 1's Sentinel carries no droppable weapon, so its
@@ -264,7 +267,8 @@ WEAPONS['sentinel_beam'] = {
     'trigger': {'rounds_per_second': 30.0, 'heat_generated_per_round': 0.0426,
                 'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),
                 'rounds_between_tracers': 0,
-                'first_person_offset': (0.0, -0.04, -0.035),     # wu: right, down
+                # wu: right, down -- test 3: y -0.04 sat right of the muzzle ('further to the left')
+                'first_person_offset': (0.0, -0.02, -0.035),
                 # test 2: the hum ran on too long after letting go -- the illumination
                 # it follows held 0.15 s past the last round; one 15/s interval is 0.067
                 'illumination_recovery_time': 0.08},
@@ -624,6 +628,12 @@ def edit_weapon(key, write):
         look = ligh_def.build(filepath=path(L['look'], '.light')).data.tagdata
         lt.data.tagdata.color = look.color
         lt.data.tagdata.lens_flare.filepath = look.lens_flare.filepath
+        if 'radius' in L:
+            lt.data.tagdata.shape.radius = L['radius']
+        for bound in (lt.data.tagdata.color.color_lower_bound,
+                      lt.data.tagdata.color.color_upper_bound):
+            if 'argb' in L:
+                bound.a, bound.r, bound.g, bound.b = L['argb']
         save(lt, path(L['out'], '.light'), write)
     if 'charge_loop' in w:
         add_charge_loop(d, w['charge_loop'])
