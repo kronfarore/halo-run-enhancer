@@ -227,43 +227,39 @@ WEAPONS['sentinel_beam'] = {
                'first-person posing': SBS + 'beam_pose',
                'first-person melee': SBS + 'beam_melee',
                'first-person overheating': SBS + 'beam_overheat'},
-    # THE HUM, the flamethrower's way (the stock continuous-fire weapon): input B =
-    # `primary firing on`, function 1 = 'one' scaled by B_in, a sound_looping (a clone of
-    # its fire_ft: fade in/out) on B_out with Halo 3's in / 0.5 s seamless loop / out.
-    # The plasma rifle template's functions are rewired to make room (`rewire`): heat
-    # moves to function 3 (the heat flares follow it to D_out), illumination to input C.
-    # History: test 1 put `primary firing on` in input C / function 3 -- silent (the
-    # remaining difference from the flamethrower is that slot layout); tests 2-3 scaled by
-    # the illumination function, which toggled per round and QUEUED start/end tracks (the
-    # tail grew with how long fire was held); test 4's per-shot grains sounded like static
-    'rewire': {'inputs': ('heat', 'primary_firing_on', 'illumination', 'age'),
-               # new index: (template function index, scale by, usage)
-               'functions': {1: ((r'weapons\flamethrower\flamethrower', 1), 'B_in', 'fire loop'),
-                             2: (2, 'C_in', 'muzzle flash'),
-                             3: (1, 'A_in', 'heat flare')},
-               'attach_scale': {'B_out': 'D_out'}},
+    # THE HUM: a sound_looping (a clone of the flamethrower's fire_ft: fade in/out) with
+    # Halo 3's in / 0.5 s seamless loop / out, on the template's ILLUMINATION function
+    # (C_out), whose hold (`illumination_recovery_time`, trigger) must outlast the gap
+    # between rounds or the loop toggles per round and QUEUES its start/end tracks.
+    # The record (2026-10-06):
+    #   test 1  `primary firing on` (input C, function 3)          silent
+    #   test 2  illumination, hold 0.15 s, 10 rounds/s, 4.3 s loop  plays, 'a bit long'
+    #   test 3  illumination, hold 0.08 s, 15 rounds/s, 0.5 s loop  tail grows with hold
+    #   test 4  per-shot grains in the firing effect                'static'
+    #   test 5  `primary firing on` the flamethrower's exact way      silent
+    #           (input B, its function 1, B_out) -- that input never reaches this weapon
+    # So: illumination, hold 0.15 s (> the 0.067 s gap at 15 rounds/s, as test 2 had)
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
-                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'B_out'},
-    # THE FIRING EFFECT (own, every round, at the first-person muzzle): the muzzle light
-    # only. No sound (the hum is the loop), no particles (Halo 1's Sentinel gun has no
-    # muzzle burst; the plasma rifle's was the template's). The light as an object
-    # attachment never showed in first person (tests 2-4)
+                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'C_out'},
+    # THE FIRING EFFECT (own, every round): the plasma rifle's flash particles only (no
+    # smoke, no tracer, no sound), recoloured to the Sentinel gunlight's red, plus the
+    # muzzle light. Test 5: a light/lens flare in the effect showed ABOVE THE RIGHT ARM
+    # (effect lights spawn at the hidden third-person weapon), while the particles carry
+    # `first person only` and spawn at the first-person muzzle -- the visible glow
     'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
-                    'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light'},
-    # the light: test 2 used the Sentinel's own gunlight -- NOT dynamic (a 0.5 wu glow
-    # for the Sentinel's body). Own light = the plasma rifle muzzle flash (dynamic) in the
-    # gunlight's colour, alive `duration` s per round. Test 5: 'barely visible if at
-    # all' -- a dynamic light only lights surfaces; what the eye sees at a muzzle is the
-    # LENS FLARE. The gunlight's own (the Sentinel's eye flare) is 0.05 wu and dims with
-    # camera rotation: own copy x5, brightness unscaled
+                    'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light',
+                    'keep_particles': 'flash', 'tint': (1.0, 1.0, 0.45, 0.4)},
+    # the light (lights the surroundings): test 2 used the Sentinel's own gunlight --
+    # NOT dynamic (a 0.5 wu glow for the Sentinel's body). Own light = the plasma rifle
+    # muzzle flash (dynamic) in the gunlight's colour, alive `duration` s per round; no
+    # lens flare (test 5: it floated over the arm)
     'own_light': {'shape': r'weapons\plasma rifle\muzzle flash',
                   'look': r'characters\sentinel\gunlight', 'out': SB + 'muzzle light',
                   # test 3: still nothing to see -- gone HARD (radius x3, full alpha and
                   # brightness on both bounds), to be paddled back once it shows
                   'radius': 6.0, 'argb': (1.0, 1.0, 0.45, 0.4), 'duration': 0.1,
-                  'flare': {'from': r'characters\sentinel\eyelight', 'out': SB + 'muzzle flare',
-                            'radius': 0.25}},
+                  'no_flare': True},
     # Halo 1's overheat steam spawns at the plasma rifle's `vent` markers, which this
     # model lacks (test 5: no particles): own copy at `overheat`
     'overheated_effect': {'from': r'weapons\plasma rifle\effects\overheated',
@@ -294,10 +290,10 @@ WEAPONS['sentinel_beam'] = {
                 # test 4: 'a bit up and right', and the FP rig went 2 units down (the
                 # muzzle with it): y -0.03, z -0.035 + 0.01 - 0.02
                 # test 5: 'halfway back to the left and down'
-                'first_person_offset': (0.0, -0.025, -0.05),
-                # test 2: the hum ran on too long after letting go -- the illumination
-                # it follows held 0.15 s past the last round; one 15/s interval is 0.067
-                'illumination_recovery_time': 0.08},
+                # test 6: good -- then the FP rig went 1 unit down, the start with it
+                'first_person_offset': (0.0, -0.025, -0.06),
+                # the hum's hold (see fire_loop): 0.08 in test 3 toggled per round
+                'illumination_recovery_time': 0.15},
     'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
              'loss_per_second': 0.3},
 }
@@ -697,6 +693,8 @@ def edit_weapon(key, write):
                 bound.a, bound.r, bound.g, bound.b = L['argb']
         if 'duration' in L:
             lt.data.tagdata.effect_parameters.duration = L['duration']
+        if L.get('no_flare'):
+            lt.data.tagdata.lens_flare.filepath = ''
         if 'flare' in L:
             from reclaimer.hek.defs.lens import lens_def
             fl = L['flare']
@@ -712,11 +710,19 @@ def edit_weapon(key, write):
         F = w['fire_effect']
         et = effe_def.build(filepath=path(F['from'], '.effect'))
         evs = et.data.tagdata.events.STEPTREE
-        while len(evs) > 1:                       # one event: the grain + the light
+        while len(evs) > 1:                       # one event
             evs.pop()
         ev = evs[0]
-        while len(ev.particles.STEPTREE):
-            ev.particles.STEPTREE.pop()
+        keep = F.get('keep_particles')            # particle tags whose path holds this
+        pts = ev.particles.STEPTREE
+        for i in range(len(pts) - 1, -1, -1):
+            if not keep or keep not in pts[i].particle_type.filepath:
+                pts.pop(i)
+        for x in pts:
+            if 'tint' in F:
+                x.flags.tint_as_hsv = False
+                for b in (x.tint_lower_bound, x.tint_upper_bound):
+                    b.a, b.r, b.g, b.b = F['tint']
         parts = ev.parts.STEPTREE
         if F['sound']:
             parts[0].type.filepath = F['sound']
