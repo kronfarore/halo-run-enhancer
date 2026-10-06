@@ -12378,11 +12378,11 @@ class OptionsDialog(QDialog):
         self._ports_anim_cb.setToolTip(
             "Scale the port's reload / ready / put-away animations by the same yardstick, "
             "so its timing keeps the same relation to the donor weapon that it had at "
-            "home.\n\nIn Halo 1 the frame data is resampled, so an animation can be made "
-            "longer as well as shorter. In every other game only the frame COUNT is "
-            "rewritten: an animation can be shortened, and a shortened one plays fewer of "
-            "its frames rather than playing faster, so its tail is cut. Ports are built at "
-            "the length they should play and scaled down from there.")
+            "home.\n\nA LONGER animation is rebuilt at its new length in every game (the "
+            "motion plays slower). In Halo 1 a shorter one is resampled too; in the other "
+            "games only its frame COUNT is cut, so it plays fewer of its frames rather "
+            "than playing faster and its tail is cut. Ports are built at the length they "
+            "should play and scaled down from there.")
         gform.addRow("Animations:", self._ports_anim_cb)
         self._ports_volume_sync_cb = QCheckBox("Sync to partner")
         self._ports_volume_sync_cb.setChecked(bool(CONFIG.get('weapon_port_volume_sync')))
