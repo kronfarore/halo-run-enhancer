@@ -188,6 +188,15 @@ def _resample_track(tr, n, fn):
     return out
 
 
+def _resample_floats(buf, per, fc, n, k=1.0):
+    """Per-frame records of `per` bytes of float32, linearly resampled to `n` frames and
+    multiplied by `k`."""
+    w = per // 4
+    tr = [list(struct.unpack_from('<%df' % w, buf, j * per)) for j in range(fc)]
+    out = _resample_track(tr, n, _lerp)
+    return b''.join(struct.pack('<%df' % w, *(v * k for v in r)) for r in out)
+
+
 def resample(a, n):
     """The same motion over `n` frames; the first and last frames are kept exactly."""
     b = dict(a)
@@ -212,79 +221,156 @@ def motion(a):
 
 # ----------------------------------------------------------------------------- page
 class Resource:
-    """One animation resource (a jmad Tag Resource Group) of a built Halo 3 / ODST map:
-    its member records, fixups and the page holding its blobs."""
+    """One animation resource (a jmad Tag Resource Group) of a built Halo 3 / ODST /
+    Reach / Halo 4 map: its member records, fixups and the page holding its blobs.
+
+    A member blob is its data sections back to back, in the order of the record's size
+    list -- [default][compressed][static flags][animated flags][movement][pill]... The
+    member record per game (sizes listed in BLOB order):
+      Halo 3 / ODST 0x30: frame count i16 +0x8; sizes u8 sf +0xC, u8 af +0xD, i16 mv
+                          +0xE, i16 pill +0x10, i16 default +0x12, i32 uncompressed
+                          +0x14, i32 compressed +0x18; blob size +0x1C; pointer +0x28
+      Reach         0x64: frame count i16 +0x8; 17 u32 sizes +0xC; blob +0x50; ptr +0x5C
+      Halo 4        0x68: frame count u16 +0x8; 18 u32 sizes +0xC; blob +0x54; ptr +0x60
+    Extra sections measured on the first-person graphs (m10 / m10_crash, 2026-10-06):
+    #5 is 12 bytes a frame (three floats: a smooth position in Halo 4's Forerunner sniper,
+    zeros in Reach) -- interpolated with the frames; #4 is root motion (8/12/16 bytes a
+    frame) -- interpolated and scaled so the total distance stays; Halo 4's #17 (78-138
+    bytes, codec byte 0x0B, then node indices up to 237, no frame numbers) is kept as it
+    is. Any other non-empty section refuses the member."""
+
+    KINDS = {
+        'h3': dict(rec=0x30, fc='<h', blob=0x1C, ptr=0x28, n=None, per_frame={}, keep=()),
+        'reach': dict(rec=0x64, fc='<h', blob=0x50, ptr=0x5C, n=17, per_frame={5: 12}, keep=()),
+        'h4': dict(rec=0x68, fc='<H', blob=0x54, ptr=0x60, n=18, per_frame={5: 12}, keep=(17,)),
+    }
 
     def __init__(self, m, pages, res):
         import halo_patch as HP
         import h3_raw_residency as R
         self.m, self.pages, self.res = m, pages, res
-        e = self.entry = pages.rbase + res * 0x40
-        self.coff, self.csz = m.i32(e + 0x14), m.i32(e + 0x18)
-        self.seg = struct.unpack_from('<h', m.data, e + 0x22)[0]
-        sb = pages.tabs['seg'][0] + self.seg * R.PLAY_SEG_ELEM
-        self.seg_off = struct.unpack_from('<i', m.data, sb + 4)[0]
-        self.fb = HP._block_base(m, e + 0x28)
-        self.nfix = max(0, m.i32(e + 0x28))
-        self.pi = pages.page_index(self.seg)
+        self.kind = 'h4' if pages.h4 else 'reach' if pages.reach else 'h3'
+        K = self.K = self.KINDS[self.kind]
+        if self.kind == 'h4':
+            e = self.entry = pages.rbase + res * 0x44
+            self.seg = struct.unpack_from('<h', m.data, e + 0x1A)[0]
+            lb = HP._block_base(m, e + 0x38)
+            ok = self.seg >= 0 and m.i32(e + 0x38) > 0 and lb
+            self.ctl = pages.cbase + m.i32(lb) if ok else None
+            self.clen = m.i32(e + 0x14) if ok else 0
+            self.seg_off = (struct.unpack_from('<i', m.data, pages.tabs['seg'][0] + self.seg * 0x18)[0]
+                            if self.seg >= 0 else -1)
+            fixat = e + 0x20
+        else:
+            e = self.entry = pages.rbase + res * 0x40
+            self.ctl = pages.cbase + m.i32(e + 0x14)
+            self.clen = m.i32(e + 0x18)
+            self.seg = struct.unpack_from('<h', m.data, e + 0x22)[0]
+            sb = pages.tabs['seg'][0] + self.seg * R.PLAY_SEG_ELEM
+            self.seg_off = struct.unpack_from('<i', m.data, sb + 4)[0]
+            fixat = e + 0x28
+        self.fb = HP._block_base(m, fixat)
+        self.nfix = max(0, m.i32(fixat))
+        self.pi = pages.page_index(self.seg) if self.seg >= 0 else -1
         self.members = []
+        if self.ctl is None:
+            return
         fix = {m.u32(self.fb + k * 8): k for k in range(self.nfix)}
-        for k in range(self.csz // 0x30):
-            fk = fix.get(k * 0x30 + 0x28)
+        for k in range(self.clen // K['rec']):
+            fk = fix.get(k * K['rec'] + K['ptr'])
             if fk is None:
                 break
-            mo = pages.cbase + self.coff + k * 0x30
+            mo = self.ctl + k * K['rec']
             val = m.u32(self.fb + fk * 8 + 4)
             self.members.append(dict(rec=mo, fix=fk, start=val & 0x0FFFFFFF, ok=val >> 28 == 4,
-                                     size=m.i32(mo + 0x1C)))
+                                     size=m.i32(mo + K['blob'])))
 
     def usable(self):
         return (self.seg_off == 0 and self.pi >= 0 and self.pages.local(self.pi)
-                and all(x['ok'] for x in self.members))
+                and bool(self.members) and all(x['ok'] for x in self.members))
 
     def blob(self, k):
         pg = self.pages.get(self.pi)
         x = self.members[k]
         return bytearray(pg[x['start']:x['start'] + x['size']])
 
-    def sizes(self, k):
+    def frames(self, k):
+        return struct.unpack_from(self.K['fc'], self.m.data, self.members[k]['rec'] + 8)[0]
+
+    def section_sizes(self, k):
+        """The member's data sections in BLOB order: [default, compressed, ...]."""
         mo = self.members[k]['rec']
-        sf, af, mv, pill, dflt, unc, cmp = struct.unpack_from('<BBhhhii', self.m.data, mo + 0xC)
-        return dict(sf=sf, af=af, mv=mv, pill=pill, dflt=dflt, unc=unc, cmp=cmp)
+        if self.kind == 'h3':
+            sf, af, mv, pill, dflt, unc, cmp = struct.unpack_from('<BBhhhii', self.m.data, mo + 0xC)
+            return [dflt, cmp, sf, af, mv, pill] + ([unc] if unc else [])
+        return list(struct.unpack_from('<%dI' % self.K['n'], self.m.data, mo + 0xC))
+
+    def sizes(self, k):
+        """default / cmp (the compressed codec data) -- what the codec checks read."""
+        s = self.section_sizes(k)
+        return dict(dflt=s[0], cmp=s[1])
+
+    def _set_sizes(self, k, cmp, fc, blob_len, extra):
+        m, mo = self.m, self.members[k]['rec']
+        struct.pack_into(self.K['fc'], m.data, mo + 8, fc)
+        if self.kind == 'h3':
+            struct.pack_into('<i', m.data, mo + 0x18, cmp)
+            for i, v in extra.items():                  # i16 movement +0xE, pill +0x10
+                struct.pack_into('<h', m.data, mo + {4: 0xE, 5: 0x10}[i], v)
+        else:
+            struct.pack_into('<I', m.data, mo + 0xC + 4, cmp)
+            for i, v in extra.items():
+                struct.pack_into('<I', m.data, mo + 0xC + 4 * i, v)
+        struct.pack_into('<i', m.data, mo + self.K['blob'], blob_len)
 
     def lengthen(self, k, new_fc):
         """Rebuild member k at `new_fc` frames. Returns (old fc, new fc) or a reason str."""
-        m = self.m
         x = self.members[k]
-        fc = struct.unpack_from('<h', m.data, x['rec'] + 8)[0]
+        fc = self.frames(k)
         if new_fc == fc:
             return fc, fc
-        s = self.sizes(k)
-        if s['unc'] or s['mv'] or s['pill']:
-            return 'carries %s' % ('uncompressed data' if s['unc'] else 'root motion')
+        secs = self.section_sizes(k)
+        for i, v in enumerate(secs):
+            if i < 4 or not v or i in self.K['keep']:
+                continue
+            if i in self.K['per_frame'] and v == self.K['per_frame'][i] * fc:
+                continue
+            if i == 4 and v % fc == 0 and v // fc in (8, 12, 16):
+                continue                                  # root motion
+            return 'carries data section #%d' % i
         blob = self.blob(k)
-        comp = blob[s['dflt']:s['dflt'] + s['cmp']]
+        parts, at = [], 0
+        for v in secs:
+            parts.append(bytes(blob[at:at + v]))
+            at += v
+        comp = parts[1]
+        extra = {}
         if comp and comp[0] in KEYFRAME_CODECS:
             new_fc = min(new_fc, KEYFRAME_MAX)
             new = retime_keyframes(comp, fc, new_fc)
             if new is None:
                 return 'keyframe codec %d layout not recognised' % comp[0]
-            x['data'] = bytes(blob[:s['dflt']]) + new + bytes(blob[s['dflt'] + s['cmp']:])
-            struct.pack_into('<h', m.data, x['rec'] + 8, new_fc)
-            return fc, new_fc
-        a = decode(comp, fc, s['cmp'])
-        if a is None:
-            return 'codec %d is not handled' % comp[0]
-        if len(encode(a)) != s['cmp']:
-            # 25 of 3152 on 010 (lip-sync, cutscenes, the Needler's ammo display) carry
-            # bytes past the tracks whose meaning is unknown: never guess at them
-            return 'codec data carries %d unknown trailing bytes' % (s['cmp'] - len(encode(a)))
-        new = encode(resample(a, new_fc))
-        tail = blob[s['dflt'] + s['cmp']:]              # static + animated node flags
-        x['data'] = bytes(blob[:s['dflt']]) + new + bytes(tail)
-        struct.pack_into('<h', m.data, x['rec'] + 8, new_fc)
-        struct.pack_into('<i', m.data, x['rec'] + 0x18, len(new))
-        struct.pack_into('<i', m.data, x['rec'] + 0x1C, len(x['data']))
+        else:
+            a = decode(comp, fc, len(comp))
+            if a is None:
+                return 'codec %d is not handled' % (comp[0] if comp else -1)
+            if len(encode(a)) != len(comp):
+                # 25 of 3152 on 010 (lip-sync, cutscenes, the Needler's ammo display)
+                # carry bytes past the tracks whose meaning is unknown: never guess
+                return 'codec data carries %d unknown trailing bytes' % (len(comp) - len(encode(a)))
+            new = encode(resample(a, new_fc))
+        parts[1] = new
+        frame_secs = dict(self.K['per_frame'])
+        if len(parts) > 4 and parts[4]:
+            frame_secs[4] = len(parts[4]) // fc
+        for i, per in frame_secs.items():
+            if i < len(parts) and parts[i]:
+                # root motion is movement PER FRAME: more frames each move less
+                parts[i] = _resample_floats(parts[i], per, fc, new_fc,
+                                            fc / float(new_fc) if i == 4 else 1.0)
+                extra[i] = len(parts[i])
+        x['data'] = b''.join(parts)
+        self._set_sizes(k, len(new), new_fc, len(x['data']), extra)
         return fc, new_fc
 
     def relayout(self):

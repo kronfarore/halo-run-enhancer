@@ -535,10 +535,10 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     L = LAYOUTS.get(str(game).strip())
     if L is None:
         return {'ok': False, 'reason': f'no reload layout for {game}'}
-    if mult > 1 and str(game).strip() not in ('Halo 3', 'Halo 3: ODST'):
+    if mult > 1 and str(game).strip() not in LENGTHEN_GAMES:
         # Only the Frame Count could be raised here, and the engine would then read past
-        # the stored frames (memory h3-animation-format). Halo 1 resamples and Halo 3 /
-        # ODST rebuild them (h3_anim_lengthen); the other games' codecs are not done yet.
+        # the stored frames (memory h3-animation-format). Halo 1 resamples and the
+        # resource games rebuild them (h3_anim_lengthen); Halo 2 is not done yet.
         return {'ok': True, 'skip': True,
                 'reason': f'animations cannot be made longer in {game} yet'}
     if not hasattr(m, 'resolve_stringid'):
@@ -549,11 +549,11 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     graphs = anims_scaled = edits = capped = 0
     seen_events = set()          # (frame_field_addr) — event blocks are shared between anims
     fo = L['frame_off']
-    # LONGER (an inverted card): Halo 3 / ODST rebuild the frames themselves
-    # (h3_anim_lengthen); raising the Frame Count alone reads past the stored frames.
-    # An animation that cannot be rebuilt keeps its length rather than break.
-    grow = mult > 1 and str(game).strip() in ('Halo 3', 'Halo 3: ODST')
-    lg = _H3Lengthener(m) if grow else None
+    # LONGER (an inverted card): Halo 3 / ODST / Reach / Halo 4 rebuild the frames
+    # themselves (h3_anim_lengthen); raising the Frame Count alone reads past the stored
+    # frames. An animation that cannot be rebuilt keeps its length rather than break.
+    grow = mult > 1 and str(game).strip() in LENGTHEN_GAMES
+    lg = _H3Lengthener(m, str(game).strip()) if grow else None
     not_longer = {}
     for _, base in tags:
         idxs = _reload_anim_indices(m, base, L, match)
@@ -617,12 +617,26 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     return out
 
 
+# games whose animations h3_anim_lengthen rebuilds at a new length (Halo 1 resamples its
+# own uncompressed frames in _scale_reload_h1)
+LENGTHEN_GAMES = ('Halo 3', 'Halo 3: ODST', 'Halo Reach', 'Halo 4')
+# per game: jmad Tag Resource Groups; the Shared Animation Data block (None = the
+# animation element itself) with its resource group/member and Frame Count offsets
+_RES_LAYOUT = {
+    'Halo 3': dict(groups=0xF8, shared=None, gm=0x28, fc=0x10),
+    'Halo 3: ODST': dict(groups=0xF8, shared=None, gm=0x28, fc=0x10),
+    'Halo Reach': dict(groups=0x1AC, shared=(0x30, 0xD4), gm=0x20, fc=0x2),
+    'Halo 4': dict(groups=0x1E4, shared=(0x34, 0xDC), gm=0x18, fc=0x0),
+}
+
+
 class _H3Lengthener:
     """Per map: rebuild Halo 3 / ODST animations at a new length (h3_anim_lengthen),
     each (resource, member) once, and write the touched pages back at the end."""
 
-    def __init__(self, m):
+    def __init__(self, m, game='Halo 3'):
         ms = _h3_pages()                       # puts sprint_toolkit on the path
+        self.lay = _RES_LAYOUT[game]
         import h3_anim_lengthen as hl
         self.m, self.hl = m, hl
         self.pages = ms.Pages(m)
@@ -633,8 +647,14 @@ class _H3Lengthener:
         """(None, frames it was rebuilt at) -- the caller then scales its Frame Count and
         events by the same rounding -- or (why not, None)."""
         m = self.m
-        groups = m.follow_all(base, [0xF8], [0xC], 'all')
-        g, k = struct.unpack_from('<hh', m.data, el + 0x28)
+        lay = self.lay
+        groups = m.follow_all(base, [lay['groups']], [0xC], 'all')
+        if lay['shared']:
+            sh = m.follow_all(el, [lay['shared'][0]], [lay['shared'][1]], 'all')
+            if not sh:
+                return 'animation borrowed from another graph', None
+            el = sh[0]
+        g, k = struct.unpack_from('<hh', m.data, el + lay['gm'])
         if not (0 <= g < len(groups)):
             return 'animation borrowed from another graph', None
         rid = m.u32(groups[g] + 4) & 0xFFFF
@@ -646,7 +666,7 @@ class _H3Lengthener:
         if not (0 <= k < len(r.members)):
             return 'no such resource member', None
         if (rid, k) not in self.done:
-            fc = struct.unpack_from('<h', m.data, el + 0x10)[0]
+            fc = struct.unpack_from('<h', m.data, el + lay['fc'])[0]
             new_fc = max(1, min(FRAME_LIMIT, int(round(fc * mult))))
             got = r.lengthen(k, new_fc)
             self.done[(rid, k)] = (got, None) if isinstance(got, str) else (None, got[1])
