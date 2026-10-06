@@ -228,9 +228,12 @@ WEAPONS['sentinel_beam'] = {
                'first-person melee': SBS + 'beam_melee',
                'first-person overheating': SBS + 'beam_overheat'},
     # THE HUM: a sound_looping (a clone of the flamethrower's fire_ft: fade in/out) with
-    # Halo 3's in / 0.5 s seamless loop / out, on the template's ILLUMINATION function
-    # (C_out), whose hold (`illumination_recovery_time`, trigger) must outlast the gap
-    # between rounds or the loop toggles per round and QUEUES its start/end tracks.
+    # Halo 3's in / 0.5 s seamless loop / out, on the trigger's RATE OF FIRE: input C =
+    # `primary rate of fire`, function 3 (the template's `age`, which drives nothing
+    # here) = 'one' scaled by it, the loop on D_out. That input ramps up over the
+    # trigger's acceleration time while fire is held and down over its deceleration time
+    # (0.1 s) after -- smooth, no per-round toggling. The rate bounds differ (29..30) so
+    # the ramp is not 0/0 (both fire every 2nd tick = 15/s).
     # The record (2026-10-06):
     #   test 1  `primary firing on` (input C, function 3)          silent
     #   test 2  illumination, hold 0.15 s, 10 rounds/s, 4.3 s loop  plays, 'a bit long'
@@ -238,10 +241,13 @@ WEAPONS['sentinel_beam'] = {
     #   test 4  per-shot grains in the firing effect                'static'
     #   test 5  `primary firing on` the flamethrower's exact way      silent
     #           (input B, its function 1, B_out) -- that input never reaches this weapon
-    # So: illumination, hold 0.15 s (> the 0.067 s gap at 15 rounds/s, as test 2 had)
+    #   test 6  illumination, hold 0.15 s, 15 rounds/s, 0.5 s loop  persists again
+    # So the illumination signal lingers whatever its hold: the rate of fire instead
+    'rewire': {'inputs': ('heat', 'illumination', 'primary_rate_of_fire', 'age'),
+               'functions': {3: (2, 'C_in', 'fire loop')}},
     'fire_loop': {'tag': SBS + 'beam_fire', 'like': r'sound\sfx\weapons\flamethrower\fire_ft',
                   'start': SBS + 'beam_fire_in', 'loop': SBS + 'beam_fire_loop',
-                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'C_out'},
+                  'end': SBS + 'beam_fire_out', 'marker': 'primary trigger', 'scale': 'D_out'},
     # THE FIRING EFFECT (own, every round): the plasma rifle's flash particles only (no
     # smoke, no tracer, no sound), recoloured to the Sentinel gunlight's red, plus the
     # muzzle light. Test 5: a light/lens flare in the effect showed ABOVE THE RIGHT ARM
@@ -250,6 +256,10 @@ WEAPONS['sentinel_beam'] = {
     'fire_effect': {'from': r'weapons\plasma rifle\effects\plasma rifle upper fire',
                     'out': SB + 'effects\\fire', 'sound': '', 'light': SB + 'muzzle light',
                     'keep_particles': 'flash', 'tint': (1.0, 1.0, 0.45, 0.4)},
+    # test 6: the glow came out plasma rifle blue-white anyway -- the `c generic`
+    # particles take the WEAPON's change colour A (the template wanders teal..blue), not
+    # the effect's tint. Change colour A = the Sentinel gunlight's red (rgb, rgb)
+    'change_color_a': ((1.0, 0.45, 0.4), (1.0, 0.3, 0.25)),
     # the light (lights the surroundings): test 2 used the Sentinel's own gunlight --
     # NOT dynamic (a 0.5 wu glow for the Sentinel's body). Own light = the plasma rifle
     # muzzle flash (dynamic) in the gunlight's colour, alive `duration` s per round; no
@@ -283,7 +293,8 @@ WEAPONS['sentinel_beam'] = {
     'beam': {'projectile': (r'characters\sentinel\beam', SB + 'beam'),
              'damage': (r'weapons\plasma rifle\bolt', SB + 'beam'),
              'range': 120.0, 'dmg': 10.4, 'acceleration': 0.05},
-    'trigger': {'rounds_per_second': 30.0, 'heat_generated_per_round': 0.0426,
+    'trigger': {'rounds_per_second': (29.0, 30.0), 'heat_generated_per_round': 0.0426,
+                'acceleration_time': 0.05, 'deceleration_time': 0.1,
                 'age_generated_per_round': 0.012, 'error_angle': (0.0, 0.0),
                 'rounds_between_tracers': 0,
                 # wu: right, down -- test 3: y -0.04 sat right of the muzzle ('further to the left')
@@ -291,8 +302,9 @@ WEAPONS['sentinel_beam'] = {
                 # muzzle with it): y -0.03, z -0.035 + 0.01 - 0.02
                 # test 5: 'halfway back to the left and down'
                 # test 6: good -- then the FP rig went 1 unit down, the start with it
-                'first_person_offset': (0.0, -0.025, -0.06),
-                # the hum's hold (see fire_loop): 0.08 in test 3 toggled per round
+                # test 7: rig 1 more unit down, the start with it
+                'first_person_offset': (0.0, -0.025, -0.07),
+                # the muzzle light's hold (the hum no longer follows it)
                 'illumination_recovery_time': 0.15},
     'heat': {'recovery_threshold': 0.25, 'overheated_threshold': 0.9,
              'loss_per_second': 0.3},
@@ -655,7 +667,8 @@ def edit_weapon(key, write):
     for k, v in w.get('trigger', {}).items():
         for tr in a.triggers.STEPTREE:
             if k == 'rounds_per_second':
-                tr.firing.rounds_per_second[0] = tr.firing.rounds_per_second[1] = v
+                lo, hi = v if isinstance(v, tuple) else (v, v)
+                tr.firing.rounds_per_second[0], tr.firing.rounds_per_second[1] = lo, hi
             elif k == 'error_angle':
                 tr.projectile.error_angle[0], tr.projectile.error_angle[1] = v
             elif k == 'first_person_offset':
@@ -678,6 +691,11 @@ def edit_weapon(key, write):
         a.heat.overheated.filepath = O['out']
     if 'rewire' in w:
         rewire(d, w['rewire'])
+    if 'change_color_a' in w:
+        cc = d.obje_attrs.change_colors.STEPTREE[0]
+        cc.flags.blend_in_hsv = False
+        for b, rgb in zip((cc.color_lower_bound, cc.color_upper_bound), w['change_color_a']):
+            b.r, b.g, b.b = rgb
     if 'own_light' in w:
         from reclaimer.hek.defs.ligh import ligh_def
         L = w['own_light']

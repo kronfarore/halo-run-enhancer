@@ -97,7 +97,8 @@ WEAPONS = {
         # test 3: 'making progress, another 1 unit'
         # test 4: 'down 2 units'; test 5: 'another unit backwards'
         # test 6: 'another unit down'
-        'view_offset': (-0.035, 0.0, -0.03),
+        # test 7: 'one more unit down'
+        'view_offset': (-0.035, 0.0, -0.04),
         # Halo 1 plays `overheated` (looped) after `overheating` while the weapon is still
         # hot -- the stock plasma rifle has one (50 frames). Without it the engine replayed
         # `overheating` (test 5: overheat sound twice, the pose jumping back mid-way).
