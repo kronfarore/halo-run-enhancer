@@ -94,14 +94,19 @@ def ammo_choice(port, state):
 
 def active_ports(game, config, catalog=None):
     """The catalog entries to hand the patcher, shaped by the run's options:
-    `weapon_ports` picks which ports are on, `weapon_ports_balance` whether their
-    balance rows apply at all, `weapon_ports_balance_anims` whether the retiming comes
+    `weapon_ports` picks which ports are on and, per port, `balanced` -- whether its
+    balance rows apply (the global `weapon_ports_balance` is the default for a port
+    without its own choice), `weapon_ports_balance_anims` whether the retiming comes
     with it, and each port's own `ammo` which pickup item it accepts."""
     out = []
     chosen = (config.get('weapon_ports') or {}).get(str(game).strip()) or {}
     for port in enabled_ports(game, config.get('weapon_ports'), catalog):
         entry = dict(port)
-        if not config.get('weapon_ports_balance', True):
+        st = chosen.get(port.get('weapon')) or {}
+        balanced = st.get('balanced')
+        if balanced is None:
+            balanced = config.get('weapon_ports_balance', True)
+        if not balanced:
             # Balance OFF means the port plays like the weapon it came from -- which is
             # not the same as writing nothing. A port built by CLONING a donor tag starts
             # out holding the DONOR's numbers, so leaving them alone would hand the player

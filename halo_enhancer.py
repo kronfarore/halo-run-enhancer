@@ -3698,7 +3698,7 @@ class ModifierDatabase:
             return False
 
     PORT_LEVELS_FILE = 'port_levels_cache.json'
-    PORT_CACHE_VERSION = 3       # 2: + port card tags MISSING there; 3: from halo.json cards
+    PORT_CACHE_VERSION = 4       # 2: + port card tags MISSING there; 3: from halo.json cards; 4: requires
 
     def _port_level_map(self, mission_id):
         import halo_patch
@@ -3794,7 +3794,11 @@ class ModifierDatabase:
                 m = halo_patch.open_map(path, game)
                 for p in weapon_ports.ports_for(game):
                     wp = weapon_ports.weap_path(p)
-                    if wp and m.find_tags('weap', wp):
+                    # `requires`: tags only the PLAYER version carries (Halo 1's sword
+                    # and fuel rod keep the enemy weapons' paths, so the stock maps
+                    # have a weapon by that name that detonates when dropped)
+                    req = [r.split(' ', 1) for r in p.get('requires') or () if ' ' in r]
+                    if wp and m.find_tags('weap', wp) and all(m.find_tags(c, q) for c, q in req):
                         found.append(p['weapon'])
                         # which of its derived cards' tags this map lacks: Halo 1's SAW
                         # fires the Assault Rifle's own bullet, so 'weapons\saw\bullet'
@@ -12316,6 +12320,11 @@ class OptionsDialog(QDialog):
             "two versions.\n\nThe balanced values become the port's vanilla, so cards "
             "scale from them. Off, the port keeps its original numbers.")
         gform.addRow("Balance:", self._ports_balance_cb)
+        self._ports_balance_cb.setToolTip(self._ports_balance_cb.toolTip()
+                                          + "\n\nEach weapon has its own Balanced switch "
+                                          "below; this one sets them all at once.")
+        self._ports_balance_cb.toggled.connect(
+            lambda on: [b.setChecked(on) for b in self._ports_balanced.values()])
         self._ports_pools_cb = QCheckBox("Offer ported weapons in every weapon pick")
         self._ports_pools_cb.setChecked(bool(CONFIG.get('weapon_ports_in_pools')))
         self._ports_pools_cb.setToolTip(
@@ -12347,6 +12356,7 @@ class OptionsDialog(QDialog):
         self._ports_boxes = {}
         self._ports_ammo = {}
         self._ports_volume = {}
+        self._ports_balanced = {}
         for game in BASELINE_GAMES:
             ports = self._ports_catalog.get(game) or []
             gb = QGroupBox(game)
@@ -12362,6 +12372,21 @@ class OptionsDialog(QDialog):
                 cb.setChecked(bool(st.get('enabled', port.get('default_on', False))))
                 cb.setToolTip(port.get('desc') or '')
                 self._ports_boxes[(game, port.get('weapon'))] = cb
+                # Balanced or Original, per weapon (user, 2026-10-06): the suggested
+                # balance rows, or the weapon's own numbers from where it came from.
+                bal = None
+                if port.get('balance') or port.get('anims'):
+                    bal = QCheckBox("↳ Balanced (off = Original)")
+                    _b = st.get('balanced')
+                    bal.setChecked(bool(CONFIG.get('weapon_ports_balance', True)
+                                        if _b is None else _b))
+                    bal.setToolTip(port.get('balance_desc') or (
+                        "On: this weapon plays with its suggested balance (%d tuned "
+                        "field(s)%s). Off: its Original numbers. The balanced values "
+                        "become its vanilla, so cards scale from them."
+                        % (len(port.get('balance') or ()),
+                           ', retimed animations' if port.get('anims') else '')))
+                    self._ports_balanced[(game, port.get('weapon'))] = bal
                 ammo = port.get('ammo') or {}
                 vol = self._port_volume_widgets(game, port.get('weapon'))
                 if not ammo:
@@ -12377,6 +12402,8 @@ class OptionsDialog(QDialog):
                         f.addRow("Port:", row)
                     else:
                         f.addRow("Port:", cb)
+                    if bal:
+                        f.addRow("", bal)
                     continue
                 # Which ammo pickup the port's magazines accept. A port has no pickup
                 # item of its own (the SAW's home game has no ammo pickups at all), so
@@ -12430,6 +12457,8 @@ class OptionsDialog(QDialog):
                     rl.addWidget(vol[0])
                     rl.addWidget(vol[1])
                 f.addRow("Port:", row)
+                if bal:
+                    f.addRow("", bal)
                 self._ports_ammo[(game, port.get('weapon'))] = combo
             lay.addWidget(gb)
 
@@ -12643,7 +12672,9 @@ class OptionsDialog(QDialog):
             'weapon_ports': {
                 g: {w: dict({'enabled': cb.isChecked()},
                             **({'ammo': self._ports_ammo[(g, w)].currentData()}
-                               if (g, w) in self._ports_ammo else {}))
+                               if (g, w) in self._ports_ammo else {}),
+                            **({'balanced': self._ports_balanced[(g, w)].isChecked()}
+                               if (g, w) in self._ports_balanced else {}))
                     for (g2, w), cb in self._ports_boxes.items() if g2 == g}
                 for g in {gg for gg, _ in self._ports_boxes}},
             'weapon_port_volume_sync': self._ports_volume_sync_cb.isChecked(),
