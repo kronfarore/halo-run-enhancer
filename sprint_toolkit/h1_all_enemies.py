@@ -25,6 +25,7 @@ Once resident, a variant spawns by REPOINTING a palette entry at patch time
     python h1_all_enemies.py test --level a10 --factions [--reuse-build]
                                                v2: one faction per encounter (explicit team),
                                                a Hunter squad first in every Covenant one
+    python h1_all_enemies.py apply [--levels a10,b30]   write it into the kit for good
     python h1_all_enemies.py verify --map M    are all roots + majors in a built map?
     (h1_all_enemies_test.cmd deploy|restore [level] swaps the test map in / out)
 """
@@ -317,11 +318,24 @@ def main():
                    help='skip the kit build: the kit maps folder <level>.map is already the anchor build')
     v = sub.add_parser('verify')
     v.add_argument('--map', required=True)
+    k = sub.add_parser('apply', help='write the plan into the kit for good (then h1_rebuild_all)')
+    k.add_argument('--levels', default=','.join(LEVELS))
     a = ap.parse_args()
     if a.cmd == 'plan':
         show(load_plan(a.replan))
         return
     plan = load_plan()
+    if a.cmd == 'apply':
+        levels = [x for x in a.levels.split(',') if x]
+        keep = os.path.join('E:' + os.sep, 'HaloBackups', 'kit-h1-before-allenemies')
+        for f in kit_files(levels):
+            dst = os.path.join(keep, os.path.relpath(f, paths.HCEEK))
+            if not os.path.exists(dst):          # first apply only: the pre-feature kit
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copy2(f, dst)
+        kit_apply(plan, levels)
+        print('kit backup (pre-feature): %s' % keep)
+        return
     if a.cmd == 'verify':
         sys.exit(0 if verify(halo_patch.open_map(a.map, 'Halo 1'), plan) else 1)
     lv = a.level
