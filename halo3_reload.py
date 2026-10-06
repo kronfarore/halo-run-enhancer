@@ -549,10 +549,12 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     graphs = anims_scaled = edits = capped = 0
     seen_events = set()          # (frame_field_addr) — event blocks are shared between anims
     fo = L['frame_off']
-    # LONGER (an inverted card): Halo 2 / 3 / ODST / Reach / Halo 4 rebuild the frames
-    # themselves (h3_anim_lengthen); raising the Frame Count alone reads past the stored
-    # frames. An animation that cannot be rebuilt keeps its length rather than break.
-    grow = mult > 1 and str(game).strip() in LENGTHEN_GAMES
+    # Halo 2 / 3 / ODST / Reach / Halo 4 REBUILD the frames at the new length
+    # (h3_anim_lengthen), so the whole motion plays faster or slower. Longer cannot be
+    # done any other way (raising the Frame Count alone reads past the stored frames): an
+    # animation that cannot be rebuilt keeps its length. Shorter falls back to cutting
+    # the Frame Count (it plays fewer of its frames, its tail is lost) -- the old way.
+    grow = mult != 1 and str(game).strip() in LENGTHEN_GAMES
     lg = ((_H2Lengthener(m) if str(game).strip() == 'Halo 2' else
            _H3Lengthener(m, str(game).strip())) if grow else None)
     not_longer = {}
@@ -571,7 +573,8 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
                 why, built = lg.lengthen(base, el, mult)
                 if why:
                     not_longer[why] = not_longer.get(why, 0) + 1
-                    continue
+                    if mult > 1:
+                        continue
             if L.get('shared_blk') is not None:
                 # Reach: the element is a header; Frame Count and every event block
                 # live in the Shared Animation Data it points at.
@@ -605,7 +608,7 @@ def scale_reload(m, tag_pattern, mult, game='Halo 3', match=('reload',)):
     moved = lg.finish() if grow else []
     if anims_scaled == 0:
         return {'ok': True, 'skip': True,
-                'reason': ('not made longer: ' + '; '.join(
+                'reason': ('not rebuilt: ' + '; '.join(
                     '%d %s' % (n, w) for w, n in not_longer.items())
                     if not_longer else 'no reload animations found'),
                 'graphs': graphs, 'animations': 0, 'edits': 0}

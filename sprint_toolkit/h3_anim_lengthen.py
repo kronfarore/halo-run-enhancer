@@ -141,15 +141,80 @@ def keyframes(buf):
 
 def retime_keyframes(buf, fc, nf):
     """`buf` with every key frame renumbered for `nf` frames (first and last kept on the
-    ends). None if the layout is not recognised."""
+    ends). Longer: renumbered in place, same size. SHORTER: two keys of a track can land
+    on one frame, so the track keeps, per frame, the key whose scaled time was nearest it
+    and the codec data is laid out again (rebuild_keyframes). None if the layout is not
+    recognised."""
     parts = keyframes(buf)
     if parts is None:
         return None
-    out = bytearray(buf)
     k = (nf - 1) / float(max(1, fc - 1))
+    out = bytearray(buf)
     for at, n in parts:
         for i in range(n):
             out[at + i] = max(0, min(nf - 1, int(round(buf[at + i] * k))))
+    if nf >= fc:
+        return bytes(out)
+    return rebuild_keyframes(buf, k, nf)
+
+
+def rebuild_keyframes(buf, k, nf):
+    """Byte-keyframe codec data re-laid with duplicate key frames dropped (see
+    retime_keyframes). Tracks keep their order in the key arrays (codec 6 lists its
+    descriptors in reverse; each track keeps its descriptor slot)."""
+    w0, = struct.unpack_from('<I', buf, 0)
+    R, T = (w0 >> 8) & 0xFF, (w0 >> 16) & 0xFF
+    o = struct.unpack_from('<8I', buf, 12)
+    S = (o[2] - o[1]) // 4
+    chans = []                      # per channel: (descriptor at, track count, times at, data at, value bytes)
+    for dat, n, tat, vat, vb in ((48, R, o[2], o[5], 8), (o[0], T, o[3], o[6], 12), (o[1], S, o[4], o[7], 4)):
+        tracks = []
+        for t in range(n):
+            d = struct.unpack_from('<I', buf, dat + 4 * t)[0]
+            cnt, first = d & 0xFFF, d >> 12
+            keys = {}
+            for j in range(cnt):
+                ki = first + j
+                exact = buf[tat + ki] * k
+                f = max(0, min(nf - 1, int(round(exact))))
+                val = bytes(buf[vat + vb * ki:vat + vb * (ki + 1)])
+                if f not in keys or abs(exact - f) < keys[f][0]:
+                    keys[f] = (abs(exact - f), val)
+            tracks.append((first, sorted((f, v) for f, (_e, v) in keys.items())))
+        chans.append((n, vb, tracks))
+    # lay out: header 48, descriptors (R, T, S), key frames (R, T, S), pad to 8, values
+    descs, times, vals = [], [], []
+    for n, vb, tracks in chans:
+        order = sorted(range(n), key=lambda t: tracks[t][0])     # original key-array order
+        start, d = 0, [0] * n
+        tb, vbuf = bytearray(), bytearray()
+        for t in order:
+            keys = tracks[t][1]
+            d[t] = len(keys) | start << 12
+            start += len(keys)
+            tb += bytes(f for f, _v in keys)
+            vbuf += b''.join(v for _f, v in keys)
+        descs.append(b''.join(struct.pack('<I', x) for x in d))
+        times.append(bytes(tb))
+        vals.append(bytes(vbuf))
+    offs = []
+    at = 48 + len(descs[0])
+    offs.append(at)                                 # translation descriptors
+    at += len(descs[1])
+    offs.append(at)                                 # scale descriptors
+    at += len(descs[2])
+    for tb in times:
+        offs.append(at)                             # rotation / translation / scale key frames
+        at += len(tb)
+    pad = (-at) % 8
+    at += pad
+    for vb_ in vals:
+        offs.append(at)                             # rotation / translation / scale values
+        at += len(vb_)
+    out = bytearray(buf[:12])
+    out += struct.pack('<8I', *offs) + bytes(buf[44:48])
+    out += b''.join(descs) + b''.join(times) + bytes(pad) + b''.join(vals)
+    assert len(out) == at and keyframes(bytes(out)) is not None
     return bytes(out)
 
 
