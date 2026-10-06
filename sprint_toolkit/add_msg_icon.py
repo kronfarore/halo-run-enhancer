@@ -39,6 +39,8 @@ def main():
     # stock icons run ~130-160 px tall (plasma rifle 250x161): a taller one gets a 512x256
     # sheet of its own
     sheet_h = SHEET_H if icon.height <= SHEET_H else 256
+    if icon.height > 256:
+        raise SystemExit('icon taller than 256 px')
     if icon.width > SHEET_W or icon.height > sheet_h:
         raise SystemExit('icon larger than %dx%d' % (SHEET_W, sheet_h))
     # registration: the stock AR icon registers at half its width and 40% of its height

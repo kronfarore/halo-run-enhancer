@@ -94,7 +94,8 @@ WEAPONS = {
                   # Second boot: +3 pushed the player BACK, a negative value forward; too
                   # much acceleration hurts the player (user tuned it live). Halo 3's
                   # aim assist stays the original; stronger lunge assist = balanced build.
-                  'range': 1.5, 'velocity': 60.0, 'acceleration': -2.0, 'push_damage': 0.01,
+                  # third boot: the user settled on -10 live
+                  'range': 1.5, 'velocity': 60.0, 'acceleration': -10.0, 'push_damage': 0.01,
                   'energy': 0.1, 'rate': 1.0},
     },
     'fuel_rod': {
@@ -123,7 +124,12 @@ WEAPONS = {
         # Halo 1 has no FP animation slot that plays DURING a charge (`overcharged` plays
         # once full, and the fuel rod fires at that instant).
         'charge_loop': {'sound': r'sound\sfx\weapons\plasma rifle\charging',
-                        'marker': 'primary trigger', 'input': 'B_in'},
+                        'marker': 'primary trigger', 'input': 'B_in',
+                        # and a GLOW while charging (user, 2026-10-06: only the model's own
+                        # self-illumination showed): the fuel rod folder's own light volume
+                        # (the Hunter's arm glow) and light, which nothing attached
+                        'glow': [r'weapons\fuel rod gun\hunter fuel rod',
+                                 r'weapons\fuel rod gun\illumination']},
         # the AI-only tag fired with rounds_per_shot 0 (never spent a round, never reloaded)
         # and had no aim assist; Halo 3's fuel rod values (degrees, wu)
         'rounds_per_shot': 1,
@@ -274,6 +280,9 @@ def make_lunge(w, a, write):
     tr.charging.charge_hold_time = 0.0
     tr.charging.overcharged_action.set_to('none')
     tr.charging.charged_illumination = 0.0
+    # a sword swing is not a gunshot: the plasma pistol template fires `loud`, which every
+    # AI in earshot reacts to
+    tr.firing.firing_noise.set_to('silent')
     tr.projectile.projectile.filepath = L['strike']
     tr.projectile.error_angle.__setitem__(1, 0.0)
     tr.misc.heat_generated_per_round = 0.0
@@ -306,10 +315,15 @@ def add_charge_loop(d, c):
     f.scale_function_by.set_to(c['input'])
     out = 'ABCD'[len(funcs) - 1] + '_out'
     loop = [a for a in td.attachments.STEPTREE if a.type.filepath == c['sound']][0]
-    atts.append(copy.deepcopy(loop))
-    a = atts[len(atts) - 1]
-    a.marker = c['marker']
-    a.primary_scale.set_to(out)
+    for ref in [c['sound']] + c.get('glow', []):
+        atts.append(copy.deepcopy(loop))
+        a = atts[len(atts) - 1]
+        if ref != c['sound']:
+            ext = 'light_volume' if os.path.exists(path(ref, '.light_volume')) else 'light'
+            a.type.tag_class.set_to(ext)
+        a.type.filepath = ref
+        a.marker = c['marker']
+        a.primary_scale.set_to(out)
 
 
 def edit_weapon(key, write):

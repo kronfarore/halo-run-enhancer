@@ -64,12 +64,18 @@ def put(sheet, name, img, template_seq, sheet_size, reg, index=None):
     have = [i for i, q in enumerate(seqs) if q.sequence_name == name[:31]]
     if have:
         si = have[0]
-        nb = bms[seqs[si].sprites.STEPTREE[0].bitmap_index]
-        if (nb.width, nb.height) != (W, H):
-            raise SystemExit('%s %r: bitmap is %dx%d, sprite wants %dx%d'
-                             % (sheet, name, nb.width, nb.height, W, H))
-        pix[nb.pixels_offset:nb.pixels_offset + len(raw)] = raw
         bi = seqs[si].sprites.STEPTREE[0].bitmap_index
+        nb = bms[bi]
+        if (nb.width, nb.height) == (W, H):
+            pix[nb.pixels_offset:nb.pixels_offset + len(raw)] = raw
+        else:                         # a different sheet size: a new bitmap, repointed
+            bms.append(copy.deepcopy(nb))
+            nb = bms[len(bms) - 1]
+            nb.width, nb.height = W, H
+            nb.pixels_offset = len(pix)
+            pix += raw
+            bi = len(bms) - 1
+            seqs[si].first_bitmap_index = bi
     else:
         reuse = index is not None and index < len(seqs)
         if reuse and len(seqs[index].sprites.STEPTREE):

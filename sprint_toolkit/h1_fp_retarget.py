@@ -104,8 +104,8 @@ WEAPONS = {
         'left_hand_offset': ((0.04, -0.02, 0.0), 0.06, 0.14),
         # and during the reloads, where the hand leaves the grip (user, 2026-10-06): one
         # unit forward and one to the right, for the whole animation
-        'left_hand_offset_anims': {'first_person:reload_empty': (0.01, -0.01, 0.0),
-                                   'first_person:reload_full': (0.01, -0.01, 0.0)},
+        'left_hand_offset_anims': {'first_person:reload_empty': (0.01, -0.02, 0.0),
+                                   'first_person:reload_full': (0.01, -0.02, 0.0)},
         'anims': {
             'first_person:idle': 'first-person idle',
             'first_person:ready': 'first-person ready',
