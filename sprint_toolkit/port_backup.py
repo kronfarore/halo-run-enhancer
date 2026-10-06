@@ -353,6 +353,20 @@ for _t in ('ui/hud/bitmaps/combined/hud_msg_icons_r.bitmap',
 SCRIPTS += ('h3_fp_pose.py', 'h1_fp_retarget.py', 'fp_render.py', 'h1_scaled_model.py',
             'h1_pickable_weapons.py', 'h1_rocket_meter.py', 'h3_hud_art.py',
             'h1_add_reticle.py', 'h1_hud_sheet.py', 'h1_port_sounds.py', 'h3_sprite_box.py')
+# --- Halo 1 SENTINEL BEAM (2026-10-06): a full Halo 3 port -- its own folder (models,
+# shaders, bitmaps, FP animations + JMAs, weapon, HUD, beam, effects, lights), its own
+# sounds, and the Sentinels' death effect it edits in place (the drop)
+TREES += [(os.path.join(HCEEK, 'tags', 'weapons', 'sentinel beam'), 'tags/weapons/sentinel beam', True),
+          (os.path.join(HCEEK, 'data', 'weapons', 'sentinel beam'), 'data/weapons/sentinel beam', True),
+          (os.path.join(HCEEK, 'tags', 'sound', 'weapons', 'sentinel_beam_port'),
+           'tags/sound/weapons/sentinel_beam_port', True),
+          (os.path.join(HCEEK, 'data', 'sound', 'weapons', 'sentinel_beam_port'),
+           'data/sound/weapons/sentinel_beam_port', True)]
+for _x in ('', '.before_pickable'):
+    SHARED.append((os.path.join(HCEEK, 'tags', 'characters', 'sentinel', 'effects', 'death.effect') + _x,
+                   'shared/characters/sentinel/effects/death.effect' + _x))
+SCRIPTS += ('h3_rm_to_jms.py', 'h1_h3_weapon_model.py', 'h1_enemy_test_map.py',
+            'make_port_catalog_h1_restored.py')
 
 PROFILES = {
     'h1': {'trees': TREES, 'shared': SHARED, 'files': FILES, 'maps': MAPS,

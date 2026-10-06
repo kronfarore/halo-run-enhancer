@@ -106,6 +106,18 @@ ENTRIES = [
          row('actv', GRUNT_ROD, 'Rate Of Fire', 0.75, 0.0, 'Grunt fuel rod rate'),
          row('actv', GRUNT_ROD + ' airdef', 'Rate Of Fire', 0.75, 0.0, 'Grunt fuel rod rate'),
      ]},
+    # a FULL PORT from Halo 3 (2026-10-06, tested on c40 over 12 boots): Halo 1's Sentinels
+    # carry no droppable weapon, so their death effect drops it (user's option B) -- it is
+    # obtainable on the levels with Sentinels. Built on a copy of the plasma rifle, whose
+    # cards it takes. No balance rows: its numbers are Halo 3's by the ratio rule.
+    {'weapon': 'Sentinel Beam', 'source': 'Halo 3', 'donor': 'Plasma Rifle', 'default_on': False,
+     'desc': "Halo 3's Sentinel Beam: its model, first-person animations and sounds. "
+             "Dropped by Sentinels when they die. A continuous beam on heat and battery.",
+     'fp_animations': B.join(['weapons', 'sentinel beam', 'fp', 'fp']),
+     # the weapon's own projectile exists only in the player build
+     'requires': ['proj ' + B.join(['weapons', 'sentinel beam', 'beam'])],
+     'anims': {},
+     'balance': []},
 ]
 
 

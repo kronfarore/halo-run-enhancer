@@ -337,6 +337,67 @@ composition order assumed); the fuel rod's 4-tick HUD; the sword's fire button (
 like the oddball). Not done: own sounds (step 10: reload silent, no sword ready sound),
 pickup icons, enhancer cards, Sentinel Beam (H3 geometry reads with `h4_rm.load`).
 
+### Halo 1: the Sentinel Beam, a full HALO 3 port (2026-10-06, 12 boots on c40)
+
+Halo 1's Sentinels fire an AI weapon that has no model and is never dropped. The port is
+Halo 3's beam, built from scratch. The DROP (the user's option B) is a `weapon` part on
+the Sentinel's body-destroyed effect, `characters\sentinel\effects\death` (threshold 0, so
+it plays on every kill). Tools, all generic per weapon:
+
+  geometry + look   h3_rm_to_jms.py (H3 render model -> JMS on its OWN skeleton, nodes
+                    `frame <name>`, quaternions conjugated, index buffers are TRIANGLE
+                    STRIPS) + h1_h3_weapon_model.py (bitmaps from the largest tgda chunk;
+                    multipurpose map R = H3 base alpha, G = illum; shader; `tool model`)
+  FP animations     h1_fp_retarget.py (`view_offset` moves the whole rig in view space;
+                    `holds` writes a still from a source's last frame)
+  weapon            h1_pickable_weapons.py on a COPY of the plasma rifle (`template`), with
+                    the ratio rule against the plasma rifle
+  sounds            h1_port_sounds.py sentinel_beam (TUPLE folders = pieces played one after
+                    another; `loop_len` = a short seamless loop, tail crossfaded into head)
+  test map          h1_enemy_test_map.py --grunt/--elite "characters\sentinel\sentinel"
+
+What Halo 1 did that the data did not say (each one cost a boot):
+
+* RATE IS TICK-QUANTISED: a round every floor(30 / rate) + 1 ticks, so 30/s fires 15/s and
+  15/s fires 10/s (measured from heat vs battery). The tag says 30 and every per-round value
+  is doubled.
+* A camera-facing CONTRAIL fired from the camera is seen END-ON and has no width: no beam in
+  view, but one in the floor's reflection. Give the trigger a `first person offset` (the
+  rocket launcher's is y -0.1). `rounds between tracers` must be 0, or only one round in four
+  draws.
+* EFFECT LIGHTS and lens flares spawn at the hidden THIRD-PERSON weapon (above the right arm);
+  object attachments never show in first person at all. The visible muzzle glow is PARTICLES
+  with `first person only`. A non-dynamic light (the Sentinel's gunlight) lights nothing.
+* Additive flash sprites SATURATE: five `flash c generic` at 15/s (~20 alive) burn any tint
+  to white. One sprite with an RGB tint (`tint as hsv` off) is red. The plasma pistol's green
+  flash is the same sprite tinted.
+* The template's `vent` markers: its overheat steam and misfire burst need own copies whose
+  locations name a marker the new model has (`overheat`).
+* Without `first-person overheated` (the stock plasma rifle's hold after `overheating`), the
+  engine REPLAYS `overheating`, with its sound and a jump in the pose.
+* A LOOPING SOUND ON A HELD TRIGGER. Weapon export inputs, as measured on this weapon:
+
+    primary firing on   never moves (two wirings, one the flamethrower's exact layout)
+    overheated          never moves
+    ready               stays 1 through an overheat
+    illumination        stays up while fire is HELD, even with nothing firing
+    primary rate of fire  ramps with the trigger (accel / decel time); bounds must differ
+                        (29..30) or the ramp is 0/0. Smooth: the hum's SOURCE
+    age (inverted)      0 on an empty battery (the template's function 3)
+    primary firing      0 while an overheat or an empty battery blocks the trigger: the
+                        one that ends the hum
+
+  A signal that drops between rounds makes the loop restart and QUEUE its start/end tracks
+  (the tail grows with how long fire was held). Halo 1 also finishes a loop pass before the
+  end track, so the loop is 0.5 s. What shipped: function 0 = 'one' x rate of fire, turning
+  off with function 1 (= 'one' x primary firing), which turns off with function 3 (battery
+  left). `turn off with` CHAINS. A per-shot sound in the firing effect instead was heard as
+  static.
+
+Open: catalogued as 'Sentinel Beam' (donor Plasma Rifle, no balance rows); the enhancer
+session wires cards/pools. A cyan layer under the muzzle glow while firing, probably the
+beam's own start; kept (user).
+
 ---
 
 ## Halo 3
