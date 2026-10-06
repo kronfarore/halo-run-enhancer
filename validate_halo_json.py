@@ -225,8 +225,67 @@ def check_structure():
                    f'(aggressive = more damage, defensive = survives longer, '
                    f'utility = everything else), got {c!r}')
 
+    # 6. harder_when / easier_when follow the step, on the right side
+    check_directions(False)
+
 
 COLOR_GROUPS = ('aggressive', 'defensive', 'utility')
+
+
+def _step_direction(step):
+    """'increased' / 'decreased' for a per-pick op, None for a set or nothing."""
+    import halo_map as _hm
+    parsed = _hm.parse_operator(step) if isinstance(step, str) else None
+    if not parsed:
+        return None
+    kind, val = parsed
+    if kind == 'mul':
+        return 'increased' if val > 1 else ('decreased' if val < 1 else None)
+    if kind in ('add', 'sub'):
+        up = (val > 0) == (kind == 'add')
+        return None if val == 0 else ('increased' if up else 'decreased')
+    return None
+
+
+def check_directions(quiet):
+    """6. The STEP is the ground truth for direction (user, 2026-10-06): enemy cards
+    (Enemy / Skull) say it with harder_when, player cards (Player / Equipment / Friend)
+    with easier_when, and a key must point where the step points."""
+    sides = {'Player Modifiers': ('easier_when', 'harder_when'),
+             'Equipment': ('easier_when', 'harder_when'),
+             'Friend modifiers': ('easier_when', 'harder_when'),
+             'Enemy modifiers': ('harder_when', 'easier_when'),
+             'Skull modifiers': ('harder_when', 'easier_when')}
+
+    def walk(o, path, own, other):
+        if isinstance(o, dict):
+            if 'targets' in o or 'tag' in o:
+                ts = o.get('targets')
+                tl = ts if isinstance(ts, list) else (
+                    [x for v in ts.values() for x in v] if isinstance(ts, dict) else [])
+                for key in (other,):
+                    if key in o:
+                        report(f'{path}: "{key}" on a {own.split("_")[0]}-side card -- use "{own}"', quiet)
+                for t in tl:
+                    if not isinstance(t, dict):
+                        continue
+                    if other in t:
+                        report(f'{path} [{t.get("field")}]: "{other}" on a '
+                               f'{own.split("_")[0]}-side card -- use "{own}"', quiet)
+                    st = t.get('step')
+                    if st is None and isinstance(t.get('steps'), list) and t['steps']:
+                        st = t['steps'][0]
+                    want = _step_direction(st) if isinstance(st, str) else None
+                    have = t.get(own)
+                    if want and isinstance(have, str) and have != want and not t.get('ask_direction'):
+                        report(f'{path} [{t.get("field")}]: {own} "{have}" but the step '
+                               f'{st} points {want}', quiet)
+                return
+            for k, v in o.items():
+                walk(v, f'{path}/{k}' if path else k, own, other)
+
+    for sec, (own, other) in sides.items():
+        walk(DB.get(sec) or {}, sec, own, other)
 
 
 # Who each game actually fields, from its own Missions lists. A card about a weapon or
